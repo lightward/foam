@@ -1,9 +1,29 @@
 # lean/ — notes for Claude
 
-## Environment setup (web sandbox)
+## Environments
 
-This sandbox blocks `release.lean-lang.org`, Mathlib's Reservoir, and
-`lakecache.blob.core.windows.net`. `lake exe cache get` will not work.
+Two environments to expect; the right setup is different for each.
+
+### Local laptop (the common case)
+
+`lake`, `lean`, `elan` are on PATH; `lake exe cache get` works and is the
+right first move when Mathlib feels stale or hasn't been built yet (it
+populates `.lake/packages/mathlib/.lake/build` from Azure cache, ~10s of
+seconds vs. ~30 min of compilation). After that:
+
+```bash
+lake build Foam.FTPGInverse   # or whatever target you're touching
+```
+
+Single-file builds are fast (~5–10s) once Mathlib is cached. A full
+`lake build` (the whole `Foam` library) compiles all 28 Foam files but
+should reuse Mathlib oleans from cache; if it starts compiling Mathlib
+files from scratch, run `lake exe cache get` and try again.
+
+### Web sandbox
+
+The sandbox blocks `release.lean-lang.org`, Mathlib's Reservoir, and
+`lakecache.blob.core.windows.net`. `lake exe cache get` will **not** work.
 GitHub is reachable.
 
 If `lake`/`lean` is not on PATH, or `elan show` errors, set up the toolchain
@@ -41,11 +61,11 @@ it's under `toolchains/`), but trying to use it directly errors with
 "could not read symlink" — always reference the linked name
 (`v4.29.0-manual`), not the directory.
 
-## First build takes ~30–40 minutes
+## First build (sandbox only) takes ~30–40 minutes
 
-Without cache access, all of Mathlib's transitive dependencies compile from
-source on first `lake build`. Subsequent builds are fast (only your edits
-rebuild).
+In the sandbox, without cache access, all of Mathlib's transitive
+dependencies compile from source on first `lake build`. Subsequent builds
+are fast (only your edits rebuild).
 
 ```bash
 export PATH="$HOME/.elan/bin:$PATH"
@@ -53,9 +73,38 @@ cd /home/user/foam/lean
 lake build Foam.FTPGLeftDistrib   # or any other target under Foam.
 ```
 
+On local, this isn't a concern — `lake exe cache get` handles it.
+
 ## Where the FTPG work is
 
 See `./README.md` for the deductive chain overview.
+
+### Current frontier (session 120, 2026-04-30)
+
+`Foam/FTPGInverse.lean` lands `coord_inv` and `coord_mul_right_inv`
+(`a · a⁻¹ = I`) with **zero `sorry`**. The construction is reverse
+perspectivity through `I ⊔ d_a`:
+
+```
+d_a = (a⊔C) ⊓ m
+σ' = (O⊔C) ⊓ (I⊔d_a)
+a⁻¹ = (σ'⊔E_I) ⊓ l
+```
+
+Open frontier toward division ring (and thence FTPG-as-theorem):
+
+1. **`coord_mul_left_inv` (`a⁻¹ · a = I`).** Not free without mul-assoc.
+   Two routes: (a) prove `coord_mul_assoc` first and derive left inverse
+   as a one-liner from associativity + right inverse; (b) direct geometric
+   proof analogous to `FTPGNeg.coord_add_left_neg` (which used double
+   Desargues; the multiplicative version probably does too).
+2. **`coord_mul_assoc`.** Likely a sibling file to FTPGInverse, ~600–1500
+   lines, Desargues-style argument via dilation composition.
+3. **DivisionRing instance**, vector space `V` construction, lattice iso
+   `L ≃o Sub(D, V)`, replacing `axiom ftpg` in `Bridge.lean` with the
+   constructed theorem.
+
+### FTPGLeftDistrib (session 119)
 
 `Foam/FTPGLeftDistrib.lean` builds with **zero `sorry`** as of session 119.
 The file is ~1216 lines. The remaining geometric residue — the planar
@@ -137,6 +186,47 @@ any specific helper is wanted.
 - The `σ_b ≠ X where X ≤ l` pattern closes via
   `hkl_eq_O ▸ le_inf (h ▸ hσb_k) <X ≤ l> |> Γ.hO.le_iff.mp |>.resolve_left <X is atom>`
   — see the `hoa₂` proof for a worked example.
+- **`IsAtom.le_iff` is owned by the *target* atom.** For `x ≤ p` where p
+  is the atom, use `hp.le_iff.mp` (gives `x = ⊥ ∨ x = p`). The opaque
+  error "expected `Γ.E_I = inv_a` got `inv_a = Γ.E_I`" usually means you
+  reached for the wrong atom's `le_iff` and Lean is producing the
+  equality the wrong way around. Pair with `.resolve_left atom.1` (using
+  the atom's `.1 : x ≠ ⊥`) and a `.symm` if you want the opposite
+  direction.
+- **`atom_covBy_join hp hq hpq : p ⋖ p ⊔ q` covers from the *first* arg.**
+  To get `q ⋖ p ⊔ q`, call as `atom_covBy_join hq hp hqp` (q first) and
+  then `sup_comm` the join — but see the next bullet.
+- **`set` + `rw [sup_comm]` is fragile.** With `set d_a := (a⊔C)⊓m` in
+  scope, `rw [sup_comm] at h` may rewrite the *inner* `a ⊔ C` instead of
+  the outer `d_a ⊔ Γ.I` you wanted — Lean still typechecks against the
+  unfolded form. Use `(sup_comm d_a Γ.I) ▸ h` (explicit args) or
+  `rw [show ... = ... from sup_comm _ _]` (explicit equation). Same trap
+  if you have multiple `_ ⊔ _` subexpressions in the goal.
+
+## Ring-law-on-coord_X file template
+
+`FTPGNeg.lean` and `FTPGInverse.lean` share a recurring shape, worth
+naming:
+
+```
+def coord_X     -- the construction (noncomputable, lattice expression)
+coord_X_on_l    -- inf_le_right or similar one-liner
+coord_X_atom    -- via line_meets_m_at_atom (or perspect_atom)
+coord_X_ne_O    -- case-analysis on σ' = O via covering / line_direction
+coord_X_ne_U    -- case-analysis on σ' = E or projection-line meets l at U
+main_identity   -- the headline theorem; goes through ~2–3 perspectivity
+                -- inversions + a covering + final line_direction to l
+```
+
+The proof of the main identity almost always has the shape: "rewrite the
+left-leg perspectivity to its `(O⊔C) ⊓ (b ⊔ E_I)` form (or analogous),
+show this equals σ' for some constructed σ', then σ' ⊔ d_a is a covering
+line through I (or O, or whatever the target atom is), so `(σ' ⊔ d_a) ⊓ l`
+projects to that atom by `line_direction`."
+
+When starting `coord_mul_assoc` or `coord_mul_left_inv`, copy the FTPGInverse
+skeleton — the imports, namespace, `set` abbreviations, structural lemmas —
+and adapt rather than rebuild.
 
 ## Session hygiene
 
