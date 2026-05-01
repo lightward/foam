@@ -17,9 +17,71 @@ and `(I ⊔ d_a) ⊓ l = I` by `line_direction` (d_a ∉ l).
 
 ## Status
 
-  Definition + atom + on-l + right inverse (a · a⁻¹ = I).
-  Left inverse (a⁻¹ · a = I) is open — standard route is via mul-assoc
-  (not yet proven) or a direct geometric argument.
+  Definition + atom + on-l + right inverse (a · a⁻¹ = I) PROVEN.
+  Non-degeneracy: `coord_inv_ne_O`, `coord_inv_ne_U` PROVEN (warm-ups,
+    they reduce to `sigma'_ne_O` / `sigma'_ne_E` via covering arguments).
+  Left inverse (a⁻¹ · a = I) — OPEN. Plan below.
+
+## Left inverse plan: a⁻¹ · a = I
+
+The coord_mul expansion gives goal `(σ_a ⊔ d_{a⁻¹}) ⊓ l = I`, where
+  σ_a       := (O ⊔ C) ⊓ (a ⊔ E_I)            -- E_I-projection of a
+  d_{a⁻¹}   := (a⁻¹ ⊔ C) ⊓ m                  -- C-projection of a⁻¹
+
+The geometric content reduces to: σ_a = σ'_{a⁻¹}, where
+  σ'_{a⁻¹} := (O ⊔ C) ⊓ (I ⊔ d_{a⁻¹})         -- I-projection of d_{a⁻¹}
+
+Equivalently: σ_a, I, d_{a⁻¹} are collinear (i.e., I ≤ σ_a ⊔ d_{a⁻¹}).
+Equivalently: `coord_inv` is involutive (`coord_inv (coord_inv a) = a`).
+
+Once σ_a ≤ I ⊔ d_{a⁻¹} is in hand, the rest is mechanical:
+  σ_a ⊔ d_{a⁻¹} = I ⊔ d_{a⁻¹}   (covering at d_{a⁻¹}, since σ_a ≠ d_{a⁻¹})
+  (I ⊔ d_{a⁻¹}) ⊓ l = I         (`line_direction`, since d_{a⁻¹} ∉ l)
+
+### Desargues setup: center C, two triangles
+
+  T₁ := (a, a⁻¹, σ_a)        on (l, l, O⊔C)
+  T₂ := (d_a, d_{a⁻¹}, σ')   on (m, m, O⊔C)
+
+  Perspective from C:
+    d_a    ≤ C ⊔ a       [d_a := (a⊔C)⊓m by construction]
+    d_{a⁻¹} ≤ C ⊔ a⁻¹     [analogously]
+    σ'     ≤ C ⊔ σ_a     [σ', σ_a, C all on the line O⊔C, given σ_a ≠ C]
+
+`desargues_planar` produces an axis ℓ (≤ π, ≠ π) containing the three
+side intersections:
+  X₁₂ := (a⊔a⁻¹) ⊓ (d_a⊔d_{a⁻¹}) = U                  [l ⊓ m]
+  X₁₃ := (a⊔σ_a) ⊓ (d_a⊔σ')      = (a⊔E_I) ⊓ (I⊔d_a)  [via σ_a ≤ a⊔E_I, σ' ≤ I⊔d_a]
+  X₂₃ := (a⁻¹⊔σ_a) ⊓ (d_{a⁻¹}⊔σ')
+
+The remaining work is reading X₂₃ to extract σ_a ≤ I⊔d_{a⁻¹}. The cleanest
+path is likely a **second** Desargues, analogous to `coord_second_desargues`
+in `FTPGAddComm.lean` — it consumes the first axis content and closes the
+target collinearity. (See `coord_add_left_neg` in `FTPGNeg.lean` for the
+double-Desargues pattern in the additive case.)
+
+### Suggested first move next session
+
+Build the multiplicative analogue lemmas
+
+  coord_first_desargues_mul  Γ ha ha_inv ha_on hinv_on ... R hR hR_not h_irred :
+    (a⊔σ_a) ⊓ (d_a⊔σ') ≤ U⊔(some axis description)
+  coord_second_desargues_mul Γ ... (axis_content_from_first) :
+    (a⁻¹⊔σ_a) ⊓ (d_{a⁻¹}⊔σ') ≤ I⊔(something extracting collinearity)
+
+paralleling `FTPGAddComm.coord_first_desargues` (~600 lines) and
+`coord_second_desargues` (~800 lines). Then `coord_mul_left_inv` is
+~30 lines like `coord_add_left_neg` (~250 lines including its char-2
+case-split).
+
+Char-2 case (a = a⁻¹) needs a separate covering argument like
+`coord_add_left_neg`'s `ha_eq_na` branch — when a is self-inverse, the
+two triangles collapse and the axis identity is replaced by a direct
+covering computation.
+
+Hypotheses needed for the headline theorem (matching FTPGNeg):
+  ha : IsAtom a, ha_on : a ≤ l, ha_ne_O, ha_ne_U
+  R, hR : IsAtom R, hR_not : ¬ R ≤ π, h_irred (third atom on each line)
 -/
 
 import Foam.FTPGMul
@@ -218,6 +280,77 @@ theorem coord_inv_atom (Γ : CoordSystem L)
       (Γ.hE_I_on_m.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right))
   exact line_meets_m_at_atom hσ'_atom Γ.hE_I_atom hσ'_ne_EI hσ'EI_le_π
     le_sup_left (l_covBy_π_inv Γ) hσ'_not_l
+
+/-- `coord_inv Γ a ≠ O`. If a⁻¹ = O then σ'⊔E_I collapses to O⊔E_I (covering at E_I),
+    forcing σ' ≤ (O⊔C)⊓(O⊔E_I) = O, contradicting `sigma'_ne_O`. -/
+theorem coord_inv_ne_O (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_U : a ≠ Γ.U) :
+    coord_inv Γ a ≠ Γ.O := by
+  unfold coord_inv
+  set σ' := (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) with hσ'_def
+  intro h
+  have hσ'_atom := sigma'_atom Γ ha ha_on
+  have hσ'_ne_EI := sigma'_ne_E_I Γ a
+  -- Step 1: O ≤ σ' ⊔ E_I.
+  have hO_le_σEI : Γ.O ≤ σ' ⊔ Γ.E_I := h.symm.le.trans inf_le_left
+  -- Step 2: σ' ⊔ E_I = O ⊔ E_I (covering at E_I).
+  have hO_ne_EI : Γ.O ≠ Γ.E_I := fun he => Γ.hO_not_m (he ▸ Γ.hE_I_on_m)
+  have hOE_le_σE : Γ.O ⊔ Γ.E_I ≤ σ' ⊔ Γ.E_I := sup_le hO_le_σEI le_sup_right
+  have hEI_lt_OE : Γ.E_I < Γ.O ⊔ Γ.E_I := lt_of_le_of_ne le_sup_right
+    (fun he => hO_ne_EI ((Γ.hE_I_atom.le_iff.mp
+      (le_sup_left.trans he.symm.le)).resolve_left Γ.hO.1))
+  have hcov_EI : Γ.E_I ⋖ σ' ⊔ Γ.E_I := by
+    have := atom_covBy_join Γ.hE_I_atom hσ'_atom (Ne.symm hσ'_ne_EI)
+    rwa [sup_comm] at this
+  have hOEI_eq : Γ.O ⊔ Γ.E_I = σ' ⊔ Γ.E_I :=
+    (hcov_EI.eq_or_eq hEI_lt_OE.le hOE_le_σE).resolve_left (ne_of_gt hEI_lt_OE)
+  -- Step 3: σ' ≤ O ⊔ E_I, σ' ≤ O ⊔ C, so σ' ≤ (O⊔C) ⊓ (O⊔E_I) = O.
+  have hσ'_le_OEI : σ' ≤ Γ.O ⊔ Γ.E_I := hOEI_eq ▸ le_sup_left
+  have hσ'_le_OC : σ' ≤ Γ.O ⊔ Γ.C := inf_le_left
+  have hOC : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  have hC_ne_EI : Γ.C ≠ Γ.E_I := fun h => Γ.hC_not_m (h ▸ Γ.hE_I_on_m)
+  have hOC_inf_OEI : (Γ.O ⊔ Γ.C) ⊓ (Γ.O ⊔ Γ.E_I) = Γ.O :=
+    modular_intersection Γ.hO Γ.hC Γ.hE_I_atom hOC hO_ne_EI hC_ne_EI Γ.hE_I_not_OC
+  have hσ'_le_O : σ' ≤ Γ.O := hOC_inf_OEI ▸ le_inf hσ'_le_OC hσ'_le_OEI
+  have hσ'_eq_O : σ' = Γ.O :=
+    (Γ.hO.le_iff.mp hσ'_le_O).resolve_left hσ'_atom.1
+  exact sigma'_ne_O Γ ha ha_on ha_ne_U hσ'_eq_O
+
+/-- `coord_inv Γ a ≠ U`. If a⁻¹ = U then σ'⊔E_I collapses to U⊔E_I ≤ m,
+    forcing σ' ≤ E (= (O⊔C)⊓m), contradicting `sigma'_ne_E`. -/
+theorem coord_inv_ne_U (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_O : a ≠ Γ.O) :
+    coord_inv Γ a ≠ Γ.U := by
+  unfold coord_inv
+  set σ' := (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) with hσ'_def
+  intro h
+  have hσ'_atom := sigma'_atom Γ ha ha_on
+  have hσ'_ne_EI := sigma'_ne_E_I Γ a
+  -- Step 1: U ≤ σ' ⊔ E_I.
+  have hU_le_σEI : Γ.U ≤ σ' ⊔ Γ.E_I := h.symm.le.trans inf_le_left
+  -- Step 2: σ' ⊔ E_I = U ⊔ E_I (covering at E_I).
+  have hU_ne_EI : Γ.U ≠ Γ.E_I := fun he => Γ.hE_I_not_l (he ▸ le_sup_right)
+  have hUE_le_σE : Γ.U ⊔ Γ.E_I ≤ σ' ⊔ Γ.E_I := sup_le hU_le_σEI le_sup_right
+  have hEI_lt_UE : Γ.E_I < Γ.U ⊔ Γ.E_I := lt_of_le_of_ne le_sup_right
+    (fun he => hU_ne_EI ((Γ.hE_I_atom.le_iff.mp
+      (le_sup_left.trans he.symm.le)).resolve_left Γ.hU.1))
+  have hcov_EI : Γ.E_I ⋖ σ' ⊔ Γ.E_I := by
+    have := atom_covBy_join Γ.hE_I_atom hσ'_atom (Ne.symm hσ'_ne_EI)
+    rwa [sup_comm] at this
+  have hUEI_eq : Γ.U ⊔ Γ.E_I = σ' ⊔ Γ.E_I :=
+    (hcov_EI.eq_or_eq hEI_lt_UE.le hUE_le_σE).resolve_left (ne_of_gt hEI_lt_UE)
+  -- Step 3: σ' ≤ U⊔E_I ≤ m, and σ' ≤ O⊔C, so σ' ≤ (O⊔C)⊓m = E.
+  have hσ'_le_UEI : σ' ≤ Γ.U ⊔ Γ.E_I := hUEI_eq ▸ le_sup_left
+  have hUEI_le_m : Γ.U ⊔ Γ.E_I ≤ Γ.U ⊔ Γ.V :=
+    sup_le le_sup_left Γ.hE_I_on_m
+  have hσ'_le_m : σ' ≤ Γ.U ⊔ Γ.V := hσ'_le_UEI.trans hUEI_le_m
+  have hσ'_le_OC : σ' ≤ Γ.O ⊔ Γ.C := inf_le_left
+  have hσ'_le_E : σ' ≤ Γ.E := by
+    show σ' ≤ (Γ.O ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)
+    exact le_inf hσ'_le_OC hσ'_le_m
+  have hσ'_eq_E : σ' = Γ.E :=
+    (Γ.hE_atom.le_iff.mp hσ'_le_E).resolve_left hσ'_atom.1
+  exact sigma'_ne_E Γ ha ha_on ha_ne_O hσ'_eq_E
 
 /-! ## Right multiplicative inverse: `a · a⁻¹ = I`. -/
 

@@ -81,8 +81,9 @@ See `./README.md` for the deductive chain overview.
 
 ### Current frontier (session 120, 2026-04-30)
 
-`Foam/FTPGInverse.lean` lands `coord_inv` and `coord_mul_right_inv`
-(`a · a⁻¹ = I`) with **zero `sorry`**. The construction is reverse
+`Foam/FTPGInverse.lean` lands `coord_inv`, `coord_mul_right_inv`
+(`a · a⁻¹ = I`), and the non-degeneracy helpers `coord_inv_ne_O`,
+`coord_inv_ne_U` with **zero `sorry`**. The construction is reverse
 perspectivity through `I ⊔ d_a`:
 
 ```
@@ -91,13 +92,28 @@ d_a = (a⊔C) ⊓ m
 a⁻¹ = (σ'⊔E_I) ⊓ l
 ```
 
+The non-degeneracy helpers reduce cleanly: `coord_inv = O` collapses
+the σ'⊔E_I line to O⊔E_I, forcing σ' ≤ (O⊔C)⊓(O⊔E_I) = O, contradicting
+`sigma'_ne_O`. Symmetric for `coord_inv = U` via U⊔E_I ≤ m and
+`sigma'_ne_E`.
+
 Open frontier toward division ring (and thence FTPG-as-theorem):
 
-1. **`coord_mul_left_inv` (`a⁻¹ · a = I`).** Not free without mul-assoc.
-   Two routes: (a) prove `coord_mul_assoc` first and derive left inverse
-   as a one-liner from associativity + right inverse; (b) direct geometric
-   proof analogous to `FTPGNeg.coord_add_left_neg` (which used double
-   Desargues; the multiplicative version probably does too).
+1. **`coord_mul_left_inv` (`a⁻¹ · a = I`).** The geometric content
+   reduces to **σ_a = σ'_{a⁻¹}** as atoms on (O⊔C); equivalently
+   `coord_inv` is involutive. The Desargues plan is laid out in
+   `Foam/FTPGInverse.lean`'s top docstring: center C, triangles
+   `T₁ = (a, a⁻¹, σ_a)` on `(l,l,OC)` and `T₂ = (d_a, d_{a⁻¹}, σ')` on
+   `(m,m,OC)`. The first axis intersections are U and `(a⊔E_I)⊓(I⊔d_a)`;
+   the third intersection `(a⁻¹⊔σ_a)⊓(d_{a⁻¹}⊔σ')` carries the open
+   geometric content. Two paths from there:
+   - (a) Prove `coord_mul_assoc` first; left inverse follows in a few
+     lines from assoc + right inverse + `a⁻¹ · (a⁻¹)⁻¹ = I` plus a
+     small algebraic juggle.
+   - (b) Build `coord_first_desargues_mul` / `coord_second_desargues_mul`
+     analogues of `FTPGAddComm`'s ~600/~800 line additive ones, then
+     `coord_mul_left_inv` lands in ~30 lines like `coord_add_left_neg`'s
+     ~250 lines (including a char-2 case-split for self-inverse a).
 2. **`coord_mul_assoc`.** Likely a sibling file to FTPGInverse, ~600–1500
    lines, Desargues-style argument via dilation composition.
 3. **DivisionRing instance**, vector space `V` construction, lattice iso
