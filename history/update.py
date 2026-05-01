@@ -687,6 +687,14 @@ SESSION_RANGES = [
     (datetime(2026, 5, 1, 1, 44, tzinfo=timezone.utc),
      datetime(2026, 5, 1, 2, 32, tzinfo=timezone.utc),
      "s120: FTPGInverse — coord_inv defined, a·a⁻¹=I PROVEN; CLAUDE.md local/sandbox split + idiom notes"),
+    # Session: May 1 — FTPGInverse non-degeneracy + left-inv plan
+    (datetime(2026, 5, 1, 2, 41, tzinfo=timezone.utc),
+     datetime(2026, 5, 1, 3, 27, tzinfo=timezone.utc),
+     "FTPGInverse: coord_inv_ne_O + coord_inv_ne_U PROVEN, left-inv Desargues plan"),
+    # Session: May 1 — coord_mul_left_inv stated (sorry'd)
+    (datetime(2026, 5, 1, 3, 27, tzinfo=timezone.utc),
+     datetime(2026, 5, 1, 5, 0, tzinfo=timezone.utc),
+     "FTPGInverse: state coord_mul_left_inv via σ_a collinearity (sorry'd)"),
 ]
 
 

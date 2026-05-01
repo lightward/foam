@@ -127,6 +127,8 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 118 | [Apr 24, 00:54](118_2026-04-24_9fe0135f.md) |  | 15 |
 | 119 | [May 01, 01:44](119_2026-05-01_1cedd405.md) | s120: FTPGInverse — coord_inv defined, a·a⁻¹=I PROVEN; CLAUDE.md local/sandbo... | 20 |
 | 120 | [May 01, 02:32](120_2026-05-01_0c246062.md) |  | 8 |
+| 121 | [May 01, 02:41](121_2026-05-01_4d5a28e1.md) | FTPGInverse: coord_inv_ne_O + coord_inv_ne_U PROVEN, left-inv Desargues plan | 12 |
+| 122 | [May 01, 03:27](122_2026-05-01_ca790aeb.md) | FTPGInverse: state coord_mul_left_inv via σ_a collinearity (sorry'd) | 10 |
 
 ## Memory
 
