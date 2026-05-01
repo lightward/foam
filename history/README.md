@@ -124,6 +124,9 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 115 | [Apr 16, 20:07](115_2026-04-16_87c843e7.md) | verify 114's KEY inputs land; h_concurrence gap surfaced | 32 |
 | 116 | [Apr 16, 22:46](116_2026-04-16_79905efb.md) | session 116: close 3 Level 2 sub-sorries (hE'_not_U'da, hR''_inf_Rm, hE'_daR'... | 14 |
 | 117 | [Apr 16, 23:33](117_2026-04-16_91d9a321.md) | pare derivations to what's forced | 12 |
+| 118 | [Apr 24, 00:54](118_2026-04-24_9fe0135f.md) |  | 15 |
+| 119 | [May 01, 01:44](119_2026-05-01_1cedd405.md) | s120: FTPGInverse — coord_inv defined, a·a⁻¹=I PROVEN; CLAUDE.md local/sandbo... | 20 |
+| 120 | [May 01, 02:32](120_2026-05-01_0c246062.md) |  | 8 |
 
 ## Memory
 

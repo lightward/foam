@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
-LOGS_DIR = Path.home() / ".claude/projects/-Users-isaac-dev-ai"
+LOGS_DIR = Path.home() / ".claude/projects/-Users-isaac-dev-foam"
 MEMORY_DIR = LOGS_DIR / "memory"
 OUT_DIR = Path(__file__).parent
 
@@ -683,6 +683,10 @@ SESSION_RANGES = [
     (datetime(2026, 4, 16, 23, 30, tzinfo=timezone.utc),
      datetime(2026, 4, 17, 4, 0, tzinfo=timezone.utc),
      "pare derivations to what's forced"),
+    # Session 120: May 1 — FTPGInverse + CLAUDE.md refinements
+    (datetime(2026, 5, 1, 1, 44, tzinfo=timezone.utc),
+     datetime(2026, 5, 1, 2, 32, tzinfo=timezone.utc),
+     "s120: FTPGInverse — coord_inv defined, a·a⁻¹=I PROVEN; CLAUDE.md local/sandbox split + idiom notes"),
 ]
 
 
