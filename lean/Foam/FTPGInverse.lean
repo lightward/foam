@@ -416,4 +416,141 @@ theorem coord_mul_right_inv (Γ : CoordSystem L)
   rw [show Γ.I ⊔ d_a = d_a ⊔ Γ.I from sup_comm _ _]
   exact line_direction hd_atom (d_a_not_l Γ ha ha_on ha_ne_U) Γ.hI_on
 
+/-! ## Open frontier: left multiplicative inverse `a⁻¹ · a = I`
+
+This section names the open geometric content as a single `sorry`'d lemma —
+`sigma_a_le_I_sup_d_inv` — and reduces the headline `coord_mul_left_inv` to
+it via the same closing pattern as `coord_mul_right_inv`. Once that lemma is
+discharged (via the planned double-Desargues argument or via
+`coord_mul_assoc`), the headline closes mechanically. See top-of-file
+docstring for the geometric plan.
+-/
+
+/-- `σ_a := (O ⊔ C) ⊓ (a ⊔ E_I)`: the E_I-projection of `a` from `l` onto
+    `O⊔C`. Same construction as the second perspectivity in `coord_mul Γ ? a`.
+    Atom by `perspect_atom` (pivot `E_I`, line `O⊔C`). -/
+private theorem sigma_a_atom (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) :
+    IsAtom ((Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I)) := by
+  have ha_ne_EI : a ≠ Γ.E_I := fun h => Γ.hE_I_not_l (h ▸ ha_on)
+  have hOC_ne : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  have hOCEI_eq_π : Γ.O ⊔ Γ.C ⊔ Γ.E_I = Γ.O ⊔ Γ.U ⊔ Γ.V := by
+    have h_lt : Γ.O ⊔ Γ.C < Γ.O ⊔ Γ.C ⊔ Γ.E_I :=
+      lt_of_le_of_ne le_sup_left (fun heq => Γ.hE_I_not_OC (heq ▸ le_sup_right))
+    have h_le : Γ.O ⊔ Γ.C ⊔ Γ.E_I ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+      sup_le (sup_le (le_sup_left.trans le_sup_left) Γ.hC_plane)
+        (Γ.hE_I_on_m.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right))
+    exact ((CoordSystem.OC_covBy_π Γ).eq_or_eq h_lt.le h_le).resolve_left (ne_of_gt h_lt)
+  rw [show (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) = (a ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.C) from inf_comm _ _]
+  refine perspect_atom Γ.hE_I_atom ha ha_ne_EI Γ.hO Γ.hC hOC_ne Γ.hE_I_not_OC ?_
+  exact sup_le ((ha_on.trans le_sup_left).trans hOCEI_eq_π.symm.le) le_sup_right
+
+/-- `σ_a ≠ E`. If `σ_a = E` then covering at `E_I` forces `a ⊔ E_I = E_I ⊔ E`,
+    so `a ≤ m`, hence `a ≤ l ⊓ m = U`, contradicting `ha_ne_U`. -/
+private theorem sigma_a_ne_E (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_U : a ≠ Γ.U) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≠ Γ.E := by
+  intro h
+  have ha_ne_EI : a ≠ Γ.E_I := fun he => Γ.hE_I_not_l (he ▸ ha_on)
+  have hE_le_aEI : Γ.E ≤ a ⊔ Γ.E_I := h.symm.le.trans inf_le_right
+  have hEIE_le_aEI : Γ.E_I ⊔ Γ.E ≤ a ⊔ Γ.E_I := sup_le le_sup_right hE_le_aEI
+  have h_cov_EI_aEI : Γ.E_I ⋖ a ⊔ Γ.E_I :=
+    (sup_comm Γ.E_I a) ▸ atom_covBy_join Γ.hE_I_atom ha ha_ne_EI.symm
+  have h_cov_EI_EIE : Γ.E_I ⋖ Γ.E_I ⊔ Γ.E :=
+    atom_covBy_join Γ.hE_I_atom Γ.hE_atom Γ.hE_I_ne_E
+  have h_eq : Γ.E_I ⊔ Γ.E = a ⊔ Γ.E_I :=
+    (h_cov_EI_aEI.eq_or_eq h_cov_EI_EIE.lt.le hEIE_le_aEI).resolve_left
+      (ne_of_gt h_cov_EI_EIE.lt)
+  have ha_le_EIE : a ≤ Γ.E_I ⊔ Γ.E := h_eq.symm ▸ (le_sup_left : a ≤ a ⊔ Γ.E_I)
+  have ha_le_m : a ≤ Γ.U ⊔ Γ.V :=
+    ha_le_EIE.trans (sup_le Γ.hE_I_on_m CoordSystem.hE_on_m)
+  have ha_le_U : a ≤ Γ.U := Γ.l_inf_m_eq_U ▸ le_inf ha_on ha_le_m
+  exact ha_ne_U ((Γ.hU.le_iff.mp ha_le_U).resolve_left ha.1)
+
+/-- **THE OPEN GEOMETRIC CONTENT for `coord_mul_left_inv`.**
+
+`σ_a` (the E_I-projection of `a` onto `O⊔C`) lies on the line `I ⊔ d_{a⁻¹}`
+(where `d_{a⁻¹} := (a⁻¹ ⊔ C) ⊓ m` is the C-projection of `a⁻¹` onto `m`).
+
+Equivalently:
+* `σ_a = σ'_{a⁻¹}` where `σ'_{a⁻¹} := (O⊔C) ⊓ (I ⊔ d_{a⁻¹})`;
+* `coord_inv` is involutive: `coord_inv Γ (coord_inv Γ a) = a`.
+
+Three known routes to discharge:
+
+1. **Double Desargues** (center `C`). Mirror of `coord_add_left_neg` in
+   `FTPGNeg.lean`. Build `coord_first_desargues_mul` and
+   `coord_second_desargues_mul` analogues of the additive lemmas in
+   `FTPGAddComm.lean` (~600 + ~800 lines), then close in ~30 lines like the
+   additive case.
+2. **Via `coord_mul_assoc`** (also open). Once associativity lands, `a · a⁻¹ = I`
+   gives `a⁻¹ · a · a⁻¹ = a⁻¹`, and the geometric content extracts.
+3. **Direct involutivity.** Show `coord_inv (coord_inv a) = a` via symmetric
+   reverse-perspectivity argument; equivalent to the present lemma.
+
+Char-2 case (`a = a⁻¹`) likely needs a separate covering argument analogous
+to `coord_add_left_neg`'s `ha_eq_na` branch.
+
+Hypotheses match `coord_add_left_neg`'s shape for direct route (1). -/
+private theorem sigma_a_le_I_sup_d_inv (Γ : CoordSystem L)
+    {a : L} (_ha : IsAtom a) (_ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (_ha_ne_O : a ≠ Γ.O) (_ha_ne_U : a ≠ Γ.U)
+    (_R : L) (_hR : IsAtom _R) (_hR_not : ¬ _R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (_h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤
+      Γ.I ⊔ (coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) := by
+  sorry
+
+/-- **Left multiplicative inverse: `a⁻¹ · a = I`.**
+
+Reduces to `sigma_a_le_I_sup_d_inv` (the sole open geometric content) via
+the same closing pattern as `coord_mul_right_inv`: σ_a-collinearity upgrades
+to `σ_a ⊔ d_{a⁻¹} = I ⊔ d_{a⁻¹}` by covering at `d_{a⁻¹}`, and then
+`(I ⊔ d_{a⁻¹}) ⊓ l = I` by `line_direction`. -/
+theorem coord_mul_left_inv (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    coord_mul Γ (coord_inv Γ a) a = Γ.I := by
+  unfold coord_mul
+  set σ_a := (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) with hσa_def
+  set d_inv := (coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) with hdinv_def
+  have hσa_atom := sigma_a_atom Γ ha ha_on
+  have hσa_ne_E := sigma_a_ne_E Γ ha ha_on ha_ne_U
+  have hinv_atom : IsAtom (coord_inv Γ a) := coord_inv_atom Γ ha ha_on ha_ne_U
+  have hinv_on : coord_inv Γ a ≤ Γ.O ⊔ Γ.U := coord_inv_on_l Γ a
+  have hinv_ne_U : coord_inv Γ a ≠ Γ.U := coord_inv_ne_U Γ ha ha_on ha_ne_O
+  have hd_inv_atom : IsAtom d_inv := d_a_atom Γ hinv_atom hinv_on
+  have hd_inv_not_l : ¬ d_inv ≤ Γ.O ⊔ Γ.U := d_a_not_l Γ hinv_atom hinv_on hinv_ne_U
+  have hI_ne_dinv : Γ.I ≠ d_inv := I_ne_d_a Γ hinv_atom hinv_on
+  -- Step 1: σ_a ≤ I ⊔ d_inv (the open geometric content).
+  have hσa_le_Id : σ_a ≤ Γ.I ⊔ d_inv :=
+    sigma_a_le_I_sup_d_inv Γ ha ha_on ha_ne_O ha_ne_U R hR hR_not h_irred
+  -- Step 2: σ_a ≠ d_inv (else σ_a ≤ m ∧ σ_a ≤ O⊔C ⇒ σ_a ≤ E ⇒ σ_a = E, contradicts sigma_a_ne_E).
+  have hσa_ne_dinv : σ_a ≠ d_inv := by
+    intro h
+    have hσa_le_m : σ_a ≤ Γ.U ⊔ Γ.V := h.symm ▸ inf_le_right
+    have hσa_le_OC : σ_a ≤ Γ.O ⊔ Γ.C := inf_le_left
+    have hσa_le_E : σ_a ≤ Γ.E := by
+      unfold CoordSystem.E CoordSystem.m
+      exact le_inf hσa_le_OC hσa_le_m
+    exact hσa_ne_E ((Γ.hE_atom.le_iff.mp hσa_le_E).resolve_left hσa_atom.1)
+  -- Step 3: covering at d_inv: σ_a ⊔ d_inv = I ⊔ d_inv.
+  have hσd_le_Id : σ_a ⊔ d_inv ≤ Γ.I ⊔ d_inv := sup_le hσa_le_Id le_sup_right
+  have hd_lt_σd : d_inv < σ_a ⊔ d_inv := lt_of_le_of_ne le_sup_right
+    (fun h => hσa_ne_dinv ((hd_inv_atom.le_iff.mp
+      (le_sup_left.trans h.symm.le)).resolve_left hσa_atom.1))
+  have hcov_d : d_inv ⋖ Γ.I ⊔ d_inv := by
+    have h2 : d_inv ⋖ d_inv ⊔ Γ.I := atom_covBy_join hd_inv_atom Γ.hI hI_ne_dinv.symm
+    exact (sup_comm d_inv Γ.I) ▸ h2
+  have hσd_eq : σ_a ⊔ d_inv = Γ.I ⊔ d_inv :=
+    (hcov_d.eq_or_eq hd_lt_σd.le hσd_le_Id).resolve_left (ne_of_gt hd_lt_σd)
+  -- Step 4: combine — the goal is (σ_a ⊔ d_inv) ⊓ l = I.
+  show (σ_a ⊔ d_inv) ⊓ (Γ.O ⊔ Γ.U) = Γ.I
+  rw [hσd_eq, show Γ.I ⊔ d_inv = d_inv ⊔ Γ.I from sup_comm _ _]
+  exact line_direction hd_inv_atom hd_inv_not_l Γ.hI_on
+
 end Foam.FTPGExplore
