@@ -47,8 +47,10 @@ complemented modular lattice, irreducible, height ≥ 4
   ↓ dilation extension, direction preservation  ── FTPGDilation  ↓ beta infrastructure, mul key identity       ── FTPGMulKeyIdentity  ↓ right distributivity via Desargues          ── FTPGDistribdistributivity (right) ✓
   ↓ additive inverse via double Desargues        ── FTPGNegcoord_neg, a + (-a) = O ✓
   ↓ converse Desargues (3D lift) + forward      ── FTPGLeftDistribdistributivity (left)                             combination logic PROVEN
+  ↓ multiplicative inverse via reverse           ── FTPGInverse
+    perspectivity through I⊔d_a                    a · a⁻¹ = I PROVEN
   ↓
-division ring structure (multiplicative inverses)
+division ring structure (mul-assoc + left inverse — open)
   ↓
 L ≃o Sub(D, V) — the isomorphism
   ↓
@@ -158,6 +160,21 @@ Defines `coord_neg` (additive inverse) via the perspectivity chain a →[E]→ �
 | double-cover | `neg_C_persp_eq_e` (C-persp of -a from l to m = e_a) |
 | left inverse | `coord_add_left_neg` (PROVEN — double Desargues + coplanarity) |
 | right inverse | `coord_add_right_neg` (from left inverse + `coord_add_comm`) |
+
+**FTPGInverse.lean** — multiplicative right inverse (zero `sorry`)
+
+Defines `coord_inv Γ a` via reverse perspectivity through I⊔d_a:
+`a⁻¹ = ((O⊔C) ⊓ (I ⊔ d_a) ⊔ E_I) ⊓ l`. Proves `coord_mul_right_inv`:
+`a · a⁻¹ = I` for `a` an atom on `l` with `a ≠ O, a ≠ U`. The construction
+exploits that the (O⊔C)-projection of d_a along the I-line is the σ that
+makes `σ ⊔ d_a` pass through I, so the second perspectivity recovers I.
+
+| layer | status |
+|---|---|
+| definition | `coord_inv` (reverse perspectivity) |
+| atom property | `coord_inv_atom`, `coord_inv_on_l` |
+| right inverse | `coord_mul_right_inv` (PROVEN) |
+| left inverse | OPEN — needs either `coord_mul_assoc` (also open) or a direct geometric proof |
 
 **FTPGLeftDistrib.lean** — left distributivity (zero `sorry`, with typed observer commitment)
 
