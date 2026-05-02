@@ -252,6 +252,41 @@ private theorem sigma'_ne_E (Γ : CoordSystem L)
     ((d_a_atom Γ ha ha_on).le_iff.mp hE_le_inf).resolve_left Γ.hE_atom.1 |>.symm
   exact d_a_ne_E Γ ha ha_on ha_ne_O hd_eq_E
 
+/-- `σ' ≠ C` when `a ≠ I`. If `σ' = C`, then `C ≤ I⊔d_a`, so `I⊔C = I⊔d_a`
+    by covering at `I`. Hence `d_a ≤ I⊔C`; combined with `d_a ≤ a⊔C` and
+    `(a⊔C)⊓(I⊔C) = C` (lines through `C` meet at `C`, since `a ≠ I`),
+    `d_a ≤ C`, contradicting `hC_not_m`.
+
+    Used as **`hob₃ : C ≠ σ'`** in `coord_first_desargues_mul`'s
+    `desargues_planar` call (center-vs-vertex distinctness). -/
+private theorem sigma'_ne_C (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_I : a ≠ Γ.I) :
+    (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) ≠ Γ.C := by
+  intro h
+  have hC_le_Id : Γ.C ≤ Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) := h.symm.le.trans inf_le_right
+  have hd_atom := d_a_atom Γ ha ha_on
+  have hI_ne_C : Γ.I ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ Γ.hI_on)
+  have hI_ne_d := I_ne_d_a Γ ha ha_on
+  have hcov_IC : Γ.I ⋖ Γ.I ⊔ Γ.C := atom_covBy_join Γ.hI Γ.hC hI_ne_C
+  have hcov_Id : Γ.I ⋖ Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) :=
+    atom_covBy_join Γ.hI hd_atom hI_ne_d
+  have hIC_le_Id : Γ.I ⊔ Γ.C ≤ Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) :=
+    sup_le le_sup_left hC_le_Id
+  have hIC_eq : Γ.I ⊔ Γ.C = Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) :=
+    (hcov_Id.eq_or_eq hcov_IC.lt.le hIC_le_Id).resolve_left (ne_of_gt hcov_IC.lt)
+  have hd_le_IC : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.I ⊔ Γ.C :=
+    (le_sup_right : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≤
+      Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)).trans hIC_eq.symm.le
+  have hmeet : (a ⊔ Γ.C) ⊓ (Γ.I ⊔ Γ.C) = Γ.C :=
+    Γ.lines_through_C_meet ha Γ.hI ha_ne_I ha_on Γ.hI_on
+  have hd_le_aC : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≤ a ⊔ Γ.C := inf_le_left
+  have hd_le_C : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.C :=
+    (le_inf hd_le_aC hd_le_IC).trans hmeet.le
+  have hd_eq_C : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.C :=
+    (Γ.hC.le_iff.mp hd_le_C).resolve_left hd_atom.1
+  exact Γ.hC_not_m
+    (hd_eq_C ▸ (inf_le_right : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.U ⊔ Γ.V))
+
 /-! ## Atom-ness of `coord_inv`. -/
 
 /-- `coord_inv Γ a` is an atom. -/
@@ -696,6 +731,47 @@ private theorem sigma_a_ne_d_a (Γ : CoordSystem L)
     (Γ.hE_atom.le_iff.mp hσa_le_E).resolve_left hσa_atom.1
   exact sigma_a_ne_E Γ ha ha_on ha_ne_U hσa_eq_E
 
+/-- **`coord_inv a ∉ O⊔C`** when `a ≠ U` (so `coord_inv a ≠ O`). `inv_a` is on
+    `l = O⊔U`; if also `inv_a ≤ O⊔C`, then `inv_a ≤ l ⊓ (O⊔C) = O`, hence
+    `inv_a = O`, contradicting `coord_inv_ne_O`. -/
+private theorem inv_a_not_OC (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_U : a ≠ Γ.U) :
+    ¬ coord_inv Γ a ≤ Γ.O ⊔ Γ.C := by
+  intro h
+  have hinv_atom : IsAtom (coord_inv Γ a) := coord_inv_atom Γ ha ha_on ha_ne_U
+  have hinv_on : coord_inv Γ a ≤ Γ.O ⊔ Γ.U := coord_inv_on_l Γ a
+  have hl_inf_OC : (Γ.O ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.C) = Γ.O := by
+    rw [show Γ.O ⊔ Γ.C = Γ.C ⊔ Γ.O from sup_comm _ _]
+    exact inf_sup_of_atom_not_le Γ.hC Γ.hC_not_l (le_sup_left : Γ.O ≤ Γ.O ⊔ Γ.U)
+  have hinv_le_O : coord_inv Γ a ≤ Γ.O := hl_inf_OC ▸ le_inf hinv_on h
+  have hinv_eq_O : coord_inv Γ a = Γ.O :=
+    (Γ.hO.le_iff.mp hinv_le_O).resolve_left hinv_atom.1
+  exact coord_inv_ne_O Γ ha ha_on ha_ne_U hinv_eq_O
+
+/-- **`σ_a ≠ coord_inv a`**. `σ_a` is on `O⊔C` (and not on `l` unless `σ_a = O`),
+    while `coord_inv a` is on `l`. Equality would force `σ_a ≤ l ⊓ (O⊔C) = O`,
+    so `σ_a = O`, contradicting `sigma_a_ne_O`.
+
+    Used as **vertex distinctness `inv_a ≠ σ_a`** in `coord_first_desargues_mul`'s
+    `desargues_planar` call. -/
+private theorem sigma_a_ne_inv_a (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≠ coord_inv Γ a := by
+  intro h
+  have hσa_atom := sigma_a_atom Γ ha ha_on
+  have hinv_on : coord_inv Γ a ≤ Γ.O ⊔ Γ.U := coord_inv_on_l Γ a
+  have hσa_le_OC : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.O ⊔ Γ.C := inf_le_left
+  have hσa_le_l : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.O ⊔ Γ.U := h.symm ▸ hinv_on
+  have hl_inf_OC : (Γ.O ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.C) = Γ.O := by
+    rw [show Γ.O ⊔ Γ.C = Γ.C ⊔ Γ.O from sup_comm _ _]
+    exact inf_sup_of_atom_not_le Γ.hC Γ.hC_not_l (le_sup_left : Γ.O ≤ Γ.O ⊔ Γ.U)
+  have hσa_le_O : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.O :=
+    (le_inf hσa_le_l hσa_le_OC).trans hl_inf_OC.le
+  have hσa_eq_O : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) = Γ.O :=
+    (Γ.hO.le_iff.mp hσa_le_O).resolve_left hσa_atom.1
+  exact sigma_a_ne_O Γ ha ha_on ha_ne_O hσa_eq_O
+
 /-- **σ_a ≠ σ'** when `a ≠ coord_inv a`. The E_I-perspectivity from `l` to
     `O⊔C` is injective on atoms: `σ_a = σ_{a⁻¹}` (via `sigma_inv_eq_sigma_prime`,
     `σ' = σ_{a⁻¹}`) would force `σ_a` ≤ `(a⊔E_I) ⊓ (a⁻¹⊔E_I) = E_I` (modular
@@ -745,6 +821,45 @@ private theorem sigma_a_ne_sigma' (Γ : CoordSystem L)
     (Γ.hE_I_atom.le_iff.mp hσa_le_E_I).resolve_left hσa_atom.1
   exact Γ.hE_I_not_OC
     (hσa_eq_E_I ▸ (inf_le_left : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.O ⊔ Γ.C))
+
+/-- **Side distinctness `inv_a⊔σ_a ≠ d_inv⊔σ'`** for the X₂₃ side of the
+    `coord_first_desargues_mul` Desargues call. If equal, `σ' ≤ d_inv⊔σ' =
+    inv_a⊔σ_a`; combined with `σ' ≤ O⊔C` and `inv_a ∉ O⊔C` (from
+    `inv_a_not_OC`), `inf_sup_of_atom_not_le` gives
+    `(O⊔C)⊓(σ_a⊔inv_a) = σ_a`, hence `σ' ≤ σ_a`. Atoms force `σ' = σ_a`,
+    contradicting `sigma_a_ne_sigma'`. -/
+private theorem h_sides_X23_mul (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_U : a ≠ Γ.U) (ha_ne_inv : a ≠ coord_inv Γ a) :
+    coord_inv Γ a ⊔ (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≠
+    (coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ⊔
+      (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) := by
+  intro h
+  have hσa_atom := sigma_a_atom Γ ha ha_on
+  have hσ'_atom := sigma'_atom Γ ha ha_on
+  have hinv_atom : IsAtom (coord_inv Γ a) := coord_inv_atom Γ ha ha_on ha_ne_U
+  have hinv_not_OC : ¬ coord_inv Γ a ≤ Γ.O ⊔ Γ.C := inv_a_not_OC Γ ha ha_on ha_ne_U
+  have hσa_le_OC : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.O ⊔ Γ.C := inf_le_left
+  have hσ'_le_OC : (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) ≤ Γ.O ⊔ Γ.C :=
+    inf_le_left
+  -- σ' ≤ inv_a ⊔ σ_a (from h, swapping σ' to LHS via le_sup_right of RHS).
+  have hσ'_le_RHS : (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) ≤
+      (coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ⊔
+        (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) := le_sup_right
+  have hσ'_le_LHS : (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) ≤
+      coord_inv Γ a ⊔ (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) :=
+    hσ'_le_RHS.trans h.symm.le
+  -- (O⊔C) ⊓ (inv_a ⊔ σ_a) = σ_a (inf_sup_of_atom_not_le with R=inv_a, s=σ_a)
+  have hOC_inf : (Γ.O ⊔ Γ.C) ⊓ (coord_inv Γ a ⊔ (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I)) =
+      (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) :=
+    inf_sup_of_atom_not_le hinv_atom hinv_not_OC hσa_le_OC
+  -- σ' ≤ σ_a
+  have hσ'_le_σa : (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) ≤
+      (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) :=
+    (le_inf hσ'_le_OC hσ'_le_LHS).trans hOC_inf.le
+  -- σ' = σ_a (atoms), contradicts sigma_a_ne_sigma'
+  have hσ'_eq_σa := IsAtom.eq_of_le hσ'_atom hσa_atom hσ'_le_σa
+  exact sigma_a_ne_sigma' Γ ha ha_on ha_ne_U ha_ne_inv hσ'_eq_σa.symm
 
 /-- **OPEN GEOMETRIC CONTENT for the generic case of `coord_mul_left_inv`.**
 

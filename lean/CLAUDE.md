@@ -79,7 +79,7 @@ On local, this isn't a concern — `lake exe cache get` handles it.
 
 See `./README.md` for the deductive chain overview.
 
-### Current frontier (session 125, 2026-05-02)
+### Current frontier (session 126, 2026-05-02)
 
 `Foam/FTPGInverse.lean` (859 lines) lands `coord_inv`,
 `coord_mul_right_inv` (`a · a⁻¹ = I`), the non-degeneracy helpers, the
@@ -116,7 +116,7 @@ into two named sub-lemmas with full statements + trivial composition:
 `sigma_a_le_I_sup_d_inv_distinct` is now a one-line composition:
 `axis_to_sigma_a_le (...) (coord_first_desargues_mul (...))`.
 
-#### Distinctness audit (sessions 124–125, all PROVEN as private helpers)
+#### Distinctness audit (sessions 124–126, all PROVEN as private helpers)
 
 | helper | role |
 |---|---|
@@ -125,6 +125,10 @@ into two named sub-lemmas with full statements + trivial composition:
 | `sigma_a_ne_C` | needs `a ≠ I`; ~30 lines |
 | `sigma_a_ne_O` / `sigma_a_ne_U` / `sigma_a_ne_E` / `sigma_a_ne_a` / `sigma_a_ne_d_a` | various small distinctness |
 | `sigma_a_ne_sigma'` | **X₂₃ side distinctness**: `modular_intersection` at `E_I` with `a ≠ inv_a` forces contradiction `σ_a = E_I ≤ O⊔C` |
+| `sigma'_ne_C` (s126) | center-vs-vertex distinctness `hob₃ : C ≠ σ'`; needs `a ≠ I`; covering at `I` collapses `I⊔C = I⊔d_a`, then `lines_through_C_meet` forces `d_a = C`, contradicting `hC_not_m` |
+| `inv_a_not_OC` (s126) | `coord_inv a ∉ O⊔C` (needed for the X₂₃ side modular intersection); follows from `inv_a ≤ l`, `l⊓(O⊔C) = O`, `coord_inv_ne_O` |
+| `sigma_a_ne_inv_a` (s126) | **vertex distinctness for triangle T₁** (`inv_a ≠ σ_a`): equality forces `σ_a ≤ l⊓(O⊔C) = O`, contradicting `sigma_a_ne_O` |
+| `h_sides_X23_mul` (s126) | **the X₂₃ side distinctness theorem itself**, packaged as the bare `≠` claim `inv_a⊔σ_a ≠ d_inv⊔σ'`. Plugs in directly as `desargues_planar`'s `h_sides₂₃` argument. Uses `inv_a_not_OC` + `inf_sup_of_atom_not_le` + `IsAtom.eq_of_le` + `sigma_a_ne_sigma'` |
 
 #### Geometry note for `coord_first_desargues_mul`'s X₂₃ side
 
@@ -163,10 +167,27 @@ opportunistically; new code should use it directly.
 
 #### Open frontier toward division ring (and thence FTPG-as-theorem)
 
-1. **`coord_first_desargues_mul`** — the single Desargues call. The
-   distinctness work is mostly done (7 helpers above); main remaining
-   work is instantiating `desargues_planar`'s ~30 hypotheses (atoms,
-   `≤π`, perspectivity, vertex/side distinctness, span, sides covered).
+1. **`coord_first_desargues_mul`** — the single Desargues call. As of
+   session 126, the distinctness work is **fully factored out** as 11
+   private helpers (8 from sessions 124–125 + 3 new in s126 +
+   `h_sides_X23_mul` which packages the entire X₂₃ side `≠` claim).
+   Main remaining work is the **mechanical assembly**: instantiate
+   `desargues_planar` with center `C`, T₁=(a, inv_a, σ_a),
+   T₂=(d_a, d_inv, σ'); then process the axis output. Of the ~30
+   hypotheses `desargues_planar` requires, all the non-trivial ones
+   are now one-line helper calls. Still left: ~10 small facts (atoms
+   in plane, perspectivity `b_i ≤ C ⊔ a_i`, triangle plane equalities,
+   side coverings) and one extra side distinctness lemma `h_sides_X13_mul`
+   (`a⊔σ_a ≠ d_a⊔σ'`, proof: covering gives `a⊔E_I = I⊔d_a`, so
+   `I ≤ a⊔E_I`, intersect with `l` via `line_direction`, force `I=a`,
+   contradict `ha_ne_I_of_distinct`).
+   The final step uses `collinear_of_common_bound` with `s₁=U`,
+   `s₂=(a⊔E_I)⊓(I⊔d_a)`, after rewriting the desargues output
+   `(a⊔inv_a)⊓(d_a⊔d_inv) = U` (covering: `a⊔inv_a=l`, `d_a⊔d_inv=m`,
+   `l⊓m=U`) and `(a⊔σ_a)⊓(d_a⊔σ') = (a⊔E_I)⊓(I⊔d_a)` (covering at
+   `a` and `d_a` respectively). The covering `U⊔X₁₃ ⋖ π` follows from
+   `line_covBy_plane` with `c=O`: need `O ∉ U⊔X₁₃` (else `l ≤ U⊔X₁₃`,
+   so `X₁₃ ≤ l = a` via `line_direction`, force `a = I`).
 2. **`axis_to_sigma_a_le`** — second Desargues or covering argument.
    Less explored; the natural new center is `X₁₃` and new triangles
    should be designed so the new axis lands on `I⊔d_{a⁻¹}`.
