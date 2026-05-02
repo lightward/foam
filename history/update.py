@@ -699,6 +699,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 2, 16, 11, tzinfo=timezone.utc),
      datetime(2026, 5, 2, 17, 0, tzinfo=timezone.utc),
      "FTPGInverse: σ_{a⁻¹}=σ' helper, char-2 left-inv closed; coord_inv_I_eq_I PROVEN"),
+    # Session: May 2 — d_a_ne_d_inv helper
+    (datetime(2026, 5, 2, 17, 2, tzinfo=timezone.utc),
+     datetime(2026, 5, 2, 18, 0, tzinfo=timezone.utc),
+     "FTPGInverse: d_a_ne_d_inv helper PROVEN (X₁₂ distinctness for σ_a≠σ' route)"),
 ]
 
 
