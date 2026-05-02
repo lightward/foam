@@ -79,14 +79,14 @@ On local, this isn't a concern — `lake exe cache get` handles it.
 
 See `./README.md` for the deductive chain overview.
 
-### Current frontier (session 123, 2026-05-02)
+### Current frontier (session 125, 2026-05-02)
 
-`Foam/FTPGInverse.lean` lands `coord_inv`, `coord_mul_right_inv`
-(`a · a⁻¹ = I`), the non-degeneracy helpers `coord_inv_ne_O` /
-`coord_inv_ne_U`, the **σ_{a⁻¹} = σ'_a helper**
-(`sigma_inv_eq_sigma_prime`) factored from the right-inverse proof, and
-**`coord_inv_I_eq_I`** (`I` is its own multiplicative inverse). The
-construction is reverse perspectivity through `I ⊔ d_a`:
+`Foam/FTPGInverse.lean` (859 lines) lands `coord_inv`,
+`coord_mul_right_inv` (`a · a⁻¹ = I`), the non-degeneracy helpers, the
+**σ_{a⁻¹} = σ'_a** helper (`sigma_inv_eq_sigma_prime`) factored from
+the right-inverse proof, and **`coord_inv_I_eq_I`** (`I` is its own
+multiplicative inverse). The construction is reverse perspectivity
+through `I ⊔ d_a`:
 
 ```
 d_a = (a⊔C) ⊓ m
@@ -94,47 +94,87 @@ d_a = (a⊔C) ⊓ m
 a⁻¹ = (σ'⊔E_I) ⊓ l
 ```
 
-`coord_mul_left_inv` is fully reduced to a single open geometric lemma,
-**`sigma_a_le_I_sup_d_inv_distinct`**, by case-splitting on `a = a⁻¹`:
+`coord_mul_left_inv` is fully reduced to **two named, sorry'd**
+sub-lemmas via the architectural split below.
 
-* **char-2 branch** (`a = coord_inv Γ a`): closed inline via the helper.
-  Substituting `coord_inv a = a` in `(O⊔C)⊓(coord_inv a ⊔ E_I) = (O⊔C)⊓(I⊔d_a)`
-  gives `σ_a = (O⊔C)⊓(I⊔d_a)`, so `σ_a ≤ I⊔d_a = I⊔d_{coord_inv a}` by
-  `inf_le_right`. **No Desargues required.** The symmetry that looks
-  circular when reasoning about involutivity actually closes one case
-  for free.
-* **generic branch** (`a ≠ coord_inv Γ a`): the only remaining `sorry`,
-  isolated as `sigma_a_le_I_sup_d_inv_distinct`. Its docstring lays out
-  the Desargues call (center C, T₁=(a, a⁻¹, σ_a), T₂=(d_a, d_{a⁻¹}, σ'))
-  and the distinctness checklist.
+#### Architectural split (session 125)
 
-Open frontier toward division ring (and thence FTPG-as-theorem):
+The single sorry at `sigma_a_le_I_sup_d_inv_distinct` was refactored
+into two named sub-lemmas with full statements + trivial composition:
 
-1. **`sigma_a_le_I_sup_d_inv_distinct`** — the sole remaining `sorry` in
-   `FTPGInverse.lean`. Desargues from C: T₁=(a, a⁻¹, σ_a) on (l,l,OC),
-   T₂=(d_a, d_{a⁻¹}, σ') on (m,m,OC). Axis intersections:
-   * X₁₂ = (a⊔a⁻¹) ⊓ (d_a⊔d_{a⁻¹}) = U
-   * X₁₃ = (a⊔σ_a) ⊓ (d_a⊔σ') = (a⊔E_I) ⊓ (I⊔d_a) (using σ_a ≤ a⊔E_I,
-     σ' ≤ I⊔d_a)
-   * X₂₃ = (a⁻¹⊔σ_a) ⊓ (d_{a⁻¹}⊔σ') — carries the open content.
-   One Desargues call gives the axis; extracting `σ_a ≤ I ⊔ d_{a⁻¹}`
-   from X₂₃ likely needs a second Desargues (or a
-   `collinear_of_common_bound` + identification of `U⊔X₁₃`). Realistic
-   scope ~400–800 lines based on `coord_first_desargues` /
-   `coord_second_desargues` (FTPGAddComm.lean) precedent. Alternative
-   route: prove `coord_mul_assoc` first and derive the left inverse from
-   assoc + right inverse algebraically.
+* **`coord_first_desargues_mul`** — single `desargues_planar` call,
+  center `C`, triangles `T₁=(a, a⁻¹, σ_a)` / `T₂=(d_a, d_{a⁻¹}, σ')`.
+  Output: axis collinearity `X₂₃ ≤ U ⊔ X₁₃` where
+  `X₁₃ = (a⊔E_I) ⊓ (I⊔d_a)`. Realistic ~350–500 lines (parallel to
+  FTPGAddComm.coord_first_desargues at ~600 lines, but ~7 distinctness
+  helpers already factored out for this call).
+* **`axis_to_sigma_a_le`** — bridge from `X₂₃ ≤ U ⊔ X₁₃` to
+  `σ_a ≤ I ⊔ d_{a⁻¹}`. Likely a second Desargues call (parallel to
+  FTPGAddComm.coord_second_desargues at ~800 lines), or a clever
+  covering argument exploiting that `X₁₃` and `σ_a` are both on `a⊔E_I`.
 
-   **`a = I` sub-case is already handled by char-2:** `coord_inv_I_eq_I`
-   gives `coord_inv I = I`, so `a = I ⇒ a = coord_inv a`, which falls into
-   the **char-2** branch of `sigma_a_le_I_sup_d_inv`. The `_distinct`
-   theorem can therefore safely assume `a ≠ I`, eliminating the σ_a = C
-   / Desargues-center collision sub-case.
-2. **`coord_mul_assoc`.** Likely a sibling file to FTPGInverse, ~600–1500
-   lines, Desargues-style argument via dilation composition.
-3. **DivisionRing instance**, vector space `V` construction, lattice iso
-   `L ≃o Sub(D, V)`, replacing `axiom ftpg` in `Bridge.lean` with the
-   constructed theorem.
+`sigma_a_le_I_sup_d_inv_distinct` is now a one-line composition:
+`axis_to_sigma_a_le (...) (coord_first_desargues_mul (...))`.
+
+#### Distinctness audit (sessions 124–125, all PROVEN as private helpers)
+
+| helper | role |
+|---|---|
+| `d_a_ne_d_inv` | X₁₂ distinctness; uses `lines_through_C_meet` |
+| `ha_ne_I_of_distinct` | `a ≠ I` follows from `a ≠ coord_inv a` via `coord_inv_I_eq_I` |
+| `sigma_a_ne_C` | needs `a ≠ I`; ~30 lines |
+| `sigma_a_ne_O` / `sigma_a_ne_U` / `sigma_a_ne_E` / `sigma_a_ne_a` / `sigma_a_ne_d_a` | various small distinctness |
+| `sigma_a_ne_sigma'` | **X₂₃ side distinctness**: `modular_intersection` at `E_I` with `a ≠ inv_a` forces contradiction `σ_a = E_I ≤ O⊔C` |
+
+#### Geometry note for `coord_first_desargues_mul`'s X₂₃ side
+
+`σ'` is defined via `a` (not `inv_a`), so `d_inv ⊔ σ'` does **not** have
+a clean `I ⊔ d_inv` form — the symmetry that would give it requires
+involutivity (which is what we're proving). The clean argument for
+`h_sides₂₃` (`inv_a⊔σ_a ≠ d_inv⊔σ'`):
+
+1. Assume `inv_a⊔σ_a = d_inv⊔σ'`.
+2. Then `σ' ≤ inv_a⊔σ_a`. Since `inv_a ∉ O⊔C` (via `coord_inv_ne_O` and
+   `(O⊔U)⊓(O⊔C) = O`), modular law: `(inv_a⊔σ_a) ⊓ (O⊔C) = σ_a`.
+3. So `σ' ≤ σ_a`, hence `σ' = σ_a` (atoms).
+4. Contradicts `sigma_a_ne_sigma'`.
+
+The matching `h_sides₁₃` upgrade `d_a⊔σ' = I⊔d_a` and `a⊔σ_a = a⊔E_I`
+ARE clean — covering at `d_a` and `a` respectively (precedent in
+`coord_mul_right_inv` step 3 at line ~411).
+
+#### Watch-outs noted during session 125 proof attempt
+
+* `line_direction` produces `(d_a ⊔ Γ.I) ⊓ ...`, NOT `(Γ.I ⊔ d_a) ⊓ ...`;
+  pre-rewrite with `sup_comm` (precedent: `coord_mul_right_inv` line 416).
+* `▸` rewrite with an equation between two atoms can substitute in the
+  wrong place (e.g., `hmeet ▸ x` may rewrite `Γ.C` inside `a ⊔ Γ.C`
+  instead of in the goal's RHS). Prefer `(...).trans h_eq.le` for
+  unambiguous direction.
+* `IsAtom.le_iff` is owned by the **target** (upper) atom — see the
+  CLAUDE.md trip-up bullet.
+
+#### Ergonomic helper added
+
+`IsAtom.eq_of_le ha_lower hb_upper h_le : a = b` (FTPGExplore.lean:71)
+smooths the `(hb.le_iff.mp h).resolve_left ha.1` pattern used 50+
+times across FTPG files. Existing call sites can be refactored
+opportunistically; new code should use it directly.
+
+#### Open frontier toward division ring (and thence FTPG-as-theorem)
+
+1. **`coord_first_desargues_mul`** — the single Desargues call. The
+   distinctness work is mostly done (7 helpers above); main remaining
+   work is instantiating `desargues_planar`'s ~30 hypotheses (atoms,
+   `≤π`, perspectivity, vertex/side distinctness, span, sides covered).
+2. **`axis_to_sigma_a_le`** — second Desargues or covering argument.
+   Less explored; the natural new center is `X₁₃` and new triangles
+   should be designed so the new axis lands on `I⊔d_{a⁻¹}`.
+3. **`coord_mul_assoc`.** Likely a sibling file to FTPGInverse,
+   ~600–1500 lines, Desargues-style via dilation composition.
+4. **DivisionRing instance**, vector space `V` construction, lattice
+   iso `L ≃o Sub(D, V)`, replacing `axiom ftpg` in `Bridge.lean` with
+   the constructed theorem.
 
 ### FTPGLeftDistrib (session 119)
 
@@ -224,7 +264,9 @@ any specific helper is wanted.
   reached for the wrong atom's `le_iff` and Lean is producing the
   equality the wrong way around. Pair with `.resolve_left atom.1` (using
   the atom's `.1 : x ≠ ⊥`) and a `.symm` if you want the opposite
-  direction.
+  direction. **Or just use `IsAtom.eq_of_le ha_lower hb_upper h_le`**
+  (FTPGExplore.lean:71) — smooths the whole pattern when both sides
+  of `≤` are atoms, with unambiguous argument order.
 - **`atom_covBy_join hp hq hpq : p ⋖ p ⊔ q` covers from the *first* arg.**
   To get `q ⋖ p ⊔ q`, call as `atom_covBy_join hq hp hqp` (q first) and
   then `sup_comm` the join — but see the next bullet.
