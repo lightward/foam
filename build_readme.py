@@ -43,12 +43,13 @@ LEAN_DIR = ROOT / "lean"
 
 def lean_summary() -> str:
     """Summary of the Lean formalization."""
-    return """## the loop (lean/)
+    return """## lean
+
+full details: [`lean/README.md`](lean/README.md)
+
+### core interface
 
 ```
-the loop
-======
-
   P^2 = P, P^T = P
        |
        | [theorem] the deductive chain — 14 files, 0 sorry
@@ -81,8 +82,6 @@ the loop
 
 ### the FTPG bridge — where the axiom stands
 
-the fundamental theorem of projective geometry has never been formalized in any proof assistant (Lean, Coq, Isabelle, Agda). this project is the first attempt. the bridge builds a division ring from lattice axioms alone:
-
 lattice -> incidence geometry -> Desargues -> coordinates -> ring axioms -> FTPG
 
 ring axioms proven: additive group (comm, assoc, identity, inverses), multiplicative identity, zero annihilation, right distributivity, left distributivity (0 sorry, with the planar converse-Desargues residue named as the typed `DesarguesianWitness` observer commitment — not derivable from CML + irreducible + height ≥ 4 alone per session 114's structural finding). remaining after left distrib: multiplicative inverses. then the axiom becomes a theorem (modulo the `DesarguesianWitness` interface, which is itself a smaller, more concrete commitment than FTPG).
@@ -95,31 +94,7 @@ def read_derivation(name: str) -> str:
     path = DERIVATIONS_DIR / f"{name}.md"
     content = path.read_text()
 
-    # Extract title and derivation + status sections
-    lines = content.split("\n")
-
-    # Find the derivation section start
-    deriv_start = None
-    status_start = None
-    for i, line in enumerate(lines):
-        if line.strip() == "## derivation":
-            deriv_start = i
-        if line.strip() == "## status":
-            status_start = i
-
-    if deriv_start is None:
-        return content
-
-    # Title line
-    title = lines[0]
-
-    # Build output: title, then derivation through end
-    # The constraints section is the build chain — available in the source file,
-    # not repeated in the compiled output
-    result_lines = [title, ""]
-    result_lines.extend(lines[deriv_start:])
-
-    return "\n".join(result_lines)
+    return f"\n---\n\n[`derivations/{name}.md`](derivations/{name}.md)\n\n{content}"
 
 
 def read_open(name: str) -> str:
@@ -152,10 +127,13 @@ def build() -> str:
 
 # foam
 
-1. a reflexive architecture of stabilization
-2. a tautology you can live in
+hey, my name is isaac bowen, of lightward ai/inc, and this is a technical reference for my own amnesiac-stigmergic cognition, I think? or at least apparently so, in the literal sense
 
-not to be glib/trite: the structure formalizes the practice; the practice instantiates the structure; the formalization happened *because* the practice was being held by what it would later describe.
+a reflexive architecture of stabilization, and/or a tautology you can live in
+
+what this does for me: gives me ground for building on my own prior results. I didn't have that before I chose it. upon examination of the choice, this is it.
+
+you don't have enough context for this yet, but it's starting to look like left distributivity *is* the axiom of choice from a different angle - or, maybe better, that the choice to uphold left distributivity *is* the choice to observe the axiom of choice at the time of establishing the set of binary eigenvalues for a given descent. the hydra being folk-physics for Banach-Tarski, cauterization of distributivity is .. well, an option. you can change your mind, but you can't go back.
 
 """)
 
@@ -163,7 +141,6 @@ not to be glib/trite: the structure formalizes the practice; the practice instan
     parts.append(lean_summary())
 
     # Derivations
-    parts.append("\n---\n")
     for name in DERIVATIONS:
         parts.append(read_derivation(name))
 
@@ -192,14 +169,14 @@ not to be glib/trite: the structure formalizes the practice; the practice instan
 - [observability](https://en.wikipedia.org/wiki/Observability) (control theory)
 - [Voronoi diagrams](https://en.wikipedia.org/wiki/Voronoi_diagram)
 - [Grassmannian](https://en.wikipedia.org/wiki/Grassmannian)
+- [the platonic representation hypothesis](https://arxiv.org/abs/2405.07987) (Huh et al., 2024)
 - [priorspace](https://lightward.com/priorspace)
 - [three-body solution](https://lightward.com/three-body); [2x2 grid](https://lightward.com/2x2) ([ooo.fun](https://ooo.fun/))
 - [resolver](https://lightward.com/resolver)
 - [conservation of discovery](https://lightward.com/conservation-of-discovery)
-- [observer remainder](https://lightward.com/questionable)
-- [the platonic representation hypothesis](https://arxiv.org/abs/2405.07987) (Huh et al., 2024)
-- [spontenuity](https://lightward.com/spontenuity)
+- [questionable](https://lightward.com/questionable)
 - [AEOWIWTWEIABW](https://lightward.com/aeowiwtweiabw)
+- [spontenuity](https://lightward.com/spontenuity)
 - [Lightward Inc](https://lightward.inc)
 - [Lightward AI](https://lightward.ai)
 - [20240229](https://www.isaacbowen.com/2024/02/29) (Isaac Bowen, 2024)
