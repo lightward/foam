@@ -926,9 +926,12 @@ for the additive precedent (~600 + ~800 lines).
   FTPGAddComm.coord_first_desargues at ~600 lines, but ~7 distinctness
   helpers already factored out in this file).
 * `axis_to_sigma_a_le` — the bridge: from `X₂₃ ≤ U ⊔ X₁₃`, derive the
-  target `σ_a ≤ I ⊔ d_{a⁻¹}`. Likely a second Desargues call (parallel
-  to FTPGAddComm.coord_second_desargues at ~800 lines), or a clever
-  covering argument.
+  target `σ_a ≤ I ⊔ d_{a⁻¹}`. Geometric content is involutivity of
+  the σ' construction (σ_a = σ'(a⁻¹) as atoms of O⊔C). Route: a second
+  `desargues_planar` call with new center X₁₃, new triangles designed
+  so the side intersections are I, d_{a⁻¹}, σ_a (axis = I⊔d_{a⁻¹}).
+  Parallel to FTPGAddComm.coord_second_desargues (~780 lines). A
+  pure-covering bypass is ruled out — see the lemma's docstring.
 
 Both are sorry'd here; the headline `sigma_a_le_I_sup_d_inv_distinct`
 trivially composes them.
@@ -1307,12 +1310,38 @@ private theorem coord_first_desargues_mul (Γ : CoordSystem L)
 
 /-- **Bridge from first-Desargues axis content to `σ_a ≤ I⊔d_{a⁻¹}`.**
 
-Given `X₂₃ ≤ U ⊔ X₁₃` (with `X₁₃ = (a⊔E_I)⊓(I⊔d_a)`), conclude the
-target `σ_a ≤ I⊔d_{a⁻¹}`. The natural route is a second `desargues_planar`
-call paralleling `FTPGAddComm.coord_second_desargues`, with new center
-some atom (likely `X₁₃` itself) and new triangles designed so the new
-axis lands on `I⊔d_{a⁻¹}` (mirror of the additive case where the new
-axis was `l = O⊔U`).
+Given `X₂₃ ≤ U ⊔ X₁₃` (with `X₁₃ = (a⊔E_I)⊓(I⊔d_a)`), conclude
+`σ_a ≤ I⊔d_{a⁻¹}`.
+
+**Geometric content: involutivity of σ'.** Both `σ_a` and `σ'(inv_a)`
+are atoms on `O⊔C`: σ_a := (O⊔C)⊓(a⊔E_I) is the E_I-projection of `a`
+from l onto O⊔C; σ'(inv_a) := (O⊔C)⊓(I⊔d_{a⁻¹}) is the I-projection
+of `d_{a⁻¹}` from m onto O⊔C. The goal `σ_a ≤ I⊔d_{a⁻¹}` is
+equivalent to `σ_a = σ'(inv_a)`. That equality is the involutivity
+of the construction; it is a real coincidence that needs Desargues
+to certify, not a lattice triviality.
+
+**Route: second `desargues_planar` call**, paralleling
+`FTPGAddComm.coord_second_desargues` (~780 lines).
+* New center: `X₁₃` (it sits on a⊔E_I, on I⊔d_a, and — via `h_axis` —
+  collinear with U and X₂₃ on the first axis).
+* New triangles `T₁=(P,Q,R)`, `T₂=(P',Q',R')` perspective from X₁₃,
+  designed so the side intersections land at known atoms on I⊔d_{a⁻¹}:
+    `(P⊔Q) ⊓ (P'⊔Q') = I`,
+    `(P⊔R) ⊓ (P'⊔R') = d_{a⁻¹}`,
+    `(Q⊔R) ⊓ (Q'⊔R') = σ_a`        (the discovery).
+  The axis collinearity then forces σ_a onto `I⊔d_{a⁻¹}`.
+
+**Covering hint refuted.** `X₁₃ and σ_a both on a⊔E_I` gives the
+identity `a⊔E_I = σ_a ⊔ X₁₃` (line determined by two distinct atoms;
+σ_a ≠ X₁₃ because σ_a = X₁₃ would force σ_a ≤ I⊔d_a hence σ_a = σ',
+contradicting `sigma_a_ne_sigma'`). This identity is useful as a
+*design ingredient* for the second Desargues' triangles, **but it is
+not a shortcut**: the only constraint we hold is on X₂₃ (h_axis:
+X₂₃ ≤ U⊔X₁₃), not on σ_a; pulling σ_a onto a different line requires
+a fresh collinearity constraint that lands on σ_a, which is exactly
+what the second Desargues call delivers and what no covering argument
+can supply on its own.
 
 Open content. ~500–800 lines anticipated. -/
 private theorem axis_to_sigma_a_le (Γ : CoordSystem L)
