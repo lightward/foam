@@ -83,8 +83,9 @@ See `./README.md` for the deductive chain overview.
 
 `Foam/FTPGInverse.lean` lands `coord_inv`, `coord_mul_right_inv`
 (`a · a⁻¹ = I`), the non-degeneracy helpers `coord_inv_ne_O` /
-`coord_inv_ne_U`, and the **σ_{a⁻¹} = σ'_a helper**
-(`sigma_inv_eq_sigma_prime`) factored from the right-inverse proof. The
+`coord_inv_ne_U`, the **σ_{a⁻¹} = σ'_a helper**
+(`sigma_inv_eq_sigma_prime`) factored from the right-inverse proof, and
+**`coord_inv_I_eq_I`** (`I` is its own multiplicative inverse). The
 construction is reverse perspectivity through `I ⊔ d_a`:
 
 ```
@@ -124,12 +125,11 @@ Open frontier toward division ring (and thence FTPG-as-theorem):
    route: prove `coord_mul_assoc` first and derive the left inverse from
    assoc + right inverse algebraically.
 
-   **Sub-case (`a = I`)**: `σ_I = C`, which equals the Desargues center
-   — that branch must be handled separately. The analysis: `σ_a = C` iff
-   `C ≤ a⊔E_I` iff `a⊔E_I = I⊔C` (covering, since both contain E_I and C
-   is on I⊔C) iff `a = I` (via `(O⊔U)⊓(I⊔C) = I`). Use
-   `coord_inv_I_eq_I` (not yet built; ~50 lines) to reduce `a = I` to
-   `(O⊔C)⊓(I⊔E_I) ≤ I⊔E_I`, immediate by `inf_le_right`.
+   **`a = I` sub-case is already handled by char-2:** `coord_inv_I_eq_I`
+   gives `coord_inv I = I`, so `a = I ⇒ a = coord_inv a`, which falls into
+   the **char-2** branch of `sigma_a_le_I_sup_d_inv`. The `_distinct`
+   theorem can therefore safely assume `a ≠ I`, eliminating the σ_a = C
+   / Desargues-center collision sub-case.
 2. **`coord_mul_assoc`.** Likely a sibling file to FTPGInverse, ~600–1500
    lines, Desargues-style argument via dilation composition.
 3. **DivisionRing instance**, vector space `V` construction, lattice iso

@@ -450,6 +450,63 @@ private theorem sigma_inv_eq_sigma_prime (Γ : CoordSystem L)
       show σ' ⊔ Γ.E_I = Γ.E_I ⊔ σ' from sup_comm _ _]
   exact line_direction Γ.hE_I_atom Γ.hE_I_not_OC inf_le_left
 
+/-- **`coord_inv` fixes I:** `coord_inv Γ I = I`. (`I` is its own multiplicative
+    inverse — the multiplicative identity is self-inverse.)
+
+    Computes through:
+    * `d_I = (I⊔C)⊓m = E_I` (by definition of E_I)
+    * `I⊔E_I = I⊔C` (covering at `I`; `E_I ≤ I⊔C`, `E_I ≠ I`)
+    * `σ'_I = (O⊔C)⊓(I⊔C) = C` (`modular_intersection`: lines through the
+      shared atom `C`, with `I` non-collinear via `hI_not_OC`)
+    * `C⊔E_I = I⊔C` (covering at `C`)
+    * `(I⊔C)⊓l = I` (`line_direction`: `C ∉ l`, `I ∈ l`)
+
+    This lemma also confirms that `a = I` falls into the **char-2** case of
+    `sigma_a_le_I_sup_d_inv` (since `coord_inv I = I` makes `a = coord_inv a`),
+    which means the eventual `sigma_a_le_I_sup_d_inv_distinct` proof can
+    safely assume `a ≠ I` — eliminating the σ_a = C / Desargues-center
+    collision sub-case. -/
+theorem coord_inv_I_eq_I (Γ : CoordSystem L) : coord_inv Γ Γ.I = Γ.I := by
+  unfold coord_inv
+  -- d_I = E_I (by def of E_I)
+  have hd_I : (Γ.I ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.E_I := rfl
+  rw [hd_I]
+  -- distinctness
+  have hI_ne_C : Γ.I ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ Γ.hI_on)
+  have hI_ne_EI : Γ.I ≠ Γ.E_I := fun h => Γ.hE_I_not_l (h ▸ Γ.hI_on)
+  have hC_ne_EI : Γ.C ≠ Γ.E_I := fun h => Γ.hC_not_m (h ▸ Γ.hE_I_on_m)
+  have hOC_ne : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  -- I⊔E_I = I⊔C (covering at I)
+  have hcov_I_IC : Γ.I ⋖ Γ.I ⊔ Γ.C := atom_covBy_join Γ.hI Γ.hC hI_ne_C
+  have hI_lt_IE : Γ.I < Γ.I ⊔ Γ.E_I := lt_of_le_of_ne le_sup_left
+    (fun h => hI_ne_EI ((Γ.hI.le_iff.mp
+      (le_sup_right.trans h.symm.le)).resolve_left Γ.hE_I_atom.1).symm)
+  have hIE_eq_IC : Γ.I ⊔ Γ.E_I = Γ.I ⊔ Γ.C :=
+    (hcov_I_IC.eq_or_eq hI_lt_IE.le (sup_le le_sup_left Γ.hE_I_le_IC)).resolve_left
+      (ne_of_gt hI_lt_IE)
+  rw [hIE_eq_IC]
+  -- (O⊔C)⊓(I⊔C) = C (modular_intersection: shared atom C, non-collinear I ≰ O⊔C)
+  have hOC_inf_IC : (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ Γ.C) = Γ.C := by
+    rw [show Γ.O ⊔ Γ.C = Γ.C ⊔ Γ.O from sup_comm _ _,
+        show Γ.I ⊔ Γ.C = Γ.C ⊔ Γ.I from sup_comm _ _]
+    exact modular_intersection Γ.hC Γ.hO Γ.hI hOC_ne.symm hI_ne_C.symm Γ.hOI
+      (sup_comm Γ.O Γ.C ▸ hI_not_OC Γ)
+  rw [hOC_inf_IC]
+  -- C⊔E_I = I⊔C (covering at C)
+  have hC_lt_CE : Γ.C < Γ.C ⊔ Γ.E_I := lt_of_le_of_ne le_sup_left
+    (fun h => hC_ne_EI ((Γ.hC.le_iff.mp
+      (le_sup_right.trans h.symm.le)).resolve_left Γ.hE_I_atom.1).symm)
+  have hcov_C_IC : Γ.C ⋖ Γ.I ⊔ Γ.C := by
+    have := atom_covBy_join Γ.hC Γ.hI hI_ne_C.symm
+    rwa [sup_comm] at this
+  have hCE_eq_IC : Γ.C ⊔ Γ.E_I = Γ.I ⊔ Γ.C :=
+    (hcov_C_IC.eq_or_eq hC_lt_CE.le (sup_le le_sup_right Γ.hE_I_le_IC)).resolve_left
+      (ne_of_gt hC_lt_CE)
+  rw [hCE_eq_IC]
+  -- (I⊔C)⊓l = I (line_direction: C ∉ l, I ∈ l)
+  rw [show Γ.I ⊔ Γ.C = Γ.C ⊔ Γ.I from sup_comm _ _]
+  exact line_direction Γ.hC Γ.hC_not_l Γ.hI_on
+
 /-! ## Open frontier: left multiplicative inverse `a⁻¹ · a = I`
 
 This section names the open geometric content as a single `sorry`'d lemma —
