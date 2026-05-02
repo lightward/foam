@@ -585,6 +585,167 @@ private theorem d_a_ne_d_inv (Γ : CoordSystem L)
     (Γ.hC.le_iff.mp hd_le_C).resolve_left hd_atom.1
   exact Γ.hC_not_m (hd_eq_C ▸ (inf_le_right : d_a ≤ Γ.U ⊔ Γ.V))
 
+/-- `a ≠ I` in the generic-`a` (i.e., `a ≠ coord_inv a`) branch.
+    By `coord_inv_I_eq_I`, `a = I` would force `a = coord_inv a`. -/
+private theorem ha_ne_I_of_distinct (Γ : CoordSystem L)
+    {a : L} (_ha : IsAtom a) (ha_ne_inv : a ≠ coord_inv Γ a) :
+    a ≠ Γ.I := by
+  intro h
+  exact ha_ne_inv (h.trans (coord_inv_I_eq_I Γ).symm |>.trans (h ▸ rfl))
+
+/-- **σ_a ≠ C** when `a ≠ I`. `σ_a = C` would force `C ≤ a⊔E_I`, hence
+    `a⊔C ≤ a⊔E_I` (covering at `a`), and since both have height 2 we get
+    `a⊔C = a⊔E_I`. Then `E_I ≤ a⊔C`, and via `(a⊔C)⊓m = d_a`, `E_I ≤ d_a`,
+    so `E_I = d_a` (atoms). But `d_a` is the projection of `a` from `C`,
+    while `E_I` is the projection of `I` from `C`; `d_a = E_I` then forces
+    `a = I` by injectivity of C-perspectivity from `l`. -/
+private theorem sigma_a_ne_C (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_I : a ≠ Γ.I) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≠ Γ.C := by
+  intro h
+  -- C ≤ a ⊔ E_I.
+  have hC_le_aEI : Γ.C ≤ a ⊔ Γ.E_I := h.symm.le.trans inf_le_right
+  -- a⊔C ≤ a⊔E_I, and a⊔C ⋖ a (well, a ⋖ a⊔C) so a⊔C = a⊔E_I.
+  have ha_ne_C : a ≠ Γ.C := fun he => Γ.hC_not_l (he ▸ ha_on)
+  have ha_ne_EI : a ≠ Γ.E_I := fun he => Γ.hE_I_not_l (he ▸ ha_on)
+  have h_aC_le : a ⊔ Γ.C ≤ a ⊔ Γ.E_I := sup_le le_sup_left hC_le_aEI
+  have hcov_a_aC : a ⋖ a ⊔ Γ.C := atom_covBy_join ha Γ.hC ha_ne_C
+  have hcov_a_aEI : a ⋖ a ⊔ Γ.E_I := atom_covBy_join ha Γ.hE_I_atom ha_ne_EI
+  have h_aC_lt : a < a ⊔ Γ.C := hcov_a_aC.lt
+  have h_aC_eq_aEI : a ⊔ Γ.C = a ⊔ Γ.E_I :=
+    (hcov_a_aEI.eq_or_eq h_aC_lt.le h_aC_le).resolve_left (ne_of_gt h_aC_lt)
+  -- E_I ≤ a⊔C, and E_I ≤ m, so E_I ≤ (a⊔C)⊓m = d_a.
+  have hEI_le_aC : Γ.E_I ≤ a ⊔ Γ.C := h_aC_eq_aEI.symm ▸ (le_sup_right : Γ.E_I ≤ a ⊔ Γ.E_I)
+  have hEI_le_d : Γ.E_I ≤ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) :=
+    le_inf hEI_le_aC Γ.hE_I_on_m
+  -- So E_I ≤ d_a (atoms): E_I = d_a.
+  have hd_atom : IsAtom ((a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) := d_a_atom Γ ha ha_on
+  have hd_eq_EI : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.E_I :=
+    ((hd_atom.le_iff.mp hEI_le_d).resolve_left Γ.hE_I_atom.1).symm
+  -- d_a = E_I means E_I ≤ a⊔C, and (a⊔C)⊓l = a, but also E_I = d_I = (I⊔C)⊓m,
+  -- so d_a = d_I, hence a = I (perspectivity injection).
+  -- Concretely: d_a ≤ a⊔C and d_a = E_I = d_I ≤ I⊔C; both lines through C meet at C
+  -- iff a ≠ I; if a ≠ I, then d_a ≤ C (= meet), so d_a = C, contradicting hC_not_m.
+  have hd_le_IC : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.I ⊔ Γ.C := by
+    rw [hd_eq_EI]; exact Γ.hE_I_le_IC
+  have hd_le_aC : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≤ a ⊔ Γ.C := inf_le_left
+  have hmeet : (a ⊔ Γ.C) ⊓ (Γ.I ⊔ Γ.C) = Γ.C :=
+    Γ.lines_through_C_meet ha Γ.hI ha_ne_I ha_on Γ.hI_on
+  have hd_le_C : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.C :=
+    (le_inf hd_le_aC hd_le_IC).trans hmeet.le
+  have hd_eq_C : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.C :=
+    (Γ.hC.le_iff.mp hd_le_C).resolve_left hd_atom.1
+  exact Γ.hC_not_m (hd_eq_C ▸ (inf_le_right : (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.U ⊔ Γ.V))
+
+/-- **σ_a ≠ O** when `a ≠ O`. `σ_a = O` forces `O ≤ a⊔E_I` (covering: `a⊔E_I = a⊔O`),
+    so `E_I ≤ a⊔O ≤ l`, contradicting `hE_I_not_l`. -/
+private theorem sigma_a_ne_O (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_O : a ≠ Γ.O) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≠ Γ.O := by
+  intro h
+  have hO_le_aEI : Γ.O ≤ a ⊔ Γ.E_I := h.symm.le.trans inf_le_right
+  have ha_ne_EI : a ≠ Γ.E_I := fun he => Γ.hE_I_not_l (he ▸ ha_on)
+  have hcov_a_aEI : a ⋖ a ⊔ Γ.E_I := atom_covBy_join ha Γ.hE_I_atom ha_ne_EI
+  have hcov_a_aO : a ⋖ a ⊔ Γ.O := atom_covBy_join ha Γ.hO ha_ne_O
+  have hOa_le : a ⊔ Γ.O ≤ a ⊔ Γ.E_I := sup_le le_sup_left hO_le_aEI
+  have h_aO_eq : a ⊔ Γ.O = a ⊔ Γ.E_I :=
+    (hcov_a_aEI.eq_or_eq hcov_a_aO.lt.le hOa_le).resolve_left (ne_of_gt hcov_a_aO.lt)
+  have hEI_le_aO : Γ.E_I ≤ a ⊔ Γ.O :=
+    h_aO_eq.symm ▸ (le_sup_right : Γ.E_I ≤ a ⊔ Γ.E_I)
+  have haO_le_l : a ⊔ Γ.O ≤ Γ.O ⊔ Γ.U := sup_le ha_on le_sup_left
+  exact Γ.hE_I_not_l (hEI_le_aO.trans haO_le_l)
+
+/-- **σ_a ≠ U** (always). `σ_a = U` would put `U` on `O⊔C`, but `U ≤ l ⊓ (O⊔C) = O`,
+    so `U = O`, contradicting `hOU`. -/
+private theorem sigma_a_ne_U (Γ : CoordSystem L)
+    {a : L} (_ha : IsAtom a) (_ha_on : a ≤ Γ.O ⊔ Γ.U) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≠ Γ.U := by
+  intro h
+  have hU_le_OC : Γ.U ≤ Γ.O ⊔ Γ.C := h.symm.le.trans inf_le_left
+  have hOC_inf_l : (Γ.O ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.C) = Γ.O := by
+    rw [show Γ.O ⊔ Γ.C = Γ.C ⊔ Γ.O from sup_comm _ _]
+    exact inf_sup_of_atom_not_le Γ.hC Γ.hC_not_l (le_sup_left : Γ.O ≤ Γ.O ⊔ Γ.U)
+  have hU_le_O : Γ.U ≤ Γ.O := hOC_inf_l ▸ le_inf le_sup_right hU_le_OC
+  exact Γ.hOU.symm ((Γ.hO.le_iff.mp hU_le_O).resolve_left Γ.hU.1)
+
+/-- **σ_a ≠ a** when `a ≠ O`. `σ_a = a` puts `a` on `O⊔C`, so `a ≤ l⊓(O⊔C) = O`. -/
+private theorem sigma_a_ne_a (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_O : a ≠ Γ.O) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≠ a := by
+  intro h
+  have ha_le_OC : a ≤ Γ.O ⊔ Γ.C := h.symm.le.trans inf_le_left
+  have hl_inf_OC : (Γ.O ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.C) = Γ.O := by
+    rw [show Γ.O ⊔ Γ.C = Γ.C ⊔ Γ.O from sup_comm _ _]
+    exact inf_sup_of_atom_not_le Γ.hC Γ.hC_not_l (le_sup_left : Γ.O ≤ Γ.O ⊔ Γ.U)
+  have ha_le_O : a ≤ Γ.O := hl_inf_OC ▸ le_inf ha_on ha_le_OC
+  exact ha_ne_O ((Γ.hO.le_iff.mp ha_le_O).resolve_left ha.1)
+
+/-- **σ_a ≠ d_a**. `σ_a` is on `O⊔C`, `d_a` on `m`; common atom = `E`, so `σ_a = d_a`
+    forces `σ_a = E`, contradicting `sigma_a_ne_E`. -/
+private theorem sigma_a_ne_d_a (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_U : a ≠ Γ.U) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≠ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) := by
+  intro h
+  have hσa_atom := sigma_a_atom Γ ha ha_on
+  have hσa_le_OC : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.O ⊔ Γ.C := inf_le_left
+  have hσa_le_m : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.U ⊔ Γ.V := h.le.trans inf_le_right
+  have hσa_le_E : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.E := by
+    show (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ (Γ.O ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)
+    exact le_inf hσa_le_OC hσa_le_m
+  have hσa_eq_E : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) = Γ.E :=
+    (Γ.hE_atom.le_iff.mp hσa_le_E).resolve_left hσa_atom.1
+  exact sigma_a_ne_E Γ ha ha_on ha_ne_U hσa_eq_E
+
+/-- **σ_a ≠ σ'** when `a ≠ coord_inv a`. The E_I-perspectivity from `l` to
+    `O⊔C` is injective on atoms: `σ_a = σ_{a⁻¹}` (via `sigma_inv_eq_sigma_prime`,
+    `σ' = σ_{a⁻¹}`) would force `σ_a` ≤ `(a⊔E_I) ⊓ (a⁻¹⊔E_I) = E_I` (modular
+    intersection at shared atom `E_I`, with `a ≠ a⁻¹` guaranteeing
+    non-collinearity). But `σ_a ≤ O⊔C` and `E_I ∉ O⊔C` (`hE_I_not_OC`),
+    contradiction.
+
+    This is the **`σ_a ≠ σ'`** distinctness condition for the X₂₃ side
+    in `coord_first_desargues_mul`'s `desargues_planar` call. -/
+private theorem sigma_a_ne_sigma' (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_U : a ≠ Γ.U)
+    (ha_ne_inv : a ≠ coord_inv Γ a) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≠
+    (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) := by
+  intro h
+  -- σ_{a⁻¹} = σ' via sigma_inv_eq_sigma_prime, so σ_a = σ' ⇒ σ_a = σ_{a⁻¹}
+  have hσ_inv_eq := sigma_inv_eq_sigma_prime Γ ha ha_on ha_ne_U
+  rw [← hσ_inv_eq] at h
+  -- h : (O⊔C)⊓(a⊔E_I) = (O⊔C)⊓(coord_inv a ⊔ E_I)
+  have hinv_atom : IsAtom (coord_inv Γ a) := coord_inv_atom Γ ha ha_on ha_ne_U
+  have hinv_on : coord_inv Γ a ≤ Γ.O ⊔ Γ.U := coord_inv_on_l Γ a
+  have hσa_atom := sigma_a_atom Γ ha ha_on
+  have ha_ne_E_I : a ≠ Γ.E_I := fun he => Γ.hE_I_not_l (he ▸ ha_on)
+  have hinv_ne_E_I : coord_inv Γ a ≠ Γ.E_I := fun he => Γ.hE_I_not_l (he ▸ hinv_on)
+  -- σ_a ≤ a⊔E_I trivially; via h, σ_a ≤ inv_a⊔E_I
+  have hσa_le_aEI : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ a ⊔ Γ.E_I := inf_le_right
+  have hσa_le_invEI : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ coord_inv Γ a ⊔ Γ.E_I :=
+    h.le.trans inf_le_right
+  -- inv_a ∉ a⊔E_I: else inv_a ≤ (a⊔E_I)⊓l = a, so inv_a = a, contradicting ha_ne_inv
+  have hinv_not_aEI : ¬ coord_inv Γ a ≤ a ⊔ Γ.E_I := by
+    intro hle
+    have hl_inf : (Γ.O ⊔ Γ.U) ⊓ (a ⊔ Γ.E_I) = a := by
+      rw [show a ⊔ Γ.E_I = Γ.E_I ⊔ a from sup_comm _ _]
+      exact inf_sup_of_atom_not_le Γ.hE_I_atom Γ.hE_I_not_l ha_on
+    have hinv_le_a : coord_inv Γ a ≤ a := (le_inf hinv_on hle).trans hl_inf.le
+    exact ha_ne_inv ((ha.le_iff.mp hinv_le_a).resolve_left hinv_atom.1).symm
+  -- modular_intersection: shared E_I, atoms a, inv_a, with inv_a ∉ E_I⊔a
+  have h_inter : (Γ.E_I ⊔ a) ⊓ (Γ.E_I ⊔ coord_inv Γ a) = Γ.E_I :=
+    modular_intersection Γ.hE_I_atom ha hinv_atom
+      ha_ne_E_I.symm hinv_ne_E_I.symm ha_ne_inv
+      (by rw [sup_comm]; exact hinv_not_aEI)
+  have hσa_le_E_I : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.E_I :=
+    (le_inf
+      (hσa_le_aEI.trans (sup_comm a Γ.E_I).le)
+      (hσa_le_invEI.trans (sup_comm (coord_inv Γ a) Γ.E_I).le)).trans h_inter.le
+  have hσa_eq_E_I : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) = Γ.E_I :=
+    (Γ.hE_I_atom.le_iff.mp hσa_le_E_I).resolve_left hσa_atom.1
+  exact Γ.hE_I_not_OC
+    (hσa_eq_E_I ▸ (inf_le_left : (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤ Γ.O ⊔ Γ.C))
+
 /-- **OPEN GEOMETRIC CONTENT for the generic case of `coord_mul_left_inv`.**
 
 For atoms `a` on `l` distinct from their own inverse (`a ≠ coord_inv Γ a`),
@@ -601,29 +762,93 @@ The axis content `X₂₃ ≤ U ⊔ X₁₃` is then unpacked via a second Desar
 `coord_first_desargues` / `coord_second_desargues` in `FTPGAddComm.lean`
 for the additive precedent (~600 + ~800 lines).
 
-Distinctness conditions for the Desargues call (all derivable from the
-existing hypotheses + `a ≠ coord_inv Γ a`):
-* `a ≠ a⁻¹` — case hypothesis.
-* `d_a ≠ d_{a⁻¹}` — `d_a_ne_d_inv` (above), via `lines_through_C_meet`.
-* `a ≠ σ_a`, `a⁻¹ ≠ σ_a` — atoms on `l` vs `O⊔C` (intersect at `O`); use
-  `ha_ne_O`, `coord_inv_ne_O`.
-* `σ_a ≠ σ'` — both atoms on `O⊔C`; via `sigma_inv_eq_sigma_prime` this
-  flips to `σ_a ≠ σ_{a⁻¹}`, then perspectivity-injectivity (through `E_I`
-  from `l` to `O⊔C`) gives `a ≠ a⁻¹`, the case hypothesis.
-* `σ_a ≠ C` — equivalent to `a ≠ I` (a separate sub-case-split needed; see
-  the analysis in the docstring above).
+**Architecture (session 125):** Split into two named sub-lemmas:
 
-The char-2 case (`a = coord_inv Γ a`) is closed by the helper directly. -/
-private theorem sigma_a_le_I_sup_d_inv_distinct (Γ : CoordSystem L)
+* `coord_first_desargues_mul` — the single Desargues call producing axis
+  collinearity `X₂₃ ≤ U ⊔ X₁₃`. Realistic ~350–500 lines (parallel to
+  FTPGAddComm.coord_first_desargues at ~600 lines, but ~7 distinctness
+  helpers already factored out in this file).
+* `axis_to_sigma_a_le` — the bridge: from `X₂₃ ≤ U ⊔ X₁₃`, derive the
+  target `σ_a ≤ I ⊔ d_{a⁻¹}`. Likely a second Desargues call (parallel
+  to FTPGAddComm.coord_second_desargues at ~800 lines), or a clever
+  covering argument.
+
+Both are sorry'd here; the headline `sigma_a_le_I_sup_d_inv_distinct`
+trivially composes them.
+
+**Distinctness audit (sessions 124–125, all PROVEN as private helpers):**
+`d_a_ne_d_inv` (X₁₂), `ha_ne_I_of_distinct`, `sigma_a_ne_C` (Desargues
+center collision), `sigma_a_ne_O`, `sigma_a_ne_U`, `sigma_a_ne_a`,
+`sigma_a_ne_d_a`, `sigma_a_ne_sigma'` (X₂₃ side distinctness — uses
+`modular_intersection` at `E_I` with `a ≠ inv_a`).
+
+**Geometry notes for the X₂₃ side** (`inv_a⊔σ_a ≠ d_inv⊔σ'`): σ' is
+defined via `a` (not `inv_a`), so `d_inv⊔σ'` does NOT have a clean
+`I⊔d_inv` form. The clean argument: assume `inv_a⊔σ_a = d_inv⊔σ'`,
+then `σ' ≤ inv_a⊔σ_a`; with `inv_a ∉ O⊔C` (since `coord_inv_ne_O`),
+modular intersection gives `(inv_a⊔σ_a)⊓(O⊔C) = σ_a`, forcing
+`σ' = σ_a`, contradicting `sigma_a_ne_sigma'`. The matching
+`d_a⊔σ' = I⊔d_a` and `a⊔σ_a = a⊔E_I` upgrades (h_sides₁₃) ARE clean
+via covering at `d_a` and `a` respectively.
+
+**Watch-out for the proof:** `line_direction` produces
+`(d_a ⊔ Γ.I) ⊓ ...`, NOT `(Γ.I ⊔ d_a) ⊓ ...`; pre-rewrite with
+`sup_comm` (the precedent `coord_mul_right_inv` does this on line 416).
+And `IsAtom.le_iff` is owned by the **target** atom (CLAUDE.md note);
+two-atom inequalities flip direction freely. -/
+private theorem coord_first_desargues_mul (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (ha_ne_inv : a ≠ coord_inv Γ a)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    (coord_inv Γ a ⊔ (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I)) ⊓
+    ((coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ⊔
+       (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V))) ≤
+    Γ.U ⊔ (a ⊔ Γ.E_I) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) := by
+  sorry
+
+/-- **Bridge from first-Desargues axis content to `σ_a ≤ I⊔d_{a⁻¹}`.**
+
+Given `X₂₃ ≤ U ⊔ X₁₃` (with `X₁₃ = (a⊔E_I)⊓(I⊔d_a)`), conclude the
+target `σ_a ≤ I⊔d_{a⁻¹}`. The natural route is a second `desargues_planar`
+call paralleling `FTPGAddComm.coord_second_desargues`, with new center
+some atom (likely `X₁₃` itself) and new triangles designed so the new
+axis lands on `I⊔d_{a⁻¹}` (mirror of the additive case where the new
+axis was `l = O⊔U`).
+
+Open content. ~500–800 lines anticipated. -/
+private theorem axis_to_sigma_a_le (Γ : CoordSystem L)
     {a : L} (_ha : IsAtom a) (_ha_on : a ≤ Γ.O ⊔ Γ.U)
     (_ha_ne_O : a ≠ Γ.O) (_ha_ne_U : a ≠ Γ.U)
     (_ha_ne_inv : a ≠ coord_inv Γ a)
     (_R : L) (_hR : IsAtom _R) (_hR_not : ¬ _R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
     (_h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
-      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q)
+    (_h_axis : (coord_inv Γ a ⊔ (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I)) ⊓
+      ((coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ⊔
+         (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V))) ≤
+      Γ.U ⊔ (a ⊔ Γ.E_I) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V))) :
     (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤
       Γ.I ⊔ (coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) := by
   sorry
+
+/-- **Generic-case content for `coord_mul_left_inv`.** Composes the two named
+    sub-lemmas: first Desargues (axis collinearity) followed by the bridge
+    to `σ_a ≤ I⊔d_{a⁻¹}`. Both sub-lemmas are open; this composition is
+    one line. -/
+private theorem sigma_a_le_I_sup_d_inv_distinct (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (ha_ne_inv : a ≠ coord_inv Γ a)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤
+      Γ.I ⊔ (coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) :=
+  axis_to_sigma_a_le Γ ha ha_on ha_ne_O ha_ne_U ha_ne_inv R hR hR_not h_irred
+    (coord_first_desargues_mul Γ ha ha_on ha_ne_O ha_ne_U ha_ne_inv R hR hR_not h_irred)
 
 /-- **`σ_a ≤ I ⊔ d_{a⁻¹}` — the geometric content of `coord_mul_left_inv`.**
 

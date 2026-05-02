@@ -69,6 +69,15 @@ variable {L : Type u} [Lattice L] [BoundedOrder L]
 -- § Atoms
 
 omit [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L] in
+/-- Two atoms with `a ≤ b` are equal. Smooths the `(hb.le_iff.mp h).resolve_left ha.1`
+    pattern: callers don't need to remember that `IsAtom.le_iff` is owned by the
+    *target* atom. Argument order `(lower, upper, le-proof)` is unambiguous and
+    produces the equality in the natural direction. -/
+theorem IsAtom.eq_of_le {a b : L} (ha : IsAtom a) (hb : IsAtom b) (h : a ≤ b) :
+    a = b :=
+  (hb.le_iff.mp h).resolve_left ha.1
+
+omit [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L] in
 /-- Distinct atoms are disjoint. -/
 theorem atoms_disjoint {a b : L} (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) :
     a ⊓ b = ⊥ := by
