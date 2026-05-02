@@ -558,6 +558,33 @@ private theorem sigma_a_ne_E (Γ : CoordSystem L)
   have ha_le_U : a ≤ Γ.U := Γ.l_inf_m_eq_U ▸ le_inf ha_on ha_le_m
   exact ha_ne_U ((Γ.hU.le_iff.mp ha_le_U).resolve_left ha.1)
 
+/-- `d_a ≠ d_{a⁻¹}` when `a ≠ a⁻¹`. The C-perspectivity `x ↦ (x⊔C)⊓m` from
+    `l` to `m` is injective on atoms: lines `a⊔C` and `a⁻¹⊔C` meet only at
+    `C` (by `lines_through_C_meet`), and `C ∉ m`, so any common atom on `m`
+    is forced to equal `C`, contradiction. This is the **X₁₂ distinctness
+    condition** in the Desargues setup of `sigma_a_le_I_sup_d_inv_distinct`
+    — the case hypothesis `a ≠ coord_inv a` carries directly to the
+    triangle T₂'s vertices. -/
+private theorem d_a_ne_d_inv (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_U : a ≠ Γ.U)
+    (ha_ne_inv : a ≠ coord_inv Γ a) :
+    (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) ≠ (coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) := by
+  intro h
+  set d_a := (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)
+  have hd_atom : IsAtom d_a := d_a_atom Γ ha ha_on
+  have hinv_atom : IsAtom (coord_inv Γ a) := coord_inv_atom Γ ha ha_on ha_ne_U
+  have hinv_on : coord_inv Γ a ≤ Γ.O ⊔ Γ.U := coord_inv_on_l Γ a
+  -- d_a ≤ a⊔C (left projection); d_a = d_{a⁻¹} so d_a ≤ a⁻¹⊔C as well.
+  have hd_le_aC : d_a ≤ a ⊔ Γ.C := inf_le_left
+  have hd_le_invC : d_a ≤ coord_inv Γ a ⊔ Γ.C := h.le.trans inf_le_left
+  -- The two C-lines meet at C.
+  have hmeet : (a ⊔ Γ.C) ⊓ (coord_inv Γ a ⊔ Γ.C) = Γ.C :=
+    Γ.lines_through_C_meet ha hinv_atom ha_ne_inv ha_on hinv_on
+  have hd_le_C : d_a ≤ Γ.C := hmeet ▸ le_inf hd_le_aC hd_le_invC
+  have hd_eq_C : d_a = Γ.C :=
+    (Γ.hC.le_iff.mp hd_le_C).resolve_left hd_atom.1
+  exact Γ.hC_not_m (hd_eq_C ▸ (inf_le_right : d_a ≤ Γ.U ⊔ Γ.V))
+
 /-- **OPEN GEOMETRIC CONTENT for the generic case of `coord_mul_left_inv`.**
 
 For atoms `a` on `l` distinct from their own inverse (`a ≠ coord_inv Γ a`),
@@ -577,11 +604,12 @@ for the additive precedent (~600 + ~800 lines).
 Distinctness conditions for the Desargues call (all derivable from the
 existing hypotheses + `a ≠ coord_inv Γ a`):
 * `a ≠ a⁻¹` — case hypothesis.
-* `d_a ≠ d_{a⁻¹}` — equivalent to `a ≠ a⁻¹` via the C-perspectivity.
+* `d_a ≠ d_{a⁻¹}` — `d_a_ne_d_inv` (above), via `lines_through_C_meet`.
 * `a ≠ σ_a`, `a⁻¹ ≠ σ_a` — atoms on `l` vs `O⊔C` (intersect at `O`); use
   `ha_ne_O`, `coord_inv_ne_O`.
-* `σ_a ≠ σ'` — both atoms on `O⊔C`; equality would force them to be `E_I`
-  via the helper, but `E_I ∉ O⊔C`.
+* `σ_a ≠ σ'` — both atoms on `O⊔C`; via `sigma_inv_eq_sigma_prime` this
+  flips to `σ_a ≠ σ_{a⁻¹}`, then perspectivity-injectivity (through `E_I`
+  from `l` to `O⊔C`) gives `a ≠ a⁻¹`, the case hypothesis.
 * `σ_a ≠ C` — equivalent to `a ≠ I` (a separate sub-case-split needed; see
   the analysis in the docstring above).
 
