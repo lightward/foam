@@ -1189,14 +1189,119 @@ private theorem coord_first_desargues_mul (Γ : CoordSystem L)
   have hX13_eq : (a ⊔ σ_a) ⊓ (d_a ⊔ σ') = (a ⊔ Γ.E_I) ⊓ (Γ.I ⊔ d_a) := by
     rw [h_aσa_eq_aEI, h_dσ'_eq_Id]
   have hX13_le_axis : (a ⊔ Γ.E_I) ⊓ (Γ.I ⊔ d_a) ≤ axis := hX13_eq ▸ h₁₃
-  -- Closing: U ⊔ X₁₃_upgraded ⋖ π via line_covBy_plane (c = O); see CLAUDE.md.
-  -- Open content for next session — needs:
-  --   (1) X₁₃_upgraded := (a⊔E_I) ⊓ (I⊔d_a) is an atom (perspect_atom-style),
-  --   (2) U ≠ X₁₃_upgraded, X₁₃_upgraded ≠ O (small distinctness),
-  --   (3) ¬ O ≤ U ⊔ X₁₃_upgraded (the key argument: l ≤ U⊔X₁₃ would force
-  --       X₁₃ ≤ l hence X₁₃ ≤ a, then X₁₃ ≤ I⊔d_a forces a = I, contradicting
-  --       ha_ne_I_of_distinct).
-  have hcov_UX13 : Γ.U ⊔ (a ⊔ Γ.E_I) ⊓ (Γ.I ⊔ d_a) ⋖ π := sorry
+  -- Closing: U ⊔ X₁₃ ⋖ π via line_covBy_plane (c = O).
+  -- Plan: (a) X₁₃ is an atom (meet of two distinct lines a⊔E_I and I⊔d_a in π);
+  --       (b) core fact: X₁₃ ≤ l → False (would force a = I via line_direction);
+  --       (c) span: U⊔X₁₃⊔O = π via l⊔X₁₃ = π;
+  --       (d) ¬ O ≤ U⊔X₁₃ via line_eq_of_atom_le → X₁₃ ≤ l, then (b).
+  set X₁₃ := (a ⊔ Γ.E_I) ⊓ (Γ.I ⊔ d_a) with hX13_def
+  have hl_cov_π : Γ.O ⊔ Γ.U ⋖ π := l_covBy_π_inv Γ
+  have ha_ne_E_I : a ≠ Γ.E_I := fun h => Γ.hE_I_not_l (h ▸ ha_on)
+  have hI_ne_d := I_ne_d_a Γ ha ha_on
+  -- Direction projections via line_direction.
+  have h_aEI_inf_l : (a ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U) = a := by
+    rw [show a ⊔ Γ.E_I = Γ.E_I ⊔ a from sup_comm _ _]
+    exact line_direction Γ.hE_I_atom Γ.hE_I_not_l ha_on
+  have h_Id_inf_l : (Γ.I ⊔ d_a) ⊓ (Γ.O ⊔ Γ.U) = Γ.I := by
+    rw [show Γ.I ⊔ d_a = d_a ⊔ Γ.I from sup_comm _ _]
+    exact line_direction hd_atom (d_a_not_l Γ ha ha_on ha_ne_U) Γ.hI_on
+  -- π memberships of the two lines.
+  have haEI_le_π : a ⊔ Γ.E_I ≤ π :=
+    sup_le ha_le_π (Γ.hE_I_on_m.trans hm_le_π)
+  have hId_le_π : Γ.I ⊔ d_a ≤ π :=
+    sup_le (Γ.hI_on.trans le_sup_left) hd_le_π
+  -- (Step 1) a ⊔ E_I ⋖ π via line_covBy_plane(a, E_I, O), span O⊔a=l, l⊔E_I=π.
+  have hO_not_aEI : ¬ Γ.O ≤ a ⊔ Γ.E_I := by
+    intro hO_le
+    have hO_le_inf : Γ.O ≤ (a ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U) := le_inf hO_le le_sup_left
+    rw [h_aEI_inf_l] at hO_le_inf
+    exact ha_ne_O ((ha.le_iff.mp hO_le_inf).resolve_left Γ.hO.1).symm
+  have hE_I_ne_O : Γ.E_I ≠ Γ.O := fun h => Γ.hE_I_not_l (h ▸ le_sup_left)
+  have hOa_eq_l : Γ.O ⊔ a = Γ.O ⊔ Γ.U :=
+    (line_eq_of_atom_le Γ.hO Γ.hU ha Γ.hOU ha_ne_O.symm
+      ha_ne_U.symm ha_on).symm
+  have h_lEI_lt : Γ.O ⊔ Γ.U < Γ.O ⊔ Γ.U ⊔ Γ.E_I := lt_of_le_of_ne le_sup_left
+    (fun heq => Γ.hE_I_not_l (le_sup_right.trans heq.symm.le))
+  have h_lEI_le_π : Γ.O ⊔ Γ.U ⊔ Γ.E_I ≤ π :=
+    sup_le le_sup_left (Γ.hE_I_on_m.trans hm_le_π)
+  have h_lEI_eq_π : Γ.O ⊔ Γ.U ⊔ Γ.E_I = π :=
+    (hl_cov_π.eq_or_eq h_lEI_lt.le h_lEI_le_π).resolve_left (ne_of_gt h_lEI_lt)
+  have h_aEIO_eq_π : a ⊔ Γ.E_I ⊔ Γ.O = π := by
+    have h1 : a ⊔ Γ.E_I ⊔ Γ.O = Γ.O ⊔ a ⊔ Γ.E_I := by
+      rw [sup_comm (a ⊔ Γ.E_I) Γ.O, sup_assoc]
+    rw [h1, hOa_eq_l, h_lEI_eq_π]
+  have h_aEI_cov_π : a ⊔ Γ.E_I ⋖ π := by
+    rw [← h_aEIO_eq_π]
+    exact line_covBy_plane ha Γ.hE_I_atom Γ.hO ha_ne_E_I ha_ne_O
+      hE_I_ne_O hO_not_aEI
+  -- (Step 2) ¬ a⊔E_I ≤ I⊔d_a (else intersect with l forces a = I).
+  have h_not_aEI_le_Id : ¬ a ⊔ Γ.E_I ≤ Γ.I ⊔ d_a := by
+    intro hle
+    have ha_le_Id : a ≤ Γ.I ⊔ d_a := le_sup_left.trans hle
+    have ha_le_inf : a ≤ (Γ.I ⊔ d_a) ⊓ (Γ.O ⊔ Γ.U) := le_inf ha_le_Id ha_on
+    rw [h_Id_inf_l] at ha_le_inf
+    exact ha_ne_I ((Γ.hI.le_iff.mp ha_le_inf).resolve_left ha.1)
+  -- (Step 3) The meet (a⊔E_I) ⊓ (I⊔d_a) is non-trivial via lines_meet_if_coplanar.
+  have hI_lt_Id : Γ.I < Γ.I ⊔ d_a := lt_of_le_of_ne le_sup_left
+    (fun heq => hI_ne_d.symm ((Γ.hI.le_iff.mp
+      (le_sup_right.trans heq.symm.le)).resolve_left hd_atom.1))
+  have h_not_Id_le_aEI : ¬ Γ.I ⊔ d_a ≤ a ⊔ Γ.E_I := by
+    intro hle
+    have hI_le_aEI : Γ.I ≤ a ⊔ Γ.E_I := le_sup_left.trans hle
+    have hI_le_inf : Γ.I ≤ (a ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U) := le_inf hI_le_aEI Γ.hI_on
+    rw [h_aEI_inf_l] at hI_le_inf
+    exact ha_ne_I.symm ((ha.le_iff.mp hI_le_inf).resolve_left Γ.hI.1)
+  have h_meet_ne : (a ⊔ Γ.E_I) ⊓ (Γ.I ⊔ d_a) ≠ ⊥ :=
+    lines_meet_if_coplanar h_aEI_cov_π hId_le_π h_not_Id_le_aEI Γ.hI hI_lt_Id
+  -- (Step 4) X₁₃ is an atom via meet_of_lines_is_atom.
+  have hX13_atom : IsAtom X₁₃ :=
+    meet_of_lines_is_atom ha Γ.hE_I_atom Γ.hI hd_atom ha_ne_E_I hI_ne_d
+      h_not_aEI_le_Id h_meet_ne
+  -- X₁₃ ≤ π.
+  have hX13_le_π : X₁₃ ≤ π := inf_le_left.trans haEI_le_π
+  -- (Step 5) Core: X₁₃ ≤ l → False.
+  have h_core : ¬ X₁₃ ≤ Γ.O ⊔ Γ.U := by
+    intro hX_l
+    have hX_le_aEI : X₁₃ ≤ a ⊔ Γ.E_I := inf_le_left
+    have hX_le_Id : X₁₃ ≤ Γ.I ⊔ d_a := inf_le_right
+    have hX_le_a : X₁₃ ≤ a := by
+      have := le_inf hX_le_aEI hX_l
+      rwa [h_aEI_inf_l] at this
+    have hX_le_I : X₁₃ ≤ Γ.I := by
+      have := le_inf hX_le_Id hX_l
+      rwa [h_Id_inf_l] at this
+    have hX_eq_a : X₁₃ = a :=
+      (ha.le_iff.mp hX_le_a).resolve_left hX13_atom.1
+    have hX_eq_I : X₁₃ = Γ.I :=
+      (Γ.hI.le_iff.mp hX_le_I).resolve_left hX13_atom.1
+    exact ha_ne_I (hX_eq_a.symm.trans hX_eq_I)
+  -- (Step 6) Distinctness for line_covBy_plane(U, X₁₃, O).
+  have hU_ne_X : Γ.U ≠ X₁₃ := fun h => h_core (h ▸ le_sup_right)
+  have hX_ne_O : X₁₃ ≠ Γ.O := fun h => h_core (h ▸ le_sup_left)
+  have hO_not_UX : ¬ Γ.O ≤ Γ.U ⊔ X₁₃ := by
+    intro hO_le
+    -- U⊔X₁₃ is a line (atom join). With O ≤ U⊔X₁₃ and O ≠ U, line_eq_of_atom_le
+    -- gives U⊔X₁₃ = U⊔O = O⊔U = l. So X₁₃ ≤ l, contradicting h_core.
+    have hUX_eq : Γ.U ⊔ X₁₃ = Γ.U ⊔ Γ.O :=
+      line_eq_of_atom_le Γ.hU hX13_atom Γ.hO hU_ne_X Γ.hOU.symm hX_ne_O hO_le
+    have hUX_eq_l : Γ.U ⊔ X₁₃ = Γ.O ⊔ Γ.U := hUX_eq.trans (sup_comm _ _)
+    exact h_core (le_sup_right.trans hUX_eq_l.le)
+  -- (Step 7) Span: U⊔X₁₃⊔O = π via l⊔X₁₃ = π.
+  have hUX_le_π : Γ.U ⊔ X₁₃ ≤ π :=
+    sup_le (le_sup_right.trans le_sup_left) hX13_le_π
+  have hl_lt_lX : Γ.O ⊔ Γ.U < Γ.O ⊔ Γ.U ⊔ X₁₃ := lt_of_le_of_ne le_sup_left
+    (fun heq => h_core (le_sup_right.trans heq.symm.le))
+  have hlX_le_π : Γ.O ⊔ Γ.U ⊔ X₁₃ ≤ π := sup_le le_sup_left hX13_le_π
+  have hlX_eq_π : Γ.O ⊔ Γ.U ⊔ X₁₃ = π :=
+    (hl_cov_π.eq_or_eq hl_lt_lX.le hlX_le_π).resolve_left (ne_of_gt hl_lt_lX)
+  have h_UXO_eq_π : Γ.U ⊔ X₁₃ ⊔ Γ.O = π := by
+    have h1 : Γ.U ⊔ X₁₃ ⊔ Γ.O = Γ.O ⊔ Γ.U ⊔ X₁₃ := by
+      rw [sup_comm (Γ.U ⊔ X₁₃) Γ.O, sup_assoc]
+    rw [h1, hlX_eq_π]
+  -- (Step 8) Apply line_covBy_plane and rewrite.
+  have hcov_UX13 : Γ.U ⊔ X₁₃ ⋖ π := by
+    rw [← h_UXO_eq_π]
+    exact line_covBy_plane Γ.hU hX13_atom Γ.hO hU_ne_X Γ.hOU.symm hX_ne_O hO_not_UX
   exact collinear_of_common_bound hcov_UX13 h_axis_le h_axis_ne
     hU_le_axis hX13_le_axis h₂₃
 
