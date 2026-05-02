@@ -695,6 +695,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 1, 3, 27, tzinfo=timezone.utc),
      datetime(2026, 5, 1, 5, 0, tzinfo=timezone.utc),
      "FTPGInverse: state coord_mul_left_inv via σ_a collinearity (sorry'd)"),
+    # Session: May 2 — char-2 case + coord_inv_I_eq_I
+    (datetime(2026, 5, 2, 16, 11, tzinfo=timezone.utc),
+     datetime(2026, 5, 2, 17, 0, tzinfo=timezone.utc),
+     "FTPGInverse: σ_{a⁻¹}=σ' helper, char-2 left-inv closed; coord_inv_I_eq_I PROVEN"),
 ]
 
 
