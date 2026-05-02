@@ -297,6 +297,26 @@ any specific helper is wanted.
   unfolded form. Use `(sup_comm d_a Γ.I) ▸ h` (explicit args) or
   `rw [show ... = ... from sup_comm _ _]` (explicit equation). Same trap
   if you have multiple `_ ⊔ _` subexpressions in the goal.
+- **`h ▸ x` against `set`-bound names sometimes needs a type annotation.**
+  With `set d_a := (a⊔C)⊓m`, hypothesis `h : a = d_a`, and `ha_on : a ≤ l`,
+  the bare term `h ▸ ha_on` may produce an opaque "type mismatch" when
+  fed to a lemma expecting `d_a ≤ l`. Annotate explicitly:
+  `(h ▸ ha_on : d_a ≤ l)`. Same fix wherever the `set`-bound name appears
+  in the target type of a `▸` rewrite.
+- **Transitivity direction in covering-lemma lambdas.** When `heq : X = X ⊔ σ`
+  and you want `σ ≤ X` (typically to feed `hσ_not_X`), the order is
+  `le_sup_right.trans heq.symm.le` (σ ≤ X⊔σ, then X⊔σ ≤ X). The reverse
+  `heq.symm.le.trans le_sup_right` doesn't typecheck. Easy to flip when
+  writing the `lt_of_le_of_ne le_sup_left (fun heq => h_not (...))`
+  lambda for a `Γ.U ⊔ Γ.V < Γ.U ⊔ Γ.V ⊔ σ'` step in a triangle-plane proof.
+- **Don't reflexively `.symm` after `(IsAtom.le_iff.mp _).resolve_left _`.**
+  When chaining `le_sup_right.trans h.symm.le` to get `q ≤ p` then
+  `hp.le_iff.mp` (target atom is `p`) gives `q = p` directly. If your
+  hypothesis is `h_ne : q ≠ p`, feed the result straight in. Adding a
+  trailing `.symm` produces the opaque "expected `q = p` got `p = q`"
+  error — the same family as the IsAtom.le_iff direction bullet above,
+  but specifically in the chained-`trans` form that shows up in the
+  `lt_of_le_of_ne` lambdas of covering arguments.
 
 ## Ring-law-on-coord_X file template
 
