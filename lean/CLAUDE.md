@@ -79,12 +79,13 @@ On local, this isn't a concern — `lake exe cache get` handles it.
 
 See `./README.md` for the deductive chain overview.
 
-### Current frontier (session 120, 2026-04-30)
+### Current frontier (session 123, 2026-05-02)
 
 `Foam/FTPGInverse.lean` lands `coord_inv`, `coord_mul_right_inv`
-(`a · a⁻¹ = I`), and the non-degeneracy helpers `coord_inv_ne_O`,
-`coord_inv_ne_U` with **zero `sorry`**. The construction is reverse
-perspectivity through `I ⊔ d_a`:
+(`a · a⁻¹ = I`), the non-degeneracy helpers `coord_inv_ne_O` /
+`coord_inv_ne_U`, and the **σ_{a⁻¹} = σ'_a helper**
+(`sigma_inv_eq_sigma_prime`) factored from the right-inverse proof. The
+construction is reverse perspectivity through `I ⊔ d_a`:
 
 ```
 d_a = (a⊔C) ⊓ m
@@ -92,28 +93,43 @@ d_a = (a⊔C) ⊓ m
 a⁻¹ = (σ'⊔E_I) ⊓ l
 ```
 
-The non-degeneracy helpers reduce cleanly: `coord_inv = O` collapses
-the σ'⊔E_I line to O⊔E_I, forcing σ' ≤ (O⊔C)⊓(O⊔E_I) = O, contradicting
-`sigma'_ne_O`. Symmetric for `coord_inv = U` via U⊔E_I ≤ m and
-`sigma'_ne_E`.
+`coord_mul_left_inv` is fully reduced to a single open geometric lemma,
+**`sigma_a_le_I_sup_d_inv_distinct`**, by case-splitting on `a = a⁻¹`:
+
+* **char-2 branch** (`a = coord_inv Γ a`): closed inline via the helper.
+  Substituting `coord_inv a = a` in `(O⊔C)⊓(coord_inv a ⊔ E_I) = (O⊔C)⊓(I⊔d_a)`
+  gives `σ_a = (O⊔C)⊓(I⊔d_a)`, so `σ_a ≤ I⊔d_a = I⊔d_{coord_inv a}` by
+  `inf_le_right`. **No Desargues required.** The symmetry that looks
+  circular when reasoning about involutivity actually closes one case
+  for free.
+* **generic branch** (`a ≠ coord_inv Γ a`): the only remaining `sorry`,
+  isolated as `sigma_a_le_I_sup_d_inv_distinct`. Its docstring lays out
+  the Desargues call (center C, T₁=(a, a⁻¹, σ_a), T₂=(d_a, d_{a⁻¹}, σ'))
+  and the distinctness checklist.
 
 Open frontier toward division ring (and thence FTPG-as-theorem):
 
-1. **`coord_mul_left_inv` (`a⁻¹ · a = I`).** The geometric content
-   reduces to **σ_a = σ'_{a⁻¹}** as atoms on (O⊔C); equivalently
-   `coord_inv` is involutive. The Desargues plan is laid out in
-   `Foam/FTPGInverse.lean`'s top docstring: center C, triangles
-   `T₁ = (a, a⁻¹, σ_a)` on `(l,l,OC)` and `T₂ = (d_a, d_{a⁻¹}, σ')` on
-   `(m,m,OC)`. The first axis intersections are U and `(a⊔E_I)⊓(I⊔d_a)`;
-   the third intersection `(a⁻¹⊔σ_a)⊓(d_{a⁻¹}⊔σ')` carries the open
-   geometric content. Two paths from there:
-   - (a) Prove `coord_mul_assoc` first; left inverse follows in a few
-     lines from assoc + right inverse + `a⁻¹ · (a⁻¹)⁻¹ = I` plus a
-     small algebraic juggle.
-   - (b) Build `coord_first_desargues_mul` / `coord_second_desargues_mul`
-     analogues of `FTPGAddComm`'s ~600/~800 line additive ones, then
-     `coord_mul_left_inv` lands in ~30 lines like `coord_add_left_neg`'s
-     ~250 lines (including a char-2 case-split for self-inverse a).
+1. **`sigma_a_le_I_sup_d_inv_distinct`** — the sole remaining `sorry` in
+   `FTPGInverse.lean`. Desargues from C: T₁=(a, a⁻¹, σ_a) on (l,l,OC),
+   T₂=(d_a, d_{a⁻¹}, σ') on (m,m,OC). Axis intersections:
+   * X₁₂ = (a⊔a⁻¹) ⊓ (d_a⊔d_{a⁻¹}) = U
+   * X₁₃ = (a⊔σ_a) ⊓ (d_a⊔σ') = (a⊔E_I) ⊓ (I⊔d_a) (using σ_a ≤ a⊔E_I,
+     σ' ≤ I⊔d_a)
+   * X₂₃ = (a⁻¹⊔σ_a) ⊓ (d_{a⁻¹}⊔σ') — carries the open content.
+   One Desargues call gives the axis; extracting `σ_a ≤ I ⊔ d_{a⁻¹}`
+   from X₂₃ likely needs a second Desargues (or a
+   `collinear_of_common_bound` + identification of `U⊔X₁₃`). Realistic
+   scope ~400–800 lines based on `coord_first_desargues` /
+   `coord_second_desargues` (FTPGAddComm.lean) precedent. Alternative
+   route: prove `coord_mul_assoc` first and derive the left inverse from
+   assoc + right inverse algebraically.
+
+   **Sub-case (`a = I`)**: `σ_I = C`, which equals the Desargues center
+   — that branch must be handled separately. The analysis: `σ_a = C` iff
+   `C ≤ a⊔E_I` iff `a⊔E_I = I⊔C` (covering, since both contain E_I and C
+   is on I⊔C) iff `a = I` (via `(O⊔U)⊓(I⊔C) = I`). Use
+   `coord_inv_I_eq_I` (not yet built; ~50 lines) to reduce `a = I` to
+   `(O⊔C)⊓(I⊔E_I) ≤ I⊔E_I`, immediate by `inf_le_right`.
 2. **`coord_mul_assoc`.** Likely a sibling file to FTPGInverse, ~600–1500
    lines, Desargues-style argument via dilation composition.
 3. **DivisionRing instance**, vector space `V` construction, lattice iso

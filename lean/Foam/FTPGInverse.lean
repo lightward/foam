@@ -416,6 +416,40 @@ theorem coord_mul_right_inv (Γ : CoordSystem L)
   rw [show Γ.I ⊔ d_a = d_a ⊔ Γ.I from sup_comm _ _]
   exact line_direction hd_atom (d_a_not_l Γ ha ha_on ha_ne_U) Γ.hI_on
 
+/-- **σ_{a⁻¹} = σ'_a.** The E_I-projection of `a⁻¹` from `l` to `O⊔C` lands on
+    the same atom as the I-projection of `d_a` from `m` to `O⊔C`.
+
+    This is the algebraic content already implicit in `coord_mul_right_inv`'s
+    Steps 1+2, factored out as a reusable identity. Used in the left-inverse
+    argument: it says σ' ≤ a⁻¹ ⊔ E_I, which lets the Desargues setup
+    `T₁ = (a, a⁻¹, σ_a)`, `T₂ = (d_a, d_{a⁻¹}, σ')` close cleanly. -/
+private theorem sigma_inv_eq_sigma_prime (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_U : a ≠ Γ.U) :
+    (Γ.O ⊔ Γ.C) ⊓ (coord_inv Γ a ⊔ Γ.E_I) =
+    (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) := by
+  unfold coord_inv
+  set σ' := (Γ.O ⊔ Γ.C) ⊓ (Γ.I ⊔ (a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V)) with hσ'_def
+  set inv_a := (σ' ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U) with hinv_def
+  have hσ'_atom := sigma'_atom Γ ha ha_on
+  have hσ'_ne_EI := sigma'_ne_E_I Γ a
+  have hinv_atom : IsAtom inv_a := coord_inv_atom Γ ha ha_on ha_ne_U
+  have hinv_le_l : inv_a ≤ Γ.O ⊔ Γ.U := inf_le_right
+  have hinv_le_σEI : inv_a ≤ σ' ⊔ Γ.E_I := inf_le_left
+  have hinv_ne_EI : inv_a ≠ Γ.E_I := fun h => Γ.hE_I_not_l (h ▸ hinv_le_l)
+  have hinvEI_le : inv_a ⊔ Γ.E_I ≤ σ' ⊔ Γ.E_I := sup_le hinv_le_σEI le_sup_right
+  have hEI_lt_invEI : Γ.E_I < inv_a ⊔ Γ.E_I := lt_of_le_of_ne le_sup_right
+    (fun h => hinv_ne_EI ((Γ.hE_I_atom.le_iff.mp
+      (le_sup_left.trans h.symm.le)).resolve_left hinv_atom.1))
+  have hcov_EI : Γ.E_I ⋖ σ' ⊔ Γ.E_I := by
+    have := atom_covBy_join Γ.hE_I_atom hσ'_atom (Ne.symm hσ'_ne_EI)
+    rwa [sup_comm] at this
+  have hinvEI_eq : inv_a ⊔ Γ.E_I = σ' ⊔ Γ.E_I :=
+    (hcov_EI.eq_or_eq hEI_lt_invEI.le hinvEI_le).resolve_left (ne_of_gt hEI_lt_invEI)
+  rw [hinvEI_eq, show (Γ.O ⊔ Γ.C) ⊓ (σ' ⊔ Γ.E_I) =
+      (σ' ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.C) from inf_comm _ _,
+      show σ' ⊔ Γ.E_I = Γ.E_I ⊔ σ' from sup_comm _ _]
+  exact line_direction Γ.hE_I_atom Γ.hE_I_not_OC inf_le_left
+
 /-! ## Open frontier: left multiplicative inverse `a⁻¹ · a = I`
 
 This section names the open geometric content as a single `sorry`'d lemma —
@@ -467,40 +501,71 @@ private theorem sigma_a_ne_E (Γ : CoordSystem L)
   have ha_le_U : a ≤ Γ.U := Γ.l_inf_m_eq_U ▸ le_inf ha_on ha_le_m
   exact ha_ne_U ((Γ.hU.le_iff.mp ha_le_U).resolve_left ha.1)
 
-/-- **THE OPEN GEOMETRIC CONTENT for `coord_mul_left_inv`.**
+/-- **OPEN GEOMETRIC CONTENT for the generic case of `coord_mul_left_inv`.**
 
-`σ_a` (the E_I-projection of `a` onto `O⊔C`) lies on the line `I ⊔ d_{a⁻¹}`
-(where `d_{a⁻¹} := (a⁻¹ ⊔ C) ⊓ m` is the C-projection of `a⁻¹` onto `m`).
+For atoms `a` on `l` distinct from their own inverse (`a ≠ coord_inv Γ a`),
+`σ_a` lies on `I ⊔ d_{a⁻¹}`. The char-2 case (`a = coord_inv Γ a`) follows
+directly from `sigma_inv_eq_sigma_prime` — see `sigma_a_le_I_sup_d_inv`.
 
-Equivalently:
-* `σ_a = σ'_{a⁻¹}` where `σ'_{a⁻¹} := (O⊔C) ⊓ (I ⊔ d_{a⁻¹})`;
-* `coord_inv` is involutive: `coord_inv Γ (coord_inv Γ a) = a`.
+The intended proof: Desargues from center `C` on triangles
+`T₁ = (a, a⁻¹, σ_a)` and `T₂ = (d_a, d_{a⁻¹}, σ')`.
+* `X₁₂ = (a⊔a⁻¹) ⊓ (d_a⊔d_{a⁻¹}) = U` (l ⊓ m).
+* `X₁₃ = (a⊔σ_a) ⊓ (d_a⊔σ') = (a⊔E_I) ⊓ (I⊔d_a)` (using σ_a ≤ a⊔E_I, σ' ≤ I⊔d_a).
+* `X₂₃ = (a⁻¹⊔σ_a) ⊓ (d_{a⁻¹}⊔σ')`.
+The axis content `X₂₃ ≤ U ⊔ X₁₃` is then unpacked via a second Desargues
+(or `collinear_of_common_bound`) to `σ_a ≤ I ⊔ d_{a⁻¹}`. See
+`coord_first_desargues` / `coord_second_desargues` in `FTPGAddComm.lean`
+for the additive precedent (~600 + ~800 lines).
 
-Three known routes to discharge:
+Distinctness conditions for the Desargues call (all derivable from the
+existing hypotheses + `a ≠ coord_inv Γ a`):
+* `a ≠ a⁻¹` — case hypothesis.
+* `d_a ≠ d_{a⁻¹}` — equivalent to `a ≠ a⁻¹` via the C-perspectivity.
+* `a ≠ σ_a`, `a⁻¹ ≠ σ_a` — atoms on `l` vs `O⊔C` (intersect at `O`); use
+  `ha_ne_O`, `coord_inv_ne_O`.
+* `σ_a ≠ σ'` — both atoms on `O⊔C`; equality would force them to be `E_I`
+  via the helper, but `E_I ∉ O⊔C`.
+* `σ_a ≠ C` — equivalent to `a ≠ I` (a separate sub-case-split needed; see
+  the analysis in the docstring above).
 
-1. **Double Desargues** (center `C`). Mirror of `coord_add_left_neg` in
-   `FTPGNeg.lean`. Build `coord_first_desargues_mul` and
-   `coord_second_desargues_mul` analogues of the additive lemmas in
-   `FTPGAddComm.lean` (~600 + ~800 lines), then close in ~30 lines like the
-   additive case.
-2. **Via `coord_mul_assoc`** (also open). Once associativity lands, `a · a⁻¹ = I`
-   gives `a⁻¹ · a · a⁻¹ = a⁻¹`, and the geometric content extracts.
-3. **Direct involutivity.** Show `coord_inv (coord_inv a) = a` via symmetric
-   reverse-perspectivity argument; equivalent to the present lemma.
-
-Char-2 case (`a = a⁻¹`) likely needs a separate covering argument analogous
-to `coord_add_left_neg`'s `ha_eq_na` branch.
-
-Hypotheses match `coord_add_left_neg`'s shape for direct route (1). -/
-private theorem sigma_a_le_I_sup_d_inv (Γ : CoordSystem L)
+The char-2 case (`a = coord_inv Γ a`) is closed by the helper directly. -/
+private theorem sigma_a_le_I_sup_d_inv_distinct (Γ : CoordSystem L)
     {a : L} (_ha : IsAtom a) (_ha_on : a ≤ Γ.O ⊔ Γ.U)
     (_ha_ne_O : a ≠ Γ.O) (_ha_ne_U : a ≠ Γ.U)
+    (_ha_ne_inv : a ≠ coord_inv Γ a)
     (_R : L) (_hR : IsAtom _R) (_hR_not : ¬ _R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
     (_h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
       ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
     (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤
       Γ.I ⊔ (coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) := by
   sorry
+
+/-- **`σ_a ≤ I ⊔ d_{a⁻¹}` — the geometric content of `coord_mul_left_inv`.**
+
+Splits on whether `a` equals its own multiplicative inverse:
+* **char-2 case** (`a = coord_inv Γ a`): closed by `sigma_inv_eq_sigma_prime`
+  applied to itself — substituting `coord_inv a = a` on both sides of the
+  helper makes its conclusion exactly `σ_a = (O⊔C)⊓(I⊔d_a)`, and
+  `inf_le_right` gives `σ_a ≤ I⊔d_a = I⊔d_{a⁻¹}`. No Desargues required.
+* **generic case** (`a ≠ coord_inv Γ a`): delegates to
+  `sigma_a_le_I_sup_d_inv_distinct`, the still-open Desargues content. -/
+private theorem sigma_a_le_I_sup_d_inv (Γ : CoordSystem L)
+    {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    (Γ.O ⊔ Γ.C) ⊓ (a ⊔ Γ.E_I) ≤
+      Γ.I ⊔ (coord_inv Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) := by
+  by_cases ha_self : a = coord_inv Γ a
+  · -- Char-2 case: helper applied to a, then substituting a = coord_inv a
+    -- on both sides gives (O⊔C)⊓(a⊔E_I) = (O⊔C)⊓(I⊔d_a) ≤ I⊔d_a = I⊔d_{coord_inv a}.
+    have h := sigma_inv_eq_sigma_prime Γ ha ha_on ha_ne_U
+    rw [← ha_self] at h
+    rw [h, ← ha_self]
+    exact inf_le_right
+  · exact sigma_a_le_I_sup_d_inv_distinct Γ ha ha_on ha_ne_O ha_ne_U
+      ha_self R hR hR_not h_irred
 
 /-- **Left multiplicative inverse: `a⁻¹ · a = I`.**
 
