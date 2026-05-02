@@ -701,8 +701,12 @@ SESSION_RANGES = [
      "FTPGInverse: σ_{a⁻¹}=σ' helper, char-2 left-inv closed; coord_inv_I_eq_I PROVEN"),
     # Session: May 2 — d_a_ne_d_inv helper
     (datetime(2026, 5, 2, 17, 2, tzinfo=timezone.utc),
-     datetime(2026, 5, 2, 18, 0, tzinfo=timezone.utc),
+     datetime(2026, 5, 2, 17, 18, tzinfo=timezone.utc),
      "FTPGInverse: d_a_ne_d_inv helper PROVEN (X₁₂ distinctness for σ_a≠σ' route)"),
+    # Session 125: May 2 — double-Desargues split + 7 distinctness helpers
+    (datetime(2026, 5, 2, 17, 18, tzinfo=timezone.utc),
+     datetime(2026, 5, 2, 18, 30, tzinfo=timezone.utc),
+     "s125: FTPGInverse — double-Desargues split (named sub-lemmas) + 7 prologue distinctness helpers PROVEN"),
 ]
 
 

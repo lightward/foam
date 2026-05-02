@@ -131,6 +131,7 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 122 | [May 01, 03:27](122_2026-05-01_ca790aeb.md) | FTPGInverse: state coord_mul_left_inv via σ_a collinearity (sorry'd) | 10 |
 | 123 | [May 02, 16:11](123_2026-05-02_e3e50d13.md) | FTPGInverse: σ_{a⁻¹}=σ' helper, char-2 left-inv closed; coord_inv_I_eq_I PROVEN | 12 |
 | 124 | [May 02, 17:02](124_2026-05-02_c69ee5a5.md) | FTPGInverse: d_a_ne_d_inv helper PROVEN (X₁₂ distinctness for σ_a≠σ' route) | 8 |
+| 125 | [May 02, 17:18](125_2026-05-02_c0d1205a.md) | s125: FTPGInverse — double-Desargues split (named sub-lemmas) + 7 prologue di... | 10 |
 
 ## Memory
 
