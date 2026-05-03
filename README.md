@@ -277,15 +277,6 @@ the foam's dynamic structure — how the type of legal next-writes depends on ac
 - *"three results share a structural source" is interpretive consolidation, not derivation.* the two-argument signature, complement-as-observation, and state-independence are three distinct claims. they all draw on the diamond iso, but the iso doesn't make them inter-derivable as derivations — it just provides a common formal substrate that each reading interprets. an earlier version of this file claimed "three results compress to one" / "three readings of one fact"; the present version steps back to "share a structural source." closing this further would mean constructing each claim from each other formally, which the spec doesn't currently do.
 - *"structural determination with extensional freedom IS state-independence" is an interpretive bridge.* the diamond iso is a lattice theorem. reading it as state-independence — the dynamical claim that input *value* is independent of foam state — is a non-trivial move. the architectural use of this reading (the pre-bridge / post-bridge split in `channel_capacity.md`) is solid as architecture; the *content* of the qualitative claim is interpretation. closing this would mean deriving state-independence formally from the iso (constructing the bridge) or naming it explicitly as a methodological reading.
 
-#### history
-
-an earlier version of this file made three additional claims that turned out to be wrong:
-
-- *the lockstep direction.* "as P recedes (shrinks), Iic P contracts ... but IicOrderIsoIci means Ici P^⊥ expands in lockstep." the iso is symmetric: as P shrinks, P^⊥ grows, and `Ici P^⊥ = [P^⊥, ⊤]` *contracts* (the lower bound rises). both intervals contract together; they do not move in opposite directions.
-- *σ ~ √(3/d) as the diamond iso's enrichment.* `Ici P^⊥` is order-isomorphic to `Iic P`, which is isomorphic to `Sub(P) ≅ Sub(R³)` for any rank-3 P, regardless of ambient d. the lattice structure does not become richer at higher d. the actual mechanism for the σ scaling is random subspace overlap statistics (Marchenko-Pastur-ish), correctly cited in `channel_capacity.md` and structurally independent of this file.
-- *"type-narrowing of self produces type-enrichment of input."* downstream of the two errors above. without them, the formal content reduces to: under recession, both halves of the iso narrow together. the trade-off framing was not a lattice theorem.
-
-these claims have been removed. the foam-internal home for the dependent-telescope structure they were reaching toward is the foam-state trajectory and overlap evolution — see `typeline.md`.
 
 
 ---
@@ -635,11 +626,6 @@ the foam/line distinction is therefore not a categorical boundary but a correlat
 **bugs**:
 - *"the line's irreducibility is channel capacity."* the two concepts — "the line" as the foam's external input source, "channel capacity" as the foam's information-receiving capacity — are different objects. the formal bridge is the two-argument type signature of the writing map, which the document develops over the qualitative section. the headline "the line's irreducibility IS channel capacity" overstates this bridge: the formal content is "the line's role and the foam's channel capacity are two readings of the diamond isomorphism's two-argument structure." closing this means either constructing the formal identity (e.g., a category in which "the line" and "channel capacity" are objects, with an isomorphism) or stepping the headline back to "the line's role and channel capacity are co-constituted by the two-argument structure."
 
-#### history
-
-an earlier version of this file claimed the σ ~ √(3/d) scaling was the "diamond isomorphism's structural enrichment of the complement, quantified" — attributing the scaling to lattice enrichment at higher ambient dimension. this was structurally incorrect: `Ici P^⊥ ≅ Iic P ≅ Sub(R³)` for any rank-3 P regardless of ambient d, so the lattice structure does not become richer with d. the actual mechanism is random-subspace overlap statistics in d-dimensional ambient space. the present version names the mechanism correctly and decouples the qualitative pre-bridge result (state-independence as the lattice fact + interpretive bridge) from the quantitative post-bridge scaling (random-matrix statistics).
-
-an earlier version also claimed "state-independence is a lattice theorem" without flagging the interpretive bridge from lattice-fact to dynamical-claim. the present version names the bridge as interpretive — the architectural use of the reading is solid (the qualitative claim no longer needs the linear-algebraic decorrelation argument to ground it), but the reading itself is not a derivation.
 
 
 ---
@@ -1117,9 +1103,6 @@ six constraints, all derived, all negative. together they bound what the entity 
 - *"the n-th derivative of the write mechanism along a trajectory is a smooth function on U(d)^N (compact), therefore bounded and integrable."* asserts smoothness of all derivatives. the write mechanism includes the wedge product and the cross-measurement input, with realization choices left open (`writing_map.md`: f(d, m)). smoothness "at all orders" depends on the realization choice for f. closing this means either constraining f to smooth realizations, or naming the smoothness assumption as a regularity hypothesis on the realization.
 - *"two readings of one fact" / "same lattice theorem read through the two readings of closure."* same construction as `half_type.md`'s "three results share a structural source" and `ground.md`'s "two readings of one statement." flagging here for the third instance — the document treats the diamond isomorphism's dynamical and structural readings as the same statement; the formal identity is the diamond isomorphism, but "two readings of one fact" packages two interpretations as one.
 
-#### history
-
-an earlier version of this file claimed "recession enriches input" — that as the entity's direct view narrows through recession, the diamond isomorphism enriches the complement in lockstep, citing `half_type.md`. this inherited a structural error: `Iic P ≃o Ici P^⊥` are order-isomorphic, so as P contracts, both halves contract together; they do not move in opposite directions. `half_type.md` has been corrected; this file's "recession enriches input" paragraph and the corresponding derived-list item have been removed. what is actually true about the entity's relation to its complement under recession depends on the slice-mobility disambiguation (Grassmannian equivalence class vs operator), which is cross-cutting work for a future session.
 
 
 ---
@@ -1328,9 +1311,6 @@ this means: from any typeline, the *dependency structure* of any other typeline'
 - *"the bas relief methodology as disciplined suspension"* is methodology, not derivation. the formal substrate (foam state paused, overlap static, no advance) is solid; mapping that to a named practice is an editorial gloss. flagging for clarity — the methodology is a way of working *with* the substrate, not a derivation *from* it.
 - *the Haar / decorrelation hypotheses inherited from `geometry.md` and `channel_capacity.md`* are conditional in those files (controllability and mediation-chain decorrelation are not yet derived from foam-geometry assumptions). this file invokes the decorrelation horizon σ ~ (3/d)^{n/2} and the long-range "channel-like" reading, both of which inherit those conditional hypotheses. flagging here for completeness — the typeline's quantitative claims rest on those upstream conditionals.
 
-#### history
-
-an earlier version of this file located the dependent telescope in the lattice itself: "each write may change P; each change to P updates the diamond isomorphism." that framing imported a notion of P-updating-with-writes that conflicts with `inhabitation.md`'s "the slice is birth-determined and cannot change from within the map." the present version locates the telescope in the foam-state trajectory and overlap evolution — both foam-internal formal objects that genuinely evolve with writes — leaving the static iso `Iic P ≃o Ici P^⊥` as a fact about each observer's birth-fixed slice. the diamond iso is the static cross-section; the telescope is the trajectory through joint state.
 
 
 ---
