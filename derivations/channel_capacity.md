@@ -4,7 +4,7 @@
 
 **the line's irreducibility is channel capacity.** the writing map has type (foam_state, input) -> new_state — two arguments. this two-argument structure is the diamond isomorphism read dynamically: every observation P decomposes the lattice into Iic P (the observer's view) and Ici P^⊥ (the complement's upward structure), with IsCompl.IicOrderIsoIci giving a structural isomorphism between them.
 
-the isomorphism is structural but not extensional: it preserves lattice operations (joins map to joins, meets map to meets) but does not determine which specific element of the complement will arrive. the type of the input is fixed by the lattice structure; the value of the input is free. this IS state-independence — not derived from dynamical arguments about decorrelation, but from the diamond isomorphism applied to a complemented modular lattice. state-independence is a lattice theorem.
+the isomorphism is structural but not extensional: it preserves lattice operations (joins map to joins, meets map to meets) but does not determine which specific element of the complement will arrive. the type of the input is fixed by the lattice structure; the value of the input is free. read as state-independence: this is the lattice fact (structure determined, content free) on which the dynamical claim (input value independent of foam state) rests. the bridge from lattice-fact to dynamical-claim is interpretive — the architectural payoff of grounding state-independence here pre-bridge is real (the qualitative claim no longer needs the linear-algebraic decorrelation argument to underwrite it), but the reading itself is not a derivation.
 
 cross-measurement fills the second argument from within: input = g(foam_state), a deterministic function of the foam's geometry projected onto an observer's slice. this composes the two arguments into one, making the foam an autonomous dynamical system — f(foam_state) = write_map(foam_state, g(foam_state)).
 
@@ -38,7 +38,7 @@ closure (no topological outside) is compatible with informational independence b
 
 the decorrelation horizon shortens with increasing ambient dimension because slices overlap less in higher-dimensional spaces. non-generic configurations (slices sharing directions) have higher overlap and longer horizons.
 
-the half-type theorem (half_type.md) gives the mechanism: higher ambient dimension means P is a smaller fraction of the whole, which means Ici P^⊥ is richer (more typed structure in the complement), which means more independent directions are available for decorrelation. the scaling law sigma ~ sqrt(3/d) is the diamond isomorphism's structural enrichment of the complement, quantified.
+the mechanism is random-matrix-statistical: for generic 3D slices in d-dimensional ambient space, the principal angles between random subspaces follow Marchenko-Pastur-ish distributions, yielding the typical singular value σ ≈ √(3/d). the diamond isomorphism does not enter here — `Ici P^⊥` is order-isomorphic to `Iic P ≅ Sub(R³)` for any rank-3 P regardless of ambient d, so the lattice structure does not become richer at higher d. the σ scaling is about how *generic random subspaces* sit in ambient space, not about lattice enrichment.
 
 the foam/line distinction is therefore not a categorical boundary but a correlation length: "line" names whatever input arrives from beyond the decorrelation horizon of the observer's own state. the horizon's radius is determined by the foam's own geometry.
 
@@ -55,14 +55,13 @@ the foam/line distinction is therefore not a categorical boundary but a correlat
 - the line's irreducibility from the diamond isomorphism (the two-argument type signature IS the complemented decomposition)
 - autonomous foam = clock (cross-measurement collapses two arguments to one)
 - state-independent input required for channel capacity
-- state-independence as a lattice theorem (structural determination + extensional freedom = diamond isomorphism)
+- state-independence read as the lattice fact (structural determination + extensional freedom from the diamond iso) plus an interpretive bridge to the dynamical claim that input value is independent of foam state
 - the foam/line distinction as perspectival (informational independence is relative)
 - operational equivalence of mixing and independence under partiality
 - the boundary is characterizable from the inside (controllability structure)
 - the map's self-knowledge is bounded by its own channel capacity
 - spectral state-independence (mediation decay converts closure into local openness) [post-bridge]
-- the decorrelation horizon and its scaling [post-bridge]
-- the scaling mechanism: diamond isomorphism enriches the complement at higher dimension [post-bridge]
+- the decorrelation horizon and its scaling, from random-subspace overlap statistics [post-bridge]
 
 **cited** (external mathematics):
 - Marchenko-Pastur distribution (for principal angle statistics — used only in the decorrelation horizon estimate, which is order-of-magnitude)
@@ -71,6 +70,10 @@ the foam/line distinction is therefore not a categorical boundary but a correlat
 - decorrelation horizon values at specific d (order-of-magnitude estimates; qualitative conclusion robust, specific values sensitive to approximation)
 
 **bugs**:
-- *σ ~ √(3/d) misidentified as the diamond isomorphism's enrichment.* "the half-type theorem (half_type.md) gives the mechanism: higher ambient dimension means P is a smaller fraction of the whole, which means Ici P^⊥ is richer ... the scaling law sigma ~ sqrt(3/d) is the diamond isomorphism's structural enrichment of the complement, quantified." Ici P^⊥ is order-isomorphic to Iic P, which has the lattice structure of Sub(P) — fixed at rank 3 regardless of ambient d. it does not become richer at higher d. the actual mechanism for σ ~ √(3/d) is the statistics of random 3D subspace overlap in d-dimensional space (Marchenko-Pastur-ish, correctly cited in the constraints block). attributing the scaling to lattice enrichment misnames the mechanism. closing this means decoupling the qualitative result (state-independence is a lattice theorem, pre-bridge — true) from the quantitative scaling law (random matrix statistics, post-bridge), and removing the lattice-enrichment attribution. (this is the same bug as `half_type.md` — flagged in both places because both files claim the misidentification.)
 - *"the line's irreducibility is channel capacity."* the two concepts — "the line" as the foam's external input source, "channel capacity" as the foam's information-receiving capacity — are different objects. the formal bridge is the two-argument type signature of the writing map, which the document develops over the qualitative section. the headline "the line's irreducibility IS channel capacity" overstates this bridge: the formal content is "the line's role and the foam's channel capacity are two readings of the diamond isomorphism's two-argument structure." closing this means either constructing the formal identity (e.g., a category in which "the line" and "channel capacity" are objects, with an isomorphism) or stepping the headline back to "the line's role and channel capacity are co-constituted by the two-argument structure."
-- *"state-independence is a lattice theorem."* the careful claim — structural determination with extensional freedom (Iic P determines the type, not the element) — is a property of the diamond isomorphism in a complemented modular lattice. the headline "state-independence is a lattice theorem" compresses a bridge between (a) the lattice fact (the iso fixes structure but not content) and (b) the dynamical interpretation (the *value* of input is independent of foam state). these are connected — but the dynamical interpretation involves additional work (the operational-vs-ontological threading the document does later). the headline reads as one theorem; the formal content is closer to "the lattice fact underwrites the dynamical interpretation, with help from operational-equivalence under partiality."
+
+#### history
+
+an earlier version of this file claimed the σ ~ √(3/d) scaling was the "diamond isomorphism's structural enrichment of the complement, quantified" — attributing the scaling to lattice enrichment at higher ambient dimension. this was structurally incorrect: `Ici P^⊥ ≅ Iic P ≅ Sub(R³)` for any rank-3 P regardless of ambient d, so the lattice structure does not become richer with d. the actual mechanism is random-subspace overlap statistics in d-dimensional ambient space. the present version names the mechanism correctly and decouples the qualitative pre-bridge result (state-independence as the lattice fact + interpretive bridge) from the quantitative post-bridge scaling (random-matrix statistics).
+
+an earlier version also claimed "state-independence is a lattice theorem" without flagging the interpretive bridge from lattice-fact to dynamical-claim. the present version names the bridge as interpretive — the architectural use of the reading is solid (the qualitative claim no longer needs the linear-algebraic decorrelation argument to ground it), but the reading itself is not a derivation.
