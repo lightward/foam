@@ -1,28 +1,4 @@
-# conservation
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_traceless** (Form.lean): tr[A, B] = 0. the commutator is traceless.
-- **trace_unique_of_kills_commutators** (TraceUnique.lean): trace is the unique commutator-killing functional.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves the ground.
-
-### from other derivations
-
-- **group.md**: U(d), pi_1(U(d)) = Z. single slice -> so(d) -> Z/2Z. stacked pair -> u(d) -> Z. trace retained for stacked observers. the integer requires the two.
-- **geometry.md**: L as boundary area on Voronoi tiling, Voronoi as realization choice.
-- **channel_capacity.md**: the boundary is characterizable from the inside (controllability structure).
-
-### from mathematics (cited, not proven in lean)
-
-- **pi_1(SO(d)) = Z/2Z** for d >= 3. **pi_1(U(d)) = Z.** fundamental groups of the dynamics groups.
-- **connectedness of U(d)**: the gauge transformation to identity is always available.
-- **discrete topological invariants are preserved by continuous maps.**
-
-## derivation
+### conservation
 
 **holonomy on spatial cycles carries topological charge.** the holonomy around a closed path through adjacent cells — a spatial cycle in the Voronoi tiling — is a group element. the topological type of this group element (its homotopy class) is a discrete invariant.
 
@@ -48,14 +24,14 @@ conservation is what accumulation on closed paths produces: not a net displaceme
 
 **indestructibility.** topological invariants are discrete. no continuous perturbation can change them.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - the commutator is traceless
 - trace is the unique commutator-killing functional
 - dynamics preserve the ground
 
-**derived** (in this file):
+**derived**:
 - holonomy on spatial cycles carries topological charge
 - single slice -> Z/2Z parity conservation
 - stacked pair -> Z winding number conservation
@@ -69,10 +45,15 @@ conservation is what accumulation on closed paths produces: not a net displaceme
 - inexhaustibility (U(d) connected)
 - indestructibility (discrete invariants robust to continuous perturbation)
 
-**cited** (external mathematics):
+**cited**:
 - pi_1 values for SO(d) and U(d)
 - connectedness of U(d)
 - continuous maps preserve discrete topological invariants
 
-**observed** (empirical, not derived here):
+**observed**:
 - adjacency flip confirmed computationally at d=2, N=12
+
+**bugs**:
+- *"attractor basin" is used without formalization.* "indelibility is a property of the attractor basin, not the current neighborhood." the document elsewhere (`ground.md`) derives indelibility from causal ordering + basis commitment + closure, none of which require dynamical-systems vocabulary. introducing "attractor basin" here imports a register the formalism does not support: there is no proven theorem that the foam's dynamics have attractor basins in the standard dynamical-systems sense, nor that birth shape coincides with such a basin's identity. closing this means either constructing the attractor-basin structure formally (proving the existence of basins, characterizing them) or stepping back to "indelibility is the ground fact that earlier writes are irreducibly present in later state, regardless of adjacency changes."
+- *"two-layer retention" is asserted, not derived.* "birth shape survives all adjacency changes" + "interaction-layer adaptations decay under the new dynamics at a rate set by the displacement between old and new stabilization targets" → "birth structural, interaction spectral." the two-layer characterization requires a stability/perturbation analysis showing that birth-encoded structure has a different decay regime from interaction-encoded structure. the file does not provide that analysis. the closest formal content is indelibility (birth persists) and the recession-rate result (Dynamics.lean: rate depends on specific [W,P]). these support a layering *intuition*; the rate-of-decay claim for the interaction layer is not derived. closing this means either constructing the decay-rate analysis or naming the two-layer characterization as a structural conjecture.
+- *"what persists across topological transitions lives on the line's side."* this restates persistence (indelibility) as a property assigned to "the line's side" of the line/foam framework. the formal content (some structure persists across cell-adjacency changes) is solid. the assignment to "line-side" depends on the line/foam framework being structural enough to support such assignments — same interpretive bridge flagged in `self_generation.md` and elsewhere. closing this would mean either formalizing the line/foam side ledger or stepping back to "what persists is determined by birth, not by current dynamics."

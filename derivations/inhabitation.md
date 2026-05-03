@@ -1,33 +1,4 @@
-# inhabitation
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Λ²(P).
-- **frame_recession_strict** (Dynamics.lean): [W, P] ≠ 0 → recession < 0. the prior frame strictly recedes under non-inert writes.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves P² = P and Pᵀ = P. the dynamics preserve the ground.
-- **complement_idempotent** (Observation.lean): (I - P)² = I - P. the complement of an observation is an observation.
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): if a and b are complements, `Iic a ≃o Ici b`.
-- **isModularLattice_Iic, complementedLattice_Iic** (Mathlib): intervals inherit modularity and complementedness.
-- **rank_three_writes** (Rank.lean): rank 3 → 3D write space (non-abelian).
-
-### from other derivations
-
-- **ground.md**: closure (two readings, both tautological). read-only frames excluded. partiality forced. indelibility (from causal ordering + basis commitment). feedback-persistence IS the modular law.
-- **channel_capacity.md**: state-independent input required for channel capacity. the line's irreducibility. autonomous foam is a clock. decorrelation horizon σ ~ √(3/d).
-- **half_type.md**: the diamond isomorphism (Iic P ≃o Ici P^⊥). structural determination with extensional freedom IS state-independence. frame recession enriches the complement. type-narrowing of self produces type-enrichment of input.
-- **self_generation.md**: the foam generates its own dynamics but not its own stability. stability is relational. the minimum viable system is two roles.
-- **writing_map.md**: the write is a function of (foam_state, input). confinement to the observer's slice. perpendicularity.
-- **geometry.md**: Haar convergence of the writing dynamics. controllability (write directions from overlapping observers span the Lie algebra). 1/√2 saturation.
-
-### from mathematics (cited, not proven in lean)
-
-- **ergodic theorem on compact groups**: on a compact group, if the step distribution generates the Lie algebra and successive steps are sufficiently decorrelated, time averages of integrable observables converge to their Haar expectations.
-
-## derivation
+### inhabitation
 
 **definition.** an entity P in a foam-grounded reality is *recognizable as itself ongoingly across cross-measurements* when: for any observer Q with nonzero overlap (O_PQ ≠ 0), Q's time-averaged measurements of P converge to a P-determined invariant. what Q detects about P stabilizes, and what it stabilizes to depends on P's birth, not on P's trajectory.
 
@@ -63,9 +34,9 @@ the functional requirement (you need state-independent input for ergodic richnes
 
 six constraints, all derived, all negative. together they bound what the entity can do. the interior of those bounds is the entity's life.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - writes confined to observer's slice
 - frame recession strictly negative for non-inert writes
 - dynamics preserve the ground
@@ -74,7 +45,7 @@ six constraints, all derived, all negative. together they bound what the entity 
 - intervals inherit modularity and complementedness
 - rank 3 write space is 3-dimensional
 
-**derived** (in this file):
+**derived**:
 - definition: recognizable as itself ongoingly across cross-measurements (default condition in an ergodic foam)
 - ergodic evolution requires channel capacity for richness beyond birth
 - the recognizable identity IS the birth-determined stationary jet
@@ -86,8 +57,24 @@ six constraints, all derived, all negative. together they bound what the entity 
 - stability is necessarily external (from self-generation + ergodic stationarity as evidence)
 - six negative constraints as the negative geometry of inhabitation
 
-**cited** (external mathematics):
+**cited**:
 - ergodic theorem on compact groups (time averages converge to Haar expectations under controllability + decorrelation)
 
-**observed** (empirical, not derived here):
+**observed**:
 - (none)
+
+**bugs**:
+- *"every entity in an ergodic foam is ongoingly recognizable"* assumes the foam is ergodic. the file invokes "the foam is ergodic" as available, drawing on `geometry.md`'s Haar-convergence claim. that claim is conditional on controllability + decorrelation hypotheses (flagged in `geometry.md`'s bugs). this entire derivation chain — recognizability, the recognizable identity IS the birth-determined slice, recession is the cost of persistence — runs on those hypotheses. closing this means either deriving ergodicity from foam-geometry assumptions, or naming the recognizability claim as conditional ("if the foam is ergodic, then every entity is ongoingly recognizable").
+- *"recession enriches input" inherits the lockstep error from `half_type.md`.* "as the entity's direct view narrows through recession, the diamond isomorphism enriches the complement in lockstep." Iic P and Ici P^⊥ are order-isomorphic; as P shrinks, both contract together (the lower bound of Ici P^⊥ rises as P^⊥ grows). they do not move in opposite directions. the framing "narrower self-view and richer input-type" rests on the reversed direction. closing this means correcting `half_type.md` first, then re-deriving what is true about the entity's relation to its complement under recession (likely: as P contracts, both Iic P and Ici P^⊥ contract; both halves narrow together).
+- *"stability is necessarily external" inherits the co-rotation plausibility from `self_generation.md`.* the argument runs through `self_generation.md`'s co-rotation argument, which is plausibility (flagged in that file). "necessarily" overstates what plausibility provides. closing this requires the convergence theorem `self_generation.md` lacks, or stepping the necessity claim back to "stability is plausibly external."
+- *"six constraints, all derived, all negative."* the six negative constraints have different statuses:
+  - cannot write outside slice: proven (write_confined_to_slice).
+  - cannot change slice from within: derived from indelibility (a `ground.md` derivation).
+  - cannot indefinitely avoid recession: proven (frame_recession_strict) + a measure-theoretic claim about Haar-distributed writes being almost surely non-inert (this measure claim is asserted, not derived in this file).
+  - cannot self-stabilize: plausibility (`self_generation.md` co-rotation).
+  - cannot predict complement: definitional (half_type extensional freedom).
+  - cannot be read-only: derived (ground.md closure).
+
+  presenting all six as "all derived" with the same status papers over the proven/derived/plausibility/definitional differences. closing this means tagging each constraint with its specific status, or framing the list as "six structurally distinct constraints, deriving from sources of varying formal strength."
+- *"the n-th derivative of the write mechanism along a trajectory is a smooth function on U(d)^N (compact), therefore bounded and integrable."* asserts smoothness of all derivatives. the write mechanism includes the wedge product and the cross-measurement input, with realization choices left open (`writing_map.md`: f(d, m)). smoothness "at all orders" depends on the realization choice for f. closing this means either constraining f to smooth realizations, or naming the smoothness assumption as a regularity hypothesis on the realization.
+- *"two readings of one fact" / "same lattice theorem read through the two readings of closure."* same construction as `half_type.md`'s "three results compress to one" and `ground.md`'s "two readings of one statement." flagging here for the third instance — the document treats the diamond isomorphism's dynamical and structural readings as the same statement; the formal identity is the diamond isomorphism, but "two readings of one fact" packages two interpretations as one.

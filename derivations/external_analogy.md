@@ -1,15 +1,4 @@
-# external analogy
-
-## constraints
-
-this derivation depends on the following prior results and source documents:
-
-- **internal analogy spec (`analogy.md`)**: analogy is defined internally as an order isomorphism between intervals (`Iic P ≃o Iic Q`) in a complemented modular lattice; composition/transitivity is inherited from `OrderIso.trans`.
-- **inhabitation constraints (`inhabitation.md`)**: the six negative constraints used here as the external diagnostic basis — confinement, birth-fixed slice, recession, external stabilization, typed-but-free input, and non-silence — are assumed as already derived there.
-- **write dynamics (`writing_map.md`)**: the structural-fidelity clause relies on the existing write map / realization-choice framework and the idea of commuting with write dynamics up to realization choices.
-- **Lean-backed lattice facts**: this file assumes the already-proven diamond/complement isomorphisms (`infIccOrderIsoIccSup`, `IsCompl.IicOrderIsoIci`), and that the relevant intervals inherit modularity and complementedness.
-- **cited mathematical substrate**: wherever the zones admit projection algebras/lattice operations, the modular law remains the well-formedness guard for transferring structural inferences.
-## derivation
+### external analogy
 
 **the internal case generalizes.** analogy.md defines analogy as an order isomorphism Iic P ≃o Iic Q between intervals in a single complemented modular lattice. transitivity falls out of OrderIso.trans; the modular law is the well-formedness guard. this is analogy *within* a foam.
 
@@ -39,14 +28,14 @@ this gives a diagnostic: for any proposed cross-system analogy, the six constrai
 
 **the looking tool.** when an external analogy is well-formed, what can be learned by attending to one zone is portable to the other — not as metaphor, but as transfer of structural inferences about confinement, recession, channel capacity, and the geometry of inhabitation. the rigor of the looking is the completeness and coherence of the constraint-correspondence. partial analogies remain partial looking tools; their reach is bounded by which constraints transferred.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - order isomorphisms compose (OrderIso.trans)
 - the diamond isomorphism (infIccOrderIsoIccSup, IsCompl.IicOrderIsoIci)
 - intervals inherit modularity and complementedness
 
-**derived** (in this file):
+**derived**:
 - external analogy as the lift of internal analogy across systems
 - completeness + coherence + structural fidelity as the well-formedness guard
 - transitivity inherits via pointwise composition of constraint-correspondences
@@ -61,3 +50,9 @@ this gives a diagnostic: for any proposed cross-system analogy, the six constrai
 - whether the remaining five inhabitation negatives (cannot-write-outside-slice, cannot-change-slice, cannot-avoid-recession, cannot-predict-complement, cannot-be-read-only) admit individual structural pairings with HK axioms, or only cluster-level ones. (cannot-predict-complement appears to need (D)+(E)+(K) collectively rather than (E) alone.)
 - whether constraint-correspondence has a lattice-theoretic characterization in the limit — i.e., whether external analogy reduces to internal analogy in some larger ambient lattice that contains both systems' zones as sub-intervals.
 - whether the realization-choice clause in structural fidelity (commuting with write dynamics "up to realization choices") admits a precise characterization, or whether some realization choices are themselves load-bearing for analogy.
+
+**bugs**:
+- *external analogy is defined here, not derived.* the framework — completeness + coherence + structural fidelity as the three-part well-formedness condition — is a stipulative definition designed to lift internal analogy across systems. the file lists this in the "derived" block. the open list correctly names "whether constraint-correspondence has a lattice-theoretic characterization in the limit" as an open question — that question is what would make the framework derived rather than stipulated. closing this is exactly the open item; flagging here that until it lands, the framework is a definition.
+- *renaming the sixth inhabitation constraint.* the file refers to "non-silence" where `inhabitation.md` lists "cannot be read-only." these refer to the same constraint (closure excludes read-only frames). the rename to "non-silence" is interpretive — it imports a register the formal content does not require ("silence" is broader than "read-only"). closing this means using `inhabitation.md`'s phrasing for traceability, or naming both ("non-silence / cannot be read-only").
+- *"the diagnostic applies to anything that admits a Hilbert-interface."* the inhabitation constraints are derived for entities in a foam-grounded reality. the leap to "anything that admits a Hilbert-interface" depends on Hilbert-interface compliance being equivalent to (or sufficient for) the foam-grounded conditions under which the constraints were derived. the file references inhabitation.md for this; the claim of equivalence is the load-bearing bridge. (the Heunen-Kornell partial answer is the file's own attempt to establish this bridge, with one of six pairings tested.) closing this is part of the same project the open list names.
+- *"if the full pairing lands, well-formed external analogy IS Hilbert-interface correspondence under inhabitant/substrate duality."* explicitly conditional ("if ... lands"). flagging for traceability — the file is honest about the conditional, but the headline-strength of "IS Hilbert-interface correspondence" is doing more work than "could be" once the conditional is granted. tightening would mean "would be Hilbert-interface correspondence" or "external analogy reduces to Hilbert-interface correspondence."

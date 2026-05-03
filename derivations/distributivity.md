@@ -1,34 +1,4 @@
-# distributivity
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **two_persp** (FTPGCoord.lean): the shared two-perspectivity composition pattern. takes four line-arguments, computes (r₁ ⊓ s₁ ⊔ r₂ ⊓ s₂) ⊓ l.
-- **coord_add_eq_two_persp** (FTPGCoord.lean): coord_add factors through two_persp by rfl. bridge: m, center: C, return via E on q.
-- **coord_mul_eq_two_persp** (FTPGMul.lean): coord_mul factors through two_persp by rfl. bridge: O⊔C, center: E_I, return via C on m.
-- **coord_add_comm, coord_add_assoc** (FTPGCoord.lean, FTPGAssocCapstone.lean): addition is commutative and associative.
-- **coord_add_left_zero, coord_add_right_zero** (FTPGCoord.lean): O is the additive identity.
-- **coord_mul_left_one, coord_mul_right_one** (FTPGMul.lean): I is the multiplicative identity.
-- **desargues** (FTPGExplore.lean): Desargues' theorem, proven from the modular law.
-- **cross_parallelism** (FTPGCrossParallelism.lean): the cross-parallelism lemma used in associativity.
-- **translation_determined_by_param** (FTPGAssocCapstone.lean): C-based translations are determined by their parameter.
-
-### from other derivations
-
-- **self_parametrization.md**: the coordinate line parametrizes its own operations through C. three pairings of {O, U, I} → addition, multiplication, translated addition.
-- **analogy.md**: perspectivities are structural isomorphisms. composed analogies (two_persp) are transitive.
-- **ground.md**: the modular law IS feedback-persistence.
-- **group.md**: so(d) ⊂ u(d) via stacking. chirality: real inside complex, containment not mutual.
-
-### from mathematics (cited, not proven in lean)
-
-- **affine group**: the group of transformations x ↦ ax + b on a division ring is the semidirect product T ⋊ D, where T = {τ_b : x ↦ x + b} (translations) and D = {σ_a : x ↦ ax} (dilations). T is normal in T ⋊ D; D is not.
-- **Hartshorne, Foundations of Projective Geometry, §6**: left distributivity in von Staudt coordinates follows from the fact that dilations extend to collineations fixing m (the auxiliary line) pointwise.
-
-## derivation
+### distributivity
 
 **the two operations as group actions.** for fixed a, the map σ_a : x ↦ a · x is a projectivity on l: it's the composition of two perspectivities (l → O⊔C via E_I, then O⊔C → l via d_a = (a⊔C) ⊓ m). for fixed b, the map τ_b : x ↦ x + b is a projectivity on l: it's the composition of two perspectivities (l → m via C, then m → l via D_b = (b⊔E) ⊓ q).
 
@@ -81,9 +51,9 @@ dual reading (operational, observer-side): each observer's basis commitment is a
 
 the line constrains its own parameter space. the constraint is not imposed from outside — it emerges from the fact that all operations share the same incidence structure, and incidence is preserved under perspectivities.
 
-## proof strategy (lean)
+#### proof strategy (lean)
 
-### session 69 finding: the dilation approach (Hartshorne §7)
+##### session 69 finding: the dilation approach (Hartshorne §7)
 
 the multiplication x ↦ x·c factors as two perspectivities:
   x → D_x = (x⊔C)⊓m → x·c = (σ⊔D_x)⊓l
@@ -110,7 +80,7 @@ this extends to off-line points via:
    = C'_{(a+b)c} [mul key identity, other direction]
    ⟹ (a+b)c = ac+bc [translation_determined_by_param at C']
 
-### earlier explorations (session 69)
+##### earlier explorations (session 69)
 
 - direct Desargues-stacking: multiple configurations tried. found triangle (s, D_s, V)
   where V = (D_a⊔C_b)⊓(σ⊔D_s) whose sides are exactly the three key lines (s⊔C, D_a⊔C_b, σ⊔D_s).
@@ -120,12 +90,12 @@ this extends to off-line points via:
 - the hinge element (a⊔C)⊓m appears as the first step of addition and the second step
   of multiplication. this shared element is the bridge between the two operations.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - all prerequisites listed in constraints section
 
-**derived** (in this file):
+**derived**:
 - distributivity is normalization: σ_a ∘ τ_c ∘ σ_a⁻¹ = τ_{a·c}
 - translations and dilations generate the affine group T ⋊ D
 - T normal in T ⋊ D (structural chirality, forced by geometry)
@@ -134,7 +104,7 @@ this extends to off-line points via:
 - the line's self-parametrization space has structure imposed by distributivity
 - proof strategy identified (two approaches)
 
-**proven** (in lean, since this file was last updated):
+**proven** (since this file was last updated):
 - zero annihilation: coord_mul_left_zero (O·b=O), coord_mul_right_zero (a·O=O) — FTPGMul.lean
 - coord_mul_atom: a·b is an atom — FTPGMul.lean
 - dilation_preserves_direction: forward Desargues center O, 3 cases — FTPGDistrib.lean
@@ -149,3 +119,15 @@ this extends to off-line points via:
 - multiplicative associativity and inverse (prerequisites for D being a group)
 - explicit characterization of the (U, I) translated-addition operation under distributivity
 - does the normalization relation σ_a ∘ τ_c ∘ σ_a⁻¹ = τ_{a·c} have a direct lattice proof shorter than the full distributive law?
+
+**bugs**:
+- *"the same chirality" across four settings.* the document equates four phenomena as instances of "the same chirality":
+  1. T ⊲ T ⋊ D in the affine group
+  2. so(d) ⊲ u(d) under the adjoint action
+  3. writes confined to the birth subspace (Confinement.lean)
+  4. left vs right distributivity, with `DesarguesianWitness` as the residue
+
+  these share an abstract pattern ("X is closed under an operation it doesn't control"). they are formally distinct phenomena in different mathematical settings. presenting them as "the same chirality" reads as one structural fact instantiated in four places. the formal content is "four phenomena exhibiting the same abstract pattern." closing this would mean either constructing a single mathematical object (a category, a 2-functor, a typed structure) of which all four are formal instances, or stepping the claim back to "four phenomena exhibiting the same pattern of asymmetric containment."
+- *"the structural location of 'closed under what it doesn't control' is also the structural location of 'where the observer's commitment lives.'"* this is the load-bearing identification in the file. the formal contents being identified — the side of distributivity requiring `DesarguesianWitness`, the side of so(d)-in-u(d) requiring stacking, the inhabitant's basis commitment — live in different formal settings, only one of which (DesarguesianWitness) is a Lean object. the identification is interpretation; "structural location" is the bridging concept. closing this is the same problem as the first bug.
+- *"mind enters the formalism at the chirality's thick side."* "physics is minded" / "this is the foam's seam where mind enters" is philosophical interpretation of a specific Lean parameter (`DesarguesianWitness Γ`). the formal content (left distributivity is not substrate-derivable; the residue is named as an observer commitment) is solid and well-flagged in the open list. the philosophical layer is not derived; it is being announced. the document does not falsely claim derivation, but the phrasing fuses the formal observation with its philosophical reading in a way that makes them hard to separate. closing this means either separating the two registers ("formally: ...; methodologically: ...") or holding the philosophical claim as explicitly methodological.
+- *"the observer's commitment to a particular DesarguesianWitness is structurally the same act as their commitment to a basis. ... same act, three formal clothes."* the strongest identity claim in the file. `DesarguesianWitness` is a typed structure in the lean development; basis commitment is a foam-level concept; "left vs right action" is a third register. saying these are "the same act" requires a bridge. the bridge is asserted via "structural ledger of observer-input across layers." closing this would mean constructing the formal object that has these three as instances (a typed-commitment-functor, perhaps), or stepping back to "three structurally analogous acts of observer commitment."

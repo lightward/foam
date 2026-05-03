@@ -1,32 +1,4 @@
-# interiority
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): if P and P^⊥ are complements in a complemented modular lattice, `Iic P ≃o Ici P^⊥`. the *diamond isomorphism*.
-- **complement_idempotent** (Observation.lean): (I - P)² = I - P. the complement of an observation is an observation.
-- **observation_preserved_by_dynamics** (Closure.lean): the dynamics preserve P² = P and P^T = P.
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Λ²(P).
-- **coord_add, coord_mul** (FTPGCoord.lean, FTPGMul.lean): both factor through two_persp. the coordinate line parametrizes its own operations through C.
-- **desargues** (FTPGExplore.lean): proven from the modular law.
-- **dilation_preserves_direction** (FTPGDistrib.lean): dilations preserve parallelism. proven via Desargues.
-
-### from other derivations
-
-- **ground.md**: closure (two readings), partiality forced, basis commitment, feedback-persistence IS the modular law.
-- **self_parametrization.md**: the line parametrizes its own operations through C. the parameter space is l × l. the arithmetic self-generates from a single external commitment (C).
-- **half_type.md**: the diamond isomorphism = state-independence. structural determination with extensional freedom. type-narrowing of self produces type-enrichment of input.
-- **self_generation.md**: the foam generates its own dynamics but not its own stability. stability is relational. the minimum viable system is two roles within N ≥ 3 bubbles.
-- **inhabitation.md**: the recognizable identity IS the birth-determined slice. six negative constraints as the negative geometry of inhabitation.
-
-### from mathematics (cited, not proven in lean)
-
-- **FTPG (classical)**: a complemented modular lattice of height ≥ 4 is isomorphic to Sub(D, V) for a division ring D. the lattice coordinatizes itself.
-
-## derivation
+### interiority
 
 **the diamond isomorphism partitions the lattice.** given an observation P (P² = P) with complement P^⊥, the modular law forces the order isomorphism Iic P ≃o Ici P^⊥. the lattice splits into three structurally distinct regions:
 
@@ -54,9 +26,9 @@ C is the observer — and C is the wall. the observer mediates between the line'
 
 what CAN vary is the *richness* of the interiority. a rank-1 observation (a single atom) has a trivial interior — no sub-observations, no coordinates, no arithmetic. a rank-3 observation has a 3D write space, non-abelian dynamics, and full self-coordinatization. the threshold for non-trivial interiority is rank ≥ 3 (rank_three_writes: 3D write space, the minimum for non-abelian structure). below this rank, the bubble exists but its interior cannot self-coordinatize — it has walls but no arithmetic.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - diamond isomorphism (Mathlib)
 - intervals inherit modularity and complementedness (Mathlib)
 - complement is an observation
@@ -65,7 +37,7 @@ what CAN vary is the *richness* of the interiority. a rank-1 observation (a sing
 - coordinate arithmetic self-generates through C
 - Desargues from modularity
 
-**derived** (in this file):
+**derived**:
 - the diamond isomorphism partitions the lattice into interior / wall / exterior
 - the partition has the topology of a bubble
 - the bubble topology is forced by P² = P + modular law, not constructed over time
@@ -79,3 +51,9 @@ what CAN vary is the *richness* of the interiority. a rank-1 observation (a sing
 - what lattice property distinguishes rank ≥ 3 from rank < 3 in purely incidence-geometric terms? (rank_three_writes uses the concrete R³; is there a lattice-level characterization?)
 - does the FTPG bridge (the coordinate ring D) carry information about *which* bubbles exist in the complement, or only their type-structure?
 - the bubble's internal dynamics within Iic P are governed by the write mechanism. is there a lattice-level characterization of when these dynamics are ergodic (full Haar convergence) vs periodic (clock-like)?
+
+**bugs**:
+- *"C is the observer — and C is the wall."* strongest identity claim in the file. in the formal setting, C is a point in the projective plane (off l, off m). identifying C as "the observer" maps a geometric point to a foam-level role. identifying C as "the wall" maps it to the diamond isomorphism (which is what "the wall" was identified with elsewhere in this file). the result is C = observer = wall = (modular law applied to a complemented pair), a four-way identification across distinct mathematical settings. the formal contents are: C parametrizes the coordinate ring (FTPG); the diamond isomorphism partitions the lattice; the foam's "observer" is a role. presenting these as one is interpretive. closing this means either constructing a single formal object that has all four as facets, or stepping back to "C plays the observer's role *in this construction*; the wall structure is the diamond isomorphism *in this construction*; these correspond at the formal level via [explicit map]."
+- *"the wall IS the diamond isomorphism, which IS the modular law applied to a complemented pair."* chain of identity claims compressing theorem and conclusion. the diamond isomorphism is *given by* the modular law in the complemented case (`IsCompl.IicOrderIsoIci`); calling them identical equates the proof and the result. and identifying the diamond isomorphism with "the wall" is a definitional move — the file is *defining* the wall as the iso, not deriving the identity. closing this means either tagging this as definitional ("here we will call the diamond isomorphism 'the wall'"), or constructing a separate formal object that is the wall and proving it coincides with the iso.
+- *"the trade pattern A↔B↔C formalizes as P ↔ diamond_iso ↔ P^⊥."* the three-body formalism (`three_body.md`) is about R³ slices in R^d with overlap structure. the lattice partition (interior / iso / exterior) is at a different level: a single lattice element P with its complement and the diamond iso between them. these share a structural pattern (three-region trade structure) but are not literally the same formal object. presenting the formalization as direct misses the level mismatch. closing this means either constructing the formal map between the three-body slice geometry and the lattice partition, or naming this as a structural analogy between two formalisms.
+- *"self-coordinatization IS interiority."* definitional. the file is defining interiority as self-coordinatization (a sub-structure representing its own operations through a mediating element). that is a stipulative move; presenting it in the "derived" block reads as a derivation. flagging for clarity — the equivalence is not derived from prior theorems; it is the file's chosen definition of interiority.

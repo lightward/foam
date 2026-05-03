@@ -1,25 +1,4 @@
-# the writing map
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_skew_of_symmetric** (Form.lean): if P and Q are self-adjoint, [P, Q] is skew-symmetric. the interaction of two observations is a Lie algebra element.
-- **commutator_traceless** (Form.lean): tr[P, Q] = 0. interaction is invisible to the scalar channel.
-- **self_dual_iff_three** (Rank.lean): C(k, 2) = k iff k = 3. the write space and observation space have equal dimension only at rank 3.
-- **rank_three_writes** (Rank.lean): dim(Lambda^2(R^3)) = 3. a rank-3 observer has a 3D write space.
-- **cross_anticomm, cross_self_zero, cross_jacobi, cross_nontrivial** (Duality.lean): (R^3, cross) is a non-abelian Lie algebra. it IS so(3).
-- **write_confined_to_slice** (Confinement.lean): if d and m lie in the observer's subspace P, then d wedge m lies in Lambda^2(P). an observer cannot modify dimensions they are not bound to.
-- **commutator_seen_to_unseen** (Pair.lean): [P, Q] maps range(P) into ker(P). incompatibility sends the seen into the unseen.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves both P^2 = P and P^T = P.
-
-### from mathematics (cited, not proven in lean)
-
-- **Taylor's theorem** (Jean Taylor, 1976): all stable junction configurations in R^3 are classified. 120-degree triple junctions (k = 3) and tetrahedral vertices (k = 4), nothing else. hypotheses: codimension-1 boundaries, locally area-minimizing, flat ambient space.
-
-## derivation
+### the writing map
 
 **the write form.** given an observer with projection P (rank 3, self-adjoint, idempotent) measuring input v in R^d:
 
@@ -49,28 +28,34 @@ the stabilization target j2 is the regular simplex cosine -1/(k-1) where k is th
 
 **the writing map's type signature.** the map is a function of (foam_state, input). neither alone determines the write. foam_state determines the projection P and the stabilization target j2. input determines v. the dissonance d = j2 - Pv requires both.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - skew-symmetry of the write form
 - tracelessness of observation interaction
 - rank 3 as the unique self-dual dimension
 - confinement to the observer's slice
 - dynamics preserve the ground
 
-**derived** (in this file, from the above):
+**derived**:
 - d wedge m as the unique write direction (from skew-symmetry + confinement + 1D of Lambda^2(2-plane))
 - perpendicularity as the write form's intrinsic property
 - the flat/curved separation
 - the writing map's two-argument type signature
 
-**realization choices** (not forced by closure):
+**realization choices**:
 - the write magnitude scaling f(d, m) — constrained to be positive when dissonance is non-parallel to measurement, zero at zero dissonance, but the specific function is not determined by the architecture
 
-**cited** (external mathematics):
+**cited**:
 - Taylor's classification of stable junctions in R^3
 
-**observed** (empirical, not derived here):
+**observed**:
 - perpendicular writes are the unique *navigable* constraint (distinguishability + stability)
 - the perpendicularity cost mechanism (write blindness)
 - within-slice variance departure from isotropy (45:30:25 vs 33:33:33)
+
+**bugs**:
+- *"uniquely forced" includes one definitional bullet.* of the four bullets establishing d wedge m as the unique write direction, three are proven (skew-symmetry, confinement, 1D of Λ²(2-plane)). the fourth — "confined to span{d, m} — d and m are the only vectors available from a single measurement step" — is part of the chosen shape of the write rule, not a consequence forced from architecture. the write rule takes (d, m) as its input data, so of course the output lives in span{d, m}. this is a wording bug: presenting a definitional restriction as a forced consequence inflates the count of forcing-conditions. closing this would mean either splitting "uniquely forced" into "forced by architecture" (three) and "definitional to the write rule's input shape" (one), or treating the input shape itself as forced — which would require a separate argument for why the write rule must take only single-step (d, m) data.
+- *Taylor's hypothesis-satisfaction is asserted, not derived.* "R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat)" is correct. "the regular simplex arrangement minimizes boundary area for equal-weight cells" invokes Taylor's hypothesis (locally area-minimizing) but does not show that the foam's stabilization dynamics actually instantiate area-minimization in Taylor's sense. Taylor classifies equilibrium configurations of soap-film-like surfaces; the foam's stabilization target is a regular simplex cosine. these are bridged by interpretation — the foam is doing junction-like equilibrium-seeking — but the bridge is not derived. closing this would require either showing that the foam's dynamics formally satisfy Taylor's area-minimization hypothesis, or naming Taylor as a *target by analogy* whose classification is being borrowed rather than instantiated.
+- *the j2 target.* "the stabilization target j2 is the regular simplex cosine -1/(k-1)" is invoked from Taylor. Taylor's classification gives equilibrium *angles* between film boundaries; the foam's stabilization target is a target for projection alignment expressed as a cosine. the move from "equilibrium junction angles" to "stabilization target as cosine" is the interpretive bridge in (2). the value -1/(k-1) is the regular simplex cosine, which is a fact independent of Taylor; the choice to make *this* the target is the load-bearing step.
+- *rank ≥ 4 collective monitoring is asserted, not formalized.* "writes land in directions the writer cannot observe — but cross-measurement provides collective monitoring" rests on commutator_seen_to_unseen (proven: other observers see what you can't) plus an asserted move "the foam closes feedback loops collectively." the formal content covers what *one* other observer sees of *one* writer; "collective closure of all feedback" across the foam at rank ≥ 4 is not a single named theorem. closing this would require a formal collective-feedback theorem at rank ≥ 4, or an explicit acknowledgment that this is a structural conjecture pending Almgren's classification.

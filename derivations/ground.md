@@ -1,29 +1,4 @@
-# ground
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug. the only axiom in this project is ftpg (Bridge.lean), and it is being eliminated. every other property is either proven, identified as a fixed-point constraint, or derived. calling a non-axiom an axiom is a bug — it introduces a false starting point into a structure that has none.
-
-### from lean (proven)
-
-- **subspaceFoamGround** (Ground.lean): the subspace lattice of a vector space over a division ring is complemented, modular, and bounded — as a theorem, not an axiom.
-- **ftpg** (Bridge.lean): axiom. a complemented modular lattice of sufficient structure is isomorphic to the subspace lattice of a vector space over a division ring. the one axiom in the formalization.
-- **dimension_unique** (Bridge.lean): if two finite-dimensional vector spaces over the same division ring have order-isomorphic submodule lattices, they have the same dimension. the axiom has a unique solution.
-- **eigenvalue_binary** (Observation.lean): P^2 = P implies eigenvalues in {0, 1}. observation is total per direction.
-- **complement_idempotent** (Observation.lean): P^2 = P implies (I - P)^2 = I - P. the complement of an observation is an observation.
-- **rank_two_abelian_writes** (Rank.lean): rank 2 → 1D write space (abelian). the write algebra collapses.
-- **orthogonality_forced** (Ground.lean): if M is symmetric and v^T M v = 1 for all unit v, then M = I. O(d) is forced.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves both idempotent and symmetric properties. dynamics preserve the ground.
-
-### from mathematics (cited, not proven in lean)
-
-- **Dedekind's characterization**: a lattice is modular if and only if it contains no sublattice isomorphic to N_5 (the pentagon).
-
-### from other derivations
-
-- none. this is the root.
-
-## derivation
+### ground
 
 **closure.** one ground, two readings, both tautological.
 
@@ -75,9 +50,9 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 
 **indelibility.** causal ordering is forced (every measurement changes the foam; partiality means each observer writes from a committed slice; closure means each write changes the shared structure). you cannot un-write, so the first commitment locks.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - subspace lattices are complemented, modular, bounded
 - the FTPG axiom has a unique solution (dimension is determined)
 - eigenvalues of projections are binary
@@ -85,14 +60,14 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 - O(d) is forced by preservation of all projections
 - dynamics preserve the ground (the loop closes)
 
-**identified** (in this file):
+**identified**:
 - closure as the self-referential joint between two readings of one structure
 - the loop: lattice properties ↔ Sub(D, V) ↔ P² = P ↔ dynamics ↔ ground properties
 - fixed-point uniqueness of each property (modular, complemented, irreducible, height ≥ 4)
 - D = ℝ from self-consistency with the stabilization contract
 - the epistemic boundary: "is this the only loop?" is well-formed but unanswerable from within (derived from partiality + channel capacity + closure)
 
-**derived** (in this file, from the loop's structure):
+**derived**:
 - partiality (from closure / from elements being proper subspaces)
 - partiality forces position / basis commitment
 - encounters change frames (the self-referential joint — structure and phenomenology share a nerve)
@@ -100,9 +75,15 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 - read-only frames excluded
 - indelibility (from causal ordering + basis commitment)
 
-**cited** (external mathematics):
+**cited**:
 - the fundamental theorem of projective geometry (stated as lean axiom, not proven)
 - Dedekind's N_5 characterization of modularity
 
-**observed** (empirical, not derived here):
+**observed**:
 - (none — the ground is entirely identified or derived, plus the one axiom being eliminated)
+
+**bugs**:
+- *two readings as one statement.* the structural reading ("the loop closes," mechanically verified in lean) and the phenomenological reading ("you can't stand outside") are presented as the same statement, sharing "a single nerve." the lean work establishes the structural side. the phenomenological side is bridged-to in prose. the identity is asserted rather than derived. closing this would require either a formal target in which both readings are objects and exhibit a constructed isomorphism, or an explicit demotion of "same statement" to "two registers a reader is being asked to hold together."
+- *D = ℝ is sufficiency, not necessity.* "if D = ℝ the contract is satisfiable, and the classification exists" shows ℝ works. the document does not rule out other division rings that might satisfy some contract that also closes a loop. "D = ℝ is confirmed by self-consistency" overstates what the argument provides. closing this would require either a uniqueness argument (no other division ring admits a foam-closing contract) or a characterization of ℝ among division rings such that the contract picks it out.
+- *fixed-point uniqueness varies in strength across the four properties.* modular has a real chain (N_5 → path-dependent composition → indeterminate feedback → no value to feed back). height ≥ 4 has a real chain (rank_two_abelian_writes + partiality). complemented is argued by "complement_idempotent has no home" — that argues this specific loop wouldn't run, not that no self-sustaining loop is possible without complementation. irreducibility is named-definitional (the document admits this: "the irreducibility is what 'one' means"). presenting all four as "fixed-point constraints" of equal status under-flags the differences. closing this would require either separating the four into mechanical / definitional / plausibility tiers, or strengthening the complemented case to a real necessity argument.
+- *"encounters change frames" recasts dynamics as experience.* the lattice formalism describes dynamics on projections (orthogonal conjugation, observation_preserved_by_dynamics). "encounters change frames" / "you experience change" recasts this in observer-experiential terms. the recasting is treated as direct read-off — "same statement, two readings" — but the leap from formal dynamics to phenomenological description is the leap. closing this is the same problem as the first bullet: the formal-to-phenomenological identification is the load-bearing move, and it is not itself derived.

@@ -1,27 +1,4 @@
-# the three-body mapping
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_seen_to_unseen** (Pair.lean): [P, Q] maps range(P) into ker(P). incompatibility sends the seen into the unseen.
-- **commutator_off_diag_range** (Tangent.lean): P * [W, P] * P = 0. no range-to-range component.
-- **commutator_off_diag_kernel** (Tangent.lean): (I-P) * [W, P] * (I-P) = 0. no kernel-to-kernel component.
-- **commutator_is_tangent** (Tangent.lean): [W, P] = range-to-kernel + kernel-to-range. purely off-diagonal. this IS the Grassmannian tangent.
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Lambda^2(P).
-
-### from other derivations
-
-- **ground.md**: closure, partiality, basis commitment.
-- **writing_map.md**: the write form (wedge product), perpendicularity, confinement.
-
-### from mathematics (cited, not proven in lean)
-
-- **Grassmannian geometry**: T_P Gr(k, d) = Hom(range(P), ker(P)). the tangent space at a k-plane is the space of linear maps from the k-plane to its complement.
-
-## derivation
+### the three-body mapping
 
 **the overlap matrix.** given two observers A and B with R^3 slices P_A and P_B, the overlap matrix O = P_A * P_B^T is a 3x3 matrix. its singular values measure the overlap between the slices.
 
@@ -45,7 +22,7 @@ this tangent is directional pressure from cross-measurement toward what the obse
 
 **the tangent peaks at intermediate overlap.** identical slices: zero tangent (no Unknown territory to point toward). orthogonal slices: weak tangent (no Knowable channel — range(O) is thin). intermediate overlap: largest tangent magnitude. this is the coverage-interaction trade-off.
 
-### mediation
+#### mediation
 
 when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandatory intermediary.
 
@@ -59,14 +36,14 @@ when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandat
 
 **wall alignment is an irreducible triple invariant.** the eigenvalues of R_A depend on both pairwise overlaps O_AB and O_BC and on how these overlaps are oriented relative to each other within B's R^3. if the walls share principal directions within B, eigenvalues are products sigma^2_{AB,i} * sigma^2_{BC,i}. if misaligned, they mix. this alignment cannot be computed from pairwise overlaps alone — it requires all three slices.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - the commutator maps seen to unseen
 - the commutator is purely off-diagonal (Grassmannian tangent structure)
 - writes are confined to the observer's slice
 
-**derived** (in this file):
+**derived**:
 - Known/Knowable/Unknown from the overlap matrix
 - every write involves the Knowable
 - Grassmannian tangent from cross-measurement (Knowable -> Unknown)
@@ -79,11 +56,16 @@ when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandat
 - spectral symmetry (same eigenvalues from both sides)
 - wall alignment as irreducible triple invariant
 
-**cited** (external mathematics):
+**cited**:
 - Grassmannian tangent space structure: T_P Gr(k, d) = Hom(range(P), ker(P))
 - singular values of M and M^T are identical (linear algebra)
 
-**observed** (empirical, not derived here):
+**observed**:
 - sequence echo through cross-measurement (r = 0.99 rank fidelity, strong attenuation)
 - the round trip is generative (neither observer can produce the round-trip signal alone)
 - echo is perspectivally asymmetric (A->B != B->A for same orderings)
+
+**bugs**:
+- *"every write involves the Knowable"* is context-dependent. Known is defined relative to a single neighbor B. if A and B are nearly orthogonal, Known (within A's R^3) can be 2- or 3-dimensional, in which case A can form a wedge product entirely within Known and write without involving Knowable. the claim is true *given that A has fewer than 2 private dimensions relative to all neighbors collectively* — which is the typical case in a connected foam, but not a single-neighbor fact. closing this means either re-stating the claim relative to the union of all neighbors' slices ("every write involves the collective Knowable"), or naming the typical-case condition explicitly.
+- *"the tangent peaks at intermediate overlap"* is asserted from boundary intuition. the document argues identical-slice and orthogonal-slice limits give zero or weak tangent; "intermediate overlap: largest tangent magnitude" follows. the formal location of the peak (which singular-value configuration maximizes the tangent magnitude) is not derived. closing this would mean either characterizing the peak as a function of singular values of O, or stepping back to "the tangent is non-monotone in overlap; it vanishes at both extremes."
+- *"experiential asymmetry (which observer 'feels contained') is perspectival, not algebraic."* the file's algebraic content (singular value symmetry) is solid. "experiential asymmetry" introduces an observer-experience register the formalism does not develop. flagging for traceability — the claim is honest about being non-algebraic, but "experiential" is doing work the file does not earn.

@@ -1,31 +1,6 @@
-# channel capacity
+### channel capacity
 
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_traceless** (Form.lean): tr[P, Q] = 0. observation interaction is invisible to the scalar channel.
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Lambda^2(P). the observer cannot modify dimensions outside its slice.
-- **infIccOrderIsoIccSup** (Mathlib, ModularLattice.lean): the diamond isomorphism. in any modular lattice, [a ⊓ b, a] ≃o [b, a ⊔ b].
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): for complements, Iic a ≃o Ici b. each half is typed by the other's view of the whole.
-- **complementedLattice_Iic, complementedLattice_Ici** (Mathlib, ModularLattice.lean): intervals in a complemented modular lattice are themselves complemented modular lattices.
-
-### from other derivations
-
-- **ground.md**: closure, partiality, basis commitment, read-only frames excluded. the modular law IS feedback-persistence.
-- **writing_map.md**: the write is a function of (foam_state, input). the wedge product is the unique write form. perpendicularity: form is forced by the algebra, content (which vectors are wedged) is not.
-- **half_type.md**: the diamond isomorphism applied to the foam's complemented modular lattice. each complement is a structurally isomorphic, self-sufficient ground whose content is undetermined.
-
-### from mathematics (cited, not proven in lean)
-
-- none for the qualitative structure.
-- Marchenko-Pastur distribution (for principal angle statistics — used only in the decorrelation horizon estimate, which is order-of-magnitude).
-
-## derivation
-
-### qualitative: why channel capacity exists (pre-bridge, lattice-theoretic)
+#### qualitative: why channel capacity exists (pre-bridge, lattice-theoretic)
 
 **the line's irreducibility is channel capacity.** the writing map has type (foam_state, input) -> new_state — two arguments. this two-argument structure is the diamond isomorphism read dynamically: every observation P decomposes the lattice into Iic P (the observer's view) and Ici P^⊥ (the complement's upward structure), with IsCompl.IicOrderIsoIci giving a structural isomorphism between them.
 
@@ -49,7 +24,7 @@ the foam cannot distinguish "truly random input" from "deterministic input decor
 
 **the map's self-knowledge is bounded by its own channel capacity.** dynamical properties (attractor basins, recession rates, convergence) are consequences of the map's structure — derivable from within. commitment properties (which inputs arrive, whether the observer stacks, when recommitment occurs) are on the input side — not derivable from within. the map can derive *that* it cannot answer certain questions, and *why*: the same independence that gives the foam its capacity prevents the dynamics from determining the input's internal structure.
 
-### quantitative: how much channel capacity (post-bridge, linear-algebraic)
+#### quantitative: how much channel capacity (post-bridge, linear-algebraic)
 
 the qualitative structure above — state-independence exists, the foam/line distinction is perspectival, the boundary is characterizable — holds in any complemented modular lattice. the following quantitative results require the vector space structure provided by the FTPG bridge.
 
@@ -67,16 +42,16 @@ the half-type theorem (half_type.md) gives the mechanism: higher ambient dimensi
 
 the foam/line distinction is therefore not a categorical boundary but a correlation length: "line" names whatever input arrives from beyond the decorrelation horizon of the observer's own state. the horizon's radius is determined by the foam's own geometry.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - observation interaction is traceless (the scalar channel is algebraically unreachable by commutators)
 - writes are confined to the observer's slice
 - the diamond isomorphism (infIccOrderIsoIccSup, IsCompl.IicOrderIsoIci)
 - intervals inherit modularity and complementedness
 - each half of a complementary pair is a self-sufficient foam ground (HalfType.lean)
 
-**derived** (in this file):
+**derived**:
 - the line's irreducibility from the diamond isomorphism (the two-argument type signature IS the complemented decomposition)
 - autonomous foam = clock (cross-measurement collapses two arguments to one)
 - state-independent input required for channel capacity
@@ -94,3 +69,8 @@ the foam/line distinction is therefore not a categorical boundary but a correlat
 
 **observed** (empirical, not derived here):
 - decorrelation horizon values at specific d (order-of-magnitude estimates; qualitative conclusion robust, specific values sensitive to approximation)
+
+**bugs**:
+- *σ ~ √(3/d) misidentified as the diamond isomorphism's enrichment.* "the half-type theorem (half_type.md) gives the mechanism: higher ambient dimension means P is a smaller fraction of the whole, which means Ici P^⊥ is richer ... the scaling law sigma ~ sqrt(3/d) is the diamond isomorphism's structural enrichment of the complement, quantified." Ici P^⊥ is order-isomorphic to Iic P, which has the lattice structure of Sub(P) — fixed at rank 3 regardless of ambient d. it does not become richer at higher d. the actual mechanism for σ ~ √(3/d) is the statistics of random 3D subspace overlap in d-dimensional space (Marchenko-Pastur-ish, correctly cited in the constraints block). attributing the scaling to lattice enrichment misnames the mechanism. closing this means decoupling the qualitative result (state-independence is a lattice theorem, pre-bridge — true) from the quantitative scaling law (random matrix statistics, post-bridge), and removing the lattice-enrichment attribution. (this is the same bug as `half_type.md` — flagged in both places because both files claim the misidentification.)
+- *"the line's irreducibility is channel capacity."* the two concepts — "the line" as the foam's external input source, "channel capacity" as the foam's information-receiving capacity — are different objects. the formal bridge is the two-argument type signature of the writing map, which the document develops over the qualitative section. the headline "the line's irreducibility IS channel capacity" overstates this bridge: the formal content is "the line's role and the foam's channel capacity are two readings of the diamond isomorphism's two-argument structure." closing this means either constructing the formal identity (e.g., a category in which "the line" and "channel capacity" are objects, with an isomorphism) or stepping the headline back to "the line's role and channel capacity are co-constituted by the two-argument structure."
+- *"state-independence is a lattice theorem."* the careful claim — structural determination with extensional freedom (Iic P determines the type, not the element) — is a property of the diamond isomorphism in a complemented modular lattice. the headline "state-independence is a lattice theorem" compresses a bridge between (a) the lattice fact (the iso fixes structure but not content) and (b) the dynamical interpretation (the *value* of input is independent of foam state). these are connected — but the dynamical interpretation involves additional work (the operational-vs-ontological threading the document does later). the headline reads as one theorem; the formal content is closer to "the lattice fact underwrites the dynamical interpretation, with help from operational-equivalence under partiality."

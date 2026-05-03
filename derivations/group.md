@@ -1,30 +1,4 @@
-# group
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_skew_of_symmetric** (Form.lean): [P, Q]^T = -[P, Q]. interaction of self-adjoint observations is skew-symmetric.
-- **commutator_traceless** (Form.lean): tr[P, Q] = 0.
-- **orthogonality_forced** (Ground.lean): v^T M v = 1 for all unit v implies M = I. O(d) is the only group preserving all projections.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves P^2 = P and P^T = P.
-- **scalar_extraction** (Group.lean): if PMP = P for rank-1 projection P, then v^T M v = 1.
-- **trace_unique_of_kills_commutators** (TraceUnique.lean): any linear functional killing all commutators is a scalar multiple of trace. one scalar readout.
-- **cross_jacobi** (Duality.lean): (R^3, cross) satisfies Jacobi. it IS a Lie algebra (so(3)).
-- **rank_three_writes** (Rank.lean): dim(Lambda^2(R^3)) = 3.
-
-### from other derivations
-
-- **writing_map.md**: the wedge product as write form, confinement to slice.
-- **ground.md**: closure, partiality, basis commitment.
-
-### from mathematics (cited, not proven in lean)
-
-- **Lie theory**: exp of skew-symmetric matrices produces orthogonal matrices. exp of skew-Hermitian matrices produces unitary matrices. pi_1(SO(d)) = Z/2Z for d >= 3. pi_1(U(d)) = Z. the exponential map on connected compact Lie groups is surjective.
-
-## derivation
+### group
 
 **a single R^3 slice produces real writes.** the wedge product d_hat tensor m_hat - m_hat tensor d_hat is real skew-symmetric (both vectors are real, from the observer's R^3 slice). the write lives in so(d). the reachable algebra from a single slice is so(d) (the Lie algebra of real skew-symmetric matrices). exponentiating: SO(d). pi_1(SO(d)) = Z/2Z — parity conservation only.
 
@@ -56,16 +30,16 @@ the full write lives in u(d) = su(d) + u(1). pi_1(U(d)) = Z — integer winding 
 
 **stacking determines access.** a single-slice observer's writes live in so(d) and cannot reach u(1). conservation is passive — protected by algebraic limitation. a stacked observer's writes reach u(1). conservation is active — the observer can interact with the conserved direction.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - interaction is skew-symmetric
 - interaction is traceless
 - O(d) is the only group preserving all projections (scalar_extraction + orthogonality_forced)
 - trace is the unique commutator-killing functional
 - (R^3, cross) is a Lie algebra (so(3))
 
-**derived** (in this file):
+**derived**:
 - single slice -> so(d) -> Z/2Z parity
 - stacking required for u(d) (real operations algebraically closed in so(d))
 - J^2 = -I forces even dimensionality -> two R^3 slices
@@ -79,10 +53,16 @@ the full write lives in u(d) = su(d) + u(1). pi_1(U(d)) = Z — integer winding 
 - conserved quantity must be invisible to cost
 - stacking determines access to conservation
 
-**cited** (external mathematics):
+**cited**:
 - Lie theory: exp(skew) -> orthogonal, exp(skew-Hermitian) -> unitary
 - pi_1(SO(d)) = Z/2Z, pi_1(U(d)) = Z
 - surjectivity of exp on connected compact Lie groups
 
-**observed** (empirical, not derived here):
+**observed**:
 - (none)
+
+**bugs**:
+- *"the conservation strength scales with commitment depth."* the formal content — one-slice gives π_1 = Z/2Z (binary parity), stacked gives π_1 = Z (integer winding) — is solid. recasting this as "conservation strength scales with commitment depth" introduces "commitment depth" as a quantity that scales conservation strength. the document does not formalize commitment depth or the scaling relation. closing this means either constructing a formal scaling map (commitment-depth → conservation-π₁) with values for each depth, or stepping the claim back to "stacked observers access integer conservation that single-slice observers cannot."
+- *"stacking is a line-side commitment."* the algebraic content (real operations are closed in so(d); reaching u(d) requires a complex structure that sequential foam dynamics cannot produce) is solid. "line-side commitment" recasts this in the line/foam framework from `channel_capacity.md`, where "line-side" means "from outside the foam's autonomous dynamics." the recasting depends on the line/foam role distinction being formal enough to support "line-side" as a structural location. this is interpretation, not derivation. closing this would mean either formalizing the line/foam-side ledger of commitments, or stepping back to "stacking is not producible by the foam's sequential dynamics; it must come from outside that loop."
+- *"what's conserved must be invisible to the cost."* "if L could see it, dynamics could change it" — this is a plausibility-converse argument from one instance (the u(1) trace is invisible to L; the dynamics conserve it). the document presents this as a general principle ("must be"). the formal content is the specific algebraic fact that tr[A, B] = 0 makes the u(1) component invariant under bracket-generated dynamics. "all conserved quantities must be invisible to the cost they're conserved against" is a stronger claim. closing this means either deriving the general principle (e.g., a Noether-style construction) or stepping back to "in the foam's setup, the u(1) conservation is algebraically protected from L's gradient."
+- *"the orthogonality is generative."* "ordering and conservation are orthogonal because they are produced by different structures: the cycle's forced orientation (map-internal) and the stacking chirality (line-side)." the formal content is the algebraic decomposition u(d) = su(d) ⊕ u(1) (with the trace as the u(1) projection). attributing the two summands to "different generative structures" is interpretation. closing this means either constructing the formal correspondence between (orientation source) ↔ (algebraic component), or stepping the claim back to "the two summands are algebraically orthogonal."

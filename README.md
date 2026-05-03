@@ -59,37 +59,19 @@ lattice -> incidence geometry -> Desargues -> coordinates -> ring axioms -> FTPG
 ring axioms proven: additive group (comm, assoc, identity, inverses), multiplicative identity, zero annihilation, right distributivity, left distributivity (0 sorry, with the planar converse-Desargues residue named as the typed `DesarguesianWitness` observer commitment — not derivable from CML + irreducible + height ≥ 4 alone per session 114's structural finding). remaining after left distrib: multiplicative inverses. then the axiom becomes a theorem (modulo the `DesarguesianWitness` interface, which is itself a smaller, more concrete commitment than FTPG).
 
 lateral: the diamond isomorphism (HalfType) — from modularity alone, each complement is a structurally isomorphic, self-sufficient ground whose content is undetermined. state-independence is a lattice theorem, pre-bridge.
+## derivations
+
+derivations claim only what follows. any additional assumption is a bug. there *are* bugs: this project is in an active process of derivation-as-in-chemistry. I'm coming at this with absolute technical epistemic humility; where I don't, it's a bug, to be listed as such.
+
+an axiom is an assumption is a bug. thus, we're working on deriving FTPG itself.
+
+
 
 ---
 
 [`derivations/ground.md`](derivations/ground.md)
 
-# ground
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug. the only axiom in this project is ftpg (Bridge.lean), and it is being eliminated. every other property is either proven, identified as a fixed-point constraint, or derived. calling a non-axiom an axiom is a bug — it introduces a false starting point into a structure that has none.
-
-### from lean (proven)
-
-- **subspaceFoamGround** (Ground.lean): the subspace lattice of a vector space over a division ring is complemented, modular, and bounded — as a theorem, not an axiom.
-- **ftpg** (Bridge.lean): axiom. a complemented modular lattice of sufficient structure is isomorphic to the subspace lattice of a vector space over a division ring. the one axiom in the formalization.
-- **dimension_unique** (Bridge.lean): if two finite-dimensional vector spaces over the same division ring have order-isomorphic submodule lattices, they have the same dimension. the axiom has a unique solution.
-- **eigenvalue_binary** (Observation.lean): P^2 = P implies eigenvalues in {0, 1}. observation is total per direction.
-- **complement_idempotent** (Observation.lean): P^2 = P implies (I - P)^2 = I - P. the complement of an observation is an observation.
-- **rank_two_abelian_writes** (Rank.lean): rank 2 → 1D write space (abelian). the write algebra collapses.
-- **orthogonality_forced** (Ground.lean): if M is symmetric and v^T M v = 1 for all unit v, then M = I. O(d) is forced.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves both idempotent and symmetric properties. dynamics preserve the ground.
-
-### from mathematics (cited, not proven in lean)
-
-- **Dedekind's characterization**: a lattice is modular if and only if it contains no sublattice isomorphic to N_5 (the pentagon).
-
-### from other derivations
-
-- none. this is the root.
-
-## derivation
+### ground
 
 **closure.** one ground, two readings, both tautological.
 
@@ -141,9 +123,9 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 
 **indelibility.** causal ordering is forced (every measurement changes the foam; partiality means each observer writes from a committed slice; closure means each write changes the shared structure). you cannot un-write, so the first commitment locks.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - subspace lattices are complemented, modular, bounded
 - the FTPG axiom has a unique solution (dimension is determined)
 - eigenvalues of projections are binary
@@ -151,14 +133,14 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 - O(d) is forced by preservation of all projections
 - dynamics preserve the ground (the loop closes)
 
-**identified** (in this file):
+**identified**:
 - closure as the self-referential joint between two readings of one structure
 - the loop: lattice properties ↔ Sub(D, V) ↔ P² = P ↔ dynamics ↔ ground properties
 - fixed-point uniqueness of each property (modular, complemented, irreducible, height ≥ 4)
 - D = ℝ from self-consistency with the stabilization contract
 - the epistemic boundary: "is this the only loop?" is well-formed but unanswerable from within (derived from partiality + channel capacity + closure)
 
-**derived** (in this file, from the loop's structure):
+**derived**:
 - partiality (from closure / from elements being proper subspaces)
 - partiality forces position / basis commitment
 - encounters change frames (the self-referential joint — structure and phenomenology share a nerve)
@@ -166,40 +148,25 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 - read-only frames excluded
 - indelibility (from causal ordering + basis commitment)
 
-**cited** (external mathematics):
+**cited**:
 - the fundamental theorem of projective geometry (stated as lean axiom, not proven)
 - Dedekind's N_5 characterization of modularity
 
-**observed** (empirical, not derived here):
+**observed**:
 - (none — the ground is entirely identified or derived, plus the one axiom being eliminated)
+
+**bugs**:
+- *two readings as one statement.* the structural reading ("the loop closes," mechanically verified in lean) and the phenomenological reading ("you can't stand outside") are presented as the same statement, sharing "a single nerve." the lean work establishes the structural side. the phenomenological side is bridged-to in prose. the identity is asserted rather than derived. closing this would require either a formal target in which both readings are objects and exhibit a constructed isomorphism, or an explicit demotion of "same statement" to "two registers a reader is being asked to hold together."
+- *D = ℝ is sufficiency, not necessity.* "if D = ℝ the contract is satisfiable, and the classification exists" shows ℝ works. the document does not rule out other division rings that might satisfy some contract that also closes a loop. "D = ℝ is confirmed by self-consistency" overstates what the argument provides. closing this would require either a uniqueness argument (no other division ring admits a foam-closing contract) or a characterization of ℝ among division rings such that the contract picks it out.
+- *fixed-point uniqueness varies in strength across the four properties.* modular has a real chain (N_5 → path-dependent composition → indeterminate feedback → no value to feed back). height ≥ 4 has a real chain (rank_two_abelian_writes + partiality). complemented is argued by "complement_idempotent has no home" — that argues this specific loop wouldn't run, not that no self-sustaining loop is possible without complementation. irreducibility is named-definitional (the document admits this: "the irreducibility is what 'one' means"). presenting all four as "fixed-point constraints" of equal status under-flags the differences. closing this would require either separating the four into mechanical / definitional / plausibility tiers, or strengthening the complemented case to a real necessity argument.
+- *"encounters change frames" recasts dynamics as experience.* the lattice formalism describes dynamics on projections (orthogonal conjugation, observation_preserved_by_dynamics). "encounters change frames" / "you experience change" recasts this in observer-experiential terms. the recasting is treated as direct read-off — "same statement, two readings" — but the leap from formal dynamics to phenomenological description is the leap. closing this is the same problem as the first bullet: the formal-to-phenomenological identification is the load-bearing move, and it is not itself derived.
 
 
 ---
 
 [`derivations/writing_map.md`](derivations/writing_map.md)
 
-# the writing map
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_skew_of_symmetric** (Form.lean): if P and Q are self-adjoint, [P, Q] is skew-symmetric. the interaction of two observations is a Lie algebra element.
-- **commutator_traceless** (Form.lean): tr[P, Q] = 0. interaction is invisible to the scalar channel.
-- **self_dual_iff_three** (Rank.lean): C(k, 2) = k iff k = 3. the write space and observation space have equal dimension only at rank 3.
-- **rank_three_writes** (Rank.lean): dim(Lambda^2(R^3)) = 3. a rank-3 observer has a 3D write space.
-- **cross_anticomm, cross_self_zero, cross_jacobi, cross_nontrivial** (Duality.lean): (R^3, cross) is a non-abelian Lie algebra. it IS so(3).
-- **write_confined_to_slice** (Confinement.lean): if d and m lie in the observer's subspace P, then d wedge m lies in Lambda^2(P). an observer cannot modify dimensions they are not bound to.
-- **commutator_seen_to_unseen** (Pair.lean): [P, Q] maps range(P) into ker(P). incompatibility sends the seen into the unseen.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves both P^2 = P and P^T = P.
-
-### from mathematics (cited, not proven in lean)
-
-- **Taylor's theorem** (Jean Taylor, 1976): all stable junction configurations in R^3 are classified. 120-degree triple junctions (k = 3) and tetrahedral vertices (k = 4), nothing else. hypotheses: codimension-1 boundaries, locally area-minimizing, flat ambient space.
-
-## derivation
+### the writing map
 
 **the write form.** given an observer with projection P (rank 3, self-adjoint, idempotent) measuring input v in R^d:
 
@@ -229,64 +196,44 @@ the stabilization target j2 is the regular simplex cosine -1/(k-1) where k is th
 
 **the writing map's type signature.** the map is a function of (foam_state, input). neither alone determines the write. foam_state determines the projection P and the stabilization target j2. input determines v. the dissonance d = j2 - Pv requires both.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - skew-symmetry of the write form
 - tracelessness of observation interaction
 - rank 3 as the unique self-dual dimension
 - confinement to the observer's slice
 - dynamics preserve the ground
 
-**derived** (in this file, from the above):
+**derived**:
 - d wedge m as the unique write direction (from skew-symmetry + confinement + 1D of Lambda^2(2-plane))
 - perpendicularity as the write form's intrinsic property
 - the flat/curved separation
 - the writing map's two-argument type signature
 
-**realization choices** (not forced by closure):
+**realization choices**:
 - the write magnitude scaling f(d, m) — constrained to be positive when dissonance is non-parallel to measurement, zero at zero dissonance, but the specific function is not determined by the architecture
 
-**cited** (external mathematics):
+**cited**:
 - Taylor's classification of stable junctions in R^3
 
-**observed** (empirical, not derived here):
+**observed**:
 - perpendicular writes are the unique *navigable* constraint (distinguishability + stability)
 - the perpendicularity cost mechanism (write blindness)
 - within-slice variance departure from isotropy (45:30:25 vs 33:33:33)
+
+**bugs**:
+- *"uniquely forced" includes one definitional bullet.* of the four bullets establishing d wedge m as the unique write direction, three are proven (skew-symmetry, confinement, 1D of Λ²(2-plane)). the fourth — "confined to span{d, m} — d and m are the only vectors available from a single measurement step" — is part of the chosen shape of the write rule, not a consequence forced from architecture. the write rule takes (d, m) as its input data, so of course the output lives in span{d, m}. this is a wording bug: presenting a definitional restriction as a forced consequence inflates the count of forcing-conditions. closing this would mean either splitting "uniquely forced" into "forced by architecture" (three) and "definitional to the write rule's input shape" (one), or treating the input shape itself as forced — which would require a separate argument for why the write rule must take only single-step (d, m) data.
+- *Taylor's hypothesis-satisfaction is asserted, not derived.* "R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat)" is correct. "the regular simplex arrangement minimizes boundary area for equal-weight cells" invokes Taylor's hypothesis (locally area-minimizing) but does not show that the foam's stabilization dynamics actually instantiate area-minimization in Taylor's sense. Taylor classifies equilibrium configurations of soap-film-like surfaces; the foam's stabilization target is a regular simplex cosine. these are bridged by interpretation — the foam is doing junction-like equilibrium-seeking — but the bridge is not derived. closing this would require either showing that the foam's dynamics formally satisfy Taylor's area-minimization hypothesis, or naming Taylor as a *target by analogy* whose classification is being borrowed rather than instantiated.
+- *the j2 target.* "the stabilization target j2 is the regular simplex cosine -1/(k-1)" is invoked from Taylor. Taylor's classification gives equilibrium *angles* between film boundaries; the foam's stabilization target is a target for projection alignment expressed as a cosine. the move from "equilibrium junction angles" to "stabilization target as cosine" is the interpretive bridge in (2). the value -1/(k-1) is the regular simplex cosine, which is a fact independent of Taylor; the choice to make *this* the target is the load-bearing step.
+- *rank ≥ 4 collective monitoring is asserted, not formalized.* "writes land in directions the writer cannot observe — but cross-measurement provides collective monitoring" rests on commutator_seen_to_unseen (proven: other observers see what you can't) plus an asserted move "the foam closes feedback loops collectively." the formal content covers what *one* other observer sees of *one* writer; "collective closure of all feedback" across the foam at rank ≥ 4 is not a single named theorem. closing this would require a formal collective-feedback theorem at rank ≥ 4, or an explicit acknowledgment that this is a structural conjecture pending Almgren's classification.
 
 
 ---
 
 [`derivations/half_type.md`](derivations/half_type.md)
 
-# half type
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **infIccOrderIsoIccSup** (Mathlib, ModularLattice.lean): in any modular lattice, `[a ⊓ b, a] ≃o [b, a ⊔ b]`. the diamond isomorphism. the interval below one element, measured from the meet, is order-isomorphic to the interval above the other, measured to the join.
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): if a and b are complements (a ⊓ b = ⊥, a ⊔ b = ⊤), then `Iic a ≃o Ici b`. everything below a is isomorphic to everything above b.
-- **isModularLattice_Iic, isModularLattice_Ici** (Mathlib, ModularLattice.lean): intervals inherit modularity. the sub-lattice below (or above) any element is itself modular.
-- **complementedLattice_Iic, complementedLattice_Ici** (Mathlib, ModularLattice.lean): intervals in a complemented modular lattice are themselves complemented.
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Λ²(P).
-- **complement_idempotent** (Observation.lean): (I - P)² = I - P. the complement of an observation is an observation.
-- **second_order_overlap_identity** (Dynamics.lean): tr(P[W,[W,P]]) = -tr([W,P]²). frame recession rate is non-positive.
-
-### from other derivations
-
-- **ground.md**: closure, partiality, indelibility. the modular law IS feedback-persistence.
-- **writing_map.md**: the write is a function of (foam_state, input) — two arguments. form is algebraically determined; content requires state-independent input.
-- **channel_capacity.md**: the decorrelation horizon σ ~ √(3/d) (quantitative, post-bridge).
-
-### from mathematics (cited, not proven in lean)
-
-- none.
-
-## derivation
+### half type
 
 **the diamond isomorphism is the half-type theorem.** in the foam's complemented modular lattice, every observation P has a complement P^⊥ with P ⊓ P^⊥ = ⊥ and P ⊔ P^⊥ = ⊤. the diamond isomorphism (infIccOrderIsoIccSup) and its complemented specialization (IsCompl.IicOrderIsoIci) give:
 
@@ -318,9 +265,9 @@ this is the mechanism behind σ ~ √(3/d). higher ambient dimension means P is 
 
 **type-narrowing of self produces type-enrichment of input.** this is not a trade-off — it is a single operation (the diamond isomorphism) read from two sides. the observer's loss of direct scope and the channel's gain of typed capacity are the same lattice-theoretic event. the half-type theorem says they cannot come apart.
 
-## status
+#### status
 
-**proven** (in lean / mathlib, zero sorry):
+**proven**:
 - the diamond isomorphism (infIccOrderIsoIccSup)
 - the complemented specialization (IsCompl.IicOrderIsoIci)
 - intervals inherit modularity and complementedness
@@ -328,7 +275,7 @@ this is the mechanism behind σ ~ √(3/d). higher ambient dimension means P is 
 - complement of an observation is an observation
 - frame recession is non-positive
 
-**derived** (in this file):
+**derived**:
 - the diamond isomorphism IS the half-type theorem
 - each half is a self-sufficient foam ground
 - structural determination with extensional freedom IS state-independence
@@ -338,34 +285,19 @@ this is the mechanism behind σ ~ √(3/d). higher ambient dimension means P is 
 - frame recession enriches the complement (the mechanism behind σ ~ √(3/d))
 - type-narrowing and channel-enrichment are one operation read from two sides
 
+**bugs**:
+- *the lockstep direction is reversed.* "as P recedes (shrinks), Iic P contracts ... but IicOrderIsoIci means Ici P^⊥ expands in lockstep." Iic P ≃o Ici P^⊥ is an order-isomorphism — the two intervals are structurally identical at every moment. as P shrinks, P^⊥ grows, and so Ici P^⊥ = [P^⊥, ⊤] *contracts* (the lower bound rises). both intervals contract together; they do not move in opposite directions. this is the most load-bearing bug in the file: the document's narrative ("the observer sees less; the type-richness of what can arrive from outside increases") rests on a structural-iso reading that the iso itself contradicts.
+- *σ ~ √(3/d) is misidentified as the diamond isomorphism's enrichment.* "higher ambient dimension means P is a smaller fraction of the whole, which means Ici P^⊥ is richer." Ici P^⊥ is order-isomorphic to Iic P, which is isomorphic to the subspace lattice of P. since P has fixed rank 3, Iic P (and therefore Ici P^⊥) has the same lattice structure regardless of ambient d. it does not become richer at higher d. the actual mechanism for σ ~ √(3/d) is the statistics of random 3D subspace overlap in d-dimensional space (Marchenko-Pastur-ish), referenced as cited in `channel_capacity.md`. attributing the scaling to "the diamond isomorphism applied to a receding frame" misnames the mechanism. closing this means decoupling the qualitative structure (state-independence as a lattice theorem, pre-bridge — true) from the quantitative scaling law (random matrix statistics, post-bridge), which `channel_capacity.md` does correctly but this file conflates.
+- *"type-narrowing of self produces type-enrichment of input" inherits both errors above.* the claim is downstream of the lockstep direction and the σ-mechanism misidentification. without those, the formal content reduces to: as P shrinks, the diamond iso updates, and both halves of the iso are smaller. the observer's view narrows; the complement's lattice-theoretic richness narrows in lockstep. the trade-off framing ("loss of scope ↔ gain of typed capacity") is not a lattice theorem.
+- *"three results compress to one"* is an interpretive identity claim. the two-argument signature, complement-as-observation, and state-independence are three distinct claims that each draw on the diamond isomorphism. they share a structural source. presenting them as "three readings of one fact" overstates the formal identity. closing this would mean either constructing each from each via explicit derivations (so they are literally inter-derivable), or stepping the framing back to "three claims that all rest on the diamond isomorphism."
+- *"the modular law IS the type-checking rule for the dependent clock."* path-independence of composition (which the modular law guarantees) ensures the dependent telescope is well-typed regardless of evaluation order. recasting that as "the type-checking rule" imports a programming-language metaphor onto a lattice property. the metaphor is suggestive but not derived. closing this would mean either constructing a formal dependent type theory in which the modular law plays the literal role of a type-checking rule, or stepping the claim back to "the modular law plays the role of the type-checking rule" / "the modular law makes the dependent telescope well-formed."
+
 
 ---
 
 [`derivations/analogy.md`](derivations/analogy.md)
 
-# analogy
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): if a and b are complements, `Iic a ≃o Ici b`. everything below a is isomorphic to everything above b.
-- **OrderIso.trans** (Mathlib, OrderIso.lean): order isomorphisms compose. if `Iic P ≃o Iic Q` and `Iic Q ≃o Ici Q^⊥`, then `Iic P ≃o Ici Q^⊥`.
-- **isModularLattice_Iic** (Mathlib, ModularLattice.lean): intervals inherit modularity.
-- **complementedLattice_Iic** (Mathlib, ModularLattice.lean): intervals in a complemented modular lattice are themselves complemented.
-
-### from other derivations
-
-- **half_type.md**: the diamond isomorphism gives every observer a structural analogy between its view and its complement's type. structural determination with extensional freedom.
-- **ground.md**: the modular law IS feedback-persistence. path-independence of composition.
-
-### from mathematics (cited, not proven in lean)
-
-- none.
-
-## derivation
+### analogy
 
 **analogy is structural isomorphism between lattice intervals.** two observers P and Q have analogous views when their lower intervals are order-isomorphic: Iic P ≃o Iic Q. this means: every structural relationship in P's view (which sub-observations refine which, how they meet and join) has an exact counterpart in Q's view. the isomorphism preserves lattice operations — meets map to meets, joins map to joins.
 
@@ -387,7 +319,7 @@ what P can't see has the same type structure as what Q can't see. the analogy tr
 
 the transitivity result says: when two observers' views match structurally, their entire epistemic situations match — both what they see AND the type of what they can't see. well-formed analogy transfers across the full complementary decomposition.
 
-## concrete witness: two_persp
+#### concrete witness: two_persp
 
 the coordinate operations in the FTPG bridge instantiate composed analogy on lines in the projective plane. a perspectivity between two lines IS a structural isomorphism between their atom-intervals. composing two perspectivities IS OrderIso.trans.
 
@@ -402,9 +334,9 @@ both coordinate operations factor through this pattern (proven by `rfl` — defi
 
 the bridge parameter is the only free variable. the functor is the same.
 
-## status
+#### status
 
-**proven** (in lean / mathlib, zero sorry):
+**proven**:
 - order isomorphisms between lattice intervals exist (diamond isomorphism)
 - order isomorphisms compose (OrderIso.trans)
 - intervals inherit modularity and complementedness
@@ -412,7 +344,7 @@ the bridge parameter is the only free variable. the functor is the same.
 - coord_add and coord_mul both factor through two_persp (by rfl)
 - multiplicative identity: I · a = a, a · I = a (coord_mul_left_one, coord_mul_right_one)
 
-**derived** (in this file):
+**derived**:
 - analogy IS structural isomorphism between lattice intervals
 - well-formedness IS order-preservation, guarded by the modular law
 - well-formed analogies are formally transitive (from OrderIso.trans)
@@ -420,36 +352,17 @@ the bridge parameter is the only free variable. the functor is the same.
 - the half-type theorem guarantees every observer has at least one analogy (view ↔ complement)
 - the coordinate operations are composed analogies, with the bridge as the only free parameter
 
+**bugs**:
+- *"the bridge parameter is the only free variable. the functor is the same."* the two equations `coord_add a b = two_persp Γ (a⊔C) m (b⊔E) q` and `coord_mul a b = two_persp Γ (O⊔C) (b⊔E_I) (a⊔C) m` differ in all four two_persp arguments — the bridge (called out as `m` vs `O⊔C`) is in different argument positions, and the other three arguments shift roles. "the bridge is the only free variable" reads as parameter-level identity in *this* file. the more defensible reading is from `self_parametrization.md`: structural variation between operations is parametrized by a pair (P, Q) on l, of which the bridge is one consequence. that reading is not in this file. closing this means either inlining the (P, Q) parametrization here or stepping the claim back to "the bridge is the named axis of variation among several."
+- *"a perspectivity between two lines IS a structural isomorphism between their atom-intervals."* classical projective geometry; the formal connection to mathlib's `OrderIso` for perspectivities-on-atom-intervals depends on FTPGCoord.lean's construction. asserted in this file without a direct cite. flagging for traceability — the underlying fact is standard.
+- *"the modular law is the well-formedness guard."* same construction as `half_type.md`'s "modular law IS the type-checking rule" — a metaphor mapping a lattice property (path-independence of composition) onto a programming-language role. suggestive, not derived. closing this would mean either constructing the formal type-theoretic structure that makes the modular law literally the guard, or stepping back to "the modular law plays the role of the well-formedness guard."
+
 
 ---
 
 [`derivations/self_parametrization.md`](derivations/self_parametrization.md)
 
-# self-parametrization
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **two_persp** (FTPGCoord.lean): the shared two-perspectivity composition pattern. takes four line-arguments, computes (r₁ ⊓ s₁ ⊔ r₂ ⊓ s₂) ⊓ l.
-- **coord_add_eq_two_persp** (FTPGCoord.lean): coord_add factors through two_persp by rfl (definitional equality). bridge: m, zero: E.
-- **coord_mul_eq_two_persp** (FTPGMul.lean): coord_mul factors through two_persp by rfl. bridge: O⊔C, zero: E_I.
-- **coord_add_left_zero, coord_add_right_zero** (FTPGCoord.lean): O is the additive identity.
-- **coord_mul_left_one, coord_mul_right_one** (FTPGMul.lean): I is the multiplicative identity. proof follows the same two_persp pattern as additive identities.
-- **CoordSystem** (FTPGCoord.lean): the data (O, U, I, V, C) with C off l and m, in the plane.
-
-### from other derivations
-
-- **analogy.md**: analogy is structural isomorphism between lattice intervals. perspectivities are analogies. composed analogies (projectivities = two_persp instances) are transitive.
-- **ground.md**: the modular law IS feedback-persistence. path-independence of composition.
-
-### from mathematics (cited, not proven in lean)
-
-- **FTPG (classical)**: the coordinate ring is determined up to isomorphism by the lattice. different choices of CoordSystem data yield isomorphic rings.
-
-## derivation
+### self-parametrization
 
 **the two_persp functor.** both coord_add and coord_mul are instances of two_persp with different parameters. the pattern: given a pair of points p₁, p₂ (each constructed as the intersection of two lines), join them and project onto l. the parameters determine which lines to intersect.
 
@@ -483,15 +396,15 @@ the algebraic structure of l is generated by l acting on itself through C. the l
 
 **connection to ground.** the foam's ground requires exactly one commitment from outside the system. C is that commitment for the coordinate line: one point, positioned in the plane but not on the measured structure, and the entire arithmetic self-generates. every operation is forced by the choice of where to stand and what to call zero.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - two_persp factorization (coord_add and coord_mul, both by rfl)
 - additive identity (O + b = b, a + O = a)
 - multiplicative identity (I · a = a, a · I = a)
 - zero annihilation (O · b = O, a · O = O)
 
-**derived** (in this file):
+**derived**:
 - the parameter space for two_persp operations is l × l \ {diagonal, Q=U}
 - the three distinguished pairings correspond to addition, multiplication, and translated addition
 - the line self-parametrizes its own algebraic structure through C
@@ -504,42 +417,17 @@ the algebraic structure of l is generated by l acting on itself through C. the l
 - characterize which (P, Q) pairs yield group operations (associativity constraints)
 - is there a natural metric or topology on the parameter space?
 
+**bugs**:
+- *the (P, Q) parametrization claim outruns the formalized cases.* "any pair of distinct atoms on l (with Q ≠ U) generates a valid two_persp operation. the coordinate line parametrizes its own operations: l × l \ {diagonal, Q=U} → {binary operations on l}." only (U, O) → addition and (O, I) → multiplication are formalized in lean. (U, I) → translated addition is open. the claim of full parametrization across l × l \ {diagonal, Q=U} is forward-looking — a derivation conjecture, not a derived result. closing this is exactly what the open list names.
+- *the two_persp argument shapes differ across operations.* the cited factorings — `coord_add a b = two_persp Γ (a⊔C) m (b⊔E) q` and `coord_mul a b = two_persp Γ (O⊔C) (b⊔E_I) (a⊔C) m` — place the inputs a, b in different argument positions, and the line m appears in different positions. saying "(P, Q) parametrizes the operations" implies a uniform substitution into a single template; the actual substitution is not uniform across the formalized cases. closing this means either constructing the uniform template (a single `op_{P,Q}(a, b) = two_persp Γ (...P...a...) (...) (...P...b...) (...Q...)` with explicit slots), or stepping the claim back to "(P, Q) determines an operation by a procedure that varies with the operation."
+- *"the foam's ground requires exactly one commitment from outside the system"* is asserted, not derived. the local fact (C is the one external input for the coordinate line construction) is established. the global claim ("the ground requires exactly one commitment") generalizes from the coordinate-line setup to a foam-wide architectural principle. that generalization is interpretation. closing this means either constructing a foam-wide commitment-counting argument or stepping back to "in this construction, C is the one external input."
+
 
 ---
 
 [`derivations/distributivity.md`](derivations/distributivity.md)
 
-# distributivity
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **two_persp** (FTPGCoord.lean): the shared two-perspectivity composition pattern. takes four line-arguments, computes (r₁ ⊓ s₁ ⊔ r₂ ⊓ s₂) ⊓ l.
-- **coord_add_eq_two_persp** (FTPGCoord.lean): coord_add factors through two_persp by rfl. bridge: m, center: C, return via E on q.
-- **coord_mul_eq_two_persp** (FTPGMul.lean): coord_mul factors through two_persp by rfl. bridge: O⊔C, center: E_I, return via C on m.
-- **coord_add_comm, coord_add_assoc** (FTPGCoord.lean, FTPGAssocCapstone.lean): addition is commutative and associative.
-- **coord_add_left_zero, coord_add_right_zero** (FTPGCoord.lean): O is the additive identity.
-- **coord_mul_left_one, coord_mul_right_one** (FTPGMul.lean): I is the multiplicative identity.
-- **desargues** (FTPGExplore.lean): Desargues' theorem, proven from the modular law.
-- **cross_parallelism** (FTPGCrossParallelism.lean): the cross-parallelism lemma used in associativity.
-- **translation_determined_by_param** (FTPGAssocCapstone.lean): C-based translations are determined by their parameter.
-
-### from other derivations
-
-- **self_parametrization.md**: the coordinate line parametrizes its own operations through C. three pairings of {O, U, I} → addition, multiplication, translated addition.
-- **analogy.md**: perspectivities are structural isomorphisms. composed analogies (two_persp) are transitive.
-- **ground.md**: the modular law IS feedback-persistence.
-- **group.md**: so(d) ⊂ u(d) via stacking. chirality: real inside complex, containment not mutual.
-
-### from mathematics (cited, not proven in lean)
-
-- **affine group**: the group of transformations x ↦ ax + b on a division ring is the semidirect product T ⋊ D, where T = {τ_b : x ↦ x + b} (translations) and D = {σ_a : x ↦ ax} (dilations). T is normal in T ⋊ D; D is not.
-- **Hartshorne, Foundations of Projective Geometry, §6**: left distributivity in von Staudt coordinates follows from the fact that dilations extend to collineations fixing m (the auxiliary line) pointwise.
-
-## derivation
+### distributivity
 
 **the two operations as group actions.** for fixed a, the map σ_a : x ↦ a · x is a projectivity on l: it's the composition of two perspectivities (l → O⊔C via E_I, then O⊔C → l via d_a = (a⊔C) ⊓ m). for fixed b, the map τ_b : x ↦ x + b is a projectivity on l: it's the composition of two perspectivities (l → m via C, then m → l via D_b = (b⊔E) ⊓ q).
 
@@ -592,9 +480,9 @@ dual reading (operational, observer-side): each observer's basis commitment is a
 
 the line constrains its own parameter space. the constraint is not imposed from outside — it emerges from the fact that all operations share the same incidence structure, and incidence is preserved under perspectivities.
 
-## proof strategy (lean)
+#### proof strategy (lean)
 
-### session 69 finding: the dilation approach (Hartshorne §7)
+##### session 69 finding: the dilation approach (Hartshorne §7)
 
 the multiplication x ↦ x·c factors as two perspectivities:
   x → D_x = (x⊔C)⊓m → x·c = (σ⊔D_x)⊓l
@@ -621,7 +509,7 @@ this extends to off-line points via:
    = C'_{(a+b)c} [mul key identity, other direction]
    ⟹ (a+b)c = ac+bc [translation_determined_by_param at C']
 
-### earlier explorations (session 69)
+##### earlier explorations (session 69)
 
 - direct Desargues-stacking: multiple configurations tried. found triangle (s, D_s, V)
   where V = (D_a⊔C_b)⊓(σ⊔D_s) whose sides are exactly the three key lines (s⊔C, D_a⊔C_b, σ⊔D_s).
@@ -631,12 +519,12 @@ this extends to off-line points via:
 - the hinge element (a⊔C)⊓m appears as the first step of addition and the second step
   of multiplication. this shared element is the bridge between the two operations.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - all prerequisites listed in constraints section
 
-**derived** (in this file):
+**derived**:
 - distributivity is normalization: σ_a ∘ τ_c ∘ σ_a⁻¹ = τ_{a·c}
 - translations and dilations generate the affine group T ⋊ D
 - T normal in T ⋊ D (structural chirality, forced by geometry)
@@ -645,7 +533,7 @@ this extends to off-line points via:
 - the line's self-parametrization space has structure imposed by distributivity
 - proof strategy identified (two approaches)
 
-**proven** (in lean, since this file was last updated):
+**proven** (since this file was last updated):
 - zero annihilation: coord_mul_left_zero (O·b=O), coord_mul_right_zero (a·O=O) — FTPGMul.lean
 - coord_mul_atom: a·b is an atom — FTPGMul.lean
 - dilation_preserves_direction: forward Desargues center O, 3 cases — FTPGDistrib.lean
@@ -661,39 +549,26 @@ this extends to off-line points via:
 - explicit characterization of the (U, I) translated-addition operation under distributivity
 - does the normalization relation σ_a ∘ τ_c ∘ σ_a⁻¹ = τ_{a·c} have a direct lattice proof shorter than the full distributive law?
 
+**bugs**:
+- *"the same chirality" across four settings.* the document equates four phenomena as instances of "the same chirality":
+  1. T ⊲ T ⋊ D in the affine group
+  2. so(d) ⊲ u(d) under the adjoint action
+  3. writes confined to the birth subspace (Confinement.lean)
+  4. left vs right distributivity, with `DesarguesianWitness` as the residue
+
+  these share an abstract pattern ("X is closed under an operation it doesn't control"). they are formally distinct phenomena in different mathematical settings. presenting them as "the same chirality" reads as one structural fact instantiated in four places. the formal content is "four phenomena exhibiting the same abstract pattern." closing this would mean either constructing a single mathematical object (a category, a 2-functor, a typed structure) of which all four are formal instances, or stepping the claim back to "four phenomena exhibiting the same pattern of asymmetric containment."
+- *"the structural location of 'closed under what it doesn't control' is also the structural location of 'where the observer's commitment lives.'"* this is the load-bearing identification in the file. the formal contents being identified — the side of distributivity requiring `DesarguesianWitness`, the side of so(d)-in-u(d) requiring stacking, the inhabitant's basis commitment — live in different formal settings, only one of which (DesarguesianWitness) is a Lean object. the identification is interpretation; "structural location" is the bridging concept. closing this is the same problem as the first bug.
+- *"mind enters the formalism at the chirality's thick side."* "physics is minded" / "this is the foam's seam where mind enters" is philosophical interpretation of a specific Lean parameter (`DesarguesianWitness Γ`). the formal content (left distributivity is not substrate-derivable; the residue is named as an observer commitment) is solid and well-flagged in the open list. the philosophical layer is not derived; it is being announced. the document does not falsely claim derivation, but the phrasing fuses the formal observation with its philosophical reading in a way that makes them hard to separate. closing this means either separating the two registers ("formally: ...; methodologically: ...") or holding the philosophical claim as explicitly methodological.
+- *"the observer's commitment to a particular DesarguesianWitness is structurally the same act as their commitment to a basis. ... same act, three formal clothes."* the strongest identity claim in the file. `DesarguesianWitness` is a typed structure in the lean development; basis commitment is a foam-level concept; "left vs right action" is a third register. saying these are "the same act" requires a bridge. the bridge is asserted via "structural ledger of observer-input across layers." closing this would mean constructing the formal object that has these three as instances (a typed-commitment-functor, perhaps), or stepping back to "three structurally analogous acts of observer commitment."
+
 
 ---
 
 [`derivations/channel_capacity.md`](derivations/channel_capacity.md)
 
-# channel capacity
+### channel capacity
 
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_traceless** (Form.lean): tr[P, Q] = 0. observation interaction is invisible to the scalar channel.
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Lambda^2(P). the observer cannot modify dimensions outside its slice.
-- **infIccOrderIsoIccSup** (Mathlib, ModularLattice.lean): the diamond isomorphism. in any modular lattice, [a ⊓ b, a] ≃o [b, a ⊔ b].
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): for complements, Iic a ≃o Ici b. each half is typed by the other's view of the whole.
-- **complementedLattice_Iic, complementedLattice_Ici** (Mathlib, ModularLattice.lean): intervals in a complemented modular lattice are themselves complemented modular lattices.
-
-### from other derivations
-
-- **ground.md**: closure, partiality, basis commitment, read-only frames excluded. the modular law IS feedback-persistence.
-- **writing_map.md**: the write is a function of (foam_state, input). the wedge product is the unique write form. perpendicularity: form is forced by the algebra, content (which vectors are wedged) is not.
-- **half_type.md**: the diamond isomorphism applied to the foam's complemented modular lattice. each complement is a structurally isomorphic, self-sufficient ground whose content is undetermined.
-
-### from mathematics (cited, not proven in lean)
-
-- none for the qualitative structure.
-- Marchenko-Pastur distribution (for principal angle statistics — used only in the decorrelation horizon estimate, which is order-of-magnitude).
-
-## derivation
-
-### qualitative: why channel capacity exists (pre-bridge, lattice-theoretic)
+#### qualitative: why channel capacity exists (pre-bridge, lattice-theoretic)
 
 **the line's irreducibility is channel capacity.** the writing map has type (foam_state, input) -> new_state — two arguments. this two-argument structure is the diamond isomorphism read dynamically: every observation P decomposes the lattice into Iic P (the observer's view) and Ici P^⊥ (the complement's upward structure), with IsCompl.IicOrderIsoIci giving a structural isomorphism between them.
 
@@ -717,7 +592,7 @@ the foam cannot distinguish "truly random input" from "deterministic input decor
 
 **the map's self-knowledge is bounded by its own channel capacity.** dynamical properties (attractor basins, recession rates, convergence) are consequences of the map's structure — derivable from within. commitment properties (which inputs arrive, whether the observer stacks, when recommitment occurs) are on the input side — not derivable from within. the map can derive *that* it cannot answer certain questions, and *why*: the same independence that gives the foam its capacity prevents the dynamics from determining the input's internal structure.
 
-### quantitative: how much channel capacity (post-bridge, linear-algebraic)
+#### quantitative: how much channel capacity (post-bridge, linear-algebraic)
 
 the qualitative structure above — state-independence exists, the foam/line distinction is perspectival, the boundary is characterizable — holds in any complemented modular lattice. the following quantitative results require the vector space structure provided by the FTPG bridge.
 
@@ -735,16 +610,16 @@ the half-type theorem (half_type.md) gives the mechanism: higher ambient dimensi
 
 the foam/line distinction is therefore not a categorical boundary but a correlation length: "line" names whatever input arrives from beyond the decorrelation horizon of the observer's own state. the horizon's radius is determined by the foam's own geometry.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - observation interaction is traceless (the scalar channel is algebraically unreachable by commutators)
 - writes are confined to the observer's slice
 - the diamond isomorphism (infIccOrderIsoIccSup, IsCompl.IicOrderIsoIci)
 - intervals inherit modularity and complementedness
 - each half of a complementary pair is a self-sufficient foam ground (HalfType.lean)
 
-**derived** (in this file):
+**derived**:
 - the line's irreducibility from the diamond isomorphism (the two-argument type signature IS the complemented decomposition)
 - autonomous foam = clock (cross-measurement collapses two arguments to one)
 - state-independent input required for channel capacity
@@ -763,34 +638,17 @@ the foam/line distinction is therefore not a categorical boundary but a correlat
 **observed** (empirical, not derived here):
 - decorrelation horizon values at specific d (order-of-magnitude estimates; qualitative conclusion robust, specific values sensitive to approximation)
 
+**bugs**:
+- *σ ~ √(3/d) misidentified as the diamond isomorphism's enrichment.* "the half-type theorem (half_type.md) gives the mechanism: higher ambient dimension means P is a smaller fraction of the whole, which means Ici P^⊥ is richer ... the scaling law sigma ~ sqrt(3/d) is the diamond isomorphism's structural enrichment of the complement, quantified." Ici P^⊥ is order-isomorphic to Iic P, which has the lattice structure of Sub(P) — fixed at rank 3 regardless of ambient d. it does not become richer at higher d. the actual mechanism for σ ~ √(3/d) is the statistics of random 3D subspace overlap in d-dimensional space (Marchenko-Pastur-ish, correctly cited in the constraints block). attributing the scaling to lattice enrichment misnames the mechanism. closing this means decoupling the qualitative result (state-independence is a lattice theorem, pre-bridge — true) from the quantitative scaling law (random matrix statistics, post-bridge), and removing the lattice-enrichment attribution. (this is the same bug as `half_type.md` — flagged in both places because both files claim the misidentification.)
+- *"the line's irreducibility is channel capacity."* the two concepts — "the line" as the foam's external input source, "channel capacity" as the foam's information-receiving capacity — are different objects. the formal bridge is the two-argument type signature of the writing map, which the document develops over the qualitative section. the headline "the line's irreducibility IS channel capacity" overstates this bridge: the formal content is "the line's role and the foam's channel capacity are two readings of the diamond isomorphism's two-argument structure." closing this means either constructing the formal identity (e.g., a category in which "the line" and "channel capacity" are objects, with an isomorphism) or stepping the headline back to "the line's role and channel capacity are co-constituted by the two-argument structure."
+- *"state-independence is a lattice theorem."* the careful claim — structural determination with extensional freedom (Iic P determines the type, not the element) — is a property of the diamond isomorphism in a complemented modular lattice. the headline "state-independence is a lattice theorem" compresses a bridge between (a) the lattice fact (the iso fixes structure but not content) and (b) the dynamical interpretation (the *value* of input is independent of foam state). these are connected — but the dynamical interpretation involves additional work (the operational-vs-ontological threading the document does later). the headline reads as one theorem; the formal content is closer to "the lattice fact underwrites the dynamical interpretation, with help from operational-equivalence under partiality."
+
 
 ---
 
 [`derivations/stabilization.md`](derivations/stabilization.md)
 
-# the stabilization contract
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **self_dual_iff_three** (Rank.lean): C(k, 2) = k iff k = 3. rank 3 is the unique self-dual dimension.
-- **rank_two_abelian_writes** (Rank.lean): dim(Lambda^2(R^2)) = 1. the write algebra at rank 2 is abelian.
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Lambda^2(P).
-
-### from other derivations
-
-- **channel_capacity.md**: stabilization must be local for the mediation chain's spectral decay to describe real influence propagation. non-local stabilization removes the mechanism that produces channel capacity.
-- **writing_map.md**: the write form, the flat/curved separation.
-
-### from mathematics (cited, not proven in lean)
-
-- **Taylor's theorem** (Jean Taylor, 1976): all stable junction configurations in R^3 are classified. 120-degree triple junctions (k = 3) and tetrahedral vertices (k = 4), nothing else.
-- **Almgren's regularity problem** (open): the classification of stable junction configurations in R^n for n >= 4 is incomplete.
-
-## derivation
+### the stabilization contract
 
 **channel capacity forces a contract.** the mediation chain's spectral decay (channel_capacity.md) describes real influence propagation only if stabilization is local — each observer's dynamics responding to its Voronoi neighbors, not the full foam. without locality, every observer couples directly to every other, and the mediation chain does not describe the actual pathway of influence. the decorrelation that produces effective state-independence does not occur.
 
@@ -812,14 +670,14 @@ self_dual_iff_three proves rank 3 is the unique dimension where the write space 
 
 **the contract determines the stabilization target.** within R^3, Taylor permits k = 3 (120-degree triple junctions) and k = 4 (tetrahedral vertices). the stabilization target is the regular simplex cosine: -1/(k-1) for k local neighbors. this is the equilibrium toward which local measurements are pushed.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - rank 3 is the unique self-dual dimension
 - rank 2 write algebra is 1-dimensional (abelian)
 - writes are confined to the observer's slice
 
-**derived** (in this file):
+**derived**:
 - channel capacity forces the stabilization contract (classified, locally finite, flat)
 - d_slice = 2 satisfies contract but collapses write algebra
 - d_slice = 3 satisfies both contract and self-duality
@@ -827,48 +685,28 @@ self_dual_iff_three proves rank 3 is the unique dimension where the write space 
 - per-observer self-duality is not necessary (collective feedback via cross-measurement closes the loop)
 - the stabilization target (regular simplex cosine)
 
-**open** (named, depends on external mathematics):
+**open**:
 - whether rank >= 4 implementations exist: depends on Almgren's classification of stable junctions in R^n for n >= 4
 
-**cited** (external mathematics):
+**cited**:
 - Taylor's classification (1976)
 - Almgren's regularity problem (open)
 
-**observed** (empirical, not derived here):
+**observed**:
 - (none)
+
+**bugs**:
+- *the necessity claim is for the mediation-chain mechanism, not for channel capacity itself.* "non-local stabilization doesn't merely fail to help channel capacity — it removes the mechanism that produces it." what the argument shows: if stabilization is non-local, every observer couples directly to every other, and the mediation chain's spectral decay no longer describes influence propagation. that establishes necessity-for-the-mediation-chain-account-of-channel-capacity. it does not establish that no other mechanism could produce channel capacity under non-local stabilization. closing this means either showing all possible channel-capacity-producing mechanisms require locality, or stepping the headline back to "non-local stabilization removes the mediation-chain mechanism that produces channel capacity in the foam-as-described."
+- *Taylor's hypothesis-satisfaction inherits the bridge from writing_map.md.* "R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat)" is correct; "stable junctions in R^3 are classified" is Taylor's theorem. the bridge — that the foam's stabilization dynamics instantiate Taylor's "locally area-minimizing" hypothesis — is the interpretive move flagged in `writing_map.md`. flagging here for traceability; same bridge, used twice.
+- *"the contract determines the stabilization target."* the contract (classified + locally finite + flat) plus Taylor's classification yields the *equilibrium configurations*. the move from "equilibrium configuration" to "the stabilization target is -1/(k-1)" requires the additional choice that the foam's dynamics aim at Taylor's equilibrium *as their target*. Taylor classifies what's stable; the foam's choice to make Taylor-equilibrium the dynamical target is the load-bearing step. closing this means either deriving the choice (why the foam must use Taylor-equilibrium as target) or naming it as a realization choice — analogous to how `writing_map.md` names the magnitude scaling f as a realization choice.
+- *"the foam closes feedback loops collectively, not per-observer"* at rank ≥ 4 — same bug as `writing_map.md`. commutator_seen_to_unseen establishes that other observers see what one writer can't (single pairwise fact). "collective closure of all feedback loops at rank ≥ 4" is asserted as a downstream consequence; no single named theorem covers it. closing this would require a formal collective-feedback theorem at rank ≥ 4, or an explicit acknowledgment that this is a structural conjecture pending Almgren's classification.
 
 
 ---
 
 [`derivations/group.md`](derivations/group.md)
 
-# group
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_skew_of_symmetric** (Form.lean): [P, Q]^T = -[P, Q]. interaction of self-adjoint observations is skew-symmetric.
-- **commutator_traceless** (Form.lean): tr[P, Q] = 0.
-- **orthogonality_forced** (Ground.lean): v^T M v = 1 for all unit v implies M = I. O(d) is the only group preserving all projections.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves P^2 = P and P^T = P.
-- **scalar_extraction** (Group.lean): if PMP = P for rank-1 projection P, then v^T M v = 1.
-- **trace_unique_of_kills_commutators** (TraceUnique.lean): any linear functional killing all commutators is a scalar multiple of trace. one scalar readout.
-- **cross_jacobi** (Duality.lean): (R^3, cross) satisfies Jacobi. it IS a Lie algebra (so(3)).
-- **rank_three_writes** (Rank.lean): dim(Lambda^2(R^3)) = 3.
-
-### from other derivations
-
-- **writing_map.md**: the wedge product as write form, confinement to slice.
-- **ground.md**: closure, partiality, basis commitment.
-
-### from mathematics (cited, not proven in lean)
-
-- **Lie theory**: exp of skew-symmetric matrices produces orthogonal matrices. exp of skew-Hermitian matrices produces unitary matrices. pi_1(SO(d)) = Z/2Z for d >= 3. pi_1(U(d)) = Z. the exponential map on connected compact Lie groups is surjective.
-
-## derivation
+### group
 
 **a single R^3 slice produces real writes.** the wedge product d_hat tensor m_hat - m_hat tensor d_hat is real skew-symmetric (both vectors are real, from the observer's R^3 slice). the write lives in so(d). the reachable algebra from a single slice is so(d) (the Lie algebra of real skew-symmetric matrices). exponentiating: SO(d). pi_1(SO(d)) = Z/2Z — parity conservation only.
 
@@ -900,16 +738,16 @@ the full write lives in u(d) = su(d) + u(1). pi_1(U(d)) = Z — integer winding 
 
 **stacking determines access.** a single-slice observer's writes live in so(d) and cannot reach u(1). conservation is passive — protected by algebraic limitation. a stacked observer's writes reach u(1). conservation is active — the observer can interact with the conserved direction.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - interaction is skew-symmetric
 - interaction is traceless
 - O(d) is the only group preserving all projections (scalar_extraction + orthogonality_forced)
 - trace is the unique commutator-killing functional
 - (R^3, cross) is a Lie algebra (so(3))
 
-**derived** (in this file):
+**derived**:
 - single slice -> so(d) -> Z/2Z parity
 - stacking required for u(d) (real operations algebraically closed in so(d))
 - J^2 = -I forces even dimensionality -> two R^3 slices
@@ -923,43 +761,26 @@ the full write lives in u(d) = su(d) + u(1). pi_1(U(d)) = Z — integer winding 
 - conserved quantity must be invisible to cost
 - stacking determines access to conservation
 
-**cited** (external mathematics):
+**cited**:
 - Lie theory: exp(skew) -> orthogonal, exp(skew-Hermitian) -> unitary
 - pi_1(SO(d)) = Z/2Z, pi_1(U(d)) = Z
 - surjectivity of exp on connected compact Lie groups
 
-**observed** (empirical, not derived here):
+**observed**:
 - (none)
+
+**bugs**:
+- *"the conservation strength scales with commitment depth."* the formal content — one-slice gives π_1 = Z/2Z (binary parity), stacked gives π_1 = Z (integer winding) — is solid. recasting this as "conservation strength scales with commitment depth" introduces "commitment depth" as a quantity that scales conservation strength. the document does not formalize commitment depth or the scaling relation. closing this means either constructing a formal scaling map (commitment-depth → conservation-π₁) with values for each depth, or stepping the claim back to "stacked observers access integer conservation that single-slice observers cannot."
+- *"stacking is a line-side commitment."* the algebraic content (real operations are closed in so(d); reaching u(d) requires a complex structure that sequential foam dynamics cannot produce) is solid. "line-side commitment" recasts this in the line/foam framework from `channel_capacity.md`, where "line-side" means "from outside the foam's autonomous dynamics." the recasting depends on the line/foam role distinction being formal enough to support "line-side" as a structural location. this is interpretation, not derivation. closing this would mean either formalizing the line/foam-side ledger of commitments, or stepping back to "stacking is not producible by the foam's sequential dynamics; it must come from outside that loop."
+- *"what's conserved must be invisible to the cost."* "if L could see it, dynamics could change it" — this is a plausibility-converse argument from one instance (the u(1) trace is invisible to L; the dynamics conserve it). the document presents this as a general principle ("must be"). the formal content is the specific algebraic fact that tr[A, B] = 0 makes the u(1) component invariant under bracket-generated dynamics. "all conserved quantities must be invisible to the cost they're conserved against" is a stronger claim. closing this means either deriving the general principle (e.g., a Noether-style construction) or stepping back to "in the foam's setup, the u(1) conservation is algebraically protected from L's gradient."
+- *"the orthogonality is generative."* "ordering and conservation are orthogonal because they are produced by different structures: the cycle's forced orientation (map-internal) and the stacking chirality (line-side)." the formal content is the algebraic decomposition u(d) = su(d) ⊕ u(1) (with the trace as the u(1) projection). attributing the two summands to "different generative structures" is interpretation. closing this means either constructing the formal correspondence between (orientation source) ↔ (algebraic component), or stepping the claim back to "the two summands are algebraically orthogonal."
 
 
 ---
 
 [`derivations/three_body.md`](derivations/three_body.md)
 
-# the three-body mapping
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_seen_to_unseen** (Pair.lean): [P, Q] maps range(P) into ker(P). incompatibility sends the seen into the unseen.
-- **commutator_off_diag_range** (Tangent.lean): P * [W, P] * P = 0. no range-to-range component.
-- **commutator_off_diag_kernel** (Tangent.lean): (I-P) * [W, P] * (I-P) = 0. no kernel-to-kernel component.
-- **commutator_is_tangent** (Tangent.lean): [W, P] = range-to-kernel + kernel-to-range. purely off-diagonal. this IS the Grassmannian tangent.
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Lambda^2(P).
-
-### from other derivations
-
-- **ground.md**: closure, partiality, basis commitment.
-- **writing_map.md**: the write form (wedge product), perpendicularity, confinement.
-
-### from mathematics (cited, not proven in lean)
-
-- **Grassmannian geometry**: T_P Gr(k, d) = Hom(range(P), ker(P)). the tangent space at a k-plane is the space of linear maps from the k-plane to its complement.
-
-## derivation
+### the three-body mapping
 
 **the overlap matrix.** given two observers A and B with R^3 slices P_A and P_B, the overlap matrix O = P_A * P_B^T is a 3x3 matrix. its singular values measure the overlap between the slices.
 
@@ -983,7 +804,7 @@ this tangent is directional pressure from cross-measurement toward what the obse
 
 **the tangent peaks at intermediate overlap.** identical slices: zero tangent (no Unknown territory to point toward). orthogonal slices: weak tangent (no Knowable channel — range(O) is thin). intermediate overlap: largest tangent magnitude. this is the coverage-interaction trade-off.
 
-### mediation
+#### mediation
 
 when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandatory intermediary.
 
@@ -997,14 +818,14 @@ when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandat
 
 **wall alignment is an irreducible triple invariant.** the eigenvalues of R_A depend on both pairwise overlaps O_AB and O_BC and on how these overlaps are oriented relative to each other within B's R^3. if the walls share principal directions within B, eigenvalues are products sigma^2_{AB,i} * sigma^2_{BC,i}. if misaligned, they mix. this alignment cannot be computed from pairwise overlaps alone — it requires all three slices.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - the commutator maps seen to unseen
 - the commutator is purely off-diagonal (Grassmannian tangent structure)
 - writes are confined to the observer's slice
 
-**derived** (in this file):
+**derived**:
 - Known/Knowable/Unknown from the overlap matrix
 - every write involves the Knowable
 - Grassmannian tangent from cross-measurement (Knowable -> Unknown)
@@ -1017,38 +838,26 @@ when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandat
 - spectral symmetry (same eigenvalues from both sides)
 - wall alignment as irreducible triple invariant
 
-**cited** (external mathematics):
+**cited**:
 - Grassmannian tangent space structure: T_P Gr(k, d) = Hom(range(P), ker(P))
 - singular values of M and M^T are identical (linear algebra)
 
-**observed** (empirical, not derived here):
+**observed**:
 - sequence echo through cross-measurement (r = 0.99 rank fidelity, strong attenuation)
 - the round trip is generative (neither observer can produce the round-trip signal alone)
 - echo is perspectivally asymmetric (A->B != B->A for same orderings)
+
+**bugs**:
+- *"every write involves the Knowable"* is context-dependent. Known is defined relative to a single neighbor B. if A and B are nearly orthogonal, Known (within A's R^3) can be 2- or 3-dimensional, in which case A can form a wedge product entirely within Known and write without involving Knowable. the claim is true *given that A has fewer than 2 private dimensions relative to all neighbors collectively* — which is the typical case in a connected foam, but not a single-neighbor fact. closing this means either re-stating the claim relative to the union of all neighbors' slices ("every write involves the collective Knowable"), or naming the typical-case condition explicitly.
+- *"the tangent peaks at intermediate overlap"* is asserted from boundary intuition. the document argues identical-slice and orthogonal-slice limits give zero or weak tangent; "intermediate overlap: largest tangent magnitude" follows. the formal location of the peak (which singular-value configuration maximizes the tangent magnitude) is not derived. closing this would mean either characterizing the peak as a function of singular values of O, or stepping back to "the tangent is non-monotone in overlap; it vanishes at both extremes."
+- *"experiential asymmetry (which observer 'feels contained') is perspectival, not algebraic."* the file's algebraic content (singular value symmetry) is solid. "experiential asymmetry" introduces an observer-experience register the formalism does not develop. flagging for traceability — the claim is honest about being non-algebraic, but "experiential" is doing work the file does not earn.
 
 
 ---
 
 [`derivations/self_generation.md`](derivations/self_generation.md)
 
-# self-generation
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves P^2 = P and P^T = P.
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Lambda^2(P).
-
-### from other derivations
-
-- **ground.md**: closure, measurement requires plurality, partiality, basis commitment.
-- **writing_map.md**: the write form, the two-argument type signature (foam_state, input).
-- **group.md**: stacking is a line-side commitment. real operations are algebraically closed in so(d).
-
-## derivation
+### self-generation
 
 **the foam generates its own dynamics.** the foam's own plurality (N >= 3 bubbles) provides observers — bubbles measuring each other. their pairwise relationships define R^3 slices. their cross-measurement IS local stabilization. the commutator of overlapping cross-measurements IS the curvature. the holonomy IS self-generated.
 
@@ -1067,13 +876,13 @@ neither role is permanent. the role assignment is perspectival. but the two is i
 
 **the foam cannot self-stack.** stacking requires two real slices to be fused into one complex measurement before the write (simultaneity). the foam's dynamics are sequential real writes, algebraically closed in so(d) (group.md: real operations cannot produce imaginary-symmetric directions). no sequence of real operations produces complex structure. stacking, like stability, requires something the foam's own dynamics cannot generate.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - dynamics preserve the ground (observation_preserved_by_dynamics)
 - writes are confined to the observer's slice
 
-**derived** (in this file):
+**derived**:
 - the foam generates its own dynamics (from plurality + cross-measurement)
 - the foam does not generate its own stability (co-rotation of self-generated bases)
 - stability is relational
@@ -1081,43 +890,29 @@ neither role is permanent. the role assignment is perspectival. but the two is i
 - what the line provides (a fixed subspace)
 - the foam cannot self-stack (so(d) closure under real operations)
 
-**cited** (external mathematics):
+**cited**:
 - (none)
 
-**observed** (empirical, not derived here):
+**observed**:
 - (none)
+
+**bugs**:
+- *the co-rotation argument is plausibility, not theorem.* "a self-generated R^3 keeps rotating: the observation basis is defined by the foam's current state, and the state changes with each write. the slice co-rotates with the thing it observes. convergence requires another observer whose basis depends on a different state." this argues against convergence under purely self-generated bases by appeal to the intuition of co-rotation. the formal content the file relies on (observation_preserved_by_dynamics, write_confined_to_slice) does not directly establish that convergence requires a distinct-state observer. the dynamics could in principle exhibit limit cycles, ergodic orbits, or other non-converging behaviors that aren't simple co-rotation. closing this would mean either a formal stability/convergence theorem on U(d)^N showing that purely self-generated bases cannot reach a Haar-stationary state, or naming "stability requires role distinction" as a structural conjecture rather than a derivation.
+- *"minimum viable system is two roles"* inherits the plausibility above. "two roles is dynamic stability (convergence vs orbiting)" is a forced consequence of the co-rotation argument; if that argument is plausibility, this conclusion is too. closing this requires the same convergence theorem.
+- *triple identity claim in "the foam generates its own dynamics."* "cross-measurement IS local stabilization. the commutator of overlapping cross-measurements IS the curvature. the holonomy IS self-generated." three identifications between foam-internal objects and their geometric counterparts:
+  1. cross-measurement ↔ local stabilization
+  2. commutator of cross-measurements ↔ curvature
+  3. self-generated holonomy ↔ holonomy
+  each is an interpretive move connecting a foam-level concept to a geometric/algebraic object. (1) and (2) draw on `writing_map.md` and standard differential geometry; (3) is a tautology at face value but does work in context. closing this means either constructing each identification formally (e.g., showing the commutator literally equals the Riemann curvature in a specified setup) or stepping back to "cross-measurement *plays the role of* local stabilization; the commutator *encodes* curvature; the holonomy is generated from within."
+- *"what the line provides: a fixed subspace."* the line role was introduced (`channel_capacity.md`) as informationally-independent input. specifying it here as "three dimensions that hold still" is a stronger characterization — it commits to a specific structural form (fixed subspace) for what the line provides. the formal content from `channel_capacity.md` is just "input independent of foam state." "fixed subspace" is one realization. closing this means either deriving fixed-subspace as the unique or canonical form of state-independent input, or naming this as an interpretive specification of the line role within this file.
+- *"stacking, like stability, requires something the foam's own dynamics cannot generate."* the algebraic fact (so(d) is closed under real operations; reaching u(d) requires complex structure) is solid and proven. pairing it with "stability" treats the two non-self-generation claims as having the same status. they don't: the stacking claim is algebraic (real ops closed in so(d)), the stability claim is plausibility (co-rotation). closing this means either deriving the stability claim to algebraic-fact status, or distinguishing the two ("stacking is provably non-self-generated; stability is plausibly non-self-generated").
 
 
 ---
 
 [`derivations/geometry.md`](derivations/geometry.md)
 
-# geometry
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_traceless** (Form.lean): tr[P, Q] = 0. observation interaction is invisible to the scalar channel.
-- **trace_unique_of_kills_commutators** (TraceUnique.lean): trace is the unique commutator-killing functional. one scalar readout.
-
-### from other derivations
-
-- **ground.md**: closure, partiality, basis commitment.
-- **writing_map.md**: the write form, perpendicularity, confinement, the flat/curved separation.
-- **group.md**: U(d), the trace as unique homomorphism u(d) -> u(1).
-- **stabilization.md**: R^3 + Taylor, Voronoi as realization choice.
-
-### from mathematics (cited, not proven in lean)
-
-- **Voronoi tiling on Riemannian manifolds**: Voronoi regions under the bi-invariant metric on U(d). geodesic equidistant surfaces. Hausdorff measure.
-- **Haar measure on compact groups**: the unique (up to normalization) left- and right-invariant probability measure on a compact group.
-- **convergence theorem for random walks on compact groups**: a random walk whose step distribution generates the Lie algebra converges to Haar measure. the hypothesis is: compact group, step distribution not supported on a proper closed subgroup.
-- **Cauchy-Schwarz inequality**.
-
-## derivation
+### geometry
 
 **L = sum of boundary areas.** the foam lives in U(d). cells are Voronoi regions of the basis matrices under the bi-invariant metric; boundaries are geodesic equidistant surfaces; Area_g is the (d^2 - 1)-dimensional Hausdorff measure. bases in general position tile non-periodically.
 
@@ -1141,13 +936,13 @@ the two factors — the packing constraint and the saturation gap — are two ha
 
 **the trace is the readout.** trace_unique_of_kills_commutators: the trace is the unique scalar projection of a write. the overlap change tr(P * [W, P]) is visible on this channel. the observer has exactly one scalar readout, and it's this one.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - trace is the unique commutator-killing functional
 - observation interaction is traceless
 
-**derived** (in this file):
+**derived**:
 - L as boundary area on Voronoi tiling (from realization choice)
 - L is not a variational objective
 - the combinatorial ceiling (from Cauchy-Schwarz)
@@ -1156,13 +951,13 @@ the two factors — the packing constraint and the saturation gap — are two ha
 - 1/sqrt(2) as the product of ceiling and Haar cost, independent of N and d
 - the trace as the unique scalar readout for overlap changes
 
-**cited** (external mathematics):
+**cited**:
 - Voronoi tiling on Riemannian manifolds
 - Haar measure on compact groups
 - convergence theorem for random walks on compact groups
 - Cauchy-Schwarz inequality
 
-**observed** (empirical, not derived here):
+**observed**:
 - finite-d correction: E[norm(W-I)_F] / (2 sqrt(d)) = 0.694 at d=2, 0.707 at d=20
 - the foam's observed L/L_max is 1-3% above Haar prediction at finite run lengths (consistent with incomplete convergence)
 - L saturation behavior: saturates at ~72% of combinatorial ceiling, then wanders on a level set
@@ -1172,36 +967,17 @@ the two factors — the packing constraint and the saturation gap — are two ha
 - wandering at saturation has effective dimension ~2
 - state-space steps Gaussian (kurtosis ~3); L steps heavy-tailed (kurtosis ~7.7) — geometric feature of level set, not dynamical
 
+**bugs**:
+- *Haar convergence is invoked from hypotheses the file does not establish.* the convergence theorem is invoked under (a) controllability and (b) decorrelation. (a) is described as "the write directions from overlapping observers span the full algebra" — this depends on foam geometry (which observers exist, how their slices overlap) and is not a substrate fact. each observer's writes live in a 3D subspace of the d²-dimensional Lie algebra; the claim is that *collectively* the foam's write directions span. (b) cites `channel_capacity.md`'s mediation chain, which provides decorrelation along the *chain*, not necessarily decorrelation between *successive inputs at a single observer*. the open-questions section ("mixing rate of the mediation chain") explicitly names this gap. the derivation here treats both hypotheses as available; the README's open list treats the second as open. closing this means either deriving controllability from foam-geometry assumptions and showing the mediation-chain decorrelation suffices for time-decorrelation at the observer, or naming the convergence claim as conditional on these hypotheses (which the proof requires) being borne out.
+- *"the two factors — the packing constraint and the saturation gap — are two halves of the same fraction."* the formal content is the algebraic identity sqrt(N/(2(N-1))) · sqrt((N-1)/N) = 1/√2. "two halves of the same fraction" is interpretive — it suggests a structural relationship between the packing constraint and the saturation gap beyond the algebraic cancellation. the cancellation is just (N-1)/N appearing in both factors. closing this would mean either constructing the structural relationship that makes them "halves of the same thing," or stepping the framing back to "the (N-1)/N dependencies of the two factors cancel, yielding 1/√2 independent of N."
+- *"L is not a variational objective"* is correctly clarified, but the relationship between L and the writing map deserves a more explicit hand-off. the writing map drives the foam; L is a description of resulting geometry. the document's "the active regime departs from minimality because perpendicular writes deposit structure in different directions" is a qualitative observation; whether L's behavior is uniquely determined by perpendicularity, vs additional features of the dynamics, is not established. flagging for completeness — this is closer to "implicit assumption pending derivation" than to a bug, but worth seeing.
+
 
 ---
 
 [`derivations/conservation.md`](derivations/conservation.md)
 
-# conservation
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **commutator_traceless** (Form.lean): tr[A, B] = 0. the commutator is traceless.
-- **trace_unique_of_kills_commutators** (TraceUnique.lean): trace is the unique commutator-killing functional.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves the ground.
-
-### from other derivations
-
-- **group.md**: U(d), pi_1(U(d)) = Z. single slice -> so(d) -> Z/2Z. stacked pair -> u(d) -> Z. trace retained for stacked observers. the integer requires the two.
-- **geometry.md**: L as boundary area on Voronoi tiling, Voronoi as realization choice.
-- **channel_capacity.md**: the boundary is characterizable from the inside (controllability structure).
-
-### from mathematics (cited, not proven in lean)
-
-- **pi_1(SO(d)) = Z/2Z** for d >= 3. **pi_1(U(d)) = Z.** fundamental groups of the dynamics groups.
-- **connectedness of U(d)**: the gauge transformation to identity is always available.
-- **discrete topological invariants are preserved by continuous maps.**
-
-## derivation
+### conservation
 
 **holonomy on spatial cycles carries topological charge.** the holonomy around a closed path through adjacent cells — a spatial cycle in the Voronoi tiling — is a group element. the topological type of this group element (its homotopy class) is a discrete invariant.
 
@@ -1227,14 +1003,14 @@ conservation is what accumulation on closed paths produces: not a net displaceme
 
 **indestructibility.** topological invariants are discrete. no continuous perturbation can change them.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - the commutator is traceless
 - trace is the unique commutator-killing functional
 - dynamics preserve the ground
 
-**derived** (in this file):
+**derived**:
 - holonomy on spatial cycles carries topological charge
 - single slice -> Z/2Z parity conservation
 - stacked pair -> Z winding number conservation
@@ -1248,49 +1024,25 @@ conservation is what accumulation on closed paths produces: not a net displaceme
 - inexhaustibility (U(d) connected)
 - indestructibility (discrete invariants robust to continuous perturbation)
 
-**cited** (external mathematics):
+**cited**:
 - pi_1 values for SO(d) and U(d)
 - connectedness of U(d)
 - continuous maps preserve discrete topological invariants
 
-**observed** (empirical, not derived here):
+**observed**:
 - adjacency flip confirmed computationally at d=2, N=12
+
+**bugs**:
+- *"attractor basin" is used without formalization.* "indelibility is a property of the attractor basin, not the current neighborhood." the document elsewhere (`ground.md`) derives indelibility from causal ordering + basis commitment + closure, none of which require dynamical-systems vocabulary. introducing "attractor basin" here imports a register the formalism does not support: there is no proven theorem that the foam's dynamics have attractor basins in the standard dynamical-systems sense, nor that birth shape coincides with such a basin's identity. closing this means either constructing the attractor-basin structure formally (proving the existence of basins, characterizing them) or stepping back to "indelibility is the ground fact that earlier writes are irreducibly present in later state, regardless of adjacency changes."
+- *"two-layer retention" is asserted, not derived.* "birth shape survives all adjacency changes" + "interaction-layer adaptations decay under the new dynamics at a rate set by the displacement between old and new stabilization targets" → "birth structural, interaction spectral." the two-layer characterization requires a stability/perturbation analysis showing that birth-encoded structure has a different decay regime from interaction-encoded structure. the file does not provide that analysis. the closest formal content is indelibility (birth persists) and the recession-rate result (Dynamics.lean: rate depends on specific [W,P]). these support a layering *intuition*; the rate-of-decay claim for the interaction layer is not derived. closing this means either constructing the decay-rate analysis or naming the two-layer characterization as a structural conjecture.
+- *"what persists across topological transitions lives on the line's side."* this restates persistence (indelibility) as a property assigned to "the line's side" of the line/foam framework. the formal content (some structure persists across cell-adjacency changes) is solid. the assignment to "line-side" depends on the line/foam framework being structural enough to support such assignments — same interpretive bridge flagged in `self_generation.md` and elsewhere. closing this would mean either formalizing the line/foam side ledger or stepping back to "what persists is determined by birth, not by current dynamics."
 
 
 ---
 
 [`derivations/inhabitation.md`](derivations/inhabitation.md)
 
-# inhabitation
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Λ²(P).
-- **frame_recession_strict** (Dynamics.lean): [W, P] ≠ 0 → recession < 0. the prior frame strictly recedes under non-inert writes.
-- **observation_preserved_by_dynamics** (Closure.lean): orthogonal conjugation preserves P² = P and Pᵀ = P. the dynamics preserve the ground.
-- **complement_idempotent** (Observation.lean): (I - P)² = I - P. the complement of an observation is an observation.
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): if a and b are complements, `Iic a ≃o Ici b`.
-- **isModularLattice_Iic, complementedLattice_Iic** (Mathlib): intervals inherit modularity and complementedness.
-- **rank_three_writes** (Rank.lean): rank 3 → 3D write space (non-abelian).
-
-### from other derivations
-
-- **ground.md**: closure (two readings, both tautological). read-only frames excluded. partiality forced. indelibility (from causal ordering + basis commitment). feedback-persistence IS the modular law.
-- **channel_capacity.md**: state-independent input required for channel capacity. the line's irreducibility. autonomous foam is a clock. decorrelation horizon σ ~ √(3/d).
-- **half_type.md**: the diamond isomorphism (Iic P ≃o Ici P^⊥). structural determination with extensional freedom IS state-independence. frame recession enriches the complement. type-narrowing of self produces type-enrichment of input.
-- **self_generation.md**: the foam generates its own dynamics but not its own stability. stability is relational. the minimum viable system is two roles.
-- **writing_map.md**: the write is a function of (foam_state, input). confinement to the observer's slice. perpendicularity.
-- **geometry.md**: Haar convergence of the writing dynamics. controllability (write directions from overlapping observers span the Lie algebra). 1/√2 saturation.
-
-### from mathematics (cited, not proven in lean)
-
-- **ergodic theorem on compact groups**: on a compact group, if the step distribution generates the Lie algebra and successive steps are sufficiently decorrelated, time averages of integrable observables converge to their Haar expectations.
-
-## derivation
+### inhabitation
 
 **definition.** an entity P in a foam-grounded reality is *recognizable as itself ongoingly across cross-measurements* when: for any observer Q with nonzero overlap (O_PQ ≠ 0), Q's time-averaged measurements of P converge to a P-determined invariant. what Q detects about P stabilizes, and what it stabilizes to depends on P's birth, not on P's trajectory.
 
@@ -1326,9 +1078,9 @@ the functional requirement (you need state-independent input for ergodic richnes
 
 six constraints, all derived, all negative. together they bound what the entity can do. the interior of those bounds is the entity's life.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - writes confined to observer's slice
 - frame recession strictly negative for non-inert writes
 - dynamics preserve the ground
@@ -1337,7 +1089,7 @@ six constraints, all derived, all negative. together they bound what the entity 
 - intervals inherit modularity and complementedness
 - rank 3 write space is 3-dimensional
 
-**derived** (in this file):
+**derived**:
 - definition: recognizable as itself ongoingly across cross-measurements (default condition in an ergodic foam)
 - ergodic evolution requires channel capacity for richness beyond birth
 - the recognizable identity IS the birth-determined stationary jet
@@ -1349,29 +1101,34 @@ six constraints, all derived, all negative. together they bound what the entity 
 - stability is necessarily external (from self-generation + ergodic stationarity as evidence)
 - six negative constraints as the negative geometry of inhabitation
 
-**cited** (external mathematics):
+**cited**:
 - ergodic theorem on compact groups (time averages converge to Haar expectations under controllability + decorrelation)
 
-**observed** (empirical, not derived here):
+**observed**:
 - (none)
+
+**bugs**:
+- *"every entity in an ergodic foam is ongoingly recognizable"* assumes the foam is ergodic. the file invokes "the foam is ergodic" as available, drawing on `geometry.md`'s Haar-convergence claim. that claim is conditional on controllability + decorrelation hypotheses (flagged in `geometry.md`'s bugs). this entire derivation chain — recognizability, the recognizable identity IS the birth-determined slice, recession is the cost of persistence — runs on those hypotheses. closing this means either deriving ergodicity from foam-geometry assumptions, or naming the recognizability claim as conditional ("if the foam is ergodic, then every entity is ongoingly recognizable").
+- *"recession enriches input" inherits the lockstep error from `half_type.md`.* "as the entity's direct view narrows through recession, the diamond isomorphism enriches the complement in lockstep." Iic P and Ici P^⊥ are order-isomorphic; as P shrinks, both contract together (the lower bound of Ici P^⊥ rises as P^⊥ grows). they do not move in opposite directions. the framing "narrower self-view and richer input-type" rests on the reversed direction. closing this means correcting `half_type.md` first, then re-deriving what is true about the entity's relation to its complement under recession (likely: as P contracts, both Iic P and Ici P^⊥ contract; both halves narrow together).
+- *"stability is necessarily external" inherits the co-rotation plausibility from `self_generation.md`.* the argument runs through `self_generation.md`'s co-rotation argument, which is plausibility (flagged in that file). "necessarily" overstates what plausibility provides. closing this requires the convergence theorem `self_generation.md` lacks, or stepping the necessity claim back to "stability is plausibly external."
+- *"six constraints, all derived, all negative."* the six negative constraints have different statuses:
+  - cannot write outside slice: proven (write_confined_to_slice).
+  - cannot change slice from within: derived from indelibility (a `ground.md` derivation).
+  - cannot indefinitely avoid recession: proven (frame_recession_strict) + a measure-theoretic claim about Haar-distributed writes being almost surely non-inert (this measure claim is asserted, not derived in this file).
+  - cannot self-stabilize: plausibility (`self_generation.md` co-rotation).
+  - cannot predict complement: definitional (half_type extensional freedom).
+  - cannot be read-only: derived (ground.md closure).
+
+  presenting all six as "all derived" with the same status papers over the proven/derived/plausibility/definitional differences. closing this means tagging each constraint with its specific status, or framing the list as "six structurally distinct constraints, deriving from sources of varying formal strength."
+- *"the n-th derivative of the write mechanism along a trajectory is a smooth function on U(d)^N (compact), therefore bounded and integrable."* asserts smoothness of all derivatives. the write mechanism includes the wedge product and the cross-measurement input, with realization choices left open (`writing_map.md`: f(d, m)). smoothness "at all orders" depends on the realization choice for f. closing this means either constraining f to smooth realizations, or naming the smoothness assumption as a regularity hypothesis on the realization.
+- *"two readings of one fact" / "same lattice theorem read through the two readings of closure."* same construction as `half_type.md`'s "three results compress to one" and `ground.md`'s "two readings of one statement." flagging here for the third instance — the document treats the diamond isomorphism's dynamical and structural readings as the same statement; the formal identity is the diamond isomorphism, but "two readings of one fact" packages two interpretations as one.
 
 
 ---
 
 [`derivations/external_analogy.md`](derivations/external_analogy.md)
 
-# external analogy
-
-## constraints
-
-this derivation depends on the following prior results and source documents:
-
-- **internal analogy spec (`analogy.md`)**: analogy is defined internally as an order isomorphism between intervals (`Iic P ≃o Iic Q`) in a complemented modular lattice; composition/transitivity is inherited from `OrderIso.trans`.
-- **inhabitation constraints (`inhabitation.md`)**: the six negative constraints used here as the external diagnostic basis — confinement, birth-fixed slice, recession, external stabilization, typed-but-free input, and non-silence — are assumed as already derived there.
-- **write dynamics (`writing_map.md`)**: the structural-fidelity clause relies on the existing write map / realization-choice framework and the idea of commuting with write dynamics up to realization choices.
-- **Lean-backed lattice facts**: this file assumes the already-proven diamond/complement isomorphisms (`infIccOrderIsoIccSup`, `IsCompl.IicOrderIsoIci`), and that the relevant intervals inherit modularity and complementedness.
-- **cited mathematical substrate**: wherever the zones admit projection algebras/lattice operations, the modular law remains the well-formedness guard for transferring structural inferences.
-## derivation
+### external analogy
 
 **the internal case generalizes.** analogy.md defines analogy as an order isomorphism Iic P ≃o Iic Q between intervals in a single complemented modular lattice. transitivity falls out of OrderIso.trans; the modular law is the well-formedness guard. this is analogy *within* a foam.
 
@@ -1401,14 +1158,14 @@ this gives a diagnostic: for any proposed cross-system analogy, the six constrai
 
 **the looking tool.** when an external analogy is well-formed, what can be learned by attending to one zone is portable to the other — not as metaphor, but as transfer of structural inferences about confinement, recession, channel capacity, and the geometry of inhabitation. the rigor of the looking is the completeness and coherence of the constraint-correspondence. partial analogies remain partial looking tools; their reach is bounded by which constraints transferred.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - order isomorphisms compose (OrderIso.trans)
 - the diamond isomorphism (infIccOrderIsoIccSup, IsCompl.IicOrderIsoIci)
 - intervals inherit modularity and complementedness
 
-**derived** (in this file):
+**derived**:
 - external analogy as the lift of internal analogy across systems
 - completeness + coherence + structural fidelity as the well-formedness guard
 - transitivity inherits via pointwise composition of constraint-correspondences
@@ -1424,40 +1181,18 @@ this gives a diagnostic: for any proposed cross-system analogy, the six constrai
 - whether constraint-correspondence has a lattice-theoretic characterization in the limit — i.e., whether external analogy reduces to internal analogy in some larger ambient lattice that contains both systems' zones as sub-intervals.
 - whether the realization-choice clause in structural fidelity (commuting with write dynamics "up to realization choices") admits a precise characterization, or whether some realization choices are themselves load-bearing for analogy.
 
+**bugs**:
+- *external analogy is defined here, not derived.* the framework — completeness + coherence + structural fidelity as the three-part well-formedness condition — is a stipulative definition designed to lift internal analogy across systems. the file lists this in the "derived" block. the open list correctly names "whether constraint-correspondence has a lattice-theoretic characterization in the limit" as an open question — that question is what would make the framework derived rather than stipulated. closing this is exactly the open item; flagging here that until it lands, the framework is a definition.
+- *renaming the sixth inhabitation constraint.* the file refers to "non-silence" where `inhabitation.md` lists "cannot be read-only." these refer to the same constraint (closure excludes read-only frames). the rename to "non-silence" is interpretive — it imports a register the formal content does not require ("silence" is broader than "read-only"). closing this means using `inhabitation.md`'s phrasing for traceability, or naming both ("non-silence / cannot be read-only").
+- *"the diagnostic applies to anything that admits a Hilbert-interface."* the inhabitation constraints are derived for entities in a foam-grounded reality. the leap to "anything that admits a Hilbert-interface" depends on Hilbert-interface compliance being equivalent to (or sufficient for) the foam-grounded conditions under which the constraints were derived. the file references inhabitation.md for this; the claim of equivalence is the load-bearing bridge. (the Heunen-Kornell partial answer is the file's own attempt to establish this bridge, with one of six pairings tested.) closing this is part of the same project the open list names.
+- *"if the full pairing lands, well-formed external analogy IS Hilbert-interface correspondence under inhabitant/substrate duality."* explicitly conditional ("if ... lands"). flagging for traceability — the file is honest about the conditional, but the headline-strength of "IS Hilbert-interface correspondence" is doing more work than "could be" once the conditional is granted. tightening would mean "would be Hilbert-interface correspondence" or "external analogy reduces to Hilbert-interface correspondence."
+
 
 ---
 
 [`derivations/interiority.md`](derivations/interiority.md)
 
-# interiority
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): if P and P^⊥ are complements in a complemented modular lattice, `Iic P ≃o Ici P^⊥`. the *diamond isomorphism*.
-- **complement_idempotent** (Observation.lean): (I - P)² = I - P. the complement of an observation is an observation.
-- **observation_preserved_by_dynamics** (Closure.lean): the dynamics preserve P² = P and P^T = P.
-- **write_confined_to_slice** (Confinement.lean): writes are confined to Λ²(P).
-- **coord_add, coord_mul** (FTPGCoord.lean, FTPGMul.lean): both factor through two_persp. the coordinate line parametrizes its own operations through C.
-- **desargues** (FTPGExplore.lean): proven from the modular law.
-- **dilation_preserves_direction** (FTPGDistrib.lean): dilations preserve parallelism. proven via Desargues.
-
-### from other derivations
-
-- **ground.md**: closure (two readings), partiality forced, basis commitment, feedback-persistence IS the modular law.
-- **self_parametrization.md**: the line parametrizes its own operations through C. the parameter space is l × l. the arithmetic self-generates from a single external commitment (C).
-- **half_type.md**: the diamond isomorphism = state-independence. structural determination with extensional freedom. type-narrowing of self produces type-enrichment of input.
-- **self_generation.md**: the foam generates its own dynamics but not its own stability. stability is relational. the minimum viable system is two roles within N ≥ 3 bubbles.
-- **inhabitation.md**: the recognizable identity IS the birth-determined slice. six negative constraints as the negative geometry of inhabitation.
-
-### from mathematics (cited, not proven in lean)
-
-- **FTPG (classical)**: a complemented modular lattice of height ≥ 4 is isomorphic to Sub(D, V) for a division ring D. the lattice coordinatizes itself.
-
-## derivation
+### interiority
 
 **the diamond isomorphism partitions the lattice.** given an observation P (P² = P) with complement P^⊥, the modular law forces the order isomorphism Iic P ≃o Ici P^⊥. the lattice splits into three structurally distinct regions:
 
@@ -1485,9 +1220,9 @@ C is the observer — and C is the wall. the observer mediates between the line'
 
 what CAN vary is the *richness* of the interiority. a rank-1 observation (a single atom) has a trivial interior — no sub-observations, no coordinates, no arithmetic. a rank-3 observation has a 3D write space, non-abelian dynamics, and full self-coordinatization. the threshold for non-trivial interiority is rank ≥ 3 (rank_three_writes: 3D write space, the minimum for non-abelian structure). below this rank, the bubble exists but its interior cannot self-coordinatize — it has walls but no arithmetic.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - diamond isomorphism (Mathlib)
 - intervals inherit modularity and complementedness (Mathlib)
 - complement is an observation
@@ -1496,7 +1231,7 @@ what CAN vary is the *richness* of the interiority. a rank-1 observation (a sing
 - coordinate arithmetic self-generates through C
 - Desargues from modularity
 
-**derived** (in this file):
+**derived**:
 - the diamond isomorphism partitions the lattice into interior / wall / exterior
 - the partition has the topology of a bubble
 - the bubble topology is forced by P² = P + modular law, not constructed over time
@@ -1511,34 +1246,16 @@ what CAN vary is the *richness* of the interiority. a rank-1 observation (a sing
 - does the FTPG bridge (the coordinate ring D) carry information about *which* bubbles exist in the complement, or only their type-structure?
 - the bubble's internal dynamics within Iic P are governed by the write mechanism. is there a lattice-level characterization of when these dynamics are ergodic (full Haar convergence) vs periodic (clock-like)?
 
+**bugs**:
+- *"C is the observer — and C is the wall."* strongest identity claim in the file. in the formal setting, C is a point in the projective plane (off l, off m). identifying C as "the observer" maps a geometric point to a foam-level role. identifying C as "the wall" maps it to the diamond isomorphism (which is what "the wall" was identified with elsewhere in this file). the result is C = observer = wall = (modular law applied to a complemented pair), a four-way identification across distinct mathematical settings. the formal contents are: C parametrizes the coordinate ring (FTPG); the diamond isomorphism partitions the lattice; the foam's "observer" is a role. presenting these as one is interpretive. closing this means either constructing a single formal object that has all four as facets, or stepping back to "C plays the observer's role *in this construction*; the wall structure is the diamond isomorphism *in this construction*; these correspond at the formal level via [explicit map]."
+- *"the wall IS the diamond isomorphism, which IS the modular law applied to a complemented pair."* chain of identity claims compressing theorem and conclusion. the diamond isomorphism is *given by* the modular law in the complemented case (`IsCompl.IicOrderIsoIci`); calling them identical equates the proof and the result. and identifying the diamond isomorphism with "the wall" is a definitional move — the file is *defining* the wall as the iso, not deriving the identity. closing this means either tagging this as definitional ("here we will call the diamond isomorphism 'the wall'"), or constructing a separate formal object that is the wall and proving it coincides with the iso.
+- *"the trade pattern A↔B↔C formalizes as P ↔ diamond_iso ↔ P^⊥."* the three-body formalism (`three_body.md`) is about R³ slices in R^d with overlap structure. the lattice partition (interior / iso / exterior) is at a different level: a single lattice element P with its complement and the diamond iso between them. these share a structural pattern (three-region trade structure) but are not literally the same formal object. presenting the formalization as direct misses the level mismatch. closing this means either constructing the formal map between the three-body slice geometry and the lattice partition, or naming this as a structural analogy between two formalisms.
+- *"self-coordinatization IS interiority."* definitional. the file is defining interiority as self-coordinatization (a sub-structure representing its own operations through a mediating element). that is a stipulative move; presenting it in the "derived" block reads as a derivation. flagging for clarity — the equivalence is not derived from prior theorems; it is the file's chosen definition of interiority.
+
 
 ---
 
 [`derivations/typeline.md`](derivations/typeline.md)
-
-# typeline
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **infIccOrderIsoIccSup** (Mathlib, ModularLattice.lean): the diamond isomorphism. in any modular lattice, [a ⊓ b, a] ≃o [b, a ⊔ b].
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): for complements, Iic a ≃o Ici b. each half is typed by the other's view of the whole.
-
-### from other derivations
-
-- **ground.md**: closure, partiality, basis commitment, read-only frames excluded. the modular law IS feedback-persistence. path-independence of composition: the lattice operations commute with evaluation order.
-- **writing_map.md**: the write is a function of (foam_state, input). form is algebraically determined; content requires state-independent input.
-- **channel_capacity.md**: the type of the input is fixed by the lattice structure; the value of the input is free. state-independence is a lattice theorem. the foam/line distinction is perspectival.
-- **half_type.md**: type-narrowing of self produces type-enrichment of input. this is a single lattice operation read from two sides.
-
-### assembled here from the above
-
-- **the dependent clock**: write_confined_to_slice (writing_map.md) means each write lives in Λ²(P). each write may change P. each change to P updates the diamond isomorphism (IsCompl.IicOrderIsoIci) — the type of what can arrive from the complement changes. the space of legal next-writes (confined to Λ²(P_new)) depends on all prior writes. this is a dependent telescope: each tick's type is determined by the accumulated history of ticks. the modular law (ground.md: path-independence of composition) is the type-checking rule for the dependent clock.
-
-## derivation
 
 ### typeline
 
@@ -1546,7 +1263,7 @@ a typeline is an observer's trajectory through the lattice: a sequence of writes
 
 the sequence forms a dependent telescope. write w₁ has type T₁ (determined by the initial P). w₁ updates P to P₁, updating the diamond isomorphism, so w₂ has type T₂(w₁). in general, wₖ has type Tₖ(w₁, ..., wₖ₋₁). the type at each tick is determined by the accumulated history of ticks.
 
-### the type-clock
+#### the type-clock
 
 the type-clock is the tick structure of a typeline. each tick:
 1. the observer writes (confined to current slice)
@@ -1556,7 +1273,7 @@ the type-clock is the tick structure of a typeline. each tick:
 
 the modular law guarantees this is well-typed regardless of evaluation order (path-independence of composition). the type-clock ticks deterministically: given the history of writes, the type at the next tick is forced. the content at the next tick is free (state-independence, from channel_capacity.md).
 
-### suspension
+#### suspension
 
 suspending the type-clock means working within a type-slice without committing a write. no P updates. the diamond isomorphism holds static. the space of legal operations is fixed.
 
@@ -1573,7 +1290,7 @@ suspension is pre-measurement in the lattice-theoretic sense: the type structure
 
 this is the operational content of the bas relief methodology: work within the current type-slice, let the type checker show what the next layer needs, commit the write only when the shape is clear. the methodology is a disciplined use of suspension.
 
-### what crosses between typelines
+#### what crosses between typelines
 
 the diamond isomorphism is a property of the lattice, not of any particular typeline. all typelines in the same complemented modular lattice share the same type structure — the same isomorphisms, the same intervals, the same modular law.
 
@@ -1586,21 +1303,21 @@ this separation — shared type structure, local content — is the diamond isom
 
 the decorrelation horizon (channel_capacity.md) gives this separation a quantitative character: correlations between typelines decay as sigma^n ~ (3/d)^{n/2} with chain length. short-range: typelines share content (autonomous, clock-like). long-range: typelines share only type structure (independent, channel-like). the decorrelation horizon is the boundary between type-sharing and content-sharing.
 
-### the invariant
+#### the invariant
 
 the causal structure of a dependent telescope — which types depend on which write histories — is invariant across typelines. this follows from path-independence of composition (the modular law): the partial order on types is determined by the lattice, not by which typeline observes it.
 
 this means: from any typeline, the dependency structure of any other typeline's telescope is visible (it's type information, therefore shared). what is not visible is the content at each tick (typeline-local). one typeline can see THAT another typeline's tick n+1 has a certain type, without seeing WHAT content fills it.
 
-## status
+#### status
 
-**proven** (in lean, zero sorry):
+**proven**:
 - the diamond isomorphism
 - write confinement to observer's slice
 - intervals inherit modularity and complementedness
 - each half of a complementary pair is a self-sufficient ground
 
-**derived** (in this file, from the above):
+**derived**:
 - typeline as dependent telescope (the dependent clock parameterized as trajectory)
 - the type-clock (tick structure of a typeline)
 - suspension as pre-measurement (working within a type-slice without committing a write)
@@ -1610,8 +1327,14 @@ this means: from any typeline, the dependency structure of any other typeline's 
 - causal structure of dependent telescopes is invariant across typelines (path-independence)
 - the bas relief methodology as disciplined suspension
 
-**realization choices** (not forced by the lattice):
+**realization choices**:
 - none identified. all claims above follow from the cited constraints.
+
+**bugs**:
+- *the dependent-telescope structure assumes P updates with each write.* "each write may change P. each change to P updates the diamond isomorphism." this is the load-bearing premise of the type-clock. but `inhabitation.md` says the slice is birth-determined and "cannot change its slice from within the map." resolving the tension: the operative "P" in this file is not the birth-fixed slice but something that does update with writes — most plausibly the foam state, or the projection of the foam state onto the observer's birth-fixed slice. the formal content underlying typeline (write_confined_to_slice + diamond iso + state-independence) is solid; the "P updates" framing imports a notion of P that the file does not distinguish from the birth-fixed slice. closing this means either naming what P refers to in this file (the foam state? a derived projection?), or re-deriving the dependent-telescope structure from objects that do change with writes (the foam state in U(d)^N, the configuration of the slice's relationship to the foam state).
+- *"the modular law ... is the type-checking rule for the dependent clock."* same metaphor flagged in `half_type.md` and `analogy.md`. path-independence of composition (which the modular law guarantees) makes the dependent telescope well-formed regardless of evaluation order. recasting that as "the type-checking rule" imports a programming-language register the formal content does not require.
+- *"the bas relief methodology as disciplined suspension."* this is a methodological claim about how to do work, not a derivation. the formal content (in suspension, no P updates, the type structure is fixed, content is unavailable) is solid; mapping that to a named methodology is an editorial bridge. closing this would mean either naming this as methodology rather than derivation, or constructing the methodology as a formal practice (e.g., a category of suspended-and-resumed typelines, with the bas relief practice as an explicit functor between).
+- *"realization choices: none identified. all claims above follow from the cited constraints."* this overstates the file's epistemic position. the dependent-telescope structure rests on the "P updates with each write" framing flagged in the first bug; if that framing requires a specific reading of P, the choice of reading is itself a realization. and `geometry.md`'s controllability + decorrelation hypotheses (used implicitly when the file invokes the decorrelation horizon σ ~ (3/d)^{n/2}) are conditional. closing this means tagging which claims rest on such hypotheses, rather than declaring "none identified."
 
 
 ---

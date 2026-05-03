@@ -1,26 +1,4 @@
-# analogy
-
-## constraints
-
-this derivation claims only what follows from these results. any additional assumption is a bug.
-
-### from lean (proven)
-
-- **IsCompl.IicOrderIsoIci** (Mathlib, ModularLattice.lean): if a and b are complements, `Iic a ≃o Ici b`. everything below a is isomorphic to everything above b.
-- **OrderIso.trans** (Mathlib, OrderIso.lean): order isomorphisms compose. if `Iic P ≃o Iic Q` and `Iic Q ≃o Ici Q^⊥`, then `Iic P ≃o Ici Q^⊥`.
-- **isModularLattice_Iic** (Mathlib, ModularLattice.lean): intervals inherit modularity.
-- **complementedLattice_Iic** (Mathlib, ModularLattice.lean): intervals in a complemented modular lattice are themselves complemented.
-
-### from other derivations
-
-- **half_type.md**: the diamond isomorphism gives every observer a structural analogy between its view and its complement's type. structural determination with extensional freedom.
-- **ground.md**: the modular law IS feedback-persistence. path-independence of composition.
-
-### from mathematics (cited, not proven in lean)
-
-- none.
-
-## derivation
+### analogy
 
 **analogy is structural isomorphism between lattice intervals.** two observers P and Q have analogous views when their lower intervals are order-isomorphic: Iic P ≃o Iic Q. this means: every structural relationship in P's view (which sub-observations refine which, how they meet and join) has an exact counterpart in Q's view. the isomorphism preserves lattice operations — meets map to meets, joins map to joins.
 
@@ -42,7 +20,7 @@ what P can't see has the same type structure as what Q can't see. the analogy tr
 
 the transitivity result says: when two observers' views match structurally, their entire epistemic situations match — both what they see AND the type of what they can't see. well-formed analogy transfers across the full complementary decomposition.
 
-## concrete witness: two_persp
+#### concrete witness: two_persp
 
 the coordinate operations in the FTPG bridge instantiate composed analogy on lines in the projective plane. a perspectivity between two lines IS a structural isomorphism between their atom-intervals. composing two perspectivities IS OrderIso.trans.
 
@@ -57,9 +35,9 @@ both coordinate operations factor through this pattern (proven by `rfl` — defi
 
 the bridge parameter is the only free variable. the functor is the same.
 
-## status
+#### status
 
-**proven** (in lean / mathlib, zero sorry):
+**proven**:
 - order isomorphisms between lattice intervals exist (diamond isomorphism)
 - order isomorphisms compose (OrderIso.trans)
 - intervals inherit modularity and complementedness
@@ -67,10 +45,15 @@ the bridge parameter is the only free variable. the functor is the same.
 - coord_add and coord_mul both factor through two_persp (by rfl)
 - multiplicative identity: I · a = a, a · I = a (coord_mul_left_one, coord_mul_right_one)
 
-**derived** (in this file):
+**derived**:
 - analogy IS structural isomorphism between lattice intervals
 - well-formedness IS order-preservation, guarded by the modular law
 - well-formed analogies are formally transitive (from OrderIso.trans)
 - analogous views imply analogous complements (from diamond isomorphism + transitivity)
 - the half-type theorem guarantees every observer has at least one analogy (view ↔ complement)
 - the coordinate operations are composed analogies, with the bridge as the only free parameter
+
+**bugs**:
+- *"the bridge parameter is the only free variable. the functor is the same."* the two equations `coord_add a b = two_persp Γ (a⊔C) m (b⊔E) q` and `coord_mul a b = two_persp Γ (O⊔C) (b⊔E_I) (a⊔C) m` differ in all four two_persp arguments — the bridge (called out as `m` vs `O⊔C`) is in different argument positions, and the other three arguments shift roles. "the bridge is the only free variable" reads as parameter-level identity in *this* file. the more defensible reading is from `self_parametrization.md`: structural variation between operations is parametrized by a pair (P, Q) on l, of which the bridge is one consequence. that reading is not in this file. closing this means either inlining the (P, Q) parametrization here or stepping the claim back to "the bridge is the named axis of variation among several."
+- *"a perspectivity between two lines IS a structural isomorphism between their atom-intervals."* classical projective geometry; the formal connection to mathlib's `OrderIso` for perspectivities-on-atom-intervals depends on FTPGCoord.lean's construction. asserted in this file without a direct cite. flagging for traceability — the underlying fact is standard.
+- *"the modular law is the well-formedness guard."* same construction as `half_type.md`'s "modular law IS the type-checking rule" — a metaphor mapping a lattice property (path-independence of composition) onto a programming-language role. suggestive, not derived. closing this would mean either constructing the formal type-theoretic structure that makes the modular law literally the guard, or stepping back to "the modular law plays the role of the well-formedness guard."
