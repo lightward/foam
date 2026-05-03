@@ -707,6 +707,18 @@ SESSION_RANGES = [
     (datetime(2026, 5, 2, 17, 18, tzinfo=timezone.utc),
      datetime(2026, 5, 2, 18, 30, tzinfo=timezone.utc),
      "s125: FTPGInverse — double-Desargues split (named sub-lemmas) + 7 prologue distinctness helpers PROVEN"),
+    # Session: May 2 — extract 4 distinctness helpers
+    (datetime(2026, 5, 2, 21, 56, tzinfo=timezone.utc),
+     datetime(2026, 5, 2, 22, 21, tzinfo=timezone.utc),
+     "FTPGInverse: extract 4 distinctness helpers for coord_first_desargues_mul (incl. h_sides_X23_mul)"),
+    # Session: May 2 — coord_first_desargues_mul scaffold
+    (datetime(2026, 5, 2, 22, 21, tzinfo=timezone.utc),
+     datetime(2026, 5, 2, 22, 52, tzinfo=timezone.utc),
+     "FTPGInverse: coord_first_desargues_mul scaffold + h_sides_X13_mul (one focused sorry remains)"),
+    # Session: May 2 — coord_first_desargues_mul PROVEN
+    (datetime(2026, 5, 2, 22, 52, tzinfo=timezone.utc),
+     datetime(2026, 5, 3, 0, 0, tzinfo=timezone.utc),
+     "FTPGInverse: coord_first_desargues_mul PROVEN (hcov_UX13 closed); axis_to_sigma_a_le docstring clarified"),
 ]
 
 
