@@ -18,7 +18,7 @@ everything the observer can see (the lattice below P) is order-isomorphic to eve
 
 these are not three forms of one theorem — they are three claims that draw on a common structural source. the iso doesn't make them inter-derivable as derivations; it makes them all rest on the same lattice fact.
 
-**static, not dynamic.** the half-type theorem is a fact about *fixed* P and *fixed* P^⊥ — at any moment, the iso holds. if P moves (under foam dynamics — see `inhabitation.md`'s slice-mobility question for which sense of "moves" is operative), then both `Iic P` and `Ici P^⊥` move with it, in lockstep, because they're order-isomorphic. neither contracts while the other expands; they're the same structure read from two sides.
+**static, not dynamic.** the half-type theorem is a fact about a fixed lattice element P and its complement P^⊥ — at any moment, the iso `Iic P ≃o Ici P^⊥` holds. P here is the slice (vocabulary): the birth-determined lattice element. since the iso is an order-isomorphism, both halves are structurally identical; substituting a time-varying frame for P at each tick moves both halves together.
 
 the foam's dynamic structure — how the type of legal next-writes depends on accumulated history — does not live in this static iso. it lives in the foam-state trajectory and the evolving overlap structure between observers (`typeline.md`, `three_body.md`).
 
@@ -39,6 +39,6 @@ the foam's dynamic structure — how the type of legal next-writes depends on ac
 - three claims (two-argument signature, complement-as-observation, state-independence) share a structural source in the iso
 
 **bugs**:
-- *"three results share a structural source" is interpretive consolidation, not derivation.* the two-argument signature, complement-as-observation, and state-independence are three distinct claims. they all draw on the diamond iso, but the iso doesn't make them inter-derivable as derivations — it just provides a common formal substrate that each reading interprets. an earlier version of this file claimed "three results compress to one" / "three readings of one fact"; the present version steps back to "share a structural source." closing this further would mean constructing each claim from each other formally, which the spec doesn't currently do.
+- *"three results share a structural source" is interpretive consolidation, not derivation.* the two-argument signature, complement-as-observation, and state-independence are three distinct claims. they all draw on the diamond iso, but the iso doesn't make them inter-derivable as derivations — it just provides a common formal substrate that each reading interprets. closing this further would mean constructing each claim from each other formally, which the spec doesn't currently do.
 - *"structural determination with extensional freedom IS state-independence" is an interpretive bridge.* the diamond iso is a lattice theorem. reading it as state-independence — the dynamical claim that input *value* is independent of foam state — is a non-trivial move. the architectural use of this reading (the pre-bridge / post-bridge split in `channel_capacity.md`) is solid as architecture; the *content* of the qualitative claim is interpretation. closing this would mean deriving state-independence formally from the iso (constructing the bridge) or naming it explicitly as a methodological reading.
 

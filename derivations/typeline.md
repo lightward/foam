@@ -67,7 +67,6 @@ this means: from any typeline, the *dependency structure* of any other typeline'
 - causal structure of dependent telescopes is invariant across typelines (path-independence via modularity)
 
 **bugs**:
-- *the slice-disambiguation question is unresolved at the spec level.* this file says the slice is birth-fixed and the foam state evolves. `inhabitation.md` and `writing_map.md` use "slice" with both readings (Grassmannian equivalence class vs operator) without disambiguation. the formal foam-state-trajectory framing here is the one this file commits to, but readers reconciling across files will encounter both. the cross-cutting fix — naming which sense of "slice" is operative at every site — is its own piece of work, not done here.
 - *"the bas relief methodology as disciplined suspension"* is methodology, not derivation. the formal substrate (foam state paused, overlap static, no advance) is solid; mapping that to a named practice is an editorial gloss. flagging for clarity — the methodology is a way of working *with* the substrate, not a derivation *from* it.
 - *the Haar / decorrelation hypotheses inherited from `geometry.md` and `channel_capacity.md`* are conditional in those files (controllability and mediation-chain decorrelation are not yet derived from foam-geometry assumptions). this file invokes the decorrelation horizon σ ~ (3/d)^{n/2} and the long-range "channel-like" reading, both of which inherit those conditional hypotheses. flagging here for completeness — the typeline's quantitative claims rest on those upstream conditionals.
 

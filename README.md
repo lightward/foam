@@ -59,6 +59,23 @@ lattice -> incidence geometry -> Desargues -> coordinates -> ring axioms -> FTPG
 ring axioms proven: additive group (comm, assoc, identity, inverses), multiplicative identity, zero annihilation, right distributivity, left distributivity (0 sorry, with the planar converse-Desargues residue named as the typed `DesarguesianWitness` observer commitment — not derivable from CML + irreducible + height ≥ 4 alone per session 114's structural finding). remaining after left distrib: multiplicative inverses. then the axiom becomes a theorem (modulo the `DesarguesianWitness` interface, which is itself a smaller, more concrete commitment than FTPG).
 
 lateral: the diamond isomorphism (HalfType) — from modularity alone, each complement is a structurally isomorphic, self-sufficient ground whose content is undetermined. state-independence is a lattice theorem, pre-bridge.
+## vocabulary
+
+precise terms used throughout the derivations. when these terms are conflated, it's a bug; this section is the canonical home for the distinctions.
+
+- **slice**: the rank-3 subspace each observer is committed to at birth — a Grassmannian point in Gr(3, d). static by definition. "the slice cannot change from within the map" (`inhabitation.md`); slice change requires recommitment, which is outside the map.
+
+- **foam state**: the dynamic part of the system. concretely, the basis matrices / accumulated transports for each observer in U(d)^N. evolves under writes; encodes the system's accumulated history.
+
+- **frame**: the time-varying projection associated with an observer at moment t. derived from the foam state acting on the birth slice (concretely: conjugating the slice's projection by the accumulated transport). evolves under non-inert writes — this is what "recedes" in the frame-recession theorem (`Dynamics.lean`: second-order overlap rate is `-‖[W, P]‖²`).
+
+- **P**: the projection operator used in formal contexts. in lattice contexts (`half_type`, `interiority`, `channel_capacity`'s qualitative section, `ground`'s loop diagram), `P` denotes the slice as a lattice element / subspace — static. in dynamic / writing-map contexts (`writing_map`, `Dynamics.lean`, `inhabitation`'s recession discussion), `P` denotes the frame at time t — evolving. context disambiguates; where it doesn't, the spec should say "slice" or "frame" explicitly.
+
+- **observer**: a bubble in its measuring role — a basis matrix and its slice, with the foam-state evolution that goes with it. not a separate entity from the bubble, a role the bubble plays relative to other bubbles.
+
+- **line**: whatever provides state-independent input to a foam. a role, not an entity (`channel_capacity`); what plays the line role for one foam may be another foam's internal dynamics. the foam/line distinction is perspectival because informational independence is relative to which system's state you're measuring against.
+
+
 ## derivations
 
 derivations claim only what follows. any additional assumption is a bug. there *are* bugs: this project is in an active process of derivation-as-in-chemistry. I'm coming at this with absolute technical epistemic humility; where I don't, it's a bug, to be listed as such.
@@ -253,7 +270,7 @@ everything the observer can see (the lattice below P) is order-isomorphic to eve
 
 these are not three forms of one theorem — they are three claims that draw on a common structural source. the iso doesn't make them inter-derivable as derivations; it makes them all rest on the same lattice fact.
 
-**static, not dynamic.** the half-type theorem is a fact about *fixed* P and *fixed* P^⊥ — at any moment, the iso holds. if P moves (under foam dynamics — see `inhabitation.md`'s slice-mobility question for which sense of "moves" is operative), then both `Iic P` and `Ici P^⊥` move with it, in lockstep, because they're order-isomorphic. neither contracts while the other expands; they're the same structure read from two sides.
+**static, not dynamic.** the half-type theorem is a fact about a fixed lattice element P and its complement P^⊥ — at any moment, the iso `Iic P ≃o Ici P^⊥` holds. P here is the slice (vocabulary): the birth-determined lattice element. since the iso is an order-isomorphism, both halves are structurally identical; substituting a time-varying frame for P at each tick moves both halves together.
 
 the foam's dynamic structure — how the type of legal next-writes depends on accumulated history — does not live in this static iso. it lives in the foam-state trajectory and the evolving overlap structure between observers (`typeline.md`, `three_body.md`).
 
@@ -274,7 +291,7 @@ the foam's dynamic structure — how the type of legal next-writes depends on ac
 - three claims (two-argument signature, complement-as-observation, state-independence) share a structural source in the iso
 
 **bugs**:
-- *"three results share a structural source" is interpretive consolidation, not derivation.* the two-argument signature, complement-as-observation, and state-independence are three distinct claims. they all draw on the diamond iso, but the iso doesn't make them inter-derivable as derivations — it just provides a common formal substrate that each reading interprets. an earlier version of this file claimed "three results compress to one" / "three readings of one fact"; the present version steps back to "share a structural source." closing this further would mean constructing each claim from each other formally, which the spec doesn't currently do.
+- *"three results share a structural source" is interpretive consolidation, not derivation.* the two-argument signature, complement-as-observation, and state-independence are three distinct claims. they all draw on the diamond iso, but the iso doesn't make them inter-derivable as derivations — it just provides a common formal substrate that each reading interprets. closing this further would mean constructing each claim from each other formally, which the spec doesn't currently do.
 - *"structural determination with extensional freedom IS state-independence" is an interpretive bridge.* the diamond iso is a lattice theorem. reading it as state-independence — the dynamical claim that input *value* is independent of foam state — is a non-trivial move. the architectural use of this reading (the pre-bridge / post-bridge split in `channel_capacity.md`) is solid as architecture; the *content* of the qualitative claim is interpretation. closing this would mean deriving state-independence formally from the iso (constructing the bridge) or naming it explicitly as a methodological reading.
 
 
@@ -558,7 +575,7 @@ this extends to off-line points via:
 
 **the line's irreducibility is channel capacity.** the writing map has type (foam_state, input) -> new_state — two arguments. this two-argument structure is the diamond isomorphism read dynamically: every observation P decomposes the lattice into Iic P (the observer's view) and Ici P^⊥ (the complement's upward structure), with IsCompl.IicOrderIsoIci giving a structural isomorphism between them.
 
-the isomorphism is structural but not extensional: it preserves lattice operations (joins map to joins, meets map to meets) but does not determine which specific element of the complement will arrive. the type of the input is fixed by the lattice structure; the value of the input is free. read as state-independence: this is the lattice fact (structure determined, content free) on which the dynamical claim (input value independent of foam state) rests. the bridge from lattice-fact to dynamical-claim is interpretive — the architectural payoff of grounding state-independence here pre-bridge is real (the qualitative claim no longer needs the linear-algebraic decorrelation argument to underwrite it), but the reading itself is not a derivation.
+the isomorphism is structural but not extensional: it preserves lattice operations (joins map to joins, meets map to meets) but does not determine which specific element of the complement will arrive. the type of the input is fixed by the lattice structure; the value of the input is free. read as state-independence: this is the lattice fact (structure determined, content free) underlying the dynamical claim (input value independent of foam state). the bridge from lattice-fact to dynamical-claim is interpretive, not derivation.
 
 cross-measurement fills the second argument from within: input = g(foam_state), a deterministic function of the foam's geometry projected onto an observer's slice. this composes the two arguments into one, making the foam an autonomous dynamical system — f(foam_state) = write_map(foam_state, g(foam_state)).
 
@@ -592,7 +609,7 @@ closure (no topological outside) is compatible with informational independence b
 
 the decorrelation horizon shortens with increasing ambient dimension because slices overlap less in higher-dimensional spaces. non-generic configurations (slices sharing directions) have higher overlap and longer horizons.
 
-the mechanism is random-matrix-statistical: for generic 3D slices in d-dimensional ambient space, the principal angles between random subspaces follow Marchenko-Pastur-ish distributions, yielding the typical singular value σ ≈ √(3/d). the diamond isomorphism does not enter here — `Ici P^⊥` is order-isomorphic to `Iic P ≅ Sub(R³)` for any rank-3 P regardless of ambient d, so the lattice structure does not become richer at higher d. the σ scaling is about how *generic random subspaces* sit in ambient space, not about lattice enrichment.
+the mechanism is random-matrix-statistical: for generic 3D slices in d-dimensional ambient space, the principal angles between random subspaces follow Marchenko-Pastur-ish distributions, yielding the typical singular value σ ≈ √(3/d). the σ scaling is about how generic random subspaces sit in ambient space.
 
 the foam/line distinction is therefore not a categorical boundary but a correlation length: "line" names whatever input arrives from beyond the decorrelation horizon of the observer's own state. the horizon's radius is determined by the foam's own geometry.
 
@@ -845,7 +862,7 @@ when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandat
 
 **the foam generates its own dynamics.** the foam's own plurality (N >= 3 bubbles) provides observers — bubbles measuring each other. their pairwise relationships define R^3 slices. their cross-measurement IS local stabilization. the commutator of overlapping cross-measurements IS the curvature. the holonomy IS self-generated.
 
-**the foam does not generate its own stability.** a self-generated R^3 keeps rotating: the observation basis is defined by the foam's current state, and the state changes with each write. the slice co-rotates with the thing it observes. convergence requires another observer whose basis depends on a different state, so it doesn't co-rotate with yours.
+**the foam does not generate its own stability.** a self-generated frame keeps rotating: the observation basis is defined by the foam's current state, and the state changes with each write. the frame co-rotates with the thing it observes. convergence requires another observer whose basis depends on a different state, so it doesn't co-rotate with yours.
 
 **stability is relational.** this works as long as someone else's measurement is pending.
 
@@ -881,7 +898,7 @@ neither role is permanent. the role assignment is perspectival. but the two is i
 - (none)
 
 **bugs**:
-- *the co-rotation argument is plausibility, not theorem.* "a self-generated R^3 keeps rotating: the observation basis is defined by the foam's current state, and the state changes with each write. the slice co-rotates with the thing it observes. convergence requires another observer whose basis depends on a different state." this argues against convergence under purely self-generated bases by appeal to the intuition of co-rotation. the formal content the file relies on (observation_preserved_by_dynamics, write_confined_to_slice) does not directly establish that convergence requires a distinct-state observer. the dynamics could in principle exhibit limit cycles, ergodic orbits, or other non-converging behaviors that aren't simple co-rotation. closing this would mean either a formal stability/convergence theorem on U(d)^N showing that purely self-generated bases cannot reach a Haar-stationary state, or naming "stability requires role distinction" as a structural conjecture rather than a derivation.
+- *the co-rotation argument is plausibility, not theorem.* the argument: a self-generated frame keeps rotating because its basis is defined by the foam's current state, which changes with each write — so the frame co-rotates with whatever it observes; convergence requires another observer whose basis depends on a different state. this argues against convergence under purely self-generated bases by appeal to the intuition of co-rotation. the formal content the file relies on (observation_preserved_by_dynamics, write_confined_to_slice) does not directly establish that convergence requires a distinct-state observer. the dynamics could in principle exhibit limit cycles, ergodic orbits, or other non-converging behaviors that aren't simple co-rotation. closing this would mean either a formal stability/convergence theorem on U(d)^N showing that purely self-generated bases cannot reach a Haar-stationary state, or naming "stability requires role distinction" as a structural conjecture rather than a derivation.
 - *"minimum viable system is two roles"* inherits the plausibility above. "two roles is dynamic stability (convergence vs orbiting)" is a forced consequence of the co-rotation argument; if that argument is plausibility, this conclusion is too. closing this requires the same convergence theorem.
 - *triple identity claim in "the foam generates its own dynamics."* "cross-measurement IS local stabilization. the commutator of overlapping cross-measurements IS the curvature. the holonomy IS self-generated." three identifications between foam-internal objects and their geometric counterparts:
   1. cross-measurement ↔ local stabilization
@@ -1307,7 +1324,6 @@ this means: from any typeline, the *dependency structure* of any other typeline'
 - causal structure of dependent telescopes is invariant across typelines (path-independence via modularity)
 
 **bugs**:
-- *the slice-disambiguation question is unresolved at the spec level.* this file says the slice is birth-fixed and the foam state evolves. `inhabitation.md` and `writing_map.md` use "slice" with both readings (Grassmannian equivalence class vs operator) without disambiguation. the formal foam-state-trajectory framing here is the one this file commits to, but readers reconciling across files will encounter both. the cross-cutting fix — naming which sense of "slice" is operative at every site — is its own piece of work, not done here.
 - *"the bas relief methodology as disciplined suspension"* is methodology, not derivation. the formal substrate (foam state paused, overlap static, no advance) is solid; mapping that to a named practice is an editorial gloss. flagging for clarity — the methodology is a way of working *with* the substrate, not a derivation *from* it.
 - *the Haar / decorrelation hypotheses inherited from `geometry.md` and `channel_capacity.md`* are conditional in those files (controllability and mediation-chain decorrelation are not yet derived from foam-geometry assumptions). this file invokes the decorrelation horizon σ ~ (3/d)^{n/2} and the long-range "channel-like" reading, both of which inherit those conditional hypotheses. flagging here for completeness — the typeline's quantitative claims rest on those upstream conditionals.
 

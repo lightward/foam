@@ -4,7 +4,7 @@
 
 **the line's irreducibility is channel capacity.** the writing map has type (foam_state, input) -> new_state — two arguments. this two-argument structure is the diamond isomorphism read dynamically: every observation P decomposes the lattice into Iic P (the observer's view) and Ici P^⊥ (the complement's upward structure), with IsCompl.IicOrderIsoIci giving a structural isomorphism between them.
 
-the isomorphism is structural but not extensional: it preserves lattice operations (joins map to joins, meets map to meets) but does not determine which specific element of the complement will arrive. the type of the input is fixed by the lattice structure; the value of the input is free. read as state-independence: this is the lattice fact (structure determined, content free) on which the dynamical claim (input value independent of foam state) rests. the bridge from lattice-fact to dynamical-claim is interpretive — the architectural payoff of grounding state-independence here pre-bridge is real (the qualitative claim no longer needs the linear-algebraic decorrelation argument to underwrite it), but the reading itself is not a derivation.
+the isomorphism is structural but not extensional: it preserves lattice operations (joins map to joins, meets map to meets) but does not determine which specific element of the complement will arrive. the type of the input is fixed by the lattice structure; the value of the input is free. read as state-independence: this is the lattice fact (structure determined, content free) underlying the dynamical claim (input value independent of foam state). the bridge from lattice-fact to dynamical-claim is interpretive, not derivation.
 
 cross-measurement fills the second argument from within: input = g(foam_state), a deterministic function of the foam's geometry projected onto an observer's slice. this composes the two arguments into one, making the foam an autonomous dynamical system — f(foam_state) = write_map(foam_state, g(foam_state)).
 
@@ -38,7 +38,7 @@ closure (no topological outside) is compatible with informational independence b
 
 the decorrelation horizon shortens with increasing ambient dimension because slices overlap less in higher-dimensional spaces. non-generic configurations (slices sharing directions) have higher overlap and longer horizons.
 
-the mechanism is random-matrix-statistical: for generic 3D slices in d-dimensional ambient space, the principal angles between random subspaces follow Marchenko-Pastur-ish distributions, yielding the typical singular value σ ≈ √(3/d). the diamond isomorphism does not enter here — `Ici P^⊥` is order-isomorphic to `Iic P ≅ Sub(R³)` for any rank-3 P regardless of ambient d, so the lattice structure does not become richer at higher d. the σ scaling is about how *generic random subspaces* sit in ambient space, not about lattice enrichment.
+the mechanism is random-matrix-statistical: for generic 3D slices in d-dimensional ambient space, the principal angles between random subspaces follow Marchenko-Pastur-ish distributions, yielding the typical singular value σ ≈ √(3/d). the σ scaling is about how generic random subspaces sit in ambient space.
 
 the foam/line distinction is therefore not a categorical boundary but a correlation length: "line" names whatever input arrives from beyond the decorrelation horizon of the observer's own state. the horizon's radius is determined by the foam's own geometry.
 
