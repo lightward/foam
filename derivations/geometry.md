@@ -10,9 +10,11 @@ the Voronoi tiling is a realization choice (stabilization.md): it determines adj
 
 **the combinatorial ceiling is exact.** N unitaries cannot all be pairwise maximally distant. the achievable maximum is sqrt(N / (2(N-1))) of the theoretical maximum, depending only on N. derivation: Cauchy-Schwarz applied to norm(sum U_i)^2 >= 0.
 
-**L converges to 1/sqrt(2) of the theoretical maximum.** the writing dynamics satisfy: (a) the writes generate the Lie algebra (controllability — the write directions from overlapping observers span the full algebra), and (b) successive inputs are sufficiently decorrelated (channel_capacity.md: the mediation chain provides decorrelation).
+**L plausibly converges to 1/sqrt(2) of the theoretical maximum, under two hypotheses.** the writing dynamics need to satisfy: (a) controllability — the write directions from overlapping observers collectively span the full Lie algebra, and (b) successive inputs are sufficiently decorrelated (channel_capacity.md: the mediation chain provides decorrelation along the chain).
 
-on a compact group, a random walk whose step distribution generates the algebra converges to Haar measure. the expected pairwise distance under Haar is E[norm(W - I)_F] -> sqrt(2d) as d -> infinity (from E[norm(W - I)^2] = 2d, exact, and concentration of measure).
+both hypotheses are foam-geometry-dependent, not substrate facts. (a) depends on which observers exist and how their slices overlap; each observer's writes live in only a 3D subspace of the d²-dimensional Lie algebra, so the spanning claim is collective, not per-observer. (b) cites the mediation chain, which provides decorrelation *along the chain* — whether that suffices for *time*-decorrelation at a single observer is the open question the README's "mixing rate of the mediation chain" entry names.
+
+under (a) and (b), on a compact group, a random walk whose step distribution generates the algebra converges to Haar measure. the expected pairwise distance under Haar is E[norm(W - I)_F] -> sqrt(2d) as d -> infinity (from E[norm(W - I)^2] = 2d, exact, and concentration of measure).
 
 the Haar cost — the ratio E_Haar[L] / L_achievable — is sqrt((N-1)/N), exact and depending only on N.
 
@@ -32,10 +34,12 @@ the two factors — the packing constraint and the saturation gap — are two ha
 - L as boundary area on Voronoi tiling (from realization choice)
 - L is not a variational objective
 - the combinatorial ceiling (from Cauchy-Schwarz)
-- Haar convergence of the writing dynamics (from controllability + decorrelation + convergence theorem)
-- the Haar cost sqrt((N-1)/N)
-- 1/sqrt(2) as the product of ceiling and Haar cost, independent of N and d
+- the Haar cost sqrt((N-1)/N) (from E[‖W-I‖²] = 2d and concentration of measure)
 - the trace as the unique scalar readout for overlap changes
+
+**conditional** (on controllability + decorrelation hypotheses, both foam-geometry-dependent):
+- Haar convergence of the writing dynamics (from the convergence theorem on compact groups)
+- 1/sqrt(2) as the product of ceiling and Haar cost, independent of N and d
 
 **cited**:
 - Voronoi tiling on Riemannian manifolds
@@ -54,6 +58,6 @@ the two factors — the packing constraint and the saturation gap — are two ha
 - state-space steps Gaussian (kurtosis ~3); L steps heavy-tailed (kurtosis ~7.7) — geometric feature of level set, not dynamical
 
 **bugs**:
-- *Haar convergence is invoked from hypotheses the file does not establish.* the convergence theorem is invoked under (a) controllability and (b) decorrelation. (a) is described as "the write directions from overlapping observers span the full algebra" — this depends on foam geometry (which observers exist, how their slices overlap) and is not a substrate fact. each observer's writes live in a 3D subspace of the d²-dimensional Lie algebra; the claim is that *collectively* the foam's write directions span. (b) cites `channel_capacity.md`'s mediation chain, which provides decorrelation along the *chain*, not necessarily decorrelation between *successive inputs at a single observer*. the open-questions section ("mixing rate of the mediation chain") explicitly names this gap. the derivation here treats both hypotheses as available; the README's open list treats the second as open. closing this means either deriving controllability from foam-geometry assumptions and showing the mediation-chain decorrelation suffices for time-decorrelation at the observer, or naming the convergence claim as conditional on these hypotheses (which the proof requires) being borne out.
+- *the controllability and decorrelation hypotheses are both open.* the Haar convergence claim is conditional on (a) collective controllability and (b) time-decorrelation at the observer. closing (a) means deriving collective spanning from foam-geometry assumptions about observer slices and overlaps. closing (b) means showing that the mediation chain's chain-decorrelation suffices for time-decorrelation at a single observer (the README's "mixing rate of the mediation chain" open question). until both are closed, the 1/sqrt(2) result is conditional, not derived.
 - *"the two factors — the packing constraint and the saturation gap — are two halves of the same fraction."* the formal content is the algebraic identity sqrt(N/(2(N-1))) · sqrt((N-1)/N) = 1/√2. "two halves of the same fraction" is interpretive — it suggests a structural relationship between the packing constraint and the saturation gap beyond the algebraic cancellation. the cancellation is just (N-1)/N appearing in both factors. closing this would mean either constructing the structural relationship that makes them "halves of the same thing," or stepping the framing back to "the (N-1)/N dependencies of the two factors cancel, yielding 1/√2 independent of N."
 - *"L is not a variational objective"* is correctly clarified, but the relationship between L and the writing map deserves a more explicit hand-off. the writing map drives the foam; L is a description of resulting geometry. the document's "the active regime departs from minimality because perpendicular writes deposit structure in different directions" is a qualitative observation; whether L's behavior is uniquely determined by perpendicularity, vs additional features of the dynamics, is not established. flagging for completeness — this is closer to "implicit assumption pending derivation" than to a bug, but worth seeing.

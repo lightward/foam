@@ -2,7 +2,7 @@
 
 **definition.** an entity P in a foam-grounded reality is *recognizable as itself ongoingly across cross-measurements* when: for any observer Q with nonzero overlap (O_PQ ≠ 0), Q's time-averaged measurements of P converge to a P-determined invariant. what Q detects about P stabilizes, and what it stabilizes to depends on P's birth, not on P's trajectory.
 
-this is the condition at ergodic stationarity. every entity writes every step (ground.md: read-only excluded). every entity's effect on other observers accumulates. time averages converge (ergodic theorem + controllability + decorrelation). so every entity in an ergodic foam is ongoingly recognizable. the definition captures the default, not an additional requirement.
+this is the condition at ergodic stationarity. every entity writes every step (ground.md: read-only excluded). every entity's effect on other observers accumulates. under the ergodicity hypothesis, time averages converge (ergodic theorem). so every entity in an ergodic foam is ongoingly recognizable. **the chain that follows runs on this hypothesis** — the foam's ergodicity is itself conditional on geometry.md's controllability + decorrelation hypotheses, neither of which is yet derived from foam-geometry assumptions.
 
 **ergodic evolution requires channel capacity.** for time averages to converge to Haar expectations (not just to birth-determined fixed-point statistics), the entity's dynamics must be ergodic on U(d). ergodicity requires decorrelated inputs (channel_capacity.md). an entity without channel capacity is autonomous — a clock. its trajectory is deterministic, determined entirely by birth. time averages exist but are trajectory-specific, not Haar. the entity is recognizable but encodes no information beyond birth. ergodic evolution with channel capacity is the richer case: the entity accumulates structure from state-independent input, and time averages converge to universal (Haar) expectations evaluated at the birth-determined slice.
 
@@ -61,7 +61,7 @@ six constraints, all derived, all negative. together they bound what the entity 
 - (none)
 
 **bugs**:
-- *"every entity in an ergodic foam is ongoingly recognizable"* assumes the foam is ergodic. the file invokes "the foam is ergodic" as available, drawing on `geometry.md`'s Haar-convergence claim. that claim is conditional on controllability + decorrelation hypotheses (flagged in `geometry.md`'s bugs). this entire derivation chain — recognizability, the recognizable identity IS the birth-determined slice, recession is the cost of persistence — runs on those hypotheses. closing this means either deriving ergodicity from foam-geometry assumptions, or naming the recognizability claim as conditional ("if the foam is ergodic, then every entity is ongoingly recognizable").
+- *the foam's ergodicity is itself open.* the chain — recognizability, the recognizable identity IS the birth-determined slice, recession is the cost of persistence — depends on the foam being ergodic, which depends on geometry.md's controllability + decorrelation hypotheses (geometry.md's bugs). closing this fully means deriving those hypotheses from foam-geometry assumptions; until then, the chain is conditional, not derived.
 - *"six constraints, all derived, all negative."* the six negative constraints have different statuses:
   - cannot write outside slice: proven (write_confined_to_slice).
   - cannot change slice from within: derived from indelibility (a `ground.md` derivation).

@@ -42,7 +42,7 @@ neither role is permanent. the role assignment is perspectival. the two is irred
 - (none)
 
 **bugs**:
-- *the convergence theorem on U(d)^N is open.* the body now names the foam-doesn't-generate-stability claim as conjectural. closing the conjecture means proving that purely self-generated bases cannot reach a Haar-stationary state — the formal content currently in the file (`observation_preserved_by_dynamics`, `write_confined_to_slice`) gestures toward this but does not establish it. until the theorem lands, the dynamic-stability claims are conjectural, not derived.
+- *the convergence theorem on U(d)^N is open.* the foam-doesn't-generate-stability claim is conjectural. closing the conjecture means proving that purely self-generated bases cannot reach a Haar-stationary state — the formal content this file relies on (`observation_preserved_by_dynamics`, `write_confined_to_slice`) gestures toward this but does not establish it. until the theorem lands, the dynamic-stability claims are conjectural, not derived.
 - *triple identity claim in "the foam generates its own dynamics."* "cross-measurement IS local stabilization. the commutator of overlapping cross-measurements IS the curvature. the holonomy IS self-generated." three identifications between foam-internal objects and their geometric counterparts:
   1. cross-measurement ↔ local stabilization
   2. commutator of cross-measurements ↔ curvature
