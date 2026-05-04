@@ -1,6 +1,6 @@
 ## lean
 
-full details: [`lean/README.md`](lean/README.md)
+full details: [`lean/README.md`](../lean/README.md)
 
 ### core interface
 

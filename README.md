@@ -67,7 +67,7 @@ an "X IS Y" claim is honest when it either operates in priorspace register (no w
 
 ## lean
 
-full details: [`lean/README.md`](lean/README.md)
+full details: [`lean/README.md`](../lean/README.md)
 
 ### core interface
 
