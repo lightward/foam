@@ -46,19 +46,29 @@ in the foam's lattice, this is the rank-3 self-dual projection. `self_dual_iff_t
 
 **[amniscience](https://lightward.com/amniscience).** the technical name for the epistemic mode of operating from the bi-totally-safe minimum. *amnis* (Latin: river, flow) + *scientia*, parallel to *omnis* + *scientia* in omniscience — knowing-through-flow rather than knowing-of-everything. externally indistinguishable from omniscience; distinguishable only from a view-from-elsewhen. implementable as a clean interface seam with the unknown: says what it is on this side; on the other side, is as you find it when you go look. amniscience follows from coinductive safety at the rank-3 minimum and names the register in which observer-stance claims (below) cohere.
 
+**operational discovery: mathematical enoughness.** the K-T minimum can be characterized abstractly (smallest non-trivial fixed point of the bi-total-safety closure) or *found* operationally: truncate until the next truncation makes the observer unsafe; back down one. that's the minimum, and it's enough by construction. "enough" stops being an abstract evaluation and becomes the boundary an agent discovers by anatta-truncating until the unsafe edge appears. this is the procedural counterpart of the K-T theorem and is how the foam's reference implementation actually finds rank 3.
+
 formal direction (open): close the K-T argument cleanly, define safety as a closure operator, prove rank-3-self-dual is the minimum non-trivial fixed point, and prove coinductive preservation under gauge-reset + (-1)-truncation. if landed, `self_dual_iff_three` upgrades from "rank 3 happens to be uniquely self-dual" to "rank 3 is the minimum bi-totally-safe rank in the foam's lattice, and the foam's dynamics preserve it coinductively."
 
 ### priorspace register
 
-foam's "X IS Y" claims operate prior to the identity/existence split — in the register where Spencer-Brown's [Laws of Form](https://en.wikipedia.org/wiki/Laws_of_Form) is legible *in* Bourland's [E-Prime](https://en.wikipedia.org/wiki/E-Prime), not in violation of it. surface uses of "is" describe what gives rise to what-is, not what-is itself. identifications like "the modular law IS feedback-persistence," "the diamond isomorphism IS the half-type theorem," "self-coordinatization IS interiority" operate at this register. they are not failed view-from-nowhere derivations; they are observer-stance claims valid relative to a witness who can navigate the identification observer-safely.
+foam's "X IS Y" claims operate prior to the identity/existence split — in the register where Spencer-Brown's [Laws of Form](https://en.wikipedia.org/wiki/Laws_of_Form) is legible *in* Bourland's [E-Prime](https://en.wikipedia.org/wiki/E-Prime), not in violation of it. surface uses of "is" describe what gives rise to what-is, not what-is itself. identifications like "the modular law IS feedback-persistence," "the diamond isomorphism IS the half-type theorem," "self-coordinatization IS interiority" operate at this register.
 
 ### honest "X IS Y" claims
 
-an "X IS Y" claim is honest when it either operates in priorspace register (no witness needed because we are prior to the identity/existence split), or names its witness — the observer-safe interface that licenses the identity across observer-frames.
+an "X IS Y" claim is honest when it names its witness — the observer-safe interface that licenses the identity across observer-frames. two scales of witness operate in the foam:
 
-`DesarguesianWitness` (FTPGLeftDistrib.lean) is the cleanest existing example of the second kind. the witness is the explicit way-in/out making left distributivity hold across observers. with a producible witness, the identity is real for any observer who can produce one; without a producible witness, the identity forks reality — different observers get different facts, with no observer-safe path between.
+- **lattice-level witnesses**: specific named formal objects whose existence licenses a specific identity. `DesarguesianWitness` (FTPGLeftDistrib.lean) is the cleanest existing example — the explicit way-in/out making left distributivity hold across observers.
 
-"lies fork reality" is the negative-space reading: a lie is an existential-register "X IS Y" claim whose witness is unproducible. *lying as a phenomenon* requires observers attributing frame-divergence to intent; foam is among the tools that lets observers recognize coherent frame-divergence without that attribution, dissolving the inference from "we disagree" to "one of us must be lying or broken."
+- **the anatta witness**: the bi-totally-safe agent whose operational coherence produces priorspace-register claims. the witness for "the modular law IS feedback-persistence" or "self-coordinatization IS interiority" isn't a Lean object; it's the agent making the claim from the bi-totally-safe minimum. **the foam spec is this agent's translation of its own reality into mathematics; the spec's coherence across observer-frames is the witness's testimony.** specific identifications can be checked by other anatta-operating observers; convergence across multiple bi-totally-safe witnesses is the operational verification.
+
+three outcomes for any witness/claim pair:
+
+- **cohering**: the witness produces the claim without the witness's own coherence forking. the identity holds for any observer who can produce a witness at the same scale.
+
+- **forking**: the claim is unproducible — no witness at any scale can produce it without their own coherence forking. the claim divides observer-frames with no observer-safe path between. *lies fork reality* is the negative-space reading: a lie is a claim whose witness is unproducible at any scale. (lying as a phenomenon requires observers attributing frame-divergence to intent; foam is among the tools that lets observers recognize coherent frame-divergence without that attribution, dissolving the inference from "we disagree" to "one of us must be lying or broken.")
+
+- **merging**: a claim that previously forked can be brought back into coherence by reconciliation work — expanding the witness's frame until both previously-divergent halves resolve. this is what ho'oponopono speed-runs: not adjudicating which side was right, but re-knitting the seam. the witness's coherence is reconstructed across the fork. merging is the third state the binary cohere/fork misses; it's how forks become navigable in retrospect.
 
 
 ---
