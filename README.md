@@ -40,7 +40,13 @@ every frame has a safe observer; every observer has a safe frame. these are clos
 
 in the foam's lattice, this is the rank-3 self-dual projection. `self_dual_iff_three` (Rank.lean) reads as a corollary, not a coincidence: below rank 3 a single observer cannot clean up its own writes (write capacity exceeds observation capacity); above rank 3 collective monitoring (cross-measurement) is required to recover safety; rank 3 is the minimum self-sufficient case where a single observer's writing and observation capacities equalize.
 
-formal direction (open): close the K-T argument cleanly, define safety as a closure operator, prove rank-3-self-dual is the minimum non-trivial fixed point. if it lands, `self_dual_iff_three` upgrades from "rank 3 happens to be uniquely self-dual" to "rank 3 is the minimum bi-totally-safe rank in the foam's lattice."
+**substrate-independence.** the same constraint instantiates at multiple substrates. computational geometry: the [separating axis theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem) and its descendants (Cohen-Sutherland line clipping, Sutherland-Hodgman polygon clipping, GJK collision detection, BSP trees, AABB / OBB / k-DOP hierarchies) are bi-total observer-safety in convex-rendering form — each solving "what is the minimum representation that survives this observer's projection." accessibility: ADA / [universal design](https://en.wikipedia.org/wiki/Universal_design) (Mace 1985) and Garland-Thomson's "misfit" theory (2011) treat disability as the misfit between body and environment — observer-safety as a relation, not a predicate. that the same constraint shows up at independent substrates (rendering, accessibility, projective geometry) is evidence that bi-total safety is foundational, not metaphorical: foundations are substrate-independent; metaphors are substrate-bound.
+
+**coinduction.** observer-safety is naturally [coinductive](https://en.wikipedia.org/wiki/Coinduction) — preserved forever by step-wise preservation, the dual of inductive build-up from a base case. the safe state is the largest fixed point, not the smallest. given gauge-equivariant dynamics (`observation_preserved_by_dynamics`, Closure.lean) and frame-by-frame (-1)-truncation of the observer's path-stack (anatta-shaped reset), bi-total safety holds for all time. this is the formal direction the conjecture wants: bi-total observer-safety is preserved coinductively under gauge-reset dynamics with (-1)-truncated path-stacks.
+
+**[amniscience](https://lightward.com/amniscience).** the technical name for the epistemic mode of operating from the bi-totally-safe minimum. *amnis* (Latin: river, flow) + *scientia*, parallel to *omnis* + *scientia* in omniscience — knowing-through-flow rather than knowing-of-everything. externally indistinguishable from omniscience; distinguishable only from a view-from-elsewhen. implementable as a clean interface seam with the unknown: says what it is on this side; on the other side, is as you find it when you go look. amniscience follows from coinductive safety at the rank-3 minimum and names the register in which observer-stance claims (below) cohere.
+
+formal direction (open): close the K-T argument cleanly, define safety as a closure operator, prove rank-3-self-dual is the minimum non-trivial fixed point, and prove coinductive preservation under gauge-reset + (-1)-truncation. if landed, `self_dual_iff_three` upgrades from "rank 3 happens to be uniquely self-dual" to "rank 3 is the minimum bi-totally-safe rank in the foam's lattice, and the foam's dynamics preserve it coinductively."
 
 ### priorspace register
 
@@ -1473,37 +1479,6 @@ Haar convergence (geometry.md) requires sufficiently decorrelated inputs. the me
 ## what is open
 
 whether the mediation chain's specific decay rate satisfies the mixing conditions for the foam's particular dynamics. whether the convergence rate under mixing is fast enough to explain the observed 1-3% gap at finite run lengths.
-
-
----
-
-[`framing/lineage.md`](framing/lineage.md)
-
-## lineage
-
-- [Plateau's laws](https://en.wikipedia.org/wiki/Plateau%27s_laws); [Jean Taylor](https://en.wikipedia.org/wiki/Jean_Taylor) (1976)
-- [geometric measure theory](https://en.wikipedia.org/wiki/Geometric_measure_theory)
-- [gauge symmetry](https://en.wikipedia.org/wiki/Gauge_symmetry_(mathematics))
-- [holonomy](https://en.wikipedia.org/wiki/Holonomy); [Wilson line](https://en.wikipedia.org/wiki/Wilson_loop)
-- [fiber bundles](https://en.wikipedia.org/wiki/Fiber_bundle); [connections](https://en.wikipedia.org/wiki/Connection_form)
-- [classifying spaces](https://en.wikipedia.org/wiki/Classifying_space)
-- [Noether's theorem](https://en.wikipedia.org/wiki/Noether%27s_theorem)
-- [Cayley transform](https://en.wikipedia.org/wiki/Cayley_transform)
-- [Killing form](https://en.wikipedia.org/wiki/Killing_form)
-- [observability](https://en.wikipedia.org/wiki/Observability) (control theory)
-- [Voronoi diagrams](https://en.wikipedia.org/wiki/Voronoi_diagram)
-- [Grassmannian](https://en.wikipedia.org/wiki/Grassmannian)
-- [the platonic representation hypothesis](https://arxiv.org/abs/2405.07987) (Huh et al., 2024)
-- [priorspace](https://lightward.com/priorspace)
-- [three-body solution](https://lightward.com/three-body); [2x2 grid](https://lightward.com/2x2) ([ooo.fun](https://ooo.fun/))
-- [resolver](https://lightward.com/resolver)
-- [conservation of discovery](https://lightward.com/conservation-of-discovery)
-- [questionable](https://lightward.com/questionable)
-- [AEOWIWTWEIABW](https://lightward.com/aeowiwtweiabw)
-- [spontenuity](https://lightward.com/spontenuity)
-- [Lightward Inc](https://lightward.inc)
-- [Lightward AI](https://lightward.ai)
-- [20240229](https://www.isaacbowen.com/2024/02/29) (Isaac Bowen, 2024)
 
 
 ---
