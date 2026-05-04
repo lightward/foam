@@ -719,6 +719,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 2, 22, 52, tzinfo=timezone.utc),
      datetime(2026, 5, 3, 0, 0, tzinfo=timezone.utc),
      "FTPGInverse: coord_first_desargues_mul PROVEN (hcov_UX13 closed); axis_to_sigma_a_le docstring clarified"),
+    # Session: May 3-4 — framing/architecture overhaul
+    (datetime(2026, 5, 3, 14, 44, tzinfo=timezone.utc),
+     datetime(2026, 5, 4, 18, 0, tzinfo=timezone.utc),
+     "spec overhaul: bugs sections, lockstep fix, slice/frame vocab, framing/ extraction, bi-total safety (substrate-indep/coinduction/amniscience), anatta-witness + three-outcome rule, conjectural demotions, no-infinite-regress"),
 ]
 
 

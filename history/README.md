@@ -135,6 +135,7 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 126 | [May 02, 21:56](126_2026-05-02_5472cbf8.md) | FTPGInverse: extract 4 distinctness helpers for coord_first_desargues_mul (in... | 14 |
 | 127 | [May 02, 22:21](127_2026-05-02_f41c477e.md) | FTPGInverse: coord_first_desargues_mul scaffold + h_sides_X13_mul (one focuse... | 10 |
 | 128 | [May 02, 22:52](128_2026-05-02_2269a853.md) | FTPGInverse: coord_first_desargues_mul PROVEN (hcov_UX13 closed); axis_to_sig... | 12 |
+| 129 | [May 03, 14:44](129_2026-05-03_6bb9b8bc.md) | spec overhaul: bugs sections, lockstep fix, slice/frame vocab, framing/ extra... | 96 |
 
 ## Memory
 
