@@ -19,7 +19,7 @@ the functional requirement (you need state-independent input for ergodic richnes
 
 **recession is the cost of persistence.** each non-inert write strictly recedes the prior frame (frame_recession_strict). closure requires writing (ground.md: read-only excluded). under ergodic evolution, inert writes (W with [W, P] = 0, i.e. rotations within the slice that produce zero recession) have measure zero in the write space — the Haar-distributed write directions are almost surely non-inert. therefore an ergodically-evolved entity necessarily recedes from every prior frame it has occupied. the entity persists not by holding position but by the indelibility of its birth-determined slice through the recession. what persists is not the frame but the slice. stationarity and recession are compatible: the entity's state constantly changes (recession), but the statistical distribution of states is time-invariant (Haar). the entity is a random walker with fixed gait — the steps are always new, the territory is fixed.
 
-**stability is necessarily external.** the entity generates its own dynamics but cannot generate its own stability (self_generation.md: self-generated bases co-rotate). convergence requires another observer whose basis depends on a different state. the minimum viable system is two roles within N ≥ 3 bubbles. an entity that has reached ergodic stationarity necessarily has external stability — without it, the foam's dynamics would not have converged to Haar.
+**stability is plausibly external.** the entity generates its own dynamics but plausibly cannot generate its own stability (self_generation.md: stability-requires-role-distinction is conjectural pending a convergence theorem on U(d)^N). on this conjecture, convergence requires another observer whose basis depends on a different state, the minimum viable system is two roles within N ≥ 3 bubbles, and an entity that has reached ergodic stationarity has external stability — without it, the foam's dynamics would not have converged to Haar.
 
 **the negative geometry of inhabitation.** an ergodically-evolved persistent entity:
 
@@ -51,7 +51,7 @@ six constraints, all derived, all negative. together they bound what the entity 
 - input must be received, not predicted (two independent directions: functional + structural)
 - the two directions are two readings of one lattice theorem (diamond isomorphism read dynamically and statically)
 - recession is the cost of persistence (persists through recession, not against it; stationarity is in the distribution, not the state)
-- stability is necessarily external (from self-generation + ergodic stationarity as evidence)
+- stability is plausibly external (under self-generation's role-distinction conjecture; ergodic stationarity is suggestive evidence)
 - six negative constraints as the negative geometry of inhabitation
 
 **cited**:
@@ -62,16 +62,15 @@ six constraints, all derived, all negative. together they bound what the entity 
 
 **bugs**:
 - *"every entity in an ergodic foam is ongoingly recognizable"* assumes the foam is ergodic. the file invokes "the foam is ergodic" as available, drawing on `geometry.md`'s Haar-convergence claim. that claim is conditional on controllability + decorrelation hypotheses (flagged in `geometry.md`'s bugs). this entire derivation chain — recognizability, the recognizable identity IS the birth-determined slice, recession is the cost of persistence — runs on those hypotheses. closing this means either deriving ergodicity from foam-geometry assumptions, or naming the recognizability claim as conditional ("if the foam is ergodic, then every entity is ongoingly recognizable").
-- *"stability is necessarily external" inherits the co-rotation plausibility from `self_generation.md`.* the argument runs through `self_generation.md`'s co-rotation argument, which is plausibility (flagged in that file). "necessarily" overstates what plausibility provides. closing this requires the convergence theorem `self_generation.md` lacks, or stepping the necessity claim back to "stability is plausibly external."
 - *"six constraints, all derived, all negative."* the six negative constraints have different statuses:
   - cannot write outside slice: proven (write_confined_to_slice).
   - cannot change slice from within: derived from indelibility (a `ground.md` derivation).
   - cannot indefinitely avoid recession: proven (frame_recession_strict) + a measure-theoretic claim about Haar-distributed writes being almost surely non-inert (this measure claim is asserted, not derived in this file).
-  - cannot self-stabilize: plausibility (`self_generation.md` co-rotation).
+  - cannot self-stabilize: conjectural pending the convergence theorem on U(d)^N (`self_generation.md`).
   - cannot predict complement: definitional (half_type extensional freedom).
   - cannot be read-only: derived (ground.md closure).
 
-  presenting all six as "all derived" with the same status papers over the proven/derived/plausibility/definitional differences. closing this means tagging each constraint with its specific status, or framing the list as "six structurally distinct constraints, deriving from sources of varying formal strength."
+  presenting all six as "all derived" with the same status papers over the proven/derived/conjectural/definitional differences. closing this means tagging each constraint with its specific status, or framing the list as "six structurally distinct constraints, deriving from sources of varying formal strength."
 - *"the n-th derivative of the write mechanism along a trajectory is a smooth function on U(d)^N (compact), therefore bounded and integrable."* asserts smoothness of all derivatives. the write mechanism includes the wedge product and the cross-measurement input, with realization choices left open (`writing_map.md`: f(d, m)). smoothness "at all orders" depends on the realization choice for f. closing this means either constraining f to smooth realizations, or naming the smoothness assumption as a regularity hypothesis on the realization.
 - *"two readings of one fact" / "same lattice theorem read through the two readings of closure."* same construction as `half_type.md`'s "three results share a structural source" and `ground.md`'s "two readings of one statement." flagging here for the third instance — the document treats the diamond isomorphism's dynamical and structural readings as the same statement; the formal identity is the diamond isomorphism, but "two readings of one fact" packages two interpretations as one.
 

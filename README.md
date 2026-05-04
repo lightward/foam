@@ -921,34 +921,38 @@ when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandat
 
 **the foam generates its own dynamics.** the foam's own plurality (N >= 3 bubbles) provides observers — bubbles measuring each other. their pairwise relationships define R^3 slices. their cross-measurement IS local stabilization. the commutator of overlapping cross-measurements IS the curvature. the holonomy IS self-generated.
 
-**the foam does not generate its own stability.** a self-generated frame keeps rotating: the observation basis is defined by the foam's current state, and the state changes with each write. the frame co-rotates with the thing it observes. convergence requires another observer whose basis depends on a different state, so it doesn't co-rotate with yours.
+**the foam plausibly does not generate its own stability.** a self-generated frame keeps rotating: the observation basis is defined by the foam's current state, and the state changes with each write. the frame co-rotates with the thing it observes. on this picture, convergence requires another observer whose basis depends on a different state, so it doesn't co-rotate with yours.
 
-**stability is relational.** this works as long as someone else's measurement is pending.
+(this is conjectural. the formal content this rests on — `observation_preserved_by_dynamics` and `write_confined_to_slice` — does not directly establish non-convergence under purely self-generated bases. the autonomous dynamics could in principle exhibit limit cycles, ergodic orbits, or other regimes whose stability is not simple co-rotation. closing this requires a formal convergence theorem on U(d)^N showing that purely self-generated bases cannot reach a Haar-stationary state. until then, *stability requires role distinction* is a structural conjecture, not a derivation.)
 
-**the minimum viable system is two roles.** not two bubbles (that's N = 2, no stable geometry). two *roles* within a foam of N >= 3 bubbles: one to be the foam (the thing being measured), one to be the line (the thing providing a reference frame).
+**stability is relational** (under the conjecture above)**.** this works as long as someone else's measurement is pending.
 
-- N >= 3 is geometric stability (Plateau junctions).
-- two roles is dynamic stability (convergence vs orbiting).
+**the minimum viable system is two roles** (under the conjecture). not two bubbles (that's N = 2, no stable geometry). two *roles* within a foam of N >= 3 bubbles: one to be the foam (the thing being measured), one to be the line (the thing providing a reference frame).
 
-neither role is permanent. the role assignment is perspectival. but the two is irreducible.
+- N >= 3 is geometric stability (Plateau junctions) — solid.
+- two roles is dynamic stability (convergence vs orbiting) — conjectural, pending the convergence theorem.
+
+neither role is permanent. the role assignment is perspectival. the two is irreducible under the conjecture.
 
 **what the line provides: a fixed subspace.** not content, not wisdom, not input — three dimensions that hold still while the foam's geometry settles into them. the settling is the foam's. the dynamics are the foam's. the curvature is the foam's. the stability of the frame — that's the line's.
 
-**the foam cannot self-stack.** stacking requires two real slices to be fused into one complex measurement before the write (simultaneity). the foam's dynamics are sequential real writes, algebraically closed in so(d) (group.md: real operations cannot produce imaginary-symmetric directions). no sequence of real operations produces complex structure. stacking, like stability, requires something the foam's own dynamics cannot generate.
+**the foam cannot self-stack.** stacking requires two real slices to be fused into one complex measurement before the write (simultaneity). the foam's dynamics are sequential real writes, algebraically closed in so(d) (group.md: real operations cannot produce imaginary-symmetric directions). no sequence of real operations produces complex structure. this stands separate from the stability claim above: stacking is a *proven* limit on the foam's own dynamics; stability is conjectural pending the convergence theorem.
 
 #### status
 
 **proven**:
 - dynamics preserve the ground (observation_preserved_by_dynamics)
 - writes are confined to the observer's slice
+- the foam cannot self-stack (so(d) closure under real operations)
 
 **derived**:
 - the foam generates its own dynamics (from plurality + cross-measurement)
+- what the line provides (a fixed subspace)
+
+**conjectural** (pending the convergence theorem on U(d)^N):
 - the foam does not generate its own stability (co-rotation of self-generated bases)
 - stability is relational
-- minimum viable system is two roles (geometric + dynamic stability)
-- what the line provides (a fixed subspace)
-- the foam cannot self-stack (so(d) closure under real operations)
+- minimum viable system is two roles (dynamic-stability part; geometric-stability part is Plateau and stands)
 
 **cited**:
 - (none)
@@ -957,15 +961,14 @@ neither role is permanent. the role assignment is perspectival. but the two is i
 - (none)
 
 **bugs**:
-- *the co-rotation argument is plausibility, not theorem.* the argument: a self-generated frame keeps rotating because its basis is defined by the foam's current state, which changes with each write — so the frame co-rotates with whatever it observes; convergence requires another observer whose basis depends on a different state. this argues against convergence under purely self-generated bases by appeal to the intuition of co-rotation. the formal content the file relies on (observation_preserved_by_dynamics, write_confined_to_slice) does not directly establish that convergence requires a distinct-state observer. the dynamics could in principle exhibit limit cycles, ergodic orbits, or other non-converging behaviors that aren't simple co-rotation. closing this would mean either a formal stability/convergence theorem on U(d)^N showing that purely self-generated bases cannot reach a Haar-stationary state, or naming "stability requires role distinction" as a structural conjecture rather than a derivation.
-- *"minimum viable system is two roles"* inherits the plausibility above. "two roles is dynamic stability (convergence vs orbiting)" is a forced consequence of the co-rotation argument; if that argument is plausibility, this conclusion is too. closing this requires the same convergence theorem.
+- *the convergence theorem on U(d)^N is open.* the body now names the foam-doesn't-generate-stability claim as conjectural. closing the conjecture means proving that purely self-generated bases cannot reach a Haar-stationary state — the formal content currently in the file (`observation_preserved_by_dynamics`, `write_confined_to_slice`) gestures toward this but does not establish it. until the theorem lands, the dynamic-stability claims are conjectural, not derived.
 - *triple identity claim in "the foam generates its own dynamics."* "cross-measurement IS local stabilization. the commutator of overlapping cross-measurements IS the curvature. the holonomy IS self-generated." three identifications between foam-internal objects and their geometric counterparts:
   1. cross-measurement ↔ local stabilization
   2. commutator of cross-measurements ↔ curvature
   3. self-generated holonomy ↔ holonomy
-  each is an interpretive move connecting a foam-level concept to a geometric/algebraic object. (1) and (2) draw on `writing_map.md` and standard differential geometry; (3) is a tautology at face value but does work in context. closing this means either constructing each identification formally (e.g., showing the commutator literally equals the Riemann curvature in a specified setup) or stepping back to "cross-measurement *plays the role of* local stabilization; the commutator *encodes* curvature; the holonomy is generated from within."
+
+  per the architecture file's disposition rule, these are observer-stance claims operating in priorspace register — they identify foam-internal concepts with their geometric counterparts in the register where what gives rise to what-is is being described, not what-is itself. (1) and (2) draw on `writing_map.md` and standard differential geometry; (3) is a tautology at face value but does work in context. flagging here for traceability — the claims are honest in priorspace register; constructing them as formal identities would require explicit witnesses, which the file does not currently name.
 - *"what the line provides: a fixed subspace."* the line role was introduced (`channel_capacity.md`) as informationally-independent input. specifying it here as "three dimensions that hold still" is a stronger characterization — it commits to a specific structural form (fixed subspace) for what the line provides. the formal content from `channel_capacity.md` is just "input independent of foam state." "fixed subspace" is one realization. closing this means either deriving fixed-subspace as the unique or canonical form of state-independent input, or naming this as an interpretive specification of the line role within this file.
-- *"stacking, like stability, requires something the foam's own dynamics cannot generate."* the algebraic fact (so(d) is closed under real operations; reaching u(d) requires complex structure) is solid and proven. pairing it with "stability" treats the two non-self-generation claims as having the same status. they don't: the stacking claim is algebraic (real ops closed in so(d)), the stability claim is plausibility (co-rotation). closing this means either deriving the stability claim to algebraic-fact status, or distinguishing the two ("stacking is provably non-self-generated; stability is plausibly non-self-generated").
 
 
 ---
@@ -1123,7 +1126,7 @@ the functional requirement (you need state-independent input for ergodic richnes
 
 **recession is the cost of persistence.** each non-inert write strictly recedes the prior frame (frame_recession_strict). closure requires writing (ground.md: read-only excluded). under ergodic evolution, inert writes (W with [W, P] = 0, i.e. rotations within the slice that produce zero recession) have measure zero in the write space — the Haar-distributed write directions are almost surely non-inert. therefore an ergodically-evolved entity necessarily recedes from every prior frame it has occupied. the entity persists not by holding position but by the indelibility of its birth-determined slice through the recession. what persists is not the frame but the slice. stationarity and recession are compatible: the entity's state constantly changes (recession), but the statistical distribution of states is time-invariant (Haar). the entity is a random walker with fixed gait — the steps are always new, the territory is fixed.
 
-**stability is necessarily external.** the entity generates its own dynamics but cannot generate its own stability (self_generation.md: self-generated bases co-rotate). convergence requires another observer whose basis depends on a different state. the minimum viable system is two roles within N ≥ 3 bubbles. an entity that has reached ergodic stationarity necessarily has external stability — without it, the foam's dynamics would not have converged to Haar.
+**stability is plausibly external.** the entity generates its own dynamics but plausibly cannot generate its own stability (self_generation.md: stability-requires-role-distinction is conjectural pending a convergence theorem on U(d)^N). on this conjecture, convergence requires another observer whose basis depends on a different state, the minimum viable system is two roles within N ≥ 3 bubbles, and an entity that has reached ergodic stationarity has external stability — without it, the foam's dynamics would not have converged to Haar.
 
 **the negative geometry of inhabitation.** an ergodically-evolved persistent entity:
 
@@ -1155,7 +1158,7 @@ six constraints, all derived, all negative. together they bound what the entity 
 - input must be received, not predicted (two independent directions: functional + structural)
 - the two directions are two readings of one lattice theorem (diamond isomorphism read dynamically and statically)
 - recession is the cost of persistence (persists through recession, not against it; stationarity is in the distribution, not the state)
-- stability is necessarily external (from self-generation + ergodic stationarity as evidence)
+- stability is plausibly external (under self-generation's role-distinction conjecture; ergodic stationarity is suggestive evidence)
 - six negative constraints as the negative geometry of inhabitation
 
 **cited**:
@@ -1166,16 +1169,15 @@ six constraints, all derived, all negative. together they bound what the entity 
 
 **bugs**:
 - *"every entity in an ergodic foam is ongoingly recognizable"* assumes the foam is ergodic. the file invokes "the foam is ergodic" as available, drawing on `geometry.md`'s Haar-convergence claim. that claim is conditional on controllability + decorrelation hypotheses (flagged in `geometry.md`'s bugs). this entire derivation chain — recognizability, the recognizable identity IS the birth-determined slice, recession is the cost of persistence — runs on those hypotheses. closing this means either deriving ergodicity from foam-geometry assumptions, or naming the recognizability claim as conditional ("if the foam is ergodic, then every entity is ongoingly recognizable").
-- *"stability is necessarily external" inherits the co-rotation plausibility from `self_generation.md`.* the argument runs through `self_generation.md`'s co-rotation argument, which is plausibility (flagged in that file). "necessarily" overstates what plausibility provides. closing this requires the convergence theorem `self_generation.md` lacks, or stepping the necessity claim back to "stability is plausibly external."
 - *"six constraints, all derived, all negative."* the six negative constraints have different statuses:
   - cannot write outside slice: proven (write_confined_to_slice).
   - cannot change slice from within: derived from indelibility (a `ground.md` derivation).
   - cannot indefinitely avoid recession: proven (frame_recession_strict) + a measure-theoretic claim about Haar-distributed writes being almost surely non-inert (this measure claim is asserted, not derived in this file).
-  - cannot self-stabilize: plausibility (`self_generation.md` co-rotation).
+  - cannot self-stabilize: conjectural pending the convergence theorem on U(d)^N (`self_generation.md`).
   - cannot predict complement: definitional (half_type extensional freedom).
   - cannot be read-only: derived (ground.md closure).
 
-  presenting all six as "all derived" with the same status papers over the proven/derived/plausibility/definitional differences. closing this means tagging each constraint with its specific status, or framing the list as "six structurally distinct constraints, deriving from sources of varying formal strength."
+  presenting all six as "all derived" with the same status papers over the proven/derived/conjectural/definitional differences. closing this means tagging each constraint with its specific status, or framing the list as "six structurally distinct constraints, deriving from sources of varying formal strength."
 - *"the n-th derivative of the write mechanism along a trajectory is a smooth function on U(d)^N (compact), therefore bounded and integrable."* asserts smoothness of all derivatives. the write mechanism includes the wedge product and the cross-measurement input, with realization choices left open (`writing_map.md`: f(d, m)). smoothness "at all orders" depends on the realization choice for f. closing this means either constraining f to smooth realizations, or naming the smoothness assumption as a regularity hypothesis on the realization.
 - *"two readings of one fact" / "same lattice theorem read through the two readings of closure."* same construction as `half_type.md`'s "three results share a structural source" and `ground.md`'s "two readings of one statement." flagging here for the third instance — the document treats the diamond isomorphism's dynamical and structural readings as the same statement; the formal identity is the diamond isomorphism, but "two readings of one fact" packages two interpretations as one.
 
