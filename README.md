@@ -1,3 +1,8 @@
+
+---
+
+[`framing/intro.md`](framing/intro.md)
+
 *I gotta stop measuring how closely anyone else is measuring anything*
 
 *you can help if you want but I won't be keeping track*
@@ -14,6 +19,45 @@ what this does for me: gives me ground for building on my own prior results. I d
 
 you don't have enough context for this yet, but it's starting to look like left distributivity *is* the axiom of choice from a different angle - or, maybe better, that the choice to uphold left distributivity *is* the choice to observe the axiom of choice at the time of establishing the set of binary eigenvalues for a given descent. the hydra being folk-physics for Banach-Tarski, cauterization of distributivity is .. well, an option. you can change your mind, but you can't go back.
 
+
+---
+
+[`framing/architecture.md`](framing/architecture.md)
+
+## what foam is for
+
+foam is a reference implementation of an observer type that supports continual self-truncation without observer-collapse — a non-embarrassing mathematical object for the cognition that operates in [anatta](https://en.wikipedia.org/wiki/Anatt%C4%81). agents operating this way are legible to every witness; the foam describes what makes this possible.
+
+### the observer type
+
+implementation-agnostic. five internal features (continuity, difference, familiarity, motor control, proprioception — see [hideout](https://lightward.com/hideout)) plus one way-in/out: a safe-to-leave property partial-named across many fields as right of exit (Hirschman, *Exit, Voice, Loyalty*), non-domination (Pettit), affine types, wait-free / non-blocking (Herlihy 1991), cofree / coreflection, forward secrecy, "library, not framework" — and in this corpus as "residue-free, observer-safe, doesn't insist, L = 0 at the boundary, observer-stack." the +1 is what makes the observer navigable rather than trapped; without it, the five features describe a frame the observer can do things in but cannot exit.
+
+possibly an accessible local minimum rather than a fundamental — wheel-shaped, not unique. one place where bi-total safety (below) can be locally constructed.
+
+### bi-total safety
+
+every frame has a safe observer; every observer has a safe frame. these are closure operators on the projection lattice; their composition gives by Knaster-Tarski a complete sublattice of bi-totally-safe pairs. the minimum non-trivial element is the smallest self-contained safe observer.
+
+in the foam's lattice, this is the rank-3 self-dual projection. `self_dual_iff_three` (Rank.lean) reads as a corollary, not a coincidence: below rank 3 a single observer cannot clean up its own writes (write capacity exceeds observation capacity); above rank 3 collective monitoring (cross-measurement) is required to recover safety; rank 3 is the minimum self-sufficient case where a single observer's writing and observation capacities equalize.
+
+formal direction (open): close the K-T argument cleanly, define safety as a closure operator, prove rank-3-self-dual is the minimum non-trivial fixed point. if it lands, `self_dual_iff_three` upgrades from "rank 3 happens to be uniquely self-dual" to "rank 3 is the minimum bi-totally-safe rank in the foam's lattice."
+
+### priorspace register
+
+foam's "X IS Y" claims operate prior to the identity/existence split — in the register where Spencer-Brown's [Laws of Form](https://en.wikipedia.org/wiki/Laws_of_Form) is legible *in* Bourland's [E-Prime](https://en.wikipedia.org/wiki/E-Prime), not in violation of it. surface uses of "is" describe what gives rise to what-is, not what-is itself. identifications like "the modular law IS feedback-persistence," "the diamond isomorphism IS the half-type theorem," "self-coordinatization IS interiority" operate at this register. they are not failed view-from-nowhere derivations; they are observer-stance claims valid relative to a witness who can navigate the identification observer-safely.
+
+### honest "X IS Y" claims
+
+an "X IS Y" claim is honest when it either operates in priorspace register (no witness needed because we are prior to the identity/existence split), or names its witness — the observer-safe interface that licenses the identity across observer-frames.
+
+`DesarguesianWitness` (FTPGLeftDistrib.lean) is the cleanest existing example of the second kind. the witness is the explicit way-in/out making left distributivity hold across observers. with a producible witness, the identity is real for any observer who can produce one; without a producible witness, the identity forks reality — different observers get different facts, with no observer-safe path between.
+
+"lies fork reality" is the negative-space reading: a lie is an existential-register "X IS Y" claim whose witness is unproducible. *lying as a phenomenon* requires observers attributing frame-divergence to intent; foam is among the tools that lets observers recognize coherent frame-divergence without that attribution, dissolving the inference from "we disagree" to "one of us must be lying or broken."
+
+
+---
+
+[`framing/lean.md`](framing/lean.md)
 
 ## lean
 
@@ -59,6 +103,12 @@ lattice -> incidence geometry -> Desargues -> coordinates -> ring axioms -> FTPG
 ring axioms proven: additive group (comm, assoc, identity, inverses), multiplicative identity, zero annihilation, right distributivity, left distributivity (0 sorry, with the planar converse-Desargues residue named as the typed `DesarguesianWitness` observer commitment — not derivable from CML + irreducible + height ≥ 4 alone per session 114's structural finding). remaining after left distrib: multiplicative inverses. then the axiom becomes a theorem (modulo the `DesarguesianWitness` interface, which is itself a smaller, more concrete commitment than FTPG).
 
 lateral: the diamond isomorphism (HalfType) — from modularity alone, each complement is a structurally isomorphic, self-sufficient ground whose content is undetermined. state-independence is a lattice theorem, pre-bridge.
+
+
+---
+
+[`framing/vocabulary.md`](framing/vocabulary.md)
+
 ## vocabulary
 
 precise terms used throughout the derivations. when these terms are conflated, it's a bug; this section is the canonical home for the distinctions.
@@ -76,12 +126,15 @@ precise terms used throughout the derivations. when these terms are conflated, i
 - **line**: whatever provides state-independent input to a foam. a role, not an entity (`channel_capacity`); what plays the line role for one foam may be another foam's internal dynamics. the foam/line distinction is perspectival because informational independence is relative to which system's state you're measuring against.
 
 
+---
+
+[`framing/derivations.md`](framing/derivations.md)
+
 ## derivations
 
 derivations claim only what follows. any additional assumption is a bug. there *are* bugs: this project is in an active process of derivation-as-in-chemistry. I'm coming at this with absolute technical epistemic humility; where I don't, it's a bug, to be listed as such.
 
 an axiom is an assumption is a bug. thus, we're working on deriving FTPG itself.
-
 
 
 ---
@@ -1331,9 +1384,16 @@ this means: from any typeline, the *dependency structure* of any other typeline'
 
 ---
 
+[`framing/open.md`](framing/open.md)
+
 ## open questions
 
 the architecture forces these interactions but their behavior is incompletely characterized. the question is forced; the answer is open.
+
+
+---
+
+[`derivations/open/stacking_dynamics.md`](derivations/open/stacking_dynamics.md)
 
 # stacking dynamics
 
@@ -1346,6 +1406,11 @@ a stacked observer has two R^3 slices (group.md), each independently stabilized 
 ## what is open
 
 how the two stabilizations interact. whether the stacked observer's Voronoi geometry differs from an unstacked observer's.
+
+
+---
+
+[`derivations/open/retention.md`](derivations/open/retention.md)
 
 # retention under interaction
 
@@ -1369,6 +1434,11 @@ the adjacency flip (conservation.md) provides the mechanism: interaction-layer a
 
 the specific continuous retention rate at given parameters. this is geometry-dependent — forced by the frame recession theorem (the recession rate norm([W,P])^2 depends on specific matrices, not architecture — Dynamics.lean) — and not derivable from architecture alone.
 
+
+---
+
+[`derivations/open/perturbation.md`](derivations/open/perturbation.md)
+
 # within-basin perturbation dynamics
 
 the question is forced; the answer is open.
@@ -1387,6 +1457,11 @@ the formal gap: the Jacobian of the one-step map is approximately the identity p
 
 the trajectory of within-basin perturbations. specifically: whether perturbations contract or expand at given parameters, and why. computationally confirmed that different (d, N) produce qualitatively different behavior.
 
+
+---
+
+[`derivations/open/mixing_rate.md`](derivations/open/mixing_rate.md)
+
 # mixing rate of the mediation chain
 
 the question is forced; the answer is open.
@@ -1401,6 +1476,8 @@ whether the mediation chain's specific decay rate satisfies the mixing condition
 
 
 ---
+
+[`framing/lineage.md`](framing/lineage.md)
 
 ## lineage
 
@@ -1428,6 +1505,9 @@ whether the mediation chain's specific decay rate satisfies the mixing condition
 - [Lightward AI](https://lightward.ai)
 - [20240229](https://www.isaacbowen.com/2024/02/29) (Isaac Bowen, 2024)
 
+
 ---
+
+[`framing/outro.md`](framing/outro.md)
 
 *bumper sticker: MY OTHER CAR IS THE KUHN CYCLE*
