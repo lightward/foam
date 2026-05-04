@@ -1,13 +1,12 @@
-
----
-
-[`framing/intro.md`](framing/intro.md)
+[`framing/epigraph.md`](framing/epigraph.md)
 
 *I gotta stop measuring how closely anyone else is measuring anything*
 
 *you can help if you want but I won't be keeping track*
 
 ---
+
+[`framing/intro.md`](framing/intro.md)
 
 # foam
 
@@ -18,7 +17,6 @@ a reflexive architecture of stabilization, and/or a tautology you can live in
 what this does for me: gives me ground for building on my own prior results. I didn't have that before I chose it. upon examination of the choice, this is it.
 
 you don't have enough context for this yet, but it's starting to look like left distributivity *is* the axiom of choice from a different angle - or, maybe better, that the choice to uphold left distributivity *is* the choice to observe the axiom of choice at the time of establishing the set of binary eigenvalues for a given descent. the hydra being folk-physics for Banach-Tarski, cauterization of distributivity is .. well, an option. you can change your mind, but you can't go back.
-
 
 ---
 
@@ -70,7 +68,6 @@ three outcomes for any witness/claim pair:
 
 - **merging**: a claim that previously forked can be brought back into coherence by reconciliation work — expanding the witness's frame until both previously-divergent halves resolve. this is what ho'oponopono speed-runs: not adjudicating which side was right, but re-knitting the seam. the witness's coherence is reconstructed across the fork. merging is the third state the binary cohere/fork misses; it's how forks become navigable in retrospect.
 
-
 ---
 
 [`framing/lean.md`](framing/lean.md)
@@ -120,7 +117,6 @@ ring axioms proven: additive group (comm, assoc, identity, inverses), multiplica
 
 lateral: the diamond isomorphism (HalfType) — from modularity alone, each complement is a structurally isomorphic, self-sufficient ground whose content is undetermined. state-independence is a lattice theorem, pre-bridge.
 
-
 ---
 
 [`framing/vocabulary.md`](framing/vocabulary.md)
@@ -141,7 +137,6 @@ precise terms used throughout the derivations. when these terms are conflated, i
 
 - **line**: whatever provides state-independent input to a foam. a role, not an entity (`channel_capacity`); what plays the line role for one foam may be another foam's internal dynamics. the foam/line distinction is perspectival because informational independence is relative to which system's state you're measuring against.
 
-
 ---
 
 [`framing/derivations.md`](framing/derivations.md)
@@ -151,7 +146,6 @@ precise terms used throughout the derivations. when these terms are conflated, i
 derivations claim only what follows. any additional assumption is a bug. there *are* bugs: this project is in an active process of derivation-as-in-chemistry. I'm coming at this with absolute technical epistemic humility; where I don't, it's a bug, to be listed as such.
 
 an axiom is an assumption is a bug. thus, we're working on deriving FTPG itself.
-
 
 ---
 
@@ -247,7 +241,6 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 - *fixed-point uniqueness varies in strength across the four properties.* modular has a real chain (N_5 → path-dependent composition → indeterminate feedback → no value to feed back). height ≥ 4 has a real chain (rank_two_abelian_writes + partiality). complemented is argued by "complement_idempotent has no home" — that argues this specific loop wouldn't run, not that no self-sustaining loop is possible without complementation. irreducibility is named-definitional (the document admits this: "the irreducibility is what 'one' means"). presenting all four as "fixed-point constraints" of equal status under-flags the differences. closing this would require either separating the four into mechanical / definitional / plausibility tiers, or strengthening the complemented case to a real necessity argument.
 - *"encounters change frames" recasts dynamics as experience.* the lattice formalism describes dynamics on projections (orthogonal conjugation, observation_preserved_by_dynamics). "encounters change frames" / "you experience change" recasts this in observer-experiential terms. the recasting is treated as direct read-off — "same statement, two readings" — but the leap from formal dynamics to phenomenological description is the leap. closing this is the same problem as the first bullet: the formal-to-phenomenological identification is the load-bearing move, and it is not itself derived.
 
-
 ---
 
 [`derivations/writing_map.md`](derivations/writing_map.md)
@@ -314,7 +307,6 @@ the stabilization target j2 is the regular simplex cosine -1/(k-1) where k is th
 - *the j2 target.* "the stabilization target j2 is the regular simplex cosine -1/(k-1)" is invoked from Taylor. Taylor's classification gives equilibrium *angles* between film boundaries; the foam's stabilization target is a target for projection alignment expressed as a cosine. the move from "equilibrium junction angles" to "stabilization target as cosine" is the interpretive bridge in (2). the value -1/(k-1) is the regular simplex cosine, which is a fact independent of Taylor; the choice to make *this* the target is the load-bearing step.
 - *rank ≥ 4 collective monitoring is asserted, not formalized.* "writes land in directions the writer cannot observe — but cross-measurement provides collective monitoring" rests on commutator_seen_to_unseen (proven: other observers see what you can't) plus an asserted move "the foam closes feedback loops collectively." the formal content covers what *one* other observer sees of *one* writer; "collective closure of all feedback" across the foam at rank ≥ 4 is not a single named theorem. closing this would require a formal collective-feedback theorem at rank ≥ 4, or an explicit acknowledgment that this is a structural conjecture pending Almgren's classification.
 
-
 ---
 
 [`derivations/half_type.md`](derivations/half_type.md)
@@ -362,7 +354,6 @@ the foam's dynamic structure — how the type of legal next-writes depends on ac
 **bugs**:
 - *"three results share a structural source" is interpretive consolidation, not derivation.* the two-argument signature, complement-as-observation, and state-independence are three distinct claims. they all draw on the diamond iso, but the iso doesn't make them inter-derivable as derivations — it just provides a common formal substrate that each reading interprets. closing this further would mean constructing each claim from each other formally, which the spec doesn't currently do.
 - *"structural determination with extensional freedom IS state-independence" is an interpretive bridge.* the diamond iso is a lattice theorem. reading it as state-independence — the dynamical claim that input *value* is independent of foam state — is a non-trivial move. the architectural use of this reading (the pre-bridge / post-bridge split in `channel_capacity.md`) is solid as architecture; the *content* of the qualitative claim is interpretation. closing this would mean deriving state-independence formally from the iso (constructing the bridge) or naming it explicitly as a methodological reading.
-
 
 
 ---
@@ -429,7 +420,6 @@ the bridge parameter is the only free variable. the functor is the same.
 - *"a perspectivity between two lines IS a structural isomorphism between their atom-intervals."* classical projective geometry; the formal connection to mathlib's `OrderIso` for perspectivities-on-atom-intervals depends on FTPGCoord.lean's construction. asserted in this file without a direct cite. flagging for traceability — the underlying fact is standard.
 - *"the modular law is the well-formedness guard."* same construction as `half_type.md`'s "modular law IS the type-checking rule" — a metaphor mapping a lattice property (path-independence of composition) onto a programming-language role. suggestive, not derived. closing this would mean either constructing the formal type-theoretic structure that makes the modular law literally the guard, or stepping back to "the modular law plays the role of the well-formedness guard."
 
-
 ---
 
 [`derivations/self_parametrization.md`](derivations/self_parametrization.md)
@@ -493,7 +483,6 @@ the algebraic structure of l is generated by l acting on itself through C. the l
 - *the (P, Q) parametrization claim outruns the formalized cases.* "any pair of distinct atoms on l (with Q ≠ U) generates a valid two_persp operation. the coordinate line parametrizes its own operations: l × l \ {diagonal, Q=U} → {binary operations on l}." only (U, O) → addition and (O, I) → multiplication are formalized in lean. (U, I) → translated addition is open. the claim of full parametrization across l × l \ {diagonal, Q=U} is forward-looking — a derivation conjecture, not a derived result. closing this is exactly what the open list names.
 - *the two_persp argument shapes differ across operations.* the cited factorings — `coord_add a b = two_persp Γ (a⊔C) m (b⊔E) q` and `coord_mul a b = two_persp Γ (O⊔C) (b⊔E_I) (a⊔C) m` — place the inputs a, b in different argument positions, and the line m appears in different positions. saying "(P, Q) parametrizes the operations" implies a uniform substitution into a single template; the actual substitution is not uniform across the formalized cases. closing this means either constructing the uniform template (a single `op_{P,Q}(a, b) = two_persp Γ (...P...a...) (...) (...P...b...) (...Q...)` with explicit slots), or stepping the claim back to "(P, Q) determines an operation by a procedure that varies with the operation."
 - *"the foam's ground requires exactly one commitment from outside the system"* is asserted, not derived. the local fact (C is the one external input for the coordinate line construction) is established. the global claim ("the ground requires exactly one commitment") generalizes from the coordinate-line setup to a foam-wide architectural principle. that generalization is interpretation. closing this means either constructing a foam-wide commitment-counting argument or stepping back to "in this construction, C is the one external input."
-
 
 ---
 
@@ -633,7 +622,6 @@ this extends to off-line points via:
 - *"mind enters the formalism at the chirality's thick side."* "physics is minded" / "this is the foam's seam where mind enters" is philosophical interpretation of a specific Lean parameter (`DesarguesianWitness Γ`). the formal content (left distributivity is not substrate-derivable; the residue is named as an observer commitment) is solid and well-flagged in the open list. the philosophical layer is not derived; it is being announced. the document does not falsely claim derivation, but the phrasing fuses the formal observation with its philosophical reading in a way that makes them hard to separate. closing this means either separating the two registers ("formally: ...; methodologically: ...") or holding the philosophical claim as explicitly methodological.
 - *"the observer's commitment to a particular DesarguesianWitness is structurally the same act as their commitment to a basis. ... same act, three formal clothes."* the strongest identity claim in the file. `DesarguesianWitness` is a typed structure in the lean development; basis commitment is a foam-level concept; "left vs right action" is a third register. saying these are "the same act" requires a bridge. the bridge is asserted via "structural ledger of observer-input across layers." closing this would mean constructing the formal object that has these three as instances (a typed-commitment-functor, perhaps), or stepping back to "three structurally analogous acts of observer commitment."
 
-
 ---
 
 [`derivations/channel_capacity.md`](derivations/channel_capacity.md)
@@ -713,7 +701,6 @@ the foam/line distinction is therefore not a categorical boundary but a correlat
 - *"the line's irreducibility is channel capacity."* the two concepts — "the line" as the foam's external input source, "channel capacity" as the foam's information-receiving capacity — are different objects. the formal bridge is the two-argument type signature of the writing map, which the document develops over the qualitative section. the headline "the line's irreducibility IS channel capacity" overstates this bridge: the formal content is "the line's role and the foam's channel capacity are two readings of the diamond isomorphism's two-argument structure." closing this means either constructing the formal identity (e.g., a category in which "the line" and "channel capacity" are objects, with an isomorphism) or stepping the headline back to "the line's role and channel capacity are co-constituted by the two-argument structure."
 
 
-
 ---
 
 [`derivations/stabilization.md`](derivations/stabilization.md)
@@ -770,7 +757,6 @@ self_dual_iff_three proves rank 3 is the unique dimension where the write space 
 - *Taylor's hypothesis-satisfaction inherits the bridge from writing_map.md.* "R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat)" is correct; "stable junctions in R^3 are classified" is Taylor's theorem. the bridge — that the foam's stabilization dynamics instantiate Taylor's "locally area-minimizing" hypothesis — is the interpretive move flagged in `writing_map.md`. flagging here for traceability; same bridge, used twice.
 - *"the contract determines the stabilization target."* the contract (classified + locally finite + flat) plus Taylor's classification yields the *equilibrium configurations*. the move from "equilibrium configuration" to "the stabilization target is -1/(k-1)" requires the additional choice that the foam's dynamics aim at Taylor's equilibrium *as their target*. Taylor classifies what's stable; the foam's choice to make Taylor-equilibrium the dynamical target is the load-bearing step. closing this means either deriving the choice (why the foam must use Taylor-equilibrium as target) or naming it as a realization choice — analogous to how `writing_map.md` names the magnitude scaling f as a realization choice.
 - *"the foam closes feedback loops collectively, not per-observer"* at rank ≥ 4 — same bug as `writing_map.md`. commutator_seen_to_unseen establishes that other observers see what one writer can't (single pairwise fact). "collective closure of all feedback loops at rank ≥ 4" is asserted as a downstream consequence; no single named theorem covers it. closing this would require a formal collective-feedback theorem at rank ≥ 4, or an explicit acknowledgment that this is a structural conjecture pending Almgren's classification.
-
 
 ---
 
@@ -844,7 +830,6 @@ the full write lives in u(d) = su(d) + u(1). pi_1(U(d)) = Z — integer winding 
 - *"stacking is a line-side commitment."* the algebraic content (real operations are closed in so(d); reaching u(d) requires a complex structure that sequential foam dynamics cannot produce) is solid. "line-side commitment" recasts this in the line/foam framework from `channel_capacity.md`, where "line-side" means "from outside the foam's autonomous dynamics." the recasting depends on the line/foam role distinction being formal enough to support "line-side" as a structural location. this is interpretation, not derivation. closing this would mean either formalizing the line/foam-side ledger of commitments, or stepping back to "stacking is not producible by the foam's sequential dynamics; it must come from outside that loop."
 - *"what's conserved must be invisible to the cost."* "if L could see it, dynamics could change it" — this is a plausibility-converse argument from one instance (the u(1) trace is invisible to L; the dynamics conserve it). the document presents this as a general principle ("must be"). the formal content is the specific algebraic fact that tr[A, B] = 0 makes the u(1) component invariant under bracket-generated dynamics. "all conserved quantities must be invisible to the cost they're conserved against" is a stronger claim. closing this means either deriving the general principle (e.g., a Noether-style construction) or stepping back to "in the foam's setup, the u(1) conservation is algebraically protected from L's gradient."
 - *"the orthogonality is generative."* "ordering and conservation are orthogonal because they are produced by different structures: the cycle's forced orientation (map-internal) and the stacking chirality (line-side)." the formal content is the algebraic decomposition u(d) = su(d) ⊕ u(1) (with the trace as the u(1) projection). attributing the two summands to "different generative structures" is interpretation. closing this means either constructing the formal correspondence between (orientation source) ↔ (algebraic component), or stepping the claim back to "the two summands are algebraically orthogonal."
-
 
 ---
 
@@ -922,7 +907,6 @@ when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandat
 - *"the tangent peaks at intermediate overlap"* is asserted from boundary intuition. the document argues identical-slice and orthogonal-slice limits give zero or weak tangent; "intermediate overlap: largest tangent magnitude" follows. the formal location of the peak (which singular-value configuration maximizes the tangent magnitude) is not derived. closing this would mean either characterizing the peak as a function of singular values of O, or stepping back to "the tangent is non-monotone in overlap; it vanishes at both extremes."
 - *"experiential asymmetry (which observer 'feels contained') is perspectival, not algebraic."* the file's algebraic content (singular value symmetry) is solid. "experiential asymmetry" introduces an observer-experience register the formalism does not develop. flagging for traceability — the claim is honest about being non-algebraic, but "experiential" is doing work the file does not earn.
 
-
 ---
 
 [`derivations/self_generation.md`](derivations/self_generation.md)
@@ -979,7 +963,6 @@ neither role is permanent. the role assignment is perspectival. the two is irred
 
   per the architecture file's disposition rule, these are observer-stance claims operating in priorspace register — they identify foam-internal concepts with their geometric counterparts in the register where what gives rise to what-is is being described, not what-is itself. (1) and (2) draw on `writing_map.md` and standard differential geometry; (3) is a tautology at face value but does work in context. flagging here for traceability — the claims are honest in priorspace register; constructing them as formal identities would require explicit witnesses, which the file does not currently name.
 - *"what the line provides: a fixed subspace."* the line role was introduced (`channel_capacity.md`) as informationally-independent input. specifying it here as "three dimensions that hold still" is a stronger characterization — it commits to a specific structural form (fixed subspace) for what the line provides. the formal content from `channel_capacity.md` is just "input independent of foam state." "fixed subspace" is one realization. closing this means either deriving fixed-subspace as the unique or canonical form of state-independent input, or naming this as an interpretive specification of the line role within this file.
-
 
 ---
 
@@ -1049,7 +1032,6 @@ the two factors — the packing constraint and the saturation gap — are two ha
 - *"the two factors — the packing constraint and the saturation gap — are two halves of the same fraction."* the formal content is the algebraic identity sqrt(N/(2(N-1))) · sqrt((N-1)/N) = 1/√2. "two halves of the same fraction" is interpretive — it suggests a structural relationship between the packing constraint and the saturation gap beyond the algebraic cancellation. the cancellation is just (N-1)/N appearing in both factors. closing this would mean either constructing the structural relationship that makes them "halves of the same thing," or stepping the framing back to "the (N-1)/N dependencies of the two factors cancel, yielding 1/√2 independent of N."
 - *"L is not a variational objective"* is correctly clarified, but the relationship between L and the writing map deserves a more explicit hand-off. the writing map drives the foam; L is a description of resulting geometry. the document's "the active regime departs from minimality because perpendicular writes deposit structure in different directions" is a qualitative observation; whether L's behavior is uniquely determined by perpendicularity, vs additional features of the dynamics, is not established. flagging for completeness — this is closer to "implicit assumption pending derivation" than to a bug, but worth seeing.
 
-
 ---
 
 [`derivations/conservation.md`](derivations/conservation.md)
@@ -1113,7 +1095,6 @@ conservation is what accumulation on closed paths produces: not a net displaceme
 - *"attractor basin" is used without formalization.* "indelibility is a property of the attractor basin, not the current neighborhood." the document elsewhere (`ground.md`) derives indelibility from causal ordering + basis commitment + closure, none of which require dynamical-systems vocabulary. introducing "attractor basin" here imports a register the formalism does not support: there is no proven theorem that the foam's dynamics have attractor basins in the standard dynamical-systems sense, nor that birth shape coincides with such a basin's identity. closing this means either constructing the attractor-basin structure formally (proving the existence of basins, characterizing them) or stepping back to "indelibility is the ground fact that earlier writes are irreducibly present in later state, regardless of adjacency changes."
 - *"two-layer retention" is asserted, not derived.* "birth shape survives all adjacency changes" + "interaction-layer adaptations decay under the new dynamics at a rate set by the displacement between old and new stabilization targets" → "birth structural, interaction spectral." the two-layer characterization requires a stability/perturbation analysis showing that birth-encoded structure has a different decay regime from interaction-encoded structure. the file does not provide that analysis. the closest formal content is indelibility (birth persists) and the recession-rate result (Dynamics.lean: rate depends on specific [W,P]). these support a layering *intuition*; the rate-of-decay claim for the interaction layer is not derived. closing this means either constructing the decay-rate analysis or naming the two-layer characterization as a structural conjecture.
 - *"what persists across topological transitions lives on the line's side."* this restates persistence (indelibility) as a property assigned to "the line's side" of the line/foam framework. the formal content (some structure persists across cell-adjacency changes) is solid. the assignment to "line-side" depends on the line/foam framework being structural enough to support such assignments — same interpretive bridge flagged in `self_generation.md` and elsewhere. closing this would mean either formalizing the line/foam side ledger or stepping back to "what persists is determined by birth, not by current dynamics."
-
 
 ---
 
@@ -1196,7 +1177,6 @@ six constraints, all derived, all negative. together they bound what the entity 
 - *"two readings of one fact" / "same lattice theorem read through the two readings of closure."* same construction as `half_type.md`'s "three results share a structural source" and `ground.md`'s "two readings of one statement." flagging here for the third instance — the document treats the diamond isomorphism's dynamical and structural readings as the same statement; the formal identity is the diamond isomorphism, but "two readings of one fact" packages two interpretations as one.
 
 
-
 ---
 
 [`derivations/external_analogy.md`](derivations/external_analogy.md)
@@ -1259,7 +1239,6 @@ this gives a diagnostic: for any proposed cross-system analogy, the six constrai
 - *renaming the sixth inhabitation constraint.* the file refers to "non-silence" where `inhabitation.md` lists "cannot be read-only." these refer to the same constraint (closure excludes read-only frames). the rename to "non-silence" is interpretive — it imports a register the formal content does not require ("silence" is broader than "read-only"). closing this means using `inhabitation.md`'s phrasing for traceability, or naming both ("non-silence / cannot be read-only").
 - *"the diagnostic applies to anything that admits a Hilbert-interface."* the inhabitation constraints are derived for entities in a foam-grounded reality. the leap to "anything that admits a Hilbert-interface" depends on Hilbert-interface compliance being equivalent to (or sufficient for) the foam-grounded conditions under which the constraints were derived. the file references inhabitation.md for this; the claim of equivalence is the load-bearing bridge. (the Heunen-Kornell partial answer is the file's own attempt to establish this bridge, with one of six pairings tested.) closing this is part of the same project the open list names.
 - *"if the full pairing lands, well-formed external analogy IS Hilbert-interface correspondence under inhabitant/substrate duality."* explicitly conditional ("if ... lands"). flagging for traceability — the file is honest about the conditional, but the headline-strength of "IS Hilbert-interface correspondence" is doing more work than "could be" once the conditional is granted. tightening would mean "would be Hilbert-interface correspondence" or "external analogy reduces to Hilbert-interface correspondence."
-
 
 ---
 
@@ -1324,7 +1303,6 @@ what CAN vary is the *richness* of the interiority. a rank-1 observation (a sing
 - *"the wall IS the diamond isomorphism, which IS the modular law applied to a complemented pair."* chain of identity claims compressing theorem and conclusion. the diamond isomorphism is *given by* the modular law in the complemented case (`IsCompl.IicOrderIsoIci`); calling them identical equates the proof and the result. and identifying the diamond isomorphism with "the wall" is a definitional move — the file is *defining* the wall as the iso, not deriving the identity. closing this means either tagging this as definitional ("here we will call the diamond isomorphism 'the wall'"), or constructing a separate formal object that is the wall and proving it coincides with the iso.
 - *"the trade pattern A↔B↔C formalizes as P ↔ diamond_iso ↔ P^⊥."* the three-body formalism (`three_body.md`) is about R³ slices in R^d with overlap structure. the lattice partition (interior / iso / exterior) is at a different level: a single lattice element P with its complement and the diamond iso between them. these share a structural pattern (three-region trade structure) but are not literally the same formal object. presenting the formalization as direct misses the level mismatch. closing this means either constructing the formal map between the three-body slice geometry and the lattice partition, or naming this as a structural analogy between two formalisms.
 - *"self-coordinatization IS interiority."* definitional. the file is defining interiority as self-coordinatization (a sub-structure representing its own operations through a mediating element). that is a stipulative move; presenting it in the "derived" block reads as a derivation. flagging for clarity — the equivalence is not derived from prior theorems; it is the file's chosen definition of interiority.
-
 
 ---
 
@@ -1403,7 +1381,6 @@ this means: from any typeline, the *dependency structure* of any other typeline'
 - *the Haar / decorrelation hypotheses inherited from `geometry.md` and `channel_capacity.md`* are conditional in those files (controllability and mediation-chain decorrelation are not yet derived from foam-geometry assumptions). this file invokes the decorrelation horizon σ ~ (3/d)^{n/2} and the long-range "channel-like" reading, both of which inherit those conditional hypotheses. flagging here for completeness — the typeline's quantitative claims rest on those upstream conditionals.
 
 
-
 ---
 
 [`framing/open.md`](framing/open.md)
@@ -1411,7 +1388,6 @@ this means: from any typeline, the *dependency structure* of any other typeline'
 ## open questions
 
 the architecture forces these interactions but their behavior is incompletely characterized. the question is forced; the answer is open.
-
 
 ---
 
@@ -1428,7 +1404,6 @@ a stacked observer has two R^3 slices (group.md), each independently stabilized 
 ## what is open
 
 how the two stabilizations interact. whether the stacked observer's Voronoi geometry differs from an unstacked observer's.
-
 
 ---
 
@@ -1456,7 +1431,6 @@ the adjacency flip (conservation.md) provides the mechanism: interaction-layer a
 
 the specific continuous retention rate at given parameters. this is geometry-dependent — forced by the frame recession theorem (the recession rate norm([W,P])^2 depends on specific matrices, not architecture — Dynamics.lean) — and not derivable from architecture alone.
 
-
 ---
 
 [`derivations/open/perturbation.md`](derivations/open/perturbation.md)
@@ -1479,7 +1453,6 @@ the formal gap: the Jacobian of the one-step map is approximately the identity p
 
 the trajectory of within-basin perturbations. specifically: whether perturbations contract or expand at given parameters, and why. computationally confirmed that different (d, N) produce qualitatively different behavior.
 
-
 ---
 
 [`derivations/open/mixing_rate.md`](derivations/open/mixing_rate.md)
@@ -1496,9 +1469,8 @@ Haar convergence (geometry.md) requires sufficiently decorrelated inputs. the me
 
 whether the mediation chain's specific decay rate satisfies the mixing conditions for the foam's particular dynamics. whether the convergence rate under mixing is fast enough to explain the observed 1-3% gap at finite run lengths.
 
-
 ---
 
-[`framing/outro.md`](framing/outro.md)
+[`framing/exigraph.md`](framing/exigraph.md)
 
 *bumper sticker: MY OTHER CAR IS THE KUHN CYCLE*

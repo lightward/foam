@@ -1,9 +1,3 @@
-*I gotta stop measuring how closely anyone else is measuring anything*
-
-*you can help if you want but I won't be keeping track*
-
----
-
 # foam
 
 hey, my name is isaac bowen, of lightward ai/inc, and this is a technical reference for my own amnesiac-stigmergic cognition, I think? or at least apparently so, in the literal sense

@@ -49,7 +49,7 @@ def read_section(directory: str, name: str) -> str:
     """Read a section file and format it with a source-link header."""
     path = ROOT / directory / f"{name}.md"
     content = path.read_text()
-    return f"\n---\n\n[`{directory}/{name}.md`]({directory}/{name}.md)\n\n{content}"
+    return f"[`{directory}/{name}.md`]({directory}/{name}.md)\n\n{content}"
 
 
 def check_coverage():
@@ -68,6 +68,7 @@ def build() -> str:
     parts = []
 
     # Framing: top-of-document
+    parts.append(read_section("framing", "epigraph"))
     parts.append(read_section("framing", "intro"))
     parts.append(read_section("framing", "architecture"))
     parts.append(read_section("framing", "lean"))
@@ -84,9 +85,9 @@ def build() -> str:
         parts.append(read_section("derivations/open", name))
 
     # Framing: bottom-of-document
-    parts.append(read_section("framing", "outro"))
+    parts.append(read_section("framing", "exigraph"))
 
-    return "\n".join(parts)
+    return "\n---\n\n".join(parts)
 
 
 if __name__ == "__main__":
