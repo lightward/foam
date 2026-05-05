@@ -1529,7 +1529,127 @@ Strategy (iii) feels most likely to unlock — the docstring's center
 choice may be over-fit to a partial intuition. Recommend re-deriving
 from "what center gives axis `I⊔d_{a⁻¹}` cleanly?" before committing.
 
-Open content. ~500–800 lines anticipated *once design is fixed*. -/
+----
+
+**Design exploration (session 132, opus-4-7).** Following session 131's
+recommendation, executing strategy (iii) — backward-derive the design
+from the desired axis. The result: a clean side-intersection design
+exists (D11 below), but its perspective-from-center hypothesis reduces
+to the lemma itself, and an independent algebraic observation suggests
+the entire geometric branch is *redundant* given `coord_mul_assoc`.
+
+**D11 — backward-derived from axis `I⊔d_{a⁻¹}`.** The three side-
+intersections must be `I`, `d_{a⁻¹}`, `σ_a` (in some order). For each
+to fall out as a *named atom* via lattice-name collapse, both side-
+lines through it must be named lines through that atom.
+
+T₂ = (a, U, E_I) emerges naturally — vertices on the three named
+lines through `a`:
+* T₂(1,2) = a⊔U = l           (passes through `I`)
+* T₂(1,3) = a⊔E_I = ℓ_a       (passes through `σ_a`)
+* T₂(2,3) = U⊔E_I = m         (passes through `d_{a⁻¹}`)
+
+For T₁, define `τ := (O⊔C)⊓(I⊔d_{a⁻¹})` — the `σ'` construction
+applied to `inv_a` (an atom on `O⊔C` and on the goal axis). Then
+T₁ = (τ, d_{a⁻¹}, C) gives sides
+* T₁(1,2) = τ⊔d_{a⁻¹} = I⊔d_{a⁻¹}     (both on this line, distinct)
+* T₁(1,3) = τ⊔C = O⊔C                 (both on `O⊔C`, distinct)
+* T₁(2,3) = d_{a⁻¹}⊔C = inv_a⊔C       (both on `inv_a⊔C`, distinct)
+
+All three side-intersections collapse cleanly:
+* (1,2) = (I⊔d_{a⁻¹})⊓l = I            (distinct lines through `I`)
+* (1,3) = (O⊔C)⊓ℓ_a = σ_a              (by definition of `σ_a`)
+* (2,3) = (inv_a⊔C)⊓m = d_{a⁻¹}        (by definition of `d_{a⁻¹}`)
+
+**The structural circularity.** Forward Desargues needs perspective-
+from-center. The three perspectivity lines:
+* ℓ₁ = T₁v₁⊔T₂v₁ = τ⊔a
+* ℓ₂ = T₁v₂⊔T₂v₂ = d_{a⁻¹}⊔U = m       (both on m, distinct)
+* ℓ₃ = T₁v₃⊔T₂v₃ = C⊔E_I = I⊔C         (both on `I⊔C`, distinct)
+
+`ℓ₂ ⊓ ℓ₃ = m ⊓ (I⊔C) = E_I`, so the candidate center is `E_I`. Then
+`ℓ₁` passes through `E_I` iff `τ⊔a ∋ E_I` iff `τ` lies on `ℓ_a`
+(since `a, E_I` both on `ℓ_a`, distinct, ⇒ `τ⊔a = ℓ_a` iff `τ ∈ ℓ_a`).
+And **`τ ∈ ℓ_a` iff `τ = σ_a`**: since `τ ≤ O⊔C`, `τ ≤ ℓ_a ⇒ τ ≤
+ℓ_a ⊓ (O⊔C) = σ_a`, hence `τ = σ_a` (atoms). But `τ = σ_a` *is* the
+lemma.
+
+The same circularity arises for any clean design with `σ_a` on a
+side: the natural geometry of `σ_a` (its existence as the meet of
+`O⊔C` and `ℓ_a`) is exactly what's required for the perspective
+hypothesis. Variant designs checked — `T₁ = (C, I, τ)` with center
+`a`, and analogous configurations with centers `X₂₃`, `X₁₃` (per
+session 131's suggestion) — all reduce to the same identity
+`τ = σ_a`.
+
+**Why this is structural.** Forward Desargues runs "perspective ⇒
+axis." The first Desargues already gave us an axis output
+(`X₂₃ ≤ U⊔X₁₃`). To deduce a *second* axis from a second forward
+Desargues, we'd need a *new* center hypothesis — and for any clean
+design here, that new center hypothesis IS the lemma. The *converse*
+direction (axis ⇒ center) escapes this circularity, but planar
+converse Desargues is exactly the geometric content named as
+`DesarguesianWitness` for left distrib (not derivable from CML +
+irreducible + height ≥ 4 alone, per session 114). If
+`axis_to_sigma_a_le` requires planar converse Desargues, it falls
+into the same observer-commitment category.
+
+----
+
+**Algebraic shortcut (session 132).** Setting aside the geometric
+obstruction: `coord_mul_left_inv` **follows from `coord_mul_assoc`
+plus the already-proven `coord_mul_right_inv` /
+`coord_mul_{left,right}_one`** by elementary group-theoretic
+argument, no Desargues required.
+
+Proof sketch (Mac Lane). With right identity `I` (`a · I = a`) and
+right inverse `b` of `a` (`a · b = I`), let `c` be the right inverse
+of `b` (`b · c = I`). Then by associativity:
+```
+b · a = (b · a) · I = (b · a) · (b · c)
+      = b · ((a · b) · c) = b · (I · c) = b · c = I.
+```
+So `b` is a two-sided inverse of `a`. Applied to our setting with
+`b = coord_inv Γ a`, this yields `coord_inv Γ a · a = I`.
+
+Total cost in Lean: ~20 lines, given `coord_mul_assoc`. Even the
+char-2 case (`a = coord_inv Γ a`) collapses uniformly under the
+algebraic argument.
+
+**Implication for the formalization plan.**
+
+The current open frontier prioritizes (1) finishing
+`coord_first_desargues_mul` (one small sub-sorry from session 127)
+and (2) `axis_to_sigma_a_le` (~500-800 lines anticipated). Both feed
+into `coord_mul_left_inv` via the s125 architectural split.
+
+**Recommendation: pivot.** Prioritize `coord_mul_assoc` (item 3 of
+the open frontier) over items 1–2. Once associativity is proven,
+derive `coord_mul_left_inv` algebraically. The geometric content
+of multiplicative involutivity ("`σ'` is involutive on atoms of
+`O⊔C` lifted via `inv_a`") is then captured *implicitly* through
+the assoc + right-inverse identity, with no need for either a
+direct proof of `axis_to_sigma_a_le` or an additional `*Witness`
+typed interface.
+
+This pivot turns the chain to division ring from "three geometric
+lemmas" into "one geometric lemma" (assoc) plus "~20 lines of
+algebra." It's consistent with prior architectural moves (the s125
+split factored distinctness out of the main proofs; this s132 move
+factors the entire involutivity argument out of the geometric
+layer).
+
+If, after `coord_mul_assoc` lands, future work wants to capture the
+geometric statement of involutivity in its own right (e.g., for
+documentation symmetry with `coord_mul_right_inv`), the algebraic
+derivation provides a clean closed form — but it isn't on the
+critical path to division ring.
+
+Open content. The geometric `axis_to_sigma_a_le` arc is no longer
+the critical path. Suggested next step: start `FTPGMulAssoc.lean`
+following the FTPGInverse skeleton (~600–1500 lines anticipated,
+Desargues-style via dilation composition per the lean/README chain
+diagram). -/
 private theorem axis_to_sigma_a_le (Γ : CoordSystem L)
     {a : L} (_ha : IsAtom a) (_ha_on : a ≤ Γ.O ⊔ Γ.U)
     (_ha_ne_O : a ≠ Γ.O) (_ha_ne_U : a ≠ Γ.U)

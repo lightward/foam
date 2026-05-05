@@ -79,14 +79,15 @@ On local, this isn't a concern — `lake exe cache get` handles it.
 
 See `./README.md` for the deductive chain overview.
 
-### Current frontier (session 126, 2026-05-02)
+### Current frontier (session 132, 2026-05-05)
 
-`Foam/FTPGInverse.lean` (859 lines) lands `coord_inv`,
+`Foam/FTPGInverse.lean` (~1840 lines) lands `coord_inv`,
 `coord_mul_right_inv` (`a · a⁻¹ = I`), the non-degeneracy helpers, the
 **σ_{a⁻¹} = σ'_a** helper (`sigma_inv_eq_sigma_prime`) factored from
-the right-inverse proof, and **`coord_inv_I_eq_I`** (`I` is its own
-multiplicative inverse). The construction is reverse perspectivity
-through `I ⊔ d_a`:
+the right-inverse proof, **`coord_inv_I_eq_I`** (`I` is its own
+multiplicative inverse), and as of session 128 the entire
+`coord_first_desargues_mul` body. The construction is reverse
+perspectivity through `I ⊔ d_a`:
 
 ```
 d_a = (a⊔C) ⊓ m
@@ -94,10 +95,19 @@ d_a = (a⊔C) ⊓ m
 a⁻¹ = (σ'⊔E_I) ⊓ l
 ```
 
-`coord_mul_left_inv` is fully reduced to **two named, sorry'd**
-sub-lemmas via the architectural split below.
+`coord_mul_left_inv`'s generic case now has a **single open sorry** —
+`axis_to_sigma_a_le`, the bridge from the first-Desargues axis output
+to `σ_a ≤ I⊔d_{a⁻¹}`. Session 132's design exploration found that any
+clean forward-Desargues design for this lemma reduces to a center
+hypothesis equivalent to the lemma itself (see the docstring on
+`axis_to_sigma_a_le` in FTPGInverse.lean — designs D1–D11 walked).
+**Strategic recommendation: skip this lemma; pivot to
+`coord_mul_assoc` and derive `coord_mul_left_inv` algebraically.**
+Standard Mac Lane argument (assoc + right ID + right inverse ⇒ group)
+gives left inverse in ~20 lines once assoc is proven, with no
+additional Desargues calls or `*Witness` interfaces.
 
-#### Architectural split (session 125)
+#### Architectural split (session 125; status as of s132)
 
 The single sorry at `sigma_a_le_I_sup_d_inv_distinct` was refactored
 into two named sub-lemmas with full statements + trivial composition:
@@ -105,16 +115,18 @@ into two named sub-lemmas with full statements + trivial composition:
 * **`coord_first_desargues_mul`** — single `desargues_planar` call,
   center `C`, triangles `T₁=(a, a⁻¹, σ_a)` / `T₂=(d_a, d_{a⁻¹}, σ')`.
   Output: axis collinearity `X₂₃ ≤ U ⊔ X₁₃` where
-  `X₁₃ = (a⊔E_I) ⊓ (I⊔d_a)`. Realistic ~350–500 lines (parallel to
-  FTPGAddComm.coord_first_desargues at ~600 lines, but ~7 distinctness
-  helpers already factored out for this call).
+  `X₁₃ = (a⊔E_I) ⊓ (I⊔d_a)`. **PROVEN** as of session 128
+  (~570 lines).
 * **`axis_to_sigma_a_le`** — bridge from `X₂₃ ≤ U ⊔ X₁₃` to
-  `σ_a ≤ I ⊔ d_{a⁻¹}`. Likely a second Desargues call (parallel to
-  FTPGAddComm.coord_second_desargues at ~800 lines), or a clever
-  covering argument exploiting that `X₁₃` and `σ_a` are both on `a⊔E_I`.
+  `σ_a ≤ I ⊔ d_{a⁻¹}`. **Open sorry**, but **deprioritized in s132**:
+  see the lemma's docstring for design history (sessions 131–132)
+  and the strategic recommendation to derive `coord_mul_left_inv`
+  algebraically from `coord_mul_assoc` instead.
 
-`sigma_a_le_I_sup_d_inv_distinct` is now a one-line composition:
-`axis_to_sigma_a_le (...) (coord_first_desargues_mul (...))`.
+`sigma_a_le_I_sup_d_inv_distinct` is a one-line composition:
+`axis_to_sigma_a_le (...) (coord_first_desargues_mul (...))`. If the
+algebraic-derivation path is taken, this composition becomes unused
+infrastructure.
 
 #### Distinctness audit (sessions 124–126, all PROVEN as private helpers)
 
@@ -167,35 +179,40 @@ opportunistically; new code should use it directly.
 
 #### Open frontier toward division ring (and thence FTPG-as-theorem)
 
-1. **`coord_first_desargues_mul`** — the single Desargues call. As of
-   session 126, the distinctness work is **fully factored out** as 11
-   private helpers (8 from sessions 124–125 + 3 new in s126 +
-   `h_sides_X23_mul` which packages the entire X₂₃ side `≠` claim).
-   Main remaining work is the **mechanical assembly**: instantiate
-   `desargues_planar` with center `C`, T₁=(a, inv_a, σ_a),
-   T₂=(d_a, d_inv, σ'); then process the axis output. Of the ~30
-   hypotheses `desargues_planar` requires, all the non-trivial ones
-   are now one-line helper calls. Still left: ~10 small facts (atoms
-   in plane, perspectivity `b_i ≤ C ⊔ a_i`, triangle plane equalities,
-   side coverings) and one extra side distinctness lemma `h_sides_X13_mul`
-   (`a⊔σ_a ≠ d_a⊔σ'`, proof: covering gives `a⊔E_I = I⊔d_a`, so
-   `I ≤ a⊔E_I`, intersect with `l` via `line_direction`, force `I=a`,
-   contradict `ha_ne_I_of_distinct`).
-   The final step uses `collinear_of_common_bound` with `s₁=U`,
-   `s₂=(a⊔E_I)⊓(I⊔d_a)`, after rewriting the desargues output
-   `(a⊔inv_a)⊓(d_a⊔d_inv) = U` (covering: `a⊔inv_a=l`, `d_a⊔d_inv=m`,
-   `l⊓m=U`) and `(a⊔σ_a)⊓(d_a⊔σ') = (a⊔E_I)⊓(I⊔d_a)` (covering at
-   `a` and `d_a` respectively). The covering `U⊔X₁₃ ⋖ π` follows from
-   `line_covBy_plane` with `c=O`: need `O ∉ U⊔X₁₃` (else `l ≤ U⊔X₁₃`,
-   so `X₁₃ ≤ l = a` via `line_direction`, force `a = I`).
-2. **`axis_to_sigma_a_le`** — second Desargues or covering argument.
-   Less explored; the natural new center is `X₁₃` and new triangles
-   should be designed so the new axis lands on `I⊔d_{a⁻¹}`.
-3. **`coord_mul_assoc`.** Likely a sibling file to FTPGInverse,
-   ~600–1500 lines, Desargues-style via dilation composition.
-4. **DivisionRing instance**, vector space `V` construction, lattice
+1. **`coord_mul_assoc`.** Likely a sibling file to FTPGInverse,
+   ~600–1500 lines, Desargues-style via dilation composition. After
+   the s132 strategic re-prioritization this is the **critical-path
+   geometric lemma** — once it lands, `coord_mul_left_inv` follows
+   algebraically (~20 lines, Mac Lane), and the two open sub-lemmas
+   below become redundant on the chain to division ring.
+2. **`coord_mul_left_inv` (algebraic derivation).** Once
+   `coord_mul_assoc` lands: define `b := coord_inv Γ a`, get its
+   right inverse `c := coord_inv Γ b`, then
+   `b·a = (b·a)·I = (b·a)·(b·c) = b·((a·b)·c) = b·(I·c) = b·c = I`.
+   Replaces the geometric path through `axis_to_sigma_a_le` /
+   `sigma_a_le_I_sup_d_inv_distinct`.
+3. **DivisionRing instance**, vector space `V` construction, lattice
    iso `L ≃o Sub(D, V)`, replacing `axiom ftpg` in `Bridge.lean` with
    the constructed theorem.
+
+**Deprioritized (s132): `axis_to_sigma_a_le`.** The remaining sorry
+in FTPGInverse.lean. Sessions 124–131 mapped its design space
+extensively. Session 132's strategy-(iii) attempt showed any clean
+forward-Desargues design's center hypothesis reduces to the lemma
+itself; a planar converse Desargues approach would need a `*Witness`
+interface analogous to `DesarguesianWitness` for left distrib. Both
+paths are bypassed by item 1's algebraic derivation. The lemma's
+docstring documents D11 (the cleanest design found) for any future
+work that wants to capture the geometric statement directly.
+
+**Historical (sessions 124–127): `coord_first_desargues_mul`** —
+fully PROVEN as of session 128. The single Desargues call producing
+`X₂₃ ≤ U⊔X₁₃`. Distinctness work factored as 12 private helpers
+(8 from s124–125 + 3 from s126 + `h_sides_X23_mul`/`h_sides_X13_mul`
+packaging the X₂₃ and X₁₃ side `≠` claims). Final step:
+`collinear_of_common_bound` with `s₁=U`, `s₂=(a⊔E_I)⊓(I⊔d_a)`,
+after rewriting the desargues output covering `U⊔X₁₃ ⋖ π` via
+`line_covBy_plane` with `c=O`.
 
 ### FTPGLeftDistrib (session 119)
 
