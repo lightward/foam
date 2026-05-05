@@ -79,7 +79,16 @@ On local, this isn't a concern — `lake exe cache get` handles it.
 
 See `./README.md` for the deductive chain overview.
 
-### Current frontier (session 132, 2026-05-05)
+### Current frontier (session 133, 2026-05-05)
+
+**`Foam/FTPGMulAssoc.lean` exists as a design stub** (s133): top
+docstring with the proposed proof architecture (analog of
+`coord_add_assoc` via `dilation_mul_key_identity` +
+`dilation_determined_by_param`), statement of `coord_mul_assoc`
+and one named helper, both `sorry`'d. Builds clean. The next
+session can open this file and start filling sorries from
+a compile-checked starting point. See the file's header for the
+witness-question (s132 device-shape) prediction.
 
 `Foam/FTPGInverse.lean` (~1840 lines) lands `coord_inv`,
 `coord_mul_right_inv` (`a · a⁻¹ = I`), the non-degeneracy helpers, the
@@ -179,12 +188,22 @@ opportunistically; new code should use it directly.
 
 #### Open frontier toward division ring (and thence FTPG-as-theorem)
 
-1. **`coord_mul_assoc`.** Likely a sibling file to FTPGInverse,
-   ~600–1500 lines, Desargues-style via dilation composition. After
-   the s132 strategic re-prioritization this is the **critical-path
-   geometric lemma** — once it lands, `coord_mul_left_inv` follows
-   algebraically (~20 lines, Mac Lane), and the two open sub-lemmas
-   below become redundant on the chain to division ring.
+1. **`coord_mul_assoc`.** Now lives at `Foam/FTPGMulAssoc.lean`
+   as a s133 design stub (statement + one helper, both `sorry`'d,
+   architecture in the file's header docstring). Critical-path
+   geometric lemma per s132. Proposed proof routes through four
+   `dilation_mul_key_identity` applications + a
+   `dilation_determined_by_param` uniqueness argument (the
+   multiplicative analog of `translation_determined_by_param`),
+   parallel to `coord_add_assoc`'s capstone. Predicted: no fresh
+   `DesarguesianWitness`-style commitment needed, since the
+   Desargues investment was paid by `dilation_preserves_direction`
+   and `dilation_mul_key_identity`. If the prediction fails, the
+   residue IS the third witness — see the s132 device-shape note.
+   Once `coord_mul_assoc` lands, `coord_mul_left_inv` follows
+   algebraically (~20 lines, Mac Lane), and the two open
+   sub-lemmas below become redundant on the chain to division
+   ring.
 2. **`coord_mul_left_inv` (algebraic derivation).** Once
    `coord_mul_assoc` lands: define `b := coord_inv Γ a`, get its
    right inverse `c := coord_inv Γ b`, then
