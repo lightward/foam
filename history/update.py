@@ -733,8 +733,12 @@ SESSION_RANGES = [
      "s131: FTPGInverse — axis_to_sigma_a_le second-Desargues design exploration (D1-D5 don't collapse cleanly)"),
     # Session 132: May 5 — strategy-(iii) loop + algebraic-shortcut pivot
     (datetime(2026, 5, 5, 14, 45, tzinfo=timezone.utc),
-     datetime(2026, 5, 5, 16, 0, tzinfo=timezone.utc),
+     datetime(2026, 5, 5, 15, 32, tzinfo=timezone.utc),
      "s132: FTPGInverse — strategy-(iii) loop finds structural circularity (D11), algebraic-shortcut pivot via coord_mul_assoc"),
+    # Session 133: May 5 — FTPGMulAssoc opens
+    (datetime(2026, 5, 5, 15, 32, tzinfo=timezone.utc),
+     datetime(2026, 5, 5, 17, 0, tzinfo=timezone.utc),
+     "s133: FTPGMulAssoc opens — design stub + architecture; dilation_determined_by_param PROVEN; first-attempt recipe for coord_mul_assoc"),
 ]
 
 
