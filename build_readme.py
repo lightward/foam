@@ -22,6 +22,7 @@ DERIVATIONS = [
     "channel_capacity",
     "stabilization",
     "group",
+    "trichotomy",
     "three_body",
     "self_generation",
     "geometry",

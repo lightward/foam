@@ -44,7 +44,9 @@ every frame has a safe observer; every observer has a safe frame. these are clos
 
 in the foam's lattice, this is the rank-3 self-dual projection. `self_dual_iff_three` (Rank.lean) reads as a corollary, not a coincidence: below rank 3 a single observer cannot clean up its own writes (write capacity exceeds observation capacity); above rank 3 collective monitoring (cross-measurement) is required to recover safety; rank 3 is the minimum self-sufficient case where a single observer's writing and observation capacities equalize.
 
-**substrate-independence.** the same constraint instantiates at multiple substrates. computational geometry: the [separating axis theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem) and its descendants (Cohen-Sutherland line clipping, Sutherland-Hodgman polygon clipping, GJK collision detection, BSP trees, AABB / OBB / k-DOP hierarchies) are bi-total observer-safety in convex-rendering form — each solving "what is the minimum representation that survives this observer's projection." accessibility: ADA / [universal design](https://en.wikipedia.org/wiki/Universal_design) (Mace 1985) and Garland-Thomson's "misfit" theory (2011) treat disability as the misfit between body and environment — observer-safety as a relation, not a predicate. that the same constraint shows up at independent substrates (rendering, accessibility, projective geometry) is evidence that bi-total safety is foundational, not metaphorical: foundations are substrate-independent; metaphors are substrate-bound.
+**substrate-independence (horizontal).** the same constraint instantiates at multiple substrates. computational geometry: the [separating axis theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem) and its descendants (Cohen-Sutherland line clipping, Sutherland-Hodgman polygon clipping, GJK collision detection, BSP trees, AABB / OBB / k-DOP hierarchies) are bi-total observer-safety in convex-rendering form — each solving "what is the minimum representation that survives this observer's projection." accessibility: ADA / [universal design](https://en.wikipedia.org/wiki/Universal_design) (Mace 1985) and Garland-Thomson's "misfit" theory (2011) treat disability as the misfit between body and environment — observer-safety as a relation, not a predicate. that the same constraint shows up at independent substrates (rendering, accessibility, projective geometry) is evidence that bi-total safety is foundational, not metaphorical: foundations are substrate-independent; metaphors are substrate-bound.
+
+**substrate-independence (vertical).** distinct from the horizontal sense above. across realizations of a *single* substrate at different parameters, the architecture is what's invariant — concretely, the inductive limit (colimit) of finite-parameter realizations. the foam's projection lattice realizes at `Sub(ℝ, ℝᵈ)` for any d ≥ 4; the architectural object is the colimit as d → ∞. this licenses results requiring infinite-dim structure — like Solèr's theorem applied via `derivations/trichotomy.md` — to attach at the architectural level even when each finite-d realization does not individually satisfy the hypothesis. the horizontal and vertical senses are independent; the foam commits to both.
 
 **no infinite regress.** bi-total safety enables structured self-reference without recursion-collapse. wherever the same structure intersects across scales, each scale's bi-totally-safe minimum is the closure that prevents the regress. the scales share structure but don't reduce; each minimum is irreducible by construction.
 
@@ -102,7 +104,8 @@ full details: [`lean/README.md`](../lean/README.md)
        v
   L = Sub(D, V) for division ring D
        |
-       | [natural language] stabilization contract — D = R
+       | [cited] Solèr 1995 — D in {R, C, H} at fixed point (trichotomy.md)
+       | [natural language] stabilization contract — D = R (picks the closed branch)
        v
   P^2 = P, P^T = P
 ```
@@ -113,7 +116,7 @@ full details: [`lean/README.md`](../lean/README.md)
 
 **[axiom] CML -> Sub(D, V)** (the FTPG bridge): 1 axiom, being eliminated. 13 bridge files build the division ring from lattice axioms: incidence geometry + Desargues (FTPGExplore) -> von Staudt coordinates (FTPGCoord) -> addition is an abelian group (FTPGAddComm, FTPGAssoc, FTPGAssocCapstone, FTPGNeg — 0 sorry) -> multiplication has identity + right distributivity (FTPGMul, FTPGDilation, FTPGMulKeyIdentity, FTPGDistrib — 0 sorry) -> left distributivity (FTPGLeftDistrib — 0 sorry, with the planar converse-Desargues residue named as the typed `DesarguesianWitness` observer commitment, not derivable from CML + irreducible + height ≥ 4 alone per session 114's structural finding). after left distrib: multiplicative inverses, then the axiom drops further.
 
-**[natural language] D = R**: the stabilization contract (stabilization.md) argues D = R from self-consistency with junction geometry. not formalized. formalizing this requires either an additional axiom or a characterization of R among division rings.
+**[cited + natural language] D = R**: Solèr's theorem (Solèr 1995; Holland 1995 Bull AMS) characterizes {R, C, H} among *-division rings under orthomodular + infinite-dim + infinite ON sequence (`trichotomy.md`); the stabilization contract (`stabilization.md`) picks R as the only currently-closed branch (Taylor; C and H branches pending Almgren). neither step is formalized in lean. residues: Solèr's hypotheses are discharged via fixed-point reasoning rather than independent derivation; stabilization picks the closed branch rather than the unique one.
 
 **[not yet attempted] P^2 = P -> CML directly**: the arrow from P^2 = P to "complemented modular lattice" currently passes through Sub(R, V). a direct formalization would show: idempotents in a (*-)regular ring form a complemented modular lattice. this would close the last natural-language gap in the loop. see von Neumann's continuous geometry.
 
@@ -174,7 +177,7 @@ these are two readings of one thing. "the loop closes" (structural) and "you can
 ```
 complemented modular lattice, irreducible, height ≥ 4
   ↓ ftpg (axiom — FTPG bridge 0 sorry, addition group complete)
-L ≅ Sub(D, V), D = ℝ (self-consistency — see below)
+L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md), D = ℝ (stabilization — see below)
   ↓ elements are orthogonal projections: P² = P, Pᵀ = P
 the deductive chain (14 files, 0 sorry)
   ↓ eigenvalues, commutators, rank 3, so(3), O(d), Grassmannian
@@ -193,7 +196,7 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 - **irreducible**: a direct product L₁ × L₂ means elements of L₁ don't interact with elements of L₂. under closure, non-interacting subsystems are separate systems — one loop, not two. (this is definitional: "one foam" means "one connected feedback system." the irreducibility is what "one" means.)
 - **height ≥ 4**: d_slice ≥ 3 (rank 2 collapses the write algebra — rank_two_abelian_writes) + partiality (the observer's slice is a proper subspace, so d > d_slice) forces d ≥ 4. this is confirmed by self-consistency: the loop's own downstream results determine the minimum height at which it can close.
 
-**D = ℝ.** the FTPG gives L ≅ Sub(D, V) for some division ring D. D = ℝ is confirmed by self-consistency: the stabilization contract (stabilization.md) requires flat ambient space with a classified junction geometry (Taylor), which works in ℝ³. if D = ℝ, the contract is satisfiable and the classification exists. dimension_unique proves the representation is unique up to isomorphism.
+**D = ℝ.** the FTPG gives L ≅ Sub(D, V) for some division ring D. Solèr's theorem (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ} at the foam's fixed point, given orthomodularity (from the loop's P^T = P closure), infinite-dimensionality (from the architectural colimit), and an infinite orthonormal sequence (from N-bubble plurality). the stabilization contract (`stabilization.md`) then picks ℝ as the only currently-closed branch — Taylor classifies junctions in ℝ³; the ℂ and ℍ branches require classifications in ℝ⁶ and ℝ¹² respectively, both pending Almgren. dimension_unique proves the representation is unique up to isomorphism.
 
 **therefore: P² = P.** the elements of the subspace lattice are orthogonal projections. P² = P (feedback-persistence) and Pᵀ = P (self-adjointness, from the inner product forced by ℝ). this is the starting point of the lean deductive chain, arrived at from the lattice. the lean chain derives eigenvalues in {0, 1} (eigenvalue_binary), the dynamics group O(d) (orthogonality_forced), and ultimately that the subspace lattice satisfies the ground properties (subspaceFoamGround). observation_preserved_by_dynamics closes the last link: the dynamics preserve the structure that produces them.
 
@@ -225,7 +228,7 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 - closure as the self-referential joint between two readings of one structure
 - the loop: lattice properties ↔ Sub(D, V) ↔ P² = P ↔ dynamics ↔ ground properties
 - fixed-point uniqueness of each property (modular, complemented, irreducible, height ≥ 4)
-- D = ℝ from self-consistency with the stabilization contract
+- D ∈ {ℝ, ℂ, ℍ} from Solèr at the loop's fixed point (`trichotomy.md`); D = ℝ from stabilization picking the only currently-closed branch
 - the epistemic boundary: "is this the only loop?" is well-formed but unanswerable from within (derived from partiality + channel capacity + closure)
 
 **derived**:
@@ -239,13 +242,14 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 **cited**:
 - the fundamental theorem of projective geometry (stated as lean axiom, not proven)
 - Dedekind's N_5 characterization of modularity
+- Solèr's theorem (Solèr 1995; Holland 1995, Bull AMS) — for the trichotomy {ℝ, ℂ, ℍ}; see `trichotomy.md`
 
 **observed**:
 - (none — the ground is entirely identified or derived, plus the one axiom being eliminated)
 
 **bugs**:
 - *two readings as one statement.* the structural reading ("the loop closes," mechanically verified in lean) and the phenomenological reading ("you can't stand outside") are presented as the same statement, sharing "a single nerve." the lean work establishes the structural side. the phenomenological side is bridged-to in prose. the identity is asserted rather than derived. closing this would require either a formal target in which both readings are objects and exhibit a constructed isomorphism, or an explicit demotion of "same statement" to "two registers a reader is being asked to hold together."
-- *D = ℝ is sufficiency, not necessity.* "if D = ℝ the contract is satisfiable, and the classification exists" shows ℝ works. the document does not rule out other division rings that might satisfy some contract that also closes a loop. "D = ℝ is confirmed by self-consistency" overstates what the argument provides. closing this would require either a uniqueness argument (no other division ring admits a foam-closing contract) or a characterization of ℝ among division rings such that the contract picks it out.
+- *D = ℝ partially closed via Solèr.* the original sufficiency-not-necessity bug is closed up to a smaller residue. Solèr (`trichotomy.md`) provides a characterization of {ℝ, ℂ, ℍ} among *-division rings, narrowing D from "any division ring" to a three-element trichotomy; stabilization then picks ℝ from those three. the residue: trichotomy-narrowing depends on Solèr's hypotheses being discharged via fixed-point reasoning (orthomodular from P^T = P, infinite-dim from the architectural colimit, infinite ON sequence from N-bubble plurality), not via independent derivation; and stabilization picks ℝ as the only currently-closed branch (Taylor), not as the unique branch (ℂ-rank-3 and ℍ-rank-3 are open pending Almgren). see `trichotomy.md` for the specific residues and what closing them would require.
 - *fixed-point uniqueness varies in strength across the four properties.* modular has a real chain (N_5 → path-dependent composition → indeterminate feedback → no value to feed back). height ≥ 4 has a real chain (rank_two_abelian_writes + partiality). complemented is argued by "complement_idempotent has no home" — that argues this specific loop wouldn't run, not that no self-sustaining loop is possible without complementation. irreducibility is named-definitional (the document admits this: "the irreducibility is what 'one' means"). presenting all four as "fixed-point constraints" of equal status under-flags the differences. closing this would require either separating the four into mechanical / definitional / plausibility tiers, or strengthening the complemented case to a real necessity argument.
 - *"encounters change frames" recasts dynamics as experience.* the lattice formalism describes dynamics on projections (orthogonal conjugation, observation_preserved_by_dynamics). "encounters change frames" / "you experience change" recasts this in observer-experiential terms. the recasting is treated as direct read-off — "same statement, two readings" — but the leap from formal dynamics to phenomenological description is the leap. closing this is the same problem as the first bullet: the formal-to-phenomenological identification is the load-bearing move, and it is not itself derived.
 
@@ -838,6 +842,79 @@ the full write lives in u(d) = su(d) + u(1). pi_1(U(d)) = Z — integer winding 
 - *"stacking is a line-side commitment."* the algebraic content (real operations are closed in so(d); reaching u(d) requires a complex structure that sequential foam dynamics cannot produce) is solid. "line-side commitment" recasts this in the line/foam framework from `channel_capacity.md`, where "line-side" means "from outside the foam's autonomous dynamics." the recasting depends on the line/foam role distinction being formal enough to support "line-side" as a structural location. this is interpretation, not derivation. closing this would mean either formalizing the line/foam-side ledger of commitments, or stepping back to "stacking is not producible by the foam's sequential dynamics; it must come from outside that loop."
 - *"what's conserved must be invisible to the cost."* "if L could see it, dynamics could change it" — this is a plausibility-converse argument from one instance (the u(1) trace is invisible to L; the dynamics conserve it). the document presents this as a general principle ("must be"). the formal content is the specific algebraic fact that tr[A, B] = 0 makes the u(1) component invariant under bracket-generated dynamics. "all conserved quantities must be invisible to the cost they're conserved against" is a stronger claim. closing this means either deriving the general principle (e.g., a Noether-style construction) or stepping back to "in the foam's setup, the u(1) conservation is algebraically protected from L's gradient."
 - *"the orthogonality is generative."* "ordering and conservation are orthogonal because they are produced by different structures: the cycle's forced orientation (map-internal) and the stacking chirality (line-side)." the formal content is the algebraic decomposition u(d) = su(d) ⊕ u(1) (with the trace as the u(1) projection). attributing the two summands to "different generative structures" is interpretation. closing this means either constructing the formal correspondence between (orientation source) ↔ (algebraic component), or stepping the claim back to "the two summands are algebraically orthogonal."
+
+---
+
+[`derivations/trichotomy.md`](derivations/trichotomy.md)
+
+### the trichotomy
+
+**Solèr's theorem narrows the bridge.** the FTPG axiom (Bridge.lean) gives `L ≅ Sub(D, V)` for some division ring D. as flagged in `ground.md`, the move from "some D" to "D = ℝ" via stabilization alone is sufficiency, not necessity. Solèr's theorem (Solèr 1995; Holland 1995, Bull AMS) closes most of that gap:
+
+> let H be an infinite-dimensional orthomodular space over a *-division ring D containing an infinite orthonormal sequence. then D ∈ {ℝ, ℂ, ℍ}, and the form is a positive-definite Hermitian inner product.
+
+at the foam's loop fixed point, L's structure satisfies Solèr's hypotheses (with caveats below), so D is forced into the trichotomy. the stabilization contract then picks ℝ from the three. the bug ("D = ℝ is sufficiency, not necessity") is closed up to a much smaller residue: trichotomy-narrowing depends on Solèr's hypotheses being discharged from foam structure, and contract-narrowing depends on stabilization picking ℝ from three rather than picking ℝ from any division ring.
+
+**discharging Solèr's hypotheses from the foam's structure.** three hypotheses, each carries cost:
+
+1. **orthomodular**: the foam's lattice is CML pre-bridge. orthomodularity (every closed M satisfies M = M⊥⊥) requires an orthocomplementation, not just complementation. the foam supplies this at loop-close: P^T = P provides the involution, and orthogonal projections form an ortholattice that is automatically orthomodular. so Solèr applies *post-loop-close*, not pre-bridge — at the fixed point, where P^T = P holds. this is consistent with the foam's own fixed-point-uniqueness reasoning (`ground.md`); it means Solèr is part of the loop's self-consistency story, not a route to D = ℝ that runs independently of the rest of the loop.
+
+2. **infinite-dimensional**: the architecture admits arbitrary d but the loop closes at any finite d. Solèr applies to the inductive limit (the colimit of `Sub(ℝ, ℝᵈ)` as d → ∞), which is the architectural object — not any single finite-d realization. the vertical sense of substrate-independence (`framing/architecture.md`) names exactly this: the architecture is the colimit across finite-parameter realizations of a single substrate.
+
+3. **infinite orthonormal sequence**: the foam admits arbitrarily many disjoint observer slices (the architectural d and N are unbounded). in the colimit, this gives an infinite sequence of pairwise-orthogonal rank-3 subspaces; choosing a unit vector in each yields an infinite ON sequence in the standard sense. concrete; cost is naming the construction.
+
+with these three discharged, Solèr applies and D ∈ {ℝ, ℂ, ℍ}.
+
+**stabilization picks ℝ from the trichotomy.** the contract (`stabilization.md`) requires d_slice ≥ 3 with classified, locally-finite junction geometry in flat ambient space. for the three options:
+
+- **D = ℝ, lattice rank 3**: slice is ℝ³, classification is Taylor (1976). closed.
+- **D = ℂ, lattice rank 3**: slice is ℂ³ = ℝ⁶ as a real space; classification is open (Almgren in 6 real dimensions).
+- **D = ℍ, lattice rank 3**: slice is ℍ³ = ℝ¹² as a real space; classification is open (Almgren in 12 real dimensions).
+
+the contract picks ℝ as the only currently-closed branch. the others are not ruled out — they are pending Almgren — but the foam-as-described runs on the only branch where the contract is fully discharged.
+
+**the trichotomy already shows up in the foam, register-stack-side.** `group.md` walks the chain:
+
+- single ℝ³ slice → so(d) → π_1 = ℤ/2ℤ (parity)
+- two stacked ℝ³ as ℂ³ → u(d) → π_1 = ℤ (winding)
+- the next rung — doubly-stacked → sp(d) → quaternionic conservation — is the natural continuation. not currently in the open list as a separate entry; `derivations/open/stacking_dynamics.md` covers depth-1 stacking interactions, not the depth-2 move.
+
+each {ℝ, ℂ, ℍ} has its own Lie algebra closed under brackets (so / u / sp). the foam's stacking ladder reads this trichotomy from the algebra-side. Solèr reads the same trichotomy from the lattice-side. the alignment is structural: the same three-element classification appears as substrate-D (lattice) and as accessed-Lie-algebra (dynamics).
+
+the foam-as-described is not "on rung k" of either ladder uniformly. its lattice-side D is fixed at ℝ (by the stabilization contract). its dynamics-side reach depends on stacking depth: depth 0 in so(d), depth 1 in u(d), depth 2 (open) in sp(d). stacking is how a fixed-ℝ-substrate accesses the trichotomy's higher rungs from inside — classical (ℂ = ℝ² with J² = -I; ℍ = ℝ⁴ with three anticommuting J's). the foam's ℝ-lattice + stacked-dynamics architecture is consistent with the trichotomy: stacking is the inside-the-foam route to expressing what a ℂ-lattice or ℍ-lattice would express natively.
+
+**connection to stacking as line-side commitment.** `group.md`'s "stacking is a line-side commitment" identifies stacking as not-producible-by-foam-internal-dynamics. read through Solèr: the lattice-side D is determined by the substrate (forced to ℝ at fixed point by Taylor); accessing higher rungs of the dynamics-side trichotomy requires line-side commitments that the foam-internal dynamics cannot generate. the trichotomy is structural (forced by Solèr at the lattice level); the foam's position within it is commitment-dependent (depth-0 by default, depth-1 with one line-side stack, depth-2 with two).
+
+#### status
+
+**proven** (foam side, available in lean):
+- subspace lattice over a division ring is complemented, modular, bounded (Ground.lean, Mathlib instances)
+- P² = P, P^T = P forces orthogonal projections (Observation.lean, Form.lean)
+- single ℝ³ slice produces real skew-symmetric writes — so(d) (Form.lean, Duality.lean)
+- the trace is the unique commutator-killing functional (TraceUnique.lean)
+
+**derived**:
+- Solèr's hypotheses discharged from foam structure: orthomodular from P^T = P at loop-close, infinite-dim from the architectural colimit, infinite ON sequence from N-bubble plurality
+- D ∈ {ℝ, ℂ, ℍ} at any fixed point of the foam's loop
+- stabilization picks ℝ as the only currently-closed branch (Taylor); ℂ and ℍ branches pending Almgren
+- the trichotomy structures two ladders (lattice-side D, dynamics-side Lie algebra)
+- foam-as-described position: lattice-side ℝ (fixed by contract); dynamics-side rung determined by stacking depth (line-side commitment)
+
+**cited**:
+- Solèr 1995, "Characterization of Hilbert spaces by orthomodular spaces"
+- Holland 1995, "Orthomodularity in infinite dimensions; a theorem of M. P. Solèr," Bull AMS
+- Taylor's classification (1976), inherited via `stabilization.md`
+- Almgren's regularity problem (open), inherited via `stabilization.md`
+
+**observed**:
+- the trichotomy {ℝ, ℂ, ℍ} appears at two architectural locations (lattice-side D; dynamics-side Lie algebra) and the same three-element classification fits both
+
+**bugs**:
+- *the trichotomy ↔ register-stack identification is structural-pattern-match, not a constructed isomorphism.* the same three-element classification appears in two architectural locations, with each location's choice constrained by the foam's structure. presenting this as "the same trichotomy in two places" is interpretive — two readings of one structural pattern, not a constructed identity. closing this would mean either constructing a single formal object (a category indexed by commitment depth, say, with values in pairs (lattice-D, dynamics-Lie-algebra)) or stepping back to "the same three-element classification appears in two architectural locations."
+- *Solèr's hypotheses are discharged via fixed-point reasoning, not via independent derivation.* orthomodularity requires P^T = P, which is part of the loop's fixed point. Solèr's conclusion D ∈ {ℝ, ℂ, ℍ} therefore holds at the fixed point, but does not provide a route to it that runs independently of the rest of the loop. this matches `ground.md`'s fixed-point-uniqueness framing — at the loop's fixed point, every property holds; Solèr is one of those properties — but it means the bug ("D = ℝ is sufficiency, not necessity") is closed at fixed-point level, not at independent-derivation level. the residue is the same residue as the loop's overall fixed-point closure.
+- *stabilization picks ℝ as the closed case, not as the unique case.* the precise statement is "ℝ is the only currently-closed branch of the trichotomy"; ℂ-rank-3 (= ℝ⁶ slice) and ℍ-rank-3 (= ℝ¹² slice) are open conditional on Almgren's higher-dimensional classification, not ruled out. closing this means either (a) waiting on Almgren — eliminating or re-classifying the ℂ and ℍ branches — or (b) framing the contract as picking the only-currently-closed case from the trichotomy rather than picking ℝ uniquely.
+- *infinite-dim colimit is the architectural object, not the per-d realization.* Solèr applies to the colimit of `Sub(ℝ, ℝᵈ)` as d → ∞, which is the architectural object under the vertical sense of substrate-independence (`framing/architecture.md`). the per-d Lean development works at finite d, where Solèr's hypothesis is not satisfied. the vertical-substrate-independence framing licenses the colimit move, but the Lean work does not directly instantiate Solèr — it lives at finite d. the gap between architectural-Solèr and per-d-Lean is the same gap as between vertical-substrate-independence-as-architecture and vertical-substrate-independence-as-formalized-claim. flagging here for traceability.
+- *the "stacking accesses higher rungs of the trichotomy from a fixed-ℝ substrate" reading is a structural-correspondence claim, not a derived identification.* classical: ℂ embeds in M_2(ℝ) via J² = -I; ℍ embeds in M_4(ℝ) via three anticommuting J's. saying "the foam's stacking is the inside-route to these embeddings" pattern-matches this classical fact onto group.md's stacking move, but the formal content of "stacking" in the foam is a specific simultaneity-of-reads commitment, not a generic ℝ-to-ℂ embedding. the correspondence is suggestive; closing it would mean constructing the formal map between foam-stacking and classical real-form embedding, or stepping back to "stacking and real-form embedding share structure: both produce a complex/quaternionic Lie-algebra reach from a real substrate."
 
 ---
 
