@@ -81,14 +81,22 @@ See `./README.md` for the deductive chain overview.
 
 ### Current frontier (session 133, 2026-05-05)
 
-**`Foam/FTPGMulAssoc.lean` exists as a design stub** (s133): top
-docstring with the proposed proof architecture (analog of
-`coord_add_assoc` via `dilation_mul_key_identity` +
-`dilation_determined_by_param`), statement of `coord_mul_assoc`
-and one named helper, both `sorry`'d. Builds clean. The next
-session can open this file and start filling sorries from
-a compile-checked starting point. See the file's header for the
-witness-question (s132 device-shape) prediction.
+**`Foam/FTPGMulAssoc.lean`** (~315 lines, single `sorry`) — s133
+created the file with architecture in its header, then **PROVED
+`dilation_determined_by_param`** (~150 lines) by factoring
+`dilation_ext Γ a P` as a perspectivity from `l = O⊔U` to `O⊔P`
+through center `d_P = (I⊔P)⊓m`, then `perspectivity_injective`.
+Signature held against contact with the proof — no architectural
+surprises. Six unused-but-API-parity hypotheses are underscored.
+
+The remaining `sorry` is **`coord_mul_assoc`** itself (the
+headline). The helper landing means the proposed proof
+architecture (four `dilation_mul_key_identity` applications +
+composition argument + the now-proven uniqueness lemma) has all
+its named pieces; the assembly is the next-session work. The
+witness-question (s132 device-shape) prediction (no fresh
+`DesarguesianWitness` needed) remains untested by the helper
+work — the assembly is where it gets answered.
 
 `Foam/FTPGInverse.lean` (~1840 lines) lands `coord_inv`,
 `coord_mul_right_inv` (`a · a⁻¹ = I`), the non-degeneracy helpers, the

@@ -5,10 +5,21 @@
 
 ## Status (session 133)
 
-Architecture only. Zero proof content. This file establishes
-the named sub-lemma + headline signature with `sorry` bodies,
-so the next session has a compile-checked starting point rather
-than a blank page.
+  * `dilation_determined_by_param` — **PROVEN** (~150 lines).
+    Factors `dilation_ext Γ a P` as a perspectivity from
+    `l = O⊔U` to `O⊔P` through center `d_P = (I⊔P)⊓m`,
+    then applies `perspectivity_injective`. Signature held
+    against contact with the proof — no architectural surprises.
+    Mild scope-trim: hypotheses `_ha₁_ne_O`, `_ha₂_ne_O`,
+    `_ha₁_ne_U`, `_ha₂_ne_U`, `_hP_not_OC`, `_hP_ne_I` turn out
+    not to be needed for the proof and are underscored;
+    callers from `coord_mul_assoc` will already have them, so
+    they're kept in the signature for API parity with
+    `translation_determined_by_param`.
+  * `coord_mul_assoc` — **OPEN** (single remaining `sorry`).
+    Architecture and proposed proof strategy in the theorem's
+    docstring below. The helper landing means the assembly
+    has all its named pieces.
 
 ## Why this file exists
 
@@ -151,14 +162,139 @@ variable {L : Type u} [Lattice L] [BoundedOrder L]
 theorem dilation_determined_by_param (Γ : CoordSystem L)
     {a₁ a₂ P : L} (ha₁ : IsAtom a₁) (ha₂ : IsAtom a₂)
     (ha₁_on : a₁ ≤ Γ.O ⊔ Γ.U) (ha₂_on : a₂ ≤ Γ.O ⊔ Γ.U)
-    (ha₁_ne_O : a₁ ≠ Γ.O) (ha₂_ne_O : a₂ ≠ Γ.O)
-    (ha₁_ne_U : a₁ ≠ Γ.U) (ha₂_ne_U : a₂ ≠ Γ.U)
+    (_ha₁_ne_O : a₁ ≠ Γ.O) (_ha₂_ne_O : a₂ ≠ Γ.O)
+    (_ha₁_ne_U : a₁ ≠ Γ.U) (_ha₂_ne_U : a₂ ≠ Γ.U)
     (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
     (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
-    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I)
+    (_hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (_hP_ne_I : P ≠ Γ.I)
     (h_agree : dilation_ext Γ a₁ P = dilation_ext Γ a₂ P) :
     a₁ = a₂ := by
-  sorry
+  set l := Γ.O ⊔ Γ.U
+  set m := Γ.U ⊔ Γ.V
+  set π := Γ.O ⊔ Γ.U ⊔ Γ.V
+  set d_P := (Γ.I ⊔ P) ⊓ m
+  -- ═══ Setup ═══
+  have hP_ne_O : P ≠ Γ.O := fun h => hP_not_l (h ▸ le_sup_left)
+  have hP_ne_I : P ≠ Γ.I := fun h => hP_not_l (h ▸ Γ.hI_on)
+  have hm_le_π : m ≤ π :=
+    sup_le (le_sup_right.trans le_sup_left) le_sup_right
+  -- ═══ d_P is an atom ═══
+  have hd_P_atom : IsAtom d_P :=
+    line_meets_m_at_atom Γ.hI hP (Ne.symm hP_ne_I)
+      (sup_le (Γ.hI_on.trans le_sup_left) hP_plane) Γ.m_covBy_π.le Γ.m_covBy_π Γ.hI_not_m
+  -- Reusable: I⊔P covers I (atom_covBy_join)
+  have hI_covBy_IP : Γ.I ⋖ Γ.I ⊔ P := atom_covBy_join Γ.hI hP (Ne.symm hP_ne_I)
+  have hI_lt_l : Γ.I < l := by
+    show Γ.I < Γ.O ⊔ Γ.U
+    exact lt_of_le_of_ne Γ.hI_on
+      (fun h => Γ.hOI ((Γ.hI.le_iff.mp (le_sup_left.trans h.symm.le)).resolve_left Γ.hO.1))
+  -- Helper: any extension of I to l (via O ≤ I⊔X or U ≤ I⊔X) forces P on l. Used twice below.
+  -- ═══ d_P ≠ U (else U ≤ I⊔P, then I⊔U=l ≤ I⊔P, then l = I⊔P (covering), then P ≤ l ✗) ═══
+  have hd_P_ne_U : d_P ≠ Γ.U := by
+    intro h
+    have hU_le_IP : Γ.U ≤ Γ.I ⊔ P := h.symm.le.trans inf_le_left
+    have hIU_le_IP : Γ.I ⊔ Γ.U ≤ Γ.I ⊔ P := sup_le le_sup_left hU_le_IP
+    have hIU_eq_l : Γ.I ⊔ Γ.U = l := by
+      show Γ.I ⊔ Γ.U = Γ.O ⊔ Γ.U
+      have hU_lt : Γ.U < Γ.I ⊔ Γ.U := lt_of_le_of_ne le_sup_right
+        (fun h => Γ.hUI ((Γ.hU.le_iff.mp (le_sup_left.trans h.symm.le)).resolve_left Γ.hI.1).symm)
+      have hU_covBy_l : Γ.U ⋖ Γ.O ⊔ Γ.U := by
+        rw [sup_comm]; exact atom_covBy_join Γ.hU Γ.hO Γ.hOU.symm
+      exact (hU_covBy_l.eq_or_eq hU_lt.le (sup_le Γ.hI_on le_sup_right)).resolve_left
+        (ne_of_gt hU_lt)
+    have hl_le_IP : l ≤ Γ.I ⊔ P := hIU_eq_l ▸ hIU_le_IP
+    have hl_eq_IP : l = Γ.I ⊔ P :=
+      (hI_covBy_IP.eq_or_eq hI_lt_l.le hl_le_IP).resolve_left (ne_of_gt hI_lt_l)
+    exact hP_not_l (le_sup_right.trans hl_eq_IP.symm.le)
+  -- ═══ d_P not on l: if d_P ≤ l, then d_P ≤ l ⊓ m = U, then d_P = U ✗ ═══
+  have hd_P_not_l : ¬ d_P ≤ l := by
+    intro h
+    have hd_le_U : d_P ≤ Γ.U := by
+      have h_meet : (Γ.O ⊔ Γ.U) ⊓ (Γ.U ⊔ Γ.V) = Γ.U := Γ.l_inf_m_eq_U
+      exact h_meet ▸ le_inf h inf_le_right
+    exact hd_P_ne_U ((Γ.hU.le_iff.mp hd_le_U).resolve_left hd_P_atom.1)
+  -- ═══ d_P not on O⊔P: I⊔P ≠ O⊔P (else l ≤ I⊔P, P on l ✗); modular_intersection gives
+  --     (P⊔I) ⊓ (P⊔O) = P; d_P ≤ both, so d_P ≤ P, d_P = P, P ≤ m ✗.  ═══
+  have hd_P_not_OP : ¬ d_P ≤ Γ.O ⊔ P := by
+    intro h
+    have hO_not_IP : ¬ Γ.O ≤ Γ.I ⊔ P := by
+      intro hO_le
+      have hOI_le_IP : Γ.O ⊔ Γ.I ≤ Γ.I ⊔ P := sup_le hO_le le_sup_left
+      have hOI_eq_l : Γ.O ⊔ Γ.I = l := by
+        show Γ.O ⊔ Γ.I = Γ.O ⊔ Γ.U
+        have hO_lt : Γ.O < Γ.O ⊔ Γ.I := lt_of_le_of_ne le_sup_left
+          (fun h => Γ.hOI ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left Γ.hI.1).symm)
+        exact ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq hO_lt.le
+          (sup_le le_sup_left Γ.hI_on)).resolve_left (ne_of_gt hO_lt)
+      have hl_le_IP : l ≤ Γ.I ⊔ P := hOI_eq_l ▸ hOI_le_IP
+      have hl_eq_IP : l = Γ.I ⊔ P :=
+        (hI_covBy_IP.eq_or_eq hI_lt_l.le hl_le_IP).resolve_left (ne_of_gt hI_lt_l)
+      exact hP_not_l (le_sup_right.trans hl_eq_IP.symm.le)
+    have hPI_PO_eq_P : (P ⊔ Γ.I) ⊓ (P ⊔ Γ.O) = P :=
+      modular_intersection hP Γ.hI Γ.hO hP_ne_I hP_ne_O Γ.hOI.symm
+        (fun h => hO_not_IP (sup_comm P Γ.I ▸ h))
+    have hd_le_meet : d_P ≤ (P ⊔ Γ.I) ⊓ (P ⊔ Γ.O) := by
+      rw [show P ⊔ Γ.I = Γ.I ⊔ P from sup_comm _ _,
+          show P ⊔ Γ.O = Γ.O ⊔ P from sup_comm _ _]
+      exact le_inf inf_le_left h
+    have hd_le_P : d_P ≤ P := hd_le_meet.trans hPI_PO_eq_P.le
+    have hd_eq_P : d_P = P := (hP.le_iff.mp hd_le_P).resolve_left hd_P_atom.1
+    exact hP_not_m (hd_eq_P ▸ (inf_le_right : d_P ≤ m))
+  -- ═══ Coplanarity: l ⊔ d_P = (O⊔P) ⊔ d_P (both = π) ═══
+  have hl_covBy_π : l ⋖ π := by
+    show Γ.O ⊔ Γ.U ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V
+    have hV_disj : Γ.V ⊓ (Γ.O ⊔ Γ.U) = ⊥ :=
+      (Γ.hV.le_iff.mp inf_le_left).resolve_right (fun h => Γ.hV_off (h ▸ inf_le_right))
+    have := covBy_sup_of_inf_covBy_left (hV_disj ▸ Γ.hV.bot_covBy)
+    rwa [show Γ.V ⊔ (Γ.O ⊔ Γ.U) = Γ.O ⊔ Γ.U ⊔ Γ.V from by rw [sup_comm]] at this
+  have hOP_covBy_π : Γ.O ⊔ P ⋖ π := by
+    have hU_not_OP : ¬ Γ.U ≤ Γ.O ⊔ P := by
+      intro h
+      have hOU_le_OP : Γ.O ⊔ Γ.U ≤ Γ.O ⊔ P := sup_le le_sup_left h
+      have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+      have hO_lt_l : Γ.O < l :=
+        (atom_covBy_join Γ.hO Γ.hU Γ.hOU).lt
+      have hl_eq_OP : l = Γ.O ⊔ P :=
+        (hO_covBy_OP.eq_or_eq hO_lt_l.le hOU_le_OP).resolve_left (ne_of_gt hO_lt_l)
+      exact hP_not_l (le_sup_right.trans hl_eq_OP.symm.le)
+    have hOPU_eq : Γ.O ⊔ P ⊔ Γ.U = π := by
+      show Γ.O ⊔ P ⊔ Γ.U = Γ.O ⊔ Γ.U ⊔ Γ.V
+      rw [show Γ.O ⊔ P ⊔ Γ.U = (Γ.O ⊔ Γ.U) ⊔ P from by ac_rfl]
+      have hl_lt : Γ.O ⊔ Γ.U < (Γ.O ⊔ Γ.U) ⊔ P := lt_of_le_of_ne le_sup_left
+        (fun h => hP_not_l (le_sup_right.trans h.symm.le))
+      exact (hl_covBy_π.eq_or_eq hl_lt.le
+        (sup_le hl_covBy_π.le hP_plane)).resolve_left (ne_of_gt hl_lt)
+    rw [← hOPU_eq]
+    exact line_covBy_plane Γ.hO hP Γ.hU (Ne.symm hP_ne_O) Γ.hOU
+      (fun h => hU_not_OP (h ▸ le_sup_right)) hU_not_OP
+  have hl_d_eq : l ⊔ d_P = π := by
+    have hl_lt : l < l ⊔ d_P := lt_of_le_of_ne le_sup_left
+      (fun h => hd_P_not_l (le_sup_right.trans h.symm.le))
+    exact (hl_covBy_π.eq_or_eq hl_lt.le
+      (sup_le hl_covBy_π.le ((inf_le_right : d_P ≤ m).trans hm_le_π))).resolve_left
+      (ne_of_gt hl_lt)
+  have hOP_d_eq : (Γ.O ⊔ P) ⊔ d_P = π := by
+    have hOP_lt : Γ.O ⊔ P < (Γ.O ⊔ P) ⊔ d_P := lt_of_le_of_ne le_sup_left
+      (fun h => hd_P_not_OP (le_sup_right.trans h.symm.le))
+    exact (hOP_covBy_π.eq_or_eq hOP_lt.le
+      (sup_le hOP_covBy_π.le ((inf_le_right : d_P ≤ m).trans hm_le_π))).resolve_left
+      (ne_of_gt hOP_lt)
+  have h_coplanar : Γ.O ⊔ Γ.U ⊔ d_P = (Γ.O ⊔ P) ⊔ d_P := by rw [hl_d_eq, hOP_d_eq]
+  -- ═══ Translate h_agree into perspectivity image equality ═══
+  have h_persp_eq : (a₁ ⊔ d_P) ⊓ (Γ.O ⊔ P) = (a₂ ⊔ d_P) ⊓ (Γ.O ⊔ P) := by
+    have h1 : dilation_ext Γ a₁ P = (a₁ ⊔ d_P) ⊓ (Γ.O ⊔ P) := by
+      show (Γ.O ⊔ P) ⊓ (a₁ ⊔ (Γ.I ⊔ P) ⊓ (Γ.U ⊔ Γ.V)) = (a₁ ⊔ d_P) ⊓ (Γ.O ⊔ P)
+      exact inf_comm _ _
+    have h2 : dilation_ext Γ a₂ P = (a₂ ⊔ d_P) ⊓ (Γ.O ⊔ P) := by
+      show (Γ.O ⊔ P) ⊓ (a₂ ⊔ (Γ.I ⊔ P) ⊓ (Γ.U ⊔ Γ.V)) = (a₂ ⊔ d_P) ⊓ (Γ.O ⊔ P)
+      exact inf_comm _ _
+    rw [← h1, ← h2]; exact h_agree
+  -- ═══ Conclusion: perspectivity_injective ═══
+  by_contra h_ne
+  have hp₁ : (⟨a₁, ha₁, ha₁_on⟩ : AtomsOn (Γ.O ⊔ Γ.U)) ≠ ⟨a₂, ha₂, ha₂_on⟩ :=
+    fun h => h_ne (congrArg Subtype.val h)
+  exact perspectivity_injective hd_P_atom Γ.hO Γ.hU Γ.hO hP Γ.hOU
+    (Ne.symm hP_ne_O) hd_P_not_l hd_P_not_OP h_coplanar hp₁ (Subtype.ext h_persp_eq)
 
 /-- **Associativity of coordinate multiplication.**
 
