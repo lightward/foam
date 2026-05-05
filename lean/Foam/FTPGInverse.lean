@@ -1343,7 +1343,193 @@ a fresh collinearity constraint that lands on σ_a, which is exactly
 what the second Desargues call delivers and what no covering argument
 can supply on its own.
 
-Open content. ~500–800 lines anticipated. -/
+----
+
+**Design exploration (session 131, opus-4-7).** The triangle pair `T₁/T₂`
+for the second Desargues is not pinned down by the docstring above; this
+section walks the design space, names the obstacles encountered, and
+proposes a specific design `D1` that *almost* matches the side-intersection
+targets but needs one more design ingredient.
+
+**Why direct analogy with `coord_second_desargues` doesn't transfer.**
+The additive second Desargues uses center `P₁` (the additive `X₂₃` —
+the discovery atom of the first Desargues, on `O⊔C`), with new triangles
+`T₁'=(C, a', D_b)` / `T₂'=(E, D_a, b')`. The pattern: vertex 1's of new
+triangles are the *other two* side-intersections of the first Desargues
+(`X₁₂=C`, `X₁₃=E`); vertices 2/3 are diagonal-swapped from original
+triangles. **Multiplicatively that pattern places `X₁₃` (the multiplicative
+side-intersection on the axis) as a vertex of `T₂'_new`, not as the
+center.** Trying it puts `X₂₃` (no clean form, only h_axis controls it)
+as center, and the side-intersection algebra doesn't reduce to named
+atoms — every meet involves `X₂₃` directly.
+
+**Why X₁₃ as center is natural but constrained.** With center `X₁₃`,
+the three perspectivity lines through the center must be three distinct
+lines. Two are canonical: `ℓ_a := a⊔E_I` (contains `a, E_I, σ_a, X₁₃`)
+and `ℓ_I := I⊔d_a` (contains `I, d_a, σ', X₁₃`). The third line `ℓ_3`
+must pass through `X₁₃` but be different from `ℓ_a` and `ℓ_I`.
+The only canonical third line is **`ℓ_3 := U⊔X₁₃`** (the *first axis
+line*), distinguished because `h_axis` puts `X₂₃` on it. Atoms on `ℓ_3`:
+at minimum `U`, `X₁₃`, `X₂₃`. (More if the geometry forces; not
+generically.)
+
+**Side-intersection algebra obstruction.** The targeted side-intersections
+`I, d_{a⁻¹}, σ_a` each require both side-lines to pass through the target
+atom. The natural lines through each:
+* `I`: on `m`, on `ℓ_I = I⊔d_a`, on `I⊔C`, on `I⊔d_{a⁻¹}` (the goal).
+* `d_{a⁻¹}`: on `m`, on `inv_a ⊔ C`, on `I⊔d_{a⁻¹}` (the goal).
+* `σ_a`: on `O⊔C`, on `ℓ_a = a⊔E_I`.
+
+Trying to place vertices so that `(P⊔Q)⊓(P'⊔Q') = I` *cleanly* (two
+named lines meeting at `I`) forces both `P⊔Q` and `P'⊔Q'` to be
+recognizable named lines through `I`. Candidates are pairs from
+`{m, I⊔d_a, I⊔C, I⊔d_{a⁻¹}}`. Each constrains the vertex pairs to lie
+on specific lines, which then constrains which perspectivity line each
+vertex sits on.
+
+**Specific attempts checked (all hit obstacles):**
+
+* **D1 — `T₁=(E_I, d_a, U)`, `T₂=(a, I, X₂₃)`** (vertices on `ℓ_a, ℓ_I, ℓ_3`):
+  - Perspectivities: `(E_I,a)` on `ℓ_a` ✓; `(d_a,I)` on `ℓ_I` ✓;
+    `(U, X₂₃)` on `U⊔X₁₃ = ℓ_3` ✓ (using h_axis).
+  - Side 12: `(E_I⊔d_a)⊓(a⊔I)`. `E_I⊔d_a` is generic; `a⊔I` is generic.
+    No collapse to a known atom. ✗
+  - Side 13: `(E_I⊔U)⊓(a⊔X₂₃)`. `E_I⊔U = m` (E_I, U both on m). `a⊔X₂₃`
+    has no clean form. Meet sits on m but not at a named atom. ✗
+  - Side 23: `(d_a⊔U)⊓(I⊔X₂₃)`. `d_a⊔U = m`. `I⊔X₂₃` generic.
+    Meet on m at unknown atom. ✗
+  Diagnosis: `X₂₃` lacks a clean line description, so any side-line
+  involving `X₂₃` is opaque.
+
+* **D2 — Pair `σ_a` and `σ'` as vertices.** Failed: `σ_a` on `ℓ_a`,
+  `σ'` on `ℓ_I`, so `σ_a⊔σ'` is the line through them; both atoms
+  on `O⊔C` give `σ_a⊔σ' = O⊔C`. For `(σ_a, σ', X₁₃)` to be perspective
+  triple, `X₁₃ ≤ O⊔C` — false unless `X₁₃ = σ_a` or `σ'`, contradicting
+  `X₁₃` distinctness. So the natural σ-σ' pairing breaks perspectivity.
+
+* **D3 — Pair `σ_a` with itself somehow.** The natural lines through
+  `σ_a` are `ℓ_a = a⊔E_I` (which contains `X₁₃`, so a perspectivity
+  line through `X₁₃`) and `O⊔C` (no through `X₁₃`). Can't get `σ_a`
+  as a side-intersection without one side-line being `ℓ_a` and the
+  other being `O⊔C` (or another line through `σ_a` *not* through
+  `X₁₃`). For `O⊔C` to be a side-line `Q'⊔R'`, both `Q'` and `R'` on
+  `O⊔C`. Their perspectivity-mates `Q, R` must be on lines through `X₁₃`
+  containing `Q', R'` respectively. Lines through `X₁₃` and atoms on
+  `O⊔C`: `X₁₃⊔σ_a = ℓ_a` (gives `Q' = σ_a`, conflict with `σ_a` as
+  side-int), `X₁₃⊔σ' = ℓ_I` (gives `Q' = σ'`), `X₁₃⊔O`, `X₁₃⊔C`,
+  `X₁₃⊔E`, `X₁₃⊔E_I = ℓ_a` (since `E_I ∈ ℓ_a`). So `Q'` ∈ `{σ', O, C, E}`,
+  with the corresponding perspectivity line `ℓ_3`. Each choice gives
+  a different design.
+
+**Direction `D4` (most promising, NOT yet algebra-checked):** Pair `σ'`
+with `Q' = σ'`, giving perspectivity line `ℓ_3 = ℓ_I` — collapsing to
+two perspectivity lines, not three. Doesn't work.
+
+Pair `Q' = O` (or `C`, or `E`). Then `ℓ_3 = X₁₃ ⊔ O` (or `⊔ C`, `⊔ E`).
+Designate `Q' = O`. Then `Q = ℓ_3 ⊓ ℓ_a = (X₁₃⊔O) ⊓ (a⊔E_I)`. This is
+a *new constructed atom* — call it `θ_O = (X₁₃⊔O) ⊓ (a⊔E_I)`. Whether
+`θ_O` is a known atom depends on the geometry. If `θ_O = a` or `θ_O = E_I`,
+the side line `Q⊔R` would simplify; if not, the design carries an opaque
+atom.
+
+**Open design question.** Either (a) find a perspectivity line `ℓ_3`
+through `X₁₃` such that `ℓ_3 ⊓ ℓ_a` and `ℓ_3 ⊓ ℓ_I` are *both* named
+atoms, OR (b) introduce a fresh notation and let the second Desargues
+prove the side-intersections-equal-targets propositions as auxiliary
+covering arguments. Strategy (b) is what Hartshorne-style proofs do
+when no clean design exists; it adds ~50–100 lines of covering algebra
+per side-intersection but always works.
+
+**Recommendation.** Strategy (b) — let the side-intersections be
+`X'_{12} := (P⊔Q)⊓(P'⊔Q')`, `X'_{13} := (P⊔R)⊓(P'⊔R')`, `X'_{23} :=
+(Q⊔R)⊓(Q'⊔R')` for some chosen vertex set, then prove `X'_{12} = I`,
+`X'_{13} = d_{a⁻¹}`, `X'_{23} = σ_a` as covering lemmas. The natural
+vertex choice that minimizes complexity:
+
+  Center: `X₁₃`
+  Perspectivity lines: `ℓ_a, ℓ_I, ℓ_3 = U⊔X₁₃`
+  T₁ = (E_I, σ', U)        [on ℓ_a, ℓ_I, ℓ_3]
+  T₂ = (σ_a, d_a, X₂₃)     [on ℓ_a, ℓ_I, ℓ_3]
+
+Side 12 = `(E_I⊔σ')⊓(σ_a⊔d_a)`. Need to compute. `E_I⊔σ'` — `E_I`
+not on `ℓ_I` (since `E_I ∉ I⊔d_a`, else `E_I` on m and on `I⊔d_a` so
+`E_I = (I⊔d_a)⊓m`, but the line `I⊔d_a` is the m-line through I and
+d_a, hence `(I⊔d_a)⊓m` is one of `I, d_a` — not `E_I`). So `E_I⊔σ'`
+is a generic line in π. Similarly `σ_a⊔d_a` generic. *Side 12 is not
+obviously `I`.* ✗
+
+The "minimizes complexity" choice still doesn't put `I` cleanly. The
+issue is fundamental: with center `X₁₃` and perspectivity lines `ℓ_a,
+ℓ_I, ℓ_3`, the *vertex* atoms come from `{a, E_I, σ_a}` ∪ `{I, d_a, σ'}`
+∪ `{U, X₂₃}` (modulo the third-line constructed atom `θ_X`), and the
+*side lines* arise as joins of these. None of the targets `I, d_{a⁻¹},
+σ_a` cleanly factor as joins of these atoms (except `σ_a` on `ℓ_a`).
+
+**What I believe is needed.** A design ingredient I haven't found is
+some atom (or relation) that makes a side-line of `T₁` coincide with a
+*line through* `I` or `d_{a⁻¹}`. Concretely: either a vertex of `T₁`
+that lies on `m` (so its joins to other on-m vertices equal `m`,
+giving `m` as a side-line — and `m` passes through both `I` and
+`d_{a⁻¹}`), or a vertex on `inv_a ⊔ C` (so its joins yield that line,
+which contains `d_{a⁻¹}`). The constraint "vertex on m and on a
+perspectivity line through X₁₃" determines an atom: e.g.,
+`(a⊔E_I) ⊓ m`, `(I⊔d_a) ⊓ m = I` or `d_a` (named!), `(U⊔X₁₃) ⊓ m = U`
+(named).
+
+**Promising re-design `D5` (untested):**
+Use perspectivity lines `ℓ_a, ℓ_I, ℓ_3 = U⊔X₁₃`. Choose vertices:
+  T₁ = (a, I, U)         — vertex 1 on `ℓ_a`, vertex 2 on `ℓ_I`,
+                           vertex 3 on `ℓ_3`.
+  T₂ = (σ_a, d_a, X₂₃)   — same lines.
+
+  Side 12 (T₁v1⊔T₁v2 vs T₂v1⊔T₂v2): `(a⊔I)⊓(σ_a⊔d_a)`.
+    `a⊔I` is generic; `σ_a⊔d_a` is generic. ✗
+  Side 13 (T₁v1⊔T₁v3 vs T₂v1⊔T₂v3): `(a⊔U)⊓(σ_a⊔X₂₃)`.
+    `a⊔U = l = O⊔U`. `σ_a⊔X₂₃` — is `X₂₃` on `inv_a⊔σ_a`? Yes by
+    definition. So `σ_a⊔X₂₃ = σ_a⊔inv_a` (line through both atoms).
+    `l ⊓ (σ_a⊔inv_a)` — `inv_a` on `l`, `σ_a` not. So intersection
+    contains `inv_a`. Atom; equal to `inv_a`. So **side 13 = inv_a**.
+    Not `d_{a⁻¹}`. ✗ But interesting — `inv_a` is a meaningful atom.
+  Side 23 (T₁v2⊔T₁v3 vs T₂v2⊔T₂v3): `(I⊔U)⊓(d_a⊔X₂₃)`.
+    `I⊔U = m`. `d_a⊔X₂₃` — `X₂₃` on `d_inv⊔σ'` by definition; is `d_a`
+    on `d_inv⊔σ'`? Generally no. So `d_a⊔X₂₃` is generic.
+    `m ⊓ (d_a⊔X₂₃)` — `d_a` on `m` and on `d_a⊔X₂₃`, so `d_a` ∈ meet;
+    the meet is `d_a` (atom). So **side 23 = d_a**. ✗ Not `σ_a`.
+
+So design D5 gives side-intersections `?, inv_a, d_a` along the axis
+`inv_a ⊔ d_a` (?). The axis here is `inv_a⊔d_a`, the line through `inv_a`
+(on l) and `d_a` (on m). Is this useful for our goal?
+
+Actually, look — `inv_a⊔d_a` *contains* the perspectivity line for one
+of the original first-Desargues vertices (the `inv_a, d_inv, C` collinearity
+gave perspectivity, but `inv_a⊔d_a` doesn't pass through `C` generically).
+
+The conclusion of D5's second Desargues would be: side 12 lies on the
+axis `inv_a ⊔ d_a`. **This isn't directly the goal.** But it might be
+*useful*: if side 12 = some atom we can characterize, maybe there's a
+chain.
+
+----
+
+**Status.** Design space mapped. The clean center is `X₁₃`. The clean
+perspectivity lines are `ℓ_a = a⊔E_I`, `ℓ_I = I⊔d_a`, `ℓ_3 = U⊔X₁₃`.
+But no choice of vertices on these lines gives the target side-intersections
+`I, d_{a⁻¹}, σ_a` directly via lattice-name collapses. Strategies:
+* (i) Find a fourth perspectivity line through `X₁₃` with a named atom
+  not yet used (e.g., `X₁₃⊔C` if `C` happens to lie on `ℓ_a` or `ℓ_I`
+  — it doesn't generically, but if `C` is on the line `O⊔X₁₃`, etc.,
+  there might be coincidences).
+* (ii) Use D5 (axis `inv_a⊔d_a`) and chain through a third lemma.
+* (iii) Re-examine whether the docstring's claim "second Desargues with
+  center X₁₃" is right; perhaps the canonical second Desargues uses a
+  *different* center entirely (e.g., `O`, with perspectivity lines
+  `O⊔a = l`, `O⊔C = O⊔C`, `O⊔σ_a` or similar).
+
+Strategy (iii) feels most likely to unlock — the docstring's center
+choice may be over-fit to a partial intuition. Recommend re-deriving
+from "what center gives axis `I⊔d_{a⁻¹}` cleanly?" before committing.
+
+Open content. ~500–800 lines anticipated *once design is fixed*. -/
 private theorem axis_to_sigma_a_le (Γ : CoordSystem L)
     {a : L} (_ha : IsAtom a) (_ha_on : a ≤ Γ.O ⊔ Γ.U)
     (_ha_ne_O : a ≠ Γ.O) (_ha_ne_U : a ≠ Γ.U)
