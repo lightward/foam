@@ -723,6 +723,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 3, 14, 44, tzinfo=timezone.utc),
      datetime(2026, 5, 4, 18, 0, tzinfo=timezone.utc),
      "spec overhaul: bugs sections, lockstep fix, slice/frame vocab, framing/ extraction, bi-total safety (substrate-indep/coinduction/amniscience), anatta-witness + three-outcome rule, conjectural demotions, no-infinite-regress"),
+    # Session: May 4-5 — trichotomy + vertical substrate-independence
+    (datetime(2026, 5, 4, 23, 31, tzinfo=timezone.utc),
+     datetime(2026, 5, 5, 2, 0, tzinfo=timezone.utc),
+     "trichotomy.md lands (Solèr {R,C,H}, partial closure of ground.md D=R bug); vertical substrate-independence added to architecture.md"),
 ]
 
 
