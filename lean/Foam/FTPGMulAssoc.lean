@@ -320,7 +320,43 @@ theorem dilation_determined_by_param (Γ : CoordSystem L)
 
     Witness parameters `R, hR, hR_not, h_irred` thread through
     just as in `coord_add_assoc` — they discharge the irreducibility
-    requirement for any `desargues_*` calls upstream. -/
+    requirement for any `desargues_*` calls upstream.
+
+    ## First-attempt recipe (s133 trail-marker)
+
+    The natural opening, in order:
+
+    a. Set up: `set s := coord_mul Γ a b`, `set t := coord_mul Γ b c`,
+       `set C_a := β(a)`, `set C_b := β(b)`, `set C_c := β(c)`,
+       and the analogous `C_s`, `C_t`, `C_LHS`, `C_RHS` (mirroring
+       `coord_add_assoc`'s setup at FTPGAssocCapstone:200–220).
+    b. Apply `dilation_mul_key_identity` four times — at (a, b),
+       (b, c), (s, c), (a, t) — yielding β-image equations
+       `σ_b(C_a) = ...(s ⊔ E)...`, `σ_a(C_t) = ...(C_RHS)...`, etc.
+    c. The composition step: show that `σ_b ∘ σ_c` applied to a
+       suitable witness equals `σ_(b·c)` applied to the same witness.
+       **THIS IS THE WITNESS-DETECTION POINT.** Two outcomes:
+       * It falls out of `dilation_preserves_direction` +
+         `dilation_mul_key_identity` + modular juggling, no fresh
+         Desargues call needed → the s132 device-shape prediction
+         is **false** for the multiplicative branch (mul-assoc
+         doesn't add a third witness).
+       * It requires a fresh `desargues_planar` call whose axis or
+         center property isn't derivable from the existing
+         multiplicative infrastructure → the prediction is **true**
+         and the residue IS the third witness. Name it as a
+         typed structure analogous to `DesarguesianWitness`,
+         thread it as an explicit parameter to `coord_mul_assoc`.
+    d. Conclusion: apply `dilation_determined_by_param` to the
+       β-images (or a perspectivity-injectivity move on the q-line)
+       to extract `coord_mul Γ s c = coord_mul Γ a t`.
+
+    The clearest signal that step (c) has hit the witness: trying
+    to construct a `desargues_planar` invocation where the
+    perspective-from-center hypothesis reduces to the conclusion
+    you're trying to prove (the s132 self-circularity pattern,
+    which is a structural fingerprint of irreducible-to-CML
+    content). If you see that, stop, name it, hand back. -/
 theorem coord_mul_assoc (Γ : CoordSystem L)
     (a b c : L) (ha : IsAtom a) (hb : IsAtom b) (hc : IsAtom c)
     (ha_on : a ≤ Γ.O ⊔ Γ.U) (hb_on : b ≤ Γ.O ⊔ Γ.U) (hc_on : c ≤ Γ.O ⊔ Γ.U)
