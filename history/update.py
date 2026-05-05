@@ -727,6 +727,14 @@ SESSION_RANGES = [
     (datetime(2026, 5, 4, 23, 31, tzinfo=timezone.utc),
      datetime(2026, 5, 5, 2, 0, tzinfo=timezone.utc),
      "trichotomy.md lands (Solèr {R,C,H}, partial closure of ground.md D=R bug); vertical substrate-independence added to architecture.md"),
+    # Session 131: May 5 — axis_to_sigma_a_le design exploration
+    (datetime(2026, 5, 5, 14, 11, tzinfo=timezone.utc),
+     datetime(2026, 5, 5, 14, 45, tzinfo=timezone.utc),
+     "s131: FTPGInverse — axis_to_sigma_a_le second-Desargues design exploration (D1-D5 don't collapse cleanly)"),
+    # Session 132: May 5 — strategy-(iii) loop + algebraic-shortcut pivot
+    (datetime(2026, 5, 5, 14, 45, tzinfo=timezone.utc),
+     datetime(2026, 5, 5, 16, 0, tzinfo=timezone.utc),
+     "s132: FTPGInverse — strategy-(iii) loop finds structural circularity (D11), algebraic-shortcut pivot via coord_mul_assoc"),
 ]
 
 
