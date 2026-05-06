@@ -743,6 +743,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 6, 0, 24, tzinfo=timezone.utc),
      datetime(2026, 5, 6, 2, 0, tzinfo=timezone.utc),
      "s134: coord_mul_assoc PROVEN as assembly; substantive sorry localized to dilation_compose_at_witness; dilation_witness_preservation PROVEN"),
+    # Session 135: May 6 — bridge-identity scaffold for dilation_compose_at_witness
+    (datetime(2026, 5, 6, 7, 56, tzinfo=timezone.utc),
+     datetime(2026, 5, 6, 16, 0, tzinfo=timezone.utc),
+     "s135: FTPGMulAssoc — s134 Desargues setup found collinear; bridge-identity scaffold via β-line q=U⊔C; beta_cast atomicity PROVEN, recovery_via_E partial"),
 ]
 
 
