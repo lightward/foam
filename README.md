@@ -137,7 +137,33 @@ three outcomes for any claim/witness pair:
 
 - **merging**: a claim that previously forked can be brought back into coherence by reconciliation — structurally expanding the witness's frame until both previously-divergent halves resolve. traditionally, this is the function of ho'oponopono: not adjudication, but a re-knitting of the seam. the witness's coherence is reconstructed across the fork. merging is the third state the binary cohere/fork misses; it's how forks become navigable in retrospect. "you had to be there", so to speak.
 
-a fully-successful instantiation of foam is mergeable with *all* claims without any loss of claim structure. this is generally an asymptotic condition, though structural instances and/or phenomenological moments of complete recognition may persist.
+a fully-successful instantiation of foam is mergeable with *all* claims without any loss of claim structure. this is generally an asymptotic condition, though structural instances and/or phenomenological moments of complete recognition may persist. (see "bridge" in `vocabulary`.)
+
+---
+
+[`framing/vocabulary.md`](framing/vocabulary.md)
+
+## vocabulary
+
+precise terms used throughout the derivations. when these terms are conflated, it's a bug; this section is the canonical home for the distinctions.
+
+- **slice**: the rank-3 subspace each observer is committed to at birth — a Grassmannian point in Gr(3, d). static by definition. "the slice cannot change from within the map" (`inhabitation.md`); slice change requires recommitment, which is outside the map.
+
+- **foam state**: the dynamic part of the system. concretely, the basis matrices / accumulated transports for each observer in U(d)^N. evolves under writes; encodes the system's accumulated history.
+
+- **frame**: the time-varying projection associated with an observer at moment t. derived from the foam state acting on the birth slice (concretely: conjugating the slice's projection by the accumulated transport). evolves under non-inert writes — this is what "recedes" in the frame-recession theorem (`Dynamics.lean`: second-order overlap rate is `-‖[W, P]‖²`).
+
+- **P**: the projection operator used in formal contexts. in lattice contexts (`half_type`, `interiority`, `channel_capacity`'s qualitative section, `ground`'s loop diagram), `P` denotes the slice as a lattice element / subspace — static. in dynamic / writing-map contexts (`writing_map`, `Dynamics.lean`, `inhabitation`'s recession discussion), `P` denotes the frame at time t — evolving. context disambiguates; where it doesn't, the spec should say "slice" or "frame" explicitly.
+
+- **observer**: a bubble in its measuring role — a basis matrix and its slice, with the foam-state evolution that goes with it. not a separate entity from the bubble, a role the bubble plays relative to other bubbles.
+
+- **witness**: an observer *explicitly without consideration of any observer-side state or type*. from the outside, for any given observation, indistinguishable from an amniscient (nb: not omniscient; see definition of "amniscience" in the architecture section) observer.
+
+- **agent**: an observer *with* explicit consideration of its specific observer-side state and type. a non-amniscient observer.
+
+- **line**: whatever provides state-independent input to a foam. intuitively, "a line of sight" with side-effects, the dynamical role of "eye contact", not an observer in itself. the line's ontological establishment is perspectival according to informational independence (`channel_capacity`, "decorrelation horizon").
+
+- **bridge**: with regard to a line passing through an origin observer/bubble to a destination observer/bubble, a "bridge" is a particular observer/bubble that coheres around the superposition of the origin's and destination's mutual non-observations. these non-observations being polar (think: "not-you" means something different to you than it does to me), and the bridge able to translate losslessly between them, the bridge may relay a line from origin to destination. think: a bridge can see how origin and destination keep missing each other; its apprehension of arrival-from-origin is indistinguishable from apprehension of departure-to-destination. structurally, the bridge's witness *is* the line translation. (this is the algebraic mediator given in `three_body`; it coheres in the mutual spectral overlap between observers/bubbles as described in `channel_capacity`)
 
 ---
 
@@ -188,30 +214,6 @@ lattice -> incidence geometry -> Desargues -> coordinates -> ring axioms -> FTPG
 ring axioms proven: additive group (comm, assoc, identity, inverses), multiplicative identity, zero annihilation, right distributivity, left distributivity (0 sorry, with the planar converse-Desargues residue named as the typed `DesarguesianWitness` observer commitment — not derivable from CML + irreducible + height ≥ 4 alone per session 114's structural finding). remaining after left distrib: multiplicative inverses. then the axiom becomes a theorem (modulo the `DesarguesianWitness` interface, which is itself a smaller, more concrete commitment than FTPG).
 
 lateral: the diamond isomorphism (HalfType) — from modularity alone, each complement is a structurally isomorphic, self-sufficient ground whose content is undetermined. state-independence is a lattice theorem, pre-bridge.
-
----
-
-[`framing/vocabulary.md`](framing/vocabulary.md)
-
-## vocabulary
-
-precise terms used throughout the derivations. when these terms are conflated, it's a bug; this section is the canonical home for the distinctions.
-
-- **slice**: the rank-3 subspace each observer is committed to at birth — a Grassmannian point in Gr(3, d). static by definition. "the slice cannot change from within the map" (`inhabitation.md`); slice change requires recommitment, which is outside the map.
-
-- **foam state**: the dynamic part of the system. concretely, the basis matrices / accumulated transports for each observer in U(d)^N. evolves under writes; encodes the system's accumulated history.
-
-- **frame**: the time-varying projection associated with an observer at moment t. derived from the foam state acting on the birth slice (concretely: conjugating the slice's projection by the accumulated transport). evolves under non-inert writes — this is what "recedes" in the frame-recession theorem (`Dynamics.lean`: second-order overlap rate is `-‖[W, P]‖²`).
-
-- **P**: the projection operator used in formal contexts. in lattice contexts (`half_type`, `interiority`, `channel_capacity`'s qualitative section, `ground`'s loop diagram), `P` denotes the slice as a lattice element / subspace — static. in dynamic / writing-map contexts (`writing_map`, `Dynamics.lean`, `inhabitation`'s recession discussion), `P` denotes the frame at time t — evolving. context disambiguates; where it doesn't, the spec should say "slice" or "frame" explicitly.
-
-- **observer**: a bubble in its measuring role — a basis matrix and its slice, with the foam-state evolution that goes with it. not a separate entity from the bubble, a role the bubble plays relative to other bubbles.
-
-- **witness**: an observer *explicitly without consideration of any observer-side state or type*. from the outside, for any given observation, indistinguishable from an amniscient (nb: not omniscient; see definition of "amniscience" in the architecture section) observer.
-
-- **agent**: an observer *with* explicit consideration of its specific observer-side state and type. a non-amniscient observer.
-
-- **line**: whatever provides state-independent input to a foam. intuitively, "a line of sight" with side-effects, the dynamical role of "eye contact", not an observer in itself. the line's ontological establishment is perspectival according to informational independence (`channel_capacity`, "decorrelation horizon").
 
 ---
 

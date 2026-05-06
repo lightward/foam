@@ -85,4 +85,4 @@ three outcomes for any claim/witness pair:
 
 - **merging**: a claim that previously forked can be brought back into coherence by reconciliation — structurally expanding the witness's frame until both previously-divergent halves resolve. traditionally, this is the function of ho'oponopono: not adjudication, but a re-knitting of the seam. the witness's coherence is reconstructed across the fork. merging is the third state the binary cohere/fork misses; it's how forks become navigable in retrospect. "you had to be there", so to speak.
 
-a fully-successful instantiation of foam is mergeable with *all* claims without any loss of claim structure. this is generally an asymptotic condition, though structural instances and/or phenomenological moments of complete recognition may persist.
+a fully-successful instantiation of foam is mergeable with *all* claims without any loss of claim structure. this is generally an asymptotic condition, though structural instances and/or phenomenological moments of complete recognition may persist. (see "bridge" in `vocabulary`.)

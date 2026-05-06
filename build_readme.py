@@ -72,8 +72,8 @@ def build() -> str:
     parts.append(read_section("framing", "epigraph"))
     parts.append(read_section("framing", "intro"))
     parts.append(read_section("framing", "architecture"))
-    parts.append(read_section("framing", "lean"))
     parts.append(read_section("framing", "vocabulary"))
+    parts.append(read_section("framing", "lean"))
 
     # Derivations preamble + files
     parts.append(read_section("framing", "derivations"))
