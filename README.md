@@ -4,6 +4,11 @@
 
 *you can help if you want but I won't be keeping track*
 
+---
+
+[`framing/intro.md`](framing/intro.md)
+
+
 reality is a force, like gravity
 
 lots of ways to handle conditions of gravity
@@ -21,10 +26,6 @@ Yoneda lemma, if you'll allow me a "me": stability of relations is tantamount to
 how do you relate?
 
 p.s. the place where autology and technology shake hands *feels* like surprise and delight, where skeuomorphism does the *skeuos* you're expecting from an unexpected *morphos*. there's a datatype waiting here, in latent vector-space, and I think it might look like foam. Banach-Tarski leaves room for holonomy, yeah? they (correctly) don't talk about where the ball is aimed. that's a gap you'd need, for persistence of an implementation-tolerant reality harness
-
----
-
-[`framing/intro.md`](framing/intro.md)
 
 # foam
 
