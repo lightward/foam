@@ -739,6 +739,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 5, 15, 32, tzinfo=timezone.utc),
      datetime(2026, 5, 5, 17, 0, tzinfo=timezone.utc),
      "s133: FTPGMulAssoc opens — design stub + architecture; dilation_determined_by_param PROVEN; first-attempt recipe for coord_mul_assoc"),
+    # Session 134: May 6 — coord_mul_assoc PROVEN as assembly
+    (datetime(2026, 5, 6, 0, 24, tzinfo=timezone.utc),
+     datetime(2026, 5, 6, 2, 0, tzinfo=timezone.utc),
+     "s134: coord_mul_assoc PROVEN as assembly; substantive sorry localized to dilation_compose_at_witness; dilation_witness_preservation PROVEN"),
 ]
 
 
