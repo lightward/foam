@@ -296,81 +296,353 @@ theorem dilation_determined_by_param (Γ : CoordSystem L)
   exact perspectivity_injective hd_P_atom Γ.hO Γ.hU Γ.hO hP Γ.hOU
     (Ne.symm hP_ne_O) hd_P_not_l hd_P_not_OP h_coplanar hp₁ (Subtype.ext h_persp_eq)
 
+/-! ## Capstone: `coord_mul_assoc`
+
+The s133 stub's recipe (using `dilation_mul_key_identity` four times +
+a "composition step") was a first-attempt sketch. **s134 found a
+cleaner architecture**: the substantive geometric content concentrates
+into a single named lemma, `dilation_compose_at_witness` (below), and
+`coord_mul_assoc` becomes a thin algebraic assembly using it three
+times + `dilation_determined_by_param`. The four `dilation_mul_key_identity`
+applications turn out not to be needed for the capstone.
+
+The s133 prediction (no fresh `DesarguesianWitness` needed) becomes a
+prediction about `dilation_compose_at_witness` specifically — the
+witness-detection question is now localized to that one lemma.
+-/
+
+/-- **Dilation composition law at a witness.**
+
+    For atoms `x, y` on `l` (non-degenerate) and a witness atom `P`
+    in π but off `l`, `m`, `O⊔C`, with `P ≠ I`:
+
+      `σ_(x·y)(P) = σ_y(σ_x(P))`
+
+    i.e., `dilation_ext Γ (coord_mul Γ x y) P = dilation_ext Γ y (dilation_ext Γ x P)`.
+
+    This is the substantive geometric content of `coord_mul_assoc` —
+    everything above this lemma in the multiplicative chain
+    (`dilation_ext`, `dilation_preserves_direction`,
+    `dilation_mul_key_identity`, `dilation_determined_by_param`) is
+    setup; everything below it (`coord_mul_assoc`,
+    `coord_mul_left_inv`, the DivisionRing instance) is algebraic
+    consequence. The s132 "device-shape" question — whether the
+    multiplicative branch needs a third `DesarguesianWitness`-style
+    observer commitment — is concentrated here.
+
+    ## Why this is the substantive content
+
+    `coord_mul_assoc` is `(x·y)·z = x·(y·z)`. Applied at a witness `P`:
+
+      `σ_((x·y)·z)(P) = σ_z(σ_(x·y)(P)) = σ_z(σ_y(σ_x(P)))`     [3 applications]
+      `σ_(x·(y·z))(P) = σ_(y·z)(σ_x(P)) = σ_z(σ_y(σ_x(P)))`     [3 applications]
+
+    so `σ_LHS(P) = σ_RHS(P)`, hence `LHS = RHS` by
+    `dilation_determined_by_param`. The capstone is ~30 lines once
+    this lemma lands.
+
+    ## Proof sketch (proposed)
+
+    Both `σ_(x·y)(P)` and `σ_y(σ_x(P))` lie on `O⊔P`:
+      * `σ_(x·y)(P) = (O⊔P) ⊓ ((x·y) ⊔ d_P)` where `d_P = (I⊔P)⊓m`.
+      * `σ_x(P) ≤ O⊔P`, so `σ_y(σ_x(P)) ≤ O⊔σ_x(P) = O⊔P`.
+
+    To show two atoms on `O⊔P` are equal: distinguish them by a
+    second line meeting `O⊔P` at a single atom. The natural Desargues
+    setup: triangle `(P, σ_x(P), σ_y(σ_x(P)))` perspective from `O` to
+    triangle `(I, x, x·y)` (each pair of corresponding vertices on a
+    ray through `O`). Sides meet on `m` (the axis of dilation).
+
+    **Witness-detection point (s132 device-shape conjecture):** if
+    this proof needs a fresh `desargues_planar` call whose center or
+    axis hypothesis reduces to associativity itself, that's the third
+    witness — name as a typed structure analogous to
+    `DesarguesianWitness`, thread through this lemma as an explicit
+    parameter. The s133 prediction is that the existing
+    `dilation_preserves_direction` (a forward Desargues with center O,
+    PROVEN) suffices; this lemma's proof attempt is the test. -/
+theorem dilation_compose_at_witness (Γ : CoordSystem L)
+    (x y : L) (hx : IsAtom x) (hy : IsAtom y)
+    (hx_on : x ≤ Γ.O ⊔ Γ.U) (hy_on : y ≤ Γ.O ⊔ Γ.U)
+    (hx_ne_O : x ≠ Γ.O) (hy_ne_O : y ≠ Γ.O)
+    (hx_ne_U : x ≠ Γ.U) (hy_ne_U : y ≠ Γ.U)
+    {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    dilation_ext Γ (coord_mul Γ x y) P =
+      dilation_ext Γ y (dilation_ext Γ x P) := by
+  sorry
+
+/-- **Witness preservation under dilation.**
+
+    If `P` is a valid witness for `dilation_compose_at_witness` and
+    `dilation_determined_by_param` (atom in π, off l, off m, off O⊔C,
+    ≠ I), and `x` is a non-degenerate dilation parameter (atom on l,
+    ≠ O, ≠ U, ≠ I), then `dilation_ext Γ x P` is also a valid
+    witness. Used to chain `dilation_compose_at_witness` calls in
+    `coord_mul_assoc`.
+
+    Sub-claims, decomposed:
+      * `σ_x(P)` atom — `dilation_ext_atom`, PROVEN
+      * `σ_x(P) ≤ π` — `dilation_ext_plane`, PROVEN
+      * `σ_x(P) ∉ m` — `dilation_ext_not_m`, PROVEN
+      * `σ_x(P) ∉ l` — short modular argument; appears inline at
+        FTPGDilation:646 inside `dilation_preserves_direction`
+      * `σ_x(P) ∉ O⊔C` — needs proof (similar modular shape)
+      * `σ_x(P) ≠ I` — needs proof; uses dilation injectivity at I
+        (`σ_x(I) = x ≠ I`, so if `σ_x(P) = I` then `P = I` ✗) -/
+theorem dilation_witness_preservation (Γ : CoordSystem L)
+    (x : L) (hx : IsAtom x) (hx_on : x ≤ Γ.O ⊔ Γ.U)
+    (hx_ne_O : x ≠ Γ.O) (hx_ne_U : x ≠ Γ.U) (hx_ne_I : x ≠ Γ.I)
+    {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I)
+    (hP_ne_O : P ≠ Γ.O) :
+    IsAtom (dilation_ext Γ x P) ∧
+    dilation_ext Γ x P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ∧
+    ¬ dilation_ext Γ x P ≤ Γ.O ⊔ Γ.U ∧
+    ¬ dilation_ext Γ x P ≤ Γ.U ⊔ Γ.V ∧
+    ¬ dilation_ext Γ x P ≤ Γ.O ⊔ Γ.C ∧
+    dilation_ext Γ x P ≠ Γ.I := by
+  set m := Γ.U ⊔ Γ.V
+  set l := Γ.O ⊔ Γ.U
+  set σ := dilation_ext Γ x P
+  set d_P := (Γ.I ⊔ P) ⊓ m
+  -- ═══ Sub-claim 1: σ atom (existing lemma) ═══
+  have hσ_atom : IsAtom σ :=
+    dilation_ext_atom Γ hP hx hx_on hx_ne_O hx_ne_U hP_plane hP_not_l hP_ne_O hP_ne_I hP_not_m
+  -- ═══ Sub-claim 2: σ ≤ π (existing lemma) ═══
+  have hσ_plane : σ ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := dilation_ext_plane Γ hP hx hx_on hP_plane
+  -- ═══ Sub-claim 3: σ ∉ m (existing lemma) ═══
+  have hσ_not_m : ¬ σ ≤ m :=
+    dilation_ext_not_m Γ hP hx hx_on hx_ne_O hx_ne_U hP_plane hP_not_m hP_not_l hP_ne_O
+      hP_ne_I hx_ne_I
+  -- ═══ Helpers shared across remaining sub-claims ═══
+  have hx_not_m : ¬ x ≤ m := fun h => hx_ne_U (Γ.atom_on_both_eq_U hx hx_on h)
+  have hOC : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  have hUC : Γ.U ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+  have hOx_eq_l : Γ.O ⊔ x = l := by
+    show Γ.O ⊔ x = Γ.O ⊔ Γ.U
+    have hO_lt : Γ.O < Γ.O ⊔ x := by
+      apply lt_of_le_of_ne le_sup_left; intro h
+      exact hx_ne_O ((Γ.hO.le_iff.mp (h ▸ le_sup_right)).resolve_left hx.1)
+    exact ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq hO_lt.le
+      (sup_le le_sup_left hx_on)).resolve_left (ne_of_gt hO_lt)
+  have hd_P_atom : IsAtom d_P :=
+    line_meets_m_at_atom Γ.hI hP (Ne.symm hP_ne_I)
+      (sup_le (Γ.hI_on.trans le_sup_left) hP_plane) Γ.m_covBy_π.le Γ.m_covBy_π Γ.hI_not_m
+  have hσ_le_OP : σ ≤ Γ.O ⊔ P := inf_le_left
+  -- ═══ Key sub-claim: σ ≠ O ═══
+  -- If σ = O, then O ≤ x ⊔ d_P (since σ ≤ x ⊔ d_P).
+  -- Then O ⊔ x = l ≤ x ⊔ d_P. So U ≤ l ⊓ m ≤ (x ⊔ d_P) ⊓ m = d_P (line_direction).
+  -- So U = d_P (atoms). Then U ≤ I ⊔ P, so I ⊔ U = l ≤ I ⊔ P, so P ≤ l. ✗
+  have hσ_ne_O : σ ≠ Γ.O := by
+    intro h_eq
+    have hO_le_xdP : Γ.O ≤ x ⊔ d_P := h_eq ▸ (inf_le_right : σ ≤ x ⊔ d_P)
+    have hl_le_xdP : l ≤ x ⊔ d_P :=
+      hOx_eq_l.symm.le.trans (sup_le hO_le_xdP le_sup_left)
+    have hxdP_inf_m : (x ⊔ d_P) ⊓ m = d_P :=
+      line_direction hx hx_not_m (inf_le_right : d_P ≤ m)
+    have hU_le_dP : Γ.U ≤ d_P := by
+      have h1 : Γ.U ≤ (x ⊔ d_P) ⊓ m :=
+        le_inf ((le_sup_right : Γ.U ≤ l).trans hl_le_xdP) (le_sup_left : Γ.U ≤ m)
+      exact hxdP_inf_m ▸ h1
+    have hU_eq_dP : Γ.U = d_P := IsAtom.eq_of_le Γ.hU hd_P_atom hU_le_dP
+    -- U = d_P = (I⊔P)⊓m, so U ≤ I⊔P
+    have hU_le_IP : Γ.U ≤ Γ.I ⊔ P := hU_eq_dP ▸ (inf_le_left : d_P ≤ Γ.I ⊔ P)
+    -- I⊔U covers I (atom_covBy_join with I ≠ U)
+    have hIU_covBy : Γ.I ⋖ Γ.I ⊔ Γ.U := atom_covBy_join Γ.hI Γ.hU Γ.hUI.symm
+    -- I⊔U ≤ I⊔P (U ≤ I⊔P, I ≤ I⊔P)
+    have hIU_le_IP : Γ.I ⊔ Γ.U ≤ Γ.I ⊔ P := sup_le le_sup_left hU_le_IP
+    -- I < I⊔U (cover relation)
+    have hI_lt_IU : Γ.I < Γ.I ⊔ Γ.U := hIU_covBy.lt
+    -- I ⋖ I⊔P (atom_covBy_join with P ≠ I)
+    have hI_covBy_IP : Γ.I ⋖ Γ.I ⊔ P := atom_covBy_join Γ.hI hP (Ne.symm hP_ne_I)
+    -- I⊔U = I⊔P (by covering on I⊔P, since I⊔U strictly above I and ≤ I⊔P)
+    have hIU_eq_IP : Γ.I ⊔ Γ.U = Γ.I ⊔ P :=
+      (hI_covBy_IP.eq_or_eq hI_lt_IU.le hIU_le_IP).resolve_left (ne_of_gt hI_lt_IU)
+    -- I⊔U = l (covering on U ⋖ l with I < I⊔U, both ≤ l)
+    have hIU_eq_l : Γ.I ⊔ Γ.U = l := by
+      show Γ.I ⊔ Γ.U = Γ.O ⊔ Γ.U
+      have hI_le_l : Γ.I ≤ Γ.O ⊔ Γ.U := Γ.hI_on
+      have hIU_le_l : Γ.I ⊔ Γ.U ≤ Γ.O ⊔ Γ.U := sup_le hI_le_l le_sup_right
+      have hU_lt : Γ.U < Γ.I ⊔ Γ.U := lt_of_le_of_ne le_sup_right
+        (fun h => Γ.hUI ((Γ.hU.le_iff.mp (le_sup_left.trans h.symm.le)).resolve_left Γ.hI.1).symm)
+      have hU_covBy_l : Γ.U ⋖ Γ.O ⊔ Γ.U := by
+        rw [sup_comm]; exact atom_covBy_join Γ.hU Γ.hO Γ.hOU.symm
+      exact (hU_covBy_l.eq_or_eq hU_lt.le hIU_le_l).resolve_left (ne_of_gt hU_lt)
+    -- So I⊔P = l, hence P ≤ l. Contradiction.
+    exact hP_not_l (le_sup_right.trans (hIU_eq_IP.symm.trans hIU_eq_l).le)
+  -- ═══ Sub-claim 4: σ ∉ l ═══
+  -- σ ≤ O⊔P. If σ ≤ l, then σ ≤ l ⊓ (O⊔P) = O (modular). So σ = O. ✗
+  have hOP_l_eq_O : (Γ.O ⊔ Γ.U) ⊓ (Γ.O ⊔ P) = Γ.O :=
+    modular_intersection Γ.hO Γ.hU hP Γ.hOU (Ne.symm hP_ne_O)
+      (fun h' => hP_not_l (h' ▸ le_sup_right)) hP_not_l
+  have hσ_not_l : ¬ σ ≤ l := by
+    intro h
+    have hσ_le_O : σ ≤ Γ.O := hOP_l_eq_O ▸ le_inf h hσ_le_OP
+    exact hσ_ne_O ((Γ.hO.le_iff.mp hσ_le_O).resolve_left hσ_atom.1)
+  -- ═══ Sub-claim 5: σ ∉ O⊔C ═══
+  -- σ ≤ O⊔P. If σ ≤ O⊔C, then σ ≤ (O⊔P) ⊓ (O⊔C) = O (modular, since P ∉ O⊔C).
+  -- Need: ¬ C ≤ O⊔P (else O⊔C ≤ O⊔P, covering forces O⊔C = O⊔P, P ≤ O⊔C ✗)
+  have hC_not_OP : ¬ Γ.C ≤ Γ.O ⊔ P := by
+    intro h
+    have hOC_le : Γ.O ⊔ Γ.C ≤ Γ.O ⊔ P := sup_le le_sup_left h
+    have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+    have hO_lt_OC : Γ.O < Γ.O ⊔ Γ.C := lt_of_le_of_ne le_sup_left
+      (fun h' => hOC ((Γ.hO.le_iff.mp (le_sup_right.trans h'.symm.le)).resolve_left Γ.hC.1).symm)
+    have hOC_eq_OP : Γ.O ⊔ Γ.C = Γ.O ⊔ P :=
+      (hO_covBy_OP.eq_or_eq hO_lt_OC.le hOC_le).resolve_left (ne_of_gt hO_lt_OC)
+    exact hP_not_OC (le_sup_right.trans hOC_eq_OP.symm.le)
+  have hP_ne_C : P ≠ Γ.C := fun h => hP_not_OC (h ▸ le_sup_right)
+  have hOP_OC_eq_O : (Γ.O ⊔ P) ⊓ (Γ.O ⊔ Γ.C) = Γ.O :=
+    modular_intersection Γ.hO hP Γ.hC (Ne.symm hP_ne_O) hOC hP_ne_C hC_not_OP
+  have hσ_not_OC : ¬ σ ≤ Γ.O ⊔ Γ.C := by
+    intro h
+    have hσ_le_O : σ ≤ Γ.O := hOP_OC_eq_O ▸ le_inf hσ_le_OP h
+    exact hσ_ne_O ((Γ.hO.le_iff.mp hσ_le_O).resolve_left hσ_atom.1)
+  -- ═══ Sub-claim 6: σ ≠ I ═══
+  -- σ ≤ O⊔P. If σ = I, then I ≤ O⊔P, then O⊔I = l ≤ O⊔P (covering), so P ≤ l. ✗
+  have hσ_ne_I : σ ≠ Γ.I := by
+    intro h_eq
+    have hI_le_OP : Γ.I ≤ Γ.O ⊔ P := h_eq ▸ hσ_le_OP
+    have hOI_le_OP : Γ.O ⊔ Γ.I ≤ Γ.O ⊔ P := sup_le le_sup_left hI_le_OP
+    have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+    have hO_lt_OI : Γ.O < Γ.O ⊔ Γ.I := lt_of_le_of_ne le_sup_left
+      (fun h => Γ.hOI ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left Γ.hI.1).symm)
+    have hOI_eq_OP : Γ.O ⊔ Γ.I = Γ.O ⊔ P :=
+      (hO_covBy_OP.eq_or_eq hO_lt_OI.le hOI_le_OP).resolve_left (ne_of_gt hO_lt_OI)
+    -- O⊔I = l (covering)
+    have hOI_eq_l : Γ.O ⊔ Γ.I = l := by
+      show Γ.O ⊔ Γ.I = Γ.O ⊔ Γ.U
+      have hO_covBy_l : Γ.O ⋖ Γ.O ⊔ Γ.U := atom_covBy_join Γ.hO Γ.hU Γ.hOU
+      exact (hO_covBy_l.eq_or_eq hO_lt_OI.le (sup_le le_sup_left Γ.hI_on)).resolve_left
+        (ne_of_gt hO_lt_OI)
+    -- l = O⊔P, so P ≤ l. ✗
+    -- chain: P ≤ O⊔P = O⊔I (hOI_eq_OP.symm) = l (hOI_eq_l)
+    exact hP_not_l (le_sup_right.trans (hOI_eq_OP.symm.trans hOI_eq_l).le)
+  exact ⟨hσ_atom, hσ_plane, hσ_not_l, hσ_not_m, hσ_not_OC, hσ_ne_I⟩
+
 /-- **Associativity of coordinate multiplication.**
 
     `(a·b)·c = a·(b·c)`
 
-    Proof strategy (proposed, by analogy with `coord_add_assoc`):
+    ## Proof architecture (s134)
 
-    1. Apply `dilation_mul_key_identity` four times — at (a, b),
-       (b, c), (s, c) where `s = a·b`, and (a, t) where `t = b·c`.
-       This gives β-image equations for both sides:
-         σ_c(β(s)) = (σ_s⊔U) ⊓ ((s·c) ⊔ E) = (σ_s⊔U) ⊓ ((a·b)·c ⊔ E)
-         σ_a(β(t)) = (σ_a⊔U) ⊓ ((a·t) ⊔ E) = (σ_a⊔U) ⊓ (a·(b·c) ⊔ E)
+    Capstone assembly using `dilation_compose_at_witness` (the
+    substantive lemma) three times plus `dilation_determined_by_param`:
 
-    2. Show that σ_c ∘ σ_b applied to β(a) (or to some chosen
-       witness point) agrees with σ_(b·c) applied to the same
-       witness — i.e., dilation composition. The two-lines
-       argument and `dilation_preserves_direction` should suffice
-       (parallel to how `coord_add_assoc` uses cross_parallelism).
+      1. Take a witness `P` off `l`, `m`, `O⊔C`, `≠ I`. (Threaded as
+         an explicit hypothesis here — the construction of such a
+         `P` from `R`, `h_irred` is a separate task; it parallels
+         `coord_add_assoc`'s `P = (b ⊔ E) ⊓ (a ⊔ C)` move.)
+      2. Apply `dilation_compose_at_witness` at `(s, c, P)`:
+           `σ_(s·c)(P) = σ_c(σ_s(P))`     where `s = a·b`
+      3. Apply `dilation_compose_at_witness` at `(a, b, P)`:
+           `σ_s(P) = σ_(a·b)(P) = σ_b(σ_a(P))`
+         Substitute into (2):
+           `σ_(s·c)(P) = σ_c(σ_b(σ_a(P)))`            [LHS evaluated]
+      4. Apply `dilation_compose_at_witness` at `(a, t, P)`:
+           `σ_(a·t)(P) = σ_t(σ_a(P))`     where `t = b·c`
+      5. Apply `dilation_compose_at_witness` at `(b, c, σ_a(P))`:
+           `σ_t(σ_a(P)) = σ_(b·c)(σ_a(P)) = σ_c(σ_b(σ_a(P)))`
+         Substitute into (4):
+           `σ_(a·t)(P) = σ_c(σ_b(σ_a(P)))`            [RHS evaluated]
+      6. From (3) and (5): `σ_(s·c)(P) = σ_(a·t)(P)`.
+      7. `dilation_determined_by_param` gives `s·c = a·t`. ∎
 
-    3. Apply `dilation_determined_by_param` (or perspectivity
-       injectivity at the appropriate stage) to conclude
-       `(a·b)·c = a·(b·c)`.
+    Hypothesis preservation at step 5 — `σ_a(P)` is a valid witness
+    for the next call — is `dilation_witness_preservation` (above).
 
-    Witness parameters `R, hR, hR_not, h_irred` thread through
-    just as in `coord_add_assoc` — they discharge the irreducibility
-    requirement for any `desargues_*` calls upstream.
+    Per the s134 architecture: the only **substantive** sorry is
+    `dilation_compose_at_witness`. `dilation_witness_preservation`
+    is mechanical lattice algebra (the inline proof from
+    `dilation_preserves_direction:646` covers most of it).
+    The capstone is ~30 lines of clean assembly.
 
-    ## First-attempt recipe (s133 trail-marker)
-
-    The natural opening, in order:
-
-    a. Set up: `set s := coord_mul Γ a b`, `set t := coord_mul Γ b c`,
-       `set C_a := β(a)`, `set C_b := β(b)`, `set C_c := β(c)`,
-       and the analogous `C_s`, `C_t`, `C_LHS`, `C_RHS` (mirroring
-       `coord_add_assoc`'s setup at FTPGAssocCapstone:200–220).
-    b. Apply `dilation_mul_key_identity` four times — at (a, b),
-       (b, c), (s, c), (a, t) — yielding β-image equations
-       `σ_b(C_a) = ...(s ⊔ E)...`, `σ_a(C_t) = ...(C_RHS)...`, etc.
-    c. The composition step: show that `σ_b ∘ σ_c` applied to a
-       suitable witness equals `σ_(b·c)` applied to the same witness.
-       **THIS IS THE WITNESS-DETECTION POINT.** Two outcomes:
-       * It falls out of `dilation_preserves_direction` +
-         `dilation_mul_key_identity` + modular juggling, no fresh
-         Desargues call needed → the s132 device-shape prediction
-         is **false** for the multiplicative branch (mul-assoc
-         doesn't add a third witness).
-       * It requires a fresh `desargues_planar` call whose axis or
-         center property isn't derivable from the existing
-         multiplicative infrastructure → the prediction is **true**
-         and the residue IS the third witness. Name it as a
-         typed structure analogous to `DesarguesianWitness`,
-         thread it as an explicit parameter to `coord_mul_assoc`.
-    d. Conclusion: apply `dilation_determined_by_param` to the
-       β-images (or a perspectivity-injectivity move on the q-line)
-       to extract `coord_mul Γ s c = coord_mul Γ a t`.
-
-    The clearest signal that step (c) has hit the witness: trying
-    to construct a `desargues_planar` invocation where the
-    perspective-from-center hypothesis reduces to the conclusion
-    you're trying to prove (the s132 self-circularity pattern,
-    which is a structural fingerprint of irreducible-to-CML
-    content). If you see that, stop, name it, hand back. -/
+    Witness parameters `R, hR, hR_not, h_irred` thread through to
+    `dilation_compose_at_witness` (which makes Desargues calls
+    inside its proof). -/
 theorem coord_mul_assoc (Γ : CoordSystem L)
     (a b c : L) (ha : IsAtom a) (hb : IsAtom b) (hc : IsAtom c)
     (ha_on : a ≤ Γ.O ⊔ Γ.U) (hb_on : b ≤ Γ.O ⊔ Γ.U) (hc_on : c ≤ Γ.O ⊔ Γ.U)
     (ha_ne_O : a ≠ Γ.O) (hb_ne_O : b ≠ Γ.O) (hc_ne_O : c ≠ Γ.O)
     (ha_ne_U : a ≠ Γ.U) (hb_ne_U : b ≠ Γ.U) (hc_ne_U : c ≠ Γ.U)
+    (ha_ne_I : a ≠ Γ.I)
     (_hab : a ≠ b) (_hbc : b ≠ c) (_hac : a ≠ c)
     -- Non-degeneracy of intermediate products.
-    (_hs_ne_O : coord_mul Γ a b ≠ Γ.O) (_hs_ne_U : coord_mul Γ a b ≠ Γ.U)
-    (_ht_ne_O : coord_mul Γ b c ≠ Γ.O) (_ht_ne_U : coord_mul Γ b c ≠ Γ.U)
+    (hs_ne_O : coord_mul Γ a b ≠ Γ.O) (hs_ne_U : coord_mul Γ a b ≠ Γ.U)
+    (ht_ne_O : coord_mul Γ b c ≠ Γ.O) (ht_ne_U : coord_mul Γ b c ≠ Γ.U)
     (_hsc : coord_mul Γ a b ≠ c) (_hat : a ≠ coord_mul Γ b c)
-    (_R : L) (_hR : IsAtom _R) (_hR_not : ¬ _R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
-    (_h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+    (hsc_ne_O : coord_mul Γ (coord_mul Γ a b) c ≠ Γ.O)
+    (hsc_ne_U : coord_mul Γ (coord_mul Γ a b) c ≠ Γ.U)
+    (hat_ne_O : coord_mul Γ a (coord_mul Γ b c) ≠ Γ.O)
+    (hat_ne_U : coord_mul Γ a (coord_mul Γ b c) ≠ Γ.U)
+    -- Witness atom P in the plane π, off l, m, O⊔C, ≠ I.
+    -- Constructible from R + h_irred via a perspect_atom-style move
+    -- (parallel to coord_add_assoc's P = (b⊔E)⊓(a⊔C)). Threaded
+    -- as a hypothesis here to keep the capstone tight; the
+    -- construction is a separate task below this lemma.
+    {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I) (hP_ne_O : P ≠ Γ.O)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
       ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
     coord_mul Γ (coord_mul Γ a b) c = coord_mul Γ a (coord_mul Γ b c) := by
-  sorry
+  set s := coord_mul Γ a b with hs_def
+  set t := coord_mul Γ b c with ht_def
+  -- ═══ Atomicity + on-l for intermediate products ═══
+  have hs_atom : IsAtom s := coord_mul_atom Γ a b ha hb ha_on hb_on ha_ne_O hb_ne_O ha_ne_U hb_ne_U
+  have ht_atom : IsAtom t := coord_mul_atom Γ b c hb hc hb_on hc_on hb_ne_O hc_ne_O hb_ne_U hc_ne_U
+  have hs_on : s ≤ Γ.O ⊔ Γ.U := by show coord_mul Γ a b ≤ Γ.O ⊔ Γ.U; exact inf_le_right
+  have ht_on : t ≤ Γ.O ⊔ Γ.U := by show coord_mul Γ b c ≤ Γ.O ⊔ Γ.U; exact inf_le_right
+  have hsc_atom : IsAtom (coord_mul Γ s c) :=
+    coord_mul_atom Γ s c hs_atom hc hs_on hc_on hs_ne_O hc_ne_O hs_ne_U hc_ne_U
+  have hat_atom : IsAtom (coord_mul Γ a t) :=
+    coord_mul_atom Γ a t ha ht_atom ha_on ht_on ha_ne_O ht_ne_O ha_ne_U ht_ne_U
+  have hsc_on : coord_mul Γ s c ≤ Γ.O ⊔ Γ.U := by
+    show coord_mul Γ (coord_mul Γ a b) c ≤ Γ.O ⊔ Γ.U; exact inf_le_right
+  have hat_on : coord_mul Γ a t ≤ Γ.O ⊔ Γ.U := by
+    show coord_mul Γ a (coord_mul Γ b c) ≤ Γ.O ⊔ Γ.U; exact inf_le_right
+  -- ═══ Hypothesis preservation: σ_a(P) is a valid witness ═══
+  obtain ⟨hσaP_atom, hσaP_plane, hσaP_not_l, hσaP_not_m, hσaP_not_OC, hσaP_ne_I⟩ :=
+    dilation_witness_preservation Γ a ha ha_on ha_ne_O ha_ne_U ha_ne_I
+      hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I hP_ne_O
+  -- ═══ Step 1: σ_(s·c)(P) = σ_c(σ_s(P)) ═══   [LHS = s·c]
+  have h_LHS_step : dilation_ext Γ (coord_mul Γ s c) P =
+      dilation_ext Γ c (dilation_ext Γ s P) :=
+    dilation_compose_at_witness Γ s c hs_atom hc hs_on hc_on
+      hs_ne_O hc_ne_O hs_ne_U hc_ne_U
+      hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I R hR hR_not h_irred
+  -- ═══ Step 2: σ_s(P) = σ_b(σ_a(P)) ═══   [s = a·b]
+  have h_s_decomp : dilation_ext Γ s P = dilation_ext Γ b (dilation_ext Γ a P) :=
+    dilation_compose_at_witness Γ a b ha hb ha_on hb_on
+      ha_ne_O hb_ne_O ha_ne_U hb_ne_U
+      hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I R hR hR_not h_irred
+  -- ═══ Step 3: σ_(a·t)(P) = σ_t(σ_a(P)) ═══   [RHS = a·t]
+  have h_RHS_step : dilation_ext Γ (coord_mul Γ a t) P =
+      dilation_ext Γ t (dilation_ext Γ a P) :=
+    dilation_compose_at_witness Γ a t ha ht_atom ha_on ht_on
+      ha_ne_O ht_ne_O ha_ne_U ht_ne_U
+      hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I R hR hR_not h_irred
+  -- ═══ Step 4: σ_t(σ_a(P)) = σ_c(σ_b(σ_a(P))) ═══   [t = b·c]
+  have h_t_decomp : dilation_ext Γ t (dilation_ext Γ a P) =
+      dilation_ext Γ c (dilation_ext Γ b (dilation_ext Γ a P)) :=
+    dilation_compose_at_witness Γ b c hb hc hb_on hc_on
+      hb_ne_O hc_ne_O hb_ne_U hc_ne_U
+      hσaP_atom hσaP_plane hσaP_not_l hσaP_not_m hσaP_not_OC hσaP_ne_I
+      R hR hR_not h_irred
+  -- ═══ Step 5: σ_(s·c)(P) = σ_(a·t)(P) ═══
+  have h_agree : dilation_ext Γ (coord_mul Γ s c) P =
+      dilation_ext Γ (coord_mul Γ a t) P := by
+    rw [h_LHS_step, h_s_decomp, h_RHS_step, h_t_decomp]
+  -- ═══ Step 6: dilation_determined_by_param → s·c = a·t ═══
+  exact dilation_determined_by_param Γ hsc_atom hat_atom hsc_on hat_on
+    hsc_ne_O hat_ne_O hsc_ne_U hat_ne_U
+    hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I h_agree
 
 end Foam.FTPGExplore

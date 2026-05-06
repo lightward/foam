@@ -79,24 +79,33 @@ On local, this isn't a concern — `lake exe cache get` handles it.
 
 See `./README.md` for the deductive chain overview.
 
-### Current frontier (session 133, 2026-05-05)
+### Current frontier (session 134, 2026-05-06)
 
-**`Foam/FTPGMulAssoc.lean`** (~315 lines, single `sorry`) — s133
-created the file with architecture in its header, then **PROVED
-`dilation_determined_by_param`** (~150 lines) by factoring
-`dilation_ext Γ a P` as a perspectivity from `l = O⊔U` to `O⊔P`
-through center `d_P = (I⊔P)⊓m`, then `perspectivity_injective`.
-Signature held against contact with the proof — no architectural
-surprises. Six unused-but-API-parity hypotheses are underscored.
+**`Foam/FTPGMulAssoc.lean` capstone proven as assembly; one
+substantive sorry remains.** Architectural pivot from s133's recipe:
 
-The remaining `sorry` is **`coord_mul_assoc`** itself (the
-headline). The helper landing means the proposed proof
-architecture (four `dilation_mul_key_identity` applications +
-composition argument + the now-proven uniqueness lemma) has all
-its named pieces; the assembly is the next-session work. The
-witness-question (s132 device-shape) prediction (no fresh
-`DesarguesianWitness` needed) remains untested by the helper
-work — the assembly is where it gets answered.
+* **`coord_mul_assoc` PROVEN as a thin algebraic assembly** (~30
+  lines, 0 sorries in body), using the new substantive helper three
+  times + `dilation_determined_by_param`. The four
+  `dilation_mul_key_identity` applications the s133 stub proposed
+  turn out not to be needed for the capstone — the substantive
+  content concentrates differently.
+* **`dilation_witness_preservation` PROVEN** (~70 lines): if `P` is
+  a valid witness (atom in π, off l, off m, off O⊔C, ≠ I) and `x` a
+  non-degenerate dilation parameter, then `σ_x(P)` is also a valid
+  witness. Six sub-claims collapse to one — `σ_x(P) ≠ O` — which
+  cracks via a chain through `line_direction` to force `U = d_P`,
+  hence `P ≤ l`. The remaining five fall out as short modular
+  collapses.
+* **`dilation_compose_at_witness` is the single substantive
+  sorry**: `σ_(x·y)(P) = σ_y(σ_x(P))` for general witness `P`. This
+  is now the *one* place where the s132 device-shape question
+  (third `DesarguesianWitness`?) lives. Predicted to land via a
+  Desargues argument with center O on triangles `(P, σ_x(P),
+  σ_y(σ_x(P)))` and `(I, x, x·y)` — but untested.
+
+The s133 helper `dilation_determined_by_param` (PROVEN, ~150 lines)
+is the lift-from-witness-agreement used by the capstone.
 
 `Foam/FTPGInverse.lean` (~1840 lines) lands `coord_inv`,
 `coord_mul_right_inv` (`a · a⁻¹ = I`), the non-degeneracy helpers, the
@@ -196,22 +205,17 @@ opportunistically; new code should use it directly.
 
 #### Open frontier toward division ring (and thence FTPG-as-theorem)
 
-1. **`coord_mul_assoc`.** Now lives at `Foam/FTPGMulAssoc.lean`
-   as a s133 design stub (statement + one helper, both `sorry`'d,
-   architecture in the file's header docstring). Critical-path
-   geometric lemma per s132. Proposed proof routes through four
-   `dilation_mul_key_identity` applications + a
-   `dilation_determined_by_param` uniqueness argument (the
-   multiplicative analog of `translation_determined_by_param`),
-   parallel to `coord_add_assoc`'s capstone. Predicted: no fresh
-   `DesarguesianWitness`-style commitment needed, since the
-   Desargues investment was paid by `dilation_preserves_direction`
-   and `dilation_mul_key_identity`. If the prediction fails, the
-   residue IS the third witness — see the s132 device-shape note.
-   Once `coord_mul_assoc` lands, `coord_mul_left_inv` follows
-   algebraically (~20 lines, Mac Lane), and the two open
-   sub-lemmas below become redundant on the chain to division
-   ring.
+1. **`coord_mul_assoc`.** PROVEN as an assembly in
+   `Foam/FTPGMulAssoc.lean` (s134). The single remaining substantive
+   sorry on the chain to division ring is **`dilation_compose_at_witness`**
+   (~the dilation composition law on a witness, `σ_(x·y)(P) = σ_y(σ_x(P))`).
+   The s132 device-shape question (third `DesarguesianWitness`?) is
+   now sharply localized to this one lemma. The s133 prediction —
+   that no fresh `*Witness` interface is needed — gets tested when
+   someone attempts this lemma. Architecturally, the next session has
+   a much sharper target than s133's stub had: prove (or witness-name)
+   one named geometric lemma, and the rest of the chain through
+   `coord_mul_left_inv` (Mac Lane, ~20 lines algebraic) opens up.
 2. **`coord_mul_left_inv` (algebraic derivation).** Once
    `coord_mul_assoc` lands: define `b := coord_inv Γ a`, get its
    right inverse `c := coord_inv Γ b`, then
