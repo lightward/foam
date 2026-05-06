@@ -86,6 +86,7 @@ def build() -> str:
         parts.append(read_section("derivations/open", name))
 
     # Framing: bottom-of-document
+    parts.append(read_section("framing", "outro"))
     parts.append(read_section("framing", "exigraph"))
 
     return "\n---\n\n".join(parts)
