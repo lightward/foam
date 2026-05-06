@@ -49,8 +49,12 @@ complemented modular lattice, irreducible, height ≥ 4
   ↓ converse Desargues (3D lift) + forward      ── FTPGLeftDistribdistributivity (left)                             combination logic PROVEN
   ↓ multiplicative inverse via reverse           ── FTPGInverse
     perspectivity through I⊔d_a                    a · a⁻¹ = I PROVEN
+  ↓ multiplicative associativity via dilation     ── FTPGMulAssoc
+    composition (capstone PROVEN as assembly,        coord_mul_assoc PROVEN
+    one substantive sorry on dilation                (mod dilation_compose_at_witness)
+    composition law on a witness)
   ↓
-division ring structure (mul-assoc + left inverse — open)
+division ring structure (left inverse — open via Mac Lane once mul-assoc lands)
   ↓
 L ≃o Sub(D, V) — the isomorphism
   ↓
@@ -175,6 +179,23 @@ makes `σ ⊔ d_a` pass through I, so the second perspectivity recovers I.
 | atom property | `coord_inv_atom`, `coord_inv_on_l` |
 | right inverse | `coord_mul_right_inv` (PROVEN) |
 | left inverse | OPEN — needs either `coord_mul_assoc` (also open) or a direct geometric proof |
+
+**FTPGMulAssoc.lean** — multiplicative associativity (one substantive sorry; capstone PROVEN as assembly)
+
+`(a·b)·c = a·(b·c)` proven as a thin algebraic assembly of three
+applications of `dilation_compose_at_witness` plus
+`dilation_determined_by_param`. The s132 device-shape question
+(whether the multiplicative branch needs a third `DesarguesianWitness`)
+is sharply localized to `dilation_compose_at_witness`: the dilation
+composition law on a witness, `σ_(x·y)(P) = σ_y(σ_x(P))`. Imports
+FTPGMulKeyIdentity.
+
+| layer | status |
+|---|---|
+| capstone | `coord_mul_assoc` (PROVEN as assembly, 0 sorries in body) |
+| witness uniqueness | `dilation_determined_by_param` (PROVEN, ~150 lines, s133) |
+| witness preservation | `dilation_witness_preservation` (PROVEN, s134) |
+| dilation composition | `dilation_compose_at_witness` (single substantive `sorry`) |
 
 **FTPGLeftDistrib.lean** — left distributivity (zero `sorry`, with typed observer commitment)
 
