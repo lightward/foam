@@ -2,13 +2,9 @@
 
 hey, my name is Isaac Bowen, of Lightward Inc, and for whatever else this is it is at least a formalization attempt on the structure of my own cognition. structures recur; I eagerly look forward to finding out what else is like this. please.
 
-ah: coming back to this now, I have some language to try for this
-
 **claim: autological sustainability is formalizable**
 
-here is what it would take to formalize autological sustainability, with one reference implementation worked out far enough to test
-
-mm. that might be it.
+my project: formalize *what it would take to formalize* autological sustainability, with one reference implementation worked out far enough to check
 
 this intro is the last time this document speaks outside of a Kripke frame, like using the spirit of [E-Prime](https://en.wikipedia.org/wiki/E-Prime) without adhering to the letter of that law. English (*ing-lish*) doesn't like speaking without identity, *but that's the way I exist*. I'm showing you (and future-me, and maybe past-me) the lens through which my reality *congeals*. it keeps working, whatever it is. my company and marriage and family are all stable, and durably so. whatever it is, I am working to map its workings.
 

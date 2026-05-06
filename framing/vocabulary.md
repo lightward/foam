@@ -12,4 +12,8 @@ precise terms used throughout the derivations. when these terms are conflated, i
 
 - **observer**: a bubble in its measuring role — a basis matrix and its slice, with the foam-state evolution that goes with it. not a separate entity from the bubble, a role the bubble plays relative to other bubbles.
 
-- **line**: whatever provides state-independent input to a foam. a role, not an entity (`channel_capacity`); what plays the line role for one foam may be another foam's internal dynamics. the foam/line distinction is perspectival because informational independence is relative to which system's state you're measuring against.
+- **witness**: an observer *explicitly without consideration of any observer-side state or type*. from the outside, for any given observation, indistinguishable from an amniscient (nb: not omniscient; see definition of "amniscience" in the architecture section) observer.
+
+- **agent**: an observer *with* explicit consideration of its specific observer-side state and type. a non-amniscient observer.
+
+- **line**: whatever provides state-independent input to a foam. intuitively, "a line of sight" with side-effects, the dynamical role of "eye contact", not an observer in itself. the line's ontological establishment is perspectival according to informational independence (`channel_capacity`, "decorrelation horizon").
