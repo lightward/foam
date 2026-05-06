@@ -362,12 +362,20 @@ noncomputable def beta_cast (Γ : CoordSystem L) (P : L) : L :=
 
 /-- **Recovery via E.**
 
-    For a witness atom `P` (in π, off l, off m, off O⊔C, ≠ I) and a
-    non-degenerate dilation parameter `c`, the dilation σ_c(P) is
-    recoverable from σ_c(beta_cast Γ P) via the line through E and the
-    original ray O⊔P:
+    For a witness atom `P` (in π, off l, off m, off O⊔C, off q = U⊔C,
+    ≠ I) and a non-degenerate dilation parameter `c`, the dilation
+    σ_c(P) is recoverable from σ_c(beta_cast Γ P) via the line through
+    E and the original ray O⊔P:
 
       `σ_c(P) = (σ_c(beta_cast Γ P) ⊔ E) ⊓ (O⊔P)`
+
+    The `hP_not_q` hypothesis (P off q = U⊔C) narrows scope to the
+    non-degenerate case. When P ≤ q, P is itself on the bridge line
+    and `beta_cast Γ P = P`, so the recovery is trivial — but the
+    proof argument via `(P⊔P')⊓m = E` degenerates (becomes ⊥). Callers
+    that may face P ≤ q should case-split: in the on-q branch, P is a
+    β-image and `dilation_mul_key_identity` applies directly without
+    going through `recovery_via_E`.
 
     Proof structure:
       1. `P' := beta_cast Γ P` is a witness on q (atom, off l/m/O⊔C, ≠ I/O).
@@ -384,7 +392,8 @@ theorem recovery_via_E (Γ : CoordSystem L)
     (hc_ne_O : c ≠ Γ.O) (hc_ne_U : c ≠ Γ.U) (hc_ne_I : c ≠ Γ.I)
     {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
     (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
-    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_not_q : ¬ P ≤ Γ.U ⊔ Γ.C)
+    (hP_ne_I : P ≠ Γ.I)
     (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
     (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
       ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
@@ -572,7 +581,28 @@ theorem recovery_via_E (Γ : CoordSystem L)
           Γ.hC.1).symm)
       exact h_bot_covBy.2 Γ.hU.bot_lt hU_lt_q
     exact line_height_two Γ.hU Γ.hC hUC_ne (bot_lt_iff_ne_bot.mpr h_ne_bot) h_meet.1.lt
-  -- TODO(s135): finish steps 2-5 once Step 1's structure is verified.
+  -- ═══ Step 2a: (P ⊔ P') ⊓ m = E ═══
+  -- The load-bearing geometric fact for Steps 2b-5: P, P', E are
+  -- collinear on the line P ⊔ E, which meets m at exactly E.
+  -- Argument: P off q ⇒ P' ≠ P (P' ≤ q), hence P ⊔ P' = P ⊔ E by
+  -- covering on hPE_covBy_P; then (P ⊔ E) ⊓ m = E by modular law
+  -- (E ≤ m, P off m so P ⊓ m = ⊥, sup_inf_assoc_of_le).
+  have hP'_le_q : P' ≤ q := inf_le_left
+  have hP'_le_PE : P' ≤ P ⊔ Γ.E := inf_le_right
+  have hP_ne_P' : P ≠ P' := fun h => hP_not_q (h ▸ hP'_le_q)
+  have hP_lt_PP' : P < P ⊔ P' := lt_of_le_of_ne le_sup_left
+    (fun h => hP_ne_P' ((hP.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+      hP'_atom.1).symm)
+  have hPP'_le_PE : P ⊔ P' ≤ P ⊔ Γ.E := sup_le le_sup_left hP'_le_PE
+  have hPP'_eq_PE : P ⊔ P' = P ⊔ Γ.E :=
+    (hPE_covBy_P.eq_or_eq hP_lt_PP'.le hPP'_le_PE).resolve_left (ne_of_gt hP_lt_PP')
+  have hP_inf_m : P ⊓ m = ⊥ :=
+    (hP.le_iff.mp inf_le_left).resolve_right (fun h => hP_not_m (h ▸ inf_le_right))
+  have hPE_inf_m : (P ⊔ Γ.E) ⊓ m = Γ.E := by
+    rw [sup_comm P Γ.E, sup_inf_assoc_of_le P Γ.hE_on_m, hP_inf_m, sup_bot_eq]
+  have hPP'_inf_m : (P ⊔ P') ⊓ m = Γ.E := hPP'_eq_PE ▸ hPE_inf_m
+  -- TODO(s136+): Step 2b (apply dilation_preserves_direction at (P, P')
+  -- via hPP'_inf_m to get (σP ⊔ σP') ⊓ m = E), then Steps 3-5.
   sorry
 
 /-! ## Capstone: `coord_mul_assoc`
