@@ -296,6 +296,285 @@ theorem dilation_determined_by_param (Γ : CoordSystem L)
   exact perspectivity_injective hd_P_atom Γ.hO Γ.hU Γ.hO hP Γ.hOU
     (Ne.symm hP_ne_O) hd_P_not_l hd_P_not_OP h_coplanar hp₁ (Subtype.ext h_persp_eq)
 
+/-! ## Bridge identities: β-cast and recovery-via-E (s135)
+
+### Why this section exists
+
+The s134 docstring's proposed Desargues setup for
+`dilation_compose_at_witness` (triangles `(P, σ_x(P), σ_y(σ_x(P)))` and
+`(I, x, x·y)` with center O, sides on m) **fails as a triangle setup**:
+T1's three vertices are all on the single line `O⊔P` (because dilations
+with center O preserve lines through O). The natural-looking setup is
+collinear, not a Desargues configuration.
+
+s135 takes a different path: factor `dilation_compose_at_witness` through
+the β-line `q = U⊔C` (the **bridge world** between off-l witnesses and
+on-l multiplicative structure; see `framing/vocabulary.md` "bridge")
+using E as the projection center fixed by all dilations.
+
+  * **`beta_cast Γ P = q ⊓ (P⊔E)`**: project a witness P to a β-image on
+    q via center E. (PROVEN — definitional + atom-on-q verification
+    inside `recovery_via_E`'s prologue.)
+  * **`recovery_via_E`**: `σ_c(P) = (σ_c(beta_cast Γ P) ⊔ E) ⊓ (O⊔P)`.
+    (Step 1 PROVEN: P' atomicity. Steps 2-5 OPEN — see `sorry`.)
+    Routes through `dilation_preserves_direction` (PROVEN). E is fixed
+    by σ_c (E ≤ m, dilations fix m pointwise), so collinearity of P, P',
+    E on the line P⊔E is preserved by σ_c, giving E on σ_c(P)⊔σ_c(P').
+    The unique-atom argument on (σ_c(P')⊔E) ⊓ (O⊔P) recovers σ_c(P).
+
+These let `dilation_compose_at_witness` reduce to β-image arithmetic
+where `dilation_mul_key_identity` (PROVEN) applies. The system-shift
+question (whether σ_y applied to a σ_x-shifted β-image needs a fresh
+"shifted-key-identity" lemma) becomes localized and can be answered by
+either re-bridging through E or by re-deriving the key identity at the
+shifted system — both workable, both at the architecture's permitted
+scale.
+
+### s135 status (partial; clean handoff)
+
+Step 1 lands: `beta_cast Γ P` is verified as an atom on q with the full
+witness conditions (off l, off m, off O⊔C, ≠ I, ≠ O, ≠ U, ≠ C). The
+modular juggling for these conditions runs ~100 lines and is a real
+contribution — the next session inherits this verification rather than
+rebuilding it.
+
+Steps 2-5 remain (estimated ~250-350 lines):
+  * **Step 2**: `(P⊔P')⊓m = E` via `P' ≤ P⊔E` and `(P⊔E)⊓m = E`
+    (P off m, line meets m at single atom = E).
+  * **Step 3**: apply `dilation_preserves_direction` at the pair (P, P')
+    to lift Step 2 to `(σP⊔σP')⊓m = E`. This requires verifying P' as
+    a witness for the lemma's preconditions (atom, in π, off l, off m,
+    ≠ O, ≠ I; plus σP ≠ σP', which needs its own short argument from
+    P ≠ P' and the directions being distinct).
+  * **Step 4**: from `(σP⊔σP')⊓m = E`, derive `E ≤ σP⊔σP'`, hence the
+    line `σP⊔σP'` equals `σP⊔E` (covering on σP), so `σP' ≤ σP⊔E`,
+    equivalently `σP ≤ σP'⊔E`.
+  * **Step 5**: `σP ≤ O⊔P` (definition); combined with Step 4,
+    `σP ≤ (σP'⊔E) ⊓ (O⊔P)`. The right side is an atom (two distinct
+    lines in π — distinct because E ∉ O⊔P, see hE_not_OP in the
+    prologue). Atom equality concludes.
+-/
+
+/-- The β-cast of a witness P to the bridge line q = U⊔C, projected
+    through center E. Maps `π`-atoms to atoms on q. -/
+noncomputable def beta_cast (Γ : CoordSystem L) (P : L) : L :=
+  (Γ.U ⊔ Γ.C) ⊓ (P ⊔ Γ.E)
+
+/-- **Recovery via E.**
+
+    For a witness atom `P` (in π, off l, off m, off O⊔C, ≠ I) and a
+    non-degenerate dilation parameter `c`, the dilation σ_c(P) is
+    recoverable from σ_c(beta_cast Γ P) via the line through E and the
+    original ray O⊔P:
+
+      `σ_c(P) = (σ_c(beta_cast Γ P) ⊔ E) ⊓ (O⊔P)`
+
+    Proof structure:
+      1. `P' := beta_cast Γ P` is a witness on q (atom, off l/m/O⊔C, ≠ I/O).
+      2. Collinearity through E: P, P', E lie on the line P⊔E, so
+         `(P⊔P')⊓m = E`. By `dilation_preserves_direction`,
+         `(σ_c(P)⊔σ_c(P'))⊓m = E`, hence E ≤ σ_c(P)⊔σ_c(P').
+      3. The line σ_c(P)⊔σ_c(P') equals σ_c(P')⊔E (CovBy on the line),
+         so σ_c(P) ≤ σ_c(P')⊔E.
+      4. σ_c(P) ≤ O⊔P by definition. So σ_c(P) ≤ (σ_c(P')⊔E) ⊓ (O⊔P).
+      5. The right side is an atom (two distinct lines in π meet at one
+         atom). Atom equality concludes. -/
+theorem recovery_via_E (Γ : CoordSystem L)
+    (c : L) (hc : IsAtom c) (hc_on : c ≤ Γ.O ⊔ Γ.U)
+    (hc_ne_O : c ≠ Γ.O) (hc_ne_U : c ≠ Γ.U) (hc_ne_I : c ≠ Γ.I)
+    {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    dilation_ext Γ c P =
+      (dilation_ext Γ c (beta_cast Γ P) ⊔ Γ.E) ⊓ (Γ.O ⊔ P) := by
+  set m := Γ.U ⊔ Γ.V
+  set q := Γ.U ⊔ Γ.C
+  set π := Γ.O ⊔ Γ.U ⊔ Γ.V
+  set P' := beta_cast Γ P with hP'_def
+  set σP := dilation_ext Γ c P
+  set σP' := dilation_ext Γ c P'
+  -- Reusable distinctness for hypotheses
+  have hP_ne_O : P ≠ Γ.O := fun h => hP_not_l (h ▸ le_sup_left)
+  have hOC_ne : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  have hUC_ne : Γ.U ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+  -- ═══ Step 1: P' = beta_cast Γ P is a witness on q ═══
+  -- Compute C⊔E = O⊔C (CovBy: C ⋖ O⊔C, C < C⊔E ≤ O⊔C)
+  have hC_ne_E : Γ.C ≠ Γ.E := fun h => Γ.hC_not_m (h ▸ Γ.hE_on_m)
+  have hCE_eq_OC : Γ.C ⊔ Γ.E = Γ.O ⊔ Γ.C := by
+    have hC_lt : Γ.C < Γ.C ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+      (fun h => hC_ne_E ((Γ.hC.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        Γ.hE_atom.1).symm)
+    have hC_covBy : Γ.C ⋖ Γ.O ⊔ Γ.C := by
+      rw [sup_comm]; exact atom_covBy_join Γ.hC Γ.hO hOC_ne.symm
+    exact (hC_covBy.eq_or_eq hC_lt.le (sup_le le_sup_right CoordSystem.hE_le_OC)).resolve_left
+      (ne_of_gt hC_lt)
+  -- P off C⊔E (since C⊔E = O⊔C and P off O⊔C)
+  have hP_not_CE : ¬ P ≤ Γ.C ⊔ Γ.E := fun h => hP_not_OC (hCE_eq_OC ▸ h)
+  -- U⊔E = m (CovBy: E < U⊔E ≤ m, E ⋖ m via E_sup_EI_eq_m... actually let me just use covering)
+  have hU_ne_E : Γ.U ≠ Γ.E := fun h => Γ.hE_not_l (h ▸ le_sup_right)
+  have hUE_le_m : Γ.U ⊔ Γ.E ≤ m := sup_le le_sup_left Γ.hE_on_m
+  -- P off U⊔E (P off m, U⊔E ≤ m)
+  have hP_not_UE : ¬ P ≤ Γ.U ⊔ Γ.E := fun h => hP_not_m (h.trans hUE_le_m)
+  -- P ≠ E (E on m, P off m)
+  have hP_ne_E : P ≠ Γ.E := fun h => hP_not_m (h ▸ Γ.hE_on_m)
+  -- P⊔E covers P (atom_covBy_join P E with P ≠ E)
+  have hPE_covBy_P : P ⋖ P ⊔ Γ.E := atom_covBy_join hP Γ.hE_atom hP_ne_E
+  -- Distinct lines q and P⊔E (in π); their meet is an atom = P'.
+  -- q ⋖ π: standard lemma (q is the β-line)
+  have hq_covBy_π : q ⋖ π := by
+    -- Reuse the structure: q = U⊔C, q⊓m = U, V ⋖ m gives V⊓q ⋖ V; then V⊔q = m⊔C = π.
+    -- Or use line_covBy_plane directly.
+    have hq_inf_m : q ⊓ m = Γ.U := by
+      change (Γ.U ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.U
+      rw [sup_inf_assoc_of_le Γ.C (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)]
+      have : Γ.C ⊓ (Γ.U ⊔ Γ.V) = ⊥ :=
+        (Γ.hC.le_iff.mp inf_le_left).resolve_right (fun h => Γ.hC_not_m (h ▸ inf_le_right))
+      rw [this, sup_bot_eq]
+    -- m⊔q = m⊔C = π (since C off m, m ⋖ m⊔C = π)
+    have hUV_ne : Γ.U ≠ Γ.V := fun h => Γ.hV_off (h ▸ le_sup_right)
+    have h_inf : m ⊓ q ⋖ m := by
+      rw [inf_comm, hq_inf_m]; exact atom_covBy_join Γ.hU Γ.hV hUV_ne
+    have h1 := covBy_sup_of_inf_covBy_left h_inf
+    have hmq : m ⊔ q = m ⊔ Γ.C := by
+      change m ⊔ (Γ.U ⊔ Γ.C) = m ⊔ Γ.C
+      rw [← sup_assoc, sup_eq_left.mpr (le_sup_left : Γ.U ≤ m)]
+    have hmC : m ⊔ Γ.C = π :=
+      (Γ.m_covBy_π.eq_or_eq (le_sup_left : m ≤ m ⊔ Γ.C)
+        (sup_le Γ.m_covBy_π.le Γ.hC_plane)).resolve_left
+        (ne_of_gt (lt_of_le_of_ne le_sup_left
+          (fun h => Γ.hC_not_m (le_sup_right.trans h.symm.le))))
+    rwa [hmq, hmC] at h1
+  -- P⊔E is in π (P, E both in π)
+  have hPE_le_π : P ⊔ Γ.E ≤ π :=
+    sup_le hP_plane (Γ.hE_on_m.trans Γ.m_covBy_π.le)
+  -- P⊔E ⋖ π: P, E coplanar in π; line_covBy_plane needs O off P⊔E
+  have hPE_covBy_π : P ⊔ Γ.E ⋖ π := by
+    -- O ∉ P⊔E: if O ≤ P⊔E, then O⊔P ≤ P⊔E. O ⋖ O⊔P (P ≠ O), O < P⊔E.
+    -- Then O⊔P ≤ P⊔E. P⊔E covers P; so P⊔E = O⊔P or P⊔E = P. But E ∉ {P, O⊔P}.
+    -- E ≠ P (hP_ne_E), and E ∉ O⊔P (since E ≤ O⊔C, P off O⊔C, O⊔C ≠ O⊔P).
+    have hE_not_OP : ¬ Γ.E ≤ Γ.O ⊔ P := by
+      intro h
+      -- O⊔E = O⊔C (CovBy on O⊔C, since O < O⊔E ≤ O⊔C)
+      have hO_ne_E : Γ.O ≠ Γ.E := fun h' => Γ.hO_not_m (h' ▸ Γ.hE_on_m)
+      have hOE_le_OC : Γ.O ⊔ Γ.E ≤ Γ.O ⊔ Γ.C := sup_le le_sup_left CoordSystem.hE_le_OC
+      have hO_lt_OE : Γ.O < Γ.O ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+        (fun h' => hO_ne_E ((Γ.hO.le_iff.mp (le_sup_right.trans h'.symm.le)).resolve_left
+          Γ.hE_atom.1).symm)
+      have hO_covBy_OC : Γ.O ⋖ Γ.O ⊔ Γ.C := atom_covBy_join Γ.hO Γ.hC hOC_ne
+      have hOE_eq_OC : Γ.O ⊔ Γ.E = Γ.O ⊔ Γ.C :=
+        (hO_covBy_OC.eq_or_eq hO_lt_OE.le hOE_le_OC).resolve_left (ne_of_gt hO_lt_OE)
+      -- O⊔E ≤ O⊔P (from h)
+      have hOE_le_OP : Γ.O ⊔ Γ.E ≤ Γ.O ⊔ P := sup_le le_sup_left h
+      have hOC_le_OP : Γ.O ⊔ Γ.C ≤ Γ.O ⊔ P := hOE_eq_OC ▸ hOE_le_OP
+      -- O⊔P covers O, O⊔C strictly above O, so O⊔C = O⊔P, hence P on O⊔C ✗
+      have hO_lt_OC : Γ.O < Γ.O ⊔ Γ.C := hO_covBy_OC.lt
+      have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+      have hOC_eq_OP : Γ.O ⊔ Γ.C = Γ.O ⊔ P :=
+        (hO_covBy_OP.eq_or_eq hO_lt_OC.le hOC_le_OP).resolve_left (ne_of_gt hO_lt_OC)
+      exact hP_not_OC (le_sup_right.trans hOC_eq_OP.symm.le)
+    have hO_not_PE : ¬ Γ.O ≤ P ⊔ Γ.E := by
+      intro h
+      -- P⊔E meets m: hPE_le_π gives P⊔E ≤ π. (P⊔E)⊓m = E (E ≤ both, atom).
+      -- If O ≤ P⊔E, then O,P,E ≤ P⊔E. covering forces P⊔E = O⊔P or O⊔E or...
+      -- Direct: if O ≤ P⊔E, then E ∈ O⊔P (modular: E ≤ (P⊔E) ⊓ (O⊔E)... hmm).
+      -- Cleaner: O,P,E ≤ P⊔E (height 2), so O ≤ P⊔E with P,E spanning the line.
+      -- Then O⊔E ≤ P⊔E (line containment), and since O ⋖ O⊔E, P⊔E = O⊔E unless O=O⊔E.
+      -- Actually: if O ≤ P⊔E and P⊔E is a line (covers P), then either O = P (no, O ≠ P)
+      -- or O⊔P = P⊔E (covering: P < O⊔P ≤ P⊔E, P ⋖ P⊔E gives equality).
+      have hOP_le : Γ.O ⊔ P ≤ P ⊔ Γ.E := sup_le h le_sup_left
+      have hP_lt : P < Γ.O ⊔ P := lt_of_le_of_ne le_sup_right
+        (fun h' => hP_ne_O ((hP.le_iff.mp (le_sup_left.trans h'.symm.le)).resolve_left
+          Γ.hO.1).symm)
+      have hPE_eq : P ⊔ Γ.E = Γ.O ⊔ P :=
+        (hPE_covBy_P.eq_or_eq hP_lt.le hOP_le).resolve_left (ne_of_gt hP_lt) |>.symm
+      exact hE_not_OP (le_sup_right.trans hPE_eq.le)
+    have hPEO_eq : P ⊔ Γ.E ⊔ Γ.O = π := by
+      -- P⊔E ⋖ ? gives P⊔E < P⊔E⊔O ≤ π, with line_covBy_plane.
+      -- But we want = π. Use: l ≤ P⊔E⊔O via O,P joined, then plane covering.
+      -- Actually simpler: P⊔E⊔O ≥ O⊔P (subset). O⊔P ⋖ π via earlier. O⊔P < P⊔E⊔O.
+      -- Hmm need to verify. Let me just compute upper bound and use covering.
+      have hOP_covBy_π : Γ.O ⊔ P ⋖ π := by
+        have hU_not_OP : ¬ Γ.U ≤ Γ.O ⊔ P := by
+          intro h
+          have hOU_le_OP : Γ.O ⊔ Γ.U ≤ Γ.O ⊔ P := sup_le le_sup_left h
+          have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+          have hO_lt_l : Γ.O < Γ.O ⊔ Γ.U := (atom_covBy_join Γ.hO Γ.hU Γ.hOU).lt
+          have hl_eq_OP : Γ.O ⊔ Γ.U = Γ.O ⊔ P :=
+            (hO_covBy_OP.eq_or_eq hO_lt_l.le hOU_le_OP).resolve_left (ne_of_gt hO_lt_l)
+          exact hP_not_l (le_sup_right.trans hl_eq_OP.symm.le)
+        have hOPU_eq : Γ.O ⊔ P ⊔ Γ.U = π := by
+          show Γ.O ⊔ P ⊔ Γ.U = Γ.O ⊔ Γ.U ⊔ Γ.V
+          have hl_covBy_π : Γ.O ⊔ Γ.U ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V := by
+            have hV_disj : Γ.V ⊓ (Γ.O ⊔ Γ.U) = ⊥ :=
+              (Γ.hV.le_iff.mp inf_le_left).resolve_right (fun h => Γ.hV_off (h ▸ inf_le_right))
+            have := covBy_sup_of_inf_covBy_left (hV_disj ▸ Γ.hV.bot_covBy)
+            rwa [show Γ.V ⊔ (Γ.O ⊔ Γ.U) = Γ.O ⊔ Γ.U ⊔ Γ.V from by rw [sup_comm]] at this
+          rw [show Γ.O ⊔ P ⊔ Γ.U = (Γ.O ⊔ Γ.U) ⊔ P from by ac_rfl]
+          have hl_lt : Γ.O ⊔ Γ.U < (Γ.O ⊔ Γ.U) ⊔ P := lt_of_le_of_ne le_sup_left
+            (fun h => hP_not_l (le_sup_right.trans h.symm.le))
+          exact (hl_covBy_π.eq_or_eq hl_lt.le
+            (sup_le hl_covBy_π.le hP_plane)).resolve_left (ne_of_gt hl_lt)
+        rw [← hOPU_eq]
+        exact line_covBy_plane Γ.hO hP Γ.hU (Ne.symm hP_ne_O) Γ.hOU
+          (fun h => hU_not_OP (h ▸ le_sup_right)) hU_not_OP
+      have hOP_lt : Γ.O ⊔ P < P ⊔ Γ.E ⊔ Γ.O := by
+        apply lt_of_le_of_ne
+        · rw [show P ⊔ Γ.E ⊔ Γ.O = Γ.O ⊔ P ⊔ Γ.E from by ac_rfl]
+          exact le_sup_left
+        · intro h
+          -- O⊔P = P⊔E⊔O means E ≤ O⊔P, contradicting hE_not_OP
+          have hE_le : Γ.E ≤ Γ.O ⊔ P := by
+            rw [h]; exact le_sup_right.trans le_sup_left
+          exact hE_not_OP hE_le
+      exact (hOP_covBy_π.eq_or_eq hOP_lt.le
+        (sup_le hPE_le_π (le_sup_left.trans le_sup_left))).resolve_left (ne_of_gt hOP_lt)
+    have hE_ne_O : Γ.E ≠ Γ.O := fun h => Γ.hO_not_m (h ▸ Γ.hE_on_m)
+    rw [← hPEO_eq]
+    exact line_covBy_plane hP Γ.hE_atom Γ.hO hP_ne_E hP_ne_O hE_ne_O hO_not_PE
+  -- Distinctness q ≠ P⊔E: q goes through U,C; P⊔E goes through P,E.
+  -- If equal, then P,E ≤ q. P off l, q⊓l = U, but q ⊓ l = U is on q;
+  -- E ≤ q would force E ≤ q⊓m = U, E = U, ✗. So q ≠ P⊔E.
+  have hE_not_q : ¬ Γ.E ≤ q := by
+    intro h
+    have hE_le_U : Γ.E ≤ Γ.U := by
+      have hqm : q ⊓ m = Γ.U := by
+        change (Γ.U ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.U
+        rw [sup_inf_assoc_of_le Γ.C (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)]
+        have : Γ.C ⊓ (Γ.U ⊔ Γ.V) = ⊥ :=
+          (Γ.hC.le_iff.mp inf_le_left).resolve_right (fun h' => Γ.hC_not_m (h' ▸ inf_le_right))
+        rw [this, sup_bot_eq]
+      exact hqm ▸ le_inf h Γ.hE_on_m
+    exact hU_ne_E ((Γ.hU.le_iff.mp hE_le_U).resolve_left Γ.hE_atom.1).symm
+  have hq_ne_PE : q ≠ P ⊔ Γ.E := fun h => hE_not_q (h ▸ le_sup_right)
+  -- P' = q ⊓ (P⊔E) is an atom (planes_meet_covBy + line_height_two on q)
+  have h_meet := planes_meet_covBy hq_covBy_π hPE_covBy_π hq_ne_PE
+  have hP'_atom : IsAtom P' := by
+    show IsAtom (q ⊓ (P ⊔ Γ.E))
+    -- meet ⋖ q (height 2 in q). It's nonzero because if it were ⊥, then q ⊔ (P⊔E) wouldn't
+    -- cover-up to π via planes_meet_covBy's left side. But h_meet.1 directly says
+    -- meet ⋖ q; combined with C ≤ q (so q strictly above ⊥), meet is at height 1 = atom.
+    -- Use line_height_two: requires ⊥ < meet < q. The strict-below is the missing piece.
+    have h_ne_bot : q ⊓ (P ⊔ Γ.E) ≠ ⊥ := by
+      intro h_eq
+      have h_bot_covBy : ⊥ ⋖ q := h_eq ▸ h_meet.1
+      have hC_pos : ⊥ < Γ.C := Γ.hC.bot_lt
+      have hC_le_q : Γ.C ≤ q := le_sup_right
+      have hC_lt_q : ⊥ < q := lt_of_lt_of_le hC_pos hC_le_q
+      -- ⊥ ⋖ q says nothing strictly between. But we don't have anything strictly between.
+      -- Use that q is a line (height 2), so ⊥ < q gives an atom strictly below q.
+      -- Actually the ⊥ ⋖ q would force q to be an atom; but q is a line so q has height 2.
+      -- Concretely: U ≤ q, U is an atom, ⊥ < U < q (since q ≠ U: q has C off l).
+      have hU_lt_q : Γ.U < q := lt_of_le_of_ne le_sup_left
+        (fun h => hUC_ne ((Γ.hU.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+          Γ.hC.1).symm)
+      exact h_bot_covBy.2 Γ.hU.bot_lt hU_lt_q
+    exact line_height_two Γ.hU Γ.hC hUC_ne (bot_lt_iff_ne_bot.mpr h_ne_bot) h_meet.1.lt
+  -- TODO(s135): finish steps 2-5 once Step 1's structure is verified.
+  sorry
+
 /-! ## Capstone: `coord_mul_assoc`
 
 The s133 stub's recipe (using `dilation_mul_key_identity` four times +
