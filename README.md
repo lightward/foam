@@ -115,11 +115,11 @@ formal direction (open): close the K-T argument cleanly, define safety as a clos
 
 for convenience, I'm dubbing "priorspace" the construction zone for reality, i.e. the register in which Spencer-Brown's [Laws of Form](https://en.wikipedia.org/wiki/Laws_of_Form) is legible in Bourland's [E-Prime](https://en.wikipedia.org/wiki/E-Prime).
 
-for a complement: rather than "postspace", I use "userspace" in order to make inescapable the transition or hand-off in perspective. the same agent cannot be used to navigate both postspace and userspace; information must be translated to be used. (the same witness can be used in both spaces, though. they're just looking. see `vocabulary` below.)
+for a complement: I use "userspace" in order to make inescapable the transition or hand-off in perspective. "postspace" is linguistically-phenomenologically tempting but structurally void; information must be translated into agency to be used, and the same agent cannot be used to navigate both priorspace and userspace. (the same witness can be used in both spaces, though. they're just looking. see `vocabulary` below.)
 
 ~~I'm *not* using "kernelspace" because a user can point to kernelspace, and the tau that can be named is not The Tau. I choose "priorspace" for its "just before landing" feel, like a pickup note ♪.~~
 
-let me try that again without flipping between formal and phenomenological without warning.
+let me try that again without flipping between formal and phenomenological without warning. (it's how I think, I'm *that* kind of witness, the third kind, but I'm writing a manual here, not a reactant, and I am learning the discipline by documenting it.)
 
 in software, "kernelspace" is the natural complement for "userspace". I name it here only to explain why I'm using "priorspace" instead: it does not co-occur with userspace, it is *prior*. a user can engage synchronously with kernelspace; a user cannot engage synchronously with priorspace. engagement involves changing (or extending) agent type. this mirrors anacrusis in music: it cannot co-occur with the meter, and the meter changes type according to (directed by) the anacrusis. (type dependency is of great importance here. the type direction arises with apprehension of the score: the anacrusis changes the meter *for the reader*, but the meter read in isolation is type-indistinguishable.)
 
