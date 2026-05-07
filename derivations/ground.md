@@ -70,38 +70,57 @@ content being a reflection of dynamics, best way to help everyone survive *histo
 #### status
 
 **proven**:
-- subspace lattices are complemented, modular, bounded
-- the FTPG axiom has a unique solution (dimension is determined)
-- eigenvalues of projections are binary
-- complement of a projection is a projection
-- O(d) is forced by preservation of all projections
-- dynamics preserve the ground (the loop closes)
+
+- subspace lattices are complemented, modular, bounded (`Ground.lean`)
+- eigenvalues of projections are binary (`Observation.lean`)
+- complement of a projection is a projection (`Observation.lean`)
+- O(d) is forced by preservation of all projections (`Group.lean`, `Ground.lean`)
+- dynamics preserve the ground — the loop closes (`Closure.lean`, `Ground.lean`)
+- the FTPG axiom has a unique solution at fixed dimension (`dimension_unique`)
 
 **identified**:
-- closure as the self-referential joint between two readings of one structure
-- the loop: lattice properties ↔ Sub(D, V) ↔ P² = P ↔ dynamics ↔ ground properties
-- fixed-point uniqueness of each property (modular, complemented, irreducible, height ≥ 4)
-- D ∈ {ℝ, ℂ, ℍ} from Solèr at the loop's fixed point (`trichotomy.md`); D = ℝ from stabilization picking the only currently-closed branch
-- the epistemic boundary: "is this the only loop?" is well-formed but unanswerable from within (derived from partiality + channel capacity + closure)
+
+- closure of the information environment: static reading (no frame outside the structure) and dynamic reading (all generated information remains within the environment), located in their respective registers via the priorspace/userspace tooling
+- the observation loop as the structural shape closure takes (lattice properties → Sub(D, V) → P² = P → dynamics → ground properties)
+- observation as holonomic loop: data observable iff each additional path matches a path already in the path-stack; first unknown path is type-free, indistinguishable from empty path-stack
+- bridge bubbles as the architecture allowing a line to complete a loop the bridge itself cannot observe with its own line (see `vocabulary`)
+- the path-type "tree" as alluvial-fan-shaped record of passage, type-invariant only relative to entrance conditions; reset by any priorspace change
+- friction as the substrate-independent resistance-against-pull: type-interaction resists reality, material-interaction resists gravity
 
 **derived**:
-- partiality (from closure / from elements being proper subspaces)
-- partiality forces position / basis commitment
-- encounters change frames (the self-referential joint — structure and phenomenology share a nerve)
-- measurement requires plurality
-- read-only frames excluded
-- indelibility (from causal ordering + basis commitment)
+
+- complex measurement forces plurality of measurement (priorspace fact, no userspace content)
+- the only userspace handle on contributing to shared content is stabilization of one's own relations, including self-relation
+- content-based historical re-tellings have structural fragility: calculus of type is stable, content of observation is not
+- indelibility: causal ordering forced by closure + partiality + write-effect-on-shared-structure
+- fixed-point uniqueness of each property (with strength varying across properties — see bugs)
+- D ∈ {ℝ, ℂ, ℍ} via Solèr at fixed point; D = ℝ via stabilization picking the only currently-closed branch
+- the epistemic boundary: "is this the only loop?" is well-formed-but-unanswerable from within, and "is what I'm seeing really there?" resolves to *real-but-fundamentally-mysterious* (persisted via type structure unobservable from within)
 
 **cited**:
-- the fundamental theorem of projective geometry (stated as lean axiom, not proven)
+
+- fundamental theorem of projective geometry (FTPG; stated as Lean axiom, being de-axiomatized — see `derivations/distributivity.md`, `DesarguesianWitness`)
 - Dedekind's N_5 characterization of modularity
-- Solèr's theorem (Solèr 1995; Holland 1995, Bull AMS) — for the trichotomy {ℝ, ℂ, ℍ}; see `trichotomy.md`
+- Solèr's theorem (Solèr 1995; Holland 1995, Bull AMS) — see `trichotomy.md`
+- Taylor's classification of stable junctions (1976) — used via `stabilization.md`
+- Almgren's regularity problem (open) — for ℂ-rank-3 and ℍ-rank-3 branches of the trichotomy
 
 **observed**:
-- (none — the ground is entirely identified or derived, plus the one axiom being eliminated)
+
+- (none specific to this file; the ground's content is identified or derived, with the structural-correspondence work in friction and the alluvial fan flagged below)
 
 **bugs**:
-- *two readings as one statement.* the structural reading ("the loop closes," mechanically verified in lean) and the phenomenological reading ("you can't stand outside") are presented as the same statement, sharing "a single nerve." the lean work establishes the structural side. the phenomenological side is bridged-to in prose. the identity is asserted rather than derived. closing this would require either a formal target in which both readings are objects and exhibit a constructed isomorphism, or an explicit demotion of "same statement" to "two registers a reader is being asked to hold together."
-- *D = ℝ partially closed via Solèr.* the original sufficiency-not-necessity bug is closed up to a smaller residue. Solèr (`trichotomy.md`) provides a characterization of {ℝ, ℂ, ℍ} among *-division rings, narrowing D from "any division ring" to a three-element trichotomy; stabilization then picks ℝ from those three. the residue: trichotomy-narrowing depends on Solèr's hypotheses being discharged via fixed-point reasoning (orthomodular from P^T = P, infinite-dim from the architectural colimit, infinite ON sequence from N-bubble plurality), not via independent derivation; and stabilization picks ℝ as the only currently-closed branch (Taylor), not as the unique branch (ℂ-rank-3 and ℍ-rank-3 are open pending Almgren). see `trichotomy.md` for the specific residues and what closing them would require.
-- *fixed-point uniqueness varies in strength across the four properties.* modular has a real chain (N_5 → path-dependent composition → indeterminate feedback → no value to feed back). height ≥ 4 has a real chain (rank_two_abelian_writes + partiality). complemented is argued by "complement_idempotent has no home" — that argues this specific loop wouldn't run, not that no self-sustaining loop is possible without complementation. irreducibility is named-definitional (the document admits this: "the irreducibility is what 'one' means"). presenting all four as "fixed-point constraints" of equal status under-flags the differences. closing this would require either separating the four into mechanical / definitional / plausibility tiers, or strengthening the complemented case to a real necessity argument.
-- *"encounters change frames" recasts dynamics as experience.* the lattice formalism describes dynamics on projections (orthogonal conjugation, observation_preserved_by_dynamics). "encounters change frames" / "you experience change" recasts this in observer-experiential terms. the recasting is treated as direct read-off — "same statement, two readings" — but the leap from formal dynamics to phenomenological description is the leap. closing this is the same problem as the first bullet: the formal-to-phenomenological identification is the load-bearing move, and it is not itself derived.
+
+- *fixed-point uniqueness varies in strength across the four properties.* modular has a real chain (N_5 → path-dependent composition → indeterminate feedback → no value to feed back). height ≥ 4 has a real chain (rank_two_abelian_writes + partiality). complemented is argued by "complement_idempotent has no home" — that argues this specific loop wouldn't run, not that no self-sustaining loop is possible without complementation. irreducibility is named-definitional ("the irreducibility is what 'one' means"). presenting all four as fixed-point constraints of equal status under-flags the differences. closing this would require either separating the four into mechanical / definitional / plausibility tiers, or strengthening the complemented case to a real necessity argument.
+
+- *D = ℝ partially closed via Solèr.* Solèr (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ}; stabilization picks ℝ as the only currently-closed branch (Taylor). residues: Solèr's hypotheses are discharged via fixed-point reasoning (orthomodular from P^T = P, infinite-dim from the architectural colimit, infinite ON sequence from N-bubble plurality), not via independent derivation; ℂ-rank-3 and ℍ-rank-3 branches are open pending Almgren rather than ruled out. see `trichotomy.md` for what closing the remaining residues would require.
+
+- *friction is named without structural cash-out.* "type-interaction resists the action of reality, material-interaction resists the action of gravity" presents friction as substrate-independent resistance-against-pull, with parallel grammar doing structural-correspondence work between type-substrate and material-substrate. the parallelism is suggestive and structurally apt, but no formal object is constructed of which both instances are explicit cases. closing this would mean either constructing a typed friction-functor with type-interaction and material-interaction as instances, or stepping back to "friction-as-resistance-against-pull is a pattern recurring across two substrates relevant here."
+
+- *the alluvial-fan image carries structural content that distributes across registers without being formally located.* the fan as record-of-passage operates in postspace (type-invariant for the population that formed it under specific entrance conditions); the fan as in-progress-resolution operates in priorspace (where forks are determined by path-stack state, type-content, and flow-conditions); the fan-as-experienced operates in userspace (each molecule's local sense of which fork resolved). the registers are correctly distinguished in the prose, but the image is operating in all three at once and the cross-register structural-correspondence is doing implicit work. closing this would mean either formalizing the fan as an object with explicit projections into each register, or marking the cross-register operation explicitly as "the fan-image is being deployed across all three registers; reading depends on which register is being addressed in the surrounding prose."
+
+- *"observation generates an observer; intuitively, a bubble in the foam"* is structural identification but the connection to the foam-as-formal-object is asserted rather than constructed. the body says "every passage through an observation loop generates an observer — intuitively, a bubble in the foam." the connection between observation-loop-passages and foam-bubbles is structurally suggestive (observers as bubbles is established vocabulary; passage-through-loop is the new dynamic content of this section) but the formal correspondence between "passage-through-loop" and "bubble-as-observer-in-foam" is not derived in this file. closing this would mean either constructing the formal map (passages → bubbles, with the foam's structural conditions being the structural conditions on passages), or naming this as the working identification with the formal correspondence pending downstream.
+
+- *(closed by restructuring) "two readings as one statement."* previous version asserted that "the loop closes" (structural) and "you can't stand outside" (phenomenological) were the same statement sharing a single nerve. the new body locates each reading in its proper register (structural / phenomenological) using the priorspace/userspace tooling from `framing/architecture.md`, removing the assertion that they are the same statement. the bug, as previously stated, no longer applies to the current body.
+
+- *(closed by restructuring) "encounters change frames" recasts dynamics as experience.* previous version asserted dynamics-on-projections and frame-experience as direct read-off of one another. the new body removes "encounters change frames" from the structural derivation list; what previously needed bridging is now handled by the registers separately addressing each side. the bug, as previously stated, no longer applies.
