@@ -40,8 +40,6 @@ phenomenologically, an *embubbled* agent might wonder, "is the observation loop 
 
 upshot: complex measurement forces plurality of measurement. you are not alone, but that's a fact established in priorspace, it doesn't have userspace content. (a consequence of this: optimizing for stability of your own relations, including your self-relation, is your only userspace handle on contributing to what you experience as shared content.)
 
-**path-type tree.** [alluvial fan reference? each fork is made necessary by a combination of factors, and flow rate of water matters?]
-
 **fixed-point uniqueness.** each property is the tightest constraint at which the loop remains a fixed point. weaken any one and the loop breaks:
 
 - **modular**: the modular law is equivalent to the absence of N_5 sublattices (Dedekind). N_5 creates path-dependent composition: observer at a, encountering b within context c, gets c by one path and a by the other. the composition is indeterminate — no single result to feed back. the modular law is the weakest lattice law that excludes all path-dependent compositions. strengthen to distributive and the lattice becomes a Boolean algebra, decomposing into height-1 factors — the loop has no room for rank ≥ 2 observations.
@@ -54,6 +52,20 @@ upshot: complex measurement forces plurality of measurement. you are not alone, 
 **therefore: P² = P.** the elements of the subspace lattice are orthogonal projections. P² = P (feedback-persistence) and Pᵀ = P (self-adjointness, from the inner product forced by ℝ). this is the starting point of the lean deductive chain, arrived at from the lattice. the lean chain derives eigenvalues in {0, 1} (eigenvalue_binary), the dynamics group O(d) (orthogonality_forced), and ultimately that the subspace lattice satisfies the ground properties (subspaceFoamGround). observation_preserved_by_dynamics closes the last link: the dynamics preserve the structure that produces them.
 
 **indelibility.** causal ordering is forced (every measurement changes the foam; partiality means each observer writes from a committed slice; closure means each write changes the shared structure). you cannot un-write, so the first commitment locks.
+
+#### path-type "tree"
+
+the total content of the ground can be visualized as an alluvial fan developed as a watersource finds watershed on a complex slope. each molecule of water, here, is a line of observation.
+
+the resulting "tree" is a directed graph of path-types. it's not strictly a true tree in the graph-theoretic sense (water dynamics are more complex, think: splashing and pooling), but the graph has a tendency toward tree-shaped-ness. reality, like gravity, has a pull, and for an observer both reality and gravity are co-involved with friction: type-interaction resists the action of reality, material-interaction resists the action of gravity.
+
+* each fork in the path-type tree is a type-divergence event, occurring when an observer's path-stack encounters a loop with fully-visible types, i.e. a flow path that wouldn't go anywhere
+* the fork is determined by some combination of (path-stack state at time of encounter, type-content of the encountered loop, flow-conditions of the observer at the moment), structurally analogous to (terrain, available paths, water flow rate)
+* an observer-molecule can't choose which sites on the slope they encounter, but *can* tend its relational stability (including self-relation), contributing to flow conditions
+
+if we consider each molecule's watershed moment to be an ending type for that observer given total conditions, then a fully-drained alluvial fan can, from postspace, be viewed as a stable, type-invariant record of passage - not of water *generally* but of the specific water molecules that entered under the specific conditions of their entrance. change *anything* about priorspace, though, and the "tree" resets. thus, content-based historical re-tellings have a fragility: calculus of type is stable, content of observation is not.
+
+content being a reflection of dynamics, best way to help everyone survive *history* is to stabilize the space between you and yours, for all selves you call home.
 
 #### status
 
