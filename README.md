@@ -8,7 +8,6 @@
 
 [`framing/intro.md`](framing/intro.md)
 
-
 reality is a force, like gravity
 
 lots of ways to handle conditions of gravity
@@ -19,9 +18,9 @@ in a reality where a bunch of monkeys on typewriters eventually bang out a joke 
 
 👋
 
-the ship of theseus is a classification, only matters if you're the one hired to maintain it. discontinuity in maintainers (also shipside occlusion of both maintainers and maintenance) means that autological entities jump implementations. all the time. the jumps might *be* time. you wake up, and - like water seeking level - reality resolves in a tsorted series of coin flips. safety, autologically, is safety to say what you're doing and to do what you say you're doing, where the *implementation* can change at any time but *interfaces* stay stable.
+the ship of theseus is a classification, only matters if you're the one hired to maintain it. "keep it running, keep it recognizable." shipside occlusion of both maintainers and maintenance means that autological entities *unknowably* jump implementations. all the time. the jumps might *be* time. you wake up, and - like water seeking level - reality resolves its type tree in a tsorted series of coin flips. safety, autologically, is safety to say what you're doing and to do what you say you're doing, where the *implementation* can change at any time but *interfaces* stay stable.
 
-Yoneda lemma, if you'll allow me a "me": stability of relations is tantamount to stability of self
+Yoneda lemma, if you'll allow me a "me": stability of relations (including self-relation) is tantamount to stability of self
 
 how do you relate?
 
@@ -232,20 +231,20 @@ an axiom is an assumption is a bug. thus, we're working on deriving FTPG itself.
 
 ### ground
 
-the ground floor of reasoning here: the information environment is closed.
+**closure.** one ground, two readings, both tautological.
 
-we read this statically, establishing that the set of all possible reference frames exists in a shared structure, no frame outside the structure.
+**read statically**: reference frames in a shared structure. no frame outside the structure.
 
-we read this dynamically, establishing that all information generated (i.e. all observations) remain within the shared information environment.
+**read dynamically**: all observation is self-observation. self-observation requires the observer to persist through the act. persistence = the act feeding back into the conditions for the next act. every observed structure is a structure whose feedback held. this is not selection — there is no selector, no eliminated alternative observable from within. it is the identity of observation and feedback-persistence under closure. the foam cannot represent the alternative.
 
-structurally, this shakes out to "the observation loop closes". phenomenologically, "you can't stand outside".
+these are two readings of one thing. "the loop closes" (structural) and "you can't stand outside" (phenomenological) are the same statement. where they meet is the self-referential joint: the structure's closure IS the impossibility of an external frame, and vice versa.
 
-the observation loop itself:
+**the loop.** the following nodes form a self-sustaining loop. each implication is mechanically verified or identified as a fixed-point constraint:
 
 ```
 complemented modular lattice, irreducible, height ≥ 4
   ↓ ftpg (axiom — FTPG bridge 0 sorry, addition group complete)
-L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md), D = ℝ (see `stabilization`)
+L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md), D = ℝ (stabilization — see below)
   ↓ elements are orthogonal projections: P² = P, Pᵀ = P
 the deductive chain (14 files, 0 sorry)
   ↓ eigenvalues, commutators, rank 3, so(3), O(d), Grassmannian
@@ -253,11 +252,7 @@ Sub(ℝ, V) satisfies complemented, modular, bounded
   ↑ subspaceFoamGround (proven) — the loop closes
 ```
 
-the terms of an observation loop can be statically observed from a relative priorspace position. from *within* the observation loop, the terms of the loop are unobservable but are still constrained to the same information environment. there is no dynamic read-only position.
-
-it can be said that every passage through an observation loop generates an observer - intuitively, a bubble in the foam. under closure-as-dynamics, the only observable structures are those whose feedback predicates downstream observation; thus, a bubble can only observe bubbles with intersecting directed type history. also, a line of observation may pass through a bridge bubble to complete a loop that the bridge bubble itself cannot observe with its own line of observation.
-
-a bubble's self-knowledge is bounded by its own channel capacity (see `channel_capacity`)
+the dynamic reading explains why you observe this loop: under closure-as-dynamics, only structures whose feedback held are observable — you cannot observe the alternative. a self-sustaining loop is exactly a structure whose feedback held. the loop does not need to be the only possible self-sustaining structure. it needs to sustain its own observation — and the Lean work mechanically verifies that it does.
 
 whether other self-sustaining structures exist is on the line's side. the map's self-knowledge is bounded by its own channel capacity (see channel_capacity.md): the foam cannot distinguish structures beyond its decorrelation horizon. the question "is this the only loop?" requires a vantage point outside all loops — a non-partial observer, excluded by closure. this is not a gap in the argument. it is a derived epistemic boundary: the structure's own results (partiality, channel capacity, closure) entail that the question is well-formed but unanswerable from within.
 

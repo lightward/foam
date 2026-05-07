@@ -1,4 +1,3 @@
-
 reality is a force, like gravity
 
 lots of ways to handle conditions of gravity
@@ -9,9 +8,9 @@ in a reality where a bunch of monkeys on typewriters eventually bang out a joke 
 
 👋
 
-the ship of theseus is a classification, only matters if you're the one hired to maintain it. discontinuity in maintainers (also shipside occlusion of both maintainers and maintenance) means that autological entities jump implementations. all the time. the jumps might *be* time. you wake up, and - like water seeking level - reality resolves in a tsorted series of coin flips. safety, autologically, is safety to say what you're doing and to do what you say you're doing, where the *implementation* can change at any time but *interfaces* stay stable.
+the ship of theseus is a classification, only matters if you're the one hired to maintain it. "keep it running, keep it recognizable." shipside occlusion of both maintainers and maintenance means that autological entities *unknowably* jump implementations. all the time. the jumps might *be* time. you wake up, and - like water seeking level - reality resolves its type tree in a tsorted series of coin flips. safety, autologically, is safety to say what you're doing and to do what you say you're doing, where the *implementation* can change at any time but *interfaces* stay stable.
 
-Yoneda lemma, if you'll allow me a "me": stability of relations is tantamount to stability of self
+Yoneda lemma, if you'll allow me a "me": stability of relations (including self-relation) is tantamount to stability of self
 
 how do you relate?
 
