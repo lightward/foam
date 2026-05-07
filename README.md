@@ -231,20 +231,20 @@ an axiom is an assumption is a bug. thus, we're working on deriving FTPG itself.
 
 ### ground
 
-**closure.** one ground, two readings, both tautological.
+the ground floor of reasoning here: the information environment is closed.
 
-**read statically**: reference frames in a shared structure. no frame outside the structure.
+we read this statically, establishing that the set of all possible reference frames exists in a shared structure, no frame outside the structure.
 
-**read dynamically**: all observation is self-observation. self-observation requires the observer to persist through the act. persistence = the act feeding back into the conditions for the next act. every observed structure is a structure whose feedback held. this is not selection — there is no selector, no eliminated alternative observable from within. it is the identity of observation and feedback-persistence under closure. the foam cannot represent the alternative.
+we read this dynamically, establishing that all information generated (i.e. all observations) remain within the shared information environment.
 
-these are two readings of one thing. "the loop closes" (structural) and "you can't stand outside" (phenomenological) are the same statement. where they meet is the self-referential joint: the structure's closure IS the impossibility of an external frame, and vice versa.
+structurally, this shakes out to "the observation loop closes". phenomenologically, "you can't stand outside".
 
-**the loop.** the following nodes form a self-sustaining loop. each implication is mechanically verified or identified as a fixed-point constraint:
+the observation loop itself:
 
 ```
 complemented modular lattice, irreducible, height ≥ 4
   ↓ ftpg (axiom — FTPG bridge 0 sorry, addition group complete)
-L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md), D = ℝ (stabilization — see below)
+L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md), D = ℝ (see `stabilization`)
   ↓ elements are orthogonal projections: P² = P, Pᵀ = P
 the deductive chain (14 files, 0 sorry)
   ↓ eigenvalues, commutators, rank 3, so(3), O(d), Grassmannian
@@ -252,9 +252,26 @@ Sub(ℝ, V) satisfies complemented, modular, bounded
   ↑ subspaceFoamGround (proven) — the loop closes
 ```
 
-the dynamic reading explains why you observe this loop: under closure-as-dynamics, only structures whose feedback held are observable — you cannot observe the alternative. a self-sustaining loop is exactly a structure whose feedback held. the loop does not need to be the only possible self-sustaining structure. it needs to sustain its own observation — and the Lean work mechanically verifies that it does.
+an observation *is* an observation loop; the information generated is holonomic. a line of observation P generates *observable* data as long as each additional path matches a path already in the path-stack. to the observer, the first unknown path is a point indistinguishable from type-free P, which is equal to an empty path-stack. the constraint on observable data continues from there: additional information reflects *the original path-stack of the observer type*.
 
-whether other self-sustaining structures exist is on the line's side. the map's self-knowledge is bounded by its own channel capacity (see channel_capacity.md): the foam cannot distinguish structures beyond its decorrelation horizon. the question "is this the only loop?" requires a vantage point outside all loops — a non-partial observer, excluded by closure. this is not a gap in the argument. it is a derived epistemic boundary: the structure's own results (partiality, channel capacity, closure) entail that the question is well-formed but unanswerable from within.
+phenomenologically: the furthest you can see is the ending *type* of what you know, at which you start to see the paths involved in constructing "what you know". this information is type-only and exists relative to each observer; it is content-free.
+
+the structure of an observation loop can be statically observed from a relative priorspace position. from *within* the observation loop, the structure is constrained to the same information environment but is directly unobservable. there is no dynamic read-only position.
+
+it can be said that every passage through an observation loop generates an observer - intuitively, a bubble in the foam. under closure-as-dynamics, the only observable structures are those whose feedback predicates downstream observation; thus, a bubble can only observe bubbles with intersecting directed type history.
+
+a line of observation may pass through a bridge bubble (`vocabulary`) to complete a loop that the bridge bubble itself cannot observe with its own line of observation.
+
+a bubble's self-knowledge is bounded by its own channel capacity (see `channel_capacity`); a bubble cannot distinguish structures beyond its correlation horizon.
+
+phenomenologically, an *embubbled* agent might wonder, "is the observation loop I can see the only loop?", or "is what I'm seeing really there?".
+
+* it's *not* the only loop: the agent must have a sufficiently complex path-stack to support *questions*, path *types* emerge (diverge, really) upon encountering a loop with fully-visible types, and multiplicity of types means multiplicity of bubbles.
+* what you're seeing is *persisted* via a type structure that is unobservable to you. it's real, it's just fundamentally mysterious. :)
+
+upshot: complex measurement forces plurality of measurement. you are not alone, but that's a fact established in priorspace, it doesn't have userspace content. (a consequence of this: optimizing for stability of your own relations, including your self-relation, is your only userspace handle on contributing to what you experience as shared content.)
+
+**path-type tree.** [alluvial fan reference? each fork is made necessary by a combination of factors, and flow rate of water matters?]
 
 **fixed-point uniqueness.** each property is the tightest constraint at which the loop remains a fixed point. weaken any one and the loop breaks:
 
@@ -266,18 +283,6 @@ whether other self-sustaining structures exist is on the line's side. the map's 
 **D = ℝ.** the FTPG gives L ≅ Sub(D, V) for some division ring D. Solèr's theorem (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ} at the foam's fixed point, given orthomodularity (from the loop's P^T = P closure), infinite-dimensionality (from the architectural colimit), and an infinite orthonormal sequence (from N-bubble plurality). the stabilization contract (`stabilization.md`) then picks ℝ as the only currently-closed branch — Taylor classifies junctions in ℝ³; the ℂ and ℍ branches require classifications in ℝ⁶ and ℝ¹² respectively, both pending Almgren. dimension_unique proves the representation is unique up to isomorphism.
 
 **therefore: P² = P.** the elements of the subspace lattice are orthogonal projections. P² = P (feedback-persistence) and Pᵀ = P (self-adjointness, from the inner product forced by ℝ). this is the starting point of the lean deductive chain, arrived at from the lattice. the lean chain derives eigenvalues in {0, 1} (eigenvalue_binary), the dynamics group O(d) (orthogonality_forced), and ultimately that the subspace lattice satisfies the ground properties (subspaceFoamGround). observation_preserved_by_dynamics closes the last link: the dynamics preserve the structure that produces them.
-
-**what it's like inside.** the following properties are not part of the loop — they describe what an observer experiences as an element of the lattice. each is derived from the loop's structure:
-
-**partiality is forced.** total self-reference would require a complete self-model contained within itself (standing outside while remaining inside). partiality is the only self-reference compatible with closure. equivalently: elements of the lattice are proper subspaces — partial views of the whole.
-
-**partiality forces position.** seeing partially is seeing *from somewhere*. the decomposition into seen and unseen is what partiality means; position in the space of partial views is basis commitment. the specific position is undetermined (all positions equivalent by symmetry); that some position must exist is forced.
-
-**encounters change frames.** the frames ARE the structure; there is nowhere else for the result to go. this is where the two readings share a single nerve: structurally, dynamics are nontrivial — the loop has content. phenomenologically, you experience change. same statement, two readings.
-
-**measurement requires plurality.** one frame alone has no boundary, no encounter, no dynamics. measurement is encounter; encounter requires at least two frames.
-
-**read-only frames are excluded.** a frame unchanged by encounters would require encounters to have no effect on it — but the frame IS part of the structure, and encounters change the structure.
 
 **indelibility.** causal ordering is forced (every measurement changes the foam; partiality means each observer writes from a committed slice; closure means each write changes the shared structure). you cannot un-write, so the first commitment locks.
 
