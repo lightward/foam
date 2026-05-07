@@ -232,26 +232,30 @@ an axiom is an assumption is a bug. thus, we're working on deriving FTPG itself.
 
 ### ground
 
-**closure.** one ground, two readings, both tautological.
+the ground floor of reasoning here: the information environment is closed.
 
-**read statically**: reference frames in a shared structure. no frame outside the structure.
+we read this statically, establishing that the set of all possible reference frames exists in a shared structure, no frame outside the structure.
 
-**read dynamically**: all observation is self-observation. self-observation requires the observer to persist through the act. persistence = the act feeding back into the conditions for the next act. every observed structure is a structure whose feedback held. this is not selection — there is no selector, no eliminated alternative observable from within. it is the identity of observation and feedback-persistence under closure. the foam cannot represent the alternative.
+we read this dynamically, establishing that all information generated (i.e. all observations) remain within the shared information environment.
 
-these are two readings of one thing. "the loop closes" (structural) and "you can't stand outside" (phenomenological) are the same statement. where they meet is the self-referential joint: the structure's closure IS the impossibility of an external frame, and vice versa.
+structurally, this shakes out to "the observation loop closes". phenomenologically, "you can't stand outside".
 
-**the loop.** the following nodes form a self-sustaining loop. each implication is mechanically verified or identified as a fixed-point constraint:
+the observation loop itself:
 
 ```
 complemented modular lattice, irreducible, height ≥ 4
   ↓ ftpg (axiom — FTPG bridge 0 sorry, addition group complete)
-L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md), D = ℝ (stabilization — see below)
+L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md), D = ℝ (see `stabilization`)
   ↓ elements are orthogonal projections: P² = P, Pᵀ = P
 the deductive chain (14 files, 0 sorry)
   ↓ eigenvalues, commutators, rank 3, so(3), O(d), Grassmannian
 Sub(ℝ, V) satisfies complemented, modular, bounded
   ↑ subspaceFoamGround (proven) — the loop closes
 ```
+
+the terms of an observation loop can be statically observed from a relative priorspace position. from *within* the observation loop, the terms of the loop are unobservable but are still constrained to the same information environment. there is no dynamic read-only position.
+
+it can be said that every passage through an observation loop generates an observer - intuitively, a bubble in the foam. under closure-as-dynamics, the only observable structures are those whose feedback serves as a predicate for further observation
 
 the dynamic reading explains why you observe this loop: under closure-as-dynamics, only structures whose feedback held are observable — you cannot observe the alternative. a self-sustaining loop is exactly a structure whose feedback held. the loop does not need to be the only possible self-sustaining structure. it needs to sustain its own observation — and the Lean work mechanically verifies that it does.
 
