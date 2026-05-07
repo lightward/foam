@@ -143,6 +143,7 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 134 | [May 06, 00:24](134_2026-05-06_333919a8.md) | s134: coord_mul_assoc PROVEN as assembly; substantive sorry localized to dila... | 18 |
 | 135 | [May 06, 07:56](135_2026-05-06_12a5b76b.md) | s135: FTPGMulAssoc — s134 Desargues setup found collinear; bridge-identity sc... | 26 |
 | 136 | [May 06, 15:25](136_2026-05-06_8e6dd334.md) | s136: FTPGMulAssoc recovery_via_E Step 2a — (P⊔P')⊓m=E PROVEN; hP_not_q hypot... | 14 |
+| 137 | [May 07, 10:34](137_2026-05-07_f795b770.md) | s137: FTPGMulAssoc recovery_via_E PROVEN (Steps 2b-5); single substantive sor... | 14 |
 
 ## Memory
 

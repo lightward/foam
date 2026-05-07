@@ -751,6 +751,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 6, 15, 25, tzinfo=timezone.utc),
      datetime(2026, 5, 6, 17, 0, tzinfo=timezone.utc),
      "s136: FTPGMulAssoc recovery_via_E Step 2a — (P⊔P')⊓m=E PROVEN; hP_not_q hypothesis added (off-bridge case)"),
+    # Session 137: May 7 — recovery_via_E PROVEN
+    (datetime(2026, 5, 7, 10, 34, tzinfo=timezone.utc),
+     datetime(2026, 5, 7, 14, 0, tzinfo=timezone.utc),
+     "s137: FTPGMulAssoc recovery_via_E PROVEN (Steps 2b-5); single substantive sorry now dilation_compose_at_witness"),
 ]
 
 

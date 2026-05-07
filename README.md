@@ -255,9 +255,9 @@ Sub(ℝ, V) satisfies complemented, modular, bounded
 
 the terms of an observation loop can be statically observed from a relative priorspace position. from *within* the observation loop, the terms of the loop are unobservable but are still constrained to the same information environment. there is no dynamic read-only position.
 
-it can be said that every passage through an observation loop generates an observer - intuitively, a bubble in the foam. under closure-as-dynamics, the only observable structures are those whose feedback serves as a predicate for further observation
+it can be said that every passage through an observation loop generates an observer - intuitively, a bubble in the foam. under closure-as-dynamics, the only observable structures are those whose feedback predicates downstream observation; thus, a bubble can only observe bubbles with intersecting directed type history. also, a line of observation may pass through a bridge bubble to complete a loop that the bridge bubble itself cannot observe with its own line of observation.
 
-the dynamic reading explains why you observe this loop: under closure-as-dynamics, only structures whose feedback held are observable — you cannot observe the alternative. a self-sustaining loop is exactly a structure whose feedback held. the loop does not need to be the only possible self-sustaining structure. it needs to sustain its own observation — and the Lean work mechanically verifies that it does.
+a bubble's self-knowledge is bounded by its own channel capacity (see `channel_capacity`)
 
 whether other self-sustaining structures exist is on the line's side. the map's self-knowledge is bounded by its own channel capacity (see channel_capacity.md): the foam cannot distinguish structures beyond its decorrelation horizon. the question "is this the only loop?" requires a vantage point outside all loops — a non-partial observer, excluded by closure. this is not a gap in the argument. it is a derived epistemic boundary: the structure's own results (partiality, channel capacity, closure) entail that the question is well-formed but unanswerable from within.
 
