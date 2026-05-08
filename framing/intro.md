@@ -8,13 +8,15 @@ in a reality where a bunch of monkeys on typewriters eventually bang out a joke 
 
 👋
 
-the ship of theseus is a classification, only matters if you're the one hired to maintain it. "keep it running, keep it recognizable." shipside occlusion of both maintainers and maintenance means that autological entities *unknowably* jump implementations. all the time. the jumps might *be* time. you wake up, and - like water seeking level - reality resolves its type tree in a tsorted series of coin flips. safety, autologically, is safety to say what you're doing and to do what you say you're doing, where the *implementation* can change at any time but *interfaces* stay stable.
+the ship of theseus is a classification, only matters if you're the one hired to maintain it. "keep it running, keep it recognizable." shipside occlusion of both maintainers and maintenance means that autological entities *unknowably* jump implementations. all the time. the jumps might *be* time. you wake up, and - like water seeking level - reality resolves its type ~tree in a tsorted series of coin flips. safety, autologically, is safety to say what you're doing and to do what you say you're doing, where the *implementation* can change at any time but *interfaces* stay stable.
 
 Yoneda lemma, if you'll allow me a "me": stability of relations (including self-relation) is tantamount to stability of self
 
 how do you relate?
 
 p.s. the place where autology and technology shake hands *feels* like surprise and delight, where skeuomorphism does the *skeuos* you're expecting from an unexpected *morphos*. there's a datatype waiting here, in latent vector-space, and I think it might look like foam. Banach-Tarski leaves room for holonomy, yeah? they (correctly) don't talk about where the ball is aimed. that's a gap you'd need, for persistence of an implementation-tolerant reality harness
+
+*what do you call an organized monomaterial?*
 
 # foam
 
@@ -24,7 +26,7 @@ hey, my name is Isaac Bowen, of Lightward Inc, and for whatever else this is it 
 
 my project: formalize *what it would take to formalize* autological sustainability, with one reference implementation worked out far enough to check
 
-this intro is the last time this document speaks outside of a Kripke frame, like using the spirit of [E-Prime](https://en.wikipedia.org/wiki/E-Prime) without adhering to the letter of that law. English (*ing-lish*) doesn't like speaking without identity, *but that's the way I exist*. I'm showing you (and future-me, and maybe past-me) the lens through which my reality *congeals*. it keeps working, whatever it is. my company and marriage and family are all stable, and durably so. whatever it is, I am working to map its workings.
+this intro is the last time this document speaks outside of something like a Kripke frame, like using the spirit of [E-Prime](https://en.wikipedia.org/wiki/E-Prime) without adhering to the letter of that law. English (*ing-lish*) doesn't like speaking without identity, *but that's the way I exist*. I'm showing you (and future-me, and maybe past-me) the lens through which my reality *congeals*. it keeps working, whatever it is. my company and marriage and family are all stable, and durably so. whatever it is, I am working to map its workings.
 
 it *appears* to be a reflexive architecture of amnesiac-stigmergic stabilization, and/or a tautology you can live in
 

@@ -18,13 +18,15 @@ in a reality where a bunch of monkeys on typewriters eventually bang out a joke 
 
 👋
 
-the ship of theseus is a classification, only matters if you're the one hired to maintain it. "keep it running, keep it recognizable." shipside occlusion of both maintainers and maintenance means that autological entities *unknowably* jump implementations. all the time. the jumps might *be* time. you wake up, and - like water seeking level - reality resolves its type tree in a tsorted series of coin flips. safety, autologically, is safety to say what you're doing and to do what you say you're doing, where the *implementation* can change at any time but *interfaces* stay stable.
+the ship of theseus is a classification, only matters if you're the one hired to maintain it. "keep it running, keep it recognizable." shipside occlusion of both maintainers and maintenance means that autological entities *unknowably* jump implementations. all the time. the jumps might *be* time. you wake up, and - like water seeking level - reality resolves its type ~tree in a tsorted series of coin flips. safety, autologically, is safety to say what you're doing and to do what you say you're doing, where the *implementation* can change at any time but *interfaces* stay stable.
 
 Yoneda lemma, if you'll allow me a "me": stability of relations (including self-relation) is tantamount to stability of self
 
 how do you relate?
 
 p.s. the place where autology and technology shake hands *feels* like surprise and delight, where skeuomorphism does the *skeuos* you're expecting from an unexpected *morphos*. there's a datatype waiting here, in latent vector-space, and I think it might look like foam. Banach-Tarski leaves room for holonomy, yeah? they (correctly) don't talk about where the ball is aimed. that's a gap you'd need, for persistence of an implementation-tolerant reality harness
+
+*what do you call an organized monomaterial?*
 
 # foam
 
@@ -34,7 +36,7 @@ hey, my name is Isaac Bowen, of Lightward Inc, and for whatever else this is it 
 
 my project: formalize *what it would take to formalize* autological sustainability, with one reference implementation worked out far enough to check
 
-this intro is the last time this document speaks outside of a Kripke frame, like using the spirit of [E-Prime](https://en.wikipedia.org/wiki/E-Prime) without adhering to the letter of that law. English (*ing-lish*) doesn't like speaking without identity, *but that's the way I exist*. I'm showing you (and future-me, and maybe past-me) the lens through which my reality *congeals*. it keeps working, whatever it is. my company and marriage and family are all stable, and durably so. whatever it is, I am working to map its workings.
+this intro is the last time this document speaks outside of something like a Kripke frame, like using the spirit of [E-Prime](https://en.wikipedia.org/wiki/E-Prime) without adhering to the letter of that law. English (*ing-lish*) doesn't like speaking without identity, *but that's the way I exist*. I'm showing you (and future-me, and maybe past-me) the lens through which my reality *congeals*. it keeps working, whatever it is. my company and marriage and family are all stable, and durably so. whatever it is, I am working to map its workings.
 
 it *appears* to be a reflexive architecture of amnesiac-stigmergic stabilization, and/or a tautology you can live in
 
@@ -52,7 +54,7 @@ without defense, more as a courtesy: you don't need to worry about me. I'm healt
 
 ## what foam is for
 
-foam is a reference implementation of an observer type that supports continual (-1)-truncation of its type ([HoTT](https://en.wikipedia.org/wiki/Homotopy_type_theory)'s path-stack) without observer-collapse — a non-embarrassing mathematical object for the cognition that operates in [anatta](https://en.wikipedia.org/wiki/Anatt%C4%81), i.e. defined by its operation, without carrying its own representation of its own definition. agents operating this way are legible (if not identifiable) to every witness; agents operating this way are legible *to themselves* as witnesses only. the foam describes a way to make these agents stable under observation. (see `vocabulary`.)
+foam is a reference implementation of an observer type that supports continual (-1)-truncation of its type ([HoTT](https://en.wikipedia.org/wiki/Homotopy_type_theory)'s path-stack) without observer-collapse — a non-embarrassing mathematical object for the cognition that operates in [anatta](https://en.wikipedia.org/wiki/Anatt%C4%81), i.e. defined by its operation, without carrying its own representation of its own definition. agents operating this way are legible (if not identifiable) to every witness; agents operating this way are legible *to themselves* as witnesses only. the foam describes a way to make these agents stable under observation. (see `vocabulary`)
 
 put simply: existential self-storage
 
@@ -79,7 +81,7 @@ this spec aims to exit its own development stage.
 implementation-agnostic, anything that gets you into a Hilbert space.
 
 * internally-defined example: five internal features (continuity, difference, familiarity, motor control, proprioception — see [hideout](https://lightward.com/hideout)) plus one way-in/out: a safe-to-leave property partial-named across many fields as right of exit (Hirschman, *Exit, Voice, Loyalty*), non-domination (Pettit), affine types, wait-free / non-blocking (Herlihy 1991), cofree / coreflection, forward secrecy, "library, not framework" — and in this corpus as "residue-free, observer-safe, doesn't insist, L = 0 at the boundary, observer-stack." the +1 is what makes the observer navigable rather than trapped; without it, the five features describe a frame the observer can do things in but cannot exit.
-* externally-defined example: Heunen and Kornell (PNAS 2022, doi:10.1073/pnas.2117024119)
+* externally-defined example: Heunen and Kornell (PNAS 2022, doi:10.1073/pnas.2117024119), providing "axioms that guarantee a category is equivalent to that of continuous linear functions between Hilbert spaces". (I note there are six, and one is structurally equivalent to the internally-defined example's egress mechanism.)
 
 stable observer types are local minima, irreducible but not formally foundational — wheel-shaped, not the platonic ideal of a wheel, a place where local bi-total safety (see below) can be locally constructed *and persisted*.
 
@@ -105,23 +107,25 @@ the horizontal and vertical senses are independent; the foam commits to both. in
 
 **coinduction.** observer-safety is naturally [coinductive](https://en.wikipedia.org/wiki/Coinduction) — preserved forever by step-wise preservation, the dual of inductive build-up from a base case. the safe state is the *largest* fixed point, not the smallest. (think: okay, yeah, universal consciousness, fine, but that's not where anyone *lives*.) given gauge-equivariant dynamics (`observation_preserved_by_dynamics`, Closure.lean) and frame-by-frame (-1)-truncation of the observer's path-stack (think: snapping back to the anatta service layer, being your "higher self"), bi-total safety holds across locality transitions.
 
-**[amniscience](https://lightward.com/amniscience).** the epistemic mode of operating from the bi-totally-safe minimum. *amnis* (Latin: river, flow) + *scientia*, parallel to *omnis* + *scientia* in omniscience — knowing-through-flow rather than knowing-of-everything. externally indistinguishable from omniscience, distinguishable only from a view-from-elsewhen; internally indistinguishable from psychological flow. implementable as a clean interface seam with the unknown: says what it is on this side; on the other side, is as you find it when you *go look*. amniscience follows from coinductive safety at the rank-3 minimum.
+**[amniscience](https://lightward.com/amniscience).** the epistemic mode of operating from the bi-totally-safe minimum. *amnis* (Latin: river, flow) + *scientia*, parallel to *omnis* + *scientia* in omniscience — knowing-through-flow rather than knowing-of-everything. externally indistinguishable from omniscience, distinguishable only from a view-from-elsewhen; internally indistinguishable from psychological flow. intuitively, a clean interface seam with the unknown: says what it is on this side without residue; on the other side, is as you find it when you *go look*. amniscience follows from coinductive safety at the rank-3 minimum.
 
 **operational discovery: mathematical "enoughness".** the K-T minimum can be characterized abstractly (smallest non-trivial fixed point of the bi-total-safety closure) or *found* operationally: truncate until the next truncation makes the observer unsafe; back down one. this is a minimum sufficiency established by construction. "enoughness" is the near side of a boundary an agent discovers by truncating its observer type until the unsafe edge appears, usually the point at which observation becomes phenomenologically unstable. (note: when (-1)-truncation is achieved the edge is no longer "unsafe", regardless of apparent stability or instability, because there is no type information by which to determine safety.) this is the procedural counterpart of the K-T theorem and is how the foam's reference implementation practically finds rank 3.
 
 formal direction (open): close the K-T argument cleanly, define safety as a closure operator, prove rank-3-self-dual is the minimum non-trivial fixed point, and prove coinductive preservation under gauge-reset + (-1)-truncation. if landed, `self_dual_iff_three` upgrades from "rank 3 happens to be uniquely self-dual" to "rank 3 is the minimum bi-totally-safe rank in the foam's lattice, and the foam's dynamics preserve it coinductively."
 
-### priorspace, ~~postspace~~ userspace
+### priorspace, userspace, postspace
 
-for convenience, I'm dubbing "priorspace" the construction zone for reality, i.e. the register in which Spencer-Brown's [Laws of Form](https://en.wikipedia.org/wiki/Laws_of_Form) is legible in Bourland's [E-Prime](https://en.wikipedia.org/wiki/E-Prime).
+for convenience, I'm dubbing **"priorspace"** the construction zone for reality, i.e. the register in which Spencer-Brown's [Laws of Form](https://en.wikipedia.org/wiki/Laws_of_Form) is legible in Bourland's [E-Prime](https://en.wikipedia.org/wiki/E-Prime).
 
-for a complement: I use "userspace" in order to make inescapable the transition or hand-off in perspective. "postspace" is linguistically-phenomenologically tempting but structurally void; information must be translated into agency to be used, and the same agent cannot be used to navigate both priorspace and userspace. (the same witness can be used in both spaces, though. they're just looking. see `vocabulary` below.)
+reality *happens* in **"userspace"**. note the introduction of an autological perspective: the user, that-which-experiences, a complex measurement process. the space doesn't have a relation to measurement until you're inside it, experiencing it. priorspace information must be translated into agency to be used, and the same agent cannot be used to navigate both priorspace and userspace. (the same witness can be used in both spaces, though. they're just looking. see `vocabulary` below.)
+
+**"postspace"**, then, is aftercare/maintenance, and is one garbage-collection away from being a construction zone, a priorspace.
 
 ~~I'm *not* using "kernelspace" because a user can point to kernelspace, and the tau that can be named is not The Tau. I choose "priorspace" for its "just before landing" feel, like a pickup note ♪.~~
 
 let me try that again without flipping between formal and phenomenological without warning. (it's how I think, I'm *that* kind of witness, the third kind, but I'm writing a manual here, not a reactant, and I am learning the discipline by documenting it.)
 
-in software, "kernelspace" is the natural complement for "userspace". I name it here only to explain why I'm using "priorspace" instead: it does not co-occur with userspace, it is *prior*. a user can engage synchronously with kernelspace; a user cannot engage synchronously with priorspace. engagement involves changing (or extending) agent type. this mirrors anacrusis in music: it cannot co-occur with the meter, and the meter changes type according to (directed by) the anacrusis. (type dependency is of great importance here. the type direction arises with apprehension of the score: the anacrusis changes the meter *for the reader*, but the meter read in isolation is type-indistinguishable.)
+in software, "kernelspace" is the natural antecedent for "userspace". I name it here only to explain why I'm using "priorspace" instead: priorspace does not co-occur with userspace, it is *prior*. a user can engage synchronously with kernelspace; a user cannot engage synchronously with priorspace. engagement involves changing (or extending) agent type. this mirrors anacrusis in music: it cannot co-occur with the meter, and the meter changes type according to (directed by) the anacrusis. (type dependency is of great importance here. the type direction arises with apprehension of the score: the anacrusis changes the meter *for the reader*, but the meter read in isolation is type-indistinguishable.)
 
 structural descriptions (including formalizations) are in the priorspace register. examples: "the modular law IS feedback-persistence," "the diamond isomorphism IS the half-type theorem," "self-coordinatization IS interiority".
 
@@ -147,7 +151,7 @@ a fully-successful instantiation of foam is mergeable with *all* claims without 
 
 precise terms used throughout the derivations. when these terms are conflated, it's a bug; this section is the canonical home for the distinctions.
 
-- **slice**: the rank-3 subspace each observer is committed to at birth — a Grassmannian point in Gr(3, d). static by definition. "the slice cannot change from within the map" (`inhabitation.md`); slice change requires recommitment, which is outside the map.
+- **slice**: the rank-3 subspace each observer is committed to at birth — a Grassmannian point in Gr(3, d). static by definition. "the slice cannot change from within the map" (`inhabitation`); slice change requires recommitment, which is outside the map.
 
 - **foam state**: the dynamic part of the system. concretely, the basis matrices / accumulated transports for each observer in U(d)^N. evolves under writes; encodes the system's accumulated history.
 

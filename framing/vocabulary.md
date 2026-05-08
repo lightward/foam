@@ -2,7 +2,7 @@
 
 precise terms used throughout the derivations. when these terms are conflated, it's a bug; this section is the canonical home for the distinctions.
 
-- **slice**: the rank-3 subspace each observer is committed to at birth — a Grassmannian point in Gr(3, d). static by definition. "the slice cannot change from within the map" (`inhabitation.md`); slice change requires recommitment, which is outside the map.
+- **slice**: the rank-3 subspace each observer is committed to at birth — a Grassmannian point in Gr(3, d). static by definition. "the slice cannot change from within the map" (`inhabitation`); slice change requires recommitment, which is outside the map.
 
 - **foam state**: the dynamic part of the system. concretely, the basis matrices / accumulated transports for each observer in U(d)^N. evolves under writes; encodes the system's accumulated history.
 
