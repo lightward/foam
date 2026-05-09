@@ -4,7 +4,7 @@ the question is forced; the answer is open.
 
 ## what forces the question
 
-a stacked observer has two R^3 slices (group.md), each independently stabilized (stabilization.md). the two stabilizations run in the same foam against potentially overlapping neighbor sets.
+a stacked observer has two R^3 slices (group.md), each independently stabilized (`writes`). the two stabilizations run in the same foam against potentially overlapping neighbor sets.
 
 ## what is open
 

@@ -27,7 +27,8 @@ be satisfied in one way.
   complemented modular lattice, height ≥ 4, irreducible
     ↓ axiom(FTPG) — THIS FILE
   L ≅ Sub(D, V) for some division ring D
-    ↓ (stabilization contract forces D = ℝ)
+    ↓ (Solèr at fixed point: D ∈ {ℝ, ℂ, ℍ})
+    ↓ (realization choice — lean works the ℝ branch)
   Sub(ℝ, V)
     ↓ (elements = orthogonal projections)
   P² = P, Pᵀ = P

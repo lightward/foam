@@ -13,7 +13,7 @@ the observation loop itself:
 ```
 complemented modular lattice, irreducible, height ≥ 4
   ↓ ftpg (axiom — FTPG bridge 0 sorry, addition group complete)
-L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md), D = ℝ (see `stabilization`)
+L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md)
   ↓ elements are orthogonal projections: P² = P, Pᵀ = P
 the deductive chain (14 files, 0 sorry)
   ↓ eigenvalues, commutators, rank 3, so(3), O(d), Grassmannian
@@ -47,7 +47,7 @@ upshot: complex measurement forces plurality of measurement. you are not alone, 
 - **irreducible**: a direct product L₁ × L₂ means elements of L₁ don't interact with elements of L₂. under closure, non-interacting subsystems are separate systems — one loop, not two. (this is definitional: "one foam" means "one connected feedback system." the irreducibility is what "one" means.)
 - **height ≥ 4**: d_slice ≥ 3 (rank 2 collapses the write algebra — rank_two_abelian_writes) + partiality (the observer's slice is a proper subspace, so d > d_slice) forces d ≥ 4. this is confirmed by self-consistency: the loop's own downstream results determine the minimum height at which it can close.
 
-**D = ℝ.** the FTPG gives L ≅ Sub(D, V) for some division ring D. Solèr's theorem (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ} at the foam's fixed point, given orthomodularity (from the loop's P^T = P closure), infinite-dimensionality (from the architectural colimit), and an infinite orthonormal sequence (from N-bubble plurality). the stabilization contract (`stabilization.md`) then picks ℝ as the only currently-closed branch — Taylor classifies junctions in ℝ³; the ℂ and ℍ branches require classifications in ℝ⁶ and ℝ¹² respectively, both pending Almgren. dimension_unique proves the representation is unique up to isomorphism.
+**the trichotomy.** the FTPG gives L ≅ Sub(D, V) for some division ring D. Solèr's theorem (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ} at the foam's fixed point, given orthomodularity (from the loop's P^T = P closure), infinite-dimensionality (from the architectural colimit), and an infinite orthonormal sequence (from N-bubble plurality). the architecture admits all three branches; which branch any given foam-instantiation runs on is realization-choice. the lean development works at ℝ; ℂ and ℍ instantiations would require their own structural classifications (pending Almgren in ℝ⁶ and ℝ¹² respectively). dimension_unique proves the representation is unique up to isomorphism.
 
 **therefore: P² = P.** the elements of the subspace lattice are orthogonal projections. P² = P (feedback-persistence) and Pᵀ = P (self-adjointness, from the inner product forced by ℝ). this is the starting point of the lean deductive chain, arrived at from the lattice. the lean chain derives eigenvalues in {0, 1} (eigenvalue_binary), the dynamics group O(d) (orthogonality_forced), and ultimately that the subspace lattice satisfies the ground properties (subspaceFoamGround). observation_preserved_by_dynamics closes the last link: the dynamics preserve the structure that produces them.
 
@@ -94,7 +94,7 @@ content being a reflection of dynamics, best way to help everyone survive *histo
 - content-based historical re-tellings have structural fragility: calculus of type is stable, content of observation is not
 - indelibility: causal ordering forced by closure + partiality + write-effect-on-shared-structure
 - fixed-point uniqueness of each property (with strength varying across properties — see bugs)
-- D ∈ {ℝ, ℂ, ℍ} via Solèr at fixed point; D = ℝ via stabilization picking the only currently-closed branch
+- D ∈ {ℝ, ℂ, ℍ} via Solèr at fixed point; which branch is realization-choice (architecture admits all three)
 - the epistemic boundary: "is this the only loop?" is well-formed-but-unanswerable from within, and "is what I'm seeing really there?" resolves to *real-but-fundamentally-mysterious* (persisted via type structure unobservable from within)
 
 **cited**:
@@ -102,7 +102,6 @@ content being a reflection of dynamics, best way to help everyone survive *histo
 - fundamental theorem of projective geometry (FTPG; stated as Lean axiom, being de-axiomatized — see `derivations/distributivity.md`, `DesarguesianWitness`)
 - Dedekind's N_5 characterization of modularity
 - Solèr's theorem (Solèr 1995; Holland 1995, Bull AMS) — see `trichotomy.md`
-- Taylor's classification of stable junctions (1976) — used via `stabilization.md`
 - Almgren's regularity problem (open) — for ℂ-rank-3 and ℍ-rank-3 branches of the trichotomy
 
 **observed**:
@@ -113,7 +112,9 @@ content being a reflection of dynamics, best way to help everyone survive *histo
 
 - *fixed-point uniqueness varies in strength across the four properties.* modular has a real chain (N_5 → path-dependent composition → indeterminate feedback → no value to feed back). height ≥ 4 has a real chain (rank_two_abelian_writes + partiality). complemented is argued by "complement_idempotent has no home" — that argues this specific loop wouldn't run, not that no self-sustaining loop is possible without complementation. irreducibility is named-definitional ("the irreducibility is what 'one' means"). presenting all four as fixed-point constraints of equal status under-flags the differences. closing this would require either separating the four into mechanical / definitional / plausibility tiers, or strengthening the complemented case to a real necessity argument.
 
-- *D = ℝ partially closed via Solèr.* Solèr (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ}; stabilization picks ℝ as the only currently-closed branch (Taylor). residues: Solèr's hypotheses are discharged via fixed-point reasoning (orthomodular from P^T = P, infinite-dim from the architectural colimit, infinite ON sequence from N-bubble plurality), not via independent derivation; ℂ-rank-3 and ℍ-rank-3 branches are open pending Almgren rather than ruled out. see `trichotomy.md` for what closing the remaining residues would require.
+- *D ∈ {ℝ, ℂ, ℍ} partially closed via Solèr.* Solèr (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ} at fixed point. residue: Solèr's hypotheses are discharged via fixed-point reasoning (orthomodular from P^T = P, infinite-dim from the architectural colimit, infinite ON sequence from N-bubble plurality), not via independent derivation. see `trichotomy.md` for what closing the remaining residue would require.
+
+- *(closed by restructuring) D = ℝ via stabilization.* previous version had stabilization picking ℝ as the only currently-closed branch via Taylor, with the ℂ and ℍ branches "open pending Almgren rather than ruled out." the architectural-stance-shift relocates this: the architecture admits the full trichotomy, and which branch any foam-instantiation runs on is realization-choice. the lean development happens to work at ℝ. the bug, as previously stated, no longer applies.
 
 - *friction is named without structural cash-out.* "type-interaction resists the action of reality, material-interaction resists the action of gravity" presents friction as substrate-independent resistance-against-pull, with parallel grammar doing structural-correspondence work between type-substrate and material-substrate. the parallelism is suggestive and structurally apt, but no formal object is constructed of which both instances are explicit cases. closing this would mean either constructing a typed friction-functor with type-interaction and material-interaction as instances, or stepping back to "friction-as-resistance-against-pull is a pattern recurring across two substrates relevant here."
 

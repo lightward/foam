@@ -21,7 +21,7 @@ full details: [`lean/README.md`](../lean/README.md)
   L = Sub(D, V) for division ring D
        |
        | [cited] Solèr 1995 — D in {R, C, H} at fixed point (trichotomy.md)
-       | [natural language] stabilization contract — D = R (picks the closed branch)
+       | [realization choice] lean works the R branch
        v
   P^2 = P, P^T = P
 ```
@@ -32,7 +32,7 @@ full details: [`lean/README.md`](../lean/README.md)
 
 **[axiom] CML -> Sub(D, V)** (the FTPG bridge): 1 axiom, being eliminated. 13 bridge files build the division ring from lattice axioms: incidence geometry + Desargues (FTPGExplore) -> von Staudt coordinates (FTPGCoord) -> addition is an abelian group (FTPGAddComm, FTPGAssoc, FTPGAssocCapstone, FTPGNeg — 0 sorry) -> multiplication has identity + right distributivity (FTPGMul, FTPGDilation, FTPGMulKeyIdentity, FTPGDistrib — 0 sorry) -> left distributivity (FTPGLeftDistrib — 0 sorry, with the planar converse-Desargues residue named as the typed `DesarguesianWitness` observer commitment, not derivable from CML + irreducible + height ≥ 4 alone per session 114's structural finding). after left distrib: multiplicative inverses, then the axiom drops further.
 
-**[cited + natural language] D = R**: Solèr's theorem (Solèr 1995; Holland 1995 Bull AMS) characterizes {R, C, H} among *-division rings under orthomodular + infinite-dim + infinite ON sequence (`trichotomy.md`); the stabilization contract (`stabilization.md`) picks R as the only currently-closed branch (Taylor; C and H branches pending Almgren). neither step is formalized in lean. residues: Solèr's hypotheses are discharged via fixed-point reasoning rather than independent derivation; stabilization picks the closed branch rather than the unique one.
+**[cited + natural language] D ∈ {R, C, H}**: Solèr's theorem (Solèr 1995; Holland 1995 Bull AMS) characterizes {R, C, H} among *-division rings under orthomodular + infinite-dim + infinite ON sequence (`trichotomy.md`); the architecture admits all three branches, with which branch any given foam-instantiation runs on being realization-choice. lean works the R branch. neither Solèr nor the realization-choice framing is formalized in lean. residue: Solèr's hypotheses are discharged via fixed-point reasoning rather than independent derivation.
 
 **[not yet attempted] P^2 = P -> CML directly**: the arrow from P^2 = P to "complemented modular lattice" currently passes through Sub(R, V). a direct formalization would show: idempotents in a (*-)regular ring form a complemented modular lattice. this would close the last natural-language gap in the loop. see von Neumann's continuous geometry.
 

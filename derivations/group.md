@@ -6,9 +6,9 @@
 
 **J^2 = -I forces even dimensionality.** det(J)^2 = det(-I) = (-1)^n. squares are nonnegative, so n must be even. the minimum even-dimensional space containing R^3 is R^6 = R^3 + R^3.
 
-**each component must independently satisfy the stabilization contract.** not R^4 + R^2 or other decompositions — each component must independently satisfy the stabilization contract (stabilization.md), which requires d_slice >= 3. at d_slice = 3, stacking needs R^3 + R^3 = R^6.
+**each component must independently support non-trivial write algebra.** not R^4 + R^2 or other decompositions — each component must independently have d_slice >= 3 (rank_two_abelian_writes: Λ²(R²) is 1-dimensional, so a 2D component's writes don't vary with input). at d_slice = 3, stacking needs R^3 + R^3 = R^6.
 
-**independence is forced.** stabilization is per-observer and runs within each measurement subspace separately. the two R^3 slices project and stabilize independently before their measurements are fused into the complex write. joint stabilization in R^6 would require a 6-dimensional classification (open — Almgren). the fusion is algebraic (forming d tensor m_dagger - m tensor d_dagger), not geometric.
+**independence is forced.** stabilization (per `writes`: zero-seeking on the agent's tracked quantity) is per-observer and runs within each measurement subspace separately. the two R^3 slices project and stabilize independently before their measurements are fused into the complex write. joint stabilization in R^6 would require a 6-dimensional agent (a different agent-type, with its own structural classification — open, pending Almgren). the fusion is algebraic (forming d tensor m_dagger - m tensor d_dagger), not geometric.
 
 **two R^3 slices stacked as C^3 produce complex writes.** one slice reads Re(P @ m_i), the other Im(P @ m_i). the complex write d tensor m_dagger - m tensor d_dagger is skew-Hermitian, living in u(d).
 

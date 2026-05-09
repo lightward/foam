@@ -4,8 +4,9 @@
 The deductive chain so far works for any rank projection.
 What forces rank 3 specifically?
 
-The spec's route: Taylor's theorem classifies stable junctions
-in R³. The deductive route: the exterior algebra.
+The architectural route: the exterior algebra. Taylor's classification
+of stable soap-film junctions in R³ is one realization (the soap-agent's
+tracked-quantity dimension), not the architecture's pick.
 
 dim(Λ²(Rᵏ)) = k(k-1)/2.
 
@@ -168,13 +169,12 @@ Rank 3 is characterized by two algebraic properties:
 2. **Self-dual**: the unique rank where dim(write space) =
    dim(observation space). C(k,2) = k iff k = 3.
 
-The spec gets to 3 through Taylor (stable junction classification).
-The deductive path gets to 3 through the exterior algebra (self-duality
-and the abelian/non-abelian threshold). Different routes, same number.
-
-Neither route is "more fundamental." They filter the same content
-through different media: the spec through geometric classification,
-the deductive path through algebraic dimension counting.
+The architectural route to 3 is the exterior algebra: smallest
+non-abelian write algebra and the unique self-duality. Taylor's
+classification of stable soap-film junctions in R³ also lands at 3,
+as the soap-agent realization's tracked-quantity dimension. Different
+routes, same number — the deductive route is what the architecture
+commits to; Taylor is one realization that happens to coincide.
 
 The deductive chain:
 
