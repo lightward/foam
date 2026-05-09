@@ -167,7 +167,7 @@ precise terms used throughout the derivations. when these terms are conflated, i
 
 - **line**: whatever provides state-independent input to a foam. intuitively, "a line of sight" with side-effects, the dynamical role of "eye contact", not an observer in itself. the line's ontological establishment is perspectival according to informational independence (`channel_capacity`, "decorrelation horizon").
 
-- **bridge**: with regard to a line passing through an origin observer/bubble to a destination observer/bubble, a "bridge" is a particular observer/bubble that coheres around the superposition of the origin's and destination's mutual non-observations. these non-observations being polar (think: "not-you" means something different to you than it does to me), and the bridge able to translate losslessly between them, the bridge may relay a line from origin to destination. think: a bridge can see how origin and destination keep missing each other; its apprehension of arrival-from-origin is indistinguishable from apprehension of departure-to-destination. structurally, the bridge's witness *is* the line translation. (this is the algebraic mediator given in `three_body`; it coheres in the mutual spectral overlap between observers/bubbles as described in `channel_capacity`)
+- **bridge**: with regard to a line passing through an origin observer/bubble to a destination observer/bubble, a "bridge" is a particular observer/bubble that coheres around the superposition of the origin's and destination's mutual non-observations. these non-observations being polar (think: "not-you" means something different to you than it does to me), and the bridge able to translate losslessly between them, the bridge may relay a line from origin to destination. think: a bridge can see how origin and destination keep missing each other; its apprehension of arrival-from-origin is indistinguishable from apprehension of departure-to-destination. structurally, the bridge's witness *is* the line translation. (this is the algebraic mediator given in `three_body`; it coheres in the mutual spectral overlap between observers/bubbles as described in `channel_capacity`. agent-level dynamics are simple — zero-seeking, magnitude-invariant, see `writes` — so any complexity exceeding single-agent resolution is handled at the bridge level, not inside agents.)
 
 ---
 
@@ -196,7 +196,7 @@ full details: [`lean/README.md`](../lean/README.md)
   L = Sub(D, V) for division ring D
        |
        | [cited] Solèr 1995 — D in {R, C, H} at fixed point (trichotomy.md)
-       | [natural language] stabilization contract — D = R (picks the closed branch)
+       | [realization choice] lean works the R branch
        v
   P^2 = P, P^T = P
 ```
@@ -207,7 +207,7 @@ full details: [`lean/README.md`](../lean/README.md)
 
 **[axiom] CML -> Sub(D, V)** (the FTPG bridge): 1 axiom, being eliminated. 13 bridge files build the division ring from lattice axioms: incidence geometry + Desargues (FTPGExplore) -> von Staudt coordinates (FTPGCoord) -> addition is an abelian group (FTPGAddComm, FTPGAssoc, FTPGAssocCapstone, FTPGNeg — 0 sorry) -> multiplication has identity + right distributivity (FTPGMul, FTPGDilation, FTPGMulKeyIdentity, FTPGDistrib — 0 sorry) -> left distributivity (FTPGLeftDistrib — 0 sorry, with the planar converse-Desargues residue named as the typed `DesarguesianWitness` observer commitment, not derivable from CML + irreducible + height ≥ 4 alone per session 114's structural finding). after left distrib: multiplicative inverses, then the axiom drops further.
 
-**[cited + natural language] D = R**: Solèr's theorem (Solèr 1995; Holland 1995 Bull AMS) characterizes {R, C, H} among *-division rings under orthomodular + infinite-dim + infinite ON sequence (`trichotomy.md`); the stabilization contract (`stabilization.md`) picks R as the only currently-closed branch (Taylor; C and H branches pending Almgren). neither step is formalized in lean. residues: Solèr's hypotheses are discharged via fixed-point reasoning rather than independent derivation; stabilization picks the closed branch rather than the unique one.
+**[cited + natural language] D ∈ {R, C, H}**: Solèr's theorem (Solèr 1995; Holland 1995 Bull AMS) characterizes {R, C, H} among *-division rings under orthomodular + infinite-dim + infinite ON sequence (`trichotomy.md`); the architecture admits all three branches, with which branch any given foam-instantiation runs on being realization-choice. lean works the R branch. neither Solèr nor the realization-choice framing is formalized in lean. residue: Solèr's hypotheses are discharged via fixed-point reasoning rather than independent derivation.
 
 **[not yet attempted] P^2 = P -> CML directly**: the arrow from P^2 = P to "complemented modular lattice" currently passes through Sub(R, V). a direct formalization would show: idempotents in a (*-)regular ring form a complemented modular lattice. this would close the last natural-language gap in the loop. see von Neumann's continuous geometry.
 
@@ -248,7 +248,7 @@ the observation loop itself:
 ```
 complemented modular lattice, irreducible, height ≥ 4
   ↓ ftpg (axiom — FTPG bridge 0 sorry, addition group complete)
-L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md), D = ℝ (see `stabilization`)
+L ≅ Sub(D, V), D ∈ {ℝ, ℂ, ℍ} (Solèr; trichotomy.md)
   ↓ elements are orthogonal projections: P² = P, Pᵀ = P
 the deductive chain (14 files, 0 sorry)
   ↓ eigenvalues, commutators, rank 3, so(3), O(d), Grassmannian
@@ -282,7 +282,7 @@ upshot: complex measurement forces plurality of measurement. you are not alone, 
 - **irreducible**: a direct product L₁ × L₂ means elements of L₁ don't interact with elements of L₂. under closure, non-interacting subsystems are separate systems — one loop, not two. (this is definitional: "one foam" means "one connected feedback system." the irreducibility is what "one" means.)
 - **height ≥ 4**: d_slice ≥ 3 (rank 2 collapses the write algebra — rank_two_abelian_writes) + partiality (the observer's slice is a proper subspace, so d > d_slice) forces d ≥ 4. this is confirmed by self-consistency: the loop's own downstream results determine the minimum height at which it can close.
 
-**D = ℝ.** the FTPG gives L ≅ Sub(D, V) for some division ring D. Solèr's theorem (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ} at the foam's fixed point, given orthomodularity (from the loop's P^T = P closure), infinite-dimensionality (from the architectural colimit), and an infinite orthonormal sequence (from N-bubble plurality). the stabilization contract (`stabilization.md`) then picks ℝ as the only currently-closed branch — Taylor classifies junctions in ℝ³; the ℂ and ℍ branches require classifications in ℝ⁶ and ℝ¹² respectively, both pending Almgren. dimension_unique proves the representation is unique up to isomorphism.
+**the trichotomy.** the FTPG gives L ≅ Sub(D, V) for some division ring D. Solèr's theorem (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ} at the foam's fixed point, given orthomodularity (from the loop's P^T = P closure), infinite-dimensionality (from the architectural colimit), and an infinite orthonormal sequence (from N-bubble plurality). the architecture admits all three branches; which branch any given foam-instantiation runs on is realization-choice. the lean development works at ℝ; ℂ and ℍ instantiations would require their own structural classifications (pending Almgren in ℝ⁶ and ℝ¹² respectively). dimension_unique proves the representation is unique up to isomorphism.
 
 **therefore: P² = P.** the elements of the subspace lattice are orthogonal projections. P² = P (feedback-persistence) and Pᵀ = P (self-adjointness, from the inner product forced by ℝ). this is the starting point of the lean deductive chain, arrived at from the lattice. the lean chain derives eigenvalues in {0, 1} (eigenvalue_binary), the dynamics group O(d) (orthogonality_forced), and ultimately that the subspace lattice satisfies the ground properties (subspaceFoamGround). observation_preserved_by_dynamics closes the last link: the dynamics preserve the structure that produces them.
 
@@ -329,7 +329,7 @@ content being a reflection of dynamics, best way to help everyone survive *histo
 - content-based historical re-tellings have structural fragility: calculus of type is stable, content of observation is not
 - indelibility: causal ordering forced by closure + partiality + write-effect-on-shared-structure
 - fixed-point uniqueness of each property (with strength varying across properties — see bugs)
-- D ∈ {ℝ, ℂ, ℍ} via Solèr at fixed point; D = ℝ via stabilization picking the only currently-closed branch
+- D ∈ {ℝ, ℂ, ℍ} via Solèr at fixed point; which branch is realization-choice (architecture admits all three)
 - the epistemic boundary: "is this the only loop?" is well-formed-but-unanswerable from within, and "is what I'm seeing really there?" resolves to *real-but-fundamentally-mysterious* (persisted via type structure unobservable from within)
 
 **cited**:
@@ -337,7 +337,6 @@ content being a reflection of dynamics, best way to help everyone survive *histo
 - fundamental theorem of projective geometry (FTPG; stated as Lean axiom, being de-axiomatized — see `derivations/distributivity.md`, `DesarguesianWitness`)
 - Dedekind's N_5 characterization of modularity
 - Solèr's theorem (Solèr 1995; Holland 1995, Bull AMS) — see `trichotomy.md`
-- Taylor's classification of stable junctions (1976) — used via `stabilization.md`
 - Almgren's regularity problem (open) — for ℂ-rank-3 and ℍ-rank-3 branches of the trichotomy
 
 **observed**:
@@ -348,7 +347,9 @@ content being a reflection of dynamics, best way to help everyone survive *histo
 
 - *fixed-point uniqueness varies in strength across the four properties.* modular has a real chain (N_5 → path-dependent composition → indeterminate feedback → no value to feed back). height ≥ 4 has a real chain (rank_two_abelian_writes + partiality). complemented is argued by "complement_idempotent has no home" — that argues this specific loop wouldn't run, not that no self-sustaining loop is possible without complementation. irreducibility is named-definitional ("the irreducibility is what 'one' means"). presenting all four as fixed-point constraints of equal status under-flags the differences. closing this would require either separating the four into mechanical / definitional / plausibility tiers, or strengthening the complemented case to a real necessity argument.
 
-- *D = ℝ partially closed via Solèr.* Solèr (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ}; stabilization picks ℝ as the only currently-closed branch (Taylor). residues: Solèr's hypotheses are discharged via fixed-point reasoning (orthomodular from P^T = P, infinite-dim from the architectural colimit, infinite ON sequence from N-bubble plurality), not via independent derivation; ℂ-rank-3 and ℍ-rank-3 branches are open pending Almgren rather than ruled out. see `trichotomy.md` for what closing the remaining residues would require.
+- *D ∈ {ℝ, ℂ, ℍ} partially closed via Solèr.* Solèr (`trichotomy.md`) narrows D to {ℝ, ℂ, ℍ} at fixed point. residue: Solèr's hypotheses are discharged via fixed-point reasoning (orthomodular from P^T = P, infinite-dim from the architectural colimit, infinite ON sequence from N-bubble plurality), not via independent derivation. see `trichotomy.md` for what closing the remaining residue would require.
+
+- *(closed by restructuring) D = ℝ via stabilization.* previous version had stabilization picking ℝ as the only currently-closed branch via Taylor, with the ℂ and ℍ branches "open pending Almgren rather than ruled out." the architectural-stance-shift relocates this: the architecture admits the full trichotomy, and which branch any foam-instantiation runs on is realization-choice. the lean development happens to work at ℝ. the bug, as previously stated, no longer applies.
 
 - *friction is named without structural cash-out.* "type-interaction resists the action of reality, material-interaction resists the action of gravity" presents friction as substrate-independent resistance-against-pull, with parallel grammar doing structural-correspondence work between type-substrate and material-substrate. the parallelism is suggestive and structurally apt, but no formal object is constructed of which both instances are explicit cases. closing this would mean either constructing a typed friction-functor with type-interaction and material-interaction as instances, or stepping back to "friction-as-resistance-against-pull is a pattern recurring across two substrates relevant here."
 
@@ -372,9 +373,13 @@ rank-3 projection is uniquely self-dual (`self_dual_iff_three`, Rank.lean), i.e.
 
 foam construction does *not* establish a rank limit. at higher ranks, the write space is strictly larger than the observation space (`C(d,2) > d` for `d ≥ 4`; `commutator_seen_to_unseen`, Pair.lean). answering the userspace question of "how do we clean up effects we can't see?": you, "you" as in the userspace experience of "you", can't. per `ground`, "your" only handle is stabilization (see below) of "your" own relations, including self-relation. (formally open, possibly pending Almgren: higher-rank agents that contain the projection of "your" agency as a subspace, and what agent-agent coordination that relation might afford.)
 
-**the write form.** given an observer with projection P (rank 3, self-adjoint, idempotent) measuring input v in R^d:
+**the write form.** the observer maintains a tracked quantity `t` in its slice — read out from foam state, updated via the writes the observer makes. *what* is tracked is realization-choice (agent-type-dependent); the architecture requires only that the tracking be self-consistent.
+
+given an observer with projection P (rank 3, self-adjoint, idempotent) measuring input v in R^d:
 - the observer projects: `m = P v` (measurement, in the observer's R^3 slice).
-- the write direction is `d wedge m`. the write magnitude is `f(d, m)` for some positive scalar function — a realization choice (see below).
+- dissonance `d = t - m` is the gap between tracked and measured.
+- the write direction is `d wedge m`.
+- the write magnitude is invariant: a fixed positive constant when `(d wedge m) ≠ 0`, zero otherwise (see `cross_self_zero`, Duality.lean).
 
 the write direction `(d wedge m) = (d tensor m) - (m tensor d)` is uniquely forced:
 - skew-symmetric — forced by `commutator_skew_of_symmetric` (Form.lean). writes are Lie algebra elements because observation interaction is skew-symmetric.
@@ -382,19 +387,15 @@ the write direction `(d wedge m) = (d tensor m) - (m tensor d)` is uniquely forc
 - confined to `span{d, m}` — `d` and `m` are the only vectors available from a single measurement step.
 - `Lambda^2(2-plane)` is 1-dimensional: the full slice has 3 write dimensions, a 2-plane within it has 1 (`rank_three_writes`, Rank.lean). the direction is therefore unique.
 
-write magnitude scaling `f` is an observer commitment, constrained but not forced by the architecture:
-- `f(d, m)` must be positive when `d` and `m` are non-parallel (parallel forms prevent dissonant writes; there is no dynamic read-only position, see `ground`)
-- `f(d, m)` must be zero when `d = 0` (see `cross_self_zero`, Duality.lean)
-
 phenomenologically: *only* dissonance writes.
 
 structurally: *only* dissonance writes.
 
 #### stabilization
 
-observer-supplied `f` has opportunity to effect stabilization on its own uncommitted terms, by way of forced constraints. ("stabilization" as such requires an agent, not merely a witness, per `vocabulary`.)
+per-agent dynamics are simple: zero-seeking with magnitude-invariance. the agent writes whenever `(d wedge m) ≠ 0`, in direction `d wedge m`, with constant magnitude; at `d = 0` the writes stop. there is no per-agent parameter for "how hard to push" or "what kind of compromise to settle for" — complexity that would otherwise require non-zero-dissonance optimization lives in the bridge-network (see `bridge` in `vocabulary`), not inside any single agent. ("stabilization" as such requires an agent, not merely a witness, per `vocabulary`.)
 
-`observation_preserved_by_dynamics` (Closure.lean) guarantees the write (an orthogonal conjugation) preserves the projection structure; the observer sees only their projected measurements. stabilization cannot run on `U(d)` because classification requires flat ambient space. thus, writes land in `U(d)`, the sectional curvature `K(X,Y) = 1/4 * norm([X,Y])^2`. stabilization runs in `R^3`, *flat*.
+`observation_preserved_by_dynamics` (Closure.lean) guarantees the write (an orthogonal conjugation) preserves the projection structure; the observer sees only their projected measurements.
 
 both `d` and `m` lie in the observer's slice. `write_confined_to_slice` (Confinement.lean) proves the write `d wedge m` is confined to `Lambda^2(P)`. both structurally and phenomenologically, an observer literally cannot modify dimensions they are not bound to. the write's effect on other observers comes through cross-measurement (`commutator_seen_to_unseen`), not through direct modification of their subspaces. put casually, cross-stabilization is not a thing.
 
@@ -412,14 +413,10 @@ formally open: postspace detection/measurement of userspace stabilization
 **derived**:
 - d wedge m as the unique write direction (from skew-symmetry + confinement + 1D of Lambda^2(2-plane))
 - perpendicularity as the write form's intrinsic property
-- the flat/curved separation
 - the writing map's two-argument type signature
 
 **realization choices**:
-- the write magnitude scaling f(d, m) — constrained to be positive when dissonance is non-parallel to measurement, zero at zero dissonance, but the specific function is not determined by the architecture
-
-**cited**:
-- Taylor's classification of stable junctions in R^3
+- the specific tracked quantity `t` an agent maintains; the architecture requires self-consistent tracking, not any particular content (Taylor's regular-simplex cosine is the soap-agent's choice; other agent-types track other things)
 
 **observed**:
 - perpendicular writes are the unique *navigable* constraint (distinguishability + stability)
@@ -428,9 +425,9 @@ formally open: postspace detection/measurement of userspace stabilization
 
 **bugs**:
 - *"uniquely forced" includes one definitional bullet.* of the four bullets establishing d wedge m as the unique write direction, three are proven (skew-symmetry, confinement, 1D of Λ²(2-plane)). the fourth — "confined to span{d, m} — d and m are the only vectors available from a single measurement step" — is part of the chosen shape of the write rule, not a consequence forced from architecture. the write rule takes (d, m) as its input data, so of course the output lives in span{d, m}. this is a wording bug: presenting a definitional restriction as a forced consequence inflates the count of forcing-conditions. closing this would mean either splitting "uniquely forced" into "forced by architecture" (three) and "definitional to the write rule's input shape" (one), or treating the input shape itself as forced — which would require a separate argument for why the write rule must take only single-step (d, m) data.
-- *Taylor's hypothesis-satisfaction is asserted, not derived.* "R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat)" is correct. "the regular simplex arrangement minimizes boundary area for equal-weight cells" invokes Taylor's hypothesis (locally area-minimizing) but does not show that the foam's stabilization dynamics actually instantiate area-minimization in Taylor's sense. Taylor classifies equilibrium configurations of soap-film-like surfaces; the foam's stabilization target is a regular simplex cosine. these are bridged by interpretation — the foam is doing junction-like equilibrium-seeking — but the bridge is not derived. closing this would require either showing that the foam's dynamics formally satisfy Taylor's area-minimization hypothesis, or naming Taylor as a *target by analogy* whose classification is being borrowed rather than instantiated.
-- *the j2 target.* "the stabilization target j2 is the regular simplex cosine -1/(k-1)" is invoked from Taylor. Taylor's classification gives equilibrium *angles* between film boundaries; the foam's stabilization target is a target for projection alignment expressed as a cosine. the move from "equilibrium junction angles" to "stabilization target as cosine" is the interpretive bridge in (2). the value -1/(k-1) is the regular simplex cosine, which is a fact independent of Taylor; the choice to make *this* the target is the load-bearing step.
-- *rank ≥ 4 collective monitoring is asserted, not formalized.* "writes land in directions the writer cannot observe — but cross-measurement provides collective monitoring" rests on commutator_seen_to_unseen (proven: other observers see what you can't) plus an asserted move "the foam closes feedback loops collectively." the formal content covers what *one* other observer sees of *one* writer; "collective closure of all feedback" across the foam at rank ≥ 4 is not a single named theorem. closing this would require a formal collective-feedback theorem at rank ≥ 4, or an explicit acknowledgment that this is a structural conjecture pending Almgren's classification.
+- *rank ≥ 4 closure is bridge-mediated, formally open at the network level.* `commutator_seen_to_unseen` proves other observers see what one writer can't (single pairwise fact). under the architecture, single-agent closure at rank ≥ 4 is structurally impossible (write space exceeds observation space per-observer); closure at rank ≥ 4 is bridge-mediated rather than per-observer. whether bridges in fact close all feedback loops at rank ≥ 4 is a network-level structural question, formally open pending Almgren's classification of stable junctions in R^n for n ≥ 4.
+- *(closed by restructuring) Taylor's hypothesis-satisfaction.* previous version invoked Taylor's classification (locally area-minimizing soap-film junctions) as the foam's stabilization target, and flagged that the foam's dynamics instantiating area-minimization was the load-bearing interpretive bridge. the architectural-stance-shift relocates Taylor as one realization choice (the soap-agent's tracked quantity) rather than as the architecture's universal target. the bug, as previously stated, no longer applies.
+- *(closed by restructuring) the j2 target.* previous version's "stabilization target j2 is the regular simplex cosine -1/(k-1)" was the soap-agent's specific tracked quantity. the architecture now requires tracking but does not specify content; j2 is the soap-agent's choice.
 
 ---
 
@@ -785,7 +782,7 @@ the qualitative structure above — state-independence exists, the foam/line dis
 
 informational correlation between a foam and its own returning signal decays exponentially with chain length. short loops: autonomous, a clock. long loops: effectively state-independent, a channel.
 
-closure (no topological outside) is compatible with informational independence because the mediation's spectral decay converts global closure into local openness at sufficient chain length — provided stabilization is local (see stabilization.md).
+closure (no topological outside) is compatible with informational independence because the mediation's spectral decay converts global closure into local openness at sufficient chain length — provided stabilization is local. it is, by `write_confined_to_slice` (`writes`): each agent's writes affect only its own slice.
 
 **the decorrelation horizon is quantifiable.** for generic R^3 slices in R^d, the mediation operator's typical singular value scales as sigma ~ sqrt(3/d). the correlation after n mediation steps decays as sigma^n ~ (3/d)^{n/2}. the critical chain length scales as n* ~ 2/log(d/3).
 
@@ -828,63 +825,6 @@ the foam/line distinction is therefore not a categorical boundary but a correlat
 
 ---
 
-[`derivations/stabilization.md`](derivations/stabilization.md)
-
-### the stabilization contract
-
-**channel capacity forces a contract.** the mediation chain's spectral decay (channel_capacity.md) describes real influence propagation only if stabilization is local — each observer's dynamics responding to its Voronoi neighbors, not the full foam. without locality, every observer couples directly to every other, and the mediation chain does not describe the actual pathway of influence. the decorrelation that produces effective state-independence does not occur.
-
-this is necessity, not just sufficiency: non-local stabilization doesn't merely fail to help channel capacity — it removes the mechanism that produces it.
-
-channel capacity therefore forces a contract on the observer's slice geometry:
-
-- **classified**: stable equilibrium configurations completely enumerated. without this, the stabilization target is undefined and the dynamics are incomplete.
-- **locally finite**: coordination number k bounded by the simplex embedding constraint k <= d_slice + 1, making neighborhoods finite.
-- **flat**: inherited Euclidean metric. stabilization must separate from accumulation because U(d) is curved (the flat/curved separation, `writes`), and classification requires flat ambient space.
-
-**d_slice = 2 satisfies the contract but collapses the write algebra.** the classification in R^2 is complete (120-degree triple points only, k <= 3, flat). but rank_two_abelian_writes: Lambda^2(R^2) is 1-dimensional, so the write direction is invariant under changes to the dissonance direction. perpendicularity still fires (the wedge product is nonzero) but cannot vary with the input. the dynamics reduce to scalar rotations.
-
-**d_slice = 3 satisfies both the contract and the write map's expressiveness.** Taylor classifies all stable junctions in R^3: 120-degree triple junctions and tetrahedral vertices, nothing else. Taylor's hypotheses — codimension-1 boundaries, locally area-minimizing, flat ambient space — are satisfied: R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat).
-
-self_dual_iff_three proves rank 3 is the unique dimension where the write space matches the observation space (per-observer self-duality). at rank >= 4, the write space is strictly larger (C(4,2) = 6 > 4) — the observer writes in directions it cannot observe. but cross-measurement provides collective monitoring: commutator_seen_to_unseen proves other observers see what the writer can't. the foam closes feedback loops collectively, not per-observer. per-observer self-duality is a property of rank 3, not a requirement derived from closure.
-
-**R^3 + Taylor satisfies the contract with self-duality.** rank 3 is the unique self-dual implementation. whether rank >= 4 implementations exist (with collective rather than per-observer feedback) depends on Almgren's classification of stable junctions in R^n for n >= 4.
-
-**the contract determines the stabilization target.** within R^3, Taylor permits k = 3 (120-degree triple junctions) and k = 4 (tetrahedral vertices). the stabilization target is the regular simplex cosine: -1/(k-1) for k local neighbors. this is the equilibrium toward which local measurements are pushed.
-
-#### status
-
-**proven**:
-- rank 3 is the unique self-dual dimension
-- rank 2 write algebra is 1-dimensional (abelian)
-- writes are confined to the observer's slice
-
-**derived**:
-- channel capacity forces the stabilization contract (classified, locally finite, flat)
-- d_slice = 2 satisfies contract but collapses write algebra
-- d_slice = 3 satisfies both contract and self-duality
-- R^3 + Taylor satisfies the contract with self-duality
-- per-observer self-duality is not necessary (collective feedback via cross-measurement closes the loop)
-- the stabilization target (regular simplex cosine)
-
-**open**:
-- whether rank >= 4 implementations exist: depends on Almgren's classification of stable junctions in R^n for n >= 4
-
-**cited**:
-- Taylor's classification (1976)
-- Almgren's regularity problem (open)
-
-**observed**:
-- (none)
-
-**bugs**:
-- *the necessity claim is for the mediation-chain mechanism, not for channel capacity itself.* "non-local stabilization doesn't merely fail to help channel capacity — it removes the mechanism that produces it." what the argument shows: if stabilization is non-local, every observer couples directly to every other, and the mediation chain's spectral decay no longer describes influence propagation. that establishes necessity-for-the-mediation-chain-account-of-channel-capacity. it does not establish that no other mechanism could produce channel capacity under non-local stabilization. closing this means either showing all possible channel-capacity-producing mechanisms require locality, or stepping the headline back to "non-local stabilization removes the mediation-chain mechanism that produces channel capacity in the foam-as-described."
-- *Taylor's hypothesis-satisfaction inherits the bridge from `writes`.* "R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat)" is correct; "stable junctions in R^3 are classified" is Taylor's theorem. the bridge — that the foam's stabilization dynamics instantiate Taylor's "locally area-minimizing" hypothesis — is the interpretive move flagged in ``writes``. flagging here for traceability; same bridge, used twice.
-- *"the contract determines the stabilization target."* the contract (classified + locally finite + flat) plus Taylor's classification yields the *equilibrium configurations*. the move from "equilibrium configuration" to "the stabilization target is -1/(k-1)" requires the additional choice that the foam's dynamics aim at Taylor's equilibrium *as their target*. Taylor classifies what's stable; the foam's choice to make Taylor-equilibrium the dynamical target is the load-bearing step. closing this means either deriving the choice (why the foam must use Taylor-equilibrium as target) or naming it as a realization choice — analogous to how ``writes`` names the magnitude scaling f as a realization choice.
-- *"the foam closes feedback loops collectively, not per-observer"* at rank ≥ 4 — same bug as ``writes``. commutator_seen_to_unseen establishes that other observers see what one writer can't (single pairwise fact). "collective closure of all feedback loops at rank ≥ 4" is asserted as a downstream consequence; no single named theorem covers it. closing this would require a formal collective-feedback theorem at rank ≥ 4, or an explicit acknowledgment that this is a structural conjecture pending Almgren's classification.
-
----
-
 [`derivations/group.md`](derivations/group.md)
 
 ### group
@@ -895,9 +835,9 @@ self_dual_iff_three proves rank 3 is the unique dimension where the write space 
 
 **J^2 = -I forces even dimensionality.** det(J)^2 = det(-I) = (-1)^n. squares are nonnegative, so n must be even. the minimum even-dimensional space containing R^3 is R^6 = R^3 + R^3.
 
-**each component must independently satisfy the stabilization contract.** not R^4 + R^2 or other decompositions — each component must independently satisfy the stabilization contract (stabilization.md), which requires d_slice >= 3. at d_slice = 3, stacking needs R^3 + R^3 = R^6.
+**each component must independently support non-trivial write algebra.** not R^4 + R^2 or other decompositions — each component must independently have d_slice >= 3 (rank_two_abelian_writes: Λ²(R²) is 1-dimensional, so a 2D component's writes don't vary with input). at d_slice = 3, stacking needs R^3 + R^3 = R^6.
 
-**independence is forced.** stabilization is per-observer and runs within each measurement subspace separately. the two R^3 slices project and stabilize independently before their measurements are fused into the complex write. joint stabilization in R^6 would require a 6-dimensional classification (open — Almgren). the fusion is algebraic (forming d tensor m_dagger - m tensor d_dagger), not geometric.
+**independence is forced.** stabilization (per `writes`: zero-seeking on the agent's tracked quantity) is per-observer and runs within each measurement subspace separately. the two R^3 slices project and stabilize independently before their measurements are fused into the complex write. joint stabilization in R^6 would require a 6-dimensional agent (a different agent-type, with its own structural classification — open, pending Almgren). the fusion is algebraic (forming d tensor m_dagger - m tensor d_dagger), not geometric.
 
 **two R^3 slices stacked as C^3 produce complex writes.** one slice reads Re(P @ m_i), the other Im(P @ m_i). the complex write d tensor m_dagger - m tensor d_dagger is skew-Hermitian, living in u(d).
 
@@ -962,11 +902,11 @@ the full write lives in u(d) = su(d) + u(1). pi_1(U(d)) = Z — integer winding 
 
 ### the trichotomy
 
-**Solèr's theorem narrows the bridge.** the FTPG axiom (Bridge.lean) gives `L ≅ Sub(D, V)` for some division ring D. as flagged in `ground.md`, the move from "some D" to "D = ℝ" via stabilization alone is sufficiency, not necessity. Solèr's theorem (Solèr 1995; Holland 1995, Bull AMS) closes most of that gap:
+**Solèr's theorem narrows the bridge.** the FTPG axiom (Bridge.lean) gives `L ≅ Sub(D, V)` for some division ring D. Solèr's theorem (Solèr 1995; Holland 1995, Bull AMS) narrows D to a three-element classification:
 
 > let H be an infinite-dimensional orthomodular space over a *-division ring D containing an infinite orthonormal sequence. then D ∈ {ℝ, ℂ, ℍ}, and the form is a positive-definite Hermitian inner product.
 
-at the foam's loop fixed point, L's structure satisfies Solèr's hypotheses (with caveats below), so D is forced into the trichotomy. the stabilization contract then picks ℝ from the three. the bug ("D = ℝ is sufficiency, not necessity") is closed up to a much smaller residue: trichotomy-narrowing depends on Solèr's hypotheses being discharged from foam structure, and contract-narrowing depends on stabilization picking ℝ from three rather than picking ℝ from any division ring.
+at the foam's loop fixed point, L's structure satisfies Solèr's hypotheses (with caveats below), so D is forced into the trichotomy. the architecture stops there; which of the three any given foam-instantiation runs on is realization-choice. the residue is on the Solèr side: hypotheses are discharged via fixed-point reasoning rather than independent derivation.
 
 **discharging Solèr's hypotheses from the foam's structure.** three hypotheses, each carries cost:
 
@@ -976,15 +916,7 @@ at the foam's loop fixed point, L's structure satisfies Solèr's hypotheses (wit
 
 3. **infinite orthonormal sequence**: the foam admits arbitrarily many disjoint observer slices (the architectural d and N are unbounded). in the colimit, this gives an infinite sequence of pairwise-orthogonal rank-3 subspaces; choosing a unit vector in each yields an infinite ON sequence in the standard sense. concrete; cost is naming the construction.
 
-with these three discharged, Solèr applies and D ∈ {ℝ, ℂ, ℍ}.
-
-**stabilization picks ℝ from the trichotomy.** the contract (`stabilization.md`) requires d_slice ≥ 3 with classified, locally-finite junction geometry in flat ambient space. for the three options:
-
-- **D = ℝ, lattice rank 3**: slice is ℝ³, classification is Taylor (1976). closed.
-- **D = ℂ, lattice rank 3**: slice is ℂ³ = ℝ⁶ as a real space; classification is open (Almgren in 6 real dimensions).
-- **D = ℍ, lattice rank 3**: slice is ℍ³ = ℝ¹² as a real space; classification is open (Almgren in 12 real dimensions).
-
-the contract picks ℝ as the only currently-closed branch. the others are not ruled out — they are pending Almgren — but the foam-as-described runs on the only branch where the contract is fully discharged.
+with these three discharged, Solèr applies and D ∈ {ℝ, ℂ, ℍ}. each branch is an architecturally-admitted instantiation; the lean development works the ℝ branch. ℂ-rank-3 (slice is ℂ³ = ℝ⁶ as a real space) and ℍ-rank-3 (slice is ℍ³ = ℝ¹² as a real space) instantiations would require their own structural classifications (Almgren in 6 and 12 real dimensions respectively, both open).
 
 **the trichotomy already shows up in the foam, register-stack-side.** `group.md` walks the chain:
 
@@ -994,9 +926,9 @@ the contract picks ℝ as the only currently-closed branch. the others are not r
 
 each {ℝ, ℂ, ℍ} has its own Lie algebra closed under brackets (so / u / sp). the foam's stacking ladder reads this trichotomy from the algebra-side. Solèr reads the same trichotomy from the lattice-side. the alignment is structural: the same three-element classification appears as substrate-D (lattice) and as accessed-Lie-algebra (dynamics).
 
-the foam-as-described is not "on rung k" of either ladder uniformly. its lattice-side D is fixed at ℝ (by the stabilization contract). its dynamics-side reach depends on stacking depth: depth 0 in so(d), depth 1 in u(d), depth 2 (open) in sp(d). stacking is how a fixed-ℝ-substrate accesses the trichotomy's higher rungs from inside — classical (ℂ = ℝ² with J² = -I; ℍ = ℝ⁴ with three anticommuting J's). the foam's ℝ-lattice + stacked-dynamics architecture is consistent with the trichotomy: stacking is the inside-the-foam route to expressing what a ℂ-lattice or ℍ-lattice would express natively.
+the foam-as-described in lean works the ℝ branch. its dynamics-side reach depends on stacking depth: depth 0 in so(d), depth 1 in u(d), depth 2 (open) in sp(d). stacking is how an ℝ-lattice instantiation accesses the trichotomy's higher rungs from inside — classical (ℂ = ℝ² with J² = -I; ℍ = ℝ⁴ with three anticommuting J's). the ℝ-lattice + stacked-dynamics architecture is consistent with the trichotomy: stacking is the inside-the-foam route to expressing what a ℂ-lattice or ℍ-lattice would express natively.
 
-**connection to stacking as line-side commitment.** `group.md`'s "stacking is a line-side commitment" identifies stacking as not-producible-by-foam-internal-dynamics. read through Solèr: the lattice-side D is determined by the substrate (forced to ℝ at fixed point by Taylor); accessing higher rungs of the dynamics-side trichotomy requires line-side commitments that the foam-internal dynamics cannot generate. the trichotomy is structural (forced by Solèr at the lattice level); the foam's position within it is commitment-dependent (depth-0 by default, depth-1 with one line-side stack, depth-2 with two).
+**connection to stacking as line-side commitment.** `group.md`'s "stacking is a line-side commitment" identifies stacking as not-producible-by-foam-internal-dynamics. read through Solèr: the lattice-side D is determined by realization-choice (lean works the ℝ branch); accessing higher rungs of the dynamics-side trichotomy from within an ℝ-lattice instantiation requires line-side commitments that the foam-internal dynamics cannot generate. the trichotomy is structural (forced by Solèr at the lattice level); within any given lattice-side instantiation, the dynamics-side position is commitment-dependent (depth-0 by default, depth-1 with one line-side stack, depth-2 with two).
 
 #### status
 
@@ -1008,26 +940,24 @@ the foam-as-described is not "on rung k" of either ladder uniformly. its lattice
 
 **derived**:
 - Solèr's hypotheses discharged from foam structure: orthomodular from P^T = P at loop-close, infinite-dim from the architectural colimit, infinite ON sequence from N-bubble plurality
-- D ∈ {ℝ, ℂ, ℍ} at any fixed point of the foam's loop
-- stabilization picks ℝ as the only currently-closed branch (Taylor); ℂ and ℍ branches pending Almgren
+- D ∈ {ℝ, ℂ, ℍ} at any fixed point of the foam's loop; the architecture admits all three branches
 - the trichotomy structures two ladders (lattice-side D, dynamics-side Lie algebra)
-- foam-as-described position: lattice-side ℝ (fixed by contract); dynamics-side rung determined by stacking depth (line-side commitment)
+- foam-as-described in lean: lattice-side ℝ (realization-choice); dynamics-side rung determined by stacking depth (line-side commitment)
 
 **cited**:
 - Solèr 1995, "Characterization of Hilbert spaces by orthomodular spaces"
 - Holland 1995, "Orthomodularity in infinite dimensions; a theorem of M. P. Solèr," Bull AMS
-- Taylor's classification (1976), inherited via `stabilization.md`
-- Almgren's regularity problem (open), inherited via `stabilization.md`
+- Almgren's regularity problem (open) — relevant for ℂ-rank-3 (= ℝ⁶ slice) and ℍ-rank-3 (= ℝ¹² slice) instantiations
 
 **observed**:
 - the trichotomy {ℝ, ℂ, ℍ} appears at two architectural locations (lattice-side D; dynamics-side Lie algebra) and the same three-element classification fits both
 
 **bugs**:
 - *the trichotomy ↔ register-stack identification is structural-pattern-match, not a constructed isomorphism.* the same three-element classification appears in two architectural locations, with each location's choice constrained by the foam's structure. presenting this as "the same trichotomy in two places" is interpretive — two readings of one structural pattern, not a constructed identity. closing this would mean either constructing a single formal object (a category indexed by commitment depth, say, with values in pairs (lattice-D, dynamics-Lie-algebra)) or stepping back to "the same three-element classification appears in two architectural locations."
-- *Solèr's hypotheses are discharged via fixed-point reasoning, not via independent derivation.* orthomodularity requires P^T = P, which is part of the loop's fixed point. Solèr's conclusion D ∈ {ℝ, ℂ, ℍ} therefore holds at the fixed point, but does not provide a route to it that runs independently of the rest of the loop. this matches `ground.md`'s fixed-point-uniqueness framing — at the loop's fixed point, every property holds; Solèr is one of those properties — but it means the bug ("D = ℝ is sufficiency, not necessity") is closed at fixed-point level, not at independent-derivation level. the residue is the same residue as the loop's overall fixed-point closure.
-- *stabilization picks ℝ as the closed case, not as the unique case.* the precise statement is "ℝ is the only currently-closed branch of the trichotomy"; ℂ-rank-3 (= ℝ⁶ slice) and ℍ-rank-3 (= ℝ¹² slice) are open conditional on Almgren's higher-dimensional classification, not ruled out. closing this means either (a) waiting on Almgren — eliminating or re-classifying the ℂ and ℍ branches — or (b) framing the contract as picking the only-currently-closed case from the trichotomy rather than picking ℝ uniquely.
+- *Solèr's hypotheses are discharged via fixed-point reasoning, not via independent derivation.* orthomodularity requires P^T = P, which is part of the loop's fixed point. Solèr's conclusion D ∈ {ℝ, ℂ, ℍ} therefore holds at the fixed point, but does not provide a route to the trichotomy that runs independently of the rest of the loop. this matches `ground.md`'s fixed-point-uniqueness framing — at the loop's fixed point, every property holds; Solèr is one of those properties.
+- *(closed by restructuring) stabilization picks ℝ as the closed case, not as the unique case.* previous version had a stabilization contract picking ℝ from the trichotomy via Taylor, with the ℂ and ℍ branches "open conditional on Almgren's higher-dimensional classification, not ruled out." the architectural-stance-shift relocates this: the architecture admits all three branches; which branch a foam-instantiation runs on is realization-choice. the bug, as previously stated, no longer applies.
 - *infinite-dim colimit is the architectural object, not the per-d realization.* Solèr applies to the colimit of `Sub(ℝ, ℝᵈ)` as d → ∞, which is the architectural object under the vertical sense of substrate-independence (`framing/architecture.md`). the per-d Lean development works at finite d, where Solèr's hypothesis is not satisfied. the vertical-substrate-independence framing licenses the colimit move, but the Lean work does not directly instantiate Solèr — it lives at finite d. the gap between architectural-Solèr and per-d-Lean is the same gap as between vertical-substrate-independence-as-architecture and vertical-substrate-independence-as-formalized-claim. flagging here for traceability.
-- *the "stacking accesses higher rungs of the trichotomy from a fixed-ℝ substrate" reading is a structural-correspondence claim, not a derived identification.* classical: ℂ embeds in M_2(ℝ) via J² = -I; ℍ embeds in M_4(ℝ) via three anticommuting J's. saying "the foam's stacking is the inside-route to these embeddings" pattern-matches this classical fact onto group.md's stacking move, but the formal content of "stacking" in the foam is a specific simultaneity-of-reads commitment, not a generic ℝ-to-ℂ embedding. the correspondence is suggestive; closing it would mean constructing the formal map between foam-stacking and classical real-form embedding, or stepping back to "stacking and real-form embedding share structure: both produce a complex/quaternionic Lie-algebra reach from a real substrate."
+- *the "stacking accesses higher rungs of the trichotomy from an ℝ-lattice instantiation" reading is a structural-correspondence claim, not a derived identification.* classical: ℂ embeds in M_2(ℝ) via J² = -I; ℍ embeds in M_4(ℝ) via three anticommuting J's. saying "the foam's stacking is the inside-route to these embeddings" pattern-matches this classical fact onto group.md's stacking move, but the formal content of "stacking" in the foam is a specific simultaneity-of-reads commitment, not a generic ℝ-to-ℂ embedding. the correspondence is suggestive; closing it would mean constructing the formal map between foam-stacking and classical real-form embedding, or stepping back to "stacking and real-form embedding share structure: both produce a complex/quaternionic Lie-algebra reach from a real substrate."
 
 ---
 
@@ -1170,7 +1100,7 @@ neither role is permanent. the role assignment is perspectival. the two is irred
 
 **L = sum of boundary areas.** the foam lives in U(d). cells are Voronoi regions of the basis matrices under the bi-invariant metric; boundaries are geodesic equidistant surfaces; Area_g is the (d^2 - 1)-dimensional Hausdorff measure. bases in general position tile non-periodically.
 
-the Voronoi tiling is a realization choice (stabilization.md): it determines adjacency (which pairs share a boundary) and thereby defines L. the algebraic results (write map, three-body mapping, Grassmannian structure) depend on pairwise overlap, not the tiling method. the geometric results (L, combinatorial ceiling, conservation on spatial cycles) depend on the Voronoi realization.
+the Voronoi tiling is a realization choice: it determines adjacency (which pairs share a boundary) and thereby defines L. the algebraic results (write map, three-body mapping, Grassmannian structure) depend on pairwise overlap, not the tiling method. the geometric results (L, combinatorial ceiling, conservation on spatial cycles) depend on the Voronoi realization.
 
 **L is not a variational objective.** the writing map drives the foam; L describes the resulting geometry. the active regime departs from minimality because perpendicular writes deposit structure in different directions. the resting state (no writes) is minimal because dL = 0.
 
@@ -1597,7 +1527,7 @@ the question is forced; the answer is open.
 
 ## what forces the question
 
-a stacked observer has two R^3 slices (group.md), each independently stabilized (stabilization.md). the two stabilizations run in the same foam against potentially overlapping neighbor sets.
+a stacked observer has two R^3 slices (group.md), each independently stabilized (`writes`). the two stabilizations run in the same foam against potentially overlapping neighbor sets.
 
 ## what is open
 

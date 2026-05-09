@@ -20,7 +20,6 @@ DERIVATIONS = [
     "self_parametrization",
     "distributivity",
     "channel_capacity",
-    "stabilization",
     "group",
     "trichotomy",
     "three_body",
