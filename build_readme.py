@@ -14,7 +14,7 @@ from pathlib import Path
 # Dependency order (topologically sorted)
 DERIVATIONS = [
     "ground",
-    "writing_map",
+    "writes",
     "half_type",
     "analogy",
     "self_parametrization",

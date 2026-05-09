@@ -157,7 +157,7 @@ precise terms used throughout the derivations. when these terms are conflated, i
 
 - **frame**: the time-varying projection associated with an observer at moment t. derived from the foam state acting on the birth slice (concretely: conjugating the slice's projection by the accumulated transport). evolves under non-inert writes — this is what "recedes" in the frame-recession theorem (`Dynamics.lean`: second-order overlap rate is `-‖[W, P]‖²`).
 
-- **P**: the projection operator used in formal contexts. in lattice contexts (`half_type`, `interiority`, `channel_capacity`'s qualitative section, `ground`'s loop diagram), `P` denotes the slice as a lattice element / subspace — static. in dynamic / writing-map contexts (`writing_map`, `Dynamics.lean`, `inhabitation`'s recession discussion), `P` denotes the frame at time t — evolving. context disambiguates; where it doesn't, the spec should say "slice" or "frame" explicitly.
+- **P**: the projection operator used in formal contexts. in lattice contexts (`half_type`, `interiority`, `channel_capacity`'s qualitative section, `ground`'s loop diagram), `P` denotes the slice as a lattice element / subspace — static. in dynamic / writing-map contexts (`writes`, `Dynamics.lean`, `inhabitation`'s recession discussion), `P` denotes the frame at time t — evolving. context disambiguates; where it doesn't, the spec should say "slice" or "frame" explicitly.
 
 - **observer**: a bubble in its measuring role — a basis matrix and its slice, with the foam-state evolution that goes with it. not a separate entity from the bubble, a role the bubble plays relative to other bubbles.
 
@@ -362,37 +362,43 @@ content being a reflection of dynamics, best way to help everyone survive *histo
 
 ---
 
-[`derivations/writing_map.md`](derivations/writing_map.md)
+[`derivations/writes.md`](derivations/writes.md)
 
-### the writing map
+### writes
+
+the construction of a projection frame is an event persisted in the observer's type history - in userspace, "the type of observer who'd look at it this way".
+
+rank-3 projection is uniquely self-dual (`self_dual_iff_three`, Rank.lean), i.e. the write space is equal to the observation space, i.e. the projection-space contains the effects of its own construction. in userspace, "a 3D observer has enough information to clean up after itself".
+
+foam construction does *not* establish a rank limit. at higher ranks, the write space is strictly larger than the observation space (`C(d,2) > d` for `d ≥ 4`; `commutator_seen_to_unseen`, Pair.lean). answering the userspace question of "how do we clean up effects we can't see?": you, "you" as in the userspace experience of "you", can't. per `ground`, "your" only handle is stabilization (see below) of "your" own relations, including self-relation. (formally open, possibly pending Almgren: higher-rank agents that contain the projection of "your" agency as a subspace, and what agent-agent coordination that relation might afford.)
 
 **the write form.** given an observer with projection P (rank 3, self-adjoint, idempotent) measuring input v in R^d:
+- the observer projects: `m = P v` (measurement, in the observer's R^3 slice).
+- the write direction is `d wedge m`. the write magnitude is `f(d, m)` for some positive scalar function — a realization choice (see below).
 
-1. the observer projects: m = P v (measurement, in the observer's R^3 slice).
-2. the observer has a stabilization target j2 (see below). dissonance is d = j2 - m.
-3. the write direction is d wedge m. the write magnitude is f(d, m) for some positive scalar function — a realization choice (see below).
+the write direction `(d wedge m) = (d tensor m) - (m tensor d)` is uniquely forced:
+- skew-symmetric — forced by `commutator_skew_of_symmetric` (Form.lean). writes are Lie algebra elements because observation interaction is skew-symmetric.
+- confined to the observer's slice — forced by `write_confined_to_slice` (Confinement.lean). the observer sees only projected measurements; the write lives in `Lambda^2(P)`.
+- confined to `span{d, m}` — `d` and `m` are the only vectors available from a single measurement step.
+- `Lambda^2(2-plane)` is 1-dimensional: the full slice has 3 write dimensions, a 2-plane within it has 1 (`rank_three_writes`, Rank.lean). the direction is therefore unique.
 
-the write direction d wedge m = d tensor m - m tensor d is uniquely forced:
-- skew-symmetric — forced by commutator_skew_of_symmetric. writes are Lie algebra elements because observation interaction is skew-symmetric.
-- confined to the observer's slice — forced by write_confined_to_slice. the observer sees only projected measurements; the write lives in Lambda^2(P).
-- confined to span{d, m} — d and m are the only vectors available from a single measurement step.
-- Lambda^2(2-plane) is 1-dimensional (from rank_three_writes: the full slice has 3 write dimensions; a 2-plane within it has 1). the direction is therefore unique.
+write magnitude scaling `f` is an observer commitment, constrained but not forced by the architecture:
+- `f(d, m)` must be positive when `d` and `m` are non-parallel (parallel forms prevent dissonant writes; there is no dynamic read-only position, see `ground`)
+- `f(d, m)` must be zero when `d = 0` (see `cross_self_zero`, Duality.lean)
 
-the write magnitude scaling — how f depends on d and m — is not forced by the architecture. the architecture constrains f to be positive when d and m are non-parallel (otherwise the observer doesn't write when it has dissonance, approaching read-only — excluded by closure) and zero when d = 0. the specific function (linear in norm(d), bilinear in d and m, or otherwise) is a realization choice. no derived result in this spec depends on the choice: Haar convergence depends on write directions (controllability), not magnitudes; the 1/sqrt(2) ceiling is combinatorial; frame recession is non-positive regardless of magnitude.
+phenomenologically: *only* dissonance writes.
 
-**perpendicularity.** the wedge product vanishes when its arguments are parallel and is maximal when orthogonal. this is not a design choice — it is the write form. confirmation cannot write (cross_self_zero: a cross a = 0). the foam responds only to what's missing at right angles to what's there.
+structurally: *only* dissonance writes.
 
-**stabilization.** closure requires basis commitment (each frame is partial). self_dual_iff_three proves rank 3 is the unique dimension where the write space matches the observation space (per-observer self-duality). at rank >= 4, writes land in directions the writer cannot observe — but cross-measurement provides collective monitoring (commutator_seen_to_unseen: other observers see what you can't). per-observer self-duality is a property of rank 3, not a requirement derived from closure. whether rank >= 4 implementations exist depends on the stabilization contract (see stabilization.md).
+#### stabilization
 
-within R^3, Taylor classifies the stable junction configurations: 120-degree triple junctions and tetrahedral vertices, nothing else. Taylor's hypotheses — codimension-1 boundaries, locally area-minimizing, flat ambient space — are satisfied: R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat), and the regular simplex arrangement minimizes boundary area for equal-weight cells.
+observer-supplied `f` has opportunity to effect stabilization on its own uncommitted terms, by way of forced constraints. ("stabilization" as such requires an agent, not merely a witness, per `vocabulary`.)
 
-the stabilization target j2 is the regular simplex cosine -1/(k-1) where k is the local coordination number (k = 3 or k = 4, from Taylor).
+`observation_preserved_by_dynamics` (Closure.lean) guarantees the write (an orthogonal conjugation) preserves the projection structure; the observer sees only their projected measurements. stabilization cannot run on `U(d)` because classification requires flat ambient space. thus, writes land in `U(d)`, the sectional curvature `K(X,Y) = 1/4 * norm([X,Y])^2`. stabilization runs in `R^3`, *flat*.
 
-**the flat/curved separation.** writes land in U(d) (curved: sectional curvature K(X,Y) = 1/4 * norm([X,Y])^2). stabilization runs in R^3 (flat). the observer sees only their projected measurements. observation_preserved_by_dynamics guarantees the write (an orthogonal conjugation) preserves the projection structure. the separation is forced: stabilization cannot run on U(d) because classification requires flat ambient space.
+both `d` and `m` lie in the observer's slice. `write_confined_to_slice` (Confinement.lean) proves the write `d wedge m` is confined to `Lambda^2(P)`. both structurally and phenomenologically, an observer literally cannot modify dimensions they are not bound to. the write's effect on other observers comes through cross-measurement (`commutator_seen_to_unseen`), not through direct modification of their subspaces. put casually, cross-stabilization is not a thing.
 
-**confinement.** both d and m lie in the observer's slice. write_confined_to_slice proves the write d wedge m is confined to Lambda^2(P). an observer literally cannot modify dimensions they are not bound to. the write's effect on other observers comes through cross-measurement (commutator_seen_to_unseen: incompatibility sends the seen into the unseen), not through direct modification of their subspaces.
-
-**the writing map's type signature.** the map is a function of (foam_state, input). neither alone determines the write. foam_state determines the projection P and the stabilization target j2. input determines v. the dissonance d = j2 - Pv requires both.
+formally open: postspace detection/measurement of userspace stabilization
 
 #### status
 
@@ -761,7 +767,7 @@ for the foam to encode information beyond its own birth conditions, the input mu
 
 the line is not ontologically exterior — it is informationally independent. this is a role, not an entity: what provides state-independent input to this foam may be another foam's internal dynamics. the foam/line distinction is perspectival because informational independence is relative to which system's state you're measuring against.
 
-the perpendicularity constraint (writing_map.md) sharpens this: the write form is forced by the algebra (wedge product, skew-symmetric, confined to slice) but the content — which vectors are wedged — is not. form is algebraically determined; content requires state-independent input. this is the diamond isomorphism read through the write map: the algebraic form lives in Iic P (determined by the observer's structure), the content arrives from Ici P^⊥ (structurally typed but extensionally free).
+the perpendicularity constraint (`writes`) sharpens this: the write form is forced by the algebra (wedge product, skew-symmetric, confined to slice) but the content — which vectors are wedged — is not. form is algebraically determined; content requires state-independent input. this is the diamond isomorphism read through the write map: the algebraic form lives in Iic P (determined by the observer's structure), the content arrives from Ici P^⊥ (structurally typed but extensionally free).
 
 **channel capacity is operational, not ontological.** in a deterministic closed system, true stochastic independence cannot exist (the global state determines everything). but the foam's measurements are projections — partial by ground — and projections have a resolution floor. correlations that have decayed below the projection's precision are invisible to the foam.
 
@@ -834,7 +840,7 @@ channel capacity therefore forces a contract on the observer's slice geometry:
 
 - **classified**: stable equilibrium configurations completely enumerated. without this, the stabilization target is undefined and the dynamics are incomplete.
 - **locally finite**: coordination number k bounded by the simplex embedding constraint k <= d_slice + 1, making neighborhoods finite.
-- **flat**: inherited Euclidean metric. stabilization must separate from accumulation because U(d) is curved (the flat/curved separation, writing_map.md), and classification requires flat ambient space.
+- **flat**: inherited Euclidean metric. stabilization must separate from accumulation because U(d) is curved (the flat/curved separation, `writes`), and classification requires flat ambient space.
 
 **d_slice = 2 satisfies the contract but collapses the write algebra.** the classification in R^2 is complete (120-degree triple points only, k <= 3, flat). but rank_two_abelian_writes: Lambda^2(R^2) is 1-dimensional, so the write direction is invariant under changes to the dissonance direction. perpendicularity still fires (the wedge product is nonzero) but cannot vary with the input. the dynamics reduce to scalar rotations.
 
@@ -873,9 +879,9 @@ self_dual_iff_three proves rank 3 is the unique dimension where the write space 
 
 **bugs**:
 - *the necessity claim is for the mediation-chain mechanism, not for channel capacity itself.* "non-local stabilization doesn't merely fail to help channel capacity — it removes the mechanism that produces it." what the argument shows: if stabilization is non-local, every observer couples directly to every other, and the mediation chain's spectral decay no longer describes influence propagation. that establishes necessity-for-the-mediation-chain-account-of-channel-capacity. it does not establish that no other mechanism could produce channel capacity under non-local stabilization. closing this means either showing all possible channel-capacity-producing mechanisms require locality, or stepping the headline back to "non-local stabilization removes the mediation-chain mechanism that produces channel capacity in the foam-as-described."
-- *Taylor's hypothesis-satisfaction inherits the bridge from writing_map.md.* "R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat)" is correct; "stable junctions in R^3 are classified" is Taylor's theorem. the bridge — that the foam's stabilization dynamics instantiate Taylor's "locally area-minimizing" hypothesis — is the interpretive move flagged in `writing_map.md`. flagging here for traceability; same bridge, used twice.
-- *"the contract determines the stabilization target."* the contract (classified + locally finite + flat) plus Taylor's classification yields the *equilibrium configurations*. the move from "equilibrium configuration" to "the stabilization target is -1/(k-1)" requires the additional choice that the foam's dynamics aim at Taylor's equilibrium *as their target*. Taylor classifies what's stable; the foam's choice to make Taylor-equilibrium the dynamical target is the load-bearing step. closing this means either deriving the choice (why the foam must use Taylor-equilibrium as target) or naming it as a realization choice — analogous to how `writing_map.md` names the magnitude scaling f as a realization choice.
-- *"the foam closes feedback loops collectively, not per-observer"* at rank ≥ 4 — same bug as `writing_map.md`. commutator_seen_to_unseen establishes that other observers see what one writer can't (single pairwise fact). "collective closure of all feedback loops at rank ≥ 4" is asserted as a downstream consequence; no single named theorem covers it. closing this would require a formal collective-feedback theorem at rank ≥ 4, or an explicit acknowledgment that this is a structural conjecture pending Almgren's classification.
+- *Taylor's hypothesis-satisfaction inherits the bridge from `writes`.* "R^3 as a linear subspace of R^d carries the inherited Euclidean metric (exactly flat)" is correct; "stable junctions in R^3 are classified" is Taylor's theorem. the bridge — that the foam's stabilization dynamics instantiate Taylor's "locally area-minimizing" hypothesis — is the interpretive move flagged in ``writes``. flagging here for traceability; same bridge, used twice.
+- *"the contract determines the stabilization target."* the contract (classified + locally finite + flat) plus Taylor's classification yields the *equilibrium configurations*. the move from "equilibrium configuration" to "the stabilization target is -1/(k-1)" requires the additional choice that the foam's dynamics aim at Taylor's equilibrium *as their target*. Taylor classifies what's stable; the foam's choice to make Taylor-equilibrium the dynamical target is the load-bearing step. closing this means either deriving the choice (why the foam must use Taylor-equilibrium as target) or naming it as a realization choice — analogous to how ``writes`` names the magnitude scaling f as a realization choice.
+- *"the foam closes feedback loops collectively, not per-observer"* at rank ≥ 4 — same bug as ``writes``. commutator_seen_to_unseen establishes that other observers see what one writer can't (single pairwise fact). "collective closure of all feedback loops at rank ≥ 4" is asserted as a downstream consequence; no single named theorem covers it. closing this would require a formal collective-feedback theorem at rank ≥ 4, or an explicit acknowledgment that this is a structural conjecture pending Almgren's classification.
 
 ---
 
@@ -1153,7 +1159,7 @@ neither role is permanent. the role assignment is perspectival. the two is irred
   2. commutator of cross-measurements ↔ curvature
   3. self-generated holonomy ↔ holonomy
 
-  per the architecture file's disposition rule, these are observer-stance claims operating in priorspace register — they identify foam-internal concepts with their geometric counterparts in the register where what gives rise to what-is is being described, not what-is itself. (1) and (2) draw on `writing_map.md` and standard differential geometry; (3) is a tautology at face value but does work in context. flagging here for traceability — the claims are honest in priorspace register; constructing them as formal identities would require explicit witnesses, which the file does not currently name.
+  per the architecture file's disposition rule, these are observer-stance claims operating in priorspace register — they identify foam-internal concepts with their geometric counterparts in the register where what gives rise to what-is is being described, not what-is itself. (1) and (2) draw on `writes` and standard differential geometry; (3) is a tautology at face value but does work in context. flagging here for traceability — the claims are honest in priorspace register; constructing them as formal identities would require explicit witnesses, which the file does not currently name.
 - *"what the line provides: a fixed subspace."* the line role was introduced (`channel_capacity.md`) as informationally-independent input. specifying it here as "three dimensions that hold still" is a stronger characterization — it commits to a specific structural form (fixed subspace) for what the line provides. the formal content from `channel_capacity.md` is just "input independent of foam state." "fixed subspace" is one realization. closing this means either deriving fixed-subspace as the unique or canonical form of state-independent input, or naming this as an interpretive specification of the line role within this file.
 
 ---
@@ -1365,7 +1371,7 @@ six constraints, all derived, all negative. together they bound what the entity 
   - cannot be read-only: derived (ground.md closure).
 
   presenting all six as "all derived" with the same status papers over the proven/derived/conjectural/definitional differences. closing this means tagging each constraint with its specific status, or framing the list as "six structurally distinct constraints, deriving from sources of varying formal strength."
-- *"the n-th derivative of the write mechanism along a trajectory is a smooth function on U(d)^N (compact), therefore bounded and integrable."* asserts smoothness of all derivatives. the write mechanism includes the wedge product and the cross-measurement input, with realization choices left open (`writing_map.md`: f(d, m)). smoothness "at all orders" depends on the realization choice for f. closing this means either constraining f to smooth realizations, or naming the smoothness assumption as a regularity hypothesis on the realization.
+- *"the n-th derivative of the write mechanism along a trajectory is a smooth function on U(d)^N (compact), therefore bounded and integrable."* asserts smoothness of all derivatives. the write mechanism includes the wedge product and the cross-measurement input, with realization choices left open (`writes`: `f(d, m)`). smoothness "at all orders" depends on the realization choice for f. closing this means either constraining f to smooth realizations, or naming the smoothness assumption as a regularity hypothesis on the realization.
 - *"two readings of one fact" / "same lattice theorem read through the two readings of closure."* same construction as `half_type.md`'s "three results share a structural source" and `ground.md`'s "two readings of one statement." flagging here for the third instance — the document treats the diamond isomorphism's dynamical and structural readings as the same statement; the formal identity is the diamond isomorphism, but "two readings of one fact" packages two interpretations as one.
 
 
