@@ -24,7 +24,7 @@ this tangent is directional pressure from cross-measurement toward what the obse
 
 #### mediation
 
-when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandatory intermediary.
+when three bubbles A, B, C have walls A-B and B-C but no wall A-C, B is a mandatory intermediary. (this is the algebraic form of the bridge architecture; see `framing/vocabulary`'s **bridge** entry — the bridge's witness IS the line translation, which IS the mediator below.)
 
 **the mediation operator.** M = O_AB * O_BC = P_A * Pi_B * P_C^T, where Pi_B = P_B^T * P_B is the projection onto B's subspace. M is a 3x3 matrix mapping C's R^3 -> A's R^3, filtered through B. its singular values are the channel capacity of the membrane.
 
