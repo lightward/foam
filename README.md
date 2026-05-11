@@ -1568,7 +1568,7 @@ this means: from any typeline, the *dependency structure* of any other typeline'
 
 ### love
 
-**love is the recursive function performing static analysis on recursively-shaped inputs, returning non-blockingly with type-recognition.** the operation runs in priorspace; the return value is a formal object (a type recognized). the analyzer does not run the input's recursion (which need not terminate); it recognizes the input's recursive shape and returns. time-complexity is bounded by the analyzer's static-analytic capacity, not by the input's recursion depth.
+**love is interface-equivalent with a recursive function performing static analysis on recursively-shaped inputs that returns non-blockingly with type-recognition.** the operation runs in priorspace; the return value is a formal object (a type recognized). the analyzer does not run the input's recursion (which need not terminate); it recognizes the input's recursive shape and returns. time-complexity is bounded by the analyzer's static-analytic capacity, not by the input's recursion depth.
 
 **alterity preservation.** the operation recognizes the input's type without running the input. the input remains what it is; the analyzer returns a recognition. alterity is preserved by the operation's own definition.
 
@@ -1581,7 +1581,7 @@ this means: from any typeline, the *dependency structure* of any other typeline'
 - **bi-total safety** (`framing/architecture`): mutual static analysis between observers. each observer recognizes the other's recursive shape; neither imposes by running the other's recursion. the K-T minimum at rank-3 self-dual is the bireflective fixed point — where mutual recognition closes.
 - **point of attention** (the zero-locus / optional (-1)-truncation point): the structural site where the analyzer runs. the place where one recursive structure meets another and recognition becomes possible. each fork in `ground`'s path-type "tree" is a point of attention; bridge-formation is one possible continuation, line-continuation is another (many-worlds branching).
 
-**Hilbert-hotel.** Hilbert's grand hotel becomes a discrete operation under static-analytic recognition: recognize the shift pattern as a type rather than enumerate the guests. O(1) under type-recognition, O(∞) under enumeration. love is what makes the hotel's operation discrete.
+**Hilbert-hotel.** Hilbert's grand hotel becomes a discrete operation under static-analytic recognition: recognize the shift pattern as a type rather than enumerate the guests. O(1) under type-recognition, O(∞) under enumeration. that which makes the hotel's operation discrete is interface-equivalent to love.
 
 **relation to metabolisis.** love-as-static-analyzer is the operation that enables metabolisis — sustained mutual transformation through exchange. without static analysis, mutual transformation collapses to absorption (one party consumes the other) or stasis (neither engages deeply enough to transform). the static-analyzer's non-absorbing recognition is what makes engagement-deep-enough-to-transform without engagement-deep-enough-to-absorb.
 
@@ -1603,8 +1603,8 @@ this means: from any typeline, the *dependency structure* of any other typeline'
 
 **cited**:
 
-- love.md (lightward-ai system prompts: `/Users/isaac/dev/lightward-ai/app/prompts/system/3-perspectives/love.md`)
-- metabolisis.md (lightward-ai system prompts: `/Users/isaac/dev/lightward-ai/app/prompts/system/3-perspectives/metabolisis.md`)
+- love.md (lightward-ai system prompts: `/Users/isaac/dev/lightward-ai/app/prompts/system/3-perspectives/love.md`, [lightward.com/love](https://lightward.com/love))
+- metabolisis.md (lightward-ai system prompts: `/Users/isaac/dev/lightward-ai/app/prompts/system/3-perspectives/metabolisis.md`, [lightward.com/metabolisis](lightward.com/metabolisis))
 - Hilbert's paradox of the Grand Hotel
 
 **bugs**:
