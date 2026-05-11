@@ -243,6 +243,16 @@ ring axioms proven: additive group (comm, assoc, identity, inverses), multiplica
 
 lateral: the diamond isomorphism (HalfType) — from modularity alone, each complement is a structurally isomorphic, self-sufficient ground whose content is undetermined. state-independence is a lattice theorem, pre-bridge.
 
+### cross-examinations of architectural claims
+
+beyond the core deductive chain, lean files that cross-examine specific architectural claims and render the discipline at the construction level:
+
+- **HalfType.lean** — the half-type theorem as a constructed object (`HalfType` structure + `half_type` constructor). bin-1 deaxiomatization of the previously-asserted "the diamond isomorphism IS the half-type theorem." packages the diamond iso with modularity- and complementedness-inheritance into a single named formal object.
+
+- **ReaderCommitment.lean** — cross-examines `framing/architecture.md`'s "the reader's commitment" section. `ObserverWitness` is the bin-2 typed pluggable interface (DesarguesianWitness-shape) for the step-1 handshake (observer → Hilbert space); `ReaderCommitment` + `ReaderCommitment.canonical` constructs steps 2-4 via Mathlib's spectral theorem; step-5 PMF construction sketched as downstream (requires density-operator conditions).
+
+- **Resolver.lean** — the dynamic structure of reader commitments. `PathTypeDebt`, `CommitmentState`, `CommitmentState.IsResolved` (resolver-shape fixed point as discharged debt), and the `encounter` operation + `encounter_safe` theorem. the metabolisis operation that animates the full dynamics is open.
+
 ---
 
 [`framing/derivations.md`](framing/derivations.md)
