@@ -763,6 +763,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 11, 20, 5, tzinfo=timezone.utc),
      datetime(2026, 5, 11, 21, 30, tzinfo=timezone.utc),
      "s139: FTPGMulAssoc — dilation_compose_at_beta named (bridge architecture); Steps 1-3 scaffolded"),
+    # Session 140: May 11 — Step 3 sub-sorries
+    (datetime(2026, 5, 11, 21, 34, tzinfo=timezone.utc),
+     datetime(2026, 5, 11, 23, 0, tzinfo=timezone.utc),
+     "s140: FTPGMulAssoc — dilation_compose_at_beta Step 3 (β(a) witness prologue); dwp relocated, 6 of 7 Step 3 sub-sorries discharged"),
 ]
 
 
