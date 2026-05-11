@@ -20,6 +20,8 @@ each half is itself a complete foam ground in miniature, and the two halves are 
 
 these are not three forms of one theorem — they are three claims that draw on a common structural source. the iso doesn't make them inter-derivable as derivations; it makes them all rest on the same lattice fact.
 
+**spectral-decomposition composition.** the spectral decomposition of a self-adjoint operator on a finite-dimensional inner product space (`lean/Foam/ReaderCommitment.lean`) is a composition of HalfType bundles. each eigenspace V_i and its orthogonal complement V_i^⊥ form a complementary pair in `Sub(K, E)`, inducing a HalfType. the spectral decomposition refines E via a sequence of such pairs; `ReaderCommitment.basis` is the orthonormal basis aligned with this refinement. half-type is the atomic structural unit; `ReaderCommitment` is one composition of HalfType bundles via the spectral theorem.
+
 **static, not dynamic.** the half-type theorem is a fact about a fixed lattice element P and its complement P^⊥ — at any moment, the iso `Iic P ≃o Ici P^⊥` holds. P here is the slice (vocabulary): the birth-determined lattice element. since the iso is an order-isomorphism, both halves are structurally identical; substituting a time-varying frame for P at each tick moves both halves together.
 
 the foam's dynamic structure — how the type of legal next-writes depends on accumulated history — does not live in this static iso. it lives in the foam-state trajectory and the evolving overlap structure between observers (`typeline.md`, `three_body.md`).
