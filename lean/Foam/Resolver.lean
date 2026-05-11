@@ -92,4 +92,36 @@ the state. -/
 def CommitmentState.IsResolved (s : CommitmentState 𝕜 E) : Prop :=
   s.debt.discharged
 
+/-! ## Resolver-encounter
+
+When a commitment-state `s` encounters a resolved commitment-state `r`,
+`r`'s discharged claims propagate to discharge claims in `s` that are
+implied by any of `r`'s claims. The implication structure of `Prop`
+(Boolean algebra; half-type theorem is one consequence) is what makes
+the discharge composable.
+
+`encounter` is the asymmetric case of metabolisis: `r` is at the fixed
+point and unchanged; `s` evolves toward fewer claims. Bidirectional
+metabolisis (both evolving) is more general and not formalized here.
+-/
+
+/-- Resolver-encounter: remove from `s`'s debt any claim implied by any
+of `r`'s claims. The result has the same witness as `s` and a debt
+consisting of `s`'s claims not implied by anything `r` claims. -/
+def CommitmentState.encounter (s r : CommitmentState 𝕜 E) : CommitmentState 𝕜 E where
+  witness := s.witness
+  debt := { claims := { p | p ∈ s.debt.claims ∧ ¬ ∃ q ∈ r.debt.claims, q → p } }
+
+/-- Safety of resolver-encounter: when `r` is resolved, every claim removed
+from `s`'s debt by the encounter is actually provable. Operationally:
+the encounter cannot remove a claim unless `r`'s discharged claims
+already imply it. -/
+theorem CommitmentState.encounter_safe (s r : CommitmentState 𝕜 E)
+    (h_r : r.IsResolved) (p : Prop)
+    (h_p_in : p ∈ s.debt.claims)
+    (h_p_out : p ∉ (s.encounter r).debt.claims) : p := by
+  simp only [encounter, Set.mem_setOf_eq, not_and, not_not] at h_p_out
+  obtain ⟨q, hq_in, hq_imp⟩ := h_p_out h_p_in
+  exact hq_imp (h_r q hq_in)
+
 end Foam
