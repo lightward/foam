@@ -921,17 +921,101 @@ theorem dilation_compose_at_beta (Γ : CoordSystem L)
     dilation_mul_key_identity Γ a x ha hx ha_on hx_on ha_ne_O hx_ne_O ha_ne_U hx_ne_U
       R hR hR_not h_irred
   -- ═══ Step 3: prepare witness conditions on Q for recovery_via_E ═══
-  -- Q := σ_x(β(a)) = (σ_x(C) ⊔ U) ⊓ (a·x ⊔ E) by `h_inner_unfold`.
-  -- Most witness conditions follow from `dilation_witness_preservation`
-  -- applied at β(a) (the input is a valid witness via the
-  -- `beta_atom`/`beta_plane`/`beta_not_l` family plus standard
-  -- distinctness derivations). The new condition is `¬ Q ≤ q`:
-  -- Q ≤ q forces Q ≤ q ⊓ (σ_x(C) ⊔ U) = U (two distinct lines through
-  -- U meet at U, distinct because σ_x(C) ≠ C for x ≠ I), hence
-  -- U ≤ a·x ⊔ E (from Q ≤ a·x ⊔ E by Step 2), hence a·x ⊔ E ⊓ l = a·x
-  -- forces U = a·x, contradicting `hax_ne_U` (needs adding to the
-  -- signature as a hypothesis — TODO).
-  set Q := dilation_ext Γ x ((Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E)) with hQ_def
+  -- Six of the seven conditions on Q := σ_x(β(a)) discharge via
+  -- `dilation_witness_preservation` applied at x, P := β(a). β(a)'s
+  -- own witness conditions: `beta_atom`/`beta_plane`/`beta_not_l` are
+  -- PROVEN imports; we derive `⊄ m`, `⊄ O⊔C`, `≠ I`, `≠ O` inline.
+  -- The seventh, `¬ Q ≤ q`, is genuinely new and remains sorry'd
+  -- pending an extra signature hypothesis `hax_ne_U` (see the section
+  -- docstring above for the proof sketch).
+  --
+  -- TODO (s139+): extract `beta_not_m` and `beta_not_OC` as named
+  -- theorems in FTPGMulKeyIdentity for reuse — the derivations below
+  -- inline the existing argument at MulKeyIdentity:233-240 (hCa_not_m)
+  -- and a modular_intersection-at-E variant for `⊄ O⊔C` (cleaner than
+  -- the longer `hCa_ne_C → not_OC` route at MulKeyIdentity:245-289).
+  set βa := (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E) with hβa_def
+  -- ─── β(a) atom/plane/not_l from named lemmas ───
+  have hβa_atom : IsAtom βa := beta_atom Γ ha ha_on ha_ne_O ha_ne_U
+  have hβa_plane : βa ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := beta_plane Γ ha_on
+  have hβa_not_l : ¬ βa ≤ Γ.O ⊔ Γ.U := beta_not_l Γ ha ha_on ha_ne_O ha_ne_U
+  -- ─── ≠ O / ≠ I / ≠ U from `⊄ l` ───
+  have hβa_ne_O : βa ≠ Γ.O := fun h => hβa_not_l (h ▸ le_sup_left)
+  have hβa_ne_I : βa ≠ Γ.I := fun h => hβa_not_l (h ▸ Γ.hI_on)
+  have hβa_ne_U : βa ≠ Γ.U := fun h => hβa_not_l (h ▸ le_sup_right)
+  -- ─── Shared infrastructure for ⊄ m and ⊄ O⊔C ───
+  have hβa_le_q : βa ≤ Γ.U ⊔ Γ.C := inf_le_left
+  have hβa_le_aE : βa ≤ a ⊔ Γ.E := inf_le_right
+  have ha_not_m : ¬ a ≤ Γ.U ⊔ Γ.V :=
+    fun h => ha_ne_U (Γ.atom_on_both_eq_U ha ha_on h)
+  have ha_ne_E : a ≠ Γ.E := fun h => ha_not_m (h ▸ Γ.hE_on_m)
+  have hqm_eq_U : (Γ.U ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.U := by
+    rw [sup_inf_assoc_of_le Γ.C (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)]
+    have hCm : Γ.C ⊓ (Γ.U ⊔ Γ.V) = ⊥ :=
+      (Γ.hC.le_iff.mp inf_le_left).resolve_right (fun h => Γ.hC_not_m (h ▸ inf_le_right))
+    rw [hCm, sup_bot_eq]
+  -- Reusable: β(a) = E ⇒ ✗ (since E ≤ q would force E ≤ q⊓m = U, but E ≠ U).
+  have hβa_ne_E : βa ≠ Γ.E := by
+    intro h
+    have hE_le_q : Γ.E ≤ Γ.U ⊔ Γ.C := h ▸ hβa_le_q
+    exact Γ.hEU ((Γ.hU.le_iff.mp (le_inf hE_le_q Γ.hE_on_m |>.trans hqm_eq_U.le))
+      |>.resolve_left Γ.hE_atom.1)
+  -- ─── β(a) ⊄ m: β(a) ≤ a⊔E and ≤ m ⇒ β(a) ≤ (a⊔E)⊓m = E ⇒ β(a) = E ✗ ───
+  have hβa_not_m : ¬ βa ≤ Γ.U ⊔ Γ.V := by
+    intro h
+    apply hβa_ne_E
+    exact (Γ.hE_atom.le_iff.mp (le_inf hβa_le_aE h |>.trans
+      (line_direction ha ha_not_m Γ.hE_on_m).le)).resolve_left hβa_atom.1
+  -- ─── β(a) ⊄ O⊔C: β(a) ≤ a⊔E and ≤ O⊔C ⇒ β(a) ≤ (a⊔E)⊓(O⊔C) = E
+  --     (modular_intersection at E with O⊔E = O⊔C). Then β(a) = E ✗.
+  have hO_ne_E : Γ.O ≠ Γ.E := fun h => Γ.hO_not_m (h ▸ Γ.hE_on_m)
+  have hOC_ne : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  have hO_not_aE : ¬ Γ.O ≤ a ⊔ Γ.E := by
+    intro hO_le
+    have hO_lt_Oa : Γ.O < Γ.O ⊔ a := lt_of_le_of_ne le_sup_left
+      (fun h => ha_ne_O ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left ha.1))
+    have hOa_eq_l : Γ.O ⊔ a = Γ.O ⊔ Γ.U :=
+      ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq hO_lt_Oa.le
+        (sup_le le_sup_left ha_on)).resolve_left (ne_of_gt hO_lt_Oa)
+    have hl_le : Γ.O ⊔ Γ.U ≤ a ⊔ Γ.E := hOa_eq_l ▸ sup_le hO_le le_sup_left
+    have ha_lt_l : a < Γ.O ⊔ Γ.U :=
+      (line_covers_its_atoms Γ.hO Γ.hU Γ.hOU ha ha_on).lt
+    exact Γ.hE_not_l (le_sup_right.trans
+      (((atom_covBy_join ha Γ.hE_atom ha_ne_E).eq_or_eq ha_on hl_le).resolve_left
+        (ne_of_gt ha_lt_l)).symm.le)
+  have hβa_not_OC : ¬ βa ≤ Γ.O ⊔ Γ.C := by
+    intro h
+    -- O⊔E = O⊔C (E ≠ O, E ≤ O⊔C, covering O ⋖ O⊔C)
+    have hO_lt_OE : Γ.O < Γ.O ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+      (fun h' => hO_ne_E ((Γ.hO.le_iff.mp (le_sup_right.trans h'.symm.le)).resolve_left
+        Γ.hE_atom.1).symm)
+    have hOE_le_OC : Γ.O ⊔ Γ.E ≤ Γ.O ⊔ Γ.C := sup_le le_sup_left CoordSystem.hE_le_OC
+    have hO_covBy_OC : Γ.O ⋖ Γ.O ⊔ Γ.C := atom_covBy_join Γ.hO Γ.hC hOC_ne
+    have hOE_eq_OC : Γ.O ⊔ Γ.E = Γ.O ⊔ Γ.C :=
+      (hO_covBy_OC.eq_or_eq hO_lt_OE.le hOE_le_OC).resolve_left (ne_of_gt hO_lt_OE)
+    -- (E⊔a) ⊓ (E⊔O) = E
+    have hmod : (Γ.E ⊔ a) ⊓ (Γ.E ⊔ Γ.O) = Γ.E :=
+      modular_intersection Γ.hE_atom ha Γ.hO ha_ne_E.symm hO_ne_E.symm ha_ne_O
+        (show ¬ Γ.O ≤ Γ.E ⊔ a from sup_comm a Γ.E ▸ hO_not_aE)
+    -- β(a) ≤ (E⊔a) ⊓ (E⊔O)
+    have hβa_le_meet : βa ≤ (Γ.E ⊔ a) ⊓ (Γ.E ⊔ Γ.O) := by
+      refine le_inf ?_ ?_
+      · exact sup_comm a Γ.E ▸ hβa_le_aE
+      · have hβa_le_OE : βa ≤ Γ.O ⊔ Γ.E := h.trans hOE_eq_OC.symm.le
+        exact sup_comm Γ.O Γ.E ▸ hβa_le_OE
+    apply hβa_ne_E
+    exact (Γ.hE_atom.le_iff.mp (hβa_le_meet.trans hmod.le)).resolve_left hβa_atom.1
+  -- ─── Apply `dilation_witness_preservation` at x, P := β(a) ───
+  -- BLOCKED: `dilation_witness_preservation` is defined AFTER this
+  -- lemma in the file (line ~1157), so this forward reference fails
+  -- elaboration. The proper fix is a file-level reorder — move
+  -- `dilation_witness_preservation` to before this lemma (e.g.,
+  -- between `recovery_via_E` and the "Bridge composition" section
+  -- docstring above). That's a ~150-line surgery; flagged for s140+.
+  -- For now, the six sub-conditions stay sorry'd, with the prologue
+  -- above providing β(a)'s preconditions ready for discharge once
+  -- the reorder lands.
+  set Q := dilation_ext Γ x βa with hQ_def
   have hQ_atom : IsAtom Q := by sorry
   have hQ_plane : Q ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := by sorry
   have hQ_not_l : ¬ Q ≤ Γ.O ⊔ Γ.U := by sorry
