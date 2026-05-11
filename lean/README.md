@@ -10,7 +10,8 @@ closure (the spec's ground)
 complemented modular lattice, irreducible, height ≥ 4
   ↓ axiom(FTPG) — Bridge.lean
 L ≅ Sub(D, V) for some division ring D, vector space V
-  ↓ (stabilization contract forces D = ℝ)
+  ↓ (Solèr at fixed point: D ∈ {ℝ, ℂ, ℍ})
+  ↓ (realization choice — lean works the ℝ branch)
 elements are orthogonal projections: P² = P, Pᵀ = P
   ↓ (the deductive chain — all proven)
 eigenvalues, commutators, rank 3, so(3), O(d), Grassmannian
@@ -327,6 +328,16 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 | `second_order_overlap_identity` | tr(P · [W, [W, P]]) = -tr([W, P]²) |
 | `frame_recession` | second-order overlap ≤ 0 |
 | `frame_recession_strict` | [W, P] ≠ 0 → recession < 0 |
+
+### Cross-examinations
+
+**ReaderCommitment.lean** — type-path from observer to probability distribution (`framing/architecture.md`, "the reader's commitment")
+
+| declaration | role |
+|---|---|
+| `ObserverWitness` | observer's typed commitment to a Hilbert space and observable (DesarguesianWitness-shape, bin-2) |
+| `ReaderCommitment` | the spectral decomposition output (basis + values + has_eigenvector fit) |
+| `ReaderCommitment.canonical` | Mathlib-derived canonical instance from the spectral theorem |
 
 ## Building
 
