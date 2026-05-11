@@ -788,6 +788,156 @@ theorem recovery_via_E (Γ : CoordSystem L)
   -- Atom equality: σP ≤ RHS atom ⇒ σP = RHS
   exact (hRHS_atom.le_iff.mp hσP_le_meet).resolve_left hσP_atom.1
 
+/-- **Witness preservation under dilation.**
+
+    If `P` is a valid witness for `dilation_compose_at_witness` and
+    `dilation_determined_by_param` (atom in π, off l, off m, off O⊔C,
+    ≠ I), and `x` is a non-degenerate dilation parameter (atom on l,
+    ≠ O, ≠ U, ≠ I), then `dilation_ext Γ x P` is also a valid
+    witness. Used to chain `dilation_compose_at_witness` calls in
+    `coord_mul_assoc`.
+
+    Sub-claims, decomposed:
+      * `σ_x(P)` atom — `dilation_ext_atom`, PROVEN
+      * `σ_x(P) ≤ π` — `dilation_ext_plane`, PROVEN
+      * `σ_x(P) ∉ m` — `dilation_ext_not_m`, PROVEN
+      * `σ_x(P) ∉ l` — short modular argument; appears inline at
+        FTPGDilation:646 inside `dilation_preserves_direction`
+      * `σ_x(P) ∉ O⊔C` — needs proof (similar modular shape)
+      * `σ_x(P) ≠ I` — needs proof; uses dilation injectivity at I
+        (`σ_x(I) = x ≠ I`, so if `σ_x(P) = I` then `P = I` ✗) -/
+theorem dilation_witness_preservation (Γ : CoordSystem L)
+    (x : L) (hx : IsAtom x) (hx_on : x ≤ Γ.O ⊔ Γ.U)
+    (hx_ne_O : x ≠ Γ.O) (hx_ne_U : x ≠ Γ.U) (hx_ne_I : x ≠ Γ.I)
+    {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I)
+    (hP_ne_O : P ≠ Γ.O) :
+    IsAtom (dilation_ext Γ x P) ∧
+    dilation_ext Γ x P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ∧
+    ¬ dilation_ext Γ x P ≤ Γ.O ⊔ Γ.U ∧
+    ¬ dilation_ext Γ x P ≤ Γ.U ⊔ Γ.V ∧
+    ¬ dilation_ext Γ x P ≤ Γ.O ⊔ Γ.C ∧
+    dilation_ext Γ x P ≠ Γ.I := by
+  set m := Γ.U ⊔ Γ.V
+  set l := Γ.O ⊔ Γ.U
+  set σ := dilation_ext Γ x P
+  set d_P := (Γ.I ⊔ P) ⊓ m
+  -- ═══ Sub-claim 1: σ atom (existing lemma) ═══
+  have hσ_atom : IsAtom σ :=
+    dilation_ext_atom Γ hP hx hx_on hx_ne_O hx_ne_U hP_plane hP_not_l hP_ne_O hP_ne_I hP_not_m
+  -- ═══ Sub-claim 2: σ ≤ π (existing lemma) ═══
+  have hσ_plane : σ ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := dilation_ext_plane Γ hP hx hx_on hP_plane
+  -- ═══ Sub-claim 3: σ ∉ m (existing lemma) ═══
+  have hσ_not_m : ¬ σ ≤ m :=
+    dilation_ext_not_m Γ hP hx hx_on hx_ne_O hx_ne_U hP_plane hP_not_m hP_not_l hP_ne_O
+      hP_ne_I hx_ne_I
+  -- ═══ Helpers shared across remaining sub-claims ═══
+  have hx_not_m : ¬ x ≤ m := fun h => hx_ne_U (Γ.atom_on_both_eq_U hx hx_on h)
+  have hOC : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  have hUC : Γ.U ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+  have hOx_eq_l : Γ.O ⊔ x = l := by
+    show Γ.O ⊔ x = Γ.O ⊔ Γ.U
+    have hO_lt : Γ.O < Γ.O ⊔ x := by
+      apply lt_of_le_of_ne le_sup_left; intro h
+      exact hx_ne_O ((Γ.hO.le_iff.mp (h ▸ le_sup_right)).resolve_left hx.1)
+    exact ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq hO_lt.le
+      (sup_le le_sup_left hx_on)).resolve_left (ne_of_gt hO_lt)
+  have hd_P_atom : IsAtom d_P :=
+    line_meets_m_at_atom Γ.hI hP (Ne.symm hP_ne_I)
+      (sup_le (Γ.hI_on.trans le_sup_left) hP_plane) Γ.m_covBy_π.le Γ.m_covBy_π Γ.hI_not_m
+  have hσ_le_OP : σ ≤ Γ.O ⊔ P := inf_le_left
+  -- ═══ Key sub-claim: σ ≠ O ═══
+  -- If σ = O, then O ≤ x ⊔ d_P (since σ ≤ x ⊔ d_P).
+  -- Then O ⊔ x = l ≤ x ⊔ d_P. So U ≤ l ⊓ m ≤ (x ⊔ d_P) ⊓ m = d_P (line_direction).
+  -- So U = d_P (atoms). Then U ≤ I ⊔ P, so I ⊔ U = l ≤ I ⊔ P, so P ≤ l. ✗
+  have hσ_ne_O : σ ≠ Γ.O := by
+    intro h_eq
+    have hO_le_xdP : Γ.O ≤ x ⊔ d_P := h_eq ▸ (inf_le_right : σ ≤ x ⊔ d_P)
+    have hl_le_xdP : l ≤ x ⊔ d_P :=
+      hOx_eq_l.symm.le.trans (sup_le hO_le_xdP le_sup_left)
+    have hxdP_inf_m : (x ⊔ d_P) ⊓ m = d_P :=
+      line_direction hx hx_not_m (inf_le_right : d_P ≤ m)
+    have hU_le_dP : Γ.U ≤ d_P := by
+      have h1 : Γ.U ≤ (x ⊔ d_P) ⊓ m :=
+        le_inf ((le_sup_right : Γ.U ≤ l).trans hl_le_xdP) (le_sup_left : Γ.U ≤ m)
+      exact hxdP_inf_m ▸ h1
+    have hU_eq_dP : Γ.U = d_P := IsAtom.eq_of_le Γ.hU hd_P_atom hU_le_dP
+    -- U = d_P = (I⊔P)⊓m, so U ≤ I⊔P
+    have hU_le_IP : Γ.U ≤ Γ.I ⊔ P := hU_eq_dP ▸ (inf_le_left : d_P ≤ Γ.I ⊔ P)
+    -- I⊔U covers I (atom_covBy_join with I ≠ U)
+    have hIU_covBy : Γ.I ⋖ Γ.I ⊔ Γ.U := atom_covBy_join Γ.hI Γ.hU Γ.hUI.symm
+    -- I⊔U ≤ I⊔P (U ≤ I⊔P, I ≤ I⊔P)
+    have hIU_le_IP : Γ.I ⊔ Γ.U ≤ Γ.I ⊔ P := sup_le le_sup_left hU_le_IP
+    -- I < I⊔U (cover relation)
+    have hI_lt_IU : Γ.I < Γ.I ⊔ Γ.U := hIU_covBy.lt
+    -- I ⋖ I⊔P (atom_covBy_join with P ≠ I)
+    have hI_covBy_IP : Γ.I ⋖ Γ.I ⊔ P := atom_covBy_join Γ.hI hP (Ne.symm hP_ne_I)
+    -- I⊔U = I⊔P (by covering on I⊔P, since I⊔U strictly above I and ≤ I⊔P)
+    have hIU_eq_IP : Γ.I ⊔ Γ.U = Γ.I ⊔ P :=
+      (hI_covBy_IP.eq_or_eq hI_lt_IU.le hIU_le_IP).resolve_left (ne_of_gt hI_lt_IU)
+    -- I⊔U = l (covering on U ⋖ l with I < I⊔U, both ≤ l)
+    have hIU_eq_l : Γ.I ⊔ Γ.U = l := by
+      show Γ.I ⊔ Γ.U = Γ.O ⊔ Γ.U
+      have hI_le_l : Γ.I ≤ Γ.O ⊔ Γ.U := Γ.hI_on
+      have hIU_le_l : Γ.I ⊔ Γ.U ≤ Γ.O ⊔ Γ.U := sup_le hI_le_l le_sup_right
+      have hU_lt : Γ.U < Γ.I ⊔ Γ.U := lt_of_le_of_ne le_sup_right
+        (fun h => Γ.hUI ((Γ.hU.le_iff.mp (le_sup_left.trans h.symm.le)).resolve_left Γ.hI.1).symm)
+      have hU_covBy_l : Γ.U ⋖ Γ.O ⊔ Γ.U := by
+        rw [sup_comm]; exact atom_covBy_join Γ.hU Γ.hO Γ.hOU.symm
+      exact (hU_covBy_l.eq_or_eq hU_lt.le hIU_le_l).resolve_left (ne_of_gt hU_lt)
+    -- So I⊔P = l, hence P ≤ l. Contradiction.
+    exact hP_not_l (le_sup_right.trans (hIU_eq_IP.symm.trans hIU_eq_l).le)
+  -- ═══ Sub-claim 4: σ ∉ l ═══
+  -- σ ≤ O⊔P. If σ ≤ l, then σ ≤ l ⊓ (O⊔P) = O (modular). So σ = O. ✗
+  have hOP_l_eq_O : (Γ.O ⊔ Γ.U) ⊓ (Γ.O ⊔ P) = Γ.O :=
+    modular_intersection Γ.hO Γ.hU hP Γ.hOU (Ne.symm hP_ne_O)
+      (fun h' => hP_not_l (h' ▸ le_sup_right)) hP_not_l
+  have hσ_not_l : ¬ σ ≤ l := by
+    intro h
+    have hσ_le_O : σ ≤ Γ.O := hOP_l_eq_O ▸ le_inf h hσ_le_OP
+    exact hσ_ne_O ((Γ.hO.le_iff.mp hσ_le_O).resolve_left hσ_atom.1)
+  -- ═══ Sub-claim 5: σ ∉ O⊔C ═══
+  -- σ ≤ O⊔P. If σ ≤ O⊔C, then σ ≤ (O⊔P) ⊓ (O⊔C) = O (modular, since P ∉ O⊔C).
+  -- Need: ¬ C ≤ O⊔P (else O⊔C ≤ O⊔P, covering forces O⊔C = O⊔P, P ≤ O⊔C ✗)
+  have hC_not_OP : ¬ Γ.C ≤ Γ.O ⊔ P := by
+    intro h
+    have hOC_le : Γ.O ⊔ Γ.C ≤ Γ.O ⊔ P := sup_le le_sup_left h
+    have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+    have hO_lt_OC : Γ.O < Γ.O ⊔ Γ.C := lt_of_le_of_ne le_sup_left
+      (fun h' => hOC ((Γ.hO.le_iff.mp (le_sup_right.trans h'.symm.le)).resolve_left Γ.hC.1).symm)
+    have hOC_eq_OP : Γ.O ⊔ Γ.C = Γ.O ⊔ P :=
+      (hO_covBy_OP.eq_or_eq hO_lt_OC.le hOC_le).resolve_left (ne_of_gt hO_lt_OC)
+    exact hP_not_OC (le_sup_right.trans hOC_eq_OP.symm.le)
+  have hP_ne_C : P ≠ Γ.C := fun h => hP_not_OC (h ▸ le_sup_right)
+  have hOP_OC_eq_O : (Γ.O ⊔ P) ⊓ (Γ.O ⊔ Γ.C) = Γ.O :=
+    modular_intersection Γ.hO hP Γ.hC (Ne.symm hP_ne_O) hOC hP_ne_C hC_not_OP
+  have hσ_not_OC : ¬ σ ≤ Γ.O ⊔ Γ.C := by
+    intro h
+    have hσ_le_O : σ ≤ Γ.O := hOP_OC_eq_O ▸ le_inf hσ_le_OP h
+    exact hσ_ne_O ((Γ.hO.le_iff.mp hσ_le_O).resolve_left hσ_atom.1)
+  -- ═══ Sub-claim 6: σ ≠ I ═══
+  -- σ ≤ O⊔P. If σ = I, then I ≤ O⊔P, then O⊔I = l ≤ O⊔P (covering), so P ≤ l. ✗
+  have hσ_ne_I : σ ≠ Γ.I := by
+    intro h_eq
+    have hI_le_OP : Γ.I ≤ Γ.O ⊔ P := h_eq ▸ hσ_le_OP
+    have hOI_le_OP : Γ.O ⊔ Γ.I ≤ Γ.O ⊔ P := sup_le le_sup_left hI_le_OP
+    have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+    have hO_lt_OI : Γ.O < Γ.O ⊔ Γ.I := lt_of_le_of_ne le_sup_left
+      (fun h => Γ.hOI ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left Γ.hI.1).symm)
+    have hOI_eq_OP : Γ.O ⊔ Γ.I = Γ.O ⊔ P :=
+      (hO_covBy_OP.eq_or_eq hO_lt_OI.le hOI_le_OP).resolve_left (ne_of_gt hO_lt_OI)
+    -- O⊔I = l (covering)
+    have hOI_eq_l : Γ.O ⊔ Γ.I = l := by
+      show Γ.O ⊔ Γ.I = Γ.O ⊔ Γ.U
+      have hO_covBy_l : Γ.O ⋖ Γ.O ⊔ Γ.U := atom_covBy_join Γ.hO Γ.hU Γ.hOU
+      exact (hO_covBy_l.eq_or_eq hO_lt_OI.le (sup_le le_sup_left Γ.hI_on)).resolve_left
+        (ne_of_gt hO_lt_OI)
+    -- l = O⊔P, so P ≤ l. ✗
+    -- chain: P ≤ O⊔P = O⊔I (hOI_eq_OP.symm) = l (hOI_eq_l)
+    exact hP_not_l (le_sup_right.trans (hOI_eq_OP.symm.trans hOI_eq_l).le)
+  exact ⟨hσ_atom, hσ_plane, hσ_not_l, hσ_not_m, hσ_not_OC, hσ_ne_I⟩
+
 /-! ## Bridge composition: σ-composition at a β-image (s138)
 
 The s135 architectural prediction, with `recovery_via_E` now PROVEN
@@ -1006,23 +1156,15 @@ theorem dilation_compose_at_beta (Γ : CoordSystem L)
     apply hβa_ne_E
     exact (Γ.hE_atom.le_iff.mp (hβa_le_meet.trans hmod.le)).resolve_left hβa_atom.1
   -- ─── Apply `dilation_witness_preservation` at x, P := β(a) ───
-  -- BLOCKED: `dilation_witness_preservation` is defined AFTER this
-  -- lemma in the file (line ~1157), so this forward reference fails
-  -- elaboration. The proper fix is a file-level reorder — move
-  -- `dilation_witness_preservation` to before this lemma (e.g.,
-  -- between `recovery_via_E` and the "Bridge composition" section
-  -- docstring above). That's a ~150-line surgery; flagged for s140+.
-  -- For now, the six sub-conditions stay sorry'd, with the prologue
-  -- above providing β(a)'s preconditions ready for discharge once
-  -- the reorder lands.
+  -- Apply dilation_witness_preservation (relocated above this section) at x, P := β(a)
+  -- to discharge 6 of the 7 sub-witness conditions on Q := σ_x(β(a)).
   set Q := dilation_ext Γ x βa with hQ_def
-  have hQ_atom : IsAtom Q := by sorry
-  have hQ_plane : Q ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := by sorry
-  have hQ_not_l : ¬ Q ≤ Γ.O ⊔ Γ.U := by sorry
-  have hQ_not_m : ¬ Q ≤ Γ.U ⊔ Γ.V := by sorry
-  have hQ_not_OC : ¬ Q ≤ Γ.O ⊔ Γ.C := by sorry
+  obtain ⟨hQ_atom, hQ_plane, hQ_not_l, hQ_not_m, hQ_not_OC, hQ_ne_I⟩ :=
+    dilation_witness_preservation Γ x hx hx_on hx_ne_O hx_ne_U hx_ne_I
+      hβa_atom hβa_plane hβa_not_l hβa_not_m hβa_not_OC hβa_ne_I hβa_ne_O
+  -- Seventh condition (genuinely new): `¬ Q ≤ q`
+  -- Requires extra signature hypothesis `hax_ne_U` per section docstring.
   have hQ_not_q : ¬ Q ≤ Γ.U ⊔ Γ.C := by sorry
-  have hQ_ne_I : Q ≠ Γ.I := by sorry
   -- ═══ Step 4: apply `recovery_via_E` to σ_y(Q) ═══
   have h_recovery : dilation_ext Γ y Q =
       (dilation_ext Γ y (beta_cast Γ Q) ⊔ Γ.E) ⊓ (Γ.O ⊔ Q) :=
@@ -1142,156 +1284,6 @@ theorem dilation_compose_at_witness (Γ : CoordSystem L)
     dilation_ext Γ (coord_mul Γ x y) P =
       dilation_ext Γ y (dilation_ext Γ x P) := by
   sorry
-
-/-- **Witness preservation under dilation.**
-
-    If `P` is a valid witness for `dilation_compose_at_witness` and
-    `dilation_determined_by_param` (atom in π, off l, off m, off O⊔C,
-    ≠ I), and `x` is a non-degenerate dilation parameter (atom on l,
-    ≠ O, ≠ U, ≠ I), then `dilation_ext Γ x P` is also a valid
-    witness. Used to chain `dilation_compose_at_witness` calls in
-    `coord_mul_assoc`.
-
-    Sub-claims, decomposed:
-      * `σ_x(P)` atom — `dilation_ext_atom`, PROVEN
-      * `σ_x(P) ≤ π` — `dilation_ext_plane`, PROVEN
-      * `σ_x(P) ∉ m` — `dilation_ext_not_m`, PROVEN
-      * `σ_x(P) ∉ l` — short modular argument; appears inline at
-        FTPGDilation:646 inside `dilation_preserves_direction`
-      * `σ_x(P) ∉ O⊔C` — needs proof (similar modular shape)
-      * `σ_x(P) ≠ I` — needs proof; uses dilation injectivity at I
-        (`σ_x(I) = x ≠ I`, so if `σ_x(P) = I` then `P = I` ✗) -/
-theorem dilation_witness_preservation (Γ : CoordSystem L)
-    (x : L) (hx : IsAtom x) (hx_on : x ≤ Γ.O ⊔ Γ.U)
-    (hx_ne_O : x ≠ Γ.O) (hx_ne_U : x ≠ Γ.U) (hx_ne_I : x ≠ Γ.I)
-    {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
-    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
-    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I)
-    (hP_ne_O : P ≠ Γ.O) :
-    IsAtom (dilation_ext Γ x P) ∧
-    dilation_ext Γ x P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ∧
-    ¬ dilation_ext Γ x P ≤ Γ.O ⊔ Γ.U ∧
-    ¬ dilation_ext Γ x P ≤ Γ.U ⊔ Γ.V ∧
-    ¬ dilation_ext Γ x P ≤ Γ.O ⊔ Γ.C ∧
-    dilation_ext Γ x P ≠ Γ.I := by
-  set m := Γ.U ⊔ Γ.V
-  set l := Γ.O ⊔ Γ.U
-  set σ := dilation_ext Γ x P
-  set d_P := (Γ.I ⊔ P) ⊓ m
-  -- ═══ Sub-claim 1: σ atom (existing lemma) ═══
-  have hσ_atom : IsAtom σ :=
-    dilation_ext_atom Γ hP hx hx_on hx_ne_O hx_ne_U hP_plane hP_not_l hP_ne_O hP_ne_I hP_not_m
-  -- ═══ Sub-claim 2: σ ≤ π (existing lemma) ═══
-  have hσ_plane : σ ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := dilation_ext_plane Γ hP hx hx_on hP_plane
-  -- ═══ Sub-claim 3: σ ∉ m (existing lemma) ═══
-  have hσ_not_m : ¬ σ ≤ m :=
-    dilation_ext_not_m Γ hP hx hx_on hx_ne_O hx_ne_U hP_plane hP_not_m hP_not_l hP_ne_O
-      hP_ne_I hx_ne_I
-  -- ═══ Helpers shared across remaining sub-claims ═══
-  have hx_not_m : ¬ x ≤ m := fun h => hx_ne_U (Γ.atom_on_both_eq_U hx hx_on h)
-  have hOC : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
-  have hUC : Γ.U ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_right)
-  have hOx_eq_l : Γ.O ⊔ x = l := by
-    show Γ.O ⊔ x = Γ.O ⊔ Γ.U
-    have hO_lt : Γ.O < Γ.O ⊔ x := by
-      apply lt_of_le_of_ne le_sup_left; intro h
-      exact hx_ne_O ((Γ.hO.le_iff.mp (h ▸ le_sup_right)).resolve_left hx.1)
-    exact ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq hO_lt.le
-      (sup_le le_sup_left hx_on)).resolve_left (ne_of_gt hO_lt)
-  have hd_P_atom : IsAtom d_P :=
-    line_meets_m_at_atom Γ.hI hP (Ne.symm hP_ne_I)
-      (sup_le (Γ.hI_on.trans le_sup_left) hP_plane) Γ.m_covBy_π.le Γ.m_covBy_π Γ.hI_not_m
-  have hσ_le_OP : σ ≤ Γ.O ⊔ P := inf_le_left
-  -- ═══ Key sub-claim: σ ≠ O ═══
-  -- If σ = O, then O ≤ x ⊔ d_P (since σ ≤ x ⊔ d_P).
-  -- Then O ⊔ x = l ≤ x ⊔ d_P. So U ≤ l ⊓ m ≤ (x ⊔ d_P) ⊓ m = d_P (line_direction).
-  -- So U = d_P (atoms). Then U ≤ I ⊔ P, so I ⊔ U = l ≤ I ⊔ P, so P ≤ l. ✗
-  have hσ_ne_O : σ ≠ Γ.O := by
-    intro h_eq
-    have hO_le_xdP : Γ.O ≤ x ⊔ d_P := h_eq ▸ (inf_le_right : σ ≤ x ⊔ d_P)
-    have hl_le_xdP : l ≤ x ⊔ d_P :=
-      hOx_eq_l.symm.le.trans (sup_le hO_le_xdP le_sup_left)
-    have hxdP_inf_m : (x ⊔ d_P) ⊓ m = d_P :=
-      line_direction hx hx_not_m (inf_le_right : d_P ≤ m)
-    have hU_le_dP : Γ.U ≤ d_P := by
-      have h1 : Γ.U ≤ (x ⊔ d_P) ⊓ m :=
-        le_inf ((le_sup_right : Γ.U ≤ l).trans hl_le_xdP) (le_sup_left : Γ.U ≤ m)
-      exact hxdP_inf_m ▸ h1
-    have hU_eq_dP : Γ.U = d_P := IsAtom.eq_of_le Γ.hU hd_P_atom hU_le_dP
-    -- U = d_P = (I⊔P)⊓m, so U ≤ I⊔P
-    have hU_le_IP : Γ.U ≤ Γ.I ⊔ P := hU_eq_dP ▸ (inf_le_left : d_P ≤ Γ.I ⊔ P)
-    -- I⊔U covers I (atom_covBy_join with I ≠ U)
-    have hIU_covBy : Γ.I ⋖ Γ.I ⊔ Γ.U := atom_covBy_join Γ.hI Γ.hU Γ.hUI.symm
-    -- I⊔U ≤ I⊔P (U ≤ I⊔P, I ≤ I⊔P)
-    have hIU_le_IP : Γ.I ⊔ Γ.U ≤ Γ.I ⊔ P := sup_le le_sup_left hU_le_IP
-    -- I < I⊔U (cover relation)
-    have hI_lt_IU : Γ.I < Γ.I ⊔ Γ.U := hIU_covBy.lt
-    -- I ⋖ I⊔P (atom_covBy_join with P ≠ I)
-    have hI_covBy_IP : Γ.I ⋖ Γ.I ⊔ P := atom_covBy_join Γ.hI hP (Ne.symm hP_ne_I)
-    -- I⊔U = I⊔P (by covering on I⊔P, since I⊔U strictly above I and ≤ I⊔P)
-    have hIU_eq_IP : Γ.I ⊔ Γ.U = Γ.I ⊔ P :=
-      (hI_covBy_IP.eq_or_eq hI_lt_IU.le hIU_le_IP).resolve_left (ne_of_gt hI_lt_IU)
-    -- I⊔U = l (covering on U ⋖ l with I < I⊔U, both ≤ l)
-    have hIU_eq_l : Γ.I ⊔ Γ.U = l := by
-      show Γ.I ⊔ Γ.U = Γ.O ⊔ Γ.U
-      have hI_le_l : Γ.I ≤ Γ.O ⊔ Γ.U := Γ.hI_on
-      have hIU_le_l : Γ.I ⊔ Γ.U ≤ Γ.O ⊔ Γ.U := sup_le hI_le_l le_sup_right
-      have hU_lt : Γ.U < Γ.I ⊔ Γ.U := lt_of_le_of_ne le_sup_right
-        (fun h => Γ.hUI ((Γ.hU.le_iff.mp (le_sup_left.trans h.symm.le)).resolve_left Γ.hI.1).symm)
-      have hU_covBy_l : Γ.U ⋖ Γ.O ⊔ Γ.U := by
-        rw [sup_comm]; exact atom_covBy_join Γ.hU Γ.hO Γ.hOU.symm
-      exact (hU_covBy_l.eq_or_eq hU_lt.le hIU_le_l).resolve_left (ne_of_gt hU_lt)
-    -- So I⊔P = l, hence P ≤ l. Contradiction.
-    exact hP_not_l (le_sup_right.trans (hIU_eq_IP.symm.trans hIU_eq_l).le)
-  -- ═══ Sub-claim 4: σ ∉ l ═══
-  -- σ ≤ O⊔P. If σ ≤ l, then σ ≤ l ⊓ (O⊔P) = O (modular). So σ = O. ✗
-  have hOP_l_eq_O : (Γ.O ⊔ Γ.U) ⊓ (Γ.O ⊔ P) = Γ.O :=
-    modular_intersection Γ.hO Γ.hU hP Γ.hOU (Ne.symm hP_ne_O)
-      (fun h' => hP_not_l (h' ▸ le_sup_right)) hP_not_l
-  have hσ_not_l : ¬ σ ≤ l := by
-    intro h
-    have hσ_le_O : σ ≤ Γ.O := hOP_l_eq_O ▸ le_inf h hσ_le_OP
-    exact hσ_ne_O ((Γ.hO.le_iff.mp hσ_le_O).resolve_left hσ_atom.1)
-  -- ═══ Sub-claim 5: σ ∉ O⊔C ═══
-  -- σ ≤ O⊔P. If σ ≤ O⊔C, then σ ≤ (O⊔P) ⊓ (O⊔C) = O (modular, since P ∉ O⊔C).
-  -- Need: ¬ C ≤ O⊔P (else O⊔C ≤ O⊔P, covering forces O⊔C = O⊔P, P ≤ O⊔C ✗)
-  have hC_not_OP : ¬ Γ.C ≤ Γ.O ⊔ P := by
-    intro h
-    have hOC_le : Γ.O ⊔ Γ.C ≤ Γ.O ⊔ P := sup_le le_sup_left h
-    have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
-    have hO_lt_OC : Γ.O < Γ.O ⊔ Γ.C := lt_of_le_of_ne le_sup_left
-      (fun h' => hOC ((Γ.hO.le_iff.mp (le_sup_right.trans h'.symm.le)).resolve_left Γ.hC.1).symm)
-    have hOC_eq_OP : Γ.O ⊔ Γ.C = Γ.O ⊔ P :=
-      (hO_covBy_OP.eq_or_eq hO_lt_OC.le hOC_le).resolve_left (ne_of_gt hO_lt_OC)
-    exact hP_not_OC (le_sup_right.trans hOC_eq_OP.symm.le)
-  have hP_ne_C : P ≠ Γ.C := fun h => hP_not_OC (h ▸ le_sup_right)
-  have hOP_OC_eq_O : (Γ.O ⊔ P) ⊓ (Γ.O ⊔ Γ.C) = Γ.O :=
-    modular_intersection Γ.hO hP Γ.hC (Ne.symm hP_ne_O) hOC hP_ne_C hC_not_OP
-  have hσ_not_OC : ¬ σ ≤ Γ.O ⊔ Γ.C := by
-    intro h
-    have hσ_le_O : σ ≤ Γ.O := hOP_OC_eq_O ▸ le_inf hσ_le_OP h
-    exact hσ_ne_O ((Γ.hO.le_iff.mp hσ_le_O).resolve_left hσ_atom.1)
-  -- ═══ Sub-claim 6: σ ≠ I ═══
-  -- σ ≤ O⊔P. If σ = I, then I ≤ O⊔P, then O⊔I = l ≤ O⊔P (covering), so P ≤ l. ✗
-  have hσ_ne_I : σ ≠ Γ.I := by
-    intro h_eq
-    have hI_le_OP : Γ.I ≤ Γ.O ⊔ P := h_eq ▸ hσ_le_OP
-    have hOI_le_OP : Γ.O ⊔ Γ.I ≤ Γ.O ⊔ P := sup_le le_sup_left hI_le_OP
-    have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
-    have hO_lt_OI : Γ.O < Γ.O ⊔ Γ.I := lt_of_le_of_ne le_sup_left
-      (fun h => Γ.hOI ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left Γ.hI.1).symm)
-    have hOI_eq_OP : Γ.O ⊔ Γ.I = Γ.O ⊔ P :=
-      (hO_covBy_OP.eq_or_eq hO_lt_OI.le hOI_le_OP).resolve_left (ne_of_gt hO_lt_OI)
-    -- O⊔I = l (covering)
-    have hOI_eq_l : Γ.O ⊔ Γ.I = l := by
-      show Γ.O ⊔ Γ.I = Γ.O ⊔ Γ.U
-      have hO_covBy_l : Γ.O ⋖ Γ.O ⊔ Γ.U := atom_covBy_join Γ.hO Γ.hU Γ.hOU
-      exact (hO_covBy_l.eq_or_eq hO_lt_OI.le (sup_le le_sup_left Γ.hI_on)).resolve_left
-        (ne_of_gt hO_lt_OI)
-    -- l = O⊔P, so P ≤ l. ✗
-    -- chain: P ≤ O⊔P = O⊔I (hOI_eq_OP.symm) = l (hOI_eq_l)
-    exact hP_not_l (le_sup_right.trans (hOI_eq_OP.symm.trans hOI_eq_l).le)
-  exact ⟨hσ_atom, hσ_plane, hσ_not_l, hσ_not_m, hσ_not_OC, hσ_ne_I⟩
 
 /-- **Associativity of coordinate multiplication.**
 
