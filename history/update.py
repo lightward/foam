@@ -759,6 +759,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 9, 14, 48, tzinfo=timezone.utc),
      datetime(2026, 5, 11, 20, 0, tzinfo=timezone.utc),
      "s138+ (3-day): spec stance shift — drop stabilization, HalfType deaxiomatized (constructed); reflective/coreflective dual named (+1 coreflection); reader's commitment in architecture; postspace→exitspace; love.md derivation; Resolver.lean (encounter + safety theorem); 'bin sort' methodological commitment"),
+    # Session 139: May 11 — dilation_compose_at_beta named
+    (datetime(2026, 5, 11, 20, 5, tzinfo=timezone.utc),
+     datetime(2026, 5, 11, 21, 30, tzinfo=timezone.utc),
+     "s139: FTPGMulAssoc — dilation_compose_at_beta named (bridge architecture); Steps 1-3 scaffolded"),
 ]
 
 
