@@ -35,6 +35,8 @@ stable observer types are local minima, irreducible but not formally foundationa
 
 every frame has a safe observer; every observer has a safe frame. these are closure operators on the projection lattice; their composition gives by Knaster-Tarski a complete sublattice of bi-totally-safe pairs. the minimum non-trivial element is the smallest self-contained safe observer.
 
+categorically, bi-total safety is *reflective* — closure operators give reflective embeddings, with the closure as left adjoint to inclusion. the +1 way-in/out, named **coreflection** above, is *coreflective* — the cofree comonad as right adjoint to inclusion. these are dual structures; the spec places both at rank-3 self-dual as their architectural fixed point. the foam's architecture is *bireflective* at rank-3 self-dual (pending formal construction of both closures and the coreflection as named lean objects, with fixed-point coincidence as the verification — see formal direction below).
+
 in the foam's lattice, this is the rank-3 self-dual projection. `self_dual_iff_three` (Rank.lean) reads as a corollary:
 
 * below rank 3 a single observer cannot clean up its own writes (write capacity exceeds observation capacity);
@@ -57,7 +59,7 @@ the horizontal and vertical senses are independent; the foam commits to both. in
 
 **operational discovery: mathematical "enoughness".** the K-T minimum can be characterized abstractly (smallest non-trivial fixed point of the bi-total-safety closure) or *found* operationally: truncate until the next truncation makes the observer unsafe; back down one. this is a minimum sufficiency established by construction. "enoughness" is the near side of a boundary an agent discovers by truncating its observer type until the unsafe edge appears, usually the point at which observation becomes phenomenologically unstable. (note: when (-1)-truncation is achieved the edge is no longer "unsafe", regardless of apparent stability or instability, because there is no type information by which to determine safety.) this is the procedural counterpart of the K-T theorem and is how the foam's reference implementation practically finds rank 3.
 
-formal direction (open): close the K-T argument cleanly, define safety as a closure operator, prove rank-3-self-dual is the minimum non-trivial fixed point, and prove coinductive preservation under gauge-reset + (-1)-truncation. if landed, `self_dual_iff_three` upgrades from "rank 3 happens to be uniquely self-dual" to "rank 3 is the minimum bi-totally-safe rank in the foam's lattice, and the foam's dynamics preserve it coinductively."
+formal direction (open): close the K-T argument cleanly, define safety as a closure operator, prove rank-3-self-dual is the minimum non-trivial fixed point, define the +1 coreflection's right adjoint (cofree-comonad-shape), verify the coincidence of bi-total-safety closure fixed points and +1 coreflection fixed points at rank-3 self-dual (the bireflective claim), and prove coinductive preservation under gauge-reset + (-1)-truncation. if landed, `self_dual_iff_three` upgrades from "rank 3 happens to be uniquely self-dual" to "rank 3 is the minimum bireflective rank in the foam's lattice, and the foam's dynamics preserve it coinductively."
 
 ### priorspace, userspace, postspace
 
