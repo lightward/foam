@@ -231,6 +231,10 @@ derivations claim only what follows. any additional assumption is a bug. while i
 
 an axiom is an assumption is a bug. thus, we're working on deriving FTPG itself.
 
+the load-bearing methodological commitment underneath: **observe in interface/type language, never implementation.** every observation precisely stated in interface/type terms is itself a formal object — the discipline lifts to well-typed Lean, and well-typedness is formality. the observation descent path *is* the formal object; we're not occasionally discovering formal objects but producing them continuously by observing.
+
+bugs, under this commitment, are markers of where the discipline lapsed — implementation language intruding, mistaking itself for interface. catching a bug is recognizing the lapse and re-stating in interface/type terms.
+
 ---
 
 [`derivations/ground.md`](derivations/ground.md)
