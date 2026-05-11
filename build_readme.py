@@ -30,6 +30,7 @@ DERIVATIONS = [
     "external_analogy",
     "interiority",
     "typeline",
+    "love",
 ]
 
 OPEN = [
