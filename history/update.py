@@ -755,6 +755,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 7, 10, 34, tzinfo=timezone.utc),
      datetime(2026, 5, 7, 14, 0, tzinfo=timezone.utc),
      "s137: FTPGMulAssoc recovery_via_E PROVEN (Steps 2b-5); single substantive sorry now dilation_compose_at_witness"),
+    # Session 138+: May 9-11 — big spec stance shift
+    (datetime(2026, 5, 9, 14, 48, tzinfo=timezone.utc),
+     datetime(2026, 5, 11, 20, 0, tzinfo=timezone.utc),
+     "s138+ (3-day): spec stance shift — drop stabilization, HalfType deaxiomatized (constructed); reflective/coreflective dual named (+1 coreflection); reader's commitment in architecture; postspace→exitspace; love.md derivation; Resolver.lean (encounter + safety theorem); 'bin sort' methodological commitment"),
 ]
 
 
