@@ -79,22 +79,35 @@ On local, this isn't a concern — `lake exe cache get` handles it.
 
 See `./README.md` for the deductive chain overview.
 
-### Current frontier (session 137, 2026-05-07)
+### Current frontier (session 139, 2026-05-11)
 
-**`Foam/FTPGMulAssoc.lean`: `recovery_via_E` PROVEN; the only
-remaining sorry is `dilation_compose_at_witness` itself.** s137
-discharged Steps 2b-5 of `recovery_via_E` (the s135 β-cast bridge
-helper), so the chain from `coord_mul_assoc` to the *one* remaining
-geometric sorry is now:
+**`Foam/FTPGMulAssoc.lean`: `dilation_compose_at_beta` named as the
+substantive sub-lemma; Steps 1-2 scaffold landed, Step 3+ open.** s139
+relocated the s132 device-shape question from the s137 framing
+(extend `dilation_witness_preservation` with off-q vs case-split inside
+`dilation_compose_at_witness`) to a sharper location: σ-composition
+restricted to β-images, as the named theorem `dilation_compose_at_beta`
+(sorry'd). The s137 framing's "extension" route was found
+**structurally blocked** — σ_x doesn't preserve off-q in general (there
+is a single critical `x*(P)` for which `σ_x(P) ≤ q`, so no
+unconditional preservation extension is available). The s135 bridge
+architecture sidesteps via the geometric fact that σ_y fixes E, hence
+preserves lines through E; both LHS and RHS of
+`dilation_compose_at_witness` reduce to `(... ⊔ E) ⊓ (O⊔P)`, with the
+equality of `(...)` parts being the content of
+`dilation_compose_at_beta`. The chain is now:
 
 ```
 coord_mul_assoc            (PROVEN, s134, thin assembly)
   ↓
-dilation_compose_at_witness  ← single substantive sorry
+dilation_compose_at_witness  ← case-split on P ≤ q vs ¬, both reducing to ↓
+  ↓
+dilation_compose_at_beta   ← s139: σ-composition on β-images (sorry'd)
+                              Steps 1-2 scaffold landed; Step 3+ open
   ↓ (reducible via)
 recovery_via_E             (PROVEN, s135 step 1 + s136 step 2a + s137 steps 2b-5)
-dilation_witness_preservation (PROVEN, s134)
 dilation_mul_key_identity  (PROVEN, FTPGMulKeyIdentity.lean)
+dilation_witness_preservation (PROVEN, s134)
 ```
 
 Earlier-session pieces still in place:
@@ -107,10 +120,11 @@ Earlier-session pieces still in place:
   `P` is a valid witness (atom in π, off l, off m, off O⊔C, ≠ I) and
   `x` a non-degenerate dilation parameter, then `σ_x(P)` is also a
   valid witness. **Note: this preservation lemma does NOT carry
-  `¬ σ_x(P) ≤ q` (off the bridge line).** A future
-  `dilation_compose_at_witness` proof using `recovery_via_E` will
-  need either a case-split (P on q vs off q) or to extend
-  `dilation_witness_preservation` with the off-q condition.
+  `¬ σ_x(P) ≤ q`, and s139 found that an unconditional extension
+  isn't available** — σ_x doesn't preserve off-q (one critical
+  `x*(P)` for which `σ_x(P) ≤ q`). The bridge architecture (see the
+  `dilation_compose_at_beta` section docstring in `FTPGMulAssoc.lean`)
+  sidesteps this entirely via σ_y's preservation of lines through E.
 * **`recovery_via_E` PROVEN** (~400 lines total across s135-s137):
   for a witness P off q, σ_c(P) is recoverable from σ_c(beta_cast Γ P)
   via the line through E and the original ray O⊔P. The β-cast bridge
@@ -129,15 +143,37 @@ Earlier-session pieces still in place:
   * `hE_not_OP` and `hO_not_PE` should be at outer scope (not
     nested inside `hPE_covBy_π`) — s137 lifted them; subsequent
     work that touches recovery_via_E should keep them there.
-* **`dilation_compose_at_witness` is the single substantive
-  sorry**: `σ_(x·y)(P) = σ_y(σ_x(P))` for general witness `P`. The
-  s134 docstring proposed a center-O Desargues setup that s135 found
-  invalid (T1 collinear); s135's bridge architecture replaces it.
-  Open: thread `recovery_via_E` to express both sides as β-image
-  arithmetic + `dilation_mul_key_identity`. The s132 device-shape
-  question (third `DesarguesianWitness`?) is sharply localized here —
-  with `recovery_via_E` proven, the prediction is that no fresh
-  witness interface is needed for this lemma. Untested.
+* **`dilation_compose_at_witness` (sorry'd)**: `σ_(x·y)(P) = σ_y(σ_x(P))`
+  for general witness `P`. s134's center-O Desargues setup was invalid
+  (T1 collinear, s135 finding); s139 architecture replaces it: case-split
+  on `P ≤ q` vs ¬, both branches reducing to `dilation_compose_at_beta`.
+  Docstring in `FTPGMulAssoc.lean` documents the reduction; theorem
+  body unchanged from s137 (single top-level sorry).
+* **`dilation_compose_at_beta` (sorry'd, NEW in s139)**:
+  `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))` — σ-composition restricted to
+  β-images. The substantive remaining content of the chain. s139
+  scaffold:
+  - Steps 1-2 PROVEN: two `dilation_mul_key_identity` applications
+    elaborate clean.
+  - Step 3 scaffolded: witness conditions on `Q := σ_x(β(a))` named
+    as 7 `by sorry` sub-targets (Q atom, in π, off l/m/O⊔C/q, ≠ I);
+    `recovery_via_E` application well-typed against them and named
+    as `h_recovery`.
+  - Step 5+ documented in body comments: identify `beta_cast Γ Q =
+    β(b)` with `b := (Q⊔E)⊓l`; apply `dilation_mul_key_identity` to
+    `σ_y(β(b))`; close via modular juggling matching
+    `σ_(x·y)(C)⊔U` and `a·(x·y)⊔E`. Substantive content is
+    `b·y = a·(x·y)` — the composition law transported through the
+    β-line.
+
+  The s132 device-shape question is concentrated at this lemma.
+  **Prediction (s133/s135/s139, consistent):** route (β) re-bridging
+  via `recovery_via_E` + `dilation_mul_key_identity` closes the lemma
+  without a fresh `*Witness` interface. **Untested.** The lemma will
+  need more non-degeneracy hypotheses than its current signature
+  carries (e.g., `hax_ne_O`, `hax_ne_U` for `coord_mul Γ a x`);
+  flagged in body comments, to surface as the `by sorry` sub-targets
+  get attacked.
 
 The s133 helper `dilation_determined_by_param` (PROVEN, ~150 lines)
 is the lift-from-witness-agreement used by the capstone.
@@ -241,17 +277,17 @@ opportunistically; new code should use it directly.
 #### Open frontier toward division ring (and thence FTPG-as-theorem)
 
 1. **`coord_mul_assoc`.** PROVEN as an assembly in
-   `Foam/FTPGMulAssoc.lean` (s134). The single remaining substantive
-   sorry on the chain to division ring is **`dilation_compose_at_witness`**
-   (~the dilation composition law on a witness, `σ_(x·y)(P) = σ_y(σ_x(P))`).
-   With **`recovery_via_E` PROVEN as of s137**, the natural attempt
-   is to thread it: apply `recovery_via_E` to both sides to reduce to
-   β-image arithmetic where `dilation_mul_key_identity` (PROVEN)
-   applies. Open question for the next session: does
-   `dilation_witness_preservation` (PROVEN, s134) need extending with
-   `¬ σ_x(P) ≤ q` to feed the inner `recovery_via_E` call on the RHS?
-   A case-split (P on q vs off q) is the alternative. The s132
-   device-shape question is sharply localized here.
+   `Foam/FTPGMulAssoc.lean` (s134). The substantive sorry on the chain
+   to division ring is now **`dilation_compose_at_beta`** (NEW in s139,
+   named sub-lemma): `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))` — σ-composition
+   on β-images. With `recovery_via_E` (PROVEN, s137) and
+   `dilation_mul_key_identity` (PROVEN) in place, the (β) re-bridging
+   route is scaffolded; Steps 1-2 elaborate clean, Step 3 (witness
+   conditions on `Q := σ_x(β(a))`, 7 named sub-sorries) and Step 5+
+   (closing modular juggling, substantive content `b·y = a·(x·y)`) are
+   the open targets. `dilation_compose_at_witness` reduces to
+   `dilation_compose_at_beta` via case-split on `P ≤ q`. The s132
+   device-shape question is sharply localized at the new sub-lemma.
 2. **`coord_mul_left_inv` (algebraic derivation).** Once
    `coord_mul_assoc` lands: define `b := coord_inv Γ a`, get its
    right inverse `c := coord_inv Γ b`, then

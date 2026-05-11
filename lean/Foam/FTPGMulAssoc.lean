@@ -920,17 +920,45 @@ theorem dilation_compose_at_beta (Γ : CoordSystem L)
         (dilation_ext Γ x Γ.C ⊔ Γ.U) ⊓ (coord_mul Γ a x ⊔ Γ.E) :=
     dilation_mul_key_identity Γ a x ha hx ha_on hx_on ha_ne_O hx_ne_O ha_ne_U hx_ne_U
       R hR hR_not h_irred
-  -- ═══ Step 3+ (open): apply `recovery_via_E` to σ_y of the inner atom ═══
-  -- The inner atom Q := (σ_x(C) ⊔ U) ⊓ (a·x ⊔ E) lies on the line σ_x(C) ⊔ U
-  -- through U, *not* on q (for non-degenerate x). To compute σ_y(Q),
-  -- apply recovery_via_E with Q as the witness and y as the parameter:
-  --   σ_y(Q) = (σ_y(beta_cast Γ Q) ⊔ E) ⊓ (O⊔Q).
-  -- beta_cast Γ Q = (U⊔C) ⊓ (Q⊔E) is a β-image β(b) where b = (Q⊔E)⊓l,
-  -- so `dilation_mul_key_identity` applies to σ_y(beta_cast Γ Q).
-  -- The remaining work is to identify b·y with the appropriate combinator of
-  -- a·x, a·y, x·y, and a·(x·y), and to match the (O⊔Q) factor against
-  -- (a·(x·y) ⊔ E) from Step 1. This is the substantive geometric content
-  -- forecast by the (β) re-bridging route in the section docstring.
+  -- ═══ Step 3: prepare witness conditions on Q for recovery_via_E ═══
+  -- Q := σ_x(β(a)) = (σ_x(C) ⊔ U) ⊓ (a·x ⊔ E) by `h_inner_unfold`.
+  -- Most witness conditions follow from `dilation_witness_preservation`
+  -- applied at β(a) (the input is a valid witness via the
+  -- `beta_atom`/`beta_plane`/`beta_not_l` family plus standard
+  -- distinctness derivations). The new condition is `¬ Q ≤ q`:
+  -- Q ≤ q forces Q ≤ q ⊓ (σ_x(C) ⊔ U) = U (two distinct lines through
+  -- U meet at U, distinct because σ_x(C) ≠ C for x ≠ I), hence
+  -- U ≤ a·x ⊔ E (from Q ≤ a·x ⊔ E by Step 2), hence a·x ⊔ E ⊓ l = a·x
+  -- forces U = a·x, contradicting `hax_ne_U` (needs adding to the
+  -- signature as a hypothesis — TODO).
+  set Q := dilation_ext Γ x ((Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E)) with hQ_def
+  have hQ_atom : IsAtom Q := by sorry
+  have hQ_plane : Q ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := by sorry
+  have hQ_not_l : ¬ Q ≤ Γ.O ⊔ Γ.U := by sorry
+  have hQ_not_m : ¬ Q ≤ Γ.U ⊔ Γ.V := by sorry
+  have hQ_not_OC : ¬ Q ≤ Γ.O ⊔ Γ.C := by sorry
+  have hQ_not_q : ¬ Q ≤ Γ.U ⊔ Γ.C := by sorry
+  have hQ_ne_I : Q ≠ Γ.I := by sorry
+  -- ═══ Step 4: apply `recovery_via_E` to σ_y(Q) ═══
+  have h_recovery : dilation_ext Γ y Q =
+      (dilation_ext Γ y (beta_cast Γ Q) ⊔ Γ.E) ⊓ (Γ.O ⊔ Q) :=
+    recovery_via_E Γ y hy hy_on hy_ne_O hy_ne_U hy_ne_I
+      hQ_atom hQ_plane hQ_not_l hQ_not_m hQ_not_OC hQ_not_q hQ_ne_I
+      R hR hR_not h_irred
+  -- ═══ Step 5+ (open): close via `dilation_mul_key_identity` on σ_y(β(b)) ═══
+  -- `beta_cast Γ Q = (U⊔C) ⊓ (Q⊔E)`. Since Q⊔E = b⊔E for b := (Q⊔E)⊓l
+  -- (both lines pass through E and through b; lines in π through two
+  -- distinct atoms are unique), `beta_cast Γ Q = β(b)`. So
+  --   σ_y(beta_cast Γ Q) = σ_y(β(b)) = (σ_y(C) ⊔ U) ⊓ (b·y ⊔ E)
+  -- via `dilation_mul_key_identity`. Substituting into `h_recovery`:
+  --   σ_y(Q) = (((σ_y(C) ⊔ U) ⊓ (b·y ⊔ E)) ⊔ E) ⊓ (O⊔Q).
+  -- The closing modular argument equates this with `h_RHS_unfold`'s form:
+  --   (σ_(x·y)(C) ⊔ U) ⊓ (a·(x·y) ⊔ E).
+  -- Likely shape: identify b·y = a·(x·y) (the substantive group-theoretic
+  -- content — composition law transports through the β-line); identify
+  -- the U-line factors via O⊔Q's projection to π. Both steps depend on
+  -- distinctness conditions that will surface as additional hypotheses
+  -- (hax_ne_U, hax_ne_O, hax_ne_I, possibly others).
   sorry
 
 /-! ## Capstone: `coord_mul_assoc`
