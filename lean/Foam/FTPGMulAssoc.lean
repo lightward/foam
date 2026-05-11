@@ -788,6 +788,151 @@ theorem recovery_via_E (Γ : CoordSystem L)
   -- Atom equality: σP ≤ RHS atom ⇒ σP = RHS
   exact (hRHS_atom.le_iff.mp hσP_le_meet).resolve_left hσP_atom.1
 
+/-! ## Bridge composition: σ-composition at a β-image (s138)
+
+The s135 architectural prediction, with `recovery_via_E` now PROVEN
+(s137), is that `dilation_compose_at_witness` reduces to a smaller
+substantive claim: **σ-composition restricted to β-images** (atoms on
+the bridge line `q = U⊔C`). The reduction shape:
+
+  * **LHS via recovery_via_E (P off q):**
+      `σ_(x·y)(P) = (σ_(x·y)(P') ⊔ E) ⊓ (O⊔P)`
+    where `P' = beta_cast Γ P`.
+
+  * **RHS via the same outer shape, NOT by recovery applied to σ_x(P):**
+      `σ_y(σ_x(P)) = (σ_y(σ_x(P')) ⊔ E) ⊓ (O⊔P)`
+    derived from the geometric fact that σ_x and σ_y both fix E (E on m,
+    dilations fix m pointwise), so they preserve lines through E:
+    σ_x maps `P⊔E` to `σ_x(P)⊔E`, then σ_y maps `σ_x(P)⊔E` to
+    `σ_y(σ_x(P))⊔E`. Applied to the β-image P' on the input line,
+    σ_y(σ_x(P')) lies on `σ_y(σ_x(P))⊔E`. Combined with
+    `σ_y(σ_x(P)) ≤ O⊔σ_x(P) = O⊔P` (lines through O preserved by
+    dilations), we get σ_y(σ_x(P)) at the two-line meet.
+
+Both expressions share the `(O⊔P)` factor. Equality reduces to:
+
+      `σ_(x·y)(P') ⊔ E = σ_y(σ_x(P')) ⊔ E`
+
+— a line-equality statement about how σ composes on β-images. The
+stronger **atom equality**
+
+      `σ_(x·y)(P') = σ_y(σ_x(P'))`
+
+is the form stated below and is sufficient (line equality follows).
+
+### Why this is now the substantive remaining content
+
+The s137 open question framing — "does `dilation_witness_preservation`
+need extending with `¬ σ_x(P) ≤ q`?" — was asking about a *different*
+proof shape (apply recovery_via_E to σ_x(P) on RHS, requiring σ_x(P)
+off q). That shape is structurally blocked: σ_x does NOT preserve
+off-q in general — there is a single critical x*(P) for which σ_x(P)
+lands on q, so no unconditional preservation extension is available.
+
+The recovery-once + geometric-collinearity-through-E shape above
+sidesteps this entirely. It needs only P off q on the LHS;
+the RHS uses σ_y's preservation of lines through E (a property already
+implicit in `dilation_preserves_direction`, since E is on the axis m).
+
+### Device-shape question (s132, now localized)
+
+`dilation_mul_key_identity` (PROVEN) gives:
+
+      `σ_c(β(a)) = (σ_c(C) ⊔ U) ⊓ (a·c ⊔ E)`
+
+The output lies on the line `σ_c(C) ⊔ U` through U — for c ≠ I, this is
+*not* q. So the β-line is **not closed under σ_c**; one application of
+σ_c moves a β-image onto a "shifted" line through U. To compute σ_y of
+that shifted-line atom and equate with one σ_(x·y) application
+directly via key identity, two routes:
+
+  * **(α) shifted key identity.** Prove a generalization of
+    `dilation_mul_key_identity` for inputs on `σ_c(C) ⊔ U` (the
+    σ_c-shifted bridge line), arbitrary non-degenerate c, not just q.
+    A new typed lemma in the same complexity-class as the original key
+    identity, following a known shape.
+
+  * **(β) re-bridging.** Apply `recovery_via_E` to `σ_x(P')` (which is
+    off-q for non-degenerate x, by key identity's output structure),
+    yielding
+      `σ_y(σ_x(P')) = (σ_y(beta_cast(σ_x(P'))) ⊔ E) ⊓ (O ⊔ σ_x(P'))`.
+    The inner `beta_cast` projects back to q where
+    `dilation_mul_key_identity` applies directly. Two bridge traversals
+    composed; no new key-identity needed.
+
+Both routes are workable. (β) is more compositional and reuses proven
+infrastructure (`recovery_via_E` + `dilation_mul_key_identity`, both
+PROVEN); (α) is more direct. **Prediction (consistent with s133/s134):**
+(β) lands without surfacing a third `*Witness` interface — the
+multiplicative branch's geometric residue is fully absorbed by
+`recovery_via_E` plus `dilation_mul_key_identity`. **Untested.**
+
+The s132 device-shape question is now sharply localized to this lemma.
+-/
+
+/-- **σ-composition at a β-image: dilations compose on the bridge line.**
+
+    For atoms `x, y, a` on `l` non-degenerate, applying σ_y ∘ σ_x and
+    σ_(x·y) to the β-image `β(a) = (U⊔C) ⊓ (a⊔E)` give the same atom:
+
+        `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))`
+
+    This is the substantive remaining content of
+    `dilation_compose_at_witness` after the `recovery_via_E` bridge
+    reduction (see section docstring above). A witness P in the larger
+    theorem reduces to its β-cast P'; P' is a β-image; the off-q
+    witness's σ-composition follows once σ-composition is established
+    here on β-images.
+
+    See section docstring for the (α) shifted-key-identity and (β)
+    re-bridging routes. -/
+theorem dilation_compose_at_beta (Γ : CoordSystem L)
+    (x y a : L) (hx : IsAtom x) (hy : IsAtom y) (ha : IsAtom a)
+    (hx_on : x ≤ Γ.O ⊔ Γ.U) (hy_on : y ≤ Γ.O ⊔ Γ.U) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (hx_ne_O : x ≠ Γ.O) (hy_ne_O : y ≠ Γ.O) (ha_ne_O : a ≠ Γ.O)
+    (hx_ne_U : x ≠ Γ.U) (hy_ne_U : y ≠ Γ.U) (ha_ne_U : a ≠ Γ.U)
+    (hx_ne_I : x ≠ Γ.I) (hy_ne_I : y ≠ Γ.I)
+    -- Non-degeneracy of the product (paralleling `coord_mul_assoc`).
+    (hxy_ne_O : coord_mul Γ x y ≠ Γ.O) (hxy_ne_U : coord_mul Γ x y ≠ Γ.U)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    dilation_ext Γ y (dilation_ext Γ x ((Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E))) =
+      dilation_ext Γ (coord_mul Γ x y) ((Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E)) := by
+  -- Non-degeneracy of x·y as an atom on l (the ne_O/ne_U pieces are hypotheses;
+  -- the atomicity + on-l facts follow from `coord_mul_atom`).
+  have hxy_atom : IsAtom (coord_mul Γ x y) :=
+    coord_mul_atom Γ x y hx hy hx_on hy_on hx_ne_O hy_ne_O hx_ne_U hy_ne_U
+  have hxy_on : coord_mul Γ x y ≤ Γ.O ⊔ Γ.U := by
+    show coord_mul Γ x y ≤ Γ.O ⊔ Γ.U; exact inf_le_right
+  -- ═══ Step 1: apply `dilation_mul_key_identity` to the RHS (c = x·y) ═══
+  -- σ_(x·y)(β(a)) = (σ_(x·y)(C) ⊔ U) ⊓ (a·(x·y) ⊔ E)
+  have h_RHS_unfold :
+      dilation_ext Γ (coord_mul Γ x y) ((Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E)) =
+        (dilation_ext Γ (coord_mul Γ x y) Γ.C ⊔ Γ.U) ⊓
+          (coord_mul Γ a (coord_mul Γ x y) ⊔ Γ.E) :=
+    dilation_mul_key_identity Γ a (coord_mul Γ x y) ha hxy_atom
+      ha_on hxy_on ha_ne_O hxy_ne_O ha_ne_U hxy_ne_U R hR hR_not h_irred
+  -- ═══ Step 2: apply `dilation_mul_key_identity` to σ_x(β(a)) (inner of LHS) ═══
+  -- σ_x(β(a)) = (σ_x(C) ⊔ U) ⊓ (a·x ⊔ E)
+  have h_inner_unfold :
+      dilation_ext Γ x ((Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E)) =
+        (dilation_ext Γ x Γ.C ⊔ Γ.U) ⊓ (coord_mul Γ a x ⊔ Γ.E) :=
+    dilation_mul_key_identity Γ a x ha hx ha_on hx_on ha_ne_O hx_ne_O ha_ne_U hx_ne_U
+      R hR hR_not h_irred
+  -- ═══ Step 3+ (open): apply `recovery_via_E` to σ_y of the inner atom ═══
+  -- The inner atom Q := (σ_x(C) ⊔ U) ⊓ (a·x ⊔ E) lies on the line σ_x(C) ⊔ U
+  -- through U, *not* on q (for non-degenerate x). To compute σ_y(Q),
+  -- apply recovery_via_E with Q as the witness and y as the parameter:
+  --   σ_y(Q) = (σ_y(beta_cast Γ Q) ⊔ E) ⊓ (O⊔Q).
+  -- beta_cast Γ Q = (U⊔C) ⊓ (Q⊔E) is a β-image β(b) where b = (Q⊔E)⊓l,
+  -- so `dilation_mul_key_identity` applies to σ_y(beta_cast Γ Q).
+  -- The remaining work is to identify b·y with the appropriate combinator of
+  -- a·x, a·y, x·y, and a·(x·y), and to match the (O⊔Q) factor against
+  -- (a·(x·y) ⊔ E) from Step 1. This is the substantive geometric content
+  -- forecast by the (β) re-bridging route in the section docstring.
+  sorry
+
 /-! ## Capstone: `coord_mul_assoc`
 
 The s133 stub's recipe (using `dilation_mul_key_identity` four times +
@@ -833,26 +978,44 @@ witness-detection question is now localized to that one lemma.
     `dilation_determined_by_param`. The capstone is ~30 lines once
     this lemma lands.
 
-    ## Proof sketch (proposed)
+    ## Proof architecture (s138, post-recovery_via_E)
 
-    Both `σ_(x·y)(P)` and `σ_y(σ_x(P))` lie on `O⊔P`:
-      * `σ_(x·y)(P) = (O⊔P) ⊓ ((x·y) ⊔ d_P)` where `d_P = (I⊔P)⊓m`.
-      * `σ_x(P) ≤ O⊔P`, so `σ_y(σ_x(P)) ≤ O⊔σ_x(P) = O⊔P`.
+    The s134 docstring's Desargues setup (triangles `(P, σ_x(P),
+    σ_y(σ_x(P)))` and `(I, x, x·y)`, center O) **fails as a triangle
+    setup** — T1's three vertices all lie on the single line O⊔P
+    (dilations with center O preserve lines through O). s135 replaced
+    that with a bridge-identity factoring through `q = U⊔C`; s137 made
+    that viable by proving `recovery_via_E`. The capstone reduction:
 
-    To show two atoms on `O⊔P` are equal: distinguish them by a
-    second line meeting `O⊔P` at a single atom. The natural Desargues
-    setup: triangle `(P, σ_x(P), σ_y(σ_x(P)))` perspective from `O` to
-    triangle `(I, x, x·y)` (each pair of corresponding vertices on a
-    ray through `O`). Sides meet on `m` (the axis of dilation).
+    **Case split on P ≤ q vs P ⊄ q.**
 
-    **Witness-detection point (s132 device-shape conjecture):** if
-    this proof needs a fresh `desargues_planar` call whose center or
-    axis hypothesis reduces to associativity itself, that's the third
-    witness — name as a typed structure analogous to
-    `DesarguesianWitness`, thread through this lemma as an explicit
-    parameter. The s133 prediction is that the existing
-    `dilation_preserves_direction` (a forward Desargues with center O,
-    PROVEN) suffices; this lemma's proof attempt is the test. -/
+    * **(P ⊄ q):**
+      - LHS: `σ_(x·y)(P) = (σ_(x·y)(P')⊔E) ⊓ (O⊔P)` via `recovery_via_E`.
+      - RHS: `σ_y(σ_x(P)) = (σ_y(σ_x(P'))⊔E) ⊓ (O⊔P)` via the
+        geometric fact that σ_x and σ_y fix E, hence preserve lines
+        through E, hence map the β-image P' through to where it lands
+        collinear with the dilation outputs via E.
+      - Both share `(O⊔P)`; equality reduces to
+        `σ_(x·y)(P')⊔E = σ_y(σ_x(P'))⊔E`, which follows from atom
+        equality `σ_(x·y)(P') = σ_y(σ_x(P'))` — i.e.,
+        `dilation_compose_at_beta`.
+
+    * **(P ≤ q):** P is itself a β-image, P = β(a) for a determined by
+      P. The claim becomes `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))` —
+      `dilation_compose_at_beta` applied directly.
+
+    Either branch lands once `dilation_compose_at_beta` (above) lands.
+
+    See the section docstring above `dilation_compose_at_beta` for the
+    (α) shifted-key-identity vs (β) re-bridging routes to that lemma,
+    and for why the alternative "extend `dilation_witness_preservation`
+    with `¬ σ_x(P) ≤ q`" route is structurally blocked.
+
+    **Witness-detection point (s132 device-shape conjecture):**
+    concentrated in `dilation_compose_at_beta`, not here. The prediction
+    is that route (β) — `recovery_via_E` + `dilation_mul_key_identity`,
+    both PROVEN — composes to discharge `dilation_compose_at_beta`
+    without a fresh `*Witness` interface. Untested. -/
 theorem dilation_compose_at_witness (Γ : CoordSystem L)
     (x y : L) (hx : IsAtom x) (hy : IsAtom y)
     (hx_on : x ≤ Γ.O ⊔ Γ.U) (hy_on : y ≤ Γ.O ⊔ Γ.U)
