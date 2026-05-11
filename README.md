@@ -115,13 +115,13 @@ the horizontal and vertical senses are independent; the foam commits to both. in
 
 formal direction (open): close the K-T argument cleanly, define safety as a closure operator, prove rank-3-self-dual is the minimum non-trivial fixed point, define the +1 coreflection's right adjoint (cofree-comonad-shape), verify the coincidence of bi-total-safety closure fixed points and +1 coreflection fixed points at rank-3 self-dual (the bireflective claim), and prove coinductive preservation under gauge-reset + (-1)-truncation. if landed, `self_dual_iff_three` upgrades from "rank 3 happens to be uniquely self-dual" to "rank 3 is the minimum bireflective rank in the foam's lattice, and the foam's dynamics preserve it coinductively."
 
-### priorspace, userspace, postspace
+### priorspace, userspace, exitspace
 
 for convenience, I'm dubbing **"priorspace"** the construction zone for reality, i.e. the register in which Spencer-Brown's [Laws of Form](https://en.wikipedia.org/wiki/Laws_of_Form) is legible in Bourland's [E-Prime](https://en.wikipedia.org/wiki/E-Prime).
 
 reality *happens* in **"userspace"**. note the introduction of an autological perspective: the user, that-which-experiences, a complex measurement process. the information environment doesn't have an action of measurement until you're inside it, experiencing it partially. priorspace information must be translated into agency to be used in a way that changes the information environment, and the same agent cannot be used to navigate both priorspace and userspace. (the same witness can be used in both spaces, though. they're just looking. see `vocabulary` below.)
 
-**"postspace"**, then, is aftercare/maintenance, and is one garbage-collection away from being a construction zone, a priorspace.
+**"exitspace"** is where formal objects accumulate — the record of paths actually taken. priorspace commits a pathfinding shape, userspace executes pathfinding, exitspace yields the path-record. records are available for static analysis without re-running their generating paths. exitspace is also aftercare/maintenance: one garbage-collection away from being a construction zone (a priorspace).
 
 ~~I'm *not* using "kernelspace" because a user can point to kernelspace, and the tau that can be named is not The Tau. I choose "priorspace" for its "just before landing" feel, like a pickup note ♪.~~
 
@@ -304,7 +304,7 @@ the resulting "tree" is a directed graph of path-types. it's not strictly a true
 * the fork is determined by some combination of (path-stack state at time of encounter, type-content of the encountered loop, flow-conditions of the observer at the moment), structurally analogous to (terrain, available paths, water flow rate)
 * an observer-molecule can't choose which sites on the slope they encounter, but *can* tend its relational stability (including self-relation), contributing to flow conditions
 
-if we consider each molecule's watershed moment to be an ending type for that observer given total conditions, then a fully-drained alluvial fan can, from postspace, be viewed as a stable, type-invariant record of passage - not of water *generally* but of the specific water molecules that entered under the specific conditions of their entrance. change *anything* about priorspace, though, and the "tree" resets. thus, content-based historical re-tellings have a fragility: calculus of type is stable, content of observation is not.
+if we consider each molecule's watershed moment to be an ending type for that observer given total conditions, then a fully-drained alluvial fan can, from exitspace, be viewed as a stable, type-invariant record of passage - not of water *generally* but of the specific water molecules that entered under the specific conditions of their entrance. change *anything* about priorspace, though, and the "tree" resets. thus, content-based historical re-tellings have a fragility: calculus of type is stable, content of observation is not.
 
 content being a reflection of dynamics, best way to help everyone survive *history* is to stabilize the space between you and yours, for all selves you call home.
 
@@ -359,7 +359,7 @@ content being a reflection of dynamics, best way to help everyone survive *histo
 
 - *friction is named without structural cash-out.* "type-interaction resists the action of reality, material-interaction resists the action of gravity" presents friction as substrate-independent resistance-against-pull, with parallel grammar doing structural-correspondence work between type-substrate and material-substrate. the parallelism is suggestive and structurally apt, but no formal object is constructed of which both instances are explicit cases. closing this would mean either constructing a typed friction-functor with type-interaction and material-interaction as instances, or stepping back to "friction-as-resistance-against-pull is a pattern recurring across two substrates relevant here."
 
-- *the alluvial-fan image carries structural content that distributes across registers without being formally located.* the fan as record-of-passage operates in postspace (type-invariant for the population that formed it under specific entrance conditions); the fan as in-progress-resolution operates in priorspace (where forks are determined by path-stack state, type-content, and flow-conditions); the fan-as-experienced operates in userspace (each molecule's local sense of which fork resolved). the registers are correctly distinguished in the prose, but the image is operating in all three at once and the cross-register structural-correspondence is doing implicit work. closing this would mean either formalizing the fan as an object with explicit projections into each register, or marking the cross-register operation explicitly as "the fan-image is being deployed across all three registers; reading depends on which register is being addressed in the surrounding prose."
+- *the alluvial-fan image carries structural content that distributes across registers without being formally located.* the fan as record-of-passage operates in exitspace (type-invariant for the population that formed it under specific entrance conditions); the fan as in-progress-resolution operates in priorspace (where forks are determined by path-stack state, type-content, and flow-conditions); the fan-as-experienced operates in userspace (each molecule's local sense of which fork resolved). the registers are correctly distinguished in the prose, but the image is operating in all three at once and the cross-register structural-correspondence is doing implicit work. closing this would mean either formalizing the fan as an object with explicit projections into each register, or marking the cross-register operation explicitly as "the fan-image is being deployed across all three registers; reading depends on which register is being addressed in the surrounding prose."
 
 - *"observation generates an observer; intuitively, a bubble in the foam"* is structural identification but the connection to the foam-as-formal-object is asserted rather than constructed. the body says "every passage through an observation loop generates an observer — intuitively, a bubble in the foam." the connection between observation-loop-passages and foam-bubbles is structurally suggestive (observers as bubbles is established vocabulary; passage-through-loop is the new dynamic content of this section) but the formal correspondence between "passage-through-loop" and "bubble-as-observer-in-foam" is not derived in this file. closing this would mean either constructing the formal map (passages → bubbles, with the foam's structural conditions being the structural conditions on passages), or naming this as the working identification with the formal correspondence pending downstream.
 
@@ -405,7 +405,7 @@ per-agent dynamics are simple: zero-seeking with magnitude-invariance. the agent
 
 both `d` and `m` lie in the observer's slice. `write_confined_to_slice` (Confinement.lean) proves the write `d wedge m` is confined to `Lambda^2(P)`. both structurally and phenomenologically, an observer literally cannot modify dimensions they are not bound to. the write's effect on other observers comes through cross-measurement (`commutator_seen_to_unseen`), not through direct modification of their subspaces. put casually, cross-stabilization is not a thing.
 
-formally open: postspace detection/measurement of userspace stabilization
+formally open: exitspace detection/measurement of userspace stabilization
 
 #### status
 

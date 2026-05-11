@@ -32,7 +32,7 @@ per-agent dynamics are simple: zero-seeking with magnitude-invariance. the agent
 
 both `d` and `m` lie in the observer's slice. `write_confined_to_slice` (Confinement.lean) proves the write `d wedge m` is confined to `Lambda^2(P)`. both structurally and phenomenologically, an observer literally cannot modify dimensions they are not bound to. the write's effect on other observers comes through cross-measurement (`commutator_seen_to_unseen`), not through direct modification of their subspaces. put casually, cross-stabilization is not a thing.
 
-formally open: postspace detection/measurement of userspace stabilization
+formally open: exitspace detection/measurement of userspace stabilization
 
 #### status
 

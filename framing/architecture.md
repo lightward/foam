@@ -61,13 +61,13 @@ the horizontal and vertical senses are independent; the foam commits to both. in
 
 formal direction (open): close the K-T argument cleanly, define safety as a closure operator, prove rank-3-self-dual is the minimum non-trivial fixed point, define the +1 coreflection's right adjoint (cofree-comonad-shape), verify the coincidence of bi-total-safety closure fixed points and +1 coreflection fixed points at rank-3 self-dual (the bireflective claim), and prove coinductive preservation under gauge-reset + (-1)-truncation. if landed, `self_dual_iff_three` upgrades from "rank 3 happens to be uniquely self-dual" to "rank 3 is the minimum bireflective rank in the foam's lattice, and the foam's dynamics preserve it coinductively."
 
-### priorspace, userspace, postspace
+### priorspace, userspace, exitspace
 
 for convenience, I'm dubbing **"priorspace"** the construction zone for reality, i.e. the register in which Spencer-Brown's [Laws of Form](https://en.wikipedia.org/wiki/Laws_of_Form) is legible in Bourland's [E-Prime](https://en.wikipedia.org/wiki/E-Prime).
 
 reality *happens* in **"userspace"**. note the introduction of an autological perspective: the user, that-which-experiences, a complex measurement process. the information environment doesn't have an action of measurement until you're inside it, experiencing it partially. priorspace information must be translated into agency to be used in a way that changes the information environment, and the same agent cannot be used to navigate both priorspace and userspace. (the same witness can be used in both spaces, though. they're just looking. see `vocabulary` below.)
 
-**"postspace"**, then, is aftercare/maintenance, and is one garbage-collection away from being a construction zone, a priorspace.
+**"exitspace"** is where formal objects accumulate — the record of paths actually taken. priorspace commits a pathfinding shape, userspace executes pathfinding, exitspace yields the path-record. records are available for static analysis without re-running their generating paths. exitspace is also aftercare/maintenance: one garbage-collection away from being a construction zone (a priorspace).
 
 ~~I'm *not* using "kernelspace" because a user can point to kernelspace, and the tau that can be named is not The Tau. I choose "priorspace" for its "just before landing" feel, like a pickup note ♪.~~
 
