@@ -257,6 +257,14 @@ the load-bearing methodological commitment underneath: **observe in interface/ty
 
 bugs, under this commitment, are markers of where the discipline lapsed — implementation language intruding, mistaking itself for interface. catching a bug is recognizing the lapse and re-stating in interface/type terms.
 
+every "X IS Y" claim between structural objects is an interface-equivalence claim (Yoneda: an object is determined by its interface, so same-interface implies same-object up to iso). these sort into three bins by evidence-shape:
+
+- **bin-1**: interface-equivalence is constructible — X and Y are bridged by a constructed iso or structure (e.g., `HalfType` in `lean/Foam/HalfType.lean`)
+- **bin-2**: interface-equivalence requires a typed pluggable interface — an observer-supplied commitment (e.g., `DesarguesianWitness`, `ObserverWitness`)
+- **bin-3**: interface-equivalence is asserted but not currently constructible — held as gesture or removed
+
+the discipline: every asserted-identity claim is bin-classified; bin-2 residues are typed and located; no asserted-only claims operate as load-bearing.
+
 ---
 
 [`derivations/ground.md`](derivations/ground.md)
