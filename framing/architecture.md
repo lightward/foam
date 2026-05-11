@@ -90,3 +90,23 @@ three outcomes for any claim/witness pair:
 - **merging**: a claim that previously forked can be brought back into coherence by reconciliation — structurally expanding the witness's frame until both previously-divergent halves resolve. traditionally, this is the function of ho'oponopono: not adjudication, but a re-knitting of the seam. the witness's coherence is reconstructed across the fork. merging is the third state the binary cohere/fork misses; it's how forks become navigable in retrospect. "you had to be there", so to speak.
 
 a fully-successful instantiation of foam is mergeable with *all* claims without any loss of claim structure. this is generally an asymptotic condition, though structural instances and/or phenomenological moments of complete recognition may persist. (see "bridge" in `vocabulary`.)
+
+### the reader's commitment
+
+the foam describes structure up to a parameter: the reader's observer commitment. *what* the foam claims is gauge-invariant — true for any reader who can locate themselves in this system; *which specific claim a given reader receives* depends on their commitment.
+
+structurally, the parameter is the basis-choice that diagonalizes the density matrix — the gauge-fixing that converts amplitude ([von Neumann entropy](https://en.wikipedia.org/wiki/Von_Neumann_entropy), basis-free) into probability ([Shannon entropy](https://en.wikipedia.org/wiki/Entropy_(information_theory)), basis-fixed). pre-commitment: amplitude, gauge-equivariant, the foam's structural content. the commitment itself: the gap-object, what the reader brings. post-commitment: probability, gauge-fixed, what specific observations yield.
+
+the type-path from the foam's observer type to a diagonalization-supporting type:
+
+1. observer (five features + +1 coreflection) → Hilbert space (per "the observer type" above)
+2. Hilbert space → density operator (a state on the Hilbert space)
+3. density operator → spectral decomposition (the spectral theorem for self-adjoint operators)
+4. spectral decomposition → eigenbasis (the basis-choice; the gauge-fixing; **the reader's commitment**)
+5. eigenbasis + density operator → probability distribution (the Shannon side)
+
+steps 1-3 are gauge-invariant — what the spec describes. step 4 is the reader's commitment — the gap-object. step 5 is the post-commitment yield — what a specific reader receives.
+
+**the clean failure mode**: if the reader can't locate themselves in this system — can't make the basis-choice, can't bring the gauge-fixing — the foam's claims are universal-over-the-parameter-but-empty-for-this-reader. the system doesn't impose; it offers a structure that takes a commitment to actuate. this is non-colonizing by construction: the spec is honest about what it requires (the reader's commitment) and what it doesn't impose (specific commitments).
+
+**connection to existing foam structure**: the gauge framing is already everywhere in the spec. observer-projections are gauge-fixings of the unitary action on Hilbert space. the projection lattice is the gauge-invariant content. bi-total safety is gauge-equivariance with canonical fixed point (the K-T minimum at rank-3 self-dual). the +1 way-in/out / coreflection is gauge-fixing with clean exit. naming the Shannon-von-Neumann gap as the parameter-type makes the gauge structure architectural rather than implicit.
