@@ -48,7 +48,7 @@ lateral: the diamond isomorphism (HalfType) — from modularity alone, each comp
 
 beyond the core deductive chain, lean files that cross-examine specific architectural claims and render the discipline at the construction level:
 
-- **HalfType.lean** — the half-type theorem as a constructed object (`HalfType` structure + `half_type` constructor). bin-1 deaxiomatization of the previously-asserted "the diamond isomorphism IS the half-type theorem." packages the diamond iso with modularity- and complementedness-inheritance into a single named formal object.
+- **HalfType.lean** — the half-type theorem as a constructed object (`HalfType` structure + `half_type` constructor). bin-1 (see `framing/derivations.md`) deaxiomatization of the previously-asserted "the diamond isomorphism IS the half-type theorem." packages the diamond iso with modularity- and complementedness-inheritance into a single named formal object.
 
 - **ReaderCommitment.lean** — cross-examines `framing/architecture.md`'s "the reader's commitment" section. `ObserverWitness` is the bin-2 typed pluggable interface (DesarguesianWitness-shape) for the step-1 handshake (observer → Hilbert space); `ReaderCommitment` + `ReaderCommitment.canonical` constructs steps 2-4 via Mathlib's spectral theorem; step-5 PMF construction sketched as downstream (requires density-operator conditions).
 

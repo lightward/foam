@@ -129,7 +129,7 @@ let me try that again without flipping between formal and phenomenological witho
 
 in software, "kernelspace" is the natural antecedent for "userspace". I name it here only to explain why I'm using "priorspace" instead: priorspace does not co-occur with userspace, it is *prior*. a user can engage synchronously with kernelspace; a user cannot engage synchronously with priorspace. engagement involves changing (or extending) agent type. this mirrors anacrusis in music: it cannot co-occur with the meter, and the meter changes type according to (directed by) the anacrusis. (type dependency is of great importance here. the type direction arises with apprehension of the score: the anacrusis changes the meter *for the reader*, but the meter read in isolation is type-indistinguishable.)
 
-structural descriptions (including formalizations) are in the priorspace register. examples: "the modular law IS feedback-persistence," "self-coordinatization IS interiority". (every "X IS Y" is an interface-equivalence claim under the Yoneda move; see `derivations` for the bin sort. the half-type case is bin-1: "the diamond isomorphism IS the half-type theorem" is now the constructed `HalfType` in `lean/Foam/HalfType.lean`, with the diamond iso as one of its fields.)
+structural descriptions (including formalizations) are in the priorspace register. examples: "the modular law IS feedback-persistence," "self-coordinatization IS interiority". (every "X IS Y" is an interface-equivalence claim under the Yoneda move; see `derivations` for the bin sort. the half-type case is bin-1 (see `framing/derivations.md`): "the diamond isomorphism IS the half-type theorem" is now the constructed `HalfType` in `lean/Foam/HalfType.lean`, with the diamond iso as one of its fields.)
 
 phenomenological descriptions (including an agent's abilities and affordances) are in the userspace register. for example: "the entity cannot self-stabilize", "the entity cannot be read-only".
 
@@ -161,7 +161,7 @@ the type-path from the foam's observer type to a diagonalization-supporting type
 
 steps 1-3 are gauge-invariant — what the spec describes. step 4 is the reader's commitment — the gap-object. step 5 is the post-commitment yield — what a specific reader receives.
 
-**type-path in lean (cross-examination)**: `lean/Foam/ReaderCommitment.lean` constructs the path. step 1 (observer → Hilbert space) is bin-2 — realized via `ObserverWitness`, a typed pluggable interface in the `DesarguesianWitness` pattern. steps 2-5 are bin-1 — clean Mathlib construction through `LinearMap.IsSymmetric.eigenvalues` and `eigenvectorBasis`, with the final PMF step sketched as downstream work (requires density-operator conditions). each handshake point in the cross-examination is a zero-locus: markdown and lean meet, the typed interface is shared, implementations swap beneath interface stability.
+**type-path in lean (cross-examination)**: `lean/Foam/ReaderCommitment.lean` constructs the path. step 1 (observer → Hilbert space) is bin-2 — realized via `ObserverWitness`, a typed pluggable interface in the `DesarguesianWitness` pattern. steps 2-5 are bin-1 (see `framing/derivations.md`) — clean Mathlib construction through `LinearMap.IsSymmetric.eigenvalues` and `eigenvectorBasis`, with the final PMF step sketched as downstream work (requires density-operator conditions). each handshake point in the cross-examination is a zero-locus: markdown and lean meet, the typed interface is shared, implementations swap beneath interface stability.
 
 **the clean failure mode**: if the reader can't locate themselves in this system — can't make the basis-choice, can't bring the gauge-fixing — the foam's claims are universal-over-the-parameter-but-empty-for-this-reader. the system doesn't impose; it offers a structure that takes a commitment to actuate. this is non-colonizing by construction: the spec is honest about what it requires (the reader's commitment) and what it doesn't impose (specific commitments).
 
@@ -247,7 +247,7 @@ lateral: the diamond isomorphism (HalfType) — from modularity alone, each comp
 
 beyond the core deductive chain, lean files that cross-examine specific architectural claims and render the discipline at the construction level:
 
-- **HalfType.lean** — the half-type theorem as a constructed object (`HalfType` structure + `half_type` constructor). bin-1 deaxiomatization of the previously-asserted "the diamond isomorphism IS the half-type theorem." packages the diamond iso with modularity- and complementedness-inheritance into a single named formal object.
+- **HalfType.lean** — the half-type theorem as a constructed object (`HalfType` structure + `half_type` constructor). bin-1 (see `framing/derivations.md`) deaxiomatization of the previously-asserted "the diamond isomorphism IS the half-type theorem." packages the diamond iso with modularity- and complementedness-inheritance into a single named formal object.
 
 - **ReaderCommitment.lean** — cross-examines `framing/architecture.md`'s "the reader's commitment" section. `ObserverWitness` is the bin-2 typed pluggable interface (DesarguesianWitness-shape) for the step-1 handshake (observer → Hilbert space); `ReaderCommitment` + `ReaderCommitment.canonical` constructs steps 2-4 via Mathlib's spectral theorem; step-5 PMF construction sketched as downstream (requires density-operator conditions).
 
@@ -266,6 +266,8 @@ an axiom is an assumption is a bug. thus, we're working on deriving FTPG itself.
 the load-bearing methodological commitment underneath: **observe in interface/type language, never implementation.** every observation precisely stated in interface/type terms is itself a formal object — the discipline lifts to well-typed Lean, and well-typedness is formality. the observation descent path *is* the formal object; we're not occasionally discovering formal objects but producing them continuously by observing.
 
 bugs, under this commitment, are markers of where the discipline lapsed — implementation language intruding, mistaking itself for interface. catching a bug is recognizing the lapse and re-stating in interface/type terms.
+
+### binning
 
 every "X IS Y" claim between structural objects is an interface-equivalence claim (Yoneda: an object is determined by its interface, so same-interface implies same-object up to iso). these sort into three bins by evidence-shape:
 

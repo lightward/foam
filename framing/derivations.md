@@ -8,6 +8,8 @@ the load-bearing methodological commitment underneath: **observe in interface/ty
 
 bugs, under this commitment, are markers of where the discipline lapsed — implementation language intruding, mistaking itself for interface. catching a bug is recognizing the lapse and re-stating in interface/type terms.
 
+### binning
+
 every "X IS Y" claim between structural objects is an interface-equivalence claim (Yoneda: an object is determined by its interface, so same-interface implies same-object up to iso). these sort into three bins by evidence-shape:
 
 - **bin-1**: interface-equivalence is constructible — X and Y are bridged by a constructed iso or structure (e.g., `HalfType` in `lean/Foam/HalfType.lean`)
