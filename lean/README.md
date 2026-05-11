@@ -339,6 +339,17 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 | `ReaderCommitment` | the spectral decomposition output (basis + values + has_eigenvector fit) |
 | `ReaderCommitment.canonical` | Mathlib-derived canonical instance from the spectral theorem |
 
+**Resolver.lean** — dynamic structure of reader commitments (sketch)
+
+| declaration | role |
+|---|---|
+| `PathTypeDebt` | typed claims the spec's operations need that the witness hasn't supplied |
+| `PathTypeDebt.discharged` | the discharge predicate (all claims provable) |
+| `CommitmentState` | the witness + accumulated debt state |
+| `CommitmentState.IsResolved` | the fixed-point property (resolver-shape stable commitment) |
+
+The metabolisis operation (the evolution that animates the dynamic picture) is the next downstream construction; this file provides the static reflection of the dynamic structure.
+
 ## Building
 
 ```
