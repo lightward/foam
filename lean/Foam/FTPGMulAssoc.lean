@@ -1075,9 +1075,12 @@ theorem dilation_compose_at_beta (Γ : CoordSystem L)
   -- `dilation_witness_preservation` applied at x, P := β(a). β(a)'s
   -- own witness conditions: `beta_atom`/`beta_plane`/`beta_not_l` are
   -- PROVEN imports; we derive `⊄ m`, `⊄ O⊔C`, `≠ I`, `≠ O` inline.
-  -- The seventh, `¬ Q ≤ q`, is genuinely new and remains sorry'd
-  -- pending an extra signature hypothesis `hax_ne_U` (see the section
-  -- docstring above for the proof sketch).
+  -- The seventh, `¬ Q ≤ q`, is genuinely new and PROVEN (s141) via the
+  -- key identity's output structure: Q ≤ σ_x(C)⊔U; σ_x(C) ⊄ q (from
+  -- σ_x(C) ≤ O⊔C, (O⊔C)⊓q = C, and σ_x(C) ≠ C); so the two lines
+  -- σ_x(C)⊔U and q are distinct lines through U, meeting at U; Q ≤ q
+  -- would force Q ≤ U ≤ m, contradicting Q ⊄ m. No extra hypothesis
+  -- needed beyond hx_ne_I (already in the signature).
   --
   -- TODO (s139+): extract `beta_not_m` and `beta_not_OC` as named
   -- theorems in FTPGMulKeyIdentity for reuse — the derivations below
@@ -1162,9 +1165,67 @@ theorem dilation_compose_at_beta (Γ : CoordSystem L)
   obtain ⟨hQ_atom, hQ_plane, hQ_not_l, hQ_not_m, hQ_not_OC, hQ_ne_I⟩ :=
     dilation_witness_preservation Γ x hx hx_on hx_ne_O hx_ne_U hx_ne_I
       hβa_atom hβa_plane hβa_not_l hβa_not_m hβa_not_OC hβa_ne_I hβa_ne_O
-  -- Seventh condition (genuinely new): `¬ Q ≤ q`
-  -- Requires extra signature hypothesis `hax_ne_U` per section docstring.
-  have hQ_not_q : ¬ Q ≤ Γ.U ⊔ Γ.C := by sorry
+  -- Seventh condition (genuinely new): `¬ Q ≤ q`.
+  -- Proof via the key identity's output structure:
+  --   Q = σ_x(β(a)) = (σ_x(C) ⊔ U) ⊓ (a·x ⊔ E)   [h_inner_unfold]
+  -- so Q ≤ σ_x(C) ⊔ U. Combined with σ_x(C) ⊄ q (via σ_x(C) ≤ O⊔C,
+  -- (O⊔C)⊓q = C, and σ_x(C) ≠ C from `dilation_ext_ne_P`), the two
+  -- lines σ_x(C)⊔U and q are distinct lines through U, meeting at U.
+  -- Then Q ≤ q would force Q ≤ U ≤ m, contradicting hQ_not_m.
+  have hQ_not_q : ¬ Q ≤ Γ.U ⊔ Γ.C := by
+    intro hQ_le_q
+    -- σ_x(C) = (O⊔C) ⊓ (x ⊔ E_I); in particular σ_x(C) ≤ O⊔C.
+    set σxC := dilation_ext Γ x Γ.C with hσxC_def
+    have hσxC_eq : σxC = (Γ.O ⊔ Γ.C) ⊓ (x ⊔ Γ.E_I) :=
+      dilation_ext_C Γ x hx hx_on hx_ne_O hx_ne_U
+    have hσxC_le_OC : σxC ≤ Γ.O ⊔ Γ.C := hσxC_eq ▸ inf_le_left
+    -- σ_x(C) ≠ C via `dilation_ext_ne_P` at P := C (x ≠ I).
+    have hC_ne_I : Γ.C ≠ Γ.I := fun h => Γ.hC_not_l (h ▸ Γ.hI_on)
+    have hσxC_ne_C : σxC ≠ Γ.C :=
+      dilation_ext_ne_P Γ Γ.hC hx hx_on hx_ne_O hx_ne_U
+        Γ.hC_plane Γ.hC_not_m Γ.hC_not_l hOC_ne.symm hC_ne_I hx_ne_I
+    -- Standard fact (derived inline): ¬ U ≤ O⊔C.
+    -- If U ≤ O⊔C, then U ≤ (O⊔U)⊓(O⊔C) = O (modular at O, U ≠ C, C ⊄ O⊔U).
+    have hU_not_OC : ¬ Γ.U ≤ Γ.O ⊔ Γ.C := by
+      intro hU_le
+      have hC_ne_U : Γ.C ≠ Γ.U := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+      have hOU_OC_eq_O : (Γ.O ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.C) = Γ.O :=
+        modular_intersection Γ.hO Γ.hU Γ.hC Γ.hOU hOC_ne hC_ne_U.symm Γ.hC_not_l
+      have hU_le_O : Γ.U ≤ Γ.O := hOU_OC_eq_O ▸ le_inf le_sup_right hU_le
+      exact Γ.hOU ((Γ.hO.le_iff.mp hU_le_O).resolve_left Γ.hU.1).symm
+    -- σ_x(C) ⊄ q: σ_x(C) ≤ q and ≤ O⊔C gives σ_x(C) ≤ (O⊔C)⊓q = C ✗.
+    have hC_ne_U : Γ.C ≠ Γ.U := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+    have hOC_q_eq_C : (Γ.C ⊔ Γ.O) ⊓ (Γ.C ⊔ Γ.U) = Γ.C :=
+      modular_intersection Γ.hC Γ.hO Γ.hU hOC_ne.symm hC_ne_U Γ.hOU
+        (fun h => hU_not_OC (h.trans (sup_comm Γ.C Γ.O).le))
+    -- σ_x(C) is an atom (named lemma: `dilation_ext_atom` at C).
+    have hσxC_atom : IsAtom σxC :=
+      dilation_ext_atom Γ Γ.hC hx hx_on hx_ne_O hx_ne_U
+        Γ.hC_plane Γ.hC_not_l hOC_ne.symm hC_ne_I Γ.hC_not_m
+    have hσxC_not_q : ¬ σxC ≤ Γ.U ⊔ Γ.C := by
+      intro h
+      apply hσxC_ne_C
+      have hσxC_le_meet : σxC ≤ (Γ.C ⊔ Γ.O) ⊓ (Γ.C ⊔ Γ.U) :=
+        le_inf (sup_comm Γ.O Γ.C ▸ hσxC_le_OC) (sup_comm Γ.U Γ.C ▸ h)
+      exact (Γ.hC.le_iff.mp (hσxC_le_meet.trans hOC_q_eq_C.le)).resolve_left hσxC_atom.1
+    -- (U ⊔ C) ⊓ (U ⊔ σ_x(C)) = U (two distinct lines through U).
+    have hσxC_ne_U : σxC ≠ Γ.U := by
+      intro h
+      apply hU_not_OC
+      exact h ▸ hσxC_le_OC
+    have hmeetU : (Γ.U ⊔ Γ.C) ⊓ (Γ.U ⊔ σxC) = Γ.U :=
+      modular_intersection Γ.hU Γ.hC hσxC_atom hC_ne_U.symm hσxC_ne_U.symm
+        hσxC_ne_C.symm hσxC_not_q
+    -- Q ≤ σ_x(C) ⊔ U (factor of the key identity output).
+    have hQ_le_σxCU : Q ≤ σxC ⊔ Γ.U :=
+      h_inner_unfold.le.trans inf_le_left
+    -- Q ≤ U via the meet at U.
+    have hQ_le_U : Q ≤ Γ.U := by
+      have hQ_le : Q ≤ (Γ.U ⊔ Γ.C) ⊓ (Γ.U ⊔ σxC) :=
+        le_inf hQ_le_q (sup_comm σxC Γ.U ▸ hQ_le_σxCU)
+      exact hQ_le.trans hmeetU.le
+    -- Q ≤ U ≤ m contradicts Q ⊄ m.
+    exact hQ_not_m (hQ_le_U.trans le_sup_left)
   -- ═══ Step 4: apply `recovery_via_E` to σ_y(Q) ═══
   have h_recovery : dilation_ext Γ y Q =
       (dilation_ext Γ y (beta_cast Γ Q) ⊔ Γ.E) ⊓ (Γ.O ⊔ Q) :=

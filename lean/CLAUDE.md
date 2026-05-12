@@ -79,31 +79,29 @@ On local, this isn't a concern — `lake exe cache get` handles it.
 
 See `./README.md` for the deductive chain overview.
 
-### Current frontier (session 139, 2026-05-11)
+### Current frontier (session 141, 2026-05-11)
 
-**`Foam/FTPGMulAssoc.lean`: `dilation_compose_at_beta` named as the
-substantive sub-lemma; Steps 1-2 scaffold landed, Step 3+ open.** s139
-relocated the s132 device-shape question from the s137 framing
-(extend `dilation_witness_preservation` with off-q vs case-split inside
-`dilation_compose_at_witness`) to a sharper location: σ-composition
-restricted to β-images, as the named theorem `dilation_compose_at_beta`
-(sorry'd). The s137 framing's "extension" route was found
-**structurally blocked** — σ_x doesn't preserve off-q in general (there
-is a single critical `x*(P)` for which `σ_x(P) ≤ q`, so no
-unconditional preservation extension is available). The s135 bridge
-architecture sidesteps via the geometric fact that σ_y fixes E, hence
-preserves lines through E; both LHS and RHS of
-`dilation_compose_at_witness` reduce to `(... ⊔ E) ⊓ (O⊔P)`, with the
-equality of `(...)` parts being the content of
-`dilation_compose_at_beta`. The chain is now:
+**`Foam/FTPGMulAssoc.lean`: `dilation_compose_at_beta` Step 3 fully
+discharged (all 7 witness sub-conditions on Q PROVEN); Step 5+ open.**
+s141 closed the seventh and last Step 3 sub-sorry, `hQ_not_q`. Proof
+uses the key identity's output structure: Q ≤ σ_x(C)⊔U; σ_x(C) ⊄ q
+(via σ_x(C) ≤ O⊔C, modular `(O⊔C)⊓q = C`, and `dilation_ext_ne_P` for
+σ_x(C) ≠ C); the two lines σ_x(C)⊔U and q are distinct lines through
+U, meeting at U; Q ≤ q forces Q ≤ U ≤ m, contradicting Q ⊄ m from
+`dilation_witness_preservation`. **No extra signature hypothesis
+needed** — the s139 docstring's prediction that `hax_ne_U` would be
+required turned out to be over-cautious; `hx_ne_I` (already in the
+signature) suffices via `dilation_ext_ne_P`. The chain is now:
 
 ```
 coord_mul_assoc            (PROVEN, s134, thin assembly)
   ↓
 dilation_compose_at_witness  ← case-split on P ≤ q vs ¬, both reducing to ↓
   ↓
-dilation_compose_at_beta   ← s139: σ-composition on β-images (sorry'd)
-                              Steps 1-2 scaffold landed; Step 3+ open
+dilation_compose_at_beta   ← σ-composition on β-images (1 sorry: Step 5+)
+                              Steps 1-3 PROVEN (s141); Step 4 PROVEN via
+                              `recovery_via_E`; Step 5+ open (substantive
+                              modular closure)
   ↓ (reducible via)
 recovery_via_E             (PROVEN, s135 step 1 + s136 step 2a + s137 steps 2b-5)
 dilation_mul_key_identity  (PROVEN, FTPGMulKeyIdentity.lean)
@@ -149,31 +147,35 @@ Earlier-session pieces still in place:
   on `P ≤ q` vs ¬, both branches reducing to `dilation_compose_at_beta`.
   Docstring in `FTPGMulAssoc.lean` documents the reduction; theorem
   body unchanged from s137 (single top-level sorry).
-* **`dilation_compose_at_beta` (sorry'd, NEW in s139)**:
+* **`dilation_compose_at_beta` (1 sorry: Step 5+)**:
   `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))` — σ-composition restricted to
-  β-images. The substantive remaining content of the chain. s139
-  scaffold:
+  β-images. The substantive remaining content of the chain. Status
+  as of s141:
   - Steps 1-2 PROVEN: two `dilation_mul_key_identity` applications
     elaborate clean.
-  - Step 3 scaffolded: witness conditions on `Q := σ_x(β(a))` named
-    as 7 `by sorry` sub-targets (Q atom, in π, off l/m/O⊔C/q, ≠ I);
-    `recovery_via_E` application well-typed against them and named
-    as `h_recovery`.
-  - Step 5+ documented in body comments: identify `beta_cast Γ Q =
-    β(b)` with `b := (Q⊔E)⊓l`; apply `dilation_mul_key_identity` to
+  - Step 3 PROVEN (s140 + s141): all 7 witness sub-conditions on
+    `Q := σ_x(β(a))` discharged. The first 6 (Q atom, in π, off
+    l/m/O⊔C, ≠ I) factored through `dilation_witness_preservation`
+    in s140; the 7th (`¬ Q ≤ q`) PROVEN in s141 via the key
+    identity's output structure (see proof at the `hQ_not_q` site
+    in FTPGMulAssoc.lean and the inline comment block above).
+    `recovery_via_E` now applies cleanly at line `h_recovery`.
+  - Step 4 PROVEN: `recovery_via_E` lands; `σ_y(Q) = (σ_y(β-cast Q)
+    ⊔ E) ⊓ (O⊔Q)`.
+  - Step 5+ open: identify `beta_cast Γ Q = β(b)` with
+    `b := (Q⊔E)⊓l`; apply `dilation_mul_key_identity` to
     `σ_y(β(b))`; close via modular juggling matching
     `σ_(x·y)(C)⊔U` and `a·(x·y)⊔E`. Substantive content is
     `b·y = a·(x·y)` — the composition law transported through the
     β-line.
 
-  The s132 device-shape question is concentrated at this lemma.
   **Prediction (s133/s135/s139, consistent):** route (β) re-bridging
   via `recovery_via_E` + `dilation_mul_key_identity` closes the lemma
-  without a fresh `*Witness` interface. **Untested.** The lemma will
-  need more non-degeneracy hypotheses than its current signature
-  carries (e.g., `hax_ne_O`, `hax_ne_U` for `coord_mul Γ a x`);
-  flagged in body comments, to surface as the `by sorry` sub-targets
-  get attacked.
+  without a fresh `*Witness` interface. **Steps 1-4 corroborate the
+  prediction; Step 5+ is the test.** The s141 finding that `hQ_not_q`
+  needed no extra hypothesis suggests the further-hypothesis warning
+  (`hax_ne_O`, `hax_ne_U`, etc.) flagged in body comments may also
+  be over-cautious — to be revisited when Step 5+ is attacked.
 
 The s133 helper `dilation_determined_by_param` (PROVEN, ~150 lines)
 is the lift-from-witness-agreement used by the capstone.
@@ -278,16 +280,18 @@ opportunistically; new code should use it directly.
 
 1. **`coord_mul_assoc`.** PROVEN as an assembly in
    `Foam/FTPGMulAssoc.lean` (s134). The substantive sorry on the chain
-   to division ring is now **`dilation_compose_at_beta`** (NEW in s139,
-   named sub-lemma): `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))` — σ-composition
+   to division ring is **`dilation_compose_at_beta`** (named sub-lemma
+   from s139): `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))` — σ-composition
    on β-images. With `recovery_via_E` (PROVEN, s137) and
    `dilation_mul_key_identity` (PROVEN) in place, the (β) re-bridging
-   route is scaffolded; Steps 1-2 elaborate clean, Step 3 (witness
-   conditions on `Q := σ_x(β(a))`, 7 named sub-sorries) and Step 5+
-   (closing modular juggling, substantive content `b·y = a·(x·y)`) are
-   the open targets. `dilation_compose_at_witness` reduces to
-   `dilation_compose_at_beta` via case-split on `P ≤ q`. The s132
-   device-shape question is sharply localized at the new sub-lemma.
+   route is now fully landed through Step 4. **Steps 1-4 PROVEN
+   (s140-s141): two key-identity unfoldings, all 7 Step 3 witness
+   sub-conditions on `Q := σ_x(β(a))` discharged, `recovery_via_E`
+   application lands at `h_recovery`.** Step 5+ open: closing modular
+   juggling, substantive content `b·y = a·(x·y)`. `dilation_compose_
+   at_witness` reduces to `dilation_compose_at_beta` via case-split on
+   `P ≤ q`. The s132 device-shape question is sharply localized at
+   Step 5+.
 2. **`coord_mul_left_inv` (algebraic derivation).** Once
    `coord_mul_assoc` lands: define `b := coord_inv Γ a`, get its
    right inverse `c := coord_inv Γ b`, then
