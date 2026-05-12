@@ -767,6 +767,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 11, 21, 34, tzinfo=timezone.utc),
      datetime(2026, 5, 11, 23, 0, tzinfo=timezone.utc),
      "s140: FTPGMulAssoc — dilation_compose_at_beta Step 3 (β(a) witness prologue); dwp relocated, 6 of 7 Step 3 sub-sorries discharged"),
+    # Session 141: May 11-12 — Step 3 complete
+    (datetime(2026, 5, 11, 23, 49, tzinfo=timezone.utc),
+     datetime(2026, 5, 12, 0, 30, tzinfo=timezone.utc),
+     "s141: FTPGMulAssoc dilation_compose_at_beta — hQ_not_q PROVEN, Step 3 complete (Steps 1-4 PROVEN; Step 5+ open)"),
 ]
 
 
