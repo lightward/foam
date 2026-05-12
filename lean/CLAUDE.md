@@ -79,31 +79,57 @@ On local, this isn't a concern — `lake exe cache get` handles it.
 
 See `./README.md` for the deductive chain overview.
 
-### Current frontier (session 141, 2026-05-11)
+### Current frontier (session 142, 2026-05-11)
 
-**`Foam/FTPGMulAssoc.lean`: `dilation_compose_at_beta` Step 3 fully
-discharged (all 7 witness sub-conditions on Q PROVEN); Step 5+ open.**
-s141 closed the seventh and last Step 3 sub-sorry, `hQ_not_q`. Proof
-uses the key identity's output structure: Q ≤ σ_x(C)⊔U; σ_x(C) ⊄ q
-(via σ_x(C) ≤ O⊔C, modular `(O⊔C)⊓q = C`, and `dilation_ext_ne_P` for
-σ_x(C) ≠ C); the two lines σ_x(C)⊔U and q are distinct lines through
-U, meeting at U; Q ≤ q forces Q ≤ U ≤ m, contradicting Q ⊄ m from
-`dilation_witness_preservation`. **No extra signature hypothesis
-needed** — the s139 docstring's prediction that `hax_ne_U` would be
-required turned out to be over-cautious; `hx_ne_I` (already in the
-signature) suffices via `dilation_ext_ne_P`. The chain is now:
+**`Foam/FTPGMulAssoc.lean`: `dilation_compose_at_beta` Step 5+ — s139
+(β) prediction FALSIFIED.** s142 carried the (β) re-bridging route
+through Steps 1–4 and inspected the closing equality at Step 5+. The
+s133/s134/s139 prediction — "(β) re-bridging lands without surfacing
+a third `*Witness` interface" — does not hold.
+
+Reason: taking ⊔E of both sides of `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))`
+reduces to `(a·x)·y ⊔ E = a·(x·y) ⊔ E`, hence by atom-cover to
+`(a·x)·y = a·(x·y)` — `coord_mul_assoc` applied to atoms.
+`dilation_compose_at_beta` *contains* its causal antecedent through
+the s134 thin assembly, making the architecture **circular through
+Lean's dependency graph**:
 
 ```
-coord_mul_assoc            (PROVEN, s134, thin assembly)
+coord_mul_assoc
+  ←  dilation_compose_at_witness (×4)
+  ←  dilation_compose_at_beta
+  ⟹  coord_mul_assoc-at-atoms
+```
+
+Step 5+ cannot close on its own infrastructure. Three exits, none
+walked (detailed in the section docstring above `dilation_compose_at_beta`
+in `Foam/FTPGMulAssoc.lean`):
+
+* **(A) Architecture inversion (bin-1)** — prove `coord_mul_assoc`
+  directly via a fresh Desargues call on coord_mul's definition.
+* **(B) Named Witness (bin-2)** — surface `MulComposeWitness Γ` as
+  typed observer commitment. See "Meta-frontier: bin-2 Witnesses as
+  exhaustion findings" below before defaulting to this.
+* **(C) Fresh Desargues at this level (bin-1)** — triangle setup
+  proving the β-image atom equality directly via a single Desargues
+  call. The (α) shifted-key-identity route may be cleanest.
+
+s142 also looked back at `FTPGLeftDistrib.lean`'s `DesarguesianWitness`
+under the same framing and found the same shape (one-route exhaustion
+mis-characterized as irreducibility). See revised docstring in
+`FTPGLeftDistrib.lean` and the "Meta-frontier" section below.
+
+Chain status (post-s142):
+
+```
+coord_mul_assoc            (s134 thin assembly; circular below)
   ↓
 dilation_compose_at_witness  ← case-split on P ≤ q vs ¬, both reducing to ↓
   ↓
-dilation_compose_at_beta   ← σ-composition on β-images (1 sorry: Step 5+)
-                              Steps 1-3 PROVEN (s141); Step 4 PROVEN via
-                              `recovery_via_E`; Step 5+ open (substantive
-                              modular closure)
+dilation_compose_at_beta   ← contains coord_mul_assoc-at-atoms (s142)
+                              Steps 1-4 PROVEN; Step 5+ open via A/B/C
   ↓ (reducible via)
-recovery_via_E             (PROVEN, s135 step 1 + s136 step 2a + s137 steps 2b-5)
+recovery_via_E             (PROVEN, s135–s137)
 dilation_mul_key_identity  (PROVEN, FTPGMulKeyIdentity.lean)
 dilation_witness_preservation (PROVEN, s134)
 ```
@@ -147,35 +173,22 @@ Earlier-session pieces still in place:
   on `P ≤ q` vs ¬, both branches reducing to `dilation_compose_at_beta`.
   Docstring in `FTPGMulAssoc.lean` documents the reduction; theorem
   body unchanged from s137 (single top-level sorry).
-* **`dilation_compose_at_beta` (1 sorry: Step 5+)**:
+* **`dilation_compose_at_beta` (1 sorry: Step 5+, prediction FALSIFIED s142)**:
   `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))` — σ-composition restricted to
-  β-images. The substantive remaining content of the chain. Status
-  as of s141:
-  - Steps 1-2 PROVEN: two `dilation_mul_key_identity` applications
-    elaborate clean.
-  - Step 3 PROVEN (s140 + s141): all 7 witness sub-conditions on
-    `Q := σ_x(β(a))` discharged. The first 6 (Q atom, in π, off
-    l/m/O⊔C, ≠ I) factored through `dilation_witness_preservation`
-    in s140; the 7th (`¬ Q ≤ q`) PROVEN in s141 via the key
-    identity's output structure (see proof at the `hQ_not_q` site
-    in FTPGMulAssoc.lean and the inline comment block above).
-    `recovery_via_E` now applies cleanly at line `h_recovery`.
-  - Step 4 PROVEN: `recovery_via_E` lands; `σ_y(Q) = (σ_y(β-cast Q)
-    ⊔ E) ⊓ (O⊔Q)`.
-  - Step 5+ open: identify `beta_cast Γ Q = β(b)` with
-    `b := (Q⊔E)⊓l`; apply `dilation_mul_key_identity` to
-    `σ_y(β(b))`; close via modular juggling matching
-    `σ_(x·y)(C)⊔U` and `a·(x·y)⊔E`. Substantive content is
-    `b·y = a·(x·y)` — the composition law transported through the
-    β-line.
-
-  **Prediction (s133/s135/s139, consistent):** route (β) re-bridging
-  via `recovery_via_E` + `dilation_mul_key_identity` closes the lemma
-  without a fresh `*Witness` interface. **Steps 1-4 corroborate the
-  prediction; Step 5+ is the test.** The s141 finding that `hQ_not_q`
-  needed no extra hypothesis suggests the further-hypothesis warning
-  (`hax_ne_O`, `hax_ne_U`, etc.) flagged in body comments may also
-  be over-cautious — to be revisited when Step 5+ is attacked.
+  β-images. Status as of s142:
+  - Steps 1-4 PROVEN (s140 + s141 + s142): two
+    `dilation_mul_key_identity` applications, seven sub-witness
+    conditions on `Q := σ_x(β(a))` (including `¬ Q ≤ q` via
+    s141's `hQ_not_q`), `recovery_via_E` applies cleanly at
+    `h_recovery`.
+  - Step 5+ FALSIFIED: the s133/s135/s139 prediction "route (β)
+    closes without a `*Witness` interface" does not hold. From
+    `h_inner_unfold`, `Q ≤ a·x ⊔ E`, so `b := (Q⊔E)⊓l = a·x` is
+    FORCED. The closing equality reduces under ⊔E to
+    `(a·x)·y = a·(x·y)` — `coord_mul_assoc` applied to atoms. The
+    s134 architecture is circular through this content. Three exits
+    A/B/C — see Current frontier above and the section docstring
+    above the theorem in `FTPGMulAssoc.lean`.
 
 The s133 helper `dilation_determined_by_param` (PROVEN, ~150 lines)
 is the lift-from-witness-agreement used by the capstone.
@@ -364,6 +377,65 @@ Four pieces compose:
    `DesarguesianWitness Γ` as an explicit parameter alongside the usual
    non-degeneracy hypotheses. The body forwards the witness's `concurrence`
    field to `_scratch_left_distrib_via_axis` as `h_concur`. Zero `sorry`.
+
+## Meta-frontier: bin-2 Witnesses as exhaustion findings
+
+The project has accumulated typed-observer commitments at points where
+the deaxiomatization program named geometric residue as explicit
+pluggable interfaces rather than carry as unproven theorems:
+
+* **`DesarguesianWitness Γ`** (`FTPGLeftDistrib.lean`) — the concurrence
+  claim for the planar converse-Desargues content of the von Staudt
+  configuration. Discharged by `coord_mul_left_distrib` callers.
+* **(prospective) `MulComposeWitness Γ`** — would discharge
+  `dilation_compose_at_beta`'s Step 5+ if exit (B) is taken on the
+  multiplicative branch.
+
+**s142 finding: both commitments are exhaustion-based, not
+irreducibility-proven.**
+
+* `DesarguesianWitness`: s114 found `desargues_converse_nonplanar`
+  lift+recurse non-terminates at Level 2 `h_ax₂₃`. The s114 → s119
+  record stated "not derivable from CML + irreducible + height ≥ 4
+  alone"; s142 lookback identified this as an inferential overreach
+  from a one-route failure result.
+* `MulComposeWitness` (if surfaced): would emerge from s142's
+  falsification of the s139 (β) prediction. The falsification shows
+  one route can't close; it does not show the content is irreducible.
+
+**Predicted shape:** both slots admit bin-1 bundlings — *typed
+constructions of the recursive content as named lattice objects*, on
+the `HalfType` template (`lean/Foam/HalfType.lean`: "the diamond iso
+IS the half-type theorem" became the constructed `HalfType`, with the
+iso as one of its fields). Whether the bundlings exist for these
+specific situations is open; the prediction is consistent with the
+geometric structure (left-distrib's concurrence is distributivity
+content, Desargues-derivable in principle; mul-assoc is
+Desargues-derivable in any coordinatized projective space of height
+≥ 4).
+
+**Mechanism note (s142):** the predicted structural shape of bin-1
+paths is *dimensional lift via the height-≥-4 R witness*. R is
+already threaded through the lemma signatures (it's how
+`desargues_planar` works internally — uses R to lift planar
+configurations into 3-space, applies nonplanar Desargues, projects
+back). For situations where the planar argument loops on itself
+(the s142 finding for `dilation_compose_at_beta`), the predicted
+construction route is: use R to lift the loop-content into 3-space
+where it has structural room to close, then project back. The
+HalfType template (`lean/Foam/HalfType.lean`) is the bundling shape:
+construct a typed object whose existence (via R) carries the
+projected lower-dim content as a field. "Residents on the higher
+substrate do the work the lower substrate can't" is the structural
+slogan.
+
+**Operational consequence:** bin-2 commitments in this project are
+*landings*, not destinations. Each Witness is a potential bin-1
+bundling waiting to be found. The default disposition when surfacing
+a new Witness should be "this names the residue; the bin-1 path is
+open" — not "this content is irreducible." The framing shift between
+these two dispositions is the s142 working-derivation; see
+`history/142_*.md`.
 
 ## Constructing a `DesarguesianWitness`
 

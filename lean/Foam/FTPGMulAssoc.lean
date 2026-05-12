@@ -1010,14 +1010,75 @@ directly via key identity, two routes:
     `dilation_mul_key_identity` applies directly. Two bridge traversals
     composed; no new key-identity needed.
 
-Both routes are workable. (β) is more compositional and reuses proven
-infrastructure (`recovery_via_E` + `dilation_mul_key_identity`, both
-PROVEN); (α) is more direct. **Prediction (consistent with s133/s134):**
-(β) lands without surfacing a third `*Witness` interface — the
-multiplicative branch's geometric residue is fully absorbed by
-`recovery_via_E` plus `dilation_mul_key_identity`. **Untested.**
+Both routes are workable in principle. (β) is more compositional and
+reuses proven infrastructure (`recovery_via_E` + `dilation_mul_key_identity`,
+both PROVEN); (α) is more direct.
 
-The s132 device-shape question is now sharply localized to this lemma.
+**Test of the (β) prediction (s142):** the s133/s134/s139 prediction —
+"(β) lands without surfacing a third `*Witness` interface" — was tested
+by carrying (β) through Steps 1–4 of `dilation_compose_at_beta` and
+inspecting the closing equality at Step 5+. **The prediction is
+falsified.**
+
+Take ⊔E of both sides of `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))`:
+
+  * LHS = σ_y(σ_x(β(a))). By `h_inner_unfold`, σ_x(β(a)) ≤ a·x ⊔ E,
+    so after `recovery_via_E` and atom-cover at E,
+    σ_y(σ_x(β(a))) ⊔ E = (a·x)·y ⊔ E.
+  * RHS = σ_(x·y)(β(a)). By `dilation_mul_key_identity`,
+    σ_(x·y)(β(a)) ≤ a·(x·y) ⊔ E, so RHS ⊔ E = a·(x·y) ⊔ E.
+
+If LHS = RHS as atoms, then (a·x)·y ⊔ E = a·(x·y) ⊔ E, hence by
+atom-cover (both atoms ≠ E, on l) **`(a·x)·y = a·(x·y)`** — i.e.,
+`coord_mul_assoc` applied to atoms `a, x, y`.
+
+So `dilation_compose_at_beta` *contains* `coord_mul_assoc-at-atoms` as
+a logical consequence of its atom equality. The s134 architecture is
+therefore **circular through Lean's dependency graph**:
+
+      coord_mul_assoc
+        ←  dilation_compose_at_witness (×4)
+        ←  dilation_compose_at_beta
+        ⟹  coord_mul_assoc-at-atoms
+
+This is not "(β) is harder than thought" — it is "(β) cannot close on
+its own infrastructure." The closure expresses the same content the
+chain was trying to derive (loop-as-content shape).
+
+**Three exits, none yet walked:**
+
+  * **(A) Architecture inversion via dimensional lift (bin-1).** Prove
+    `coord_mul_assoc` directly via a Desargues argument that uses the
+    `R` witness (the height-≥-4 atom off π, already threaded through
+    the lemma signatures) to lift the planar associativity question
+    into 3-space. The lift exists by the height-≥-4 axiom; residents
+    on the higher substrate do the proof work that the planar level
+    cannot close on itself (the s142 loop showed that the planar-only
+    attempt is circular). The s134 thin-assembly via
+    `dilation_compose_at_witness` then becomes downstream of
+    `coord_mul_assoc`, not its proof. **Bundling shape:** HalfType
+    template (`lean/Foam/HalfType.lean`) — construct
+    `DimLifted_MulAssoc Γ` (or similar) that bundles R with the
+    lift's projection content, so the structure's inhabitation IS the
+    theorem.
+
+  * **(B) Named Witness (bin-2).** Surface `MulComposeWitness Γ` (or
+    `AssociativityWitness Γ`) as a typed observer commitment,
+    parameterizing `dilation_compose_at_beta` (and `coord_mul_assoc`
+    downstream). Same shape as `DesarguesianWitness Γ` for left-distrib.
+    Note: see `lean/CLAUDE.md`'s "Meta-frontier: bin-2 Witnesses as
+    exhaustion findings" — bin-2 commitments in this project have been
+    found to be exhaustion-based, not irreducibility-proven, and admit
+    bin-1 bundlings in principle.
+
+  * **(C) Fresh Desargues at this level (bin-1).** Find a triangle
+    setup that proves `σ_y(σ_x(β(a))) = σ_(x·y)(β(a))` directly via a
+    single Desargues call (not routing through `coord_mul_assoc`). New
+    geometric argument; the (α) shifted-key-identity route above may
+    be the cleanest version.
+
+The s132 device-shape question is now sharp: which exit closes the
+multiplicative branch?
 -/
 
 /-- **σ-composition at a β-image: dilations compose on the bridge line.**
@@ -1241,11 +1302,16 @@ theorem dilation_compose_at_beta (Γ : CoordSystem L)
   --   σ_y(Q) = (((σ_y(C) ⊔ U) ⊓ (b·y ⊔ E)) ⊔ E) ⊓ (O⊔Q).
   -- The closing modular argument equates this with `h_RHS_unfold`'s form:
   --   (σ_(x·y)(C) ⊔ U) ⊓ (a·(x·y) ⊔ E).
-  -- Likely shape: identify b·y = a·(x·y) (the substantive group-theoretic
-  -- content — composition law transports through the β-line); identify
-  -- the U-line factors via O⊔Q's projection to π. Both steps depend on
-  -- distinctness conditions that will surface as additional hypotheses
-  -- (hax_ne_U, hax_ne_O, hax_ne_I, possibly others).
+  -- s142 finding: `b = a·x` is forced (from Q ≤ a·x ⊔ E via
+  -- `h_inner_unfold`, giving Q⊔E = a·x ⊔ E, so b := (Q⊔E)⊓l = a·x).
+  -- Therefore the closing equality requires
+  --   `b·y = (a·x)·y = a·(x·y)`  —  `coord_mul_assoc` at atoms.
+  -- The s134 architecture loops through this content:
+  --   coord_mul_assoc ← dilation_compose_at_witness ← dilation_compose_at_beta
+  --   ⟹ coord_mul_assoc-at-atoms.
+  -- Step 5+ cannot close on its own infrastructure. See section docstring
+  -- above the theorem for the falsification of the s139 (β) prediction
+  -- and the three exits (A inversion / B Witness / C fresh Desargues).
   sorry
 
 /-! ## Capstone: `coord_mul_assoc`

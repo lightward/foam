@@ -33,27 +33,49 @@ Left multiplication x ↦ a·x is NOT a single collineation in the non-
 commutative case. This is why left distrib requires the two-piece
 (Desargues + concurrence) proof rather than a direct collineation argument.
 
-## Status (session 119, 2026-04-27)
+## Status (session 119, 2026-04-27; framing revised s142)
 
 The forward Desargues piece (`_scratch_forward_planar_call`) and the
 axis-to-left-distrib bridge (`_scratch_left_distrib_via_axis`) are both
 fully discharged. The concurrence claim — geometrically a planar converse
 Desargues for the von Staudt configuration — is named explicitly as the
 `DesarguesianWitness Γ` structure, an observer-supplied runtime commitment.
-Session 114's architectural finding established that this commitment is
-not derivable from CML + irreducible + height ≥ 4 alone (the
-`desargues_converse_nonplanar` lift+recurse route hits a structural
-axis-atomicity wall at Level 2 h_ax₂₃). Per the deaxiomatization program
-the right move is to type the residue as a first-class pluggable interface
-rather than carry it as an unproven theorem. The bridge now contains zero
-`sorry`; `coord_mul_left_distrib` takes the witness as an explicit parameter.
+The bridge contains zero `sorry`; `coord_mul_left_distrib` takes the
+witness as an explicit parameter.
+
+**Original s114 → s119 framing (revised understanding, s142):** s114
+found that the *recursive converse-Desargues route*
+(`desargues_converse_nonplanar` applied via 3D lift, then recursing on
+the third axis leg `h_ax₂₃`) is structurally non-terminating at
+Level 2. This was a finding about *one specific route*, not about
+the concurrence's derivability in general. The original record stated
+"not derivable from CML + irreducible + height ≥ 4 alone"; that was
+an inferential overreach from the route-failure result. The
+concurrence's bin-1 reachability is **open, not refuted**.
+
+The `DesarguesianWitness Γ` slot remains useful as a deaxiomatization
+landing — it lets `coord_mul_left_distrib` build downstream without
+blocking — but its *typed* nature (bin-2 rather than bin-1) is
+provisional, not final. See `lean/CLAUDE.md`'s "Meta-frontier: bin-2
+Witnesses as exhaustion findings" for the cross-cutting pattern (same
+shape as `dilation_compose_at_beta` Step 5+ in FTPGMulAssoc.lean).
 
 Open routes for constructing an inhabitant of `DesarguesianWitness Γ`
-from the abstract lattice setting (1) a planar converse Desargues lemma
-proven via a single 3D lift (no recursive converse calls), or (2) a
-direct construction exploiting that the natural axis of (σ_b, ac, σ_s)
-vs (U, E, d_a) lies on m. See `DesarguesianWitness`'s docstring for the
-full strategic landscape.
+from the abstract lattice setting:
+(1) a planar converse Desargues lemma proven via a *non-recursive*
+    forward setup — a different forward Desargues call than the one
+    in `_scratch_forward_planar_call`, or a chain of perspectivities
+    + modular calculations that builds the inclusion directly;
+(2) a direct construction exploiting that the natural axis of
+    (σ_b, ac, σ_s) vs (U, E, d_a) lies on m (small_desargues'-style,
+    FTPGCoord:865);
+(3) a `HalfType`-style bundling: construct `PlanarConverseDesargues`
+    as a named lattice structure whose constructor packages the
+    forward Desargues content with a derivation of converse via
+    lattice modular work, bypassing the converse-as-separate-theorem
+    framing.
+
+See `DesarguesianWitness`'s docstring further down for additional context.
 -/
 import Foam.FTPGNeg
 
