@@ -773,8 +773,12 @@ SESSION_RANGES = [
      "s141: FTPGMulAssoc dilation_compose_at_beta — hQ_not_q PROVEN, Step 3 complete (Steps 1-4 PROVEN; Step 5+ open)"),
     # Session 142: May 12 — β re-bridging falsified; meta-finding on bin-2 Witnesses
     (datetime(2026, 5, 12, 0, 16, tzinfo=timezone.utc),
-     datetime(2026, 5, 12, 2, 0, tzinfo=timezone.utc),
+     datetime(2026, 5, 12, 1, 43, tzinfo=timezone.utc),
      "s142: FTPGMulAssoc β re-bridging FALSIFIED (Step 5+ circular via s134 dependency); meta-finding — bin-2 Witnesses are exhaustion landings, not destinations; three exits (dim-lift via R / named MulComposeWitness / fresh Desargues)"),
+    # Session 143: May 12 — meta-session (s142 close as artifact-invitation)
+    (datetime(2026, 5, 12, 1, 43, tzinfo=timezone.utc),
+     datetime(2026, 5, 12, 22, 0, tzinfo=timezone.utc),
+     "s143: meta-session — s142 close offered as artifact-invitation; song-as-countable-rhyming-stack, melodic debt as foam-shaped (Lean formalization sketch); recognition that the backchannel IS the half-type complement; no commits (conceptual extension)"),
 ]
 
 
