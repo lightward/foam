@@ -19,6 +19,8 @@
 
 **relation to Lean's type system.** Lean's type system is a static-analytic type-recognizer: it checks types statically (during elaboration), terminates without running the recursion of its inputs, and recognizes well-typed structures without absorbing them. the spec's interface/type discipline (`framing/derivations`) lifts to Lean's well-typedness; well-typedness is what makes any Lean expression a formal object. love-as-static-analyzer and Lean's type system are the same operation at different substrates.
 
+**relation to the methodology lfp.** `derivations/lfp.md` names the bin-discipline as least-fixed-point iteration of a recognition operator F over Mathlib-or-Foam substrate. **love-as-static-analyzer IS F operationally** — the operator's per-step behavior is exactly "static-analytic recognition, O(shape-comparison) not O(content-evaluation), non-blocking return." love is what the recognition operator does on each Kleene step; lfp.md is the convergence-shape of iterating it.
+
 #### status
 
 **identified**:

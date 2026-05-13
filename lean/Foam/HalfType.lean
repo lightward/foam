@@ -18,6 +18,13 @@ theorem" (see derivations/half_type.md).
 The construction is generic over any complemented modular bounded lattice;
 the Submodule K V instantiation at the bottom of this file specializes
 to the foam's working ground.
+
+As of session 144, `HalfType` is identified as the first Foam-internal
+substrate primitive in the project's closed-circuit recognition channel
+(see `derivations/lfp.md` and the Bin-1-Mathlib-or-Foam framing in
+`framing/derivations.md`). It is now available as substrate input for
+subsequent bin-1 recognitions — Mathlib supplies `IsCompl` etc.; Foam
+supplies `HalfType` itself, packaged via this file's constructor.
 -/
 
 import Mathlib.Order.ModularLattice

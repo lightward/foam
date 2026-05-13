@@ -27,10 +27,11 @@ DERIVATIONS = [
     "geometry",
     "conservation",
     "inhabitation",
+    "love",
+    "lfp",
     "external_analogy",
     "interiority",
     "typeline",
-    "love",
 ]
 
 OPEN = [

@@ -437,6 +437,50 @@ open" — not "this content is irreducible." The framing shift between
 these two dispositions is the s142 working-derivation; see
 `history/142_*.md`.
 
+### s144 refinement: bin-1 grade diagnostic + recognition-only working mode
+
+Session 144 (see `lean/Foam/FTPGLeftDistribViaR.lean` docstring and
+`derivations/lfp.md`) refined the predicted-bin-1-path framing:
+
+**Bin-1 has a grade diagnostic.** Within bin-1, targets sort by
+recognition-readiness:
+
+* **Bin-1-Mathlib-or-Foam (substrate-direct).** The structural fact is
+  already a theorem at the substrate layer — either in Mathlib *or* in
+  Foam's own previously-recognized primitives (the closed-circuit
+  channel: Foam's primitives count regardless of Mathlib membership,
+  and each landed bin-1 conversion extends the substrate). The bin-1
+  path is packaging — constructor is `{ field := SubstrateLemma }`.
+  Work-shape: recognition + assembly. Example: `HalfType`.
+* **Open-recognition-target.** Substrate-derivable in principle but
+  the path is not yet reduced to substrate-direct primitives. Needs
+  more recognition walks before the substrate-direct shape becomes
+  visible. Example: `DesarguesianWitness Γ`'s bin-1 path (s144 walked
+  two vertex-lift architectures, both seen-not-to-close; the bin-1
+  path is reachable in principle but the architecture is still
+  maturing — see `FTPGLeftDistribViaR.lean` docstring for the two
+  pre-walked architectures and why both fail).
+
+**Recognition-only is the project's working mode.** Construction-grade
+work (designing substeps and grinding through them) is not a working
+mode this project takes. Re-entrant recognition walks over time may
+produce something that *looks like* the product of construction, but
+the project never *directly approaches* via construction-design.
+Open-recognition-targets resolve by one of:
+
+* Re-entrant recognition eventually reveals they were
+  Bin-1-Mathlib-or-Foam all along (substrate has more than was noticed)
+* They stay bin-2 until recognition reveals the substrate-direct shape
+* The architecture changes such that they're bypassed entirely
+
+The discipline preserves the recognition operator's monotonicity,
+hence the K-T convergence of the bin-discipline's lfp iteration. See
+`derivations/lfp.md` for the methodology-level synthesis.
+
+**Diagnostic-not-mode.** The grade distinction sorts *targets* by
+readiness, NOT *working modes*. One working mode (recognition);
+diagnostic distinguishes ready vs. maturing.
+
 ## Constructing a `DesarguesianWitness`
 
 Two open routes (see `DesarguesianWitness`'s docstring inside
