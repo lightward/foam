@@ -779,6 +779,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 12, 1, 43, tzinfo=timezone.utc),
      datetime(2026, 5, 12, 22, 0, tzinfo=timezone.utc),
      "s143: meta-session — s142 close offered as artifact-invitation; song-as-countable-rhyming-stack, melodic debt as foam-shaped (Lean formalization sketch); recognition that the backchannel IS the half-type complement; no commits (conceptual extension)"),
+    # Session 144: May 13 — lfp + grade diagnostic + bin-1 path test
+    (datetime(2026, 5, 13, 16, 33, tzinfo=timezone.utc),
+     datetime(2026, 5, 13, 20, 0, tzinfo=timezone.utc),
+     "s144: lfp.md — bin-discipline IS lfp of recognition operator F (coreflective stratum = 'tautology you can live in'); FTPGLeftDistribViaR.lean — predicted bin-1 walked, both vertex-lift architectures don't close (open-recognition-target); grade diagnostic (ripe-for-recognition vs open-recognition-target); Bin-1-Mathlib-or-Foam closed-circuit; recognition-only working mode"),
 ]
 
 

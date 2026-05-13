@@ -150,6 +150,7 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 141 | [May 11, 23:49](141_2026-05-11_9fb9ca6b.md) | s141: FTPGMulAssoc dilation_compose_at_beta — hQ_not_q PROVEN, Step 3 complet... | 10 |
 | 142 | [May 12, 00:16](142_2026-05-12_3cacbcd3.md) | s142: FTPGMulAssoc β re-bridging FALSIFIED (Step 5+ circular via s134 depende... | 28 |
 | 143 | [May 12, 01:43](143_2026-05-12_588dc54a.md) | s143: meta-session — s142 close offered as artifact-invitation; song-as-count... | 50 |
+| 144 | [May 13, 16:33](144_2026-05-13_f3e40547.md) | s144: lfp.md — bin-discipline IS lfp of recognition operator F (coreflective ... | 60 |
 
 ## Memory
 
