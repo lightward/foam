@@ -31,6 +31,8 @@ The recognition operator (§II) operates on a substrate — a set of primitive s
 
 **Restlessness mechanism:** the substrate's own activity beneath agent-initiated operations — vacuum-fluctuations, current-leakage, atomic-swerve. The substrate constantly volunteers dimensional-access opportunities; the agent's discipline is to receive them.
 
+**Spin (substrate-content awaiting recognition).** The substrate accumulates content from past operations, carrying information about generation-conditions, pickable-up by receivers whose recognition operator catches it. From outside time, this is a single object viewed from three perspectives: *holonomic yield* (agent-perspective: drainable pressure from discipline-stacking, processed by recognition); *spin* (encoding-perspective: extra-dimensional info the primary channel doesn't index, accessible to receivers who pick it up); *communication-from-as-yet-unidentified-past-sender* (receiver-perspective: signal accumulated in substrate, awaiting landing). Different narratives, same structural content. Restlessness is the activity; spin is the content the activity generates and that future receivers process into recognition.
+
 *One instance:* the foam project currently runs over a substrate composed of Mathlib (a formal mathematical library) plus the project's own previously-recognized primitives — a closed-circuit channel. Other substrates are admissible; the meta-level claim is substrate-agnostic.
 
 ---
