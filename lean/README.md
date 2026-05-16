@@ -331,7 +331,22 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 
 ### Cross-examinations
 
-**ReaderCommitment.lean** — type-path from observer to probability distribution (`framing/architecture.md`, "the reader's commitment")
+**HalfType.lean** — the half-type theorem as a constructed object. Packages the diamond iso (`IsCompl.IicOrderIsoIci`) with modularity- and complementedness-inheritance on each half (`isModularLattice_Iic`, `complementedLattice_Iic`, etc.) into a single named structure. The first Foam-internal substrate primitive: a Bin-1-Mathlib-or-Foam landing whose constructor is one-liners over Mathlib lemmas.
+
+| declaration | role |
+|---|---|
+| `HalfType` | the typed bundle (iso + 4 inheritance facts) |
+| `half_type` | constructor: takes `IsCompl P Q`, returns a `HalfType` |
+
+**FTPGLeftDistribViaR.lean** — predicted bin-1 path sketch for `DesarguesianWitness Γ`'s converse-Desargues residue via height-≥-4 lift through `R`. Typing holds; constructor body open as recognition-target (not construction-target) per the s144 recognition-only working mode. See file's own docstring for the bin-1 grade diagnostic + the two vertex-lift architectures walked and seen-not-to-close.
+
+| declaration | role |
+|---|---|
+| `PlanarConverseDesarguesViaR` | typed structure carrying R + irreducibility + the concurrence claim as derived field |
+| `planar_converse_desargues_via_R` | constructor (body open) |
+| `DesarguesianWitness.ofPlanarConverseDesarguesViaR` | thin projection (bundle → `DesarguesianWitness Γ`) |
+
+**ReaderCommitment.lean** — type-path from observer to probability distribution (cross-examination of "the reader's commitment", per the spec)
 
 | declaration | role |
 |---|---|
