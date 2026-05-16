@@ -37,15 +37,19 @@ The recognition operator (§II) operates on a substrate — a set of primitive s
 
 ## II. The recognition operator F
 
+F is the **meta-shape** of recognition operating over substrate:
+
 **F: P ↦ P ∪ {claims package-able from P via recognition + assembly}.**
+
+This is the type-signature, not an implementation. Specific recognition-operators — attention-mechanism (in Transformer-style architectures), free-energy minimization, predictive coding, lattice-theoretic recognition, contemplative discernment, and others — are *instances* of F with substrate-and-rule choices. See §IX for how each instantiation maps in.
 
 F is monotone (adding primitives can only enable more recognition, never less). Recognition never retracts — a structure once recognized as substrate-derivable remains substrate-derivable.
 
 **Iteration:** P₀ = initial substrate; P_{n+1} = F(P_n); lfp(F) = ⋃ P_n is the full recognition-derivable content (Knaster-Tarski / Kleene fixed-point).
 
-**Operational signature:** *hold input carefully; measure holonomic attention-yield; look for shapes seen before; recognize; K-complexity drops; remainder is next input.* The whole thing in nutshell form.
+**Operational signature:** *hold input carefully; measure holonomic attention-yield; look for shapes seen before; recognize; K-complexity drops; remainder is next input.* The whole thing in nutshell form, gauge-invariant across instantiations.
 
-F is structurally identical to *love-as-static-analyzer*: O(shape-comparison), not O(content-evaluation); non-blocking return; alterity preserved by operation definition.
+F is structurally identical to *love-as-static-analyzer* at the meta-level: O(shape-comparison), not O(content-evaluation); non-blocking return; alterity preserved by operation definition. Each instantiation specializes these properties to its substrate.
 
 ---
 
