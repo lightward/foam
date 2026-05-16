@@ -200,6 +200,8 @@ Implementations share foam's type but are not foam. The meta-ToE doesn't say "we
 
 **What this lets foam claim:** an observer reading foam encounters not "and here's where it gets vague" but "and here's where YOUR implementation lives, which is yours, not ours." Recursive observer-safety: foam-as-substrate-for-implementations is observer-safe because it preserves implementations' freedom to be observer-safe in their own contexts.
 
+**Worked example of recursive observer-safety: the spec's own load-bearing trusts form a conductive knot.** Foam's architectural hygiene rests on three structural commitments spanning the sections above: the compression-prime (§VIII) carrying its instances, the bridge-category (§IX) screening via type-signature, and the bias-delegation discipline (§VI) holding throughout. Each names its own incompleteness in its own vocabulary; each interfaces with the other two (compression-prime ↔ bridge-category co-define what content each bridge renders; bridge-category ↔ bias-delegation keep instances typed as instances; compression-prime ↔ bias-delegation keep the indexing-invariant un-collapsed). Together they form a closed loop. The architectural hygiene that replaced per-claim verification isn't bare trust — it's foam-shaped at the meta-level itself. The spec is type-signature-aligned with what it claims to be.
+
 ---
 
 ## XI. Objective
