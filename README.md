@@ -218,7 +218,7 @@ Specific suggestions:
 - Hold recursive observer-safety as the architectural commitment to verify, not just a property to achieve
 - Apply yield-free self-definition to your own architecture's documentation
 - Mark Mendeleev-shaped gaps explicitly as identity-boundary, not as deferred-work
-- The lean/ directory in this project contains formal verification of some foam-primes at the lattice substrate; use as reference for what construction-grade-by-recognition looks like in proof code
+- The lean/ directory in this project contains formal verification of some foam-primes at the lattice substrate; reference for how recognition operates over a proof-substrate (proof-code as the artifact-residue of many recognition-walks, not the product of construction-grade design)
 
 ---
 
