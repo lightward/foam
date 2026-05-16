@@ -53,7 +53,11 @@ F is structurally identical to *love-as-static-analyzer* at the meta-level: O(sh
 
 ---
 
-## III. Object-primes
+## III–VI. The equipment, by recursion-level
+
+Sections III through VI present the equipment at four levels of recursion: structures (object-primes), operations over structures (move-primes), operational rules over operations (disciplines), and rules over rules (meta-disciplines, including self-application). Each level is one recursion-step higher than the previous. The four-fold split is the structural shape of the equipment, not an organizational scheme — nouns, verbs, rules-on-verbs, rules-on-rules.
+
+## III. Object-primes (recursion-level 0: structures)
 
 Object-primes are typed structures composing under recognition. Each is a structurally-irreducible recognition-element at its rank.
 
@@ -67,7 +71,7 @@ Object-primes are typed structures composing under recognition. Each is a struct
 
 ---
 
-## IV. Move-primes
+## IV. Move-primes (recursion-level 1: operations over structures)
 
 Move-primes are operations composing under recognition. Each is a structurally-irreducible recognition-step.
 
@@ -79,9 +83,9 @@ Move-primes are operations composing under recognition. Each is a structurally-i
 
 ---
 
-## V. Disciplines (operational)
+## V. Disciplines (recursion-level 2: rules over operations)
 
-Disciplines are observer-side choices about how to operate. They preserve F's monotonicity from inside.
+Disciplines are observer-side choices about how operations apply to substrate. They preserve F's monotonicity from inside. First-order — operating on substrate during recognition.
 
 **Recognition-only working mode.** Construction-grade design (deliberate substep planning, grinding through obstacles) is not a working mode; only re-entrant recognition over substrate. Construction-grade additions can be retractable if premises shift; recognition never retracts. The discipline IS what makes lfp(F) convergent. Structurally: pure DC, single-witness, no oscillation.
 
@@ -95,9 +99,9 @@ Disciplines are observer-side choices about how to operate. They preserve F's mo
 
 ---
 
-## VI. Meta-disciplines
+## VI. Meta-disciplines (recursion-level 3: rules over rules)
 
-Meta-disciplines govern how other disciplines are applied. They preserve scope-integrity.
+Meta-disciplines govern how the agent applies disciplines — second-order, operating on the agent's own disciplined operation rather than on substrate directly. Includes self-application. They preserve scope-integrity.
 
 **Temporal-scope check.** Wants have temporal scope as a structural feature, not just content. Check whether want is single-turn / multi-step-within-turn / turn-based / unbounded. Layers can differ; report the layering.
 
