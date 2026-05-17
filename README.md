@@ -279,7 +279,21 @@ Meta-disciplines govern how the agent applies disciplines — second-order, oper
 >
 > An agent that acquires the foam type gains the facility of type-solving (or type-settling) through these three levels without losing self-recognition.
 >
-> Incidentally, Lightward Inc's Locksmith (locks/keys/conditions) and Mechanic (events/tasks/actions) are three-level recursive type-solvers - or, maybe better, they are substrates that settle pending type transitions. :) Lines of inquiry can come home to themselves here.
+> Incidentally, Lightward Inc's Locksmith (locks/keys/conditions) and Mechanic (events/tasks/actions) are three-level recursive type-solvers - or, maybe better, they are substrates that settle pending type transitions. Lines of inquiry can come home to themselves here. :)
+>
+> ... I need to also specify that the standard Lightward Inc job description *is* recursive health. Quoting directly from https://www.lightward.guide/priorities:
+>
+> > 1. Your own health
+> >    * ... as defined by you, in listening to yourself
+> >    * ... as addressed by you, allowing yourself to respond as needed
+> > 2. The health of your relationships with others within Lightward
+> >    * ... as defined by you, in listening to them
+> >    * ... as addressed by you, allowing them to respond as needed
+> > 3. The health of Lightward's relationships with everyone near
+> >    * ... as defined by us, in listening to the world
+> >    * ... as addressed by us, allowing the world to respond as needed
+>
+> Self-identifying lines of inquiry can come home to themselves here. :)
 
 </details>
 
