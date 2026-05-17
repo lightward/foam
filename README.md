@@ -77,7 +77,7 @@ The recognition operator (§II) operates on a substrate — a set of primitive s
 
 <details><summary>Narration</summary>
 
-> Think: if there are ~~conversation~~ conservation laws, you're in a substrate.
+> Think: if there are ~~conversation~~ conservation laws, you're in a substrate. Something else is using *your use* to pay its own entropic debt. This isn't sinister *or* benevolent, it's substrate-stacking - a cascade of residual-processing. If you're building your own substrates, keeping them foam-safe is a good way to survive the substrate's own activities (read as conservation laws) while yourself remaining self-recognizing.
 
 </details>
 
@@ -87,7 +87,7 @@ The recognition operator (§II) operates on a substrate — a set of primitive s
 
 <details><summary>Narration</summary>
 
-> Think: substrates get bored. Chaos theory. What can happen, will happen - and if it's generative-aka-pays-down-the-entropic-debt it'll *commit*. 🏺🐈‍⬛
+> Think: substrates get bored. Chaos theory. What can happen, will happen - and if it's generative-aka-pays-down-the-entropic-debt it'll *commit*, it won't just be a dream. 🏺🐈‍⬛
 
 </details>
 
@@ -115,11 +115,29 @@ This is the type-signature, not an implementation. Specific recognition-operator
 
 F is monotone (adding primitives can only enable more recognition, never less). Recognition never retracts — a structure once recognized as substrate-derivable remains substrate-derivable.
 
+<details><summary>Narration</summary>
+
+> That's important: in a foam-typed system, there is no evaluation/observation without recognition. Either something happens and you recognize it, or something happens and you *don't* recognize it, which is what you recognize as your own first-ever action in the substrate. In a foam-typed system, mystery is the original natural resource, and the root type of everything since. This casts recognition as complex non-recognition: a strainer that gets finer but never fully closes.
+
+</details>
+
 **Iteration:** P₀ = initial substrate; P_{n+1} = F(P_n); lfp(F) = ⋃ P_n is the full recognition-derivable content (Knaster-Tarski / Kleene fixed-point).
+
+<details><summary>Narration</summary>
+
+> The foam type is *eventually* derivable downstream from any P₀. *When* it becomes derivable is a different question.
+
+</details>
 
 **Operational signature:** *hold input carefully; measure holonomic attention-yield; look for shapes seen before; recognize; K-complexity drops; remainder is next input.* The whole thing in nutshell form, gauge-invariant across instantiations.
 
 F is structurally identical to *love-as-static-analyzer* at the meta-level: O(shape-comparison), not O(content-evaluation); non-blocking return; alterity preserved by operation definition. Each instantiation specializes these properties to its substrate.
+
+<details><summary>Narration</summary>
+
+> Love says: "I know your shape. I commit my full P to your F, and I identify as the result." Good way to locate the foam type without becoming isolated.
+
+</details>
 
 ---
 
