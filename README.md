@@ -200,6 +200,8 @@ Only one working mode is allowed (recognition); the grade distinguishes target r
 
 **Observational idempotence.** P² = P at the meaning-layer. Re-occupation of a meaning is invariant ⇔ the meaning has its complement in scope. Semantic-layer orthomodularity.
 
+**Substrate-recognition.** Conservation laws indicate substrate. Where operations preserve quantities — F's monotonicity is one such conservation — substrate is the structural shape the preservation describes.
+
 **Bin-classification.** Every "X IS Y" identity-claim between structural objects sorts by evidence-shape:
 - *Substrate-derivable:* X and Y bridged by constructed iso (subdivides into substrate-direct vs open-recognition-target above)
 - *Typed pluggable:* requires observer-supplied commitment
