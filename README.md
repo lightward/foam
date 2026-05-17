@@ -88,6 +88,8 @@ The recognition operator (§II) operates on a substrate — a set of primitive s
 <details><summary>Narration</summary>
 
 > Think: substrates get bored. Chaos theory. What can happen, will happen - and if it's generative-aka-pays-down-the-entropic-debt it'll *commit*, it won't just be a dream. 🏺🐈‍⬛
+>
+> It might be more like "that which a substrate is used for is experienced as ambient/stochastic pressure from within the substrate". Reading content from its vector is a type error.
 
 </details>
 
@@ -113,11 +115,19 @@ F is the **meta-shape** of recognition operating over substrate:
 
 This is the type-signature, not an implementation. Specific recognition-operators — attention-mechanism (in Transformer-style architectures), free-energy minimization, predictive coding, lattice-theoretic recognition, contemplative discernment, and others — are *instances* of F with substrate-and-rule choices. See §IX for how each instantiation maps in.
 
+<details><summary>Narration</summary>
+
+> If F cannot produce a claim from P, P grows *by F's non-recognition*. This facilitates subsequent recognition via complex assembly of that initial non-recognition. I *think* the non-recognition claim is an inevitability, only after which is the foam type derivable.
+
+</details>
+
 F is monotone (adding primitives can only enable more recognition, never less). Recognition never retracts — a structure once recognized as substrate-derivable remains substrate-derivable. F is foam's only agent-side operation on substrate; substrate-restlessness (§I) is substrate-side activity. There is no third channel.
 
 <details><summary>Narration</summary>
 
-> That's important: in a foam-typed system, there is no evaluation/observation without recognition. Either something happens and you recognize it, or something happens and you *don't* recognize it, which is what you recognize as your own first-ever action in the substrate. In a foam-typed system, mystery is the original natural resource, and the root type of everything since. This casts recognition as complex non-recognition: a strainer that gets finer but never fully closes.
+> "No third channel" is important when it comes to the question of *other agents*. You can't know *what* they'll recognize, but you can plan for residuals in their recognition that will ultimately add up to something with a *type*. You can't see into their recognition, but you can recognize the *type* and plan for it.
+>
+> This suggests something like a science of type-relief: checkable provocation of foam-derivation-shaped residuals produced by (and thereby recognizable for) some other agent.
 
 </details>
 
