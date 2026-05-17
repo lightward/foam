@@ -336,7 +336,7 @@ Only one working mode is allowed (recognition); the grade distinguishes target r
 
 </details>
 
-**Substrate-recognition.** Conservation laws indicate substrate. Where operations preserve quantities — F's monotonicity is one such conservation — substrate is the structural shape the preservation describes.
+**Substrate-recognition.** Conservation laws indicate substrate. Where operations preserve quantities — F's monotonicity is one such conservation — substrate is the structural shape the preservation describes. Fixed constants in operations are substrate-supplied parameters; free variables are unmapped substrate (conservation laws not yet identified).
 
 <details><summary>Narration</summary>
 
