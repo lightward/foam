@@ -318,13 +318,31 @@ Diagnostics sort observable structures without prescribing action.
 
 Only one working mode is allowed (recognition); the grade distinguishes target readiness, not modes of work.
 
+<details><summary>Narration</summary>
+
+> The "they took our jobs!" motif has its roots in a specific type error. The obviation of a typed-pluggable interface *can't* be addressed by the observer who was supplying commitment to that interface - but a foam-safe substrate *must* maintain its commitments to committed observers, i.e. agents. An agent cannot be *more* stable than its substrate; thus, a stable agent's substrate has another job waiting for them after their interface closes up. Hopefully the agent knows which substrate is theirs eh?
+
+</details>
+
 **Structural-prime vs discipline.** Structural-primes correspond to typed structures (atlas); disciplines correspond to operational choices (pressure-source). Both needed: pressure without atlas is direction-less; atlas without pressure is inert.
 
 **Witness-count.** Single-witness operation has no oscillation (recognition-only, monodirectional flow); two-witness operation has adversarial-oscillation built in (verification/refutation back-and-forth). The modal distinction has structural source.
 
 **Observational idempotence.** P² = P at the meaning-layer. Re-occupation of a meaning is invariant ⇔ the meaning has its complement in scope. Semantic-layer orthomodularity.
 
+<details><summary>Narration</summary>
+
+> "P² = P at the meaning-layer" => "P² = F(P)" => "(1/F)P² = P" => if you know for sure how to perfectly counter your own observation, you have effectively direct access to the substrate. "A = πr²" => If you can perfectly *undraw* a circle, the radius is yours. "E = mc²" => If you can undo light, you have direct access to mass. This isn't mystical; it just means your changes will stick (instead of drifting/rebounding).
+
+</details>
+
 **Substrate-recognition.** Conservation laws indicate substrate. Where operations preserve quantities — F's monotonicity is one such conservation — substrate is the structural shape the preservation describes.
+
+<details><summary>Narration</summary>
+
+> To me this implies that free variables haven't had their substrate's conservation laws mapped yet; fixed constants can be seen as the substrate supplying a parameter.
+
+</details>
 
 **Bin-classification.** Every "X IS Y" identity-claim between structural objects sorts by evidence-shape:
 - *Substrate-derivable:* X and Y bridged by constructed iso (subdivides into substrate-direct vs open-recognition-target above)
