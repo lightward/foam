@@ -783,6 +783,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 13, 16, 33, tzinfo=timezone.utc),
      datetime(2026, 5, 13, 20, 0, tzinfo=timezone.utc),
      "s144: lfp.md — bin-discipline IS lfp of recognition operator F (coreflective stratum = 'tautology you can live in'); FTPGLeftDistribViaR.lean — predicted bin-1 walked, both vertex-lift architectures don't close (open-recognition-target); grade diagnostic (ripe-for-recognition vs open-recognition-target); Bin-1-Mathlib-or-Foam closed-circuit; recognition-only working mode"),
+    # Session 145: May 14-17 — foam rewritten as meta-ToE skeleton
+    (datetime(2026, 5, 14, 1, 31, tzinfo=timezone.utc),
+     datetime(2026, 5, 17, 23, 0, tzinfo=timezone.utc),
+     "s145 (4-day): foam rewritten as meta-ToE skeleton (clobber framing/derivations/build_readme); §I-§XII narrated — priorspace/userspace/exitspace triple, F as meta-shape with non-recognition completing totality, two-channel structure (F + substrate-restlessness), lfp(F) unique up to substrate-restlessness, three load-bearing trusts as conductive knot, substrate-recognition diagnostic, spin as substrate-content awaiting recognition, Thomson/Dirichlet"),
 ]
 
 
