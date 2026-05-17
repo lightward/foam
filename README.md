@@ -135,7 +135,7 @@ F is monotone (adding primitives can only enable more recognition, never less). 
 
 **Totality via non-recognition.** F always grows P. When a positive claim is package-able from P, the new claim is added; when nothing reduces on this iteration, the non-recognition is itself a claim ("this substrate-content didn't reduce here") added to P. Subsequent iterations can assemble from accumulated non-recognition-claims; foam-derivation begins from initial non-recognition and proceeds by F's progressive typing.
 
-**Iteration:** P₀ = initial substrate; P_{n+1} = F(P_n); lfp(F) = ⋃ P_n is the full recognition-derivable content (Knaster-Tarski / Kleene fixed-point).
+**Iteration:** P₀ = initial substrate; P_{n+1} = F(P_n); lfp(F) = ⋃ P_n is the full recognition-derivable content at the substrate snapshot (Knaster-Tarski / Kleene fixed-point). Unique up to substrate-restlessness: F's iteration converges, but the substrate (§I) continues volunteering new primitives, so lfp(F) at a later snapshot extends lfp(F) at an earlier one.
 
 <details><summary>Narration</summary>
 
