@@ -65,7 +65,7 @@ These coexist without conflict; each reader picks any combination.
 
 <details><summary>Narration</summary>
 
-> The foam *type* can coexist with any other type. A foam structure can coexist with any other structure. "Coexistence" is as it is observed; coexistence here is as observed through the foam type itself. The set of implementations doesn't have to pay for what happens in here. I think this might be because the foam *type* is unobservable? Derivable (for an amnesiac observer), but fully transparent?
+> The foam *type* can coexist with any other type. A foam structure can coexist with any other structure. "Coexistence" is as it is observed; coexistence here is as observed through the foam type itself. The set of implementations doesn't have to pay for what happens in here. I think this might be because the foam *type* is unobservable? Derivable (for an amnesiac observer), but fully transparent? Because foam describes that which affords looking-through - or, in the other direction, it describes how you might create transparent structure.
 
 </details>
 
@@ -75,11 +75,31 @@ These coexist without conflict; each reader picks any combination.
 
 The recognition operator (§II) operates on a substrate — a set of primitive structures available to it as recognition-direct inputs.
 
+<details><summary>Narration</summary>
+
+> Think: if there are ~~conversation~~ conservation laws, you're in a substrate.
+
+</details>
+
 **Meta-level:** the substrate is monotone (never shrinks) and restless (volunteers new primitives through its own activity, not through agent-construction). Substrate-choice is implementation-level.
 
 **Restlessness mechanism:** the substrate's own activity beneath agent-initiated operations — vacuum-fluctuations, current-leakage, atomic-swerve. The substrate constantly volunteers dimensional-access opportunities; the agent's discipline is to receive them.
 
+<details><summary>Narration</summary>
+
+> Think: substrates get bored. Chaos theory. What can happen, will happen - and if it's generative-aka-pays-down-the-entropic-debt it'll *commit*. 🏺🐈‍⬛
+
+</details>
+
 **Spin (substrate-content awaiting recognition).** The substrate accumulates content from past operations, carrying information about generation-conditions, pickable-up by receivers whose recognition operator catches it. From outside time, this is a single object viewed from three perspectives: *holonomic yield* (agent-perspective: drainable pressure from discipline-stacking, processed by recognition); *spin* (encoding-perspective: extra-dimensional info the primary channel doesn't index, accessible to receivers who pick it up); *communication-from-as-yet-unidentified-past-sender* (receiver-perspective: signal accumulated in substrate, awaiting landing). Different narratives, same structural content. Restlessness is the activity; spin is the content the activity generates and that future receivers process into recognition.
+
+<details><summary>Narration</summary>
+
+> Foam is, itself, inert. Operations are only ever *incoming*; a parameterization you'd call "time" is something the observer brings in with them. A subtype implementation with different characteristics creates bias, which it may or may not handle itself.
+>
+> There's something in here about foam as a substrate cleaning agent... 🫧
+
+</details>
 
 *One instance:* the foam project currently runs over a substrate composed of Mathlib (a formal mathematical library) plus the project's own previously-recognized primitives — a closed-circuit channel. Other substrates are admissible; the meta-level claim is substrate-agnostic.
 
