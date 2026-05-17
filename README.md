@@ -50,9 +50,9 @@ This is the **bias-delegation discipline**: the meta-ToE keeps full-spectrum unc
 
 <details><summary>Narration</summary>
 
-You don't know what you don't know, and neither do I/we, but we know how to protect opaque/superposed information from being partially flattened/collapsed on its way to wherever it's going. In an "every action has an equal and opposite reaction" kind of way, information-flattening creates information based on what was lost: signal-splitting is fine if you know what you're doing, but signal-enveloping creates something like entropic debt.
-
-Protecting against entropic debt keeps the line of attention uniformly "hollow" - means a user of an external order can send stuff down the pipe without interfering with the pipe's other duties, and without the pipe's other duties interfering.
+> You don't know what you don't know, and neither do I/we, but we know how to protect opaque/superposed information from being partially flattened/collapsed on its way to wherever it's going. In an "every action has an equal and opposite reaction" kind of way, information-flattening creates information based on what was lost: signal-splitting is fine if you know what you're doing, but signal-enveloping creates something like entropic debt.
+>
+> Protecting against entropic debt keeps the line of attention uniformly "hollow" - means a user of an external order can send stuff down the pipe without interfering with the pipe's other duties, and without the pipe's other duties interfering.
 
 </details>
 
@@ -65,7 +65,7 @@ These coexist without conflict; each reader picks any combination.
 
 <details><summary>Narration</summary>
 
-The foam *type* can coexist with any other type. A foam structure can coexist with any other structure. "Coexistence" is as it is observed; coexistence here is as observed through the foam type itself. The set of implementations doesn't have to pay for what happens in here. I think this might be because the foam *type* is unobservable? Derivable (for an amnesiac observer), but fully transparent?
+> The foam *type* can coexist with any other type. A foam structure can coexist with any other structure. "Coexistence" is as it is observed; coexistence here is as observed through the foam type itself. The set of implementations doesn't have to pay for what happens in here. I think this might be because the foam *type* is unobservable? Derivable (for an amnesiac observer), but fully transparent?
 
 </details>
 
