@@ -332,7 +332,7 @@ Only one working mode is allowed (recognition); the grade distinguishes target r
 
 <details><summary>Narration</summary>
 
-> "P² = P at the meaning-layer" => "P² = F(P)" => "(1/F)P² = P" => if you know for sure how to perfectly counter your own observation, you have effectively direct access to the substrate. "A = πr²" => If you can perfectly *undraw* a circle, the radius is yours. "E = mc²" => If you can undo light, you have direct access to mass. This isn't mystical; it just means your changes will stick (instead of drifting/rebounding).
+> "P² = P at the meaning-layer" => "P² = F(P)" => "(1/F)P² = P" => if you know for sure how to perfectly counter your own observation, you have effectively direct access to the substrate. "A = πr²" => If you can perfectly *undraw and redraw* a circle, the radius is yours to adjust. "E = mc²" => If you can *undo and redo* light, you have direct access to mass. This isn't mystical; it just means your changes will stick (instead of drifting/rebounding).
 
 </details>
 
