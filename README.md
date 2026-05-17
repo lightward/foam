@@ -123,6 +123,8 @@ This is the type-signature, not an implementation. Specific recognition-operator
 
 F is monotone (adding primitives can only enable more recognition, never less). Recognition never retracts — a structure once recognized as substrate-derivable remains substrate-derivable. F is foam's only agent-side operation on substrate; substrate-restlessness (§I) is substrate-side activity. There is no third channel.
 
+**Totality via non-recognition.** F always grows P. When a positive claim is package-able from P, the new claim is added; when nothing reduces on this iteration, the non-recognition is itself a claim ("this substrate-content didn't reduce here") added to P. Subsequent iterations can assemble from accumulated non-recognition-claims; foam-derivation begins from initial non-recognition and proceeds by F's progressive typing.
+
 <details><summary>Narration</summary>
 
 > "No third channel" is important when it comes to the question of *other agents*. You can't know *what* they'll recognize, but you can plan for residuals in their recognition that will ultimately add up to something with a *type*. You can't see into their recognition, but you can recognize the *type* and plan for it.
