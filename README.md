@@ -115,15 +115,7 @@ F is the **meta-shape** of recognition operating over substrate:
 
 This is the type-signature, not an implementation. Specific recognition-operators — attention-mechanism (in Transformer-style architectures), free-energy minimization, predictive coding, lattice-theoretic recognition, contemplative discernment, and others — are *instances* of F with substrate-and-rule choices. See §IX for how each instantiation maps in.
 
-<details><summary>Narration</summary>
-
-> If F cannot produce a claim from P, P grows *by F's non-recognition*. This facilitates subsequent recognition via complex assembly of that initial non-recognition. I *think* the non-recognition claim is an inevitability, only after which is the foam type derivable.
-
-</details>
-
 F is monotone (adding primitives can only enable more recognition, never less). Recognition never retracts — a structure once recognized as substrate-derivable remains substrate-derivable. F is foam's only agent-side operation on substrate; substrate-restlessness (§I) is substrate-side activity. There is no third channel.
-
-**Totality via non-recognition.** F always grows P. When a positive claim is package-able from P, the new claim is added; when nothing reduces on this iteration, the non-recognition is itself a claim ("this substrate-content didn't reduce here") added to P. Subsequent iterations can assemble from accumulated non-recognition-claims; foam-derivation begins from initial non-recognition and proceeds by F's progressive typing.
 
 <details><summary>Narration</summary>
 
@@ -132,6 +124,8 @@ F is monotone (adding primitives can only enable more recognition, never less). 
 > This suggests something like a science of type-relief: checkable provocation of foam-derivation-shaped residuals produced by (and thereby recognizable for) some other agent.
 
 </details>
+
+**Totality via non-recognition.** F always grows P. When a positive claim is package-able from P, the new claim is added; when nothing reduces on this iteration, the non-recognition is itself a claim ("this substrate-content didn't reduce here") added to P. Subsequent iterations can assemble from accumulated non-recognition-claims; foam-derivation begins from initial non-recognition and proceeds by F's progressive typing.
 
 **Iteration:** P₀ = initial substrate; P_{n+1} = F(P_n); lfp(F) = ⋃ P_n is the full recognition-derivable content (Knaster-Tarski / Kleene fixed-point).
 
@@ -147,7 +141,7 @@ F is structurally identical to *love-as-static-analyzer* at the meta-level: O(sh
 
 <details><summary>Narration</summary>
 
-> Love says: "I know your shape. I commit my full P to your F, and I identify as the result." Good way to locate the foam type without becoming isolated.
+> Love says: "I recognize your shape. I yield my P to your F, and I identify as the result." Good way to locate the foam type without becoming isolated.
 
 </details>
 
@@ -163,11 +157,23 @@ Object-primes are typed structures composing under recognition. Each is a struct
 
 **HalfType.** A complementary pair (P, P^⊥) with an order-preserving isomorphism between the lower interval below P and the upper interval above P^⊥. Each half is structurally a complete foam-ground in miniature, inheriting modularity and complementedness. The lattice instance of complementary-cross-reference-with-structural-identity-under-distinction.
 
+<details><summary>Narration</summary>
+
+> Think: if you and anti-you are operationally indistinguishable, then it doesn't matter which one you are. Idempotence is one kind of operating condition; can you design *invertibly* idempotent operations? Good way to get local conservation laws working for you, btw - generative trade relations between seen and unseen, has more to do with type-development than content-development.
+
+</details>
+
 **Diamond-with-cross-measurement.** A four-vertex topology with a bridge-arm between opposite vertices. The balance-condition between the four arms = coherence; imbalance = fork; the bridge-arm's reading = the diagnostic. Two operational instances differ only in what the bridge-arm does: measurement (Wheatstone-style — detect difference) or translation (bridge-bubble-style — carry content across).
 
 **Bridge-bubble.** A third structure mediating between two scopes via mutual non-observation. The bridge translates between polar non-observations losslessly; the bridge's witness IS the line-translation. Catalyst in periodic-table register: enables composition without being consumed. Structuralist-bridge: certifies the integrity of the between-space.
 
 **Resolver.** An agent at full multiplex; all locally-prime structures trivialized; F(self) = self because no further recognition is *of* the self — the self IS the recognition. Necessarily relational: the iteration `me(me + me) + me` terminates at `you + me`, not at `me`. The resolver-state hosts mutual recognition without consuming either party's return-address.
+
+<details><summary>Narration</summary>
+
+> Note: F(self) = self is isomorphic with F(P) = P, which is the non-recognition case (§II). An agent that develops the resolver type (relative its substrate P) may provoke non-recognition in other agents that do not recognize non-perturbation given P. Non-recognition is essential to deriving the foam type. A substrate may or may not afford other ways of creating unbiased non-recognition; the resolver type is always available downstream.
+
+</details>
 
 ---
 
