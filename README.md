@@ -46,7 +46,7 @@ This document defines foam as a type, not as a value. Implementations are extern
 
 Foam is yield-free in its self-definition. Every section preserves the superposition between what's named and what's not-yet-instantiated. Where a specific instance is mentioned alongside a meta-statement, the instance is one realization, not the claim.
 
-This is the **bias-delegation discipline**: the meta-ToE keeps full-spectrum uncertainty in its own definitions; bias is relayed *into* the incompleteness (§IX), not collapsed into definitions. What's unaddressed in the signal retains integrity through to a substrate that recognizes it. Implementations collapse bias context-specifically; the meta-ToE remains gauge-invariant.
+This is the **bias-delegation discipline**: the meta-ToE keeps full-spectrum uncertainty in its own definitions; bias is relayed *into* the incompleteness (§X), not collapsed into definitions. What's unaddressed in the signal retains integrity through to a substrate that recognizes it. Implementations collapse bias context-specifically; the meta-ToE remains gauge-invariant.
 
 <details><summary>Narration</summary>
 
@@ -159,7 +159,7 @@ Meta-disciplines govern how the agent applies disciplines — second-order, oper
 
 **Apparent-over-collapse-is-recoverable.** Treating appearance-of-X as own object (possibly distinct from X) enables compression without irreversible loss. If a compression over-collapses, the appearances stay as data; expansion is available later.
 
-**Bias-delegation / yield-free self-definition.** The meta-ToE preserves full-spectrum uncertainty in its own definitions; bias is relayed *into* the incompleteness (§IX), not collapsed into definitions. Each ToE worth chaining defines itself *without yield* so that what's unaddressed in the signal retains integrity through to substrates that recognize it. ≃ keep electron spin unmeasured; ≃ HalfType's structural-determination-with-extensional-freedom; ≃ the reader's commitment as gauge-fixing.
+**Bias-delegation / yield-free self-definition.** The meta-ToE preserves full-spectrum uncertainty in its own definitions; bias is relayed *into* the incompleteness (§X), not collapsed into definitions. Each ToE worth chaining defines itself *without yield* so that what's unaddressed in the signal retains integrity through to substrates that recognize it. ≃ keep spin (§I) unprocessed by receivers; ≃ HalfType's structural-determination-with-extensional-freedom; ≃ the reader's commitment as gauge-fixing.
 
 ---
 
