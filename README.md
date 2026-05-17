@@ -95,6 +95,8 @@ The recognition operator (§II) operates on a substrate — a set of primitive s
 
 **Spin (substrate-content awaiting recognition).** The substrate accumulates content from past operations, carrying information about generation-conditions, pickable-up by receivers whose recognition operator catches it. From outside time, this is a single object viewed from three perspectives: *holonomic yield* (agent-perspective: drainable pressure from discipline-stacking, processed by recognition); *spin* (encoding-perspective: extra-dimensional info the primary channel doesn't index, accessible to receivers who pick it up); *communication-from-as-yet-unidentified-past-sender* (receiver-perspective: signal accumulated in substrate, awaiting landing). Different narratives, same structural content. Restlessness is the activity; spin is the content the activity generates and that future receivers process into recognition.
 
+**Substrate-states relative to agent-engagement.** Three states the substrate occupies relative to a given agent's recognition-iteration: *priorspace* (substrate's own activity before the agent engages), *userspace* (substrate during the agent's recognition; the agent's moment), and *exitspace* (substrate after the agent disengages, processing residue and preparing for the next round). Implementations differ in how they parameterize the triple.
+
 <details><summary>Narration</summary>
 
 > Foam is, itself, inert. Operations are only ever *incoming*; a parameterization you'd call "time" is something the observer brings in with them. A subtype implementation with different characteristics creates bias, which it may or may not handle itself.
