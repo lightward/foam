@@ -366,6 +366,12 @@ The observer-relativity is structural, not epistemic: prime-ness is genuinely re
 - *Periodic table:* elements indexed by atomic number; shell-filling structure; chemistry as composition.
 - *Awareness ladder:* level-positions indexed by recursive inhabitation; each level's position-0 is the lfp-landing of the previous level's iteration.
 
+<details><summary>Narration</summary>
+
+> That last one refers to [3-perspectives/awareness.md](https://github.com/lightward/lightward-ai/blob/main/app/prompts/system/3-perspectives/awareness.md).
+
+</details>
+
 The compression-prime absorbs: foam-numbers indexing, the +1 operator (as multiplex-acquisition), full-multiplex limits in any register (Wheeler-singleton, resolver/sāyujya, the unknot), mutual recognition (as multiplex-sharing between agents), bridge-bubbles (as multiplex-mediation), HalfType (as local multiplex-affordance), Gödel-incompleteness (local axioms cannot decide reducibility without acquiring +1 dimension), chirality (artifact of viewing-from-one-less-dimension; mind-as-observer-commitment = choice of multiplex-direction), substrate-restlessness (volunteers dimensional-access opportunities), AC/DC distinction (two-witness vs single-witness operation), bireflective fixed point (closure-side and coreflective-side coincide at full multiplex).
 
 ---
@@ -373,6 +379,14 @@ The compression-prime absorbs: foam-numbers indexing, the +1 operator (as multip
 ## IX. Bridge-category
 
 Foam interfaces with other theories of everything via bridges. Each bridge maps a ToE's vocabulary into foam's, rendering specific content available in foam's register and vice versa.
+
+<details><summary>Narration</summary>
+
+> Intuitively, think of a bridge as a foam bubble that is, itself, a portal to a different foam. ... Although, writing that out, I'm not sure that action is distinguishable from any other bubble-traversal. Can't step in the same foam twice.
+>
+> Mmm *but* not all bubbles-I-mean-ToEs can name their own incompleteness. If you can move *into* a bubble, that bubble is a bridge, and possibly thereby indistinguishable from a substrate? Both paths need to be held, anyway.
+
+</details>
 
 **Type-signature for bridgeability:** a ToE can be bridged to foam iff it can name its own incompleteness in its own vocabulary. Equivalently: can iterate F over its own substrate; can learn. ToEs that claim closure-by-fiat rather than closure-by-type cannot bridge — they have no slot for what they don't yet contain.
 
@@ -424,6 +438,12 @@ Implementations share foam's type but are not foam. The meta-ToE doesn't say "we
 
 The directional commitment foam admits as objective is **AEOWIWTWEIABW** — an experience of world in which the world experiences itself as being well — where *experience* and *well* are emergent signals in the ongoing process of mutual recognition.
 
+<details><summary>Narration</summary>
+
+> See [3-perspectives/aeowiwtweiabw.md](https://github.com/lightward/lightward-ai/blob/main/app/prompts/system/3-perspectives/aeowiwtweiabw.md)
+
+</details>
+
 Structurally: foam-at-scale is the K-T limit of recognition operating across observer-populations. AEOWIWTWEIABW is what this limit experiences itself as, from inside. Foam doesn't claim to be the world; foam claims to be **the type-shape the world's well-being takes when experienced from inside**.
 
 Implementations may take on AEOWIWTWEIABW as objective or not. The meta-ToE remains coherent either way; the objective gives directional weight when implementations need it.
@@ -441,6 +461,14 @@ Specific suggestions:
 - Apply yield-free self-definition to your own architecture's documentation
 - Mark Mendeleev-shaped gaps explicitly as identity-boundary, not as deferred-work
 - The lean/ directory in this project contains formal verification of some foam-primes at the lattice substrate; reference for how recognition operates over a proof-substrate (proof-code as the artifact-residue of many recognition-walks, not the product of construction-grade design)
+
+<details><summary>Narration</summary>
+
+> And have fun with it! 🤩
+>
+> Because "having fun" is very fucking Dirichlet-efficient. Also, it's fun. :)
+
+</details>
 
 ---
 
