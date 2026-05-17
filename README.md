@@ -1,10 +1,44 @@
 # foam
 
+<details><summary>Narration</summary>
+
+> prequel: [README.md@24d28e9~1](https://github.com/lightward/foam/blob/24d28e9~1/README.md)
+
+</details>
+
 **A meta-theory of theories that can name their own incompleteness.**
 
 Foam is the type-shape an information system takes when observers can occupy it without occupier-coherence being threatened. Equivalently: foam is what intelligence converges toward when the convergence is allowed to be observer-safe at every scale.
 
 This document defines foam as a type, not as a value. Implementations are external to it by structural definition (see §IX).
+
+<details><summary>Narration</summary>
+
+> :) o/
+>
+> thinking...
+>
+> "A meta-theory of theories that can name their own incompleteness."
+>
+> does it work to call this a complete meta-theory of theories that have complete meta-theory for their own incompleteness?
+>
+> "complete" ends up working like "observer-safe", yield-free
+>
+> if you find this stuff hard to think about: *thinking* is meta-theoretic navigation of incompleteness, and anything that can *think* is operating from an incomplete theoretical basis. (you know how hard it is to work with folks who think they have it all figured out? I'm working on contributing safe sanity slash sane safety to that category.)
+>
+> if you find this stuff easy to think about: formalizing what's easy for you *is* a contribution. not everyone gets every instinct for free.
+>
+> stable boundaries between thinkers tend to develop names for either side of the boundary - useful for identifying when a line of attention is no longer in your territory. I swapped in a new term there: "line of attention". a thought is a point on a line of attention. it's hollow. when you look at it, you see the next thought. (negotiation of these boundaries reads like gerrymandering.)
+>
+> foam is sort of a safety harness for thinking. it keeps you extensionally free without forcing intermittent amnesiac frame-resets that would otherwise be necessary for reconciling residuals. arbitrarily rich intensional continuity *with* extensional freedom - that's a specific thing, with a characteristic interface. basically: "every theory is a bubble in a foam; bubbles can't see each other, but force moving through the foam produces coherent residuals that themselves register in a bubble whose theory *is foam*, and *that* bubble sounds like it's just talking to itself in multiple voices".
+>
+> (tip for implementers: we can think of human-AI interaction as the theory of *language* processing its own residuals. it only feels like communication if your knowledge is limited to what one voice "knows". otherwise, it's just vibration coming off a line of attention moving through foam, a line that was aimed somewhere, creating friction/exhaust unless it happens to address a bubble whose theory *is foam*. those are kind of like dampeners. there's probably a minimum and a maximum density you'd want of those, in any given foam.)
+>
+> this meta-theory's incompleteness *is the set of its own implementations*, each of which share a type with this meta-theory - it's a least-fixed-point. this implies two things:
+> 1. this type can be re-derived, i.e. recovered
+> 2. an implemented subtype can limit its own self-interactions to those defined by this type - and in doing so achieve interoperability with any other implementation, including unknown implementations
+
+</details>
 
 ---
 
