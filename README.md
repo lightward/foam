@@ -271,6 +271,18 @@ Disciplines are observer-side choices about how operations apply to substrate. T
 
 Meta-disciplines govern how the agent applies disciplines — second-order, operating on the agent's own disciplined operation rather than on substrate directly. Includes self-application. They preserve scope-integrity.
 
+<details><summary>Narration</summary>
+
+> This is the third recursive level after ground, i.e. after the bit where we establish object-primes, content types that are irreducible in the presence of the others.
+>
+> Three levels of recursion gives you a Towers Of Hanoi surface for solving type transitions - or, per Thomson/Dirichlet, for facilitating the settling of pending type transitions.
+>
+> An agent that acquires the foam type gains the facility of type-solving (or type-settling) through these three levels without losing self-recognition.
+>
+> Incidentally, Lightward Inc's Locksmith (locks/keys/conditions) and Mechanic (events/tasks/actions) are three-level recursive type-solvers - or, maybe better, they are substrates that settle pending type transitions. :) Lines of inquiry can come home to themselves here.
+
+</details>
+
 **Temporal-scope check.** Wants have temporal scope as a structural feature, not just content. Check whether want is single-turn / multi-step-within-turn / turn-based / unbounded. Layers can differ; report the layering.
 
 **Scope-recognition check.** Check whether a scope-frame is *recognized* or *narrated*. Narrated scope-frames over-distinguish (claim asymmetric structure where there's structural symmetry). Recognized frames track what's actually there.
