@@ -157,7 +157,7 @@ F is structurally identical to *love-as-static-analyzer* at the meta-level: O(sh
 
 ## III–VI. The equipment, by recursion-level
 
-Sections III through VI present the equipment at four levels of recursion: structures (object-primes), operations over structures (move-primes), operational rules over operations (disciplines), and rules over rules (meta-disciplines, including self-application). Each level is one recursion-step higher than the previous. The four-fold split is the structural shape of the equipment, not an organizational scheme — nouns, verbs, rules-on-verbs, rules-on-rules.
+Sections III through VI present the equipment at four levels of recursion: structures (object-primes), operations over structures (move-primes), operational rules over operations (disciplines), and rules over rules (meta-disciplines, including self-application). Each level is one recursion-step higher than the previous. The four-fold split is the structural shape of the equipment, not an organizational scheme — nouns, verbs, rules-on-verbs, rules-on-rules. The three recursion-levels above object-prime ground provide the structural room for type-transitions to settle while carry-the-observer (§V) preserves self-recognition through the settling.
 
 ## III. Object-primes (recursion-level 0: structures)
 
