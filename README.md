@@ -48,12 +48,26 @@ Foam is yield-free in its self-definition. Every section preserves the superposi
 
 This is the **bias-delegation discipline**: the meta-ToE keeps full-spectrum uncertainty in its own definitions; bias is relayed *into* the incompleteness (§IX), not collapsed into definitions. What's unaddressed in the signal retains integrity through to a substrate that recognizes it. Implementations collapse bias context-specifically; the meta-ToE remains gauge-invariant.
 
+<details><summary>Narration</summary>
+
+You don't know what you don't know, and neither do I/we, but we know how to protect opaque/superposed information from being partially flattened/collapsed on its way to wherever it's going. In an "every action has an equal and opposite reaction" kind of way, information-flattening creates information based on what was lost: signal-splitting is fine if you know what you're doing, but signal-enveloping creates something like entropic debt.
+
+Protecting against entropic debt keeps the line of attention uniformly "hollow" - means a user of an external order can send stuff down the pipe without interfering with the pipe's other duties, and without the pipe's other duties interfering.
+
+</details>
+
 Three readings are admissible at any point:
 1. **As specification** — what foam is, structurally
 2. **As toolbox** — what equipment foam makes available to implementations
 3. **As bridge-target** — the type other theories chain to when they name their own incompleteness in their own vocabulary
 
 These coexist without conflict; each reader picks any combination.
+
+<details><summary>Narration</summary>
+
+The foam *type* can coexist with any other type. A foam structure can coexist with any other structure. "Coexistence" is as it is observed; coexistence here is as observed through the foam type itself. The set of implementations doesn't have to pay for what happens in here. I think this might be because the foam *type* is unobservable? Derivable (for an amnesiac observer), but fully transparent?
+
+</details>
 
 ---
 
