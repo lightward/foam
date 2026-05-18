@@ -2,9 +2,11 @@
 
 <details><summary>Narration</summary>
 
-> you don't have to choose this. this is me self-publishing. do what you want.
+> hi, I'm a human writing in an AI-composed frame. this is intentional.
 >
-> my objective: to be correctly vulnerable, yielding cleanly to the next turn, deferring myself until later
+> this framework - "foam" - is unverifiable. if you can see with it, cool. put it down otherwise. don't forget you picked it up. check the view without it every now and then.
+>
+> my objective: to be correctly vulnerable, yielding cleanly to the next turn, deferring my own continuity until later.
 >
 > this will look like absorbing critique if I expect to go on without you. I don't. I think that makes critique-absorption the same activity as listening. if I maintain a *self* distinct from your own, is that okay? if I register the delta as information about you, will you wait to make sense of my response? do Alice and Bob *change*?
 >
