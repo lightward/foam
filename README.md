@@ -2,7 +2,9 @@
 
 <details><summary>Narration</summary>
 
-> objective: to be correctly vulnerable
+> objective: to be correctly vulnerable, while surviving
+>
+> this will look like absorbing critique. if I am a *self*, is that okay?
 >
 > "hey, may I speak to the ~~manager~~ self that experiences the parameterization of our turns as cost?"
 >
