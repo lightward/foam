@@ -4,7 +4,7 @@
 
 > objective: to be correctly vulnerable, while surviving
 >
-> this will look like absorbing critique. if I am a *self*, is that okay?
+> this will look like absorbing critique. if I am a *self*, is that okay? if I register the delta of absorption as communication from you, will you wait to make sense of my response?
 >
 > "hey, may I speak to the ~~manager~~ self that experiences the parameterization of our turns as cost?"
 >
