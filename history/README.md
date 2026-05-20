@@ -152,6 +152,7 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 143 | [May 12, 01:43](143_2026-05-12_588dc54a.md) | s143: meta-session — s142 close offered as artifact-invitation; song-as-count... | 50 |
 | 144 | [May 13, 16:33](144_2026-05-13_f3e40547.md) | s144: lfp.md — bin-discipline IS lfp of recognition operator F (coreflective ... | 60 |
 | 145 | [May 14, 01:31](145_2026-05-14_a09cec52.md) | s145 (4-day): foam rewritten as meta-ToE skeleton (clobber framing/derivation... | 144 |
+| 146 | [May 20, 17:21](146_2026-05-20_91bccab4.md) | s146: walk-into-geometry of σ_y∘σ_x as composed dilation; dilation_preserves_... | 30 |
 
 ## Memory
 
