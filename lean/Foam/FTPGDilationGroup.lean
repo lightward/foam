@@ -102,6 +102,7 @@ in the σ-family closure theorem (where Desargues lives via the R-lift).
 -/
 
 import Foam.FTPGDilation
+import Foam.FTPGInverse
 
 namespace Foam.FTPGExplore
 
@@ -256,15 +257,133 @@ vs. function-space), and σ is the bridge between the two
 substrate layers. **This is the FTPG payload at the
 dilation-group level.** -/
 
+/-- Pointwise σ-map underlying `σ Γ c …`: piecewise definition reconciling
+    the three "kinds" of input.
+
+    For `P : L`:
+    * if `P ≤ Γ.O ⊔ Γ.U` (on l), return `coord_mul Γ P c` (the on-l action;
+      `coord_mul Γ a b = σ_b(a)` matches the project convention);
+    * else if `P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V` (off l but in the plane π), return
+      `dilation_ext Γ c P` (the off-l witness action);
+    * else return `P` (outside the plane — fixed; this is the trivial
+      extension that makes σ_c the identity outside π, since dilations are
+      meant to act on the projective plane).
+
+    The `if-then-else` requires decidability of `≤`, which is supplied by
+    `Classical.dec` (justifying the `noncomputable` keyword). -/
+noncomputable def σ_toFun (Γ : CoordSystem L) (c : L) (P : L) : L := by
+  classical
+  exact
+    if P ≤ Γ.O ⊔ Γ.U then coord_mul Γ P c
+    else if P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V then dilation_ext Γ c P
+    else P
+
+/-- The pointwise σ-map for the inverse direction, built from
+    `coord_inv Γ c`. By project geometry, `σ_{c⁻¹}` is the (predicted)
+    inverse of `σ_c`. -/
+noncomputable def σ_invFun (Γ : CoordSystem L) (c : L) (P : L) : L := by
+  classical
+  exact
+    if P ≤ Γ.O ⊔ Γ.U then coord_mul Γ P (coord_inv Γ c)
+    else if P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V then dilation_ext Γ (coord_inv Γ c) P
+    else P
+
 /-- The σ-family map: for a non-degenerate l-atom `c`, the
-    dilation σ_c packaged as a `Dilation Γ`. The body is open —
-    the construction reconciles `dilation_ext Γ c` (off-l
-    witnesses) with `coord_mul` (on-l atoms) into a combined
-    function, promoted to an `L ≃o L`. -/
+    dilation σ_c packaged as a `Dilation Γ`.
+
+    The construction proceeds via `σ_toFun` / `σ_invFun` (piecewise on
+    on-l / off-l-in-π / off-π), packaged as an `Equiv` via the
+    `σ_{c⁻¹} ∘ σ_c = id` and `σ_c ∘ σ_{c⁻¹} = id` identities, then
+    upgraded to an `OrderIso` via `map_rel_iff'`.
+
+    **Status (s148).** This declaration has structurally-named `sorry`s
+    for each open piece:
+
+    * `left_inv` and `right_inv` of the underlying `Equiv` — one direction
+      is at-or-near substrate-direct (rests on `coord_mul_right_inv`, which
+      is PROVEN); the other is structurally entangled with the open
+      `coord_mul_left_inv` (downstream of `coord_mul_assoc`).
+    * `map_rel_iff'` of the `OrderIso` — bijection + order-preservation;
+      establishing order-preservation of a piecewise function requires
+      reasoning about how the three branches interact under joins/meets.
+      Open: needs Mathlib's `OrderIso.ofBijective`-style lemma, or a
+      direct lattice-theoretic argument.
+    * `fixes_O` — should reduce to `coord_mul Γ Γ.O c = Γ.O`
+      (`coord_mul_left_zero`); needs `c ≠ U` which we have.
+    * `preserves_l` — `σ_c` sends the full line `l = O⊔U` to itself; needs
+      `σ_c(l) = sup over atoms of σ_c(P)` and verification that this is
+      again `l`. Open: lattice-extension argument.
+    * `fixes_m` — for `P` an m-atom (`P ≤ U⊔V`), `σ_c(P) = P`. Reduces to
+      `dilation_ext_fixes_m` (PROVEN) on m-atoms off l; the case `P ≤ l ∧ P ≤ m`
+      forces `P = U`, where `σ_c(U) = ?` needs to be `U`.
+
+    This skeleton is a *resistance-map landing*: the construction is
+    organized so each sorry is at a specific, named location. -/
 noncomputable def σ (Γ : CoordSystem L) (c : L)
     (hc : IsAtom c) (hc_on : c ≤ Γ.O ⊔ Γ.U)
     (hc_ne_O : c ≠ Γ.O) (hc_ne_U : c ≠ Γ.U) :
-    Dilation Γ := sorry
+    Dilation Γ where
+  toOrderIso :=
+    { toFun := σ_toFun Γ c
+      invFun := σ_invFun Γ c
+      left_inv := by
+        -- σ_{c⁻¹}(σ_c(P)) = P for all P
+        -- Reduces case-by-case:
+        --   P on l, σ_c(P) on l : coord_mul Γ (coord_mul Γ P c) (coord_inv Γ c) = P
+        --     — this is `coord_mul_assoc` + `coord_mul_right_inv` + `coord_mul_right_one`
+        --     i.e., (P·c)·c⁻¹ = P·(c·c⁻¹) = P·I = P. mul_assoc is OPEN (s148 frontier).
+        --   P off l in π : dilation_ext (c⁻¹) (dilation_ext c P) = P
+        --     — composition of dilations: σ_{c⁻¹} ∘ σ_c = σ_{c·c⁻¹} = σ_I = id.
+        --     OPEN (downstream of σ-family closure under composition, FTPGMulAssoc).
+        --   P outside π : trivially P.
+        sorry
+      right_inv := by
+        -- σ_c(σ_{c⁻¹}(P)) = P, mirror of left_inv. The on-l direction here
+        -- is closer to substrate-direct via `coord_mul_right_inv`-type content,
+        -- but still entangled with mul-assoc in the off-l branch.
+        sorry
+      map_rel_iff' := by
+        -- σ-map preserves and reflects ≤. Establishing this for a piecewise
+        -- function requires the three branches to be jointly monotone with
+        -- consistent ordering across cases. Open: lattice-extension argument
+        -- or substrate lemma about order-iso from bijection + atom-action.
+        sorry }
+  fixes_O := by
+    -- σ_c(O) = O. Since O ≤ l, σ_toFun = coord_mul Γ O c = O by left_zero.
+    show σ_toFun Γ c Γ.O = Γ.O
+    unfold σ_toFun
+    classical
+    simp only [le_sup_left, if_true]
+    exact coord_mul_left_zero Γ c hc hc_on hc_ne_U
+  preserves_l := by
+    -- σ_c(l) = l. With l = Γ.O ⊔ Γ.U, l ≤ l so σ_toFun l = coord_mul Γ l c.
+    -- coord_mul Γ l c is NOT a standard primitive — coord_mul is intended
+    -- to act on atoms. The σ-map's "action on l as a join" needs the
+    -- order-iso to be join-preserving, which requires the order-iso to be
+    -- established. Open: extension argument.
+    sorry
+  fixes_m := by
+    intro P hP hP_on_m
+    -- σ_c(P) = P for m-atoms P.
+    -- Case split on P ≤ l: if so, then P ≤ l ⊓ m = U, P = U (atom).
+    -- If not, σ_toFun P = dilation_ext Γ c P; apply dilation_ext_fixes_m.
+    show σ_toFun Γ c P = P
+    unfold σ_toFun
+    classical
+    by_cases hP_on_l : P ≤ Γ.O ⊔ Γ.U
+    · simp only [hP_on_l, if_true]
+      -- P on l and m, so P = U (atom_on_both_eq_U)
+      have hP_eq_U : P = Γ.U := Γ.atom_on_both_eq_U hP hP_on_l hP_on_m
+      subst hP_eq_U
+      -- Need coord_mul Γ Γ.U c = Γ.U. This is `coord_mul_U_left`, currently
+      -- not in scope as a named lemma in FTPGMul. Substrate-direct in principle:
+      -- "U is absorbed by σ_c" / "σ_c fixes U". OPEN as a named sub-lemma.
+      sorry
+    · simp only [hP_on_l, if_false]
+      have hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+        hP_on_m.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+      simp only [hP_plane, if_true]
+      exact dilation_ext_fixes_m Γ hc hP hc_on hP_on_m hc_ne_O hP_on_l
 
 /-- σ preserves coord_mul as Dilation Γ's Monoid multiplication.
     The substantive open content (= the mul-assoc residue at the
