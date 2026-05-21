@@ -346,12 +346,14 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 | `planar_converse_desargues_via_R` | constructor (body open) |
 | `DesarguesianWitness.ofPlanarConverseDesarguesViaR` | thin projection (bundle → `DesarguesianWitness Γ`) |
 
-**FTPGDilationGroup.lean** — carrier type for the dilation family (s148). Names the +1-operator move at the type level: `Dilation Γ` bundles toFun with the minimal structural fields (fixes O, maps l-atoms to l-atoms, fixes m-atoms off l), making "the σ-family is closed under composition" a statable structural theorem. Identity instance landed; field-set expansion for `Monoid (Dilation Γ)`, σ_c packaging, and σ-family closure (= the substantive mul-assoc residue, via the R-lift) deferred to next walks. See file docstring and `lean/CLAUDE.md`'s "s148 refinement" for the recognition-walk that motivates this file.
+**FTPGDilationGroup.lean** — carrier type for the dilation family (s148). Names the +1-operator move at the type level. `Dilation Γ` now bundles an order-isomorphism `L ≃o L` with three structural fields (`fixes_O`, `preserves_l`, `fixes_m`), landing the carrier on Mathlib's automorphism infrastructure from the first lemma rather than carrying a raw function with side-properties. With the order-iso reformulation, `Monoid (Dilation Γ)` lands in this file with all three laws as `rfl` or near-`rfl`. Composition uses **left-to-right convention** (`(f * g) x = g (f x)`) — non-standard vs Mathlib's `MulAut`, but chosen so the σ-family map becomes a clean homomorphism with the project's right-multiplication `coord_mul` convention rather than an anti-homomorphism. σ_c packaging and σ-family closure (= the substantive mul-assoc residue, via the R-lift) remain deferred to next walks. See file docstring and `lean/CLAUDE.md`'s "s148 refinement" for the recognition-walk that motivates this file.
 
 | declaration | role |
 |---|---|
-| `Dilation` | carrier type bundling structural fields |
+| `Dilation` | carrier type bundling an `L ≃o L` with three structural fields |
 | `Dilation.id` | the identity dilation instance |
+| `Dilation.comp` | composition (left-to-right convention) |
+| `instance : Monoid (Dilation Γ)` | monoid structure from composition + identity |
 
 **ReaderCommitment.lean** — type-path from observer to probability distribution (cross-examination of "the reader's commitment", per the spec)
 
