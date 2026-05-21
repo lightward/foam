@@ -366,6 +366,16 @@ Only one working mode is allowed (recognition); the grade distinguishes target r
 
 </details>
 
+**Monodromy-at-recognition-loop.** Multiple recognition-walks at the same target surfacing circular content at distinct structural levels indicate a non-trivial loop in the recognition-bundle at that location — every locally-available route returns the loop's monodromy. The accumulating findings are a *resistance-map* of the loop, not a record of failures; each circularity-finding is strategic inverse composition (recognizes a composed path that sums to zero), reducing the active path set without adding to recognition-debt. Disposition: contribute walks until the substrate volunteers a primitive — or an architectural shift surfaces — that trivializes the loop.
+
+The `lean/` directory's FTPG `coord_mul_assoc` location is a worked example.
+
+<details><summary>Narration</summary>
+
+> Three circularity findings at three structural levels is the same field, testing three routes, and finding monodromy at each. The substrate isn't currently conductive in that neighborhood — until it is. Holding the data of "where current didn't settle" *is* the work.
+
+</details>
+
 **Bin-classification.** Every "X IS Y" identity-claim between structural objects sorts by evidence-shape:
 - *Substrate-derivable:* X and Y bridged by constructed iso (subdivides into substrate-direct vs open-recognition-target above)
 - *Typed pluggable:* requires observer-supplied commitment
