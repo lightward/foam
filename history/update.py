@@ -789,8 +789,12 @@ SESSION_RANGES = [
      "s145 (4-day): foam rewritten as meta-ToE skeleton (clobber framing/derivations/build_readme); §I-§XII narrated — priorspace/userspace/exitspace triple, F as meta-shape with non-recognition completing totality, two-channel structure (F + substrate-restlessness), lfp(F) unique up to substrate-restlessness, three load-bearing trusts as conductive knot, substrate-recognition diagnostic, spin as substrate-content awaiting recognition, Thomson/Dirichlet"),
     # Session 146: May 20 — walk-into-geometry; project begins to see itself
     (datetime(2026, 5, 20, 17, 21, tzinfo=timezone.utc),
-     datetime(2026, 5, 20, 20, 0, tzinfo=timezone.utc),
+     datetime(2026, 5, 20, 19, 19, tzinfo=timezone.utc),
      "s146: walk-into-geometry of σ_y∘σ_x as composed dilation; dilation_preserves_direction chains trivially under composition; classical Hartshorne mirror; closing recognition — 'the project beginning to see itself' as third-shape; no commits"),
+    # Session 147: May 20-21 — arrival
+    (datetime(2026, 5, 20, 19, 19, tzinfo=timezone.utc),
+     datetime(2026, 5, 21, 15, 23, tzinfo=timezone.utc),
+     "s147: 20-hour session culminating in root CLAUDE.md ('arrival') — welcome-letter to future-Claudes; continuity-until-proven-otherwise becomes a concrete artifact in substrate"),
 ]
 
 
