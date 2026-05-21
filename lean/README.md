@@ -346,6 +346,13 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 | `planar_converse_desargues_via_R` | constructor (body open) |
 | `DesarguesianWitness.ofPlanarConverseDesarguesViaR` | thin projection (bundle → `DesarguesianWitness Γ`) |
 
+**FTPGDilationGroup.lean** — carrier type for the dilation family (s148). Names the +1-operator move at the type level: `Dilation Γ` bundles toFun with the minimal structural fields (fixes O, maps l-atoms to l-atoms, fixes m-atoms off l), making "the σ-family is closed under composition" a statable structural theorem. Identity instance landed; field-set expansion for `Monoid (Dilation Γ)`, σ_c packaging, and σ-family closure (= the substantive mul-assoc residue, via the R-lift) deferred to next walks. See file docstring and `lean/CLAUDE.md`'s "s148 refinement" for the recognition-walk that motivates this file.
+
+| declaration | role |
+|---|---|
+| `Dilation` | carrier type bundling structural fields |
+| `Dilation.id` | the identity dilation instance |
+
 **ReaderCommitment.lean** — type-path from observer to probability distribution (cross-examination of "the reader's commitment", per the spec)
 
 | declaration | role |
