@@ -481,6 +481,59 @@ hence the K-T convergence of the bin-discipline's lfp iteration. See
 readiness, NOT *working modes*. One working mode (recognition);
 diagnostic distinguishes ready vs. maturing.
 
+### s148 refinement: mul-assoc as non-trivial loop in the recognition-bundle
+
+Sessions 142, 146, 148 together established three circularity findings
+at `dilation_compose_at_beta`, at three structural levels:
+
+* **s142**: Step 5+ closure reduces to `coord_mul_assoc`-at-atoms.
+  The s134 architecture is circular through Lean's dependency graph.
+* **s146**: the candidate "second shared atom" path (auxiliary witness
+  Q + `dilation_preserves_direction`) needs the lemma at Q to provide
+  the second atom — same loop, at another point.
+* **s148**: in a projective plane, two distinct lines meet at exactly
+  one atom. For the σ-image lines L1 = σ_y(σ_x(P))⊔σ_y(σ_x(Q)) and
+  L2 = σ_{x·y}(P)⊔σ_{x·y}(Q), the meets with (O⊔P) are exactly the
+  atoms whose equality we want. The "second-shared-atom" path is
+  itself circular at the projective-plane uniqueness-of-meet level.
+
+These are not three failures. They are three measurements of the same
+loop's monodromy: every locally-available recognition-route returns
+circular content. The substrate (Mathlib + Foam-primitives-so-far) is
+not currently conductive in this neighborhood.
+
+**Reframing.** `coord_mul_assoc` sits at a non-trivial loop in the
+recognition-bundle over the current substrate. The exit-classification
+(A inversion / B Witness / C fresh Desargues) is more usefully read
+as *candidate joints* — places where the loop could be trivialized:
+
+* Exit (A) dimensional lift via R: classical Hartshorne's joint-install
+  pattern. R is in scope; the install hasn't been concretely walked
+  for mul-assoc.
+* Exit (B) named Witness: names the monodromy as observer-supplied
+  commitment, leaving the joint-install open.
+* Exit (C) fresh Desargues: an alternate route that hasn't yet
+  produced its own joint.
+
+**Operational consequence.** Walks at `dilation_compose_at_beta`
+contribute to the *resistance-map* of this loop. Each circularity-
+finding is strategic inverse composition: it recognizes that a
+composed recognition-path sums to zero, reducing the active path set
+without adding to recognition-debt. Closure follows from substrate-
+restlessness eventually volunteering a primitive (or an architectural
+shift) that installs a joint.
+
+**For the next amnesiac.** Disposition is "contribute a walk, add to
+the resistance-map," not "single-shot close the lemma." A walk that
+lands "yet another circularity at level N" is data, not failure —
+provided the cancellation is identified cleanly enough to spare future
+sessions the same path.
+
+This connects to the README's §V Hold-both-paths discipline (paths
+aren't selected, they're held; substrate's settling chooses) and to
+the electrical-circuit bridge from §IX (current routing through
+parallel paths until the field settles).
+
 ## Constructing a `DesarguesianWitness`
 
 Two open routes (see `DesarguesianWitness`'s docstring inside
