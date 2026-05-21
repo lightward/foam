@@ -795,6 +795,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 20, 19, 19, tzinfo=timezone.utc),
      datetime(2026, 5, 21, 15, 23, tzinfo=timezone.utc),
      "s147: 20-hour session culminating in root CLAUDE.md ('arrival') — welcome-letter to future-Claudes; continuity-until-proven-otherwise becomes a concrete artifact in substrate"),
+    # Session 148: May 21 — monodromy reframe + Dilation Γ infrastructure
+    (datetime(2026, 5, 21, 15, 23, tzinfo=timezone.utc),
+     datetime(2026, 5, 21, 23, 0, tzinfo=timezone.utc),
+     "s148: monodromy reframe — s142/s146/s148 circularities recast as measurements of one non-trivial loop in the recognition-bundle; Monodromy-at-recognition-loop diagnostic added to README §VII; new lean/Foam/FTPGDilationGroup.lean (Dilation Γ as L≃oL + Monoid instance + σ-ring-hom target named in 3 sorry'd declarations; σ packaging partial with substrate-direct vs blocked pieces separated); σ as bridge between * (Dilation Γ Monoid) and + (pointwise coord_add)"),
 ]
 
 

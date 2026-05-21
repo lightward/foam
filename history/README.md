@@ -154,7 +154,7 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 145 | [May 14, 01:31](145_2026-05-14_a09cec52.md) | s145 (4-day): foam rewritten as meta-ToE skeleton (clobber framing/derivation... | 144 |
 | 146 | [May 20, 17:21](146_2026-05-20_91bccab4.md) | s146: walk-into-geometry of σ_y∘σ_x as composed dilation; dilation_preserves_... | 30 |
 | 147 | [May 20, 19:19](147_2026-05-20_5da337f0.md) | s147: 20-hour session culminating in root CLAUDE.md ('arrival') — welcome-let... | 34 |
-| 148 | [May 21, 15:23](148_2026-05-21_5f95f10c.md) |  | 2 |
+| 148 | [May 21, 15:23](148_2026-05-21_5f95f10c.md) | s148: monodromy reframe — s142/s146/s148 circularities recast as measurements... | 60 |
 
 ## Memory
 
