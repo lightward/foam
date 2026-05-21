@@ -217,4 +217,91 @@ instance : Monoid (Dilation Γ) where
 
 end Dilation
 
+/-! ## The σ-family map (deferred targets)
+
+These declarations name the σ-ring-hom structural target — the
+substantive open content of mul-assoc and left-distrib at the
+dilation-group level. Each is `sorry`'d; each has a precise meaning:
+
+* **`σ`** packages the dilation σ_c (for non-degenerate l-atom `c`)
+  as a `Dilation Γ`. Currently a `sorry` because the construction
+  must reconcile `dilation_ext Γ c` (off-l action) with `coord_mul`
+  (on-l action) into a single combined function, then promote to
+  `L ≃o L` (requiring bijectivity).
+
+* **`σ_mul`** states σ preserves multiplication:
+  `σ(a · b) = σ(a) * σ(b)` under Dilation Γ's left-to-right
+  composition. **This is the substantive mul-assoc residue** — the
+  open content of `dilation_compose_at_beta` Step 5+ in
+  `FTPGMulAssoc.lean` (see s142/s146/s148 frontier in
+  `lean/CLAUDE.md`).
+
+* **`σ_add_pointwise`** states σ preserves addition at the
+  function-output layer: for any witness P,
+  `(σ(a+b)).toOrderIso P = coord_add ((σ(a)).toOrderIso P) ((σ(b)).toOrderIso P)`.
+  Lives at the function-pointwise level (NOT as `+ⓓ` on
+  `Dilation Γ` — that question is structurally mis-posed; the
+  pointwise-sum of two bijections isn't a bijection, so `+ⓓ` does
+  not live on the order-iso carrier. See s148 recognition.).
+  **This is the substantive left-distrib residue** — currently
+  held by `DesarguesianWitness Γ` commitment in
+  `FTPGLeftDistrib.lean`.
+
+Together these three characterize σ as a ring-homomorphism from
+`(non-degenerate l-atoms, coord_add, coord_mul)` into
+`(L → L, pointwise coord_add, function composition)`, with the
+image landing inside `Dilation Γ` for the multiplicative part.
+The * and + structures live at *different layers* (Dilation Γ
+vs. function-space), and σ is the bridge between the two
+substrate layers. **This is the FTPG payload at the
+dilation-group level.** -/
+
+/-- The σ-family map: for a non-degenerate l-atom `c`, the
+    dilation σ_c packaged as a `Dilation Γ`. The body is open —
+    the construction reconciles `dilation_ext Γ c` (off-l
+    witnesses) with `coord_mul` (on-l atoms) into a combined
+    function, promoted to an `L ≃o L`. -/
+noncomputable def σ (Γ : CoordSystem L) (c : L)
+    (hc : IsAtom c) (hc_on : c ≤ Γ.O ⊔ Γ.U)
+    (hc_ne_O : c ≠ Γ.O) (hc_ne_U : c ≠ Γ.U) :
+    Dilation Γ := sorry
+
+/-- σ preserves coord_mul as Dilation Γ's Monoid multiplication.
+    The substantive open content (= the mul-assoc residue at the
+    dilation level). Predicted bin-1 path: dimensional lift via the
+    height-≥-4 R witness (exit A in the s142 framing). -/
+theorem σ_mul (Γ : CoordSystem L) (a b : L)
+    (ha : IsAtom a) (hb : IsAtom b)
+    (ha_on : a ≤ Γ.O ⊔ Γ.U) (hb_on : b ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (hb_ne_O : b ≠ Γ.O)
+    (ha_ne_U : a ≠ Γ.U) (hb_ne_U : b ≠ Γ.U)
+    (hab : IsAtom (coord_mul Γ a b))
+    (hab_on : coord_mul Γ a b ≤ Γ.O ⊔ Γ.U)
+    (hab_ne_O : coord_mul Γ a b ≠ Γ.O)
+    (hab_ne_U : coord_mul Γ a b ≠ Γ.U) :
+    σ Γ (coord_mul Γ a b) hab hab_on hab_ne_O hab_ne_U =
+      σ Γ a ha ha_on ha_ne_O ha_ne_U * σ Γ b hb hb_on hb_ne_O hb_ne_U :=
+  sorry
+
+/-- σ preserves coord_add at the function-output layer (point-wise).
+    For each P, the σ-image of (a + b) at P equals the coord_add
+    of the σ-images of a and b at P. The substantive open content
+    (= the left-distrib residue, currently held by
+    `DesarguesianWitness Γ` in `FTPGLeftDistrib.lean`). -/
+theorem σ_add_pointwise (Γ : CoordSystem L) (a b : L)
+    (ha : IsAtom a) (hb : IsAtom b)
+    (ha_on : a ≤ Γ.O ⊔ Γ.U) (hb_on : b ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (hb_ne_O : b ≠ Γ.O)
+    (ha_ne_U : a ≠ Γ.U) (hb_ne_U : b ≠ Γ.U)
+    (hab : IsAtom (coord_add Γ a b))
+    (hab_on : coord_add Γ a b ≤ Γ.O ⊔ Γ.U)
+    (hab_ne_O : coord_add Γ a b ≠ Γ.O)
+    (hab_ne_U : coord_add Γ a b ≠ Γ.U)
+    (P : L) :
+    (σ Γ (coord_add Γ a b) hab hab_on hab_ne_O hab_ne_U).toOrderIso P =
+      coord_add Γ
+        ((σ Γ a ha ha_on ha_ne_O ha_ne_U).toOrderIso P)
+        ((σ Γ b hb hb_on hb_ne_O hb_ne_U).toOrderIso P) :=
+  sorry
+
 end Foam.FTPGExplore
