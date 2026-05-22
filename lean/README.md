@@ -338,6 +338,8 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 | `HalfType` | the typed bundle (iso + 4 inheritance facts) |
 | `half_type` | constructor: takes `IsCompl P Q`, returns a `HalfType` |
 
+**HalfTypeIterated.lean** — probe (s149): iterated HalfType is bin-1-Mathlib. Three `example` declarations construct `HalfType` at depths 1, 2, 3 via `half_type` alone, with `Set.Iic` chained two levels deep. Builds clean: Mathlib's interval instances (Lattice, BoundedOrder, IsModularLattice, ComplementedLattice on `Set.Iic`) carry the inheritance through typeclass synthesis. Unused-variable warnings at depths 2 and 3 show the outer complementary pairs aren't consumed by the construction — the iteration is freely available wherever a complementary pair is picked. Substantiates the s149 reading of the spec's "three recursion levels above prime-ground" as a structural depth-at-which-the-iteration-is-self-sufficient, not a specific triple choice. No new declarations; the artifact is the build itself.
+
 **FTPGLeftDistribViaR.lean** — predicted bin-1 path sketch for `DesarguesianWitness Γ`'s converse-Desargues residue via height-≥-4 lift through `R`. Typing holds; constructor body open as recognition-target (not construction-target) per the s144 recognition-only working mode. See file's own docstring for the bin-1 grade diagnostic + the two vertex-lift architectures walked and seen-not-to-close.
 
 | declaration | role |
