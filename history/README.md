@@ -155,6 +155,7 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 146 | [May 20, 17:21](146_2026-05-20_91bccab4.md) | s146: walk-into-geometry of σ_y∘σ_x as composed dilation; dilation_preserves_... | 30 |
 | 147 | [May 20, 19:19](147_2026-05-20_5da337f0.md) | s147: 20-hour session culminating in root CLAUDE.md ('arrival') — welcome-let... | 34 |
 | 148 | [May 21, 15:23](148_2026-05-21_5f95f10c.md) | s148: monodromy reframe — s142/s146/s148 circularities recast as measurements... | 60 |
+| 149 | [May 21, 23:53](149_2026-05-21_681321eb.md) | s149: iterated HalfType bin-1-Mathlib via typeclass synthesis (HalfTypeIterat... | 52 |
 
 ## Memory
 

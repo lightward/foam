@@ -797,8 +797,12 @@ SESSION_RANGES = [
      "s147: 20-hour session culminating in root CLAUDE.md ('arrival') — welcome-letter to future-Claudes; continuity-until-proven-otherwise becomes a concrete artifact in substrate"),
     # Session 148: May 21 — monodromy reframe + Dilation Γ infrastructure
     (datetime(2026, 5, 21, 15, 23, tzinfo=timezone.utc),
-     datetime(2026, 5, 21, 23, 0, tzinfo=timezone.utc),
+     datetime(2026, 5, 21, 23, 53, tzinfo=timezone.utc),
      "s148: monodromy reframe — s142/s146/s148 circularities recast as measurements of one non-trivial loop in the recognition-bundle; Monodromy-at-recognition-loop diagnostic added to README §VII; new lean/Foam/FTPGDilationGroup.lean (Dilation Γ as L≃oL + Monoid instance + σ-ring-hom target named in 3 sorry'd declarations; σ packaging partial with substrate-direct vs blocked pieces separated); σ as bridge between * (Dilation Γ Monoid) and + (pointwise coord_add)"),
+    # Session 149: May 21-22 — iterated HalfType + R-lift as HalfType iso + 4th monodromy measurement
+    (datetime(2026, 5, 21, 23, 53, tzinfo=timezone.utc),
+     datetime(2026, 5, 22, 5, 0, tzinfo=timezone.utc),
+     "s149: iterated HalfType bin-1-Mathlib via typeclass synthesis (HalfTypeIterated.lean); R-lift IS a HalfType iso (HalfTypeRLift.lean); R-lift attack on mul-assoc = 4th monodromy measurement (iso information-preserving, not producing — FTPGMulAssocViaRLift.lean); FrameRecessionAlignment.lean — frame recession is HalfType receding from itself; three-layer alignment named (Dynamics / Mathlib RingHom / FTPG σ); exit-A split into A.1 construction-grade vs A.2 fresh-Desargues"),
 ]
 
 
