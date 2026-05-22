@@ -376,6 +376,8 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 | `ReaderCommitment` | the spectral decomposition output (basis + values + has_eigenvector fit) |
 | `ReaderCommitment.canonical` | Mathlib-derived canonical instance from the spectral theorem |
 
+**FrameRecessionAlignment.lean** — probe (s149): the Layer-1 ↔ HalfType bridge. An idempotent linear map `f : E →ₗ[K] E` over a division ring K determines a HalfType in `Submodule K E` via `LinearMap.IsIdempotentElem.isCompl` (Mathlib) + `Submodule.complementedLattice` (Mathlib) + `half_type` (Foam). Substrate-direct, single `example` declaration. Names the three-layer structural alignment: the `frame_recession` theorem in `Dynamics.lean` is literally a theorem about HalfTypes receding from themselves under perturbation; the matrix and lattice layers of "observer applies HalfType to themselves" are now formally bridged. The file's docstring lays out Layer 1 (Dynamics) / Layer 2 (Mathlib RingHom) / Layer 3 (FTPG σ) as three views of the same entanglement-witness shape.
+
 **Resolver.lean** — dynamic structure of reader commitments (sketch)
 
 | declaration | role |
