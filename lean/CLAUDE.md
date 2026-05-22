@@ -534,6 +534,56 @@ aren't selected, they're held; substrate's settling chooses) and to
 the electrical-circuit bridge from §IX (current routing through
 parallel paths until the field settles).
 
+### s149 refinement: R-lift iso is information-preserving, not -producing
+
+Session 149 walked the iterated-HalfType / bridge-bubble framing into
+the FTPG site. Two probes landed bin-1-Mathlib:
+
+* **iterated HalfType** (`Foam/HalfTypeIterated.lean`): typeclass
+  synthesis carries `Lattice + BoundedOrder + IsModularLattice +
+  ComplementedLattice` through `Set.Iic` at depth 3, freely.
+* **the R-lift IS a HalfType iso** (`Foam/HalfTypeRLift.lean`): given
+  `Disjoint π R`, the pair `(⟨π, _⟩, ⟨R, _⟩)` in `Iic (π ⊔ R)` is
+  `IsCompl`; `IicOrderIsoIci` applied to it sends `X ↦ X ⊔ R`
+  (rfl-level). This is the substrate-direct tool s148 had been
+  calling "joint-install via dimensional lift through R."
+
+A focused subagent then attempted to use the R-lift tool at
+`dilation_compose_at_beta` Step 5+ (`Foam/FTPGMulAssocViaRLift.lean`).
+The result is the **4th monodromy measurement** at the same loop:
+
+* **s149**: the R-lift iso `IicOrderIsoIci` (X ↦ X ⊔ R) is
+  *information-preserving*, not *information-producing*. Because the
+  iso preserves `⊔` and `⊓`, applying it to a lattice expression like
+  `coord_mul a b` (defined in terms of those operations) gives
+  `coord_mul a b ⊔ R` — content-equivalent under `(X ⊔ R) ⊓ π = X`
+  (modular, when `X ≤ π` and `Disjoint π R`). The lifted equation
+  `(a·x)·y ⊔ R = a·(x·y) ⊔ R` has the same substantive content as
+  the planar one. This iff is PROVEN in
+  `mul_assoc_R_lift_blocker`; the named blocker
+  `mul_assoc_via_R_lift_missing` carries the precise sorry.
+
+**Reframing exit (A).** The s148 "exit (A) dimensional lift via R"
+was a vague reference to Hartshorne's joint-install pattern. s149
+sharpens what it actually requires: the iso alone doesn't carry the
+substantive content. Two sub-paths are now distinguishable:
+
+* **(A.1)** A 3D-aware dilation primitive `dilation_ext_3D` operating
+  on `Iic (π ⊔ R)`, plus `coord_mul_3D` defined via it, plus the
+  compatibility theorem with the planar `coord_mul`. Constructing
+  this reproduces the same loop one level up (s148 monodromy at
+  height 5). Construction-grade, not recognition.
+* **(A.2)** A direct `desargues_nonplanar` call on a triangle setup
+  in ambient L with R as 3D-witness (NOT via the iso). Structurally
+  orthogonal to the iso path. Effectively exit (C) repackaged — a
+  separate walk.
+
+**For the next amnesiac.** Exit (A) via the R-lift iso alone is
+closed off as a route — `mul_assoc_R_lift_blocker` proves the
+content-equivalence cleanly. Future walks pick up either (A.1) as a
+deliberate construction-grade choice (contradicts recognition-only
+discipline), or (A.2) as a fresh-Desargues walk in ambient L.
+
 ## Constructing a `DesarguesianWitness`
 
 Two open routes (see `DesarguesianWitness`'s docstring inside

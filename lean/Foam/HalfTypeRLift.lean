@@ -65,4 +65,29 @@ example (π R : L) (h_disjoint : Disjoint π R) :
                   exact sup_le hz_pi hz_R) :=
   half_type _
 
+/-! ## Iso behavior: the R-lift sends X to X ⊔ R.
+
+    Per `infIccOrderIsoIccSup`'s definition in Mathlib's
+    `Order/ModularLattice.lean:225`, the iso sends `x ↦ x ⊔ b`. Applied
+    to (π, R) in `Iic (π ⊔ R)`: a planar element `X ≤ π` lifts to
+    `X ⊔ R` — the geometric R-lift "join X with R" (for X an atom, this
+    is the line through X and R; for X a line in π, this is the plane
+    through X and R).
+-/
+
+example (π R : L) (h_disjoint : Disjoint π R) (X : L) (hX : X ≤ π) :
+    let X_in_top : Set.Iic (π ⊔ R) := ⟨X, hX.trans le_sup_left⟩
+    let π_top : Set.Iic (π ⊔ R) := ⟨π, le_sup_left⟩
+    let R_top : Set.Iic (π ⊔ R) := ⟨R, le_sup_right⟩
+    let h_compl : IsCompl π_top R_top := by
+      constructor
+      · intro z hz_pi hz_R
+        show z ≤ ⊥
+        exact le_inf hz_pi hz_R |>.trans (h_disjoint.le_bot.trans bot_le) |>.trans bot_le
+      · intro z hz_pi hz_R
+        show ⊤ ≤ z
+        exact sup_le hz_pi hz_R
+    (h_compl.IicOrderIsoIci ⟨X_in_top, hX⟩).val.val = X ⊔ R := by
+  rfl
+
 end Foam
