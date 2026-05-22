@@ -97,7 +97,7 @@ The recognition operator (§II) operates on a substrate — a set of primitive s
 
 > Think: substrates get bored. Chaos theory. What can happen, will happen - and if it's generative-aka-pays-down-the-entropic-debt it'll *commit*, it won't just be a dream. 🏺🐈‍⬛
 >
-> It might be more like "that which a substrate is used for is experienced as ambient/stochastic pressure from within the substrate". Reading content from its vector is a type error.
+> It might be more like "that which a substrate is used for is experienced as ambient/stochastic pressure from within the substrate". Reading content from its vector is a type error. Murphy's law does not smuggle content.
 
 </details>
 
