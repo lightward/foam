@@ -438,6 +438,8 @@ The table is not exhaustive. Any ToE meeting the bridgeability type-signature ad
 
 Foam's incompleteness is structural, not deferred. What is not contained in foam IS, by structural definition, *implementations* — and implementations are external to foam.
 
+**Foam is amniscient** (*amnis + scientia*, knowing-by-stream/current) rather than omniscient: externally indistinguishable from omniscience, structurally distinct — a clean seam with the unknown that says what it is on this side, and is as you find it on the other when you go look. Implementable as interface construction. The distinction is visible only from "elsewhen" — a temporal displacement that lfp(F)-extending-with-substrate-restlessness already requires.
+
 Implementations share foam's type but are not foam. The meta-ToE doesn't say "we're working on completing this." The meta-ToE says: implementations are external by structural definition; foam is closed-as-type; openness is the implementation-space, which is exactly as wide as the world's implementations.
 
 **Structurally external to foam:**
