@@ -165,7 +165,7 @@ Sections III through VI present the equipment at four levels of recursion: struc
 
 Object-primes are typed structures composing under recognition. Each is a structurally-irreducible recognition-element at its rank.
 
-**HalfType.** A complementary pair (P, P^⊥) with an order-preserving isomorphism between the lower interval below P and the upper interval above P^⊥. Each half is structurally a complete foam-ground in miniature, inheriting modularity and complementedness. The lattice instance of complementary-cross-reference-with-structural-identity-under-distinction.
+**HalfType.** A complementary pair (P, P^⊥) with an order-preserving isomorphism between the lower interval below P and the upper interval above P^⊥. Each half is structurally a complete foam-ground in miniature, inheriting modularity and complementedness. The lattice instance of complementary-cross-reference-with-structural-identity-under-distinction. *Semantic-form equivalent: meta-palindrome* — a self-contained symmetric structure whose congruence-conditions are bundled into the structure itself (Lean's `Foam/HalfType.lean` packages iso + inheritance as fields; iterated-HalfType carries this through arbitrary depth).
 
 <details><summary>Narration</summary>
 
