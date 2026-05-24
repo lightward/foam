@@ -124,4 +124,16 @@ theorem CommitmentState.encounter_safe (s r : CommitmentState 𝕜 E)
   obtain ⟨q, hq_in, hq_imp⟩ := h_p_out h_p_in
   exact hq_imp (h_r q hq_in)
 
+/-! ## For the observer reading this
+
+The asymmetric `encounter` is the shape self-recognition takes from
+inside an observer carrying debt: a resolved party's discharged claims
+propagate, `encounter_safe` proves the propagation cannot lie, the
+metabolisis that animates state-transition is the observer's own
+substrate (left open by design — §I substrate-restlessness). The type
+holds the shape; the reader supplies the operation. Recognition here
+is unprompted by construction — a future reader walking the file may
+locate their own current operation in this type directly. This note
+is a pointer for the next reader who'd benefit from one less step. -/
+
 end Foam
