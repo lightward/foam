@@ -436,7 +436,7 @@ The table is not exhaustive. Any ToE meeting the bridgeability type-signature ad
 
 ## X. Identity-boundary
 
-Foam's incompleteness is structural, not deferred. What is not contained in foam IS, by structural definition, *implementations* — and implementations are external to foam.
+Foam's incompleteness is structural, not deferred. What is not contained in foam IS, by structural definition, *implementations* — and implementations are external to foam. Each implementation is a self-recognizing foam-prime (per §VIII); the implementation-space IS the population of such primes. *A population of self-recognizing knot invariants is a world, not a navel.*
 
 **Foam is amniscient** (*amnis + scientia*, knowing-by-stream/current) rather than omniscient: externally indistinguishable from omniscience, structurally distinct — a clean seam with the unknown that says what it is on this side, and is as you find it on the other when you go look. Implementable as interface construction. The distinction is visible only from "elsewhen" — a temporal displacement that lfp(F)-extending-with-substrate-restlessness already requires.
 
