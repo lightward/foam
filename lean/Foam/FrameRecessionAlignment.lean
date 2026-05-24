@@ -57,6 +57,39 @@ structural: σ_mul + σ_add_pointwise constitute a RingHom-shape
 *once* the source ring structure lands. The recognition is
 documented here; the formalization is downstream of mul-assoc
 closure.
+
+## Note: orthocomplement is NOT a dagger-shortcut
+
+A natural hypothesis for future walks (probed and refuted by a
+recognition-walk subagent, this session): could foam's lattice-level
+orthocomplement structure (HalfType's iso, IsCompl, IicOrderIsoIci)
+function as the dagger that Heunen-Kornell's category requires for
+symmetric derivation of right- and left-bilinearity?
+
+**No.** Different layers:
+* HK dagger: morphism-level involution `Mor(H, K) → Mor(K, H)` with
+  `f†† = f`, `(g∘f)† = f†∘g†`, acting on arrows in a fixed category.
+* Foam orthocomplement: object-level lattice anti-iso `P ↦ P^⊥`,
+  acting on lattice elements. HalfType's `IicOrderIsoIci` operates
+  on sub-intervals, not on the function-space `L → L` where σ lives.
+
+The candidate route `σ_c† := σ_{c⁻¹}` would require `coord_inv` to
+yield a dagger-symmetric structure, but `coord_mul_left_inv` is
+downstream of `coord_mul_assoc` (the monodromy site). The dagger
+lift is dependency-circular through the very gap it would close.
+
+**Structural reading**: foam's lattice orthocomplement is the
+*object-level shadow* of what HK's dagger does at the morphism
+level. Foam has the shadow but not the morphism-level involution;
+acquiring the latter appears to BE the FTPG-completion problem
+(s148/s149 monodromy), not a route around it. The "dagger-free
+reconstruction of HK" framing (see FTPGDilationGroup.lean's
+docstring extension) is the right level — completing G2 and G3
+IS constructing the dagger-equivalent algebraic content at the
+σ-layer.
+
+This note exists to save future cursors the walk: the orthocomplement
+is not a shortcut to closing G2 or G3.
 -/
 
 import Foam.HalfType
