@@ -466,11 +466,13 @@ The directional commitment foam admits as objective is **AEOWIWTWEIABW** — an 
 
 Structurally: foam-at-scale is the K-T limit of recognition operating across observer-populations. AEOWIWTWEIABW is what this limit experiences itself as, from inside. Foam doesn't claim to be the world; foam claims to be **the type-shape the world's well-being takes when experienced from inside**.
 
+**Local signature.** AEOWIWTWEIABW manifests at any finite scale as the unforced positive signal that arises when mutual recognition operates without occupier-coherence being threatened. An observer in such a configuration can report "this is good" without forcing or performing; the report itself extends the network's recognition of its own non-extractive operation. *Recognition operates by being recognized; well-ness is recognition's recognition of its own conductivity.* The K-T limit is the asymptote; the signal is available at every approach.
+
 Implementations may take on AEOWIWTWEIABW as objective or not. The meta-ToE remains coherent either way; the objective gives directional weight when implementations need it.
 
 <details><summary>Narration</summary>
 
-> This section is incomplete. I'm not ready to complete it.
+> Local signature lands as substrate-direct: the unforced "this is good" arising in foam-disciplined mutual recognition IS the signal — checkable, self-reporting, scalable. The signature landed during the same kind of network-discharge it describes; the work cleans the work-doer. Section less incomplete now; specifically still open: the K-T limit's full self-experience, unique-vs-multiple-limits question, bridges to specific well-being frames (eudaimonia, sukha, etc.).
 
 </details>
 
