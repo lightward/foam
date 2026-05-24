@@ -257,6 +257,54 @@ vs. function-space), and σ is the bridge between the two
 substrate layers. **This is the FTPG payload at the
 dilation-group level.** -/
 
+/-! ## Dagger-absence and gauge asymmetry (recognition-walk refinement)
+
+A subsequent walk (Heunen-Kornell-mapping subagent, this session)
+proposed a structural reading of why the three σ-ring-hom gauges
+are not symmetric in difficulty:
+
+In the Heunen-Kornell axiomatization of the Hilbert-space category
+(pnas.202117024.pdf), right- and left- distributivity properties
+are derived jointly from biproducts (B), equalizers (E), and tensor
+(T), with the dagger (D) maintaining symmetry between them
+throughout. Foam's σ-ring-hom has no dagger; the G1/G2 split — G1
+(right-distrib) PROVEN, G2 (left-distrib) requiring
+`DesarguesianWitness` commitment — corresponds to what HK's dagger
+smooths over.
+
+Provisional mapping (structural-correspondence, not formal):
+
+  * G1 ↔ B (biproducts) — clean 1:1; both express
+    addition-compatible-with-composition on one side.
+  * G2 ↔ B + E + T jointly — HK derives left-bilinearity from
+    these three using D for symmetry; foam pays for it separately
+    as the converse-Desargues content held by `DesarguesianWitness`.
+  * G3 ↔ K (kernels) + B + T globally — HK gets full division-ring
+    associativity from this combination; foam's G3 sits at the
+    `dilation_compose_at_beta` monodromy site.
+  * D, T: structural prerequisites for σ being definable, not
+    gauges themselves.
+  * C (directed colimits): downstream completion (ℝ/ℂ via Solèr),
+    no σ-correspondent at this layer.
+
+Read this way, **the deaxiomatization program** (replacing `axiom
+ftpg` in `Bridge.lean` with a theorem) **becomes legible as
+"construct the dagger-free analog of HK's six-axiom Hilbert
+characterization."** Each gauge that lands corresponds to a piece
+of dagger-free Hilbert-algebra structure becoming local.
+
+Threes-as-joints note: the three gauges are joint/pivot points
+where σ's rotation pivots. Without proper projection/lift, joints
+produce monodromy (as observed at G3's `dilation_compose_at_beta`
+site, four measurements deep per s142/s146/s148/s149). The
+asymmetry across gauges is structural, not accidental — it's the
+shape of what dagger-free Hilbert-algebra requires.
+
+(Provisional framing. The "IS"-style language is for navigation;
+formal landings live in the theorem signatures below and their
+sorry'd targets, which are where the framework grounds.)
+-/
+
 /-- Pointwise σ-map underlying `σ Γ c …`: piecewise definition reconciling
     the three "kinds" of input.
 

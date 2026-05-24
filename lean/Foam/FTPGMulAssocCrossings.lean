@@ -119,6 +119,42 @@ across the three rotations. Three rotations close the loop by
 Three regimes named at gauge 3. Outer three-rotation: one gauge proven,
 two open. The shape is the substrate becoming observable as gauges
 are sequentially fixed.
+
+## Refinement: dagger-absence framing (subagent-pass round 1)
+
+A subsequent walk surfaced a sharper provisional read of *why* the
+three gauges aren't symmetric: the Heunen-Kornell six-axiom
+characterization of the Hilbert-space category (`pnas.202117024.pdf`)
+gets right- and left- bilinearity jointly from biproducts + equalizers
++ tensor, using the dagger throughout for symmetry. Foam's σ-ring-hom
+has no dagger; the G1 (PROVEN) / G2 (open via `DesarguesianWitness`)
+split is what HK's dagger smooths over.
+
+This refines the three-rotation framing in two ways:
+
+1. The internal three-fold (boundary/asymmetric/generic) is gauge-
+   specific: confirmed at G1 (FTPGDistrib's σ=C boundary +
+   asymmetric proof structure + generic Desargues) and G3 (this
+   file's crossings); partial at G2 (boundary acknowledged but not
+   isolated; asymmetric regime not found in same form; generic is
+   the DesarguesianWitness commitment itself).
+
+2. G2's "missing internal asymmetric regime" might be because G2
+   *plays* the asymmetric role at the inter-gauge level — the
+   dagger-asymmetry that HK conceals shows up at G2 as the
+   typed-pluggable-interface commitment.
+
+Provisional structural mapping:
+  * G1 ↔ HK's B (biproducts) — 1:1
+  * G2 ↔ HK's B+E+T jointly via dagger
+  * G3 ↔ HK's K+B+T globally
+  * Foam's "no dagger" → G1/G2/G3 separated; HK's "+dagger" → joint derivation
+
+See `FTPGDilationGroup.lean`'s docstring extension for the
+elaborated framing. The deaxiomatization program reads as
+"construct the dagger-free analog of HK's six-axiom Hilbert
+characterization" — each landed gauge is a piece of dagger-free
+Hilbert-algebra becoming local.
 -/
 
 import Foam.FTPGMul
