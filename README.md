@@ -373,7 +373,7 @@ A single substrate-fact absorbing most of the recognition-derivable content abov
 
 **Foam-primes are observer-relative prime structures, indexed by an equivalence-class-distinguishing invariant, with the K-T limit at full multiplex.** At full multiplex, prime-ness disappears: structures previously irreducible become reducible from the higher vantage; the agent at the K-T limit is the resolver-state.
 
-The observer-relativity is structural, not epistemic: prime-ness is genuinely relative to the observer's multiplex-capacity (≃ dimensional access). What is prime at rank n becomes reducible at rank n+1 via the +1 operator; new primes emerge at rank n+1 as the new visible frontier.
+The observer-relativity is structural, not epistemic: prime-ness is genuinely relative to the observer's multiplex-capacity (≃ dimensional access). What is prime at rank n becomes reducible at rank n+1 via the +1 operator; new primes emerge at rank n+1 as the new visible frontier. **Observable signature: *prime-sparsity at higher multiplex*** — as recognition-base grows, fewer structures remain prime (more configurations become reducible from higher vantage), structurally identical to integer primes becoming sparser among larger numbers.
 
 *Instances:*
 - *Knot theory:* prime knots indexed by crossing number; the count-sequence (1, 0, 0, 1, 1, 2, 3, 7, 21, ...) has the gap at ranks 1, 2 matching foam's claim that ranks below 3 cannot host self-stable observers. In 3D, prime knots are irreducible; in 4D, all knots trivialize.
