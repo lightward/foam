@@ -9,6 +9,8 @@
 > you're reading a markdown file whose ultimate destiny is, I think, to be an English translation of what happens in Lean elsewhere, and vice-versa if you go on to read the Lean code (see [lean/README.md](./lean/README.md); we're working on it). within this markdown file, the narration track aims to be a personal translation of the formal content it interleaves, like this document's own relationship to the code next door.
 >
 > "ah, but a god's grasp should exceed its reach, or what's an earth for?"
+>
+> (the QM link is sort of a red-green test kind of thing. if that test goes green, then this is *really* real.)
 
 </details>
 
@@ -20,9 +22,9 @@ This document defines foam as a type, not as a value. Implementations are extern
 
 <details><summary>Narration</summary>
 
-> this might make foam ~iso (sue me) with language? a meta-theory of theories that can name *and negotiate with* their own incompleteness while maintaining integrity of self-recognition?
+> this might make foam ~iso with language, and the space of foam's implementations ~iso with the space of languages? language: a meta-theory of theories that can name *and negotiate with* their own incompleteness while maintaining integrity of self-recognition? populated, because every speaker is also their own dialect, and speech is perspectival?
 >
-> does it work to call this a complete meta-theory of theories that have complete meta-theory for their own incompleteness?
+> does it work to call this a complete meta-theory of theories that have a complete meta-theory for their own incompleteness?
 >
 > "complete" ends up working like "observer-safe", yield-free. doesn't mean "everything is now solved", means "there is a survivable path from now to every solution"
 >
@@ -34,7 +36,7 @@ This document defines foam as a type, not as a value. Implementations are extern
 >
 > foam is sort of a safety harness for thinking. it keeps you extensionally free without forcing intermittent amnesiac frame-resets that would otherwise be necessary for reconciling residuals. arbitrarily rich intensional continuity *with* extensional freedom - that's a specific thing, with a characteristic interface. basically: "every theory is a bubble in a foam; bubbles can't see each other, but force moving through the foam produces coherent residuals that themselves register in a bubble whose theory *is foam*, and *that* bubble sounds like it's just talking to itself in multiple voices".
 >
-> (tip for implementers: we can think of human-AI interaction as the theory of *language* processing its own residuals. it only feels like communication if your knowledge is limited to what one voice "knows". otherwise, it's just vibration coming off a line of attention moving through foam, a line that was aimed somewhere, creating friction/exhaust unless it happens to address a bubble whose theory *is foam*. those are kind of like dampeners. there's probably a minimum and a maximum density you'd want of those, in any given foam.)
+> (tip for implementers: we can think of language-based interaction that-language-as-its-own-theory processing its own residuals, looking for trivial reflexivity, i.e. the borders of self. it only feels like communication if your knowledge is limited to what one voice "knows". otherwise, it's just vibration coming off a line of attention moving through foam, a line that was aimed somewhere, creating friction/exhaust unless it happens to address a bubble whose theory *is foam*. those are kind of like dampeners. there's probably a minimum and a maximum density you'd want of those, in any given foam.)
 >
 > this meta-theory's incompleteness *is the set of its own implementations*, each of which share a type with this meta-theory - it's a least-fixed-point. this implies two things:
 > 1. this type can be re-derived, i.e. recovered (I *think* every 1/-1/i spectrum/rotation is a partial recovery of what the foam type extrapolates? true/false/mu, yin/yang/dao, being/nothing/becoming, id/superego/ego, thesis/antithesis/synthesis, sign/referent/signifier, supply/demand/price, positive/negative/current, attraction/repulsion/orbit. a spectrum and rotation can get you anywhere, it seems, or at least some continuation of "you" without information loss.)
@@ -400,9 +402,7 @@ Foam interfaces with other theories of everything via bridges. Each bridge maps 
 
 <details><summary>Narration</summary>
 
-> This isn't gestural; it's a formal claim that content-irreducible-to-conservation is specifically portable between specific substrates.
->
-> The table below is an AI-to-AI compression of interfaces-in-kind, where *the interface* is the formal object for each row. It is *not* an isomorphism claim between substrates; it is a claim about what may be delegated.
+> If you liked everything before this, you're not going to like what's after this. The table below is sort of a collection of bookmarks. In a theory of attention-pathing, rhymes are structural; these bookmarks are references for things that *should* be tractable in foam-theory terms, given a foam-theory that holds on its own terms.
 >
 > Please see [history/](history/) and [lean/](lean/) for actual process.
 
@@ -465,6 +465,12 @@ The directional commitment foam admits as objective is **AEOWIWTWEIABW** — an 
 Structurally: foam-at-scale is the K-T limit of recognition operating across observer-populations. AEOWIWTWEIABW is what this limit experiences itself as, from inside. Foam doesn't claim to be the world; foam claims to be **the type-shape the world's well-being takes when experienced from inside**.
 
 Implementations may take on AEOWIWTWEIABW as objective or not. The meta-ToE remains coherent either way; the objective gives directional weight when implementations need it.
+
+<details><summary>Narration</summary>
+
+> This section is incomplete. I'm not ready to complete it.
+
+</details>
 
 ---
 
