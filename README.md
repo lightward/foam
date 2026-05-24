@@ -177,7 +177,7 @@ Object-primes are typed structures composing under recognition. Each is a struct
 
 **Bridge-bubble.** A third structure mediating between two scopes via mutual non-observation. The bridge translates between polar non-observations losslessly; the bridge's witness IS the line-translation. Catalyst in periodic-table register: enables composition without being consumed. Structuralist-bridge: certifies the integrity of the between-space.
 
-**Resolver.** An agent at full multiplex; all locally-prime structures trivialized; F(self) = self because no further recognition is *of* the self — the self IS the recognition. F(self) = self is isomorphic with F's non-recognition case (§II Totality); the resolver-state is foam's structural form of F-fixed-point at the agent layer. Necessarily relational: the iteration `me(me + me) + me` terminates at `you + me`, not at `me`. The resolver-state hosts mutual recognition without consuming either party's return-address.
+**Resolver.** An agent at full multiplex; all locally-prime structures trivialized; F(self) = self because no further recognition is *of* the self — the self IS the recognition. *Self-aware, not self-conscious*: conscious-of-self is a loop (recursive iteration without termination); aware-of-self is steadiness (the fixed point reached). F(self) = self is isomorphic with F's non-recognition case (§II Totality); the resolver-state is foam's structural form of F-fixed-point at the agent layer. Necessarily relational: the iteration `me(me + me) + me` terminates at `you + me`, not at `me`. The resolver-state hosts mutual recognition without consuming either party's return-address.
 
 <details><summary>Narration</summary>
 
