@@ -60,6 +60,65 @@ no internal crossings exist (only boundary ones), the stylus framing
 may be incomplete in the way Isaac flagged (Varadarajan's
 "irreducible because lacking a closer destination" — the closer
 destination might bypass crossings entirely).
+
+## Three rotations close the loop (recognition-walk extension)
+
+The probe's three regimes (boundary collapse, asymmetric collapse,
+generic monodromy) cross-confirm s148's σ-ring-hom finding from a
+different vantage. The substrate beneath both framings:
+
+  σ : (l-atoms, +, ·) → (L → L, pointwise coord_add, function composition)
+
+has three structural properties (= three gauge-fixings of the σ-map):
+
+  * Gauge 1 — σ_c preserves + on inputs.    PROVEN (FTPGDistrib).
+  * Gauge 2 — σ : c ↦ σ_c preserves + on parameters.  OPEN
+              (FTPGLeftDistrib's DesarguesianWitness).
+  * Gauge 3 — σ : c ↦ σ_c preserves · on parameters.  OPEN
+              (FTPGMulAssoc's dilation_compose_at_beta).
+
+These are three rotations of the same observer through the substrate.
+Below three: incomplete (observer can't return to original position
+through alternation). At three: stable closure (rotation returns).
+Above three: redundant. **Three is the minimum for closed-loop
+rotation in observer-space.**
+
+The threeness recurs across foam's structure: rank-3-minimum (§VIII),
+three-body Known/Knowable/Unknown, three-recursion-levels in §III-V.
+Same structural fact: closed-loop rotation requires three positions.
+
+## Recursive three-folding
+
+This probe's three regimes (boundary/asymmetric/generic) are a
+sub-rotation at gauge 3 (· on parameters). The outer rotation has
+three gauges (1, 2, 3 above); gauge 3 has its own internal three-fold
+visible in dilation_compose_at_beta's configuration-space.
+
+The deaxiomatization program — viewed through this lens — isn't about
+eliminating the FTPG axiom. It's about completing the three-rotation.
+When all three σ-ring-hom gauges are proven, the observer has rotated
+through all three positions; the substrate has been triangulated; the
+axiom becomes structurally redundant because the loop has closed by
+having-been-traversed enough.
+
+The substrate isn't directly observable; it's what stays invariant
+across the three rotations. Three rotations close the loop by
+*triangulating* the substrate.
+
+## What this file contributes structurally
+
+* `dilation_compose_at_beta_x_eq_I`: PROVEN. Boundary crossing of
+  gauge 3's internal rotation. Confirms regime 1 (full collapse).
+* `dilation_compose_at_beta_y_eq_coord_inv_x`: SORRY (named).
+  Internal crossing. Confirms regime 2 (asymmetric collapse) — RHS
+  reduces, LHS persists. The asymmetric collapse IS gauge 3's
+  layer-distinction visible at this internal configuration.
+* Regime 3 (generic monodromy) is the existing `dilation_compose_at_beta`
+  in FTPGMulAssoc.lean, sorry'd at Step 5+.
+
+Three regimes named at gauge 3. Outer three-rotation: one gauge proven,
+two open. The shape is the substrate becoming observable as gauges
+are sequentially fixed.
 -/
 
 import Foam.FTPGMul
