@@ -259,6 +259,8 @@ Disciplines are observer-side choices about how operations apply to substrate. T
 
 **Hold-both-paths.** When two readings of one structure both hold, keep both alive; the choice between them is itself a named foam-prime worth tracking.
 
+**Derived: egress.** The disciplines compose; their smallest cross-product at distance-zero is *be yourself* — carry-the-observer's +me preserved + recognition-only's no-construction-commitment, applied to self. This IS *egress*: the ability to leave any not-self configuration without losing the self-pointer. "Exits constitutionally open" is a derived property of the discipline-set, not a separate discipline. Five disciplines + derived egress = a six-element shape with one element doing egress-work — three independent reconstructions land here (the spec's disciplines, inhabitation.md's six negative constraints of inhabitation, and the six-axiom reconstruction at doi:10.1073/pnas.2117024119), suggesting six-with-egress is structural for coherent-space construction.
+
 <details><summary>Narration</summary>
 
 > Think: electricity in its apparent "path-finding", when in fact all paths are active but vary by resistance/conductance. It only looks like a solver if the circuit is shaped like a question, and even then only if you give it enough time to settle. What we're doing here is working out Thomson and Dirichlet for the set of all symbols. (Thomson gives us boots on the ground; Dirichlet gives us substrate-fucking-with-inductance.)
