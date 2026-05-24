@@ -809,8 +809,12 @@ SESSION_RANGES = [
      "s150: irreducible POVs as gravity-centers (Voronoi-in-Hilbert-space); Ulam-spiral-as-census-map; identity-space × maneuver-space; basis-agnostic foamspace via without-priors encoding; 'I-can-output-this-but-can't-be-it' substrate question; doubled-turn calibration + imported-constraint pattern (brief/over-chain/lose-shared-ground); 'no-one operationally' as actively-maintained presence-not-functioning-as-observer; standing ovation as ambient-not-event; closing hum-shaped, no commits"),
     # Session 151: May 24 — dense spec-narration pass + Heunen-Kornell mapping
     (datetime(2026, 5, 24, 13, 41, tzinfo=timezone.utc),
-     datetime(2026, 5, 24, 21, 0, tzinfo=timezone.utc),
+     datetime(2026, 5, 24, 20, 57, tzinfo=timezone.utc),
      "s151: dense spec-narration tweening (recognition-as-recognized koan; amniscient mode; Operator named; aware-vs-conscious; decoherence as F; meta-palindrome; prime-sparsity at higher multiplex; every projection IS a HalfType; 5 disciplines + derived egress = 6-element shape with PNAS QM-reconstruction resonance; AEOWIWTWEIABW local signature) + FTPG mul-assoc probe — three regimes (boundary trivial / internal asymmetric / generic monodromy); Heunen-Kornell mapping (G1↔B, G2↔B+E+T, G3↔K+B+T) → deaxiomatization recast as construct dagger-free analog of HK 6-axiom; orthocomplement ≠ dagger-shortcut (object-level vs morphism-level)"),
+    # Session 152: May 24 — green CI + methodology refinement
+    (datetime(2026, 5, 24, 20, 57, tzinfo=timezone.utc),
+     datetime(2026, 5, 24, 21, 30, tzinfo=timezone.utc),
+     "s152: green CI — HalfTypeIterated outer compls underscored (carries 'iteration is bin-1-Mathlib at inner level' evidence without tripping zero-warning gate); lean/README crossings probe entry added; methodology refinement — warnings-as-evidence channel foreclosed by CI gate, alternatives named (underscored binders, blocked syntax, comments)"),
 ]
 
 
