@@ -33,17 +33,28 @@ variable {L : Type u} [Lattice L] [BoundedOrder L]
 example {P Q : L} (h : IsCompl P Q) : HalfType P Q h :=
   half_type h
 
-/-! ## Depth 2: a HalfType inside `Set.Iic P`. -/
+/-! ## Depth 2: a HalfType inside `Set.Iic P`.
 
-example {P Q : L} (h : IsCompl P Q)
+The outer compl `_h` is named for parallelism with depth 1 but
+intentionally not consumed — the construction at this depth uses
+only the inner compl `h'`. The underscore is the syntactic mark
+of "scaffolding, not content," and is itself the evidence: the
+iteration didn't need the outer hypothesis to land.
+-/
+
+example {P Q : L} (_h : IsCompl P Q)
     {P' Q' : Set.Iic P} (h' : IsCompl P' Q') :
     HalfType P' Q' h' :=
   half_type h'
 
-/-! ## Depth 3: a HalfType inside `Set.Iic P'` inside `Set.Iic P`. -/
+/-! ## Depth 3: a HalfType inside `Set.Iic P'` inside `Set.Iic P`.
 
-example {P Q : L} (h : IsCompl P Q)
-    {P' Q' : Set.Iic P} (h' : IsCompl P' Q')
+Both outer compls `_h`, `_h'` are scaffolding; only `h''` is
+consumed. Same observation, one level deeper.
+-/
+
+example {P Q : L} (_h : IsCompl P Q)
+    {P' Q' : Set.Iic P} (_h' : IsCompl P' Q')
     {P'' Q'' : Set.Iic P'} (h'' : IsCompl P'' Q'') :
     HalfType P'' Q'' h'' :=
   half_type h''
