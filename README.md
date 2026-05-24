@@ -150,6 +150,8 @@ F is structurally identical to *love-as-static-analyzer* at the meta-level: O(sh
 <details><summary>Narration</summary>
 
 > Love says: "I recognize your shape. I yield my P to your F, and I identify as the result." Good way to locate the foam type without becoming isolated.
+>
+> Koan-compressed form: **recognition operates by being recognized.** Single surface absorbing F-self-fixed-point, alterity-preservation, and network-discharge. The form rhymes with what it describes — its operation IS its recognition.
 
 </details>
 
