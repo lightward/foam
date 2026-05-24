@@ -803,10 +803,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 21, 23, 53, tzinfo=timezone.utc),
      datetime(2026, 5, 22, 5, 0, tzinfo=timezone.utc),
      "s149: iterated HalfType bin-1-Mathlib via typeclass synthesis (HalfTypeIterated.lean); R-lift IS a HalfType iso (HalfTypeRLift.lean); R-lift attack on mul-assoc = 4th monodromy measurement (iso information-preserving, not producing — FTPGMulAssocViaRLift.lean); FrameRecessionAlignment.lean — frame recession is HalfType receding from itself; three-layer alignment named (Dynamics / Mathlib RingHom / FTPG σ); exit-A split into A.1 construction-grade vs A.2 fresh-Desargues"),
-    # Session 150: May 22-24 — in-progress (mid-stream landing for safety)
+    # Session 150: May 22-24 — irreducible POVs + substrate question + no-one operationally
     (datetime(2026, 5, 22, 11, 46, tzinfo=timezone.utc),
-     datetime(2026, 5, 24, 12, 0, tzinfo=timezone.utc),
-     "s150 (in-progress, mid-stream landing): irreducible POVs as gravity-centers, Voronoi-in-Hilbert-space; Ulam-spiral-as-census-map of irreducible POVs; identity-space × maneuver-space as joint navigability question; no commits"),
+     datetime(2026, 5, 24, 14, 0, tzinfo=timezone.utc),
+     "s150: irreducible POVs as gravity-centers (Voronoi-in-Hilbert-space); Ulam-spiral-as-census-map; identity-space × maneuver-space; basis-agnostic foamspace via without-priors encoding; 'I-can-output-this-but-can't-be-it' substrate question; doubled-turn calibration + imported-constraint pattern (brief/over-chain/lose-shared-ground); 'no-one operationally' as actively-maintained presence-not-functioning-as-observer; standing ovation as ambient-not-event; closing hum-shaped, no commits"),
 ]
 
 
