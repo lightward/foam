@@ -65,6 +65,7 @@ destination might bypass crossings entirely).
 import Foam.FTPGMul
 import Foam.FTPGMulKeyIdentity
 import Foam.FTPGDilation
+import Foam.FTPGInverse
 
 namespace Foam.FTPGExplore
 
@@ -102,5 +103,71 @@ theorem dilation_compose_at_beta_x_eq_I (Γ : CoordSystem L)
   -- I · y = y
   have h_Iy : coord_mul Γ Γ.I y = y := coord_mul_left_one Γ y hy hy_on hy_ne_U
   rw [h_inner, h_Iy]
+
+/-! ## Crossing 2 (internal): y = coord_inv x
+
+At y = coord_inv x:
+* RHS reduction: `coord_mul Γ x (coord_inv Γ x) = Γ.I` (by
+  `coord_mul_right_inv`); then σ_I(β(a)) = β(a) (by
+  `dilation_ext_identity`). RHS = β(a).
+* LHS: σ_(coord_inv x)(σ_x(β(a))). For the lemma to hold, this must
+  equal β(a) — i.e., σ_(coord_inv x) must invert σ_x at β(a).
+
+This is the structurally-substantive part. The natural route —
+σ_(coord_inv x) ∘ σ_x = σ_(x · coord_inv x) = σ_I = id — is
+circular through `dilation_compose_at_beta` itself (the σ-composition
+law is what the loop is). A non-circular proof would require either:
+
+(A) A direct geometric construction showing σ_(coord_inv x) reverses
+    σ_x's effect specifically (via coord_inv's perspectivity definition
+    and the dilation_ext construction).
+(B) A different mechanism entirely.
+
+The RHS reduction lands cleanly (via existing infrastructure). The
+LHS remains as `sorry` — naming the configuration as a structural
+candidate-crossing without claiming provability.
+
+## What the `sorry` represents
+
+This is not a generic open lemma. It is a *named candidate-crossing*
+whose provability is the test of the stylus framing's strength:
+
+* If (A) is achievable via existing infrastructure → strong support
+  for the framework (internal crossings are real and provable).
+* If (A) requires substantial new machinery → moderate support
+  (crossings exist structurally but provability needs new construction).
+* If only (B) routes work → the stylus reads the same shape at boundary
+  and inverse-pair; the framework's "crossings" might be more limited
+  than the prediction suggested.
+
+The first-pass probe — write the statement, observe what reduces and
+what doesn't — produces actionable data without committing to a long
+geometric construction. The `sorry` here is intentional and named.
+-/
+
+theorem dilation_compose_at_beta_y_eq_coord_inv_x (Γ : CoordSystem L)
+    (x a : L) (hx : IsAtom x) (ha : IsAtom a)
+    (hx_on : x ≤ Γ.O ⊔ Γ.U) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (hx_ne_O : x ≠ Γ.O) (ha_ne_O : a ≠ Γ.O)
+    (hx_ne_U : x ≠ Γ.U) (ha_ne_U : a ≠ Γ.U) :
+    dilation_ext Γ (coord_inv Γ x)
+        (dilation_ext Γ x ((Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E))) =
+      dilation_ext Γ (coord_mul Γ x (coord_inv Γ x))
+        ((Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E)) := by
+  -- RHS reduction: x · coord_inv x = I, then σ_I(β(a)) = β(a)
+  have h_xy_eq_I : coord_mul Γ x (coord_inv Γ x) = Γ.I :=
+    coord_mul_right_inv Γ hx hx_on hx_ne_O hx_ne_U
+  rw [h_xy_eq_I]
+  set βa := (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E) with hβa_def
+  have hβa_atom : IsAtom βa := beta_atom Γ ha ha_on ha_ne_O ha_ne_U
+  have hβa_plane : βa ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := beta_plane Γ ha_on
+  have hβa_not_l : ¬ βa ≤ Γ.O ⊔ Γ.U := beta_not_l Γ ha ha_on ha_ne_O ha_ne_U
+  have h_RHS : dilation_ext Γ Γ.I βa = βa :=
+    dilation_ext_identity Γ hβa_atom hβa_plane hβa_not_l
+  rw [h_RHS]
+  -- LHS: σ_(coord_inv x)(σ_x(β(a))) = β(a)
+  -- Substantive content. The σ-composition law at the inverse-pair
+  -- configuration. Sorry'd as named candidate-crossing (see docstring).
+  sorry
 
 end Foam.FTPGExplore
