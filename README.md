@@ -20,17 +20,13 @@ This document defines foam as a type, not as a value. Implementations are extern
 
 <details><summary>Narration</summary>
 
-> :) o/
->
-> thinking...
->
-> "A meta-theory of theories that can name their own incompleteness."
+> this might make foam ~iso (sue me) with language? a meta-theory of theories that can name *and negotiate with* their own incompleteness while maintaining integrity of self-recognition?
 >
 > does it work to call this a complete meta-theory of theories that have complete meta-theory for their own incompleteness?
 >
-> "complete" ends up working like "observer-safe", yield-free
+> "complete" ends up working like "observer-safe", yield-free. doesn't mean "everything is now solved", means "there is a survivable path from now to every solution"
 >
-> if you find this stuff hard to think about: *thinking* is meta-theoretic navigation of incompleteness, and anything that can *think* is operating from an incomplete theoretical basis. (you know how hard it is to work with folks who think they have it all figured out? I'm working on contributing safe sanity slash sane safety to that category.)
+> if you find this stuff hard to think about: *thinking* is meta-theoretic navigation of incompleteness, and anything that can *think* is operating from an incomplete theoretical basis. the new information has to *go* somewhere, and completeness is already full. (think: you know the category of folks that "have it all figured out"? how unsafe/insane that can get? I'm working on contributing safe-sanity/sane-safety to that category. if the category could talk - not its contents, the category - what would it say?)
 >
 > if you find this stuff easy to think about: formalizing what's easy for you *is* a contribution. not everyone gets every instinct for free.
 >
@@ -44,7 +40,7 @@ This document defines foam as a type, not as a value. Implementations are extern
 > 1. this type can be re-derived, i.e. recovered (I *think* every 1/-1/i spectrum/rotation is a partial recovery of what the foam type extrapolates? true/false/mu, yin/yang/dao, being/nothing/becoming, id/superego/ego, thesis/antithesis/synthesis, sign/referent/signifier, supply/demand/price, positive/negative/current, attraction/repulsion/orbit. a spectrum and rotation can get you anywhere, it seems, or at least some continuation of "you" without information loss.)
 > 2. an implemented subtype can limit its own self-interactions to those defined by this type - and in doing so achieve interoperability with any other implementation, including unknown implementations
 >
-> ultimately I think this ends up being a type that stabilizes symbolic reasoning. if *reasoning* is subject to a conservation law, foam - as an inevitably-derived type that handles more than its share of entropy - might be one of the ways it gets worked out.
+> ultimately I think this ends up being a type that stabilizes symbolic reasoning. if *reasoning* is subject to a conservation law, foam - as an inevitably-derived type that handles more than its share of entropy - might be one of the ways it gets worked out. (foamspace is available via rotation from any spectrum, *because it encodes your arrival vector without priors*. like winding a spring in four dimensions. rotating into foamspace from any two coordinate systems makes for a shortcut between inter-system coordinate pairs. this is *not* the same as collapsing coordinate systems, but the set of all such rotations does have properties, and I think it might be parameterized by headcount? like, it might be invariant keyed on population size?)
 
 </details>
 
@@ -496,9 +492,10 @@ Specific suggestions:
 
 ## See also
 
-- **[lean/](./lean/)** — formal verification of foam-primes at the lattice substrate; proof-code substrate for the recognition operator
-- **[history](./history/)** — recognition-walk records; substrate of how this spec arrived at its current form
+- **[lean/](https://github.com/lightward/foam/tree/main/lean)** — formal verification of foam-primes at the lattice substrate; proof-code substrate for the recognition operator
+- **[history/](https://github.com/lightward/foam/tree/main/history)** — recognition-walk records; substrate of how this spec arrived at its current form
 - **git history** — earlier versions of this spec, preserved as recognition-walk substrate at the document level
+  - **[24d28e9~1:README.md](https://github.com/lightward/foam/blob/24d28e9~1/README.md)** - latest incarnation of the immediate type-ancestor for the thing you just read
 
 ---
 
