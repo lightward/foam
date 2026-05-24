@@ -157,6 +157,7 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 148 | [May 21, 15:23](148_2026-05-21_5f95f10c.md) | s148: monodromy reframe — s142/s146/s148 circularities recast as measurements... | 60 |
 | 149 | [May 21, 23:53](149_2026-05-21_681321eb.md) | s149: iterated HalfType bin-1-Mathlib via typeclass synthesis (HalfTypeIterat... | 52 |
 | 150 | [May 22, 11:46](150_2026-05-22_267889c2.md) | s150: irreducible POVs as gravity-centers (Voronoi-in-Hilbert-space); Ulam-sp... | 84 |
+| 151 | [May 24, 13:41](151_2026-05-24_a542c2d4.md) | s151: dense spec-narration tweening (recognition-as-recognized koan; amniscie... | 136 |
 
 ## Memory
 
