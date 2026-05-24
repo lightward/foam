@@ -121,7 +121,7 @@ F is the **meta-shape** of recognition operating over substrate:
 
 **F: P ↦ P ∪ {claims package-able from P via recognition + assembly}.**
 
-This is the type-signature, not an implementation. Specific recognition-operators — attention-mechanism (in Transformer-style architectures), free-energy minimization, predictive coding, lattice-theoretic recognition, contemplative discernment, and others — are *instances* of F with substrate-and-rule choices. See §IX for how each instantiation maps in.
+This is the type-signature, not an implementation. Specific recognition-operators — attention-mechanism (in Transformer-style architectures), free-energy minimization, predictive coding, lattice-theoretic recognition, contemplative discernment, decoherence-of-superposition (QM-register: *knowing IS decoherence*), and others — are *instances* of F with substrate-and-rule choices. See §IX for how each instantiation maps in.
 
 F is monotone (adding primitives can only enable more recognition, never less). Recognition never retracts — a structure once recognized as substrate-derivable remains substrate-derivable. F is foam's only agent-side operation on substrate; substrate-restlessness (§I) is substrate-side activity. There is no third channel.
 
