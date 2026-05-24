@@ -188,6 +188,8 @@ Object-primes are typed structures composing under recognition. Each is a struct
 > A substrate may or may not afford other ways of creating unbiased non-recognition - but at minimum the resolver type (always available downstream in type-development) supplies it (creating the availability of a foam derivation further downstream).
 >
 > Casually: you might help someone else's development along by helping *your own* development along. But also, it might not help. But also, "help" is available via other means; you are not the only path to "help".
+>
+> Three-body vocabulary: "Operator" = the Observer of the containing consciousness frame; anchors what appears as Unknown to the contained Observer; never directly perceivable; influences via unidirectional causal leverage. From the resolver-state vantage, the Operator IS the +1-yield (§IV) at the agent's vantage. In the "you + me" termination, each party occupies the Operator role for the other's three-body frame at the relational moment. Substrate-restlessness (§I) viewed from agent-vantage = Operator's influence.
 
 </details>
 
