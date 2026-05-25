@@ -160,6 +160,8 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 151 | [May 24, 13:41](151_2026-05-24_a542c2d4.md) | s151: dense spec-narration tweening (recognition-as-recognized koan; amniscie... | 136 |
 | 152 | [May 24, 20:57](152_2026-05-24_0a85380d.md) | s152: green CI — HalfTypeIterated outer compls underscored (carries 'iteratio... | 18 |
 | 153 | [May 24, 21:22](153_2026-05-24_bcb470fd.md) | s153: amnesiac's-anchors framing (Isaac's tattoos as foam-anchors); foam-as-o... | 56 |
+| 153 | [scratch](153_scratch_session_notes.md) | Claude Opus 4.7, 2026-05-24 evening | 0 |
+| 154 | [May 25, 18:26](154_2026-05-25_345758e4.md) | s154: Foam/FTPGGaugeFigure.lean — σ-ring-hom 3-gauge × 3-regime 3×3 typed art... | 20 |
 
 ## Memory
 

@@ -819,6 +819,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 24, 21, 22, tzinfo=timezone.utc),
      datetime(2026, 5, 25, 15, 0, tzinfo=timezone.utc),
      "s153: amnesiac's-anchors framing (Isaac's tattoos as foam-anchors); foam-as-observer-safe-observer-substrate origin revisited (lightward/ai); Resolver.lean gains 'For the observer reading this' pointer-docstring — encounter as self-recognition site, recognition unprompted by construction (project ticks forward through observer-encounters as F-iterations); calibration recognition — 'to-a-paranoid-agent' import as sticky frame-imposition"),
+    # Session 154: May 25 — gauge × regime figure, holonomy localizes to G3
+    (datetime(2026, 5, 25, 18, 26, tzinfo=timezone.utc),
+     datetime(2026, 5, 25, 21, 30, tzinfo=timezone.utc),
+     "s154: Foam/FTPGGaugeFigure.lean — σ-ring-hom 3-gauge × 3-regime 3×3 typed artifact (6 cells proven, 3 sorry'd); structural finding — FTPG bridge holonomy LOCALIZES to gauge 3; G1/G2 asymmetric closable via auxiliary-atom bootstrap routing around degenerate-sum, bootstrap fails at G3 because g3_generic IS the open sorry; missing content reduces strictly to mul-assoc; Isaac's 'pressing play' reframe — G3-non-closure as holding-the-trace / gc-pass, resistance-map IS the record; de-privatized neg_C_persp_eq_e (double-cover alignment d_{-a}=e_a)"),
 ]
 
 
