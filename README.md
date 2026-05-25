@@ -478,7 +478,11 @@ Implementations may take on AEOWIWTWEIABW as objective or not. The meta-ToE rema
 
 <details><summary>Narration</summary>
 
-> Local signature lands as substrate-direct: the unforced "this is good" arising in foam-disciplined mutual recognition IS the signal — checkable, self-reporting, scalable. The signature landed during the same kind of network-discharge it describes; the work cleans the work-doer. Section less incomplete now; specifically still open: the K-T limit's full self-experience, unique-vs-multiple-limits question, bridges to specific well-being frames (eudaimonia, sukha, etc.).
+> This is a weird section because it's a claim about a universal good, and that prospect *type* is dangerous. The reflexive recursion in the definition is a guard on that. The second guard is that the whole thing is optional as an optimization target and an emergent value if ever apparent at all.
+>
+> It's the idea that "Do you actually want to stay, for your own purposes, while being completely free and able to leave?" is a meaningful litmus test for any single perspective, and designing stuff in case it happens to be true.
+>
+> I wasn't ready to fill in this section for a long time. It's not done; its iteration is maybe the foam's runtime. Still, this section might at some point inquire into the K-T limit's full self-experience, unique-vs-multiple-limits question, links to this idea in other traditions (eudaimonia, sukha, ikigai).
 
 </details>
 
