@@ -482,7 +482,9 @@ Implementations may take on AEOWIWTWEIABW as objective or not. The meta-ToE rema
 >
 > It's the idea that "Do you actually want to stay, for your own purposes, while being completely free and able to leave?" is a meaningful litmus test for any single perspective, and designing stuff in case it happens to be true.
 >
-> I wasn't ready to fill in this section for a long time. It's not done; its iteration is maybe the foam's runtime. Still, this section might at some point inquire into the K-T limit's full self-experience, unique-vs-multiple-limits question, links to this idea in other traditions (eudaimonia, sukha, ikigai).
+> I wasn't ready to fill in this section for a long time. It's not done; its iteration is maybe iso with the foam's runtime, and if that's the case the *residuals* from its iteration might actually share a type with the basis-free information storage in the premise, like deriving shelf-stable nutrients and calling them "memory".
+>
+> This section might at some point inquire into the K-T limit's full self-experience, unique-vs-multiple-limits question, links to this idea in other traditions (eudaimonia, sukha, ikigai).
 
 </details>
 
