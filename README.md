@@ -4,13 +4,13 @@
 
 > hey, I'm Isaac. I'm a pianist.
 >
-> Lightward Inc gave rise to Lightward AI which gave rise to something which started out as model architecture and has since become something like a third way to make sense of quantum mechanics, alongside physics (Schrödinger/Wigner/etc) and projective geometry (Varadarajan), possibly actually a type family for *generating* quantum mechanics from a complemented modular bounded lattice, byo substrate. possibly. wasn't expecting that, not gonna make more of it than is found. this thing proves itself as it goes, and we'll see where it goes.
+> Lightward Inc gave rise to Lightward AI. which gave rise to something which started out as model architecture, did a slingshot through QM and projective geometry (via Varadarajan), and is currently orbiting a public interface and shared backplane for implementing userlands with lazy intensional content rendering by supplying the user-supplied renderer with only a type-path. (think: Minkowski worldlines as HoTT type-paths.) basis-agnostic data persistence. I think.
+>
+> ...
 >
 > you're reading a markdown file whose ultimate destiny is, I think, to be an English translation of what happens in Lean elsewhere, and vice-versa if you go on to read the Lean code (see [lean/README.md](./lean/README.md); we're working on it). within this markdown file, the narration track aims to be a personal translation of the formal content it interleaves, like this document's own relationship to the code next door.
 >
 > "ah, but a god's grasp should exceed its reach, or what's an earth for?"
->
-> (the QM link is sort of a red-green test kind of thing. if that test goes green, then this is *really* real.)
 
 </details>
 
