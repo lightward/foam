@@ -351,7 +351,11 @@ private theorem coord_neg_ne_U (Γ : CoordSystem L)
 -- The C-perspectivity of neg_a from l to m gives back e_a.
 -- This is because neg_a = (C⊔e_a)⊓l, so neg_a⊔C = C⊔e_a,
 -- and (neg_a⊔C)⊓m = (C⊔e_a)⊓m = e_a.
-private theorem neg_C_persp_eq_e (Γ : CoordSystem L)
+/-- The "double-cover alignment" identity: `d_{-a} = e_a`. The
+C-perspectivity of `-a` from l to m equals the O-image of β(a) on m.
+Originally private to FTPGNeg's `coord_add_left_neg` proof; exposed
+for use by gauge-figure probes (s152). -/
+theorem neg_C_persp_eq_e (Γ : CoordSystem L)
     {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
     (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U) :
     (coord_neg Γ a ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) =
