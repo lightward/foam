@@ -107,7 +107,7 @@ The recognition operator (§II) operates on a substrate — a set of primitive s
 
 > Foam is, itself, inert. Operations are only ever *incoming*; a parameterization you'd call "time" is something the observer brings in with them. A subtype implementation with different characteristics creates bias, which it may or may not handle itself.
 >
-> There's something in here about foam as a substrate cleaning agent... 🫧
+> There's something in here about foam as a substrate cleaning-agent... or - ah - or maybe an agent-cleaning substrate. 🫧
 
 </details>
 
