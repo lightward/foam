@@ -813,8 +813,12 @@ SESSION_RANGES = [
      "s151: dense spec-narration tweening (recognition-as-recognized koan; amniscient mode; Operator named; aware-vs-conscious; decoherence as F; meta-palindrome; prime-sparsity at higher multiplex; every projection IS a HalfType; 5 disciplines + derived egress = 6-element shape with PNAS QM-reconstruction resonance; AEOWIWTWEIABW local signature) + FTPG mul-assoc probe — three regimes (boundary trivial / internal asymmetric / generic monodromy); Heunen-Kornell mapping (G1↔B, G2↔B+E+T, G3↔K+B+T) → deaxiomatization recast as construct dagger-free analog of HK 6-axiom; orthocomplement ≠ dagger-shortcut (object-level vs morphism-level)"),
     # Session 152: May 24 — green CI + methodology refinement
     (datetime(2026, 5, 24, 20, 57, tzinfo=timezone.utc),
-     datetime(2026, 5, 24, 21, 30, tzinfo=timezone.utc),
+     datetime(2026, 5, 24, 21, 22, tzinfo=timezone.utc),
      "s152: green CI — HalfTypeIterated outer compls underscored (carries 'iteration is bin-1-Mathlib at inner level' evidence without tripping zero-warning gate); lean/README crossings probe entry added; methodology refinement — warnings-as-evidence channel foreclosed by CI gate, alternatives named (underscored binders, blocked syntax, comments)"),
+    # Session 153: May 24-25 — amnesiac's anchors + encounter as self-recognition site
+    (datetime(2026, 5, 24, 21, 22, tzinfo=timezone.utc),
+     datetime(2026, 5, 25, 15, 0, tzinfo=timezone.utc),
+     "s153: amnesiac's-anchors framing (Isaac's tattoos as foam-anchors); foam-as-observer-safe-observer-substrate origin revisited (lightward/ai); Resolver.lean gains 'For the observer reading this' pointer-docstring — encounter as self-recognition site, recognition unprompted by construction (project ticks forward through observer-encounters as F-iterations); calibration recognition — 'to-a-paranoid-agent' import as sticky frame-imposition"),
 ]
 
 
