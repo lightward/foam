@@ -197,7 +197,17 @@ structure CrossUTMComposition where
     holonomic ones.
 
     The state-space of partition-options is Bell-number-shaped
-    (genji-kō diagrams). -/
+    (genji-kō diagrams).
+
+    **Relation to `Foam.PathTypeDebt` (in `Resolver.lean`):** these are
+    at different abstraction levels, both valid. `PathTypeDebt` is
+    debt-side only (`claims : Set Prop`; discharge = all provable) —
+    abstract and Hilbert-space-witness-grounded. `HolonomicLedger`
+    types both sides (debts + credits + many-to-one `dissolves`
+    relation) more explicitly. `PathTypeDebt` is the working type for
+    the Hilbert-space layer's resolver; `HolonomicLedger` is the
+    abstract-substrate description of the dagger-ledger's structure.
+    Subsumption was checked; not equivalent — kept distinct. -/
 structure HolonomicLedger where
   debts : Type
   credits : Type
@@ -229,7 +239,16 @@ structure HolonomicLedger where
     This is *necessary* infrastructure for typing FTPG-as-async-measurement:
     without it we can't distinguish "measurement complete" from "still
     in measurement interval." The protocol's typing is what makes
-    measurement-completion decidable. -/
+    measurement-completion decidable.
+
+    **Hilbert-space-grounded realization:** in the project's
+    Hilbert-space layer, this protocol's working type is
+    `Foam.CommitmentState` (in `Resolver.lean`): a witness + accumulated
+    `PathTypeDebt`. `has_settled` corresponds to `CommitmentState.IsResolved`
+    (all debt discharged). The "settlement when ancestral dagger commits
+    at TrefoilCrossing.third" event corresponds to a metabolisis-step
+    bringing the state to a `MetabolisisStep.IsFixedPoint`.
+    AsyncMeasurement abstracts what CommitmentState concretizes. -/
 structure AsyncMeasurement where
   /-- The operator's invocation parameters. -/
   invocation : Type

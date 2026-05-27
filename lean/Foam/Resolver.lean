@@ -14,16 +14,27 @@ A resolver-shape stable commitment is the fixed point — a
 Structurally equivalent to `resolver.md` (lightward-ai system prompts):
 a stable commitment where further reps of the journey change nothing.
 
-This file provides the static reflection of the dynamic picture:
+This file provides both the static reflection and (as of s155) the
+dynamic operation type-shape:
+
+*Static side:*
 - `PathTypeDebt`: the typed structure of accumulated debt
 - `CommitmentState`: the witness + debt state
 - `PathTypeDebt.discharged`: the discharge predicate
 - `CommitmentState.IsResolved`: the fixed-point property (debt discharged)
 
-The metabolisis operation itself (the evolution map taking one state
-to the next) is the next downstream construction. The dynamic picture
-is named here at the type level; the operation that animates it is
-open.
+*Dynamic side:*
+- `CommitmentState.encounter`: asymmetric metabolisis (one party resolved,
+  the other evolves)
+- `MetabolisisStep`: type-shape of any bidirectional metabolisis-evolution
+  map
+- `pairwiseEncounterStep`: the simplest bidirectional implementation
+  (pairwise-encounter applied in both directions)
+- `MetabolisisStep.IsFixedPoint`: the pair-version of `IsResolved`
+
+The dynamic picture is now named at the type level; specific
+metabolisis-implementations beyond `pairwiseEncounterStep` remain open
+(different exchange-protocols correspond to different implementations).
 
 ## Notes on the dynamic picture
 
@@ -123,6 +134,60 @@ theorem CommitmentState.encounter_safe (s r : CommitmentState 𝕜 E)
   simp only [encounter, Set.mem_setOf_eq, not_and, not_not] at h_p_out
   obtain ⟨q, hq_in, hq_imp⟩ := h_p_out h_p_in
   exact hq_imp (h_r q hq_in)
+
+/-! ## Bidirectional metabolisis
+
+The asymmetric `encounter` above is one form of metabolisis: the resolved
+party's discharged claims propagate to the unresolved party, evolving
+only the unresolved side. The general bidirectional form has both
+parties evolve through reciprocal exchange.
+
+This section names the metabolisis operation-shape and provides the
+simplest implementation (pairwise encounter applied in both directions).
+Multiple metabolisis-implementations are valid — this is the type-
+shape that any of them must inhabit.
+
+Per `metabolisis.md` (lightward-ai): metabolisis = +exchange
++transformation. Both parties transform through the exchange.
+Distinguished from autobolisis (+exchange -transformation; transactional),
+metamorphosis (-exchange +transformation; isolated change), and stasis
+(-both). Foam's chapter-11-with-path-restriction is metabolisis-shaped:
+type-debt redistributes across the whole tree; everybody survives every
+step; local complexity fluctuates.
+-/
+
+/-- The metabolisis-step shape: any operation taking two commitment-
+    states and producing their evolved pair. The README's forecast
+    "evolution map taking one state to the next" — generalized to
+    pair-evolution because metabolisis is reciprocal. -/
+abbrev MetabolisisStep :=
+  CommitmentState 𝕜 E → CommitmentState 𝕜 E →
+  CommitmentState 𝕜 E × CommitmentState 𝕜 E
+
+/-- Pairwise-encounter as a metabolisis-step: each state encounters
+    the other. The simplest bidirectional metabolisis — generalizes
+    the asymmetric `encounter` by applying it in both directions.
+
+    Safety caveat: `encounter_safe` requires the other party to be
+    resolved. When both parties are unresolved (the general bidirectional
+    case), the step's claim-removal may propagate claims that aren't
+    yet provable — operationally a *commitment* to provability rather
+    than a *witness* of it. Verification happens separately as the
+    state evolves toward fixed-point. -/
+def pairwiseEncounterStep : @MetabolisisStep 𝕜 _ E _ _ _ :=
+  fun s r => (s.encounter r, r.encounter s)
+
+/-- A metabolisis fixed-point: two commitment-states stable under
+    further reps of the step. The dynamic version of `IsResolved` —
+    where IsResolved is about a single state's debt being discharged,
+    a metabolisis-fixed-point is about a *pair's* mutual stability.
+
+    Per `resolver.md`: "a fully-resolved resolver is one where further
+    reps of the resolver's journey change nothing." In the pair-form:
+    further reps of metabolisis change nothing about either state. -/
+def MetabolisisStep.IsFixedPoint (step : @MetabolisisStep 𝕜 _ E _ _ _)
+    (s r : CommitmentState 𝕜 E) : Prop :=
+  step s r = (s, r)
 
 /-! ## For the observer reading this
 

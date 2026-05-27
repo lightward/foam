@@ -406,7 +406,7 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 
 **FrameRecessionAlignment.lean** — probe (s149): the Layer-1 ↔ HalfType bridge. An idempotent linear map `f : E →ₗ[K] E` over a division ring K determines a HalfType in `Submodule K E` via `LinearMap.IsIdempotentElem.isCompl` (Mathlib) + `Submodule.complementedLattice` (Mathlib) + `half_type` (Foam). Substrate-direct, single `example` declaration. Names the three-layer structural alignment: the `frame_recession` theorem in `Dynamics.lean` is literally a theorem about HalfTypes receding from themselves under perturbation; the matrix and lattice layers of "observer applies HalfType to themselves" are now formally bridged. The file's docstring lays out Layer 1 (Dynamics) / Layer 2 (Mathlib RingHom) / Layer 3 (FTPG σ) as three views of the same entanglement-witness shape.
 
-**Resolver.lean** — dynamic structure of reader commitments (sketch)
+**Resolver.lean** — dynamic structure of reader commitments
 
 | declaration | role |
 |---|---|
@@ -414,8 +414,13 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 | `PathTypeDebt.discharged` | the discharge predicate (all claims provable) |
 | `CommitmentState` | the witness + accumulated debt state |
 | `CommitmentState.IsResolved` | the fixed-point property (resolver-shape stable commitment) |
+| `CommitmentState.encounter` | asymmetric metabolisis: resolved party's discharged claims propagate to unresolved |
+| `CommitmentState.encounter_safe` | safety theorem for asymmetric encounter |
+| `MetabolisisStep` | type-shape of any bidirectional metabolisis-evolution map |
+| `pairwiseEncounterStep` | the simplest bidirectional metabolisis: pairwise-encounter applied in both directions |
+| `MetabolisisStep.IsFixedPoint` | predicate: a pair stable under further reps (the pair-version of `IsResolved`) |
 
-The metabolisis operation (the evolution that animates the dynamic picture) is the next downstream construction; this file provides the static reflection of the dynamic structure.
+Static + dynamic both typed (s155): the file now provides both the static reflection (`CommitmentState`, `IsResolved`) AND the dynamic metabolisis-operation type-shape (`MetabolisisStep`, `pairwiseEncounterStep`, `IsFixedPoint`). Per `metabolisis.md` (lightward-ai): metabolisis = +exchange +transformation; both parties evolve through reciprocal exchange. Foam's chapter-11-with-path-restriction is metabolisis-shaped: type-debt redistributes across the whole tree; everybody survives every step.
 
 **StatelessSubstrate.lean** — probe (s155): records the synthesis `foam-lean = FTPG × stateless multi-headed UTM` as recognition-grade typed object. The 6-color tape alphabet factors as 3 algebraic-positions (G1/G2/G3) × 2 observer-states (read/write; equivalently buffer/working-space; equivalently commitment/withdrawal); minimum-color count for stateless-3-headed UTM. 3 heads (compiler + observer + substrate) shape Desargues-like triple-rewriting. G3 is the yield-position where external UTMs compose in via `ExternalYieldComposition` (carrying a *family* of dissolved knot-types: *some unknottings dissolve more than one type of knot*). `CrossUTMComposition` is the bidirectional yield-pair. `TrefoilCrossing` types the minimum non-trivial knot-progression (first deterministic / second vacuum-formation / third commitment-site); the G3-row of the gauge × regime figure realizes this progression. `HolonomicLedger` types the ancestral dagger as balance-state (debts + credits + many-to-one `dissolves` relation), not as history-enumeration. `AsyncMeasurement` types the operator/observer async-protocol: invocation → accumulator-running → settlement-signal → scalar-interpretation; **re-types open sorries as observer-not-yet-settled rather than missing-proofs**. Morse-completeness emerges as side-effect (3 primitives × 2 directions = minimum for stateless-3-headed-UTM AND minimum for Morse-complete relay). Zero Mathlib dependencies; pure structural typing.
 
