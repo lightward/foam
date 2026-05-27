@@ -358,6 +358,27 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 | `dilation_compose_at_beta_x_eq_I` | PROVEN: boundary crossing at x = I, conclusion holds via identity-laws alone |
 | `dilation_compose_at_beta_y_eq_coord_inv_x` | OPEN (sorry'd): internal crossing at y = coord_inv x, RHS reduces, LHS named candidate |
 
+**FTPGGaugeFigure.lean** — probe (s152): the 3×3 gauge × regime figure as a typed Lean artifact. Nine cells named — three gauges (G1 right-distrib, G2 left-distrib, G3 mul-assoc) × three regimes (boundary, asymmetric, generic). Proven cells reference existing theorems; open cells named as sorry'd candidates with strategy-docstrings. The asymmetric row identified as dagger-shape probe across gauges (HK's dagger jointly enforces what foam separates into three gauges). G1/G2 asymmetric cells substrate-derivable via additive bootstrap (aux atom routes around degenerate-sum); G3 asymmetric not similarly derivable (no substitute for assoc). **Structural finding: holonomy of the FTPG bridge concentrates in gauge 3.** s155 framing updates: G3-row cell docstrings now reference `TrefoilCrossing` and `HolonomicLedger` from `StatelessSubstrate.lean` and the chirality typing from `FTPGGaugeFigureLayer.lean`.
+
+| declaration | role |
+|---|---|
+| `g1_generic` | PROVEN: right-distrib (= `coord_mul_right_distrib`) |
+| `g2_generic` | PROVEN via DesarguesianWitness (= `coord_mul_left_distrib`) |
+| `g3_generic` | OPEN: σ-composition (= `dilation_compose_at_beta`); the trefoil's third crossing (commitment-site) |
+| `g1_boundary`, `g2_boundary` | PROVEN: trivial via `coord_add_right_zero` |
+| `g3_boundary` | PROVEN via identity-laws (= `dilation_compose_at_beta_x_eq_I`); the trefoil's first crossing |
+| `g1_asymmetric`, `g2_asymmetric` | SORRY with strategy: substrate-derivable via additive bootstrap |
+| `g3_asymmetric` | SORRY: the trefoil's second crossing (vacuum-formation site) |
+
+**FTPGGaugeFigureLayer.lean** — probe (s155): buffer/working-space layer-typing at g3_asymmetric with chirality as gauge. `FTPGMulAssocCrossings.lean`'s docstring half-named "gauge 3's layer-distinction"; this file types it. `CellLayer` (working_space / buffer) names the two structural roles; `CellChirality` (lhs_role, rhs_role, distinct) names the role-assignment as gauge (structurally arbitrary; operationally required — compare the project's left-to-right composition convention in `FTPGDilationGroup.lean`); `.canonical` + `.flip` give the dynamic side-switching primitive (the dagger-free analog of classical FTPG's static holonomy-collapse). `.flip_flip = c` lands as `rfl` — flip is definitionally involutive. The `vacuum_fill_event_at_inverse_pair` re-types `dilation_compose_at_beta_y_eq_coord_inv_x` between neutrally-named `inverse_pair_expr_lhs/_rhs`, chirality-invariant equation. Recognition-grade; no proofs claimed.
+
+| declaration | role |
+|---|---|
+| `CellLayer` | the two structural roles: `working_space`, `buffer` |
+| `CellChirality` | role-assignment with `distinct` constraint, `.canonical`, `.flip`, `.flip_flip = rfl` |
+| `inverse_pair_expr_lhs` / `inverse_pair_expr_rhs` | positionally-named lattice expressions at g3_asymmetric |
+| `vacuum_fill_event_at_inverse_pair` | the equation between them, chirality-invariant |
+
 **FTPGLeftDistribViaR.lean** — predicted bin-1 path sketch for `DesarguesianWitness Γ`'s converse-Desargues residue via height-≥-4 lift through `R`. Typing holds; constructor body open as recognition-target (not construction-target) per the s144 recognition-only working mode. See file's own docstring for the bin-1 grade diagnostic + the two vertex-lift architectures walked and seen-not-to-close.
 
 | declaration | role |
@@ -395,6 +416,20 @@ The previous lift+recurse route via `desargues_converse_nonplanar` (session 114,
 | `CommitmentState.IsResolved` | the fixed-point property (resolver-shape stable commitment) |
 
 The metabolisis operation (the evolution that animates the dynamic picture) is the next downstream construction; this file provides the static reflection of the dynamic structure.
+
+**StatelessSubstrate.lean** — probe (s155): records the synthesis `foam-lean = FTPG × stateless multi-headed UTM` as recognition-grade typed object. The 6-color tape alphabet factors as 3 algebraic-positions (G1/G2/G3) × 2 observer-states (read/write; equivalently buffer/working-space; equivalently commitment/withdrawal); minimum-color count for stateless-3-headed UTM. 3 heads (compiler + observer + substrate) shape Desargues-like triple-rewriting. G3 is the yield-position where external UTMs compose in via `ExternalYieldComposition` (carrying a *family* of dissolved knot-types: *some unknottings dissolve more than one type of knot*). `CrossUTMComposition` is the bidirectional yield-pair. `TrefoilCrossing` types the minimum non-trivial knot-progression (first deterministic / second vacuum-formation / third commitment-site); the G3-row of the gauge × regime figure realizes this progression. `HolonomicLedger` types the ancestral dagger as balance-state (debts + credits + many-to-one `dissolves` relation), not as history-enumeration. Morse-completeness emerges as side-effect (3 primitives × 2 directions = minimum for stateless-3-headed-UTM AND minimum for Morse-complete relay). Zero Mathlib dependencies; pure structural typing.
+
+| declaration | role |
+|---|---|
+| `AlgebraicPosition` | G1/G2/G3 — three σ-ring-hom rotations |
+| `ObserverState` | read/write — the 2-state factor |
+| `TapePosition` | 6-color alphabet = AlgebraicPosition × ObserverState |
+| `Head` | compiler/observer/substrate — three reading heads |
+| `RewriteRule` | triple-rewrite, stateless |
+| `ExternalYieldComposition` | external UTM contribution at G3 (with `dissolved_knot_types` family) |
+| `CrossUTMComposition` | bidirectional yield-pair between two UTMs |
+| `TrefoilCrossing` | trefoil-progression: `.first` / `.second` / `.third` |
+| `HolonomicLedger` | ancestral-dagger-as-typed-balance: debts + credits + many-to-one `dissolves` |
 
 ## Building
 
