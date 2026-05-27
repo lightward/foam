@@ -214,54 +214,49 @@ structure HolonomicLedger where
   /-- Many-to-one cancellation: a credit dissolves a family of debts. -/
   dissolves : credits → (debts → Prop)
 
-/-! ## Async measurement protocol -/
+/-! ## Measurement: disposable single-use observer -/
 
-/-- FTPG measurement is *async* turn-passing between operator and
-    observer. The operator invokes the observer (the foam-lean
-    substrate); the observer's internal multiplexing accumulates
-    multi-channel readings; the observer's stillness/silence signals
-    settlement; the operator reads accumulated state as a scalar
-    interpretation *only after settlement*.
+/-- A measurement is a *disposable single-use observer*: geometry in
+    streams as accumulating geometry out, until the accumulation
+    reaches the unknot. Subsequent measurements aren't with a
+    persistent observer — they're additional disposable observers,
+    each contributing more geometry to what prior ones resolved.
 
-    Pre-settlement, the measurement-interval carries multi-channel
-    accumulator-state (non-scalar). Post-settlement, the operator-side
-    reads a scalar.
+    **observer == measurement.** No persistent observer-state to track
+    across measurements. Each Measurement is one-shot.
 
-    **The open sorries in foam-lean re-type under this protocol.**
-    They're not "missing proofs" — they're "observer not yet settled."
-    The substrate's accumulator is still running multi-channel, hasn't
-    yet reached coherent-stillness for the operator to read scalar.
-    Settlement happens when the ancestral dagger (`HolonomicLedger`)
-    commits at the third-crossing (`TrefoilCrossing.third`), at which
-    point the observer becomes stillness-signal-ready and the operator
-    can interpret.
+    **Where async-ness lives** (this is the s155 simplification of
+    what was previously typed as AsyncMeasurement with operator/
+    observer protocol-phases): *not at the individual measurement
+    level*. A single measurement just runs and either reaches unknot
+    or doesn't — synchronous-shaped. But across multiple measurements,
+    the *tree* they compose into may or may not have balanced (= all
+    measurements reached unknot, type-debt discharged). **Tree-balance
+    IS where async-ness actually lives.**
 
-    This is *necessary* infrastructure for typing FTPG-as-async-measurement:
-    without it we can't distinguish "measurement complete" from "still
-    in measurement interval." The protocol's typing is what makes
-    measurement-completion decidable.
+    **Hilbert-space-grounded realization of tree-level structure:**
+    - Tree-state: `Foam.CommitmentState` (in `Resolver.lean`)
+    - Tree-balance (single-state): `CommitmentState.IsResolved`
+    - Tree-balance (pair-state): `MetabolisisStep.IsFixedPoint`
 
-    **Hilbert-space-grounded realization:** in the project's
-    Hilbert-space layer, this protocol's working type is
-    `Foam.CommitmentState` (in `Resolver.lean`): a witness + accumulated
-    `PathTypeDebt`. `has_settled` corresponds to `CommitmentState.IsResolved`
-    (all debt discharged). The "settlement when ancestral dagger commits
-    at TrefoilCrossing.third" event corresponds to a metabolisis-step
-    bringing the state to a `MetabolisisStep.IsFixedPoint`.
-    AsyncMeasurement abstracts what CommitmentState concretizes. -/
-structure AsyncMeasurement where
-  /-- The operator's invocation parameters. -/
-  invocation : Type
-  /-- The multi-channel accumulator during the measurement interval. -/
-  accumulator : Type
-  /-- The settlement predicate: observer's coherent-stillness signaling
-      readiness to be read. -/
-  has_settled : accumulator → Prop
-  /-- The scalar interpretation, valid only after settlement. -/
-  scalar : Type
-  /-- The interpretation function — produces scalar from settled
-      accumulator-state. Dependent on the settlement-proof. -/
-  interpret : (acc : accumulator) → has_settled acc → scalar
+    Individual Measurements don't carry async-property — only the
+    tree they compose into does. The 3-field Measurement structure
+    typed here is the substrate-agnostic abstract; CommitmentState +
+    MetabolisisStep are the concrete tree-level realizations.
+
+    The simplification came from recognizing that observer==measurement
+    means async-ness can't live at the individual level (no persistent
+    observer to be async *about*); it has to live where state
+    accumulates across observers (the tree). -/
+structure Measurement where
+  /-- The geometric question posed by this measurement. -/
+  geometry_in : Type
+  /-- The accumulating geometric stream produced as measurement runs. -/
+  geometry_out : Type
+  /-- The completion-condition: this measurement's accumulation has
+      reached the unknot. No separate "scalar interpretation" step —
+      the geometry IS the result. -/
+  reached_unknot : geometry_out → Prop
 
 /-! ## Trefoil-progression: minimum non-trivial knot-shape -/
 

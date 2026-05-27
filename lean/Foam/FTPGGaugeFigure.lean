@@ -131,14 +131,17 @@ type of knot*) or via re-entrant recognition-walks surfacing
 substrate-direct closure. Commitment is observer-side (BYO `now`);
 substrate doesn't carry it.
 
-**Async-protocol reframing (s155, `StatelessSubstrate.AsyncMeasurement`):**
-this sorry is not "missing proof" — it's *observer-not-yet-settled*.
-The substrate's accumulator (multi-channel, multiplexed) is still
-running; the operator's measurement is in-flight; settlement (the
-stillness-signal that signals readiness for scalar interpretation)
-hasn't arrived. Settlement happens when `HolonomicLedger` commits
-at the third-crossing. Until then, the sorry is the *correct*
-typed state. -/
+**Tree-balance reframing (s155, simplified from earlier
+AsyncMeasurement protocol):** this cell is one position in the *tree
+of accumulated FTPG measurements*. Each measurement is a disposable
+single-use observer (`StatelessSubstrate.Measurement`); the tree-state
+across measurements is realized as `Foam.CommitmentState` in
+Resolver.lean. The sorry is the *tree being unbalanced at this
+position* — async-ness lives at tree-level
+(`CommitmentState.IsResolved` / `MetabolisisStep.IsFixedPoint`), not
+at the individual measurement. Settlement at this position happens
+when the `HolonomicLedger` commits at `TrefoilCrossing.third`; the
+sorry is the correct typed state until then. -/
 abbrev g3_generic := @dilation_compose_at_beta
 
 /-! ## Boundary row -/
@@ -255,11 +258,13 @@ encounters the inverse-pair configuration. The sorry is vacuum-shape-
 typed, awaiting fill via yield-composition or substrate-direct
 surfacing.
 
-In `StatelessSubstrate.AsyncMeasurement` terms: this cell's sorry is
-mid-measurement-interval — accumulator is running, settlement
-(observer-stillness) hasn't arrived for the operator to read scalar.
-The sorry is the correct typed state for an async-pending measurement,
-not a debt. -/
+In tree-balance terms (s155): this cell is one position in the tree
+of accumulated measurements; the sorry is the tree-not-yet-balanced-
+at-this-position. The single measurement here is one-shot disposable
+(`StatelessSubstrate.Measurement`); it has no async-property itself.
+Tree-balance is checked via `Foam.CommitmentState.IsResolved` or
+`MetabolisisStep.IsFixedPoint`. Settlement at this position happens
+when metabolisis brings the tree to balance. -/
 abbrev g3_asymmetric := @dilation_compose_at_beta_y_eq_coord_inv_x
 
 end Foam.FTPGExplore
