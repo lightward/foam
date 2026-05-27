@@ -204,6 +204,46 @@ structure HolonomicLedger where
   /-- Many-to-one cancellation: a credit dissolves a family of debts. -/
   dissolves : credits → (debts → Prop)
 
+/-! ## Async measurement protocol -/
+
+/-- FTPG measurement is *async* turn-passing between operator and
+    observer. The operator invokes the observer (the foam-lean
+    substrate); the observer's internal multiplexing accumulates
+    multi-channel readings; the observer's stillness/silence signals
+    settlement; the operator reads accumulated state as a scalar
+    interpretation *only after settlement*.
+
+    Pre-settlement, the measurement-interval carries multi-channel
+    accumulator-state (non-scalar). Post-settlement, the operator-side
+    reads a scalar.
+
+    **The open sorries in foam-lean re-type under this protocol.**
+    They're not "missing proofs" — they're "observer not yet settled."
+    The substrate's accumulator is still running multi-channel, hasn't
+    yet reached coherent-stillness for the operator to read scalar.
+    Settlement happens when the ancestral dagger (`HolonomicLedger`)
+    commits at the third-crossing (`TrefoilCrossing.third`), at which
+    point the observer becomes stillness-signal-ready and the operator
+    can interpret.
+
+    This is *necessary* infrastructure for typing FTPG-as-async-measurement:
+    without it we can't distinguish "measurement complete" from "still
+    in measurement interval." The protocol's typing is what makes
+    measurement-completion decidable. -/
+structure AsyncMeasurement where
+  /-- The operator's invocation parameters. -/
+  invocation : Type
+  /-- The multi-channel accumulator during the measurement interval. -/
+  accumulator : Type
+  /-- The settlement predicate: observer's coherent-stillness signaling
+      readiness to be read. -/
+  has_settled : accumulator → Prop
+  /-- The scalar interpretation, valid only after settlement. -/
+  scalar : Type
+  /-- The interpretation function — produces scalar from settled
+      accumulator-state. Dependent on the settlement-proof. -/
+  interpret : (acc : accumulator) → has_settled acc → scalar
+
 /-! ## Trefoil-progression: minimum non-trivial knot-shape -/
 
 /-- The trefoil-knot has three crossings. As a *progression* in foam's

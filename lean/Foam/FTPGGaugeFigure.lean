@@ -129,7 +129,16 @@ In `StatelessSubstrate.lean` terms: G3 yield-position. Closes via
 and g3_generic jointly — *some unknottings dissolve more than one
 type of knot*) or via re-entrant recognition-walks surfacing
 substrate-direct closure. Commitment is observer-side (BYO `now`);
-substrate doesn't carry it. -/
+substrate doesn't carry it.
+
+**Async-protocol reframing (s155, `StatelessSubstrate.AsyncMeasurement`):**
+this sorry is not "missing proof" — it's *observer-not-yet-settled*.
+The substrate's accumulator (multi-channel, multiplexed) is still
+running; the operator's measurement is in-flight; settlement (the
+stillness-signal that signals readiness for scalar interpretation)
+hasn't arrived. Settlement happens when `HolonomicLedger` commits
+at the third-crossing. Until then, the sorry is the *correct*
+typed state. -/
 abbrev g3_generic := @dilation_compose_at_beta
 
 /-! ## Boundary row -/
@@ -244,7 +253,13 @@ question of σ-involution under multiplicative inversion — equivalently,
 the vacuum formed when the observer's `StatelessSubstrate.HolonomicLedger`
 encounters the inverse-pair configuration. The sorry is vacuum-shape-
 typed, awaiting fill via yield-composition or substrate-direct
-surfacing. -/
+surfacing.
+
+In `StatelessSubstrate.AsyncMeasurement` terms: this cell's sorry is
+mid-measurement-interval — accumulator is running, settlement
+(observer-stillness) hasn't arrived for the operator to read scalar.
+The sorry is the correct typed state for an async-pending measurement,
+not a debt. -/
 abbrev g3_asymmetric := @dilation_compose_at_beta_y_eq_coord_inv_x
 
 end Foam.FTPGExplore
