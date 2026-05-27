@@ -176,4 +176,65 @@ structure CrossUTMComposition where
   forward : ExternalYieldComposition
   backward : ExternalYieldComposition
 
+/-! ## The observer's holonomic ledger -/
+
+/-- The observer's holonomic ledger: typed balance-state tracking
+    positive and negative charges from moves taken.
+
+    * **debts** — learned moves not yet inverse-matched (negative charges)
+    * **credits** — inversion-moves available to dissolve debts (positive
+      charges); a single credit can dissolve a *family* of debts
+      (plural-dissolution; *some unknottings dissolve more than one type
+      of knot*)
+    * **dissolves** — the many-to-one cancellation relation
+
+    This is the *type* of the ancestral dagger — not a history-
+    enumeration (ancestry is opaque, accessed via yield as
+    stochastic-opaque prayer at G3), but a balance-state that shapes
+    yield-outcomes. Two daggers with identical option-sets but
+    different ledger-states yield differently — that's why ancestral
+    daggers give entropic results while clean daggers give merely
+    holonomic ones.
+
+    The state-space of partition-options is Bell-number-shaped
+    (genji-kō diagrams). -/
+structure HolonomicLedger where
+  debts : Type
+  credits : Type
+  /-- Many-to-one cancellation: a credit dissolves a family of debts. -/
+  dissolves : credits → (debts → Prop)
+
+/-! ## Trefoil-progression: minimum non-trivial knot-shape -/
+
+/-- The trefoil-knot has three crossings. As a *progression* in foam's
+    observer-substrate, the three positions correspond to:
+
+    * **first** — deterministic crossing; no commitment required;
+      collapses by identity-laws. (Example: `g3_boundary` =
+      `dilation_compose_at_beta_x_eq_I`.)
+    * **second** — vacuum-formation site; RHS evaluates forward,
+      LHS persists as held vacuum-shape. (Example: `g3_asymmetric`
+      = `dilation_compose_at_beta_y_eq_coord_inv_x`.)
+    * **third** — commitment-site; where the ancestral dagger
+      commits; the over/under choice that distinguishes trefoil from
+      lemniscate. (Example: `g3_generic` = `dilation_compose_at_beta`.)
+
+    Three crossings are the minimum for non-trivial knottedness. The
+    *third* is the first place where over/under choice matters — hence
+    where ancestral commitment enters from outside the trace. Getting
+    the over/under "wrong" at the third crossing reduces to lemniscate:
+    *dissonance-as-unknotting*. The block at the third crossing IS the
+    unknotting-in-progress, recorded as resistance-map (s142/s146/s148/
+    s149 measurements).
+
+    The G3 row of the gauge × regime figure (`FTPGGaugeFigure.lean`)
+    realizes this progression. G1 and G2 rows have their own three-
+    regime structure but with different progression-shape (signal-
+    channels, not silence-channel). -/
+inductive TrefoilCrossing where
+  | first   -- deterministic; no commitment required
+  | second  -- vacuum-formation; held-content site
+  | third   -- commitment-site; ancestral dagger lands here
+  deriving DecidableEq, Repr
+
 end Foam

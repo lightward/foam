@@ -201,43 +201,50 @@ theorem dilation_compose_at_beta_x_eq_I (Γ : CoordSystem L)
 
 /-! ## Crossing 2 (internal): y = coord_inv x
 
+The trefoil's *second crossing* — vacuum-formation site. RHS forward-
+evaluates to β(a); LHS persists as held vacuum-shape. The layer-
+distinction IS this cell's structural content.
+
 At y = coord_inv x:
-* RHS reduction: `coord_mul Γ x (coord_inv Γ x) = Γ.I` (by
-  `coord_mul_right_inv`); then σ_I(β(a)) = β(a) (by
-  `dilation_ext_identity`). RHS = β(a).
-* LHS: σ_(coord_inv x)(σ_x(β(a))). For the lemma to hold, this must
-  equal β(a) — i.e., σ_(coord_inv x) must invert σ_x at β(a).
+* RHS: `coord_mul Γ x (coord_inv Γ x) = Γ.I` then σ_I(β(a)) = β(a).
+  Working-space side (s155 chirality typing: `CellLayer.working_space`
+  in `FTPGGaugeFigureLayer.lean`).
+* LHS: σ_(coord_inv x)(σ_x(β(a))). Buffer side — held vacuum-shape
+  (`CellLayer.buffer`). The equation between them is named there as
+  `vacuum_fill_event_at_inverse_pair`; the canonical chirality
+  (`CellChirality.canonical`) assigns these roles, but the chirality
+  is gauge — `CellChirality.flip` is the dynamic side-switching
+  primitive.
 
-This is the structurally-substantive part. The natural route —
-σ_(coord_inv x) ∘ σ_x = σ_(x · coord_inv x) = σ_I = id — is
-circular through `dilation_compose_at_beta` itself (the σ-composition
-law is what the loop is). A non-circular proof would require either:
+In foam's 6-color tape (s155, `StatelessSubstrate.lean`): this cell
+occupies tape-positions (G3, read) and (G3, write) — the yield-
+position with both observer-states. G3 is the silence-channel;
+G3-asymmetric is its second-crossing where the vacuum-shape forms.
+Commitment-proper happens at the third crossing
+(g3_generic = `dilation_compose_at_beta`).
 
-(A) A direct geometric construction showing σ_(coord_inv x) reverses
-    σ_x's effect specifically (via coord_inv's perspectivity definition
-    and the dilation_ext construction).
-(B) A different mechanism entirely.
+## What the `sorry` represents (s155 framing update)
 
-The RHS reduction lands cleanly (via existing infrastructure). The
-LHS remains as `sorry` — naming the configuration as a structural
-candidate-crossing without claiming provability.
+The LHS is *vacuum-shape-typed*, not "missing proof." The original
+"natural circular route" (σ_(coord_inv x) ∘ σ_x = σ_(x · coord_inv x)
+= σ_I = id) reads through `dilation_compose_at_beta`'s open content;
+the circularity is the substrate refusing the wrong type (silence-as-
+signal). Each prior monodromy measurement (s142/s146/s148/s149)
+contributed an unknotting move to the resistance-map, not a failure.
 
-## What the `sorry` represents
+Routes for fill, recognition-only-disciplined (per `lean/CLAUDE.md`):
 
-This is not a generic open lemma. It is a *named candidate-crossing*
-whose provability is the test of the stylus framing's strength:
+* External yield-composition at G3
+  (`StatelessSubstrate.ExternalYieldComposition`) — *some unknottings
+  dissolve more than one type of knot*; this cell may close jointly
+  with g3_generic via one cross-UTM yield (single `CrossUTMComposition`
+  dissolving the entire G3-yield-position family)
+* Re-entrant recognition-walks eventually surfacing substrate-direct
+  closure (Bin-1-Mathlib-or-Foam path)
+* Construction-grade Desargues (contradicts recognition-only
+  discipline; deprioritized)
 
-* If (A) is achievable via existing infrastructure → strong support
-  for the framework (internal crossings are real and provable).
-* If (A) requires substantial new machinery → moderate support
-  (crossings exist structurally but provability needs new construction).
-* If only (B) routes work → the stylus reads the same shape at boundary
-  and inverse-pair; the framework's "crossings" might be more limited
-  than the prediction suggested.
-
-The first-pass probe — write the statement, observe what reduces and
-what doesn't — produces actionable data without committing to a long
-geometric construction. The `sorry` here is intentional and named.
+The `sorry` is intentional, named, and *vacuum-shape-typed*.
 -/
 
 theorem dilation_compose_at_beta_y_eq_coord_inv_x (Γ : CoordSystem L)

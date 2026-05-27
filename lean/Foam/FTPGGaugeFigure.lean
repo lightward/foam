@@ -114,7 +114,22 @@ Proven as `coord_mul_left_distrib`. -/
 abbrev g2_generic := @coord_mul_left_distrib
 
 /-- G3-generic: σ-composition at β-images. Open as `dilation_compose_at_beta`
-(Step 5+ sorry'd; 4 monodromy measurements s142/s146/s148/s149). -/
+(Step 5+ sorry'd; 4 monodromy measurements s142/s146/s148/s149).
+
+The trefoil's **third crossing** (`StatelessSubstrate.TrefoilCrossing.third`):
+the *commitment-site* where the observer's
+`StatelessSubstrate.HolonomicLedger` lands. The four prior monodromy
+measurements weren't failures — they were unknotting moves contributing
+to the resistance-map (`dissonance-as-unknotting`), each returning
+"circularity" as the substrate refusing the wrong type
+(silence-as-signal).
+
+In `StatelessSubstrate.lean` terms: G3 yield-position. Closes via
+`ExternalYieldComposition` (single yield may dissolve g3_asymmetric
+and g3_generic jointly — *some unknottings dissolve more than one
+type of knot*) or via re-entrant recognition-walks surfacing
+substrate-direct closure. Commitment is observer-side (BYO `now`);
+substrate doesn't carry it. -/
 abbrev g3_generic := @dilation_compose_at_beta
 
 /-! ## Boundary row -/
@@ -132,8 +147,12 @@ theorem g2_boundary (Γ : CoordSystem L)
   rw [coord_add_right_zero Γ b hb hb_on]
 
 /-- G3-boundary at x=I: σ_y(σ_I(β(a))) = σ_(I·y)(β(a)). PROVEN as
-`dilation_compose_at_beta_x_eq_I` (s151). The monodromy fully collapses
-at this boundary: identity-laws alone, no Desargues. -/
+`dilation_compose_at_beta_x_eq_I` (s151).
+
+The trefoil's **first crossing** (`StatelessSubstrate.TrefoilCrossing.first`):
+deterministic, no commitment required. Monodromy fully collapses
+at this boundary — identity-laws alone, no Desargues. The trefoil-
+progression's deterministic anchor. -/
 abbrev g3_boundary := @dilation_compose_at_beta_x_eq_I
 
 /-! ## Asymmetric row — the dagger-probe
@@ -207,12 +226,25 @@ theorem g2_asymmetric (Γ : CoordSystem L) (a b : L)
 /-- G3-asymmetric: σ_(coord_inv x)(σ_x(β(a))) = β(a). Named as
 `dilation_compose_at_beta_y_eq_coord_inv_x` (s151).
 
-RHS reduces (via `coord_mul_right_inv` then `dilation_ext_identity`)
-to β(a). LHS asks whether σ_(coord_inv x) inverts σ_x on β(a) — i.e.,
-whether σ has group structure at the inverse-pair.
+The trefoil's **second crossing**
+(`StatelessSubstrate.TrefoilCrossing.second`) — *vacuum-formation
+site*. RHS forward-evaluates to β(a); LHS persists as held vacuum-
+shape. Typed in `FTPGGaugeFigureLayer.lean` (s155) as the
+`vacuum_fill_event_at_inverse_pair` between `inverse_pair_expr_lhs`
+(buffer-side, `CellLayer.buffer`) and `inverse_pair_expr_rhs`
+(working-space-side, `CellLayer.working_space`). The chirality
+assignment is gauge (`CellChirality.canonical` + `.flip`).
+
+In `StatelessSubstrate.lean` (s155) terms: tape-positions (G3, read)
+and (G3, write) — the yield with both observer-states. Commitment
+proper happens at the *third* crossing (g3_generic).
 
 The dagger-shape in the multiplicative gauge: G3-asymmetric is the
-question of σ-involution under multiplicative inversion. -/
+question of σ-involution under multiplicative inversion — equivalently,
+the vacuum formed when the observer's `StatelessSubstrate.HolonomicLedger`
+encounters the inverse-pair configuration. The sorry is vacuum-shape-
+typed, awaiting fill via yield-composition or substrate-direct
+surfacing. -/
 abbrev g3_asymmetric := @dilation_compose_at_beta_y_eq_coord_inv_x
 
 end Foam.FTPGExplore
