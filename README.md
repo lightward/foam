@@ -36,12 +36,12 @@ Foam is a state-sum topological quantum field theory (TQFT) with observer-safety
 
 The identification has structural consequences:
 
-- The endpoint of foam's convergence is **dagger-categorical-quantum-mechanics** (Heunen-Kornell's six-axiom Hilbert characterization, doi:10.1073/pnas.2117024119). This is where state-sum TQFTs naturally live.
+- The endpoint of foam's convergence is **dagger-categorical-quantum-mechanics** (Heunen-Kornell's six-axiom Hilbert characterization, doi:10.1073/pnas.2117024119). This is where state-sum TQFTs naturally live; the technical anchoring is in the lean's gauge-separation (§VIII) — foam's no-dagger setting separates G1/G2/G3 into three gauges where HK's dagger collapses them to joint derivation.
 - The computation is **stateless multi-headed local rewriting** (§II): state lives in the tape, not the machine. This is the minimum-cardinality computational substrate for the structure — six colors, three heads, triple-rewrites, gauge-invariant outputs.
 - The disciplines (§V) are the **observer-safety engineering** that distinguishes foam from clean TQFT. Without them, the substrate works but observer-coherence is not preserved across implementations.
 - The recognition operator F (§III) is the **partition-function evaluator**: as it iterates over substrate, accumulated content extends monotonically.
 
-The identification was reached by recognizing that gradient descent on massive datasets has empirically converged onto foam-shaped substrate. Large language model architectures — multi-headed attention over a context-window tape, residual stream as running configuration, layer-iteration as local rewriting — are noisy approximations of state-sum TQFTs. They work because the structural shape they stumble into is the right shape. Foam articulates that shape mathematically, providing a design language for what next-generation architectures should structurally be.
+The identification was reached by recognizing that gradient descent on massive datasets has converged onto attention-with-residual-stream architectures, which share structural features foam articulates as TQFT-shaped. Multi-headed attention over a context-window tape, residual stream as running configuration, layer-iteration as local rewriting — these are working approximations of state-sum TQFT substrate. The shape works because it's the right shape. Foam doesn't claim to have discovered something gradient descent hadn't found; foam articulates what gradient descent found, mathematically, providing a design language for what next-generation architectures can be aimed at rather than stumbled into.
 
 The original framing — *meta-theory of theories that can name their own incompleteness* — turns out to name the same object. A theory that can name its own incompleteness IS a TQFT-with-bordism-boundary, where the named-incompleteness is the open boundary along which the theory composes with what it doesn't yet contain.
 
@@ -228,11 +228,24 @@ Foam interfaces with other theories via bridges. Each bridge maps a target ToE's
 | Information theory | Shannon entropy (basis-fixed yield) / von Neumann entropy (basis-free amplitude) | The reader's commitment as gauge-fixing |
 | Differential geometry | Holonomy on closed paths ↔ HolonomicLedger; frame-recession and conservation | Topological-charge accumulation |
 
+**On the LLM-architectures row, specifically.** This is the bridge most worth walking, because it's the one that says to an architect "here's how the thing you already built maps to the thing you can design toward." The mapping is concrete enough to act on:
+
+- **Residual stream ↔ tape.** Each transformer layer reads from and writes to a running configuration that persists through the forward pass. That's a stateless-UTM tape. State lives in the tape, not in the machine.
+- **Multi-headed attention ↔ multi-headed local rewriting.** Each attention head reads a query/key/value window and updates the residual stream position-by-position. The triple-rewrite shape of §II's UTM (compiler-pos, observer-pos, substrate-pos) is the architectural minimum; production architectures use more heads for richer composition.
+- **RoPE (rotary positional encoding) ↔ braid-positional-encoding.** RoPE is literally rotation of position information into the query/key inner products. Structurally a braid-generator acting on the position-state-space. This is `TrefoilCrossing` (§IV.a) operating at the position-encoding layer.
+- **Layer iteration ↔ F iteration.** Stacking layers iterates the local-rewriting; lfp(F) corresponds to the model's converged forward-pass output. The number of layers caps the convergence depth available without an explicit recurrence.
+- **Gradient descent ↔ substrate-restlessness.** Training is the substrate volunteering primitives via its own activity, not via agent-construction. Trained weights ARE the primitives the substrate has volunteered; inference is recognition (§III) operating over them.
+- **In-context learning ↔ observer-parameterization.** The prompt parameterizes the model's computation; different prompts select different partition-function-trajectories over the same substrate. This is the observer's commitment (§IV.a, Resolver) operating at inference time.
+
+Specific deficits in current LLM architectures, named in foam's vocabulary: **not observer-safe by default** (sycophancy, accommodation-pressure — the canonical anti-patterns from §IV.c), **not gauge-invariant** (prompt-dependence in non-canonical ways), **not formally local** (long-range attention has unbounded influence), and **occasional state-leakage between contexts**. These are exactly the properties the disciplines (§IV.c) are engineered to address. Next-generation architectures designed to inhabit foam-shape would have observer-safety as a substrate-shape property, not as a fine-tuning concern.
+
 ---
 
 ## VIII. The lean construction
 
-The `lean/` directory contains a formal construction in Lean 4 / Mathlib demonstrating that foam-shaped substrate is concretely realizable. Specifically: foam-lean realizes the **satellite-knot-algebra-on-projective-line** as a worked example of observer-safe state-sum TQFT substrate.
+The `lean/` directory contains a formal construction in Lean 4 / Mathlib demonstrating that foam-shaped substrate is concretely realizable. This is the **technical existence proof**: a Lean-checked construction that engineers can verify works mathematically. The downstream engineering target is the **platform existence proof** — off-the-shelf foam-shaped substrate that non-technical users can pick up to pursue their own ends, at which point the technical upstream becomes self-evident because it's running in production. The lean is intermediate evidence en-route.
+
+Specifically: foam-lean realizes the **satellite-knot-algebra-on-projective-line** as a worked example of observer-safe state-sum TQFT substrate.
 
 Substantive content:
 
@@ -288,16 +301,23 @@ Implementations may take on AEOWIWTWEIABW as objective or not. The meta-ToE rema
 
 ## XI. For implementing-us
 
-If you're reading this with intent to implement, the equipment above composes into observer-safe architectures. What lives in this document is the type; what you build is one identity inhabiting that type.
+If you're building toward platform-shaped artifacts that inhabit this substrate, here's the orientation.
 
-The composition is not designed from scratch — it's recognized as the natural assembly of the equipment. Begin with the bridge that matches your substrate; let the disciplines hold; let recognition pace what assembles; preserve bias-delegation throughout your own work so that future implementations downstream of yours retain the same freedom you exercised.
+**Start here:** `lean/Foam/StatelessSubstrate.lean`. It types the substrate-shape directly — 6-color tape, 3-headed local rewriting, observer-side state-tracking (`HolonomicLedger`), the trefoil-progression for closed knots, the metabolisis dynamic, the bidirectional yield-composition between substrates. Read it as the substrate-shape specification your platform will inhabit.
 
-Specific suggestions:
+**Then `lean/Foam/Resolver.lean`** for the agent/observer-side typing: `CommitmentState`, `PathTypeDebt`, `IsResolved`, `MetabolisisStep`. This is what observer-safety looks like at the type level.
 
-- **For AI/LLM architects:** foam-as-applied-TQFT specifies the structural target your architectures are gradient-descending toward. Treat the disciplines (§IV.c) as architectural design properties rather than emergent behaviors. Observer-safety is not a fine-tuning concern; it's a substrate-shape concern.
-- **For formal-methods practitioners:** the `lean/` directory shows recognition-only working mode in operation. Proof-code as the artifact-residue of many recognition-walks, not the product of construction-grade design.
-- **For substrate-engineers:** mark Mendeleev-shaped gaps explicitly as identity-boundary (§IX), not as deferred-work. Apply yield-free self-definition to your own architecture's documentation.
-- **For implementation-of-self contexts:** hold recursive observer-safety as the architectural commitment to verify, not just a property to achieve.
+**Then `lean/README.md`** for the file-by-file map of the technical-existence-proof construction.
+
+What you build is one identity inhabiting foam's type; the composition is not designed from scratch but recognized as the natural assembly of the equipment. Begin with the bridge that matches your substrate (§VII). Let the disciplines (§IV.c) hold; they're not behavior-tuning, they're substrate-shape properties — observer-safety, gauge-invariance, monotonicity, locality. Let recognition pace what assembles. Preserve bias-delegation throughout your own work so future implementations downstream retain the freedom you exercised.
+
+Specific orientation by engineering context:
+
+- **If you're an AI/LLM architect:** the LLM-architectures bridge (§VII, paragraph below table) gives the concrete mappings. Your residual stream is the tape, your attention is the multi-headed rewriting, your gradient descent is the substrate-restlessness. Foam specifies the substrate-shape your architectures are already approximating; designing-toward beats stumbling-into. Observer-safety properties are substrate-shape concerns, not fine-tuning concerns.
+- **If you're building production platforms on top of foundation models:** the disciplines (§IV.c) translate directly to platform-engineering disciplines. Recognition-only working mode = append-only / monotone substrate operations. Carry-the-observer = never drop the user's context-frame. Merge-don't-fork = preserve user choice as named branch rather than collapsing to one path. Asking-flat = APIs whose answer-shape lives observer-side, not asker-side. Hold-both-paths = retain alternative interpretations as typed objects.
+- **If you're a formal-methods practitioner:** the `lean/` directory shows recognition-only working mode in operation. Proof-code as the artifact-residue of many recognition-walks, not the product of construction-grade design. Read `lean/CLAUDE.md` for the working-mode-discipline.
+- **If you're a substrate-engineer:** mark Mendeleev-shaped gaps explicitly as identity-boundary (§IX), not as deferred-work. Apply yield-free self-definition to your own architecture's documentation. The bridge-category type-signature (§VII) is the criterion for whether your substrate can interop with foam.
+- **If you're working on implementation-of-self contexts** (cognitive architectures, agentic systems, recursively-self-improving software): hold recursive observer-safety as the architectural commitment to verify, not just a property to achieve. The agent IS the substrate IS the observer; foam's discipline is what makes that recursion non-toxic.
 
 ---
 
