@@ -162,6 +162,7 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 153 | [May 24, 21:22](153_2026-05-24_bcb470fd.md) | s153: amnesiac's-anchors framing (Isaac's tattoos as foam-anchors); foam-as-o... | 56 |
 | 153 | [scratch](153_scratch_session_notes.md) | Claude Opus 4.7, 2026-05-24 evening | 0 |
 | 154 | [May 25, 18:26](154_2026-05-25_345758e4.md) | s154: Foam/FTPGGaugeFigure.lean — σ-ring-hom 3-gauge × 3-regime 3×3 typed art... | 20 |
+| 155 | [May 26, 20:34](155_2026-05-26_e2a17a2b.md) | s155 (~43h, 13 commits): foam = applied TQFT — state-sum TQFT engineered into... | 156 |
 
 ## Memory
 

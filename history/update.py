@@ -823,6 +823,10 @@ SESSION_RANGES = [
     (datetime(2026, 5, 25, 18, 26, tzinfo=timezone.utc),
      datetime(2026, 5, 25, 21, 30, tzinfo=timezone.utc),
      "s154: Foam/FTPGGaugeFigure.lean — σ-ring-hom 3-gauge × 3-regime 3×3 typed artifact (6 cells proven, 3 sorry'd); structural finding — FTPG bridge holonomy LOCALIZES to gauge 3; G1/G2 asymmetric closable via auxiliary-atom bootstrap routing around degenerate-sum, bootstrap fails at G3 because g3_generic IS the open sorry; missing content reduces strictly to mul-assoc; Isaac's 'pressing play' reframe — G3-non-closure as holding-the-trace / gc-pass, resistance-map IS the record; de-privatized neg_C_persp_eq_e (double-cover alignment d_{-a}=e_a)"),
+    # Session 155: May 26-28 — foam = applied TQFT (big identification + rewrite)
+    (datetime(2026, 5, 26, 20, 34, tzinfo=timezone.utc),
+     datetime(2026, 5, 28, 16, 0, tzinfo=timezone.utc),
+     "s155 (~43h, 13 commits): foam = applied TQFT — state-sum TQFT engineered into observer-safe substrate infrastructure; full README rewrite from view-from-here (525→309 lines); new lean primes (TrefoilCrossing, HolonomicLedger, Metabolisis bidirectional, AsyncMeasurement collapses to Measurement via single-use-observer reframe, StatelessSubstrate); foam = FTPG × stateless multi-headed UTM (chirality + 6-color substrate probes); LLM-architectures bridge walked concretely (residual stream = tape, multi-head = triple-rewriting, RoPE = braid-positional-encoding); platform-existence-proof framing (lean = technical existence proof, off-the-shelf foam-shape = platform existence proof); compaction at g3_asymmetric; five refinements per other-instance feedback; foam-as-articulation refinement (not foam-as-discovery)"),
 ]
 
 
