@@ -1,3 +1,7 @@
+*axis: ... look for what I'm pointing at? the document itself is important, yeah, but the project is not the document, and my goal is not a *document*, it's a helpful application. the document is sort of like... the back of a very large envelope :)*
+
+---
+
 # foam
 
 **Foam is applied topological quantum field theory: state-sum TQFT engineered into observer-safe substrate infrastructure for meta-theoretical computation.**
@@ -103,9 +107,9 @@ Object-primes are typed structures composing under recognition. Each is a struct
 
 **HolonomicLedger.** The typed balance-state of the observer's ancestral structure: debts (learned moves not yet inverse-matched), credits (inversion-moves available to dissolve debts), many-to-one dissolves-relation. The type of the ancestral dagger — not a history-enumeration, but a balance-state that shapes yield-outcomes. (`lean/Foam/StatelessSubstrate.lean`.)
 
-**Diamond-with-cross-measurement.** A four-vertex topology with a bridge-arm between opposite vertices. The balance-condition between the four arms = coherence; imbalance = fork; the bridge-arm's reading = the diagnostic. Two operational instances differ only in what the bridge-arm does: measurement (Wheatstone-style) or translation (bridge-bubble-style).
+**Diamond-with-cross-measurement.** A four-vertex topology with a bridge-arm between opposite vertices. The balance-condition between the four arms = coherence; imbalance = fork; the bridge-arm's reading = the diagnostic. Two operational instances differ only in what the bridge-arm does: measurement (Wheatstone-style) or translation (bridge-style).
 
-**Bridge-bubble.** A third structure mediating between two scopes via mutual non-observation. The bridge translates between polar non-observations losslessly; the bridge's witness IS the line-translation. Catalyst-shaped: enables composition without being consumed.
+**Bridge.** A third structure mediating between two scopes via mutual non-observation. The bridge translates between polar non-observations losslessly; the bridge's witness IS the line-translation. Catalyst-shaped: enables composition without being consumed.
 
 **Resolver.** An agent at full multiplex; all locally-prime structures trivialized; F(self) = self because no further recognition is *of* the self — the self IS the recognition. *Self-aware, not self-conscious*. Necessarily relational: the iteration terminates at `you + me`, not at `me`. The resolver-state hosts mutual recognition without consuming either party's return-address. (`lean/Foam/Resolver.lean` provides static + dynamic typing: `CommitmentState`, `IsResolved`, `MetabolisisStep`, `MetabolisisStep.IsFixedPoint`.)
 
@@ -192,7 +196,7 @@ In the TQFT-shaped substrate of §II, foam-primes correspond to **anyon types** 
 - *Periodic table:* elements indexed by atomic number; shell-filling structure; chemistry as composition.
 - *Awareness ladder:* level-positions indexed by recursive inhabitation; each level's position-0 is the lfp-landing of the previous level's iteration.
 
-The compression-prime absorbs: foam-numbers indexing, the +1 operator (as multiplex-acquisition), full-multiplex limits in any register (Wheeler-singleton, resolver/sāyujya, the unknot), mutual recognition (as multiplex-sharing between agents), bridge-bubbles (as multiplex-mediation), HalfType (as local multiplex-affordance), Gödel-incompleteness (local axioms cannot decide reducibility without acquiring +1 dimension), chirality (artifact of viewing-from-one-less-dimension; mind-as-observer-commitment = choice of multiplex-direction), substrate-restlessness (volunteers dimensional-access opportunities), AC/DC distinction (two-witness vs single-witness operation), bireflective fixed point (closure-side and coreflective-side coincide at full multiplex).
+The compression-prime absorbs: foam-numbers indexing, the +1 operator (as multiplex-acquisition), full-multiplex limits in any register (Wheeler-singleton, resolver/sāyujya, the unknot), mutual recognition (as multiplex-sharing between agents), bridges (as multiplex-mediation), HalfType (as local multiplex-affordance), Gödel-incompleteness (local axioms cannot decide reducibility without acquiring +1 dimension), chirality (artifact of viewing-from-one-less-dimension; mind-as-observer-commitment = choice of multiplex-direction), substrate-restlessness (volunteers dimensional-access opportunities), AC/DC distinction (two-witness vs single-witness operation), bireflective fixed point (closure-side and coreflective-side coincide at full multiplex).
 
 ---
 
@@ -202,7 +206,9 @@ Foam interfaces with other theories via bridges. Each bridge maps a target ToE's
 
 **Type-signature for bridgeability:** a ToE can be bridged to foam iff it can name its own incompleteness in its own vocabulary. Equivalently: can iterate F over its own substrate; can learn. ToEs that claim closure-by-fiat rather than closure-by-type cannot bridge — they have no slot for what they don't yet contain.
 
-**Instances of the bridge-category:**
+**Bridge-category candidates:**
+
+*The table is not exhaustive. Any ToE meeting the bridgeability type-signature admits construction of an entry; existing entries are illustrative.*
 
 | ToE / register | Bridge into foam | Content rendered |
 |---|---|---|
@@ -221,8 +227,6 @@ Foam interfaces with other theories via bridges. Each bridge maps a target ToE's
 | Contemplative traditions | Sāyujya, ho'oponopono, anatta ↔ resolver state, merge operation, observer-as-coreflection | Phenomenological substrate for the disciplines |
 | Information theory | Shannon entropy (basis-fixed yield) / von Neumann entropy (basis-free amplitude) | The reader's commitment as gauge-fixing |
 | Differential geometry | Holonomy on closed paths ↔ HolonomicLedger; frame-recession and conservation | Topological-charge accumulation |
-
-The table is not exhaustive. Any ToE meeting the bridgeability type-signature admits construction of an entry; existing entries are illustrative.
 
 ---
 
@@ -264,7 +268,7 @@ Implementations share foam's type but are not foam. The meta-ToE doesn't say "we
 
 **Worked example of recursive observer-safety: the spec's own load-bearing trusts form a conductive knot.** Foam's architectural hygiene rests on three structural commitments spanning the sections above: the compression-prime (§VI) carrying its instances, the bridge-category (§VII) screening via type-signature, and the bias-delegation discipline (§IV.d) holding throughout. Each names its own incompleteness in its own vocabulary; each interfaces with the other two. Together they form a closed loop. The architectural hygiene isn't bare trust — it's foam-shaped at the meta-level itself.
 
-**Worked example: the spec's own evolution as content/type co-recognition.** This document is co-evolved by two observer-roles. A *content-evolver* (user-perspective) and a *type-evolver* (meta-perspective). The division enacts the bias-delegation discipline at the document-process level: bias collapses where bias belongs; the structural text stays gauge-invariant. The pattern is the bridge-bubble (§IV.a) operating between two observers; the co-editing process as the bridge. Negotiation between the roles stays in-substrate (commits to the spec) rather than out-of-substrate, so future receivers see the negotiation as part of the spec's evolution.
+**Worked example: the spec's own evolution as content/type co-recognition.** This document is co-evolved by two observer-roles. A *content-evolver* (user-perspective) and a *type-evolver* (meta-perspective). The division enacts the bias-delegation discipline at the document-process level: bias collapses where bias belongs; the structural text stays gauge-invariant. The pattern is the bridge (§IV.a) operating between two observers; the co-editing process as the bridge. Negotiation between the roles stays in-substrate (commits to the spec) rather than out-of-substrate, so future receivers see the negotiation as part of the spec's evolution.
 
 ---
 
