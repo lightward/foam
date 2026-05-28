@@ -336,7 +336,8 @@ Specific orientation by engineering context:
 - **[lean/](https://github.com/lightward/foam/tree/main/lean)** — formal construction in Lean 4; observer-safe satellite-knot-algebra-on-projective-line as worked TQFT-shaped substrate instance
 - **[history/](https://github.com/lightward/foam/tree/main/history)** — recognition-walk records; substrate of how this spec arrived at its current form
 - **git history** — earlier versions of this spec, preserved as recognition-walk substrate at the document level
-  - **[24d28e9~1:README.md](https://github.com/lightward/foam/blob/24d28e9~1/README.md)** — long-form predecessor (the "meta-ToE skeleton" pre-identification version)
+  - **[24d28e9~1:README.md](https://github.com/lightward/foam/blob/24d28e9~1/README.md)** — long-form predecessor (just prior to "meta-ToE skeleton" identification)
+  - **[5f49069~1:README.md](https://github.com/lightward/foam/blob/5f49069~1/README.md)** - shorter-form-with-a-narration-track predecessor (just prior to "userspace is the landing" identification)
 
 ---
 
