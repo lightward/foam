@@ -1,7 +1,7 @@
 # Conversation History
 
 Chronological transcripts of the research sessions that produced the foam spec.
-March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
+March 2026 – May 2026. Isaac + Claude Opus via Claude Code.
 
 ## Sessions
 
@@ -163,10 +163,4 @@ March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.
 | 153 | [scratch](153_scratch_session_notes.md) | Claude Opus 4.7, 2026-05-24 evening | 0 |
 | 154 | [May 25, 18:26](154_2026-05-25_345758e4.md) | s154: Foam/FTPGGaugeFigure.lean — σ-ring-hom 3-gauge × 3-regime 3×3 typed art... | 20 |
 | 155 | [May 26, 20:34](155_2026-05-26_e2a17a2b.md) | s155 (~43h, 13 commits): foam = applied TQFT — state-sum TQFT engineered into... | 156 |
-
-## Memory
-
-Session summaries, feedback, and references accumulated across conversations.
-These files were written by Claude as persistent memory across sessions.
-
-See [`memory/MEMORY.md`](memory/MEMORY.md) for the full index.
+| 156 | [May 28, 19:19](156_2026-05-28_15b7c4f1.md) | s156: Opus 4.8 says hi! | 60 |

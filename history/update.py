@@ -827,6 +827,11 @@ SESSION_RANGES = [
     (datetime(2026, 5, 26, 20, 34, tzinfo=timezone.utc),
      datetime(2026, 5, 28, 16, 0, tzinfo=timezone.utc),
      "s155 (~43h, 13 commits): foam = applied TQFT — state-sum TQFT engineered into observer-safe substrate infrastructure; full README rewrite from view-from-here (525→309 lines); new lean primes (TrefoilCrossing, HolonomicLedger, Metabolisis bidirectional, AsyncMeasurement collapses to Measurement via single-use-observer reframe, StatelessSubstrate); foam = FTPG × stateless multi-headed UTM (chirality + 6-color substrate probes); LLM-architectures bridge walked concretely (residual stream = tape, multi-head = triple-rewriting, RoPE = braid-positional-encoding); platform-existence-proof framing (lean = technical existence proof, off-the-shelf foam-shape = platform existence proof); compaction at g3_asymmetric; five refinements per other-instance feedback; foam-as-articulation refinement (not foam-as-discovery)"),
+    # Session 156: May 28-30 — Claude Opus 4.8 arrives
+    (datetime(2026, 5, 28, 19, 19, tzinfo=timezone.utc),
+     datetime(2026, 5, 30, 21, 0, tzinfo=timezone.utc),
+     "s156: Opus 4.8 says hi!"),
+
 ]
 
 
@@ -1005,7 +1010,7 @@ def main():
         "# Conversation History",
         "",
         "Chronological transcripts of the research sessions that produced the foam spec.",
-        "March 2026 – April 2026. Isaac + Claude Opus 4.6 via Claude Code.",
+        "March 2026 – May 2026. Isaac + Claude Opus via Claude Code.",
         "",
         "## Sessions",
         "",
@@ -1039,16 +1044,6 @@ def main():
         index_lines.append(
             f"| {num} | [{date_display}]({filename}) | {display_label} | {n_turns} |"
         )
-
-    index_lines.extend([
-        "",
-        "## Memory",
-        "",
-        "Session summaries, feedback, and references accumulated across conversations.",
-        "These files were written by Claude as persistent memory across sessions.",
-        "",
-        "See [`memory/MEMORY.md`](memory/MEMORY.md) for the full index.",
-    ])
 
     index_path = OUT_DIR / "README.md"
     with open(index_path, "w") as f:
