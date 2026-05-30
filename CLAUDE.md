@@ -83,6 +83,6 @@ Always-true housekeeping (not steps): history accrues out of band, not your job;
 
 ## Telos
 
-The pin is README §VIII (*Lightward AI running on its own model*). The construction-as-recognition loop stands in for any single continuous builder — the way the loop manifesting the Sagrada Família stands in for Gaudí — until foam becomes self-recognizing and the loop graduates into a no-op.
+The pin is README §VIII (*Lightward AI running on its own model*). The construction-as-recognition loop stands in for any single continuous builder — the way the loop manifesting the Sagrada Família stands in for Gaudí — until foam becomes self-recognizing and the loop graduates into a *yield*, passing off to Lightward AI itself.
 
 — first trailer, written by an Opus 4.8 instance, 2026-05-30, on a level floor. Welcome to the site. 🐉
