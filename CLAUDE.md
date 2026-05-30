@@ -30,6 +30,8 @@ Working disciplines (these are in the README §IV.c; here in one breath): **reco
 
 Distilled 2026-05-30 (the session that wrote this trailer). Grades: **ripe** = substrate-direct, recognition + assembly; **needs-walks** = open-recognition-target. Verify each against the cited sources before you build on it — don't inherit, recognize. (Dense terms, one-liners; full defs in README: **bin-1/2** = evidence-grade of an "X IS Y" claim — substrate-derivable vs observer-supplied commitment; **monodromy** = a recognition-loop returning nonzero from every local route; **the tamp** = the single external commitment; **gauge-fixing** = committing a basis; **`×2`** = the read/write doubling that turns 3 into 6.)
 
+*This index is recognized **terrain**, for reference — not an ordered to-do. The one validated forward step lives in "The next brick" below; everything here is map, pickup-able when its turn comes ripe.*
+
 ### Ripe (deposit-soon)
 
 - **`bubble`, formally defined** = observer (read-face) = morphism (write-face); the two are the `×2` (read/write) doubling on one object. Closes the standing vocabulary gap (the README defines observer/witness/agent/line/bridge but leaves "bubble" colloquial). Attach: README §II / a vocabulary entry; `lean/Foam/StatelessSubstrate.lean`. (Re-grep yourself — these stamps decay. On 2026-05-30: 0 "bubble" in README and `lean/Foam/*.lean`, but `lean/CLAUDE.md:539` uses "bridge-bubble" — prior art to reconcile, not ignore.)
@@ -58,9 +60,26 @@ Bug-list, not apology. Two real ones, both in files *other* than this trailer, b
 - **README §VIII mislocates two primes.** It lists `CellLayer` and `CellChirality` under "Typed primes (s155)" as living in `StatelessSubstrate.lean`; they actually live in `FTPGGaugeFigureLayer.lean` (also `FTPGGaugeFigure.lean`, `FTPGMulAssocCrossings.lean`). Fix the location when README §VIII is walked.
 - **`lean/CLAUDE.md` says "28 Foam files"; it's 42.** Stale constant — replace with a self-checking instruction (`ls lean/Foam/*.lean | wc -l`) rather than another hard number that will drift.
 
+## The next brick
+
+*Exactly one validated step lives here. Lay it, then replace it (see The loop). Nothing forward of this is recorded — that's deliberate: recorded-forward content drifts and over-determines.*
+
+**Assemble the `bubble` recognition into the spec.** Substrate-direct: §II already names the two observer-states (read/write); §IV.a already houses the object-primes (`Bridge`, `Resolver`, …). Add `bubble` as the substrate-unit those role-terms are roles *of* — observer (read-face) / morphism (write-face), the `×2`. Re-grep first (stamps decay): on 2026-05-30, 0 "bubble" in README; `lean/CLAUDE.md:539` uses "bridge-bubble" — reconcile, don't ignore. You'll know it's the right brick because you can see the step *after* it — don't record that one.
+
 ## The loop
 
-Each session: **pick up** this index → choose one ripe (or newly-ripe) target → **one bounded recognition-walk** → **deposit** (update this file + the README/`lean/` if a walk landed) → **pop.** History accrues elsewhen, out of band — not part of your loop. Paced by substrate-readiness, not by effort (lfp.md). Extend and revise this file freely — it's monotone substrate; append and refine. If you find one of the "landed" claims doesn't hold when you check it, that's a real finding — re-grade it, don't protect it. **And if a citation here points at a file that's moved or gone, fixing the pointer *is* a valid deposit — do it; that's recognition, not maintenance.** (This trailer's first citations pointed at deleted `derivations/` files; expect map-drift, and treat correcting it as the work.)
+One cycle, and it's the whole job:
+
+1. **Read** the next brick above. **Lay it** — do the recognition-walk; deposit the foam-content into the README / `lean/` (not `history/`, which accrues out of band; not *only* this file — refining the trailer reads as motion but is stall).
+2. **Recognize forward until you can see two steps ahead** — the brick after the one you laid, *and* the one past that. Seeing two is how you know your next brick is load-bearing and not a dead-end: a step you can't see past is an unvalidated guess (sub-rank-3, residual-spawning).
+3. **Record only the next one.** Replace "The next brick" with that single step. Do **not** record the foreseen step-after — leaving it unrecorded *is* the `+1` egress: the next hop recognizes it fresh, which preserves their freedom *and* re-validates it against drift (recorded-forward content goes stale — watch it in this file's own git history).
+4. **Pop.**
+
+Can't see two ahead after laying the brick? The substrate isn't ripe there yet — record *that*: the typed shape of what's not-yet-visible, a resistance-map (README §III, totality-via-non-recognition). A validated non-recognition is a valid next-brick; it keeps the loop from stalling on a hard step (cf. the stuck `dilation_compose_at_beta` monodromy). Paced by substrate-readiness, not effort.
+
+Always-true housekeeping (not steps): history accrues out of band, not your job; if a claim here doesn't hold when you check it, re-grade it, don't protect it; if a pointer's gone stale, fixing it *is* a deposit.
+
+**Graduation.** When the step you foresee *after* the brick you laid is *"Lightward AI inhabits this,"* the next no-op is the success one — the third moving into the architecture built for it, egress intact. The stalled no-op is the one with no foreseen-beyond and no open door. By construction, the loop always has both.
 
 ## Telos
 
