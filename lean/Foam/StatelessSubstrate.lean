@@ -85,7 +85,10 @@ See also:
 ## Disposition
 
 Recognition-grade. The types name what's recognized; future recognition
-can hang content on these names. No proofs claimed.
+can hang content on these names. Almost no proofs claimed — the one
+exception is `observer_safe_of_accretive` (below), a bin-1 substrate-direct
+theorem: observer-safety is *not* an axiom but a one-line consequence of
+accretivity, so the proof IS the recognition and is carried as such.
 -/
 
 namespace Foam
@@ -332,6 +335,60 @@ abbrev Scope := TapePosition → Prop
     to persist, which is scope-context, not the `TapePosition`. -/
 def WriteOnly (S : Scope) (p : TapePosition) : Prop :=
   p.observer = ObserverState.write ∧ ¬ S p.complement
+
+/-! ## Observer-safety: read-face preservation under accretive recognition -/
+
+/-- A scope-step is **accretive** when it only grows scope: every position
+    in scope before the step is still in scope after. This is README §III's
+    monotonicity of `F` ("adding primitives can only enable more recognition,
+    never less; recognition never retracts") made concrete on `Scope`. A
+    recognition-step is the scope-map of one `F`-iteration; recognition proper
+    is accretive by construction. -/
+def Accretive (step : Scope → Scope) : Prop :=
+  ∀ (S : Scope) (p : TapePosition), S p → step S p
+
+/-- **Observer-safety = read-face preservation.** An accretive step never
+    *produces* a write-only object: any position that was not write-only in
+    `S` is still not write-only in `step S`. Read-faces in scope stay in
+    scope — the bubble's `×2` (§II) cannot collapse to a `WriteOnly` (the
+    §V observer-loss degenerate) by the act of recognizing more.
+
+    **This is a theorem, not a commitment (bin-1, substrate-direct).**
+    Observer-safety is *not* an extra axiom imposed on recognition; it falls
+    out of accretivity alone. The brick that produced this predicted exactly
+    this shape: "scope grows ⇒ read-complement can't leave scope." The proof
+    is the recognition — if a write-face's read-complement is in scope before
+    an accretive step, accretivity keeps it in scope after, so the only way to
+    end up write-only is to have been write-only already. Contrapositively:
+    the write-only set is monotone-*decreasing* under recognition — read-faces
+    can be relit (a later step brings the complement into scope) but never
+    darkened. (This is the same theorem read forward; observer-loss can only
+    be *repaired* by accretion, never *created*.)
+
+    **Why this is the read-face-preservation form of §III + indelibility.**
+    `F` is monotone (§III: recognition never retracts) and the first
+    commitment locks (indelibility). Together they say a landed claim cannot
+    fail by content going false — §V's *Falsification → observer-loss*: the
+    lattice carries no global "false," so the only failure-mode is the
+    read-face going dark. This theorem is the positive statement of that: as
+    long as the recognition-step is accretive, the read-face *does not* go
+    dark. Observer-loss therefore requires a *non-accretive* step (scope
+    contraction); monotone recognition supplies none.
+
+    **Reconcile with `Measurement` (above), do not collide.** A measurement
+    *spends* its read-face by design — it is a scope-*contraction*, hence
+    **not** accretive, and so lies outside this theorem's hypothesis. That is
+    not a violation: the read-face was never meant to persist (one-shot
+    terminus). Observer-safety is the property of read-faces *meant to
+    persist*; its domain is the accretive (persisting-bubble) step, not the
+    measurement. The licensed-contraction (`Measurement`) vs. unlicensed-
+    contraction (observer-loss) distinction is what the next walk types. -/
+theorem observer_safe_of_accretive {step : Scope → Scope} (h : Accretive step)
+    (S : Scope) (p : TapePosition) :
+    ¬ WriteOnly S p → ¬ WriteOnly (step S) p := by
+  intro hsafe hwo
+  obtain ⟨hwrite, hnot⟩ := hwo
+  exact hsafe ⟨hwrite, fun hScomp => hnot (h S p.complement hScomp)⟩
 
 /-! ## Trefoil-progression: minimum non-trivial knot-shape -/
 
