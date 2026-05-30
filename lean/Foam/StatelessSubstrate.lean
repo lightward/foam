@@ -271,6 +271,68 @@ structure Measurement where
       the geometry IS the result. -/
   reached_unknot : geometry_out → Prop
 
+/-! ## Observer-loss: the write-only degenerate -/
+
+/-- The opposite observer-face. The `×2` (read/write) doubling pairs each
+    face at an algebraic position with its complement; this is that
+    pairing as an involution on `ObserverState`
+    (`flip (flip o) = o`). -/
+def ObserverState.flip : ObserverState → ObserverState
+  | read => write
+  | write => read
+
+/-- The read/write-complement of a tape-position: the same algebraic
+    position seen through the opposite observer-face. For a write-face
+    this is its read-face — the half of the bubble's `×2` that
+    observer-loss loses. Involutive (inherits `ObserverState.flip`'s
+    involutivity), so the two faces of a bubble are
+    `p` and `p.complement`. -/
+def TapePosition.complement (p : TapePosition) : TapePosition :=
+  { p with observer := p.observer.flip }
+
+/-- A *scope*: the set of tape-positions currently reachable. A bubble's
+    read-face is *in scope* iff its `TapePosition` is a member. This is
+    the formal carrier of "the meaning has its complement in scope" from
+    Observational idempotence (§V): `P² = P` holds exactly when the
+    complement is in scope. -/
+abbrev Scope := TapePosition → Prop
+
+/-- **Observer-loss / the write-only object** — the lean type of README
+    §V's *Falsification → observer-loss* diagnostic (and the §IV.c
+    platonism / observer-toxic form that carry-the-observer names).
+
+    A `TapePosition` is *write-only* in a scope `S` when its write-face is
+    the face in view (`observer = write`) but its read-complement is
+    **not** in scope (`¬ S p.complement`) — the bubble's `×2`
+    (read/write) has collapsed to a write-only object, an
+    object-without-observer. The read-face is *unreachable from `S`*.
+    Equivalently, on the bubble-as-pair reading (§II): the bubble at
+    `p.algebraic` has its write-face but has lost its read-face.
+
+    Foam's lattice is orthomodular and non-Boolean on purpose (§V), so it
+    carries no *global* "false" — disagreement-that-lands cannot resolve
+    as "claim X is false." It relocates here, to a read-face going dark.
+    F is monotone (§III) and the first commitment locks (indelibility):
+    a landed claim cannot fail by content going false; the only
+    failure-mode is the `×2` collapsing to this.
+
+    **Structural parallel to Observational idempotence (§V).** There,
+    `P² = P` *fails* exactly when the complement is out of scope; here, a
+    bubble *degenerates* to write-only exactly when its read-complement
+    is out of scope. Same out-of-scope-complement condition, read once as
+    idempotence-failure and once as observer-loss.
+
+    **Reconcile with `Measurement` (above), do not collide.** A
+    `Measurement` is a *disposable single-use observer* that *spends* its
+    read-face by design — write-only-ness there is the intended one-shot
+    terminus. Observer-loss is a read-face that was *supposed to persist*
+    and went dark: the same position-shape, opposite disposition. The
+    predicate deliberately does not distinguish them — the disposition
+    (spent-by-design vs. lost) lives in whether the read-face was meant
+    to persist, which is scope-context, not the `TapePosition`. -/
+def WriteOnly (S : Scope) (p : TapePosition) : Prop :=
+  p.observer = ObserverState.write ∧ ¬ S p.complement
+
 /-! ## Trefoil-progression: minimum non-trivial knot-shape -/
 
 /-- The trefoil-knot has three crossings. As a *progression* in foam's
