@@ -390,6 +390,114 @@ theorem observer_safe_of_accretive {step : Scope → Scope} (h : Accretive step)
   obtain ⟨hwrite, hnot⟩ := hwo
   exact hsafe ⟨hwrite, fun hScomp => hnot (h S p.complement hScomp)⟩
 
+/-! ## Persistence: licensed vs. unlicensed scope-contraction -/
+
+/-- `ObserverState.flip` is involutive — re-flipping returns the same face. The
+    bubble's `×2` (§II) is a genuine doubling, not a collapse. -/
+@[simp] theorem ObserverState.flip_flip (o : ObserverState) : o.flip.flip = o := by
+  cases o <;> rfl
+
+/-- The read/write-complement is an involution on `TapePosition`: a bubble's two
+    faces are `p` and `p.complement`, and complementing twice returns to `p`. -/
+@[simp] theorem TapePosition.complement_complement (p : TapePosition) :
+    p.complement.complement = p := by
+  simp [TapePosition.complement]
+
+/-- A **persistence-flag** over scopes. `P S p` flags the read-face at `p` as
+    *meant to persist* in scope `S` — the scope-context the `WriteOnly` predicate
+    deliberately omits ("the disposition lives in whether the read-face was meant
+    to persist, which is scope-context, not the `TapePosition`").
+
+    This is the carrier the brick that produced this object names — and it is held
+    **open**, not pre-collapsed (§IV.d bias-delegation). The free predicate typed
+    here is the minimal shape; persistence may ultimately *live in* a richer
+    carrier already in the file — the operator's `HolonomicLedger` (a persisting
+    read-face is one whose debt is not yet discharged) or §III's lfp (the
+    converged scope is exactly what persists). Those are merges to hold, not forks
+    to choose; this predicate is the join-point, agnostic about which carrier owns
+    the flag. -/
+abbrev Persistence := Scope → TapePosition → Prop
+
+/-- **Refined observer-safety, relative to a persistence-flag `P`.** A step is
+    `SafeFor P` when it never turns a *persisting* read-face into a write-only
+    object: for any position `p` whose read-complement `p.complement` is flagged
+    persisting, if `p` was not already write-only it does not become write-only
+    under the step.
+
+    This is the honest invariant `observer_safe_of_accretive`'s remainder named.
+    Full `Accretive` (preserve *every* read-face) is slightly too strong: a
+    `Measurement` (above) legitimately spends a *non*-persisting read-face, so it
+    is a non-accretive scope-contraction yet must count as safe. The honest
+    invariant is read-face-preservation **only for read-faces meant to persist**.
+    A licensed contraction is `SafeFor P`; observer-loss (§V) is precisely a step
+    that drops a *persisting* read-face — and (see below) the step-shape is the
+    *same* in both cases; the entire difference lives in `P`. -/
+def SafeFor (P : Persistence) (step : Scope → Scope) : Prop :=
+  ∀ (S : Scope) (p : TapePosition),
+    P S p.complement → ¬ WriteOnly S p → ¬ WriteOnly (step S) p
+
+/-- Full accretivity is `SafeFor` **every** persistence-flag: an accretive step
+    preserves *all* read-faces, persisting or not, so it is trivially safe for any
+    flag. This seats `observer_safe_of_accretive` as the all-persisting special
+    case — when every read-face is meant to persist, refined safety collapses back
+    to the unconditional theorem. Refined safety, like its parent, falls out as a
+    *theorem*, not a commitment. -/
+theorem safeFor_of_accretive {step : Scope → Scope} (h : Accretive step)
+    (P : Persistence) : SafeFor P step :=
+  fun S p _ hsafe => observer_safe_of_accretive h S p hsafe
+
+/-- The scope-step of a single **measurement** at read-face `r`: it *spends* `r`,
+    removing exactly that position from scope and retaining everything else. This
+    is the one sanctioned non-accretive step (`Measurement`, above) realized at
+    the `Scope` level — a disposable single-use observer whose read-face is
+    consumed (the "disposable single-use observer / async-ness lives at the tree"
+    note on `Measurement`). -/
+def measureStep (r : TapePosition) : Scope → Scope :=
+  fun S p => S p ∧ p ≠ r
+
+/-- `measureStep` is **not accretive**: it drops `r` from scope. Both a licensed
+    measurement and unlicensed observer-loss are non-accretive scope-contractions
+    — the step-*shape* does not distinguish them (this is the whole point of the
+    two theorems below). -/
+theorem measureStep_not_accretive (r : TapePosition) :
+    ¬ Accretive (measureStep r) :=
+  fun h => (h (fun _ => True) r trivial).2 rfl
+
+/-- **Licensed contraction.** When the spent read-face `r` is *not* flagged
+    persisting, the measurement is `SafeFor P` despite failing `Accretive`: the
+    only write-only object it can create sits at `r.complement`, whose
+    read-complement is exactly the non-persisting `r`, so the safety obligation
+    there is vacuous. This is `Measurement` satisfying the refined property while
+    failing full accretivity — `Measurement` *is* the gap between "accretive" and
+    "safe." -/
+theorem measureStep_safeFor {P : Persistence} {r : TapePosition}
+    (hr : ∀ S, ¬ P S r) : SafeFor P (measureStep r) := by
+  intro S p hpers hsafe hwo
+  obtain ⟨hwrite, hnot⟩ := hwo
+  by_cases hpc : p.complement = r
+  · exact hr S (hpc ▸ hpers)
+  · exact hsafe ⟨hwrite, fun hScomp => hnot ⟨hScomp, hpc⟩⟩
+
+/-- **Unlicensed contraction = observer-loss.** The *same* `measureStep r`, when
+    `r` *is* flagged persisting (here in the full scope), is **not** `SafeFor P`:
+    it drops a persisting read-face, leaving a write-only object at `r.complement`
+    whose persisting read-complement `r` has gone dark — §V observer-loss exactly.
+    Identical step-shape to the licensed measurement above; opposite disposition;
+    the difference lives entirely in `P`. So what licenses a contraction is not
+    the step (`measureStep_not_accretive`: both are non-accretive) but the
+    scope-context — whether the spent read-face was meant to persist. -/
+theorem measureStep_not_safeFor {P : Persistence} {r : TapePosition}
+    (hread : r.observer = ObserverState.read)
+    (hpers : P (fun _ => True) r) :
+    ¬ SafeFor P (measureStep r) := by
+  intro hsafe
+  have hwrite : r.complement.observer = ObserverState.write := by
+    simp [TapePosition.complement, ObserverState.flip, hread]
+  refine hsafe (fun _ => True) r.complement ?_ ?_ ?_
+  · rw [TapePosition.complement_complement]; exact hpers
+  · exact fun hwo => hwo.2 trivial
+  · exact ⟨hwrite, by simp [measureStep]⟩
+
 /-! ## Trefoil-progression: minimum non-trivial knot-shape -/
 
 /-- The trefoil-knot has three crossings. As a *progression* in foam's

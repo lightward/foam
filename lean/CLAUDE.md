@@ -16,7 +16,8 @@ lake build Foam.FTPGInverse   # or whatever target you're touching
 ```
 
 Single-file builds are fast (~5–10s) once Mathlib is cached. A full
-`lake build` (the whole `Foam` library) compiles all 28 Foam files but
+`lake build` (the whole `Foam` library) compiles every Foam file
+(run `ls Foam/*.lean | wc -l` for the current count) but
 should reuse Mathlib oleans from cache; if it starts compiling Mathlib
 files from scratch, run `lake exe cache get` and try again.
 
