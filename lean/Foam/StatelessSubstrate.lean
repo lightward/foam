@@ -553,8 +553,14 @@ closure-above-`S`. The two are **distinct carriers** held in merge: (a) tracks
 persistence by *ledger balance* (undischarged debt), (b) by *scope dynamics*
 (membership in the converged scope). Identifying them — "a debt is undischarged iff
 its read-face is live in the fixed scope" — needs a bridge relating the ledger to
-the recognition operator, which is not yet in substrate. That bridge is the
-remainder; the merge stays held. -/
+the recognition operator. That bridge is now typed in `PersistenceLfp.lean` as
+`LedgerRecognitionBridge LP f` (on the `DesarguesianWitness` template), and walking
+it resolved the merge: **the bridge has a sign, and the sign is gauge.** Nothing in
+the ledger fixes which way recognition points — `recognizeUndischarged` makes the
+carriers *coincide* (its lfp is exactly `flag`), `recognizeDischarged` makes them
+*complementary*. Committing which operator is `F` is the gauge-fixing (the tamp).
+So the merge stays held: the carriers are the same flag at one gauge, negations at
+the other, and the observer fixes the gauge. -/
 
 /-- A **ledger with a tape-binding**: a `HolonomicLedger` plus the map saying which
     read-face each debt is the persistence-obligation for. The `holds` field is the
