@@ -215,7 +215,16 @@ the slot, as `DesarguesianWitness` is inhabited when `L = Sub(D, V)`) and
 *refuted at the `recognizeDischarged` gauge*
 (`not_bridge_recognizeDischarged_of_injective`). The remainder is therefore not
 "is there a bridge" (there is, at one gauge) but "which gauge does foam's
-*concrete* `F` commit to." -/
+*concrete* `F` commit to." **Answered in `RecognitionApplier.lean`:** foam's `F`
+(the `applyRules` rewrite-applier) is sign-*neutral*. It is *gated* (a rule fires
+only when its whole read-triple is in scope) where these toy operators are
+*ungated* (`S ↦ S ⊔ Q`), so its bare lfp is `⊥` (`applyRules_lfp_bot`: nothing fires
+from nothing) — it equals neither gauge and never reads `Discharged`. Hence
+`LedgerRecognitionBridge LP (applyRules rules)` is inhabited **iff the ledger is
+fully discharged** (`nonempty_bridge_applyRules_iff`), i.e. only where carrier (a)
+is itself `⊥`. So the gauge is the tamp — observer-supplied at the ledger, in the
+gap between rule-firing and discharge-status — and the bridge stays **bin-2** in
+foam proper. -/
 
 /-- Recognition built over the ledger that accretes the **undischarged**-backing
     read-faces — "hold open what is still owed." Of the form `S ↦ S ⊔ Q` with `Q`

@@ -155,7 +155,15 @@ inductive Head where
 /-- A triple-rewrite reads positions at all three heads and writes new
     positions at all three. Stateless: no machine-state, only tape.
     Each codification step in foam's recognition-only working mode IS
-    one such rewrite. -/
+    one such rewrite.
+
+    A *set* of these is bundled as the monotone scope-step `applyRules` in
+    `RecognitionApplier.lean` — README §III's recognition operator `F` made
+    concrete ("the recognition operator IS the rewrite-rule applier", above) —
+    where its gauge is read off: gated rule-firing (a rule fires only when its
+    whole read-triple is in scope) is sign-*neutral* w.r.t. the ledger partition,
+    its bare lfp `⊥`, so the (a)↔(b) `LedgerRecognitionBridge`
+    (`PersistenceLfp.lean`) stays bin-2 in foam proper. -/
 structure RewriteRule where
   /-- The triple-configuration that triggers the rule. -/
   reads : Head → TapePosition

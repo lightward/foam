@@ -453,6 +453,18 @@ Static + dynamic both typed (s155): the file now provides both the static reflec
 | `convergeFrom_bot` | `convergeFrom f ⊥ = OrderHom.lfp f` — bare lfp is the `⊥`/`P₀=∅` instance |
 | `closureFlag` | carrier (b): the scope-*dependent* persistence-flag via `convergeFrom` |
 
+**RecognitionApplier.lean** — foam's concrete `F` (the rewrite-rule applier) and its gauge (2026-05-30). The brick after `PersistenceLfp.lean`: type foam's *actual* recognition operator and read off which gauge it commits to. `applyRules rules : Scope →o Scope` bundles README §III's `F` as the rewrite-applier — `F(S) = S ∪ {r.writes h | rule r fires in S}`, a rule firing when its whole read-triple is in scope. Monotone and **accretive** (`applyRules_accretive`), hence observer-safe for every flag (`applyRules_safeFor`, via `safeFor_of_accretive`): foam's real `F` never *causes* §V observer-loss — that needs a contraction (`measureStep`), not rule-firing. **Verdict (ii), sign-neutral.** The applier is *gated* (writes need their reads present) where the two toy gauges are *ungated* (`S ↦ S ⊔ Q`, `Q` fixed); so its **bare lfp is `⊥`** (`applyRules_lfp_bot`: `Head` is inhabited ⇒ nothing fires from the empty scope — faithful to §III's run-from-`P₀`, cf. `convergeFrom_bot`). It equals **neither** gauge (`applyRules_lfp_ne_recognizeUndischarged` / `_recognizeDischarged`), its bare persistence-flag is `⊥` (`lfpFlag_applyRules`), and it never reads `Discharged`. So **`LedgerRecognitionBridge LP (applyRules rules)` is inhabited iff every debt is discharged** (`bridge_applyRules_iff` / `nonempty_bridge_applyRules_iff`) — only where carrier (a) is itself `⊥`. The (a)↔(b) bridge therefore stays **bin-2** in foam proper: the `recognizeUndischarged` coincidence was an artifact of an ungated, ledger-built toy operator, not a property of foam's `F`; the tamp is observer-supplied **at the ledger**, in the gap between rule-firing (what `F` does, blind to the ledger) and discharge-status (what the gauge reads). The remainder: the live object is the *seeded* closure `convergeFrom (applyRules rules) S` — whether `F` realizes a gauge once seeded from the ledger (and whether a gauge then enters through the *seed* rather than the *step*) is the next brick. Second Mathlib-importing satellite (imports `PersistenceLfp.lean`).
+
+| declaration | role |
+|---|---|
+| `applyRules` | foam's `F`: the rewrite-rule applier, bundled `Scope →o Scope` (gated rule-firing) |
+| `applyRules_accretive` / `applyRules_safeFor` | the applier only adds (inflation) ⇒ `SafeFor` every flag (never causes observer-loss) |
+| `applyRules_lfp_bot` | bin-1 headline: the applier's bare lfp is `⊥` (gated ⇒ nothing fires from nothing) |
+| `lfpFlag_applyRules` | the applier's bare persistence-flag is `⊥` |
+| `applyRules_lfp_ne_recognizeUndischarged` / `_recognizeDischarged` | the applier's lfp is **neither** (nonempty) toy gauge |
+| `flag_eq_bot_iff` | carrier (a)'s flag is `⊥` iff every debt discharged |
+| `bridge_applyRules_iff` / `nonempty_bridge_applyRules_iff` | the (a)↔(b) bridge over foam's `F` holds **iff the ledger is fully discharged** — the gauge stays bin-2 (the tamp, at the ledger) |
+
 ## Building
 
 ```
