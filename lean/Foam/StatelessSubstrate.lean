@@ -115,7 +115,20 @@ inductive ObserverState where
   deriving DecidableEq, Repr
 
 /-- A position on the foam-UTM tape: one of 6 colors, factored as
-    (algebraic-position, observer-state). -/
+    (algebraic-position, observer-state).
+
+    A `TapePosition` read as the thing its two faces belong to is a
+    *bubble* (README §II): one substrate-unit carrying the `×2`
+    (read/write) doubling. The `observer` field selects which face is
+    in view — `read` is the observer-face
+    (substrate-direct: `ObserverState.read` = observer receiving);
+    `write` *reads as* the morphism-face — observer-supplied (bin-2),
+    pending substrate-derivation.
+    The downstream role-terms (observer, witness, agent, line, bridge)
+    are roles *of* a bubble. The colloquial "bridge-bubble" framing of
+    earlier walks (s149) is the Bridge object-prime named on its bubble-
+    carrier: a bridge mediating two scopes is a bubble whose two faces
+    read the two non-observations. -/
 structure TapePosition where
   algebraic : AlgebraicPosition
   observer : ObserverState
