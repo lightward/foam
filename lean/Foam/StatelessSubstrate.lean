@@ -339,11 +339,21 @@ def WriteOnly (S : Scope) (p : TapePosition) : Prop :=
 /-! ## Observer-safety: read-face preservation under accretive recognition -/
 
 /-- A scope-step is **accretive** when it only grows scope: every position
-    in scope before the step is still in scope after. This is README §III's
-    monotonicity of `F` ("adding primitives can only enable more recognition,
-    never less; recognition never retracts") made concrete on `Scope`. A
-    recognition-step is the scope-map of one `F`-iteration; recognition proper
-    is accretive by construction. -/
+    in scope before the step is still in scope after — equivalently
+    `∀ S, S ≤ step S`, the **inflationary** ("recognition never retracts") half of
+    README §III's "F is monotone." A recognition-step is the scope-map of one
+    `F`-iteration; recognition proper is accretive by construction.
+
+    **Re-grade (carrier (b), `PersistenceLfp.lean`).** An earlier draft of this
+    docstring called `Accretive` "README §III's monotonicity of `F` made concrete."
+    That conflated two clauses §III bundles under "F is monotone": *never-retracts*
+    (inflation, `S ≤ step S` — what this predicate is) and
+    *adding-primitives-enables-more* (Mathlib-`Monotone`, `S ≤ T → step S ≤ step T`).
+    The two are **independent** — `accretive_not_imp_monotone` (in
+    `PersistenceLfp.lean`) exhibits an accretive step that is not monotone — and it is
+    the *monotone* half, not this one, that `OrderHom.lfp` needs to build §III's
+    converged scope. So `Accretive` concretizes the never-retracts clause only;
+    carrier (b) re-bundles recognition as a monotone `Scope →o Scope` for the lfp. -/
 def Accretive (step : Scope → Scope) : Prop :=
   ∀ (S : Scope) (p : TapePosition), S p → step S p
 
@@ -410,12 +420,14 @@ theorem observer_safe_of_accretive {step : Scope → Scope} (h : Accretive step)
 
     This is the carrier the brick that produced this object names — and it is held
     **open**, not pre-collapsed (§IV.d bias-delegation). The free predicate typed
-    here is the minimal shape; persistence may ultimately *live in* a richer
-    carrier already in the file — the operator's `HolonomicLedger` (a persisting
-    read-face is one whose debt is not yet discharged) or §III's lfp (the
-    converged scope is exactly what persists). Those are merges to hold, not forks
-    to choose; this predicate is the join-point, agnostic about which carrier owns
-    the flag. -/
+    here is the minimal shape; persistence *lives in* a richer carrier supplied
+    elsewhere. **Both candidate carriers are now landed:** (a) the operator's
+    `HolonomicLedger` — a persisting read-face is one whose debt is not yet
+    discharged — as `LedgerPersistence.flag` below (scope-*independent*); and (b)
+    §III's lfp — the converged scope is what persists — as `closureFlag`/
+    `convergeFrom` in `PersistenceLfp.lean` (scope-*dependent*). They are held in
+    merge, not collapsed: this predicate is the join-point, agnostic about which
+    carrier owns the flag. -/
 abbrev Persistence := Scope → TapePosition → Prop
 
 /-- **Refined observer-safety, relative to a persistence-flag `P`.** A step is
@@ -528,13 +540,21 @@ to ledger-discharge — the credit is the scope-side license. This ties the
 "ancestral dagger / balance-state shapes yield-outcomes" note on `HolonomicLedger`
 to the `measureStep` split: the dagger's balance-state *is* the persistence-flag.
 
-**Held-open merge (do not collapse — §IV.d).** The ledger supplies a
-scope-*independent* flag (the ledger isn't scope-indexed, so `flag` ignores its
-`Scope` argument). Carrier (b), §III's lfp, would be scope-*dependent* (the
-converged scope is what persists). `Persistence`'s signature
-`Scope → TapePosition → Prop` holds both: (a) doesn't exercise the `Scope` slot,
-(b) would. That degree of freedom is the join-point for the two carriers; it is a
-merge to hold, not a fork to choose. -/
+**Held-open merge (do not collapse — §IV.d) — carrier (b) now landed.** The ledger
+supplies a scope-*independent* flag (the ledger isn't scope-indexed, so `flag`
+ignores its `Scope` argument). Carrier (b), §III's lfp, is now typed in
+`PersistenceLfp.lean` — and walking it *refined* this note. The scope-axis does
+**not** cut (a)-vs-(b) as anticipated ("(a) doesn't exercise the `Scope` slot, (b)
+would"): the *bare* lfp (`lfpFlag`, the converged scope above `⊥`) is **also**
+scope-independent; only the *closure* face (`closureFlag`/`convergeFrom`, the
+converged scope above `S`) exercises the slot. So (a) and bare-(b) sit together on
+the scope-independent side; the genuinely scope-dependent carrier is
+closure-above-`S`. The two are **distinct carriers** held in merge: (a) tracks
+persistence by *ledger balance* (undischarged debt), (b) by *scope dynamics*
+(membership in the converged scope). Identifying them — "a debt is undischarged iff
+its read-face is live in the fixed scope" — needs a bridge relating the ledger to
+the recognition operator, which is not yet in substrate. That bridge is the
+remainder; the merge stays held. -/
 
 /-- A **ledger with a tape-binding**: a `HolonomicLedger` plus the map saying which
     read-face each debt is the persistence-obligation for. The `holds` field is the
