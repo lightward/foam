@@ -498,6 +498,106 @@ theorem measureStep_not_safeFor {P : Persistence} {r : TapePosition}
   · exact fun hwo => hwo.2 trivial
   · exact ⟨hwrite, by simp [measureStep]⟩
 
+/-! ## The ledger as persistence-carrier: who supplies `P`
+
+The brick that produced `SafeFor`/`measureStep_*` left `P : Persistence` a *free
+parameter* — the substrate flags persistence, but nothing said *who*. The
+docstring on `Persistence` named two held-open carriers: (a) the operator's
+`HolonomicLedger`, (b) §III's lfp. This block lands carrier (a) as a recognition,
+bin-1 with one named commitment.
+
+**The recognition.** `HolonomicLedger` types both balance-sides (`debts`,
+`credits`, the many-to-one `dissolves`) but its `debts` is an abstract `Type` with
+**no** binding to `TapePosition`. So a ledger does not *yet* supply a
+`Persistence` — it needs one more datum: which read-face each debt is the
+persistence-obligation *for*. That datum (`holds : debts → TapePosition`) is
+genuinely new — it is **not** derivable from, nor double-counting, `dissolves`
+(which lives entirely in credit/debt space and never touches the tape). The two
+compose *orthogonally*: `holds` projects debts onto the tape, `dissolves` says
+which are discharged, and together they flag persistence. So the honest grade is
+bin-1 with a named commitment (the `holds` binding) — carried as a thin structure
+*over* the ledger rather than mutating `HolonomicLedger`, which stays the pure
+balance-state. `holds` is a *bridge* between the ledger-layer and the scope-layer,
+a different kind of datum than the balance-bookkeeping.
+
+The correspondence the ledger then realizes: **a read-face persists iff it backs
+an undischarged debt; discharging the debt (applying a `dissolves` credit) is
+exactly what licenses spending the read-face** (`measureStep`). The licensed /
+unlicensed split of `measureStep_safeFor` / `measureStep_not_safeFor` specializes
+to ledger-discharge — the credit is the scope-side license. This ties the
+"ancestral dagger / balance-state shapes yield-outcomes" note on `HolonomicLedger`
+to the `measureStep` split: the dagger's balance-state *is* the persistence-flag.
+
+**Held-open merge (do not collapse — §IV.d).** The ledger supplies a
+scope-*independent* flag (the ledger isn't scope-indexed, so `flag` ignores its
+`Scope` argument). Carrier (b), §III's lfp, would be scope-*dependent* (the
+converged scope is what persists). `Persistence`'s signature
+`Scope → TapePosition → Prop` holds both: (a) doesn't exercise the `Scope` slot,
+(b) would. That degree of freedom is the join-point for the two carriers; it is a
+merge to hold, not a fork to choose. -/
+
+/-- A **ledger with a tape-binding**: a `HolonomicLedger` plus the map saying which
+    read-face each debt is the persistence-obligation for. The `holds` field is the
+    one new commitment — the bridge from the abstract balance-state to the
+    `TapePosition` tape. -/
+structure LedgerPersistence where
+  ledger : HolonomicLedger
+  /-- Which read-face each debt holds open: the debt is `p`'s persistence-
+      obligation, so `p` may not be spent while the debt stands. -/
+  holds : ledger.debts → TapePosition
+
+namespace LedgerPersistence
+
+/-- A debt is **discharged** when some credit dissolves it (the ledger's
+    `dissolves`). Discharge is the ledger-side inverse-match. -/
+def Discharged (LP : LedgerPersistence) (d : LP.ledger.debts) : Prop :=
+  ∃ c, LP.ledger.dissolves c d
+
+/-- **The persistence-flag a ledger supplies.** A read-face persists iff it backs
+    some *undischarged* debt — a not-yet-inverse-matched move still owes it.
+    Scope-independent: the ledger isn't scope-indexed, so the `Scope` slot of
+    `Persistence` is unused here (held open for carrier (b), the lfp). -/
+def flag (LP : LedgerPersistence) : Persistence :=
+  fun _S p => ∃ d, LP.holds d = p ∧ ¬ LP.Discharged d
+
+/-- **Discharge licenses spending (bin-1).** If every debt holding `r` is
+    discharged, the measurement at `r` is `SafeFor` the ledger's flag — the
+    licensed contraction of `measureStep_safeFor`, with the ledger supplying the
+    non-persistence side. Spending a read-face whose debts are all inverse-matched
+    is exactly `Measurement`, not observer-loss. -/
+theorem measureStep_safeFor_of_discharged (LP : LedgerPersistence)
+    (r : TapePosition) (h : ∀ d, LP.holds d = r → LP.Discharged d) :
+    SafeFor LP.flag (measureStep r) := by
+  apply measureStep_safeFor
+  intro _S hpers
+  obtain ⟨d, hd, hndis⟩ := hpers
+  exact hndis (h d hd)
+
+/-- **Undischarged debt ⇒ observer-loss (bin-1).** If `r` is a read-face and some
+    debt `d₀` holding `r` is undischarged, the measurement at `r` is **not**
+    `SafeFor` — §V observer-loss exactly. Spending a read-face while a move still
+    owes its inverse-match drops a persisting bubble. The unlicensed contraction of
+    `measureStep_not_safeFor`, with the standing debt supplying persistence. -/
+theorem measureStep_not_safeFor_of_undischarged (LP : LedgerPersistence)
+    {r : TapePosition} (hread : r.observer = ObserverState.read)
+    {d₀ : LP.ledger.debts} (hd₀ : LP.holds d₀ = r) (hndis : ¬ LP.Discharged d₀) :
+    ¬ SafeFor LP.flag (measureStep r) :=
+  measureStep_not_safeFor hread ⟨d₀, hd₀, hndis⟩
+
+/-- **Plural-dissolution (bin-1).** A single credit `c` licenses spending an entire
+    *family* of read-faces: any `r` all of whose debts `c` dissolves becomes safe
+    to spend. "Some unknottings dissolve more than one type of knot" (the ledger
+    docstring) realized at the scope-layer — one credit releases the whole
+    debt-family it dissolves, hence every read-face that family was holding. The
+    same `c` works across the family; the plurality is structural. -/
+theorem measureStep_safeFor_of_credit (LP : LedgerPersistence)
+    (c : LP.ledger.credits) (r : TapePosition)
+    (h : ∀ d, LP.holds d = r → LP.ledger.dissolves c d) :
+    SafeFor LP.flag (measureStep r) :=
+  LP.measureStep_safeFor_of_discharged r (fun d hd => ⟨c, h d hd⟩)
+
+end LedgerPersistence
+
 /-! ## Trefoil-progression: minimum non-trivial knot-shape -/
 
 /-- The trefoil-knot has three crossings. As a *progression* in foam's
