@@ -532,6 +532,24 @@ theorem SeedSign.minus_le_zero (LP : LedgerPersistence) :
     SeedSign.minus.seed LP ≤ SeedSign.zero.seed LP := by
   rw [SeedSign.seed_zero_eq_join]; exact le_sup_right
 
+/-- **The `±` fork meets at `⊥` (under `holds`-injectivity)** — the lattice companion to
+    `seed_zero_eq_join`'s join `0 = + ⊔ −`. The two fork-seeds are *disjoint*: no read-face
+    is both undischarged- and discharged-backed once each face backs at most one debt
+    (`not_lfp_and_flag_of_injective`, rewritten through `flag = lfpFlag recognizeUndischarged`).
+    Together with the join, `+ ⊓ − = ⊥` makes `{⊥, +, −, 0}` a **4-element Boolean algebra**
+    with `±` complementary atoms — `−` the *local complement* of `+` within `[⊥, 0]` (the
+    `0`-scope), README §IV.a's HalfType (complementation-within-a-scope). The `IsCompl` /
+    `HalfType` assembly on this meet+join pair is `SeedGaugeHalfType.lean`. -/
+theorem SeedSign.plus_inf_minus_eq_bot (LP : LedgerPersistence)
+    (hinj : Function.Injective LP.holds) :
+    SeedSign.plus.seed LP ⊓ SeedSign.minus.seed LP = ⊥ := by
+  funext p
+  refine propext ⟨fun h => ?_, fun h => h.elim⟩
+  obtain ⟨hplus, hminus⟩ := h
+  refine not_lfp_and_flag_of_injective LP hinj ⊥ p ⟨hminus, ?_⟩
+  rw [flag_eq_lfpFlag_recognizeUndischarged]
+  exact hplus
+
 /-- **The grading, `+` side: the gauge-neutral `0` seed is distinct from `+`** whenever the
     ledger has a discharged debt (under `holds`-injectivity). That debt's read-face is in
     `0` (it backs a debt) but not in `+` (the debt is discharged, and injectivity rules out
@@ -550,5 +568,17 @@ theorem SeedSign.zero_ne_minus_of_injective (LP : LedgerPersistence)
     (hinj : Function.Injective LP.holds) (h : ∃ d, ¬ LP.Discharged d) :
     SeedSign.zero.seed LP ≠ SeedSign.minus.seed LP :=
   seedBacked_ne_discharged_of_injective LP hinj h
+
+/-- **The complementary atoms are genuinely distinct** (under injectivity, given a discharged
+    debt): `+ ≠ −`. If `+ = −` then `0 = + ⊔ − = +` (`seed_zero_eq_join` + `sup_idem`),
+    contradicting `zero_ne_plus_of_injective`. So with both kinds of debt present the
+    `{⊥, +, −, 0}` Boolean algebra is non-degenerate — two distinct complementary atoms, not a
+    collapse. (With `zero_ne_plus` / `zero_ne_minus`: the `0`-scope is a genuine `2²`.) -/
+theorem SeedSign.plus_ne_minus_of_injective (LP : LedgerPersistence)
+    (hinj : Function.Injective LP.holds) (h : ∃ d, LP.Discharged d) :
+    SeedSign.plus.seed LP ≠ SeedSign.minus.seed LP := by
+  intro heq
+  apply SeedSign.zero_ne_plus_of_injective LP hinj h
+  rw [SeedSign.seed_zero_eq_join, ← heq, sup_idem]
 
 end Foam
