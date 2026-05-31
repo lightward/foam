@@ -161,6 +161,37 @@ theorem convergeFrom_bot (f : Scope →o Scope) : convergeFrom f ⊥ = OrderHom.
   ext X x
   simp
 
+/-- **The closure realizes its seed exactly iff the seed is `f`-closed.**
+    `convergeFrom f S = S` precisely when `S` is a prefixed point of `f` (`f S ≤ S`).
+
+    * `←` if `f S ≤ S` then `S ⊔ f S = S`, so `S` is a fixed point of the closure
+      operator `X ↦ S ⊔ f X` and the lfp sits at `S` (`OrderHom.lfp_le`), giving
+      `convergeFrom f S ≤ S`; `le_convergeFrom` is the other half.
+    * `→` the lfp is a fixed point (`OrderHom.map_lfp`), so
+      `S ⊔ f (convergeFrom f S) = convergeFrom f S`; substituting the hypothesis
+      `convergeFrom f S = S` yields `S ⊔ f S = S`, i.e. `f S ≤ S`.
+
+    This is the hinge for reading the *seed's* gauge (`RecognitionApplier.lean`,
+    "Seeded from the ledger"): it cleaves "does the closure equal the seed?" — a
+    fixed-point property of the `(step, seed)` pair, blind to any ledger — from
+    "what gauge does the seed carry?". So any gauge the seeded closure realizes is
+    sourced from the seed, never manufactured by the step; whether realization is
+    *exact* (closure `=` seed-gauge) or merely a *lower bound* (closure `⊋`
+    seed-gauge) is decided here, gauge-independently, by `f`-closedness. -/
+theorem convergeFrom_eq_self_iff (f : Scope →o Scope) (S : Scope) :
+    convergeFrom f S = S ↔ f S ≤ S := by
+  constructor
+  · intro h
+    have hmap : S ⊔ f (convergeFrom f S) = convergeFrom f S :=
+      OrderHom.map_lfp ⟨fun X => S ⊔ f X, fun _ _ hab => sup_le_sup_left (f.mono hab) S⟩
+    rw [h] at hmap
+    exact sup_eq_left.mp hmap
+  · intro h
+    refine le_antisymm ?_ (le_convergeFrom f S)
+    exact OrderHom.lfp_le
+      ⟨fun X => S ⊔ f X, fun _ _ hab => sup_le_sup_left (f.mono hab) S⟩
+      (sup_le le_rfl h)
+
 /-- The **scope-dependent persistence-flag** carrier (b) supplies: a read-face persists
     in scope `S` iff it lies in the converged scope above `S` (the closure of `S` under
     recognition). Unlike `lfpFlag` and carrier (a)'s `LedgerPersistence.flag`, this
@@ -224,7 +255,12 @@ from nothing) — it equals neither gauge and never reads `Discharged`. Hence
 fully discharged** (`nonempty_bridge_applyRules_iff`), i.e. only where carrier (a)
 is itself `⊥`. So the gauge is the tamp — observer-supplied at the ledger, in the
 gap between rule-firing and discharge-status — and the bridge stays **bin-2** in
-foam proper. -/
+foam proper. **Refined once more** (RecognitionApplier's "Seeded from the ledger"):
+the bare lfp is `⊥` only because `P₀ = ∅`; running the applier from a *seed*
+(`convergeFrom`, the carrier-(b) closure below) localizes the tamp precisely — `F`
+is sign-neutral, so the gauge enters through the **seed `P₀`**, and the
+undischarged-vs-discharged seed-choice is this very coincide/complement fork
+relocated from the step to the initial substrate. -/
 
 /-- Recognition built over the ledger that accretes the **undischarged**-backing
     read-faces — "hold open what is still owed." Of the form `S ↦ S ⊔ Q` with `Q`
