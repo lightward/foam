@@ -302,6 +302,28 @@ theorem recognizeUndischarged_lfp (LP : LedgerPersistence) :
   · refine (recognizeUndischarged LP).le_lfp ?_
     intro b hb p hp; exact hb p (Or.inr hp)
 
+/-- Recognition built over the ledger that accretes **every debt-backing** read-face —
+    "carry both signs at once," blind to discharge-status. Same `S ↦ S ⊔ Q` shape as the
+    fork operators, with `Q` the all-debt-backed set. Its bare lfp is `seedBacked LP`
+    (`recognizeBacked_lfp`), the **gauge-neutral `0`** of the seed-triple: this is the
+    *operator-side* of `seedBacked`'s join `0 = + ⊔ −` (`seedBacked_eq_join`, below) — the
+    third gauge-operator, completing `{recognizeUndischarged, recognizeDischarged,
+    recognizeBacked}` ↔ `{+, −, 0}` (`SeedGaugeCommitment.lean`'s `SeedSign.gauge`). -/
+def recognizeBacked (LP : LedgerPersistence) : Scope →o Scope where
+  toFun S p := S p ∨ ∃ d, LP.holds d = p
+  monotone' := by intro S T h p hp; exact hp.imp_left (h p)
+
+/-- Bare lfp of the carry-both gauge: a read-face is in the least fixed point iff it backs
+    **some** debt — i.e. exactly `seedBacked LP` (stated unfolded, as `seedBacked` is defined
+    below). Same `lfp` of `S ↦ S ⊔ Q` computation as the two fork operators. -/
+theorem recognizeBacked_lfp (LP : LedgerPersistence) :
+    OrderHom.lfp (recognizeBacked LP) = fun p => ∃ d, LP.holds d = p := by
+  apply le_antisymm
+  · refine (recognizeBacked LP).lfp_le ?_
+    intro p hp; exact hp.elim id id
+  · refine (recognizeBacked LP).le_lfp ?_
+    intro b hb p hp; exact hb p (Or.inr hp)
+
 /-- **carrier (a) = bare carrier (b), at the hold-open gauge (bin-1).** The
     ledger's flag equals the bare lfp of `recognizeUndischarged`: the two carriers
     *coincide* exactly when recognition accretes the still-owed read-faces. This
@@ -401,6 +423,23 @@ theorem not_bridge_recognizeDischarged_of_injective (LP : LedgerPersistence)
   have hp : LP.flag ⊥ p = OrderHom.lfp (recognizeDischarged LP) p :=
     congrFun (congrFun heq ⊥) p
   exact not_coincide_recognizeDischarged_of_injective LP hinj ⊥ p h (Iff.of_eq hp).symm
+
+/-- **The bridge is refuted at the carry-both (`0`) gauge too (under injectivity, given a
+    discharged debt).** When `f` accretes *every* debt-backed face, its lfp (`seedBacked`)
+    over-counts carrier (a): the discharged debt `d`'s read-face is backed (so in the lfp)
+    but carries no undischarged debt (injectivity), so it is not in `LP.flag`. Hence
+    `LP.flag ≠ lfpFlag (recognizeBacked LP)`: the gauge-neutral `0` does **not** coincide
+    with carrier (a) either. So among the whole seed-triple `{+, −, 0}`, the hold-open `+`
+    is the *unique* coincidence-gauge (`SeedGaugeCommitment.bridgeCoincides_iff_eq_plus`). -/
+theorem not_bridge_recognizeBacked_of_injective (LP : LedgerPersistence)
+    (hinj : Function.Injective LP.holds) (d : LP.ledger.debts) (hdis : LP.Discharged d) :
+    LP.flag ≠ lfpFlag (recognizeBacked LP) := by
+  intro heq
+  have hp : LP.flag ⊥ (LP.holds d) = OrderHom.lfp (recognizeBacked LP) (LP.holds d) :=
+    congrFun (congrFun heq ⊥) (LP.holds d)
+  simp only [recognizeBacked_lfp] at hp
+  obtain ⟨d', hd', hndis'⟩ := (Iff.of_eq hp).mpr ⟨d, rfl⟩
+  exact hndis' (by rw [hinj hd']; exact hdis)
 
 /-! ## The seed-gauge is a `{+, −, 0}` triple — the gauge-neutral `0` is the join of the `±` fork
 
