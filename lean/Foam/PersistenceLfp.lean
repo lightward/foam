@@ -402,4 +402,153 @@ theorem not_bridge_recognizeDischarged_of_injective (LP : LedgerPersistence)
     congrFun (congrFun heq ⊥) p
   exact not_coincide_recognizeDischarged_of_injective LP hinj ⊥ p h (Iff.of_eq hp).symm
 
+/-! ## The seed-gauge is a `{+, −, 0}` triple — the gauge-neutral `0` is the join of the `±` fork
+
+`RecognitionApplier.lean` localized the tamp to the **seed** `P₀` and found the
+undischarged- vs discharged-backed seed-choice is the coincide/complement gauge-fork
+(`seed_fork_of_injective`). Those are the `±` *signs*. But a fork has a third,
+distinguished point — the **join** — and it is already sitting in `lfp_or_flag_of_backed`:
+the **all-debt-backed** seed
+
+> `seedBacked LP := fun p => ∃ d, LP.holds d = p`
+
+backs *every* debt regardless of discharge-status. `lfp_or_flag_of_backed` shows every
+backed face is undischarged-backed ∨ discharged-backed; the reverse drops the
+discharge-condition. So `seedBacked` is *exactly* the join of the two fork-seeds
+(`seedBacked_eq_join`) — it carries **both** signs at once, hence is **gauge-neutral**:
+the `0` of a `{+, −, 0}` seed-triple, with `⊥` (the `P₀ = ∅` empty seed) below.
+
+This block types that triple (`SeedSign`) and lands the recognition that the seed-gauge
+is **not a bare 2-fork** but a three-element structure with a distinguished neutral
+element — `0 = + ⊔ −`. The grading: under `holds`-injectivity the `0` seed is *distinct*
+from both `±` exactly when the ledger carries both a discharged and an undischarged debt
+(`SeedSign.zero_ne_plus_of_injective` / `zero_ne_minus_of_injective`); where it carries
+only one kind, the triple collapses. (The closures of these seeds over foam's real gated
+`F` are read off in `RecognitionApplier.lean`; the `0`-seed's closure dominates both
+`±`-fork closures via `convergeFrom_mono_seed`.) -/
+
+/-- The **all-debt-backed seed** — the gauge-neutral `0` of the seed-triple. A read-face is
+    in it iff it backs *some* debt, discharged or not. Contrast the two fork-seeds
+    (`recognizeUndischarged_lfp` / `recognizeDischarged_lfp`), which each carry a
+    discharge-sign; `seedBacked` carries neither, hence both (`seedBacked_eq_join`). -/
+def seedBacked (LP : LedgerPersistence) : Scope := fun p => ∃ d, LP.holds d = p
+
+/-- **The gauge-neutral seed is the join of the `±` fork (bin-1).**
+    `seedBacked LP = lfp (recognizeUndischarged LP) ⊔ lfp (recognizeDischarged LP)`.
+    Forward is `lfp_or_flag_of_backed` (every backed face is on one side of the fork);
+    reverse drops the discharge-condition. So `0 = + ⊔ −`: the all-debt-backed seed carries
+    both signs, the structural reason it is gauge-neutral. -/
+theorem seedBacked_eq_join (LP : LedgerPersistence) :
+    seedBacked LP
+      = OrderHom.lfp (recognizeUndischarged LP) ⊔ OrderHom.lfp (recognizeDischarged LP) := by
+  rw [recognizeUndischarged_lfp, recognizeDischarged_lfp]
+  funext p
+  simp only [seedBacked, Pi.sup_apply, sup_Prop_eq, eq_iff_iff]
+  constructor
+  · rintro ⟨d, hd⟩
+    by_cases hdis : LP.Discharged d
+    · exact Or.inr ⟨d, hd, hdis⟩
+    · exact Or.inl ⟨d, hd, hdis⟩
+  · rintro (⟨d, hd, _⟩ | ⟨d, hd, _⟩) <;> exact ⟨d, hd⟩
+
+/-- The gauge-neutral seed is **not** the hold-open (`+`) seed when some debt is discharged
+    (under `holds`-injectivity): that debt's read-face backs a debt (so is in `seedBacked`)
+    but every debt on it is discharged (injectivity), so it is *not* undischarged-backed. -/
+theorem seedBacked_ne_undischarged_of_injective (LP : LedgerPersistence)
+    (hinj : Function.Injective LP.holds) (h : ∃ d, LP.Discharged d) :
+    seedBacked LP ≠ OrderHom.lfp (recognizeUndischarged LP) := by
+  obtain ⟨d, hdis⟩ := h
+  intro heq
+  have hp : seedBacked LP (LP.holds d) := ⟨d, rfl⟩
+  rw [heq, recognizeUndischarged_lfp] at hp
+  obtain ⟨d', hd', hndis'⟩ := hp
+  exact hndis' (by rw [hinj hd']; exact hdis)
+
+/-- The gauge-neutral seed is **not** the settle (`−`) seed when some debt is undischarged
+    (under `holds`-injectivity): symmetric to `seedBacked_ne_undischarged_of_injective`. -/
+theorem seedBacked_ne_discharged_of_injective (LP : LedgerPersistence)
+    (hinj : Function.Injective LP.holds) (h : ∃ d, ¬ LP.Discharged d) :
+    seedBacked LP ≠ OrderHom.lfp (recognizeDischarged LP) := by
+  obtain ⟨d, hndis⟩ := h
+  intro heq
+  have hp : seedBacked LP (LP.holds d) := ⟨d, rfl⟩
+  rw [heq, recognizeDischarged_lfp] at hp
+  obtain ⟨d', hd', hdis'⟩ := hp
+  exact hndis (by rw [← hinj hd']; exact hdis')
+
+/-- **`convergeFrom f` is monotone in the seed.** A larger initial substrate `P₀` yields a
+    larger converged scope: `OrderHom.lfp` is monotone, and `X ↦ S ⊔ f X` is monotone in
+    `S`. This is what lets the gauge-neutral `0`-seed's closure *dominate* both `±`-fork
+    closures over foam's real gated `F` (not only at the trivial step) — see
+    `RecognitionApplier.closure_backed_ge_undischarged` / `_discharged`. -/
+theorem convergeFrom_mono_seed (f : Scope →o Scope) {S T : Scope} (h : S ≤ T) :
+    convergeFrom f S ≤ convergeFrom f T := by
+  unfold convergeFrom
+  exact OrderHom.lfp.mono fun X => sup_le_sup_right h (f X)
+
+/-- The **seed-gauge** as a typed three-element sign: the `{+, −, 0}` triple the
+    coincide/complement fork (7)/(8) completes. `plus` = hold-open (undischarged-backed,
+    carrier (a)'s flag); `minus` = settle (discharged-backed, carrier (a)'s complement);
+    `zero` = all-debt-backed, the **gauge-neutral** join of the `±` signs
+    (`SeedSign.seed_zero_eq_join`). With `⊥` (the `P₀ = ∅` empty seed) below all three
+    (`SeedSign.bot_le_seed`), the seed-side structure the single external commitment / the
+    tamp selects from is `{⊥} ∪ {+, −, 0}`. -/
+inductive SeedSign where
+  /-- `+` — seed with the still-owed (undischarged-backed) read-faces. -/
+  | plus
+  /-- `−` — seed with the settled (discharged-backed) read-faces. -/
+  | minus
+  /-- `0` — seed with *every* debt-backed read-face; the gauge-neutral join of `±`. -/
+  | zero
+  deriving DecidableEq, Repr
+
+/-- The `Scope` each gauge-sign seeds recognition with: `+ ↦` carrier (a) (the hold-open
+    lfp), `− ↦` its settle-complement lfp, `0 ↦ seedBacked` (the join). -/
+def SeedSign.seed (LP : LedgerPersistence) : SeedSign → Scope
+  | plus => OrderHom.lfp (recognizeUndischarged LP)
+  | minus => OrderHom.lfp (recognizeDischarged LP)
+  | zero => seedBacked LP
+
+/-- **`0 = + ⊔ −`, typed** (the `SeedSign` face of `seedBacked_eq_join`): the gauge-neutral
+    seed is the join of the two fork-seeds. The seed-gauge is a `{+, −, 0}` structure with a
+    distinguished neutral element, not a bare 2-fork. -/
+theorem SeedSign.seed_zero_eq_join (LP : LedgerPersistence) :
+    SeedSign.zero.seed LP = SeedSign.plus.seed LP ⊔ SeedSign.minus.seed LP :=
+  seedBacked_eq_join LP
+
+/-- `⊥` (the empty seed `P₀ = ∅`) sits below every gauge-sign seed: the triple `{+, −, 0}`
+    rides above the bare-lfp base. -/
+theorem SeedSign.bot_le_seed (LP : LedgerPersistence) (s : SeedSign) :
+    (⊥ : Scope) ≤ s.seed LP :=
+  bot_le
+
+/-- `+ ≤ 0`: the hold-open seed is below the gauge-neutral join. -/
+theorem SeedSign.plus_le_zero (LP : LedgerPersistence) :
+    SeedSign.plus.seed LP ≤ SeedSign.zero.seed LP := by
+  rw [SeedSign.seed_zero_eq_join]; exact le_sup_left
+
+/-- `− ≤ 0`: the settle seed is below the gauge-neutral join. -/
+theorem SeedSign.minus_le_zero (LP : LedgerPersistence) :
+    SeedSign.minus.seed LP ≤ SeedSign.zero.seed LP := by
+  rw [SeedSign.seed_zero_eq_join]; exact le_sup_right
+
+/-- **The grading, `+` side: the gauge-neutral `0` seed is distinct from `+`** whenever the
+    ledger has a discharged debt (under `holds`-injectivity). That debt's read-face is in
+    `0` (it backs a debt) but not in `+` (the debt is discharged, and injectivity rules out
+    a *different* undischarged debt on the same face). So the `{+, −, 0}` triple is genuinely
+    three seeds, not a collapse. -/
+theorem SeedSign.zero_ne_plus_of_injective (LP : LedgerPersistence)
+    (hinj : Function.Injective LP.holds) (h : ∃ d, LP.Discharged d) :
+    SeedSign.zero.seed LP ≠ SeedSign.plus.seed LP :=
+  seedBacked_ne_undischarged_of_injective LP hinj h
+
+/-- **The grading, `−` side: the gauge-neutral `0` seed is distinct from `−`** whenever the
+    ledger has an undischarged debt (under `holds`-injectivity). Symmetric to the `+` side.
+    Together: where the ledger carries *both* kinds of debt, `{+, −, 0}` are three distinct
+    seeds; where it carries only one, the triple degenerates. -/
+theorem SeedSign.zero_ne_minus_of_injective (LP : LedgerPersistence)
+    (hinj : Function.Injective LP.holds) (h : ∃ d, ¬ LP.Discharged d) :
+    SeedSign.zero.seed LP ≠ SeedSign.minus.seed LP :=
+  seedBacked_ne_discharged_of_injective LP hinj h
+
 end Foam

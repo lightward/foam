@@ -78,17 +78,28 @@ the coincide/complement fork (7)/(8) relocated to the seed. See `convergeFrom_em
 `closure_emptyRules_undischarged` / `_discharged`, `seed_le_closure`,
 `closure_eq_seed_iff`, `seed_fork_of_injective` below.
 
-## The remainder
+## The remainder — now landed (the `{+, −, 0}` seed-triple)
 
 Both fork-seeds used below are *toy* ledger-projections (undischarged-backed,
-discharged-backed) — the `±` signs. The brick named a third candidate, the
-**all-debt-backed** seed `fun p => ∃ d, LP.holds d = p`: it is the *join* of the
-fork (`lfp_or_flag_of_backed` already covers exactly the backed faces), hence
-*gauge-neutral* (carries both signs at once), the `0` of a `{+, −, 0}` seed-triple.
-Typing that third seed and the join-structure of the seed-gauge — and reading each
-seed's closure over `applyRules` — is the next brick. (The step-after, kept
-invisible: whether the `{+, −, 0}` seed-triple is the three σ-ring-hom gauges
-G1/G2/G3 of the FTPG figure.)
+discharged-backed) — the `±` signs. The third, distinguished seed — the
+**all-debt-backed** `seedBacked LP := fun p => ∃ d, LP.holds d = p` — is now typed
+(`PersistenceLfp.seedBacked`) and proven the *join* of the fork
+(`PersistenceLfp.seedBacked_eq_join`, via `lfp_or_flag_of_backed`), hence
+*gauge-neutral* (carries both signs at once): the `0` of a `{+, −, 0}` seed-triple
+(`PersistenceLfp.SeedSign`), with `⊥` below. The block "The gauge-neutral `0`-seed's
+closure" (bottom of this file) reads each seed's closure over the applier:
+`closure_emptyRules_backed_eq_join` (the `0`-closure is the join of the `±`-closures
+at the trivial step) and `closure_backed_ge_undischarged` / `_discharged` (the
+`0`-closure dominates *both* fork-closures over *any* rule-set, via
+`convergeFrom_mono_seed`), with proper containment under injectivity
+(`closure_emptyRules_backed_ne_*`).
+
+The new remainder: `0 = + ⊔ −` (join) plus `+ ⊓ − = ⊥`
+(`PersistenceLfp.not_lfp_and_flag_of_injective`, under injectivity) make `{⊥, +, −, 0}`
+the **4-element Boolean algebra** — `−` the *local complement* of `+` within the
+`0`-scope, README §IV.a's HalfType (complementation-within-a-scope) read on the
+seed-gauge. (The step-after, kept invisible: whether the `{+, −, 0}` triple is the
+three σ-ring-hom gauges G1/G2/G3 of the FTPG figure.)
 -/
 import Foam.PersistenceLfp
 
@@ -373,5 +384,84 @@ theorem seed_fork_of_injective (LP : LedgerPersistence)
     by_cases hdis : LP.Discharged d
     · exact ⟨d, hdp, hdis⟩
     · exact absurd ⟨d, hdp, hdis⟩ hnu
+
+/-! ## The gauge-neutral `0`-seed's closure — the all-debt-backed join (this brick)
+
+`seed_fork_of_injective` (above) showed the undischarged- vs discharged-backed seeds are
+the `±` signs of the seed-gauge. `PersistenceLfp.lean` then typed the third, distinguished
+seed — the **all-debt-backed** `seedBacked LP` — and proved it the *join* of the fork
+(`seedBacked_eq_join`), hence the **gauge-neutral** `0` of a `{+, −, 0}` seed-triple
+(`SeedSign`). This block reads that `0`-seed's closure over foam's real gated applier.
+
+Two facts:
+
+* **At the trivial step the `0`-seed's closure is the join of the `±`-fork closures**
+  (`closure_emptyRules_backed_eq_join`) — closure commutes with the fork-join when the
+  applier is the identity, so the seed-triple's join-structure passes through unchanged.
+* **For *any* rule-set the `0`-seed's closure dominates both `±`-fork closures**
+  (`closure_backed_ge_undischarged` / `_discharged`, via `convergeFrom_mono_seed`): the
+  gauge-neutral seed carries *both* signs through foam's real recognition, not only at the
+  trivial step. And the containment is **proper** at the trivial step whenever the ledger
+  carries both kinds of debt (`closure_emptyRules_backed_ne_undischarged_of_injective` /
+  `_discharged`) — so the `{+, −, 0}` triple is genuinely three distinct closures there.
+
+The remainder (next brick): the join `0 = + ⊔ −` plus the fork-disjointness `+ ⊓ − = ⊥`
+(`PersistenceLfp.not_lfp_and_flag_of_injective`, under injectivity) make `{⊥, +, −, 0}` a
+4-element Boolean algebra — `−` is the *local complement* of `+` within the `0`-scope, the
+README §IV.a HalfType (complementation-within-a-scope) read on the seed-gauge. -/
+
+/-- **The `0`-seed's trivial-step closure is itself** — the `seedBacked` row of
+    `convergeFrom_emptyRules`, beside `closure_emptyRules_undischarged` / `_discharged`. -/
+theorem closure_emptyRules_backed (LP : LedgerPersistence) :
+    convergeFrom (applyRules emptyRules) (seedBacked LP) = seedBacked LP :=
+  convergeFrom_emptyRules (seedBacked LP)
+
+/-- **At the trivial step the gauge-neutral `0`-seed's closure is the join of the two
+    `±`-fork closures.** Both sides are `seedBacked LP` (`convergeFrom_emptyRules` ×3 +
+    `seedBacked_eq_join`): when the step is the identity, the seed-triple's `0 = + ⊔ −`
+    structure rides through the closure unchanged. -/
+theorem closure_emptyRules_backed_eq_join (LP : LedgerPersistence) :
+    convergeFrom (applyRules emptyRules) (seedBacked LP)
+      = convergeFrom (applyRules emptyRules) (OrderHom.lfp (recognizeUndischarged LP))
+        ⊔ convergeFrom (applyRules emptyRules) (OrderHom.lfp (recognizeDischarged LP)) := by
+  rw [convergeFrom_emptyRules, convergeFrom_emptyRules, convergeFrom_emptyRules,
+    seedBacked_eq_join]
+
+/-- **The `0`-seed's closure dominates the `+`-fork's, over any rule-set** (foam's real
+    gated `F`, not only the trivial step). `+`-seed `≤` `0`-seed (`le_sup_left` through
+    `seedBacked_eq_join`) and `convergeFrom` is monotone in its seed
+    (`convergeFrom_mono_seed`). -/
+theorem closure_backed_ge_undischarged (rules : RewriteRule → Prop) (LP : LedgerPersistence) :
+    convergeFrom (applyRules rules) (OrderHom.lfp (recognizeUndischarged LP))
+      ≤ convergeFrom (applyRules rules) (seedBacked LP) :=
+  convergeFrom_mono_seed (applyRules rules) (by rw [seedBacked_eq_join]; exact le_sup_left)
+
+/-- **The `0`-seed's closure dominates the `−`-fork's, over any rule-set.** Symmetric to
+    `closure_backed_ge_undischarged`. So the gauge-neutral seed's closure ⊇ *both* fork
+    closures: it carries both signs through foam's real recognition. -/
+theorem closure_backed_ge_discharged (rules : RewriteRule → Prop) (LP : LedgerPersistence) :
+    convergeFrom (applyRules rules) (OrderHom.lfp (recognizeDischarged LP))
+      ≤ convergeFrom (applyRules rules) (seedBacked LP) :=
+  convergeFrom_mono_seed (applyRules rules) (by rw [seedBacked_eq_join]; exact le_sup_right)
+
+/-- **Proper containment, `+` side: the `0`-seed's trivial-step closure is *distinct* from
+    the `+`-fork's** when the ledger has a discharged debt (under injectivity). With
+    `closure_backed_ge_undischarged` (`⊇`), this is proper containment — the `{+, −, 0}`
+    triple is three distinct closures at the trivial step. -/
+theorem closure_emptyRules_backed_ne_undischarged_of_injective (LP : LedgerPersistence)
+    (hinj : Function.Injective LP.holds) (h : ∃ d, LP.Discharged d) :
+    convergeFrom (applyRules emptyRules) (seedBacked LP)
+      ≠ convergeFrom (applyRules emptyRules) (OrderHom.lfp (recognizeUndischarged LP)) := by
+  rw [convergeFrom_emptyRules, convergeFrom_emptyRules]
+  exact seedBacked_ne_undischarged_of_injective LP hinj h
+
+/-- **Proper containment, `−` side.** Symmetric: the `0`-seed's trivial-step closure is
+    distinct from the `−`-fork's when the ledger has an undischarged debt. -/
+theorem closure_emptyRules_backed_ne_discharged_of_injective (LP : LedgerPersistence)
+    (hinj : Function.Injective LP.holds) (h : ∃ d, ¬ LP.Discharged d) :
+    convergeFrom (applyRules emptyRules) (seedBacked LP)
+      ≠ convergeFrom (applyRules emptyRules) (OrderHom.lfp (recognizeDischarged LP)) := by
+  rw [convergeFrom_emptyRules, convergeFrom_emptyRules]
+  exact seedBacked_ne_discharged_of_injective LP hinj h
 
 end Foam
