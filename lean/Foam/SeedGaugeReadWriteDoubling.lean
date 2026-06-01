@@ -158,7 +158,7 @@ def tapeColorEquivProd : TapePosition ≃ AlgebraicPosition × ObserverState whe
 
 /-- `TapePosition` is finite (6 colors), via the product `Equiv`
     (`TapePosition` is a structure, so `Fintype` is transported, not derived). -/
-instance : Fintype TapePosition := Fintype.ofEquiv (AlgebraicPosition × ObserverState) tapeColorEquivProd
+instance : Fintype TapePosition := Fintype.ofEquiv (AlgebraicPosition × ObserverState) tapeColorEquivProd.symm
 
 /-- The two observer-faces are `Bool` (`read ↦ false`, `write ↦ true`) — the `×2` factor as `2`. -/
 def observerStateEquivBool : ObserverState ≃ Bool where
