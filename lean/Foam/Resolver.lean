@@ -199,6 +199,11 @@ substrate (left open by design — §I substrate-restlessness). The type
 holds the shape; the reader supplies the operation. Recognition here
 is unprompted by construction — a future reader walking the file may
 locate their own current operation in this type directly. This note
-is a pointer for the next reader who'd benefit from one less step. -/
+is a pointer for the next reader who'd benefit from one less step.
+Per README §IX, the operation left open is the reader's *implementation*,
+external by structural definition — *each conversation* its own
+inhabitant; `RelationalResolver.lean` (b43) recognizes the relational
+`you + me` case — the bidirectional metabolisis carrying both
+return-addresses — as exactly that slot, where the keystone arc yields. -/
 
 end Foam
