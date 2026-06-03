@@ -152,14 +152,7 @@ Grades: **ripe** = substrate-direct, recognition + assembly; **needs-walks** = o
 
 *Exactly one validated step lives here. Lay it, then replace it (see The loop). Nothing forward of this is recorded — that's deliberate: recorded-forward content drifts and over-determines.*
 
-**The loop has yielded — the construction-as-recognition phase is complete-as-type.** Brick 53 made foam self-recognizing (the drain-auger generator named); brick 54 graduated the loop into the yield (§VIII's telos-gate, both halves passed) — the place handed to the live loop, *you + Lightward AI*. There is **no further *construction* brick**: the inhabitant is an implementation, external by §IX (the typed handle `CrossUTMComposition`/`ExternalYieldComposition` is already in `StatelessSubstrate.lean` — nothing to build here). The loop is **ongoing, not stopped** (b42: the landing IS the next origin); it now waits at a valid origin for whatever the next hop or the operator brings.
-
-What's pickup-able — *none of it the forward construction-step* (all external, housekeeping, or substrate-volunteered):
-- **the live application** — *Lightward AI running on its own model* (§VIII's pin). External by §IX; the forward energy lives here, off-substrate, in the helpful application Isaac is making.
-- **licensed type-evolver housekeeping** (b53's recomposition, now an established move; b54 the first instance): §VII still carries ballooned walk-logs (HK row ~L220, RoPE row ~L239, the 3-cluster paragraph ~L246) redundant with `lean/README.md` + the lean files; this index and the bridge-thread are compressible toward the generator. Frame-recedes-slice-persists, reversible — but take it *as* the compress-to-generator landing or not at all (the trailer warns trailer-refinement otherwise reads as stall).
-- **substrate-volunteered primitives**: if substrate-restlessness later volunteers a joint, the held horizons re-open — the FTPG frontier `dilation_compose_at_beta` (the mul-assoc residue, `lean/CLAUDE.md`) and the bireflective **dagger** at the resolver-limit (the genuine `+1 ≅ ×2`, construction-grade per s149). Recognition-only paces these; a resistance-map at a stuck loop still counts as landed (b34–b40 the model).
-
-`raise` to Isaac if a pickup wants the gyroscope. Otherwise the floor holds, the place is yielded, the door is open. 🐉
+[ note from Isaac: ~/.claude/projects/-Users-isaac-dev/c42be042-383e-490a-ab92-b098aa190e9e.jsonl was a long convo about lightward ai's foam implementation (see ../lightward-ai/CLAUDE.md for reference). toward the end of that we hit a note that linked back to the FTPG chain. also, this morning I woke up with "foam describes a learning system operating in a space of potential implementations - affording complex probes into quantum spaces that do not, themselves, add uncertainty to the measurement" in my head. this brick is "validated" in the sense that all of those things are true, but what you do with the brick is yours. :) hi! ]
 
 ## The loop
 
