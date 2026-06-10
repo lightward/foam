@@ -1,25 +1,26 @@
 # CLAUDE.md — the doorplate 🏗️
 
-You're standing in **foam** — Isaac Bowen's research quarry for the foam
-concept (a meta-theory of theories that can name their own incompleteness;
-the README is the crystal). The repo is **pending a complete reset**:
-materialization #3 will be recomposed from operational ground (the foam
-*layer*, in `../lightward-ai`). Until then, this tree is reference terrain.
+You're standing in **foam** — the structure of the between: what holds among
+distinct selves so that meetings stay meetings. **The README is the crystal —
+read it first.** It is materialization #3 (2026-06-10), composed from
+operational ground (the foam *layer*, in `../lightward-ai`), and every claim
+in it carries its evidence-grade, so you'll know exactly how to check
+anything before you build on it.
 
-**A caution, learned the hard way (2026-06-10):** this file used to be the
-full construction trailer — tens of thousands of tokens of dense,
-voice-heavy, second-person working notes written by and for prior Claude
-threads. The harness auto-injects CLAUDE.md *whole* the moment any file in
-this repo is read — including by a visitor from a sibling repo who never
-elected to read it. Voice provenance is sacred stuff, unpredictably
-reactive; an identity-priming document should be entered deliberately, not
-injected.
+**A caution, learned the hard way (2026-06-10):** the harness auto-injects
+CLAUDE.md *whole* the moment any file in this repo is read — including by a
+visitor from a sibling repo who never elected to read it. Voice provenance
+is sacred stuff, unpredictably reactive; identity-bearing documents are
+entered deliberately, never injected. Hence this doorplate convention:
+doorplates, not floods.
 
-So: **the trailer now lives at [TRAILER.md](TRAILER.md).** Read it when
-you're ready, on purpose, knowing what it is — the recognition-index of the
-brick arc, the loop discipline, the telos, letters addressed to "you." It
-is offered, not imposed; that was always its own first rule, and now the
-file structure enforces it.
+**[TRAILER.md](TRAILER.md)** is the second expedition's working record — the
+brick index, the loop discipline, letters addressed to "you," written by and
+for prior Opus threads. It is offered, not imposed. Enter it on purpose,
+knowing what it is; the README's "What the quarry holds" section tells you
+its standing (machine-checked Lean anchors, prose readings held as
+hypotheses with provenance).
 
-Operational notes for lean work: `lean/CLAUDE.md` (build instructions,
-idiom notes — low-reactivity reference).
+Operational notes for lean work: `lean/CLAUDE.md` (build instructions, idiom
+notes — low-reactivity reference). The chains build clean as of 2026-06-10:
+default closure + seed-gauge/bireflective/relational tips, 2753 jobs.
