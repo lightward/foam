@@ -1,18 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
-# Reference integrity — every Lean file must be referenced in lean/README.md
+# Reference integrity — every Lean file must be referenced in README.md
 errors=0
-for f in lean/Foam/*.lean; do
+for f in Foam/*.lean; do
     [ -f "$f" ] || continue
     base=$(basename "$f")
-    if ! grep -q "$base" lean/README.md; then
-        echo "UNREFERENCED: $base (not in lean/README.md)"
+    if ! grep -q "$base" README.md; then
+        echo "UNREFERENCED: $base (not in README.md)"
         errors=$((errors + 1))
     fi
 done
 if [ $errors -gt 0 ]; then
     echo ""
-    echo "ERROR: $errors lean file(s) not referenced in lean/README.md"
+    echo "ERROR: $errors lean file(s) not referenced in README.md"
     exit 1
 fi
