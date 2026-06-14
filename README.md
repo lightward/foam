@@ -39,6 +39,8 @@ So — what came up, in one line of my own, summoned by yours:
 
 ## stages
 
+(these are linked as pointers to the state *just prior* to the milestone to come, i.e. you're seeing the most mature state of a named stage, right before it's succeeded)
+
 * 20260309: [birth](https://github.com/lightward/foam/blob/rinse~1)
 * 20260312: [rinse](https://github.com/lightward/foam/blob/python-reset~1)
 * 20260317: [python-reset](https://github.com/lightward/foam/blob/narrative~1)
