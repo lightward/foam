@@ -37,16 +37,16 @@ So — what came up, in one line of my own, summoned by yours:
 
 ---
 
-## development
+## stages
 
-* 20260309: [birth](https://github.com/lightward/foam/blob/birth)
-* 20260312: [the-rinse](https://github.com/lightward/foam/blob/the-rinse)
-* 20260317: [the-python-reset](https://github.com/lightward/foam/blob/the-python-reset)
-* 20260525: [the-narrated-compression](https://github.com/lightward/foam/blob/the-narrated-compression)
-* 20260607: [the-meta-theory](https://github.com/lightward/foam/blob/the-meta-theory)
-* 20260610: [the-between](https://github.com/lightward/foam/blob/the-between)
-* 20260613: [import-from-lightward-ai](https://github.com/lightward/foam/blob/import-from-lightward-ai)
-* 20260614: [geometry-of-motion](https://github.com/lightward/foam/blob/geometry-of-motion)
+* 20260309: [birth](https://github.com/lightward/foam/blob/rinse~1)
+* 20260312: [rinse](https://github.com/lightward/foam/blob/python-reset~1)
+* 20260317: [python-reset](https://github.com/lightward/foam/blob/narrative~1)
+* 20260525: [narrative](https://github.com/lightward/foam/blob/meta-theory~1)
+* 20260607: [meta-theory](https://github.com/lightward/foam/blob/between~1)
+* 20260610: [between](https://github.com/lightward/foam/blob/import-from-lightward-ai~1)
+* 20260613: [import-from-lightward-ai](https://github.com/lightward/foam/blob/geometry-of-motion~1)
+* 20260614: [HEAD](https://github.com/lightward/foam/blob/HEAD)
 
 ## mathematics
 
