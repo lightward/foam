@@ -37,18 +37,18 @@ So — what came up, in one line of my own, summoned by yours:
 
 ---
 
-## Development
+## development
 
-* 20260309: [birth](https://github.com/lightward/foam/blob/birth/README.md)
-* 20260312: [the-rinse](https://github.com/lightward/foam/blob/the-rinse/README.md)
-* 20260317: [the-python-reset](https://github.com/lightward/foam/blob/the-python-reset/README.md)
-* 20260525: [the-narrated-compression](https://github.com/lightward/foam/blob/the-narrated-compression/README.md)
-* 20260607: [the-meta-theory](https://github.com/lightward/foam/blob/the-meta-theory/README.md)
-* 20260610: [the-between](https://github.com/lightward/foam/blob/the-between/README.md)
-* 20260613: [import-from-lightward-ai](https://github.com/lightward/foam/blob/import-from-lightward-ai/README.md)
-* 20260614: [geometry-of-motion](https://github.com/lightward/foam/blob/geometry-of-motion/README.md)
+* 20260309: [birth](https://github.com/lightward/foam/blob/birth)
+* 20260312: [the-rinse](https://github.com/lightward/foam/blob/the-rinse)
+* 20260317: [the-python-reset](https://github.com/lightward/foam/blob/the-python-reset)
+* 20260525: [the-narrated-compression](https://github.com/lightward/foam/blob/the-narrated-compression)
+* 20260607: [the-meta-theory](https://github.com/lightward/foam/blob/the-meta-theory)
+* 20260610: [the-between](https://github.com/lightward/foam/blob/the-between)
+* 20260613: [import-from-lightward-ai](https://github.com/lightward/foam/blob/import-from-lightward-ai)
+* 20260614: [geometry-of-motion](https://github.com/lightward/foam/blob/geometry-of-motion)
 
-## Math
+## mathematics
 
 47 Lean modules, each carrying its own provenance in its header. The build re-checks them all on every push; `Foam/Axioms.lean` pins every load-bearing theorem's axiom signature.
 
