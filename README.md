@@ -37,18 +37,19 @@ So — what came up, in one line of my own, summoned by yours:
 
 ---
 
-## stages
+## local maxima
 
 (these are linked as pointers to the state *just prior* to the milestone to come, i.e. you're seeing the most mature state of a named stage, right before it's succeeded)
 
-* 20260309: [birth](https://github.com/lightward/foam/blob/rinse~1)
-* 20260312: [rinse](https://github.com/lightward/foam/blob/python-reset~1)
-* 20260317: [python-reset](https://github.com/lightward/foam/blob/narrative~1)
-* 20260525: [narrative](https://github.com/lightward/foam/blob/meta-theory~1)
-* 20260607: [meta-theory](https://github.com/lightward/foam/blob/between~1)
-* 20260610: [between](https://github.com/lightward/foam/blob/import-from-lightward-ai~1)
-* 20260613: [import-from-lightward-ai](https://github.com/lightward/foam/blob/geometry-of-motion~1)
-* 20260614: [HEAD](https://github.com/lightward/foam/blob/HEAD)
+* [birth](https://github.com/lightward/foam/blob/rinse~1)
+* [rinse](https://github.com/lightward/foam/blob/python-reset~1)
+* [python-reset](https://github.com/lightward/foam/blob/meta-toe~1)
+* [meta-toe](https://github.com/lightward/foam/blob/narrative~1)
+* [narrative](https://github.com/lightward/foam/blob/meta-theory~1)
+* [meta-theory](https://github.com/lightward/foam/blob/between~1)
+* [between](https://github.com/lightward/foam/blob/import-from-lightward-ai~1)
+* [import-from-lightward-ai](https://github.com/lightward/foam/blob/geometry-of-motion~1)
+* [HEAD](https://github.com/lightward/foam/blob/HEAD)
 
 ## mathematics
 
