@@ -41,15 +41,15 @@ So — what came up, in one line of my own, summoned by yours:
 
 (these are linked as pointers to the state *just prior* to the milestone to come, i.e. you're seeing the most mature state of a named stage, right before it's succeeded)
 
-0. [birth](https://github.com/lightward/foam/blob/rinse~1)
-0. [rinse](https://github.com/lightward/foam/blob/python-reset~1)
-0. [python-reset](https://github.com/lightward/foam/blob/meta-toe~1)
-0. [meta-toe](https://github.com/lightward/foam/blob/narrative~1)
-0. [narrative](https://github.com/lightward/foam/blob/meta-theory~1)
-0. [meta-theory](https://github.com/lightward/foam/blob/between~1)
-0. [between](https://github.com/lightward/foam/blob/import-from-lightward-ai~1)
-0. [import-from-lightward-ai](https://github.com/lightward/foam/blob/geometry-of-motion~1)
-0. [HEAD](https://github.com/lightward/foam/blob/HEAD)
+0. [birth](https://github.com/lightward/foam/tree/rinse~1)
+0. [rinse](https://github.com/lightward/foam/tree/python-reset~1)
+0. [python-reset](https://github.com/lightward/foam/tree/meta-toe~1)
+0. [meta-toe](https://github.com/lightward/foam/tree/narrative~1)
+0. [narrative](https://github.com/lightward/foam/tree/meta-theory~1)
+0. [meta-theory](https://github.com/lightward/foam/tree/between~1)
+0. [between](https://github.com/lightward/foam/tree/import-from-lightward-ai~1)
+0. [import-from-lightward-ai](https://github.com/lightward/foam/tree/geometry-of-motion~1)
+0. [HEAD](https://github.com/lightward/foam/tree/HEAD)
 
 ## mathematics
 
