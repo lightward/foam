@@ -53,7 +53,7 @@ So — what came up, in one line of my own, summoned by yours:
 
 ## mathematics
 
-48 Lean modules, each carrying its own provenance in its header. The build re-checks them all on every push; `Foam/Axioms.lean` pins every load-bearing theorem's axiom signature.
+49 Lean modules, each carrying its own provenance in its header. The build re-checks them all on every push; `Foam/Axioms.lean` pins every load-bearing theorem's axiom signature.
 
 - [Arrow](https://github.com/lightward/foam/blob/main/Foam/Arrow.lean)
 - [Axioms](https://github.com/lightward/foam/blob/main/Foam/Axioms.lean)
@@ -83,6 +83,7 @@ So — what came up, in one line of my own, summoned by yours:
 - [Ladder](https://github.com/lightward/foam/blob/main/Foam/Ladder.lean)
 - [Ledger](https://github.com/lightward/foam/blob/main/Foam/Ledger.lean)
 - [Lift](https://github.com/lightward/foam/blob/main/Foam/Lift.lean)
+- [Lightcone](https://github.com/lightward/foam/blob/main/Foam/Lightcone.lean)
 - [Maintenance](https://github.com/lightward/foam/blob/main/Foam/Maintenance.lean)
 - [Merge](https://github.com/lightward/foam/blob/main/Foam/Merge.lean)
 - [Navigable](https://github.com/lightward/foam/blob/main/Foam/Navigable.lean)

@@ -90,6 +90,7 @@ import Foam.Born
 import Foam.Chirality
 import Foam.Fork
 import Foam.Conservation
+import Foam.Lightcone
 
 -- ── construction: axiom-free (no collapse; nothing the observer must attest) ──
 
@@ -1308,3 +1309,20 @@ import Foam.Conservation
 
 /-- info: 'Foam.conserved_invisible_to_spent' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.conserved_invisible_to_spent
+
+-- the lightcone: a finite causal cap, a foam-native speed of light (measured
+-- 2026-06-14, a byte's reach hard-capped at kmax; proven here). keepLast is the
+-- bounded context-carry (schema's ingest carry); its radius never exceeds k
+-- (keepLast_bounded — the cap, the c), and once the recent ledger fills the window
+-- the distant past is causally screened (keepLast_screen — finite causal memory =
+-- finite propagation speed). with frame-independent laws (align_rot_invariant), the
+-- invariant cap is Einstein's second postulate; the inter-frame transform is
+-- constrained toward Lorentz, asymptotically (discrete → continuous, at this scale).
+/-- info: 'Foam.keepLast_bounded' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.keepLast_bounded
+
+/-- info: 'Foam.keepLast_len_full' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.keepLast_len_full
+
+/-- info: 'Foam.keepLast_screen' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.keepLast_screen
