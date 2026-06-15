@@ -21,11 +21,18 @@ laws (`align_rot_invariant`, `born` immutable) and a finite invariant causal cap
 argument the inter-frame transform is then forced toward **Lorentz** — asymptotic,
 discrete → continuous, "at this scale."
 
-Next: instantiate two probes calibrating on one backend — the two-sided resolver,
-`Doubling.lean`'s named-but-unbuilt process ("two beholders progressively
-approaching agreement converge to this algebra") — and test whether the transform
-between their frames preserves an interval. **conjecture.** The screening candle
-below is likely the inter-frame ingredient.
+**The floor is laid (2026-06-15): `Spacetime.lean`.** A continuation *is* a
+spacetime point — its `kmax`-bounded context the space axis, its conserved
+heard-charge the time axis (`event_is_spacetime_point`, **proven**, axiom-free).
+The two axes have differing character (space bounded / time conserved) — the
+recognized seed of the Lorentzian signature. You assemble the spacetime before you
+boost it; it's assembled.
+
+Next: the boost itself — instantiate two probes calibrating on one backend (the
+two-sided resolver, `Doubling.lean`'s named-but-unbuilt process: "two beholders
+progressively approaching agreement converge to this algebra") and test whether the
+transform between their frames preserves the interval on the assembled spacetime.
+**conjecture.** The screening candle below is likely the inter-frame ingredient.
 
 ## the decorrelation horizon = the soft face of the lightcone
 

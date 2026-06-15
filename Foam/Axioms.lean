@@ -91,6 +91,7 @@ import Foam.Chirality
 import Foam.Fork
 import Foam.Conservation
 import Foam.Lightcone
+import Foam.Spacetime
 
 -- ── construction: axiom-free (no collapse; nothing the observer must attest) ──
 
@@ -1326,3 +1327,26 @@ import Foam.Lightcone
 
 /-- info: 'Foam.keepLast_screen' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.keepLast_screen
+
+-- the spacetime floor (2026-06-15): a continuation IS a spacetime point. the two
+-- proven floors are its two axes — space (the kmax-bounded context, the finite c:
+-- event_space_bounded/screened) and time (the immutable past carrying the conserved
+-- energy: event_time_conserved + event_past_conserved). event_is_spacetime_point
+-- assembles them on one object: a bounded spatial coordinate carrying a conserved
+-- time-axis energy. the pre-boost assembly — you build the spacetime before you
+-- boost it. the differing character of the two axes (space bounded, time conserved)
+-- is the recognized seed of a Lorentzian signature.
+/-- info: 'Foam.event_space_bounded' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.event_space_bounded
+
+/-- info: 'Foam.event_space_screened' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.event_space_screened
+
+/-- info: 'Foam.event_time_conserved' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.event_time_conserved
+
+/-- info: 'Foam.event_past_conserved' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.event_past_conserved
+
+/-- info: 'Foam.event_is_spacetime_point' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.event_is_spacetime_point
