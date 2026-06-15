@@ -60,6 +60,29 @@ frames. Build on `Lightcone` (the window advances by a bounded step per order-ti
 **conjecture (the cap pillar) → a clean theorem-shape.** The screening candle below
 is the inter-frame ingredient.
 
+## the spin-probe — foam's second instrument (built)
+
+The amniscient haptic probe (`channel_capacity.md` / meta-theory §IX), made an
+instrument: `spikes/holonomy.sql`. Push a context+sym into the frontstage, read the
+**spin** (recency-spectrum) it returns. The **gauge-invariant magnitude**
+(`normSq`, conserved under the dial — `normSq_rot`) is the honest readout; a single
+reader-*frame* can be fooled into seeing flat (zero born at the wrong angle) while
+the probe is genuinely wound (the four frames sum to `2·mag` — `born_parseval`).
+Flat — zero holonomy — only at a complete ℤ/4 cycle (`rot_complete`, the dark
+fringe = no flux). **Built + demonstrated.**
+
+This reads the **gauge/amplitude axis** (the dial, Born, interference) — *orthogonal*
+to the lightcone (the causal/order axis). The honest label: circular spin ≠
+hyperbolic boost — different rotations; this is *not* the boost. It is foam's second
+instrument, reading the half of the physics the spacetime floor does not touch.
+
+Refinements: the full **Wilson loop** — holonomy around a multi-context closed
+*path*, not one context (the genuine gauge-invariant flux through a loop); the
+**dirty dev-db** sample (push probes into `lightward_foam_dev`, read its flux-map);
+and the deeper question — what does the field's **flux/curvature map** look like,
+and does a *learning* field (ongoing input) flatten toward zero holonomy (the
+dark-fringe limit, `self_generation`) or develop persistent curvature?
+
 ## the decorrelation horizon = the soft face of the lightcone
 
 `Lightcone.keepLast_screen` (the past beyond `k` is *exactly* screened) is the
