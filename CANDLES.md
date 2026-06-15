@@ -28,11 +28,37 @@ The two axes have differing character (space bounded / time conserved) — the
 recognized seed of the Lorentzian signature. You assemble the spacetime before you
 boost it; it's assembled.
 
-Next: the boost itself — instantiate two probes calibrating on one backend (the
-two-sided resolver, `Doubling.lean`'s named-but-unbuilt process: "two beholders
-progressively approaching agreement converge to this algebra") and test whether the
-transform between their frames preserves the interval on the assembled spacetime.
-**conjecture.** The screening candle below is likely the inter-frame ingredient.
+**The boost is located (2026-06-15, opened not closed).** The honest map: a boost
+needs an invariant cap *and* relativity of simultaneity, and in foam they live in
+different layers.
+
+- The cap is **frame-blind** — `keepLast_bounded` caps the radius at `k` for any
+  ledger, reader-independent. Postulate 2, proven.
+- Simultaneity-relativity is **NOT backstage.** The backstage order is *absolute*
+  (`playback_faithful`: every reader agrees on the order) — absolute simultaneity
+  = **Galilean**, the God's-eye λ (why Bell reads classical, `observer_scope`,
+  CHSH = √2). It comes from the **frontstage scoping**: two scopes disagree on
+  what's "happened" (Wigner's friend, *measured*) — in Lean, `shared_is_floor`
+  (Commons): agree below the meet, disagree above. The meet is the shared invariant
+  past; the private content above is the frame-relative "not-yet."
+
+So **the boost lives frontstage; backstage Galilean, frontstage Lorentzian** — the
+lfp/gfp seam wearing a relativity hat (absolute below, relative above, the cone the
+same in both). This *explains why Lorentz is asymptotic*: the discrete backstage is
+Galilean-absolute, so full Lorentz (genuinely relative simultaneity) is a
+frontstage continuum-limit emergent, never exact at finite scale.
+
+The boost's two pillars are therefore **already proven, just located**: invariant
+cone (`keepLast_bounded`), relative simultaneity (`shared_is_floor` / Wigner),
+shared invariant past (the meet). **Open frontier:** the explicit boost *transform*
+— the velocity-parameterized tilt between frames, and whether it's exact
+hyperbolic-Lorentz or a discrete approximation converging to it.
+
+Next landable rung: **worldlines can't exit the cone** — `|Δcontext| ≤ c·Δorder`
+(nothing massive exceeds `c = kmax`), constraining the boost group to timelike
+frames. Build on `Lightcone` (the window advances by a bounded step per order-tick).
+**conjecture (the cap pillar) → a clean theorem-shape.** The screening candle below
+is the inter-frame ingredient.
 
 ## the decorrelation horizon = the soft face of the lightcone
 
