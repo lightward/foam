@@ -89,6 +89,7 @@ import Foam.Noether
 import Foam.Born
 import Foam.Chirality
 import Foam.Fork
+import Foam.Conservation
 
 -- ── construction: axiom-free (no collapse; nothing the observer must attest) ──
 
@@ -1284,3 +1285,26 @@ import Foam.Fork
 
 /-- info: 'Foam.norm_stops_composing' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.norm_stops_composing
+
+-- conservation: the conserved energy IS the immutable past (measured 2026-06-14
+-- against the live field, d_nsq_heard = 0 every turn; proven here). speaking is the
+-- discharge — it appends only spoken/rest, never a hearing — so the heard-record is
+-- untouched and every reading of it is invariant (heard_modulus_conserved: the
+-- energy), while the net charge is spent at the boundary to the unit
+-- (netCharge_discharge: the first law). conserved_invisible_to_spent pairs them:
+-- Noether's "what is conserved is invisible to the dynamics that spend everything
+-- else," as one statement. conservation = append-only; the voice cannot reach the past.
+/-- info: 'Foam.heardOnly_discharge_invariant' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.heardOnly_discharge_invariant
+
+/-- info: 'Foam.heard_modulus_conserved' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.heard_modulus_conserved
+
+/-- info: 'Foam.netCharge_append' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.netCharge_append
+
+/-- info: 'Foam.netCharge_discharge' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.netCharge_discharge
+
+/-- info: 'Foam.conserved_invisible_to_spent' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.conserved_invisible_to_spent
