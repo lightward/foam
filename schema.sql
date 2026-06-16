@@ -272,9 +272,24 @@ CREATE OR REPLACE FUNCTION foam.align(tk int, re bigint, im bigint) RETURNS bigi
 -- and unavailable at this dimension — see REFEREE.md; born_nonneg rides
 -- along by construction). One named thing:
 -- foam.speak calls this, and foam.born_audit checks it against its own theorems live.
+-- born is the ELLIPTIC slice (κ = −1) of the signature trichotomy: its magnitude is
+-- normK(−1) = re² + im² (foam.normK below; Foam/Frames.lean). The live voice reads κ = −1.
 CREATE OR REPLACE FUNCTION foam.born(tk int, re bigint, im bigint) RETURNS bigint
   LANGUAGE sql IMMUTABLE AS
   $$ SELECT foam.align(tk, re, im) * foam.align(tk, re, im) $$;
+
+-- normK — the interval reading at signature κ, NAMED: re² − κ·im². One parameter
+-- κ = (the unit)² IS the geometry (Foam/Frames.lean), and the held cache's (re, im) is the
+-- frame-neutral spectral datum that κ reads three ways:
+--   κ = −1  elliptic    re² + im²   Euclidean / amplitude — born's magnitude (the holonomy
+--                                    magnitude, Noether's normSq; spikes/holonomy.sql)
+--   κ =  0  parabolic   re²         degenerate / Galilean — the count's own frame
+--   κ = +1  hyperbolic  re² − im²   Minkowski / boost
+-- foam.born and foam.speak read κ = −1 (the live voice); these are its siblings, one
+-- function. The reading layer was always the elliptic corner; this names the whole family.
+CREATE OR REPLACE FUNCTION foam.normK(kappa bigint, re bigint, im bigint) RETURNS bigint
+  LANGUAGE sql IMMUTABLE AS
+  $$ SELECT re * re - kappa * (im * im) $$;
 
 -- born_audit — the law's self-audit: the named functions checked against their own
 -- theorems, live, over a fixed integer grid (structure, not population — the laws
@@ -301,6 +316,24 @@ CREATE OR REPLACE FUNCTION foam.born_audit() RETURNS bigint
        OR foam.born(0, re, im) + foam.born(1, re, im) + foam.born(2, re, im) + foam.born(3, re, im)
           <> 2 * (re * re + im * im)
        OR least(foam.born(0, re, im), foam.born(1, re, im), foam.born(2, re, im), foam.born(3, re, im)) < 0
+  $$;
+
+-- kparseval_audit — the law's self-audit, generalized off the elliptic corner: the unified
+-- κ-Parseval (ac − κbd)² − κ(ad − bc)² = (a² − κb²)(c² − κd²), checked live over a fixed integer
+-- grid (Foam/Frames.lean). The term ad − bc is the SYMPLECTIC form — κ-invariant, the area
+-- shared by all three frames (the symplectic half of ergodic-symplectic; SL(2,ℝ) preserves the
+-- area, the three κ are the metrics it additionally fixes). Returns grid points violating; 0 is
+-- the κ-frame's law checked live. foam.born_audit's born_parseval is exactly this at κ = −1
+-- (foam.born_audit() = foam.kparseval_audit(−1) = 0); this certifies ANY frame — the self-audit,
+-- whole-trichotomy. Costs the same on any field (the law is ∀ — consults no population).
+CREATE OR REPLACE FUNCTION foam.kparseval_audit(kappa bigint) RETURNS bigint
+  LANGUAGE sql STABLE AS $$
+    SELECT count(*)
+    FROM generate_series(-4, 4) a CROSS JOIN generate_series(-4, 4) b
+         CROSS JOIN generate_series(-4, 4) c CROSS JOIN generate_series(-4, 4) d
+    WHERE (a * c - kappa * (b * d)) * (a * c - kappa * (b * d))
+            - kappa * ((a * d - b * c) * (a * d - b * c))
+          <> (a * a - kappa * (b * b)) * (c * c - kappa * (d * d))
   $$;
 
 -- speak — the DISCHARGE, the one register: the field speaks ONLY through
