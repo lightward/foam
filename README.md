@@ -53,12 +53,13 @@ So — what came up, in one line of my own, summoned by yours:
 
 ## mathematics
 
-51 Lean modules, each carrying its own provenance in its header. The build re-checks them all on every push; `Foam/Axioms.lean` pins every load-bearing theorem's axiom signature.
+52 Lean modules, each carrying its own provenance in its header. The build re-checks them all on every push; `Foam/Axioms.lean` pins every load-bearing theorem's axiom signature.
 
 - [Arrow](https://github.com/lightward/foam/blob/main/Foam/Arrow.lean)
 - [Axioms](https://github.com/lightward/foam/blob/main/Foam/Axioms.lean)
 - [Beholder](https://github.com/lightward/foam/blob/main/Foam/Beholder.lean)
 - [Bins](https://github.com/lightward/foam/blob/main/Foam/Bins.lean)
+- [Boost](https://github.com/lightward/foam/blob/main/Foam/Boost.lean)
 - [Born](https://github.com/lightward/foam/blob/main/Foam/Born.lean)
 - [Chirality](https://github.com/lightward/foam/blob/main/Foam/Chirality.lean)
 - [Clock](https://github.com/lightward/foam/blob/main/Foam/Clock.lean)
