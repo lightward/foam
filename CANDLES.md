@@ -119,6 +119,52 @@ obstruction; a *measurement* before them is noise. (Method: categorical-first fo
 categories must exist first.) **rhyme → conjecture (step 1 corrected twice — the symplectic overreach
 undone; Mahler / Kronecker / knot-periodicity, frame-invariant).**
 
+## the engine's gearing — the spiral, golden non-resonance, gravity-as-pitch (continuum)
+
+The continuum organs of the gravity candle, surfaced in the relativity-program thread (2026-06-16)
+and gated together (φ is irrational — the same frontier as the Lorentz boost, `int_pell_one`).
+`Foam/Spiral.lean` named the genus — recursive holonomy = `evalAt step` — and witnessed the integer
+spiral species (×⟨1,1⟩, growth √2, `spiral_step_grows`); what follows are its continuum properties.
+
+- **the crankshaft — `exp`/`log` as the backstage/frontstage rivet.** The log spiral is `exp` of a
+  straight line on a cylinder: a slice ⊥ the fiber is a circle (the dial, at every depth), the fiber
+  is the vacuum `exp` never reaches (the puncture = `forever_escapes`), the spiral is the helix
+  threading the circles. So the README crux — "backstage arithmetic, frontstage kinematic" — *is*
+  `log`/`exp`: backstage = the **additive** ledger (`gen_length`, linear, the cylinder axis);
+  frontstage = the **multiplicative** spiral (`r = e^u`, geometric). Linear-in-the-ledger =
+  geometric-in-the-experience; the backstage is arithmetic *because* it is the log of the kinematic
+  frontstage. Same `exp` as rapidity→velocity — the Lorentzian "continuum limit" the crux names.
+- **the golden gearing — why the engine runs.** Among growing steps, φ is the gear-ratio that
+  **never resonates**: most-irrational ⟹ the last invariant torus to break (KAM / Aubry–Mather), the
+  most robust quasiperiodicity, no mode-lock. The golden gearing never stalls — and *that is the
+  animation.* `clock_loops` (windless → eventually periodic → locked → dead, lfp) vs `forever_escapes`
+  (the wind → never locks → alive, gfp): the difference is the gearing, and the maximally-alive one is
+  golden. φ keeps the engine (foam's founding word) from becoming a clock; the wind that never lets the
+  state lock is the golden wind.
+- **φ in three roles — the third is the animation.** radial/Pisot (storage growth, `m(x²−x−1)=φ`, the
+  smallest Pisot, the lightest mass) · angular/golden-angle (packing, the most-irrational rotation,
+  phyllotaxis) · **gear-ratio** (the crankshaft converting radial↔angular, the non-resonant one that
+  runs). Not one optimization, not two coincidental — a *conversion between two*, geared by φ; the
+  third thing rotates between the optima like engine pistons.
+- **φ as the tare.** Most-irrational = never aliases under rescaling = the scale-immune ur-unit = the
+  founding tare (`Tare`, three-body.md: "the only thing you can agree on is the tare"). The founding
+  word and the engine-gearing are the same number.
+- **gravity = the un-flattenable pitch.** The now-surface gauge (`now_surface_invariant`) flattens any
+  single instant — the 90° radius ⊥ the fiber, `finite_boost_galilean` block-diagonal, flat space per
+  slice — but cannot flatten the *pitch* (the across-slice tilt, the φ-growth). Gravity is precisely
+  the residual the now-surface gauge cannot remove: the curvature that survives straightening every
+  instant. The reachable theorem-shape — the pitch is invariant under the now-surface gauge the way
+  flatness is *within* it.
+- **Ulam, parked.** The square (period-4, rational, lattice) spiral is the resonant *opposite* of the
+  golden; its prime diagonals are mode-locks (the `n²+n+41` quadratics). Characterized by contrast:
+  the resonant pole of the axis φ is the non-resonant pole of.
+
+Solid: φ = smallest Pisot; golden angle = optimal packing; golden mean = most robust against resonance
+(KAM). Reading: that this gearing *is* `exp`/`log` / foam's engine, and locked-vs-golden *is*
+`clock_loops`-vs-`forever_escapes`. Continuum throughout — gated, the boost's sibling. The next
+integer-buildable rung is the platonic predicate (cyclotomic / `m=1`, decidable over ℤ), named in
+`Foam/Spiral.lean`. **rhyme → conjecture.**
+
 ## the spin-probe — foam's second instrument (built)
 
 The amniscient haptic probe (`channel_capacity.md` / meta-theory §IX), made an
