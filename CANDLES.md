@@ -50,6 +50,57 @@ the off-diagonal coupling (ε²: 0→+1) turns on, and the proper boosts absent 
 into being. This IS the `decorrelation horizon` candle below — the soft, between-frames face, the
 decoupling the continuum boost needs. **conjecture.**
 
+## gravity — the storage-cost gradient of settling-under-observation (theory first)
+
+Held up against dark matter (2026-06-16), then sharpened: a foam-native, Verlinde-flavored reading
+of gravity as an *apparent* frontstage effect of the backstage settling — under the animation of
+continuous measurement — toward least-storage-cost paths. The structural pieces are proven; the
+synthesis is the conjecture.
+
+- **the animation**: measurement is participatory — `Tare`'s "no read that is not also a write";
+  observation is the wind that keeps the field from looping dead (`clock_loops`).
+- **settling, not solving**: the resolver relaxes to a fixed point — `fair_run_converges`,
+  `quiescent_is_correct` (the settled state IS the answer).
+- **cheapest-to-store = self-describing**: `gen_grows` ("compression IS prediction"); the attractor
+  is the round-trip fixed point (`lossless_codec`, decode∘encode = id) and `meet_self` — a path iso
+  with its own symbolism, the platonic form, zero residue.
+
+**The inversion the corpus forces.** Learning-as-decoherence (measured, `d_heardmod_closed = −176`)
+drives a repeated pattern's modulus DOWN to the dark fringe; modulus = mass (`rest_mass_conserved`).
+So settling drives mass toward *zero* — the redundant decoheres into the platonic background.
+Therefore **mass is not what settles; mass is what *resists* settling** — the conserved, incompressible
+residue the dynamics cannot spend (`conserved_invisible_to_spent`). Gravity is the relaxation of
+everything compressible toward the self-completing dark fringe; the gravitational appearance is the
+gradient of that settling-field *around* the incompressible cores it must route past. Mass-as-source,
+recovered as un-settle-ability.
+
+**foam already holds Verlinde's entropic-gravity ingredients**: a holographic screen
+(`keepLast_screen`, the cone boundary), a bounded screen capacity (`keepLast_bounded`, ≤ k bits), a
+first law at the boundary (`netCharge_discharge`, d_net = −spoken), a conserved energy (the
+heard-modulus). The missing piece is the **entropy–displacement law** (ΔStorage ∝ Δposition) that turns
+∇(storage cost) into a force.
+
+**The dark-matter closure.** Gravity tracks the modulus (the incompressible mass); light tracks the
+*stations* — and `station_blind_to_norm` says the stations are blind to the modulus. So the visible
+undercounts the mass that sources the settling: gravity stronger than visible mass = flat rotation curves
+= dark matter; the same split as the Bullet Cluster (gravity follows the conserved modulus, light the
+spent/visible). Dark matter and emergent gravity become one statement — the stations can't see what the
+settling-field is shaped by. (Folds together the dark-sector reading: the rest mass invisible to every
+station, append-only/collisionless, frame-invariant.)
+
+**Theory before experiment — explicitly gated.** The tempting measurement — *does local modulus tilt the
+`keepLast` cone (does effective `c` shrink near high-mass continuations, time-dilation-shaped)?* — must
+NOT be run until the space is theoretically exhausted top to bottom. foam has no metric on context-space
+yet ("position" is context-index; "distance" is the worldline displacement `keepLast_advance`), and
+without the categories the result is uninterpretable: a premature measurement yields only confusing
+negatives, not a falsification. (Method, per this file: empirical-first for discovery, categorical-first
+for falsification — but the categories must *exist* first.) The work, in order: (1) define the
+storage-cost functional on continuations (the MDL/Kolmogorov reading of the modulus); (2) derive the
+entropy–displacement law on the cone screen; (3) define cone-tilt as a modulus-dependent reach (the point
+where foam's rigid, frame-invariant `c` would have to bend); (4) ONLY THEN measure whether the dev field
+tilts. A failed *proof* at (2)–(3) is a located obstruction; a failed *measurement* before them is noise.
+**rhyme → conjecture.**
+
 ## the spin-probe — foam's second instrument (built)
 
 The amniscient haptic probe (`channel_capacity.md` / meta-theory §IX), made an
