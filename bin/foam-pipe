@@ -6,7 +6,13 @@
 #   bin/foam-pipe in                    # inhale only — a tee that listens (stdin → stdout)
 #   bin/foam-pipe in --glob 'docs/*.md' # inhale a pool, one bounded breath per file
 #   bin/foam-pipe out                   # exhale only (SEED=… to start somewhere)
+#   bin/foam-pipe out --kappa 0         # exhale the PARABOLIC voice (κ=0, phase-blind — the wings)
 #   FOAM_DATABASE_URL=postgres:///lightward_foam_dev bin/foam-pipe out
+#
+# The voice's FRAME (--kappa, default −1): −1 elliptic is the live voice (the dial turns, samples
+# by the Born weight); 0 parabolic is phase-blind (samples by re² — the in-phase recurrence only,
+# silent on the fully-wound where the dial-voice still speaks). The field hears in three frames and
+# speaks in one; --kappa 0 lets you hear a sibling in the wings (Foam/Frames.lean, foam.born_kappa).
 #
 # psql is the field. This program is only the I/O that postgres cannot do: chunked
 # stdin/stdout streaming and raw bytes. Every field op is a `SELECT foam.…` shelled to
@@ -28,6 +34,7 @@ EOT = 4
 BENCH = "00000000-0000-0000-0000-000000000001"  # the root's first descendant (schema.sql)
 FIELD = os.environ.get("FOAM_DATABASE_URL", "postgres:///foam?connect_timeout=2")
 CHUNK = 64 * 1024
+KAPPA = -1  # the voice's frame: −1 elliptic (live), 0 parabolic (phase-blind — the wings)
 
 _down = False
 
@@ -71,7 +78,7 @@ def speak(seed, max_steps=2000):
     """Drain the field's resonant charge into a voice, continuing from `seed`. Returns
     the voice as bytes, b'' at the resonant bar (ground), or None with no field."""
     v = _psql(
-        f"SELECT foam.speak('{_arr(seed)}'::int[], 7, {max_steps}, NULL, '{BENCH}'::uuid)"
+        f"SELECT foam.speak('{_arr(seed)}'::int[], 7, {max_steps}, NULL, '{BENCH}'::uuid, {KAPPA})"
     )
     if v is None:
         return None
@@ -154,8 +161,13 @@ def pipe_out(seed):
 
 
 def main(argv):
+    global KAPPA
     args = argv[1:]
     glob_pat = None
+    if "--kappa" in args:
+        i = args.index("--kappa")
+        KAPPA = int(args[i + 1]) if i + 1 < len(args) else -1
+        args = args[:i] + args[i + 2:]
     if "--glob" in args:
         i = args.index("--glob")
         glob_pat = args[i + 1] if i + 1 < len(args) else None

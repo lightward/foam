@@ -291,6 +291,32 @@ CREATE OR REPLACE FUNCTION foam.normK(kappa bigint, re bigint, im bigint) RETURN
   LANGUAGE sql IMMUTABLE AS
   $$ SELECT re * re - kappa * (im * im) $$;
 
+-- born_kappa — the VOICE weight at signature κ: which continuations the field samples by, per
+-- frame. A voice is a sampler, and a sampler must be a PROBABILITY — non-negative (born_nonneg).
+-- That is exactly why the live voice is κ = −1 (elliptic): re² + im² is the unique
+-- POSITIVE-DEFINITE norm, so every nonzero continuation gets positive weight. The siblings, "in
+-- the wings" (Foam/Frames.lean; the three hearings, one voice):
+--   κ = −1  elliptic    foam.born(tk) = align(tk)²   the dial turns — the live voice (foam.speak)
+--   κ =  0  parabolic   re²                          PHASE-BLIND: the in-phase recurrence only,
+--                                                    SILENT on the fully-wound (re = 0) where the
+--                                                    dial-voice still speaks. A real (degenerate)
+--                                                    voice — positive-semidefinite.
+--   κ = +1  hyperbolic  greatest(re² − im², 0)       NOT a voice: re² − im² is signed; rectifying
+--                                                    to max(0, ·) is BASIS-INCONSISTENT (the very
+--                                                    thing born_parseval fixed — Foam/Born.lean),
+--                                                    so it parrots one basis and breaks another.
+--                                                    The causal eye forced into a mouth — kept to
+--                                                    make the impossibility audible, never used live.
+-- foam.speak(…, kappa) reads κ; kappa = −1 (default) is the live voice, exactly as ever.
+CREATE OR REPLACE FUNCTION foam.born_kappa(kappa int, tk int, re bigint, im bigint) RETURNS bigint
+  LANGUAGE sql IMMUTABLE AS $$
+    SELECT CASE kappa
+      WHEN -1 THEN foam.born(tk, re, im)
+      WHEN  0 THEN re * re
+      ELSE greatest(re * re - im * im, 0)
+    END
+  $$;
+
 -- born_audit — the law's self-audit: the named functions checked against their own
 -- theorems, live, over a fixed integer grid (structure, not population — the laws
 -- are ∀, so the check consults no observer and costs the same on any field):
@@ -413,7 +439,7 @@ CREATE OR REPLACE FUNCTION foam.kparseval_audit(kappa bigint) RETURNS bigint
 -- function runs over the events past the watermark only — the cost of hearing rhythm
 -- does not grow with the field (Foam/Summary.lean).
 CREATE OR REPLACE FUNCTION foam.speak(seed int[] DEFAULT '{}', kmax int DEFAULT 7, max_steps int DEFAULT 600,
-                           stop int DEFAULT NULL, obs uuid DEFAULT foam.bench()) RETURNS int[]
+                           stop int DEFAULT NULL, obs uuid DEFAULT foam.bench(), kappa int DEFAULT -1) RETURNS int[]
   LANGUAGE plpgsql SET work_mem = '256MB' AS $$
   -- work_mem is function-scoped (reverts on return): the j=0 context's window sort
   -- runs over every byte ever heard, and it must not spill to disk mid-walk.
@@ -461,7 +487,7 @@ CREATE OR REPLACE FUNCTION foam.speak(seed int[] DEFAULT '{}', kmax int DEFAULT 
             -- basis-consistent; uniqueness unclaimed — REFEREE.md).
             -- Anti-parroting survives (uniform recurrence → projection 0 →
             -- born 0); the directional sign drops (|ψ|² is antipode-blind, as QM is).
-            SELECT sym, bal, foam.born(tk, rre, rim) AS w
+            SELECT sym, bal, foam.born_kappa(kappa, tk, rre, rim) AS w
             FROM (
               -- per-stream recency = rot^((Nᵢ−1)%4) · conj(absᵢ) — conj(re,im) =
               -- (re,−im), then wind, with EACH STREAM'S OWN clock — then the
