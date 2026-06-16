@@ -92,6 +92,13 @@ import Foam.Fork
 import Foam.Conservation
 import Foam.Lightcone
 import Foam.Spacetime
+import Foam.Seam
+import Foam.Boost
+import Foam.Galilean
+import Foam.Frames
+import Foam.Rotations
+import Foam.Mass
+import Foam.Tare
 
 -- ── construction: axiom-free (no collapse; nothing the observer must attest) ──
 
@@ -1350,3 +1357,66 @@ import Foam.Spacetime
 
 /-- info: 'Foam.event_is_spacetime_point' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.event_is_spacetime_point
+
+-- ── the relativity program, consolidated (2026-06-15→16): the now-surface, the boost, the
+-- signature trichotomy, the three rotation groups, the rest mass, the tare ──
+-- The arc that grew from Spacetime's two axes. All construction-grade (axiom-free) save one:
+-- the tare's exit, which carries the licensed [propext] — the observer's one kept collapse, the
+-- same coin as the floor and the outcome. The discipline holds across the whole arc; choice and
+-- Quot.sound never appear. (Each module self-pins too; this is the central record, in order of
+-- recognition.)
+
+-- the now-surface: the watermark is gauge, the whole reading invariant (summary_resumes read as
+-- relativity of simultaneity); and the seam — the "can't, alone" family is the one mediating
+-- arrow's two non-iso faces, mono (the conserved past) and not-epi (the open future)
+/-- info: 'Foam.now_surface_invariant' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.now_surface_invariant
+
+/-- info: 'Foam.seam_two_faces' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.seam_two_faces
+
+-- the boost: finite foam is Galilean (the Event is block-diagonal, the axes do not mix); the
+-- complete frame forces the Minkowski interval (boost_forced_at_the_frame); the hyperbolic
+-- two-square identity (int_hyperbolic, the split-complex norm multiplicativity)
+/-- info: 'Foam.finite_boost_galilean' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.finite_boost_galilean
+
+/-- info: 'Foam.boost_forced_at_the_frame' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.boost_forced_at_the_frame
+
+/-- info: 'Foam.int_hyperbolic' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.int_hyperbolic
+
+-- the Galilean frame (ℤ[ε], ε² = 0): velocities add — the boost group is the additive line, the
+-- parabolic corner of the trichotomy
+/-- info: 'Foam.galilean_velocities_add' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.galilean_velocities_add
+
+-- the signature trichotomy unified by κ: one forcing at three geometries
+-- (forced_at_the_frame_kappa), the rest-energy zero-point free only at κ=+1 (zero_point_kappa)
+/-- info: 'Foam.forced_at_the_frame_kappa' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.forced_at_the_frame_kappa
+
+/-- info: 'Foam.zero_point_kappa' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.zero_point_kappa
+
+-- the three rotation groups: the integer unit hyperbola is trivial (int_pell_one) — no proper
+-- integer boost; the hyperbolic corner; why Lorentz needs the continuum
+/-- info: 'Foam.int_pell_one' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.int_pell_one
+
+-- the rest mass: the conserved heard-modulus read as the κ=+1 Minkowski invariant
+-- (indistinguishable-from-mass, closed)
+/-- info: 'Foam.rest_mass_conserved' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.rest_mass_conserved
+
+-- the tare — the invariant under self-transcription (the founding word, "the measurement
+-- solution" / the three-body tare, made a theorem). tare_mass is the energetic face
+-- (axiom-free); `tare` conjoins the exit (floor_persists) with the self-return (meet_self) and
+-- carries the exit's [propext] — the freedom to leave is the collapse the discipline never
+-- refuses, the same coin as the floor and the outcome.
+/-- info: 'Foam.tare_mass' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.tare_mass
+
+/-- info: 'Foam.tare' depends on axioms: [propext] -/
+#guard_msgs in #print axioms Foam.tare
