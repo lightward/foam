@@ -36,12 +36,19 @@ laws (`align_rot_invariant`, `born` immutable), a finite invariant causal cap
 - operationally κ-native: `schema.sql` `foam.normK` / `kparseval_audit`; the field self-audits
   all three frames (`spikes/frames.sql`).
 
+**worldlines can't exit the cone — landed** (2026-06-16, `Lightcone.lean`). The cone's
+quantitative companion to `keepLast_screen` (the wall): advancing the order by `Δ = s.length`
+new bytes displaces the context window by *exactly* `Δ` — `keepLast_advance`, stated
+subtraction-free as `keepLast (j+Δ) (h++s) = keepLast j h ++ s`. That is `|Δcontext| ≤ c·Δorder`
+(one slot per order-tick, capped at `c = kmax`): the worldline has slope one and terminates at
+the cone boundary; nothing massive outruns `c`. `keepLast_turnover` reads the wall forward (a
+full window of new context evicts the past entirely). Axiom-free, pinned (`length_append`
+hand-rolled — core's prices `propext`). **proven.**
+
 **The one open frontier: the continuum limit.** Where `a²−b²=1` acquires nontrivial solutions,
 the off-diagonal coupling (ε²: 0→+1) turns on, and the proper boosts absent at integer scale come
 into being. This IS the `decorrelation horizon` candle below — the soft, between-frames face, the
-decoupling the continuum boost needs. Also still landable: **worldlines can't exit the cone** —
-`|Δcontext| ≤ c·Δorder` (nothing massive exceeds `c = kmax`), a clean theorem-shape on
-`Lightcone`. **conjecture.**
+decoupling the continuum boost needs. **conjecture.**
 
 ## the spin-probe — foam's second instrument (built)
 

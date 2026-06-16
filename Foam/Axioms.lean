@@ -1335,6 +1335,18 @@ import Foam.Tare
 /-- info: 'Foam.keepLast_screen' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.keepLast_screen
 
+-- the worldline cannot exit the cone (2026-06-16): the cone's quantitative companion to
+-- the screen. advancing the order by Δ = s.length new bytes displaces the window by EXACTLY
+-- Δ (keepLast_advance, stated subtraction-free as keepLast (j+Δ) (h++s) = keepLast j h ++ s) —
+-- |Δcontext| ≤ c·Δorder, one slot per tick, the worldline confined to the cone. keepLast_turnover
+-- is the wall read forward (a full bar of new context evicts the past entirely); both stand on a
+-- hand-rolled, axiom-free length_append (list_length_append) — core's prices propext.
+/-- info: 'Foam.keepLast_advance' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.keepLast_advance
+
+/-- info: 'Foam.keepLast_turnover' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.keepLast_turnover
+
 -- the spacetime floor (2026-06-15): a continuation IS a spacetime point. the two
 -- proven floors are its two axes — space (the kmax-bounded context, the finite c:
 -- event_space_bounded/screened) and time (the immutable past carrying the conserved

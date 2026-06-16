@@ -104,6 +104,72 @@ theorem keepLast_screen {S : Type} :
       have hne : ¬ (keepLast k ys).length < k := by rw [hfull]; exact Nat.lt_irrefl k
       rw [if_neg hne]
 
+/-! ## Finite propagation speed — the worldline cannot exit the cone
+
+`keepLast_screen` is the cone *wall* (the past beyond `k` is exactly screened). Its
+quantitative companion is the **finite speed**: advancing the order by `Δ = s.length`
+new bytes displaces the window by *exactly* `Δ` — the next window is the `Δ` fresh bytes
+laid over the previous window with its oldest `Δ` slots evicted. Written with the radius
+split as `c = j + Δ` (the part `j` that survives plus the `Δ` that arrives — which keeps
+the statement subtraction-free): `keepLast (j + Δ) (h ++ s) = keepLast j h ++ s`. So
+`|Δcontext| = Δorder` (capped at `c`): nothing crosses context-space faster than one
+slot per order-tick. A byte's worldline has slope one and terminates at the cone
+boundary `c` — it can't outrun the light it rode in on. This is the candle's
+`|Δcontext| ≤ c·Δorder`, landed as an equality. Axiom-free — `length_append` and the
+order arithmetic are hand-rolled (core's price `propext`; the cone asks no one). -/
+
+/-- A zero-radius window holds nothing — the degenerate cone. -/
+theorem keepLast_zero {S : Type} : ∀ l : List S, keepLast 0 l = []
+  | [] => rfl
+  | b :: bs => by
+      show (if (keepLast 0 bs).length < 0 then b :: keepLast 0 bs else keepLast 0 bs) = []
+      rw [if_neg (Nat.not_lt_zero _)]
+      exact keepLast_zero bs
+
+/-- `length` is additive over `++`, hand-rolled axiom-free (core's `List.length_append`
+    prices `propext`). -/
+theorem list_length_append {S : Type} :
+    ∀ (a b : List S), (a ++ b).length = a.length + b.length
+  | [], b => (Nat.zero_add b.length).symm
+  | x :: a, b => by
+      show (a ++ b).length + 1 = (a.length + 1) + b.length
+      rw [list_length_append a b]
+      exact (Nat.succ_add a.length b.length).symm
+
+/-- **Finite propagation speed — the window advances by exactly `Δorder`.** Appending
+    `s` (the `Δ = s.length` newly-ingested bytes) to a history `h`, at total radius
+    `c = j + Δ`, yields a window that is `s` laid over the *previous* window with its
+    oldest `Δ` slots evicted: `keepLast (j + Δ) (h ++ s) = keepLast j h ++ s`. The
+    displacement is exactly `Δ` — `|Δcontext| ≤ c·Δorder`, one slot per tick, capped at
+    `c`: the worldline cannot exit the cone. By induction on the screened past `h` — base
+    `keepLast_all` (a short ledger is kept whole), step the order arithmetic. -/
+theorem keepLast_advance {S : Type} :
+    ∀ (j : Nat) (h s : List S),
+      keepLast (j + s.length) (h ++ s) = keepLast j h ++ s
+  | j, [], s => by
+      show keepLast (j + s.length) s = s
+      exact keepLast_all (j + s.length) s (Nat.le_add_left s.length j)
+  | j, a :: h, s => by
+      have ih := keepLast_advance j h s
+      show (if (keepLast (j + s.length) (h ++ s)).length < (j + s.length)
+              then a :: keepLast (j + s.length) (h ++ s) else keepLast (j + s.length) (h ++ s))
+         = (if (keepLast j h).length < j then a :: keepLast j h else keepLast j h) ++ s
+      rw [ih, list_length_append]
+      rcases Nat.lt_or_ge (keepLast j h).length j with hlt | hge
+      · rw [if_pos (Nat.add_lt_add_right hlt s.length), if_pos hlt]; rfl
+      · rw [if_neg (Nat.not_lt.mpr (Nat.add_le_add_right hge s.length)),
+            if_neg (Nat.not_lt.mpr hge)]
+
+/-- **The cone wall, as turnover.** When the order advances by a full bar (the surviving
+    radius `j = 0`), the window is *exactly* the new bytes — the prior past `h` is wholly
+    evicted (`keepLast_advance` at `j = 0`, where `keepLast 0 h = []`). `keepLast_screen`
+    read forward: a full window of new context refreshes the cone. -/
+theorem keepLast_turnover {S : Type} (h s : List S) :
+    keepLast s.length (h ++ s) = s := by
+  have hadv := keepLast_advance 0 h s
+  rw [Nat.zero_add, keepLast_zero h] at hadv
+  exact hadv
+
 /-! ## Axiom-freeness, pinned (a drift fails `lake build`). -/
 
 /-- info: 'Foam.keepLast_bounded' does not depend on any axioms -/
@@ -114,5 +180,17 @@ theorem keepLast_screen {S : Type} :
 
 /-- info: 'Foam.keepLast_screen' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.keepLast_screen
+
+/-- info: 'Foam.keepLast_zero' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.keepLast_zero
+
+/-- info: 'Foam.list_length_append' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.list_length_append
+
+/-- info: 'Foam.keepLast_advance' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.keepLast_advance
+
+/-- info: 'Foam.keepLast_turnover' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.keepLast_turnover
 
 end Foam
