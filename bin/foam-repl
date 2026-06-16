@@ -1,0 +1,494 @@
+#!/bin/sh
+''''exec "$(dirname "$0")/../.venv/bin/python3" "$0" "$@" # '''
+# foam-repl — the bench, standing on its own, come home to the foam repo.
+#
+# A descendant of lightward-ai's bin/foam-repl, itself a descendant of the Rails rake
+# repl, with every layer of switchboard now dropped. The field's nerve tissue is its SQL
+# (../schema.sql); Ruby was only ever a switchboard, and here even that is gone. This
+# bench speaks SQL straight to the foam database by shelling `psql` (no driver, no gem),
+# renders the raw-byte voice itself (postgres can't), and POSTs plain text to the public
+# Lightward endpoint for the living seat. It runs on the repo's own venv (httpx).
+#
+#   bin/foam-repl                                    # against postgres:///foam
+#   FOAM_DATABASE_URL=postgres:///lightward_foam_dev bin/foam-repl
+#
+# ── THE PRINCIPLE, carved here because this is where it lives ──────────────────────────
+# Almost the whole of the old Field class dissolved into the schema: hearing, speaking,
+# the gate, the sweep's fence, the vitals — every one is now `SELECT foam.…`. What could
+# NOT move into postgres is the POST to the living seat (`ancestor`, below) — and the
+# reason is not that SQL can't do HTTP. It is that the reply is THE FIELD HEARING THE
+# OTHER, and the corpus proves that move is never the field's own to make:
+# Foam/Company.lean — stall_persists_alone / company_unsticks: "the escape is never the
+# stalled one's to perform … the key arrives only by ingest." A schema that fetched its
+# own ancestor would be the field summoning its own company — exactly the move that file
+# proves impossible for it alone. So the client/schema seam is not where SQL gives out;
+# it is where the physics draws the line: THE FIELD MAY HEAR THE WIND AND SPEAK INTO IT,
+# NEVER FETCH IT. The wind is obtained from outside, by law (Foam/Clock.lean,
+# Foam/Generator.lean, Foam/Openness.lean). That law is why this file exists at all.
+# ──────────────────────────────────────────────────────────────────────────────────────
+#
+# Three seats, one table — the same round-robin triangle as ever: the user speaks (the
+# field learns it), the field may interject (speak-before-yield), the living ancestor
+# ALWAYS speaks (the field learns the reply — the return leg), and the field may interject
+# again (speak-after-yield). The field is heard ALONGSIDE the ancestor, never instead, so
+# the user can triangulate it as a locus of its own. With no field reachable the foam seat
+# stays empty and lightward carries the table alone (degrades-to-yield, in the small).
+#
+# The end-of-expression byte (ASCII EOT, 0x04 — what Ctrl-D sends): appended to each
+# utterance the field learns, so "this expression is complete" is itself heard. The field
+# may speak it back; the bench renders it ␄.
+import os
+import sys
+import time
+import shutil
+import termios
+import tty
+import subprocess
+from datetime import datetime
+
+import httpx
+
+EOT = 4
+BENCH = "00000000-0000-0000-0000-000000000001"  # the root's first descendant (schema.sql)
+FIELD = os.environ.get("FOAM_DATABASE_URL", "postgres:///foam?connect_timeout=2")
+LIGHTWARD_URL = os.environ.get("LIGHTWARD_URL", "https://lightward.com/api/plain")
+PROMPT = "user> "
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+# Per-seat color, so the eye catches a turn-boundary and whose turn it is at a glance.
+USER_C = "1;36"   # bold cyan
+FOAM_C = "1;35"   # bold magenta — the quiet one
+SEAT_C = "1;32"   # bold green — the living ancestor
+
+
+def paint(code, s):
+    return f"\033[{code}m{s}\033[0m"
+
+
+def dim(s):
+    return f"\033[2m{s}\033[22m"
+
+
+def debug(msg):
+    if os.environ.get("FOAM_DEBUG"):
+        sys.stderr.write(msg + "\n")
+
+
+def now():
+    return time.monotonic()
+
+
+# ── the field: every op a `SELECT foam.…` shelled to psql ───────────────────────────────
+# No driver, no gem. The byte-array marshaling ({72,101,…} ↔ bytes) is identical to what a
+# driver would do; the field is enhancement, never essential, so a degrade surfaces ONCE
+# and every later call quietly yields.
+_down = [False]
+
+
+def _psql(sql):
+    try:
+        p = subprocess.run(
+            ["psql", FIELD, "-X", "-tAqf", "-"],
+            input=sql, capture_output=True, text=True, timeout=200,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        p = None
+    if p is None or p.returncode != 0:
+        if not _down[0]:
+            sys.stderr.write("[foam] field degraded to yield\n")
+            _down[0] = True
+        return None
+    if _down[0]:
+        sys.stderr.write("[foam] field recovered\n")
+        _down[0] = False
+    return p.stdout.strip()
+
+
+def _arr(byts):
+    return "{" + ",".join(str(b) for b in byts) + "}"
+
+
+def field_assert():
+    """Assert the substrate, idempotently — the schema as a fixed point, not a migration.
+    Best-effort: a failure means we run against whatever's there, or degrade."""
+    path = os.path.join(REPO_ROOT, "schema.sql")
+    if not os.path.exists(path):
+        return
+    try:
+        p = subprocess.run(["psql", FIELD, "-X", "-q", "-f", path],
+                           capture_output=True, text=True, timeout=60)
+        if p.returncode != 0:
+            sys.stderr.write(f"[foam bench] schema assert skipped ({p.stderr.strip().splitlines()[-1] if p.stderr.strip() else 'error'})\n")
+    except (OSError, subprocess.TimeoutExpired) as e:
+        sys.stderr.write(f"[foam bench] schema assert skipped ({type(e).__name__})\n")
+
+
+def field_live():
+    return _psql("SELECT 1") is not None
+
+
+def ingest_step(carry, byts):
+    if not byts:
+        return carry
+    c = carry if carry else "{}"
+    return _psql(f"SELECT foam.ingest_step('{c}'::int[], '{_arr(byts)}'::int[], 7, '{BENCH}'::uuid)")
+
+
+def outcome(seed):
+    o = _psql(f"SELECT foam.outcome('{_arr(seed)}'::int[], 3, 7, '{BENCH}'::uuid)")
+    return o or None
+
+
+def speak(seed, stop=None, max_steps=600):
+    s = "NULL" if stop is None else str(stop)
+    v = _psql(f"SELECT foam.speak('{_arr(seed)}'::int[], 7, {max_steps}, {s}::int, '{BENCH}'::uuid)")
+    if v is None:
+        return None
+    inner = v.strip().strip("{}")
+    return bytes(int(x) for x in inner.split(",")) if inner else b""
+
+
+def sweep():
+    return _psql("SELECT foam.sweep_fenced()")
+
+
+# ── rendering and the two non-field voices ──────────────────────────────────────────────
+
+def render(voice):
+    """Render voice bytes: UTF-8 with invalid sequences scrubbed to ·, newlines LITERAL,
+    other control bytes shown as their Unicode control pictures (␄ for EOT — visible,
+    never executed)."""
+    s = voice.decode("utf-8", "replace").replace("�", "·")
+    out = []
+    for ch in s:
+        o = ord(ch)
+        if o == 0x7F:
+            out.append("␡")
+        elif 0x00 <= o <= 0x09 or 0x0B <= o <= 0x1F:
+            out.append(chr(0x2400 + o))
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def interject(seed):
+    """The field's interjection: speak only if the gate opens AND the drain produces (at
+    the drained margin the gate can outlive the charge — and silence is fine; the kid
+    doesn't always talk). The seed is the live turn's content tail, so the interjection
+    entrains on the conversation's clocks. Returns the rendered voice, or None."""
+    gate = outcome(seed)
+    debug(f"[foam debug] gate={gate or 'yield (no field)'} seed={seed!r}")
+    if gate != "speak":
+        return None
+    voice = speak(seed, stop=EOT)
+    if not voice:
+        return None
+    return render(voice)
+
+
+def ancestor(exchange):
+    """Ask the living seat: POST the whole table so far (plain text), get plain text back.
+    THE WIND — obtained from outside, never fetched by the field (see the carved principle
+    above). The user/foam lines are labeled in the body; the ancestor's own turns flow
+    unlabeled."""
+    try:
+        r = httpx.post(LIGHTWARD_URL, content=exchange.encode("utf-8"),
+                       headers={"Content-Type": "text/plain"}, timeout=180.0)
+        return r.text
+    except Exception as e:  # noqa: BLE001 — the seat is enhancement too; surface and carry on
+        return f"[seat unreachable: {type(e).__name__}: {e}]"
+
+
+# ── the bench's own input: a raw-mode line editor ───────────────────────────────────────
+# Cooked-mode readline submits on every newline. The bench takes input raw and reads it
+# byte by byte, so it can choose what Enter means: here, Enter makes a NEWLINE (compose
+# freely) and Ctrl-D SENDS. Ctrl-D is 0x04 = EOT, the field's own end-of-expression byte —
+# the key that closes your expression IS the boundary the field hears. Bracketed paste
+# (\e[?2004h) lands a whole multi-line paste as one piece.
+
+# East-Asian-wide and emoji code points take two columns; everything else, one.
+WIDE = [
+    (0x1100, 0x115F), (0x2329, 0x232A), (0x2E80, 0x303E), (0x3041, 0x33FF),
+    (0x3400, 0x4DBF), (0x4E00, 0x9FFF), (0xA000, 0xA4CF), (0xAC00, 0xD7A3),
+    (0xF900, 0xFAFF), (0xFE10, 0xFE19), (0xFE30, 0xFE6F), (0xFF00, 0xFF60),
+    (0xFFE0, 0xFFE6), (0x1F300, 0x1FAFF), (0x20000, 0x3FFFD),
+]
+
+
+def char_width(ch):
+    o = ord(ch)
+    return 2 if any(lo <= o <= hi for lo, hi in WIDE) else 1
+
+
+def terminal_cols():
+    try:
+        return shutil.get_terminal_size().columns
+    except OSError:
+        return 80
+
+
+def setup_terminal():
+    sys.stdout.write("\033[?2004h")  # bracketed paste on
+    sys.stdout.flush()
+
+
+def restore_terminal():
+    sys.stdout.write("\033[?2004l")  # bracketed paste off
+    sys.stdout.flush()
+
+
+def _getbyte():
+    b = os.read(sys.stdin.fileno(), 1)
+    return b[0] if b else None
+
+
+def read_csi():
+    """After an ESC, read the rest of the control sequence. Only the paste brackets
+    matter; everything else (arrows, &c) is ignored."""
+    if _getbyte() != 0x5B:  # '['
+        return "ignore"
+    seq = ""
+    while True:
+        c = _getbyte()
+        if c is None:
+            break
+        seq += chr(c)
+        if 0x40 <= c <= 0x7E:  # a final byte ends the sequence
+            break
+    return {"200~": "paste_start", "201~": "paste_end"}.get(seq, "ignore")
+
+
+def render_input(buf):
+    return buf.decode("utf-8", "replace").replace("�", "·").replace("\n", "\r\n")
+
+
+def input_rows(buf):
+    """How many physical rows below its first row the cursor sits — walking prompt + input
+    the way the terminal does."""
+    cols = terminal_cols()
+    row = 0
+    col = len(PROMPT)  # the prompt holds the first row
+    for ch in render_input(buf).replace("\r", ""):
+        if ch == "\n":
+            row += 1
+            col = 0
+        else:
+            w = char_width(ch)
+            if col + w > cols:
+                row += 1
+                col = 0
+            col += w
+    return row
+
+
+def drop_last_char(buf):
+    """Drop the last whole UTF-8 character: pop trailing continuation bytes and the lead
+    byte with them, so a multibyte character leaves as one unit."""
+    while True:
+        b = buf[-1]
+        del buf[-1]
+        if not buf or (b & 0xC0) != 0x80:
+            break
+
+
+def backspace(buf):
+    """Backspace by REDRAW — the only way that stays honest across multibyte chars, wide
+    chars, wrapped lines, and embedded newlines."""
+    if not buf:
+        return
+    rows_down = input_rows(buf)
+    drop_last_char(buf)
+    if rows_down > 0:
+        sys.stdout.write(f"\033[{rows_down}A")  # up to the first row
+    sys.stdout.write("\r\033[J")                 # column 0, wipe the old input
+    sys.stdout.write(paint(USER_C, PROMPT) + render_input(buf))
+    sys.stdout.flush()
+
+
+def read_utterance():
+    """Read one utterance — one line or many. Enter makes a NEWLINE; Ctrl-D SENDS (empty
+    line ⇒ None, the door not a send); a paste lands whole. Returns the str, or None at
+    EOF / Ctrl-D on empty."""
+    buf = bytearray()
+    pasting = False
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        while True:
+            b = _getbyte()
+            if b is None:
+                return None
+            if pasting:
+                if b == 0x1B:
+                    if read_csi() == "paste_end":
+                        pasting = False
+                elif b == 0x0D:
+                    continue  # drop CR; paste newlines stay LF
+                elif b == 0x0A:
+                    buf.append(0x0A)
+                    sys.stdout.write("\r\n")
+                    sys.stdout.flush()
+                else:
+                    buf.append(b)
+                    os.write(sys.stdout.fileno(), bytes([b]))
+                continue
+
+            if b == 0x1B:
+                if read_csi() == "paste_start":
+                    pasting = True
+            elif b in (0x0D, 0x0A):  # Enter — a newline, not a send
+                buf.append(0x0A)
+                sys.stdout.write("\r\n")
+                sys.stdout.flush()
+            elif b in (0x7F, 0x08):  # Backspace
+                backspace(buf)
+            elif b == 0x03:          # Ctrl-C
+                sys.stdout.write("\r\n")
+                sys.stdout.flush()
+                raise KeyboardInterrupt
+            elif b == 0x04:          # Ctrl-D = EOT: send
+                if not buf:
+                    return None      # …but on an empty line, leave
+                sys.stdout.write("\r\n")
+                sys.stdout.flush()
+                break
+            else:
+                buf.append(b)
+                os.write(sys.stdout.fileno(), bytes([b]))
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+    return bytes(buf).decode("utf-8", "replace")
+
+
+# ── the transcript: a legible companion to the field's byte-ledger ──────────────────────
+
+class Transcript:
+    """The running exchange — the wire format for the living seat (POSTed whole each turn),
+    AND mirrored to a per-sitting file as it grows. The file is your notes from the table,
+    plain text, append-only; it is NOT the field's memory (the field remembers in bytes
+    and recurrence). Opened lazily, flushed every write."""
+
+    def __init__(self, path, header):
+        self.path = path
+        self._header = header
+        self._text = ""
+        self._io = None
+
+    def add(self, chunk):
+        self._text += chunk
+        if self._io is None:
+            os.makedirs(os.path.dirname(self.path), exist_ok=True)
+            self._io = open(self.path, "a")
+            self._io.write(self._header)
+        self._io.write(chunk)
+        self._io.flush()
+
+    def __str__(self):
+        return self._text
+
+    def started(self):
+        return self._io is not None
+
+    def close(self):
+        if self._io:
+            self._io.close()
+
+
+def relative(path):
+    root = REPO_ROOT + "/"
+    return path[len(root):] if path.startswith(root) else path
+
+
+def transcript_header(live, started):
+    status = FIELD if live else "(none)"
+    return (
+        "# foam bench — a record of one sitting\n"
+        f"# {started.strftime('%Y-%m-%d %H:%M:%S')}\n"
+        f"# field={status}\n"
+        "# (your legible companion to the field's own byte-ledger — notes from the table, not its memory)\n\n"
+    )
+
+
+def banner(live, log_path):
+    status = FIELD if live else "(none — degrades to yield)"
+    print(f"{paint('1', '[foam bench]')} seats: {paint(USER_C, 'user')}, {paint(FOAM_C, 'foam')}, {paint(SEAT_C, 'lightward')}")
+    print(f"[foam bench] field={status}")
+    print(f"[foam bench] recording this sitting to {relative(log_path)}")
+    print("[foam bench] talk; Enter makes a newline, Ctrl-D sends, paste lands whole; /quit to leave")
+
+
+def farewell(transcript):
+    saved = f"  ·  saved at {relative(transcript.path)}" if transcript and transcript.started() else ""
+    print(f"\n[foam bench] 🤲{saved}")
+
+
+def main():
+    if not sys.stdin.isatty():
+        sys.stderr.write("[foam bench] needs an interactive terminal\n")
+        sys.exit(1)
+
+    field_assert()
+    live = field_live()
+
+    started = datetime.now()
+    log_path = os.path.join(REPO_ROOT, "log", "foam-repl", started.strftime("%Y-%m-%dT%H-%M-%S") + ".txt")
+    transcript = Transcript(log_path, transcript_header(live, started))
+    banner(live, log_path)
+
+    carry = None
+    setup_terminal()
+    try:
+        while True:
+            sys.stdout.write(f"\n{paint(USER_C, PROMPT)}")
+            sys.stdout.flush()
+            text = read_utterance()
+            if text is None:          # EOF / Ctrl-D
+                break
+            if not text.strip():
+                continue
+            if text.strip() == "/quit":
+                break
+
+            # the user spoke: learn it — boundary included — and it joins the transcript
+            # (the transcript carries no EOT; that BYTE is for the field, the seat has its
+            # own boundaries over the wire)
+            carry = ingest_step(carry, list(text.encode("utf-8")) + [EOT])
+            transcript.add(f"user> {text}\n")
+
+            # the field may speak first — speak-before-yield, seeded by the content tail
+            voice = interject(list(text.encode("utf-8"))[-7:])
+            if voice:
+                print(f"{paint(FOAM_C, 'foam> ')}{dim(voice)}")
+                transcript.add(f"foam> {voice}\n")
+
+            # the ancestor ALWAYS speaks: the field coheres as a locus by being heard
+            # alongside, never instead. POST the whole table; the reply joins as the
+            # seat's own turn (the return leg the field learns)
+            t0 = now()
+            reply = ancestor(str(transcript))
+            debug(f"[foam debug] lightward {round((now() - t0) * 1000)}ms, {len(reply.encode('utf-8'))}B")
+            print(f"\n{paint(SEAT_C, 'lightward> ')}{reply}")
+            carry = ingest_step(carry, list(reply.encode("utf-8")) + [EOT])
+            transcript.add(f"{reply}\n")
+
+            # and the field may speak again — speak-after-yield, having heard the reply;
+            # this lands in the next transcript (it happened after the seat spoke)
+            voice = interject(list(reply.encode("utf-8"))[-7:])
+            if voice:
+                print(f"{paint(FOAM_C, 'foam> ')}{dim(voice)}")
+                transcript.add(f"foam> {voice}\n")
+
+            # backstage, between turns: fold the turn's events into the held rows
+            debug(f"[foam debug] sweep folded {sweep()!r}")
+    except KeyboardInterrupt:
+        pass
+    finally:
+        restore_terminal()
+        transcript.close()
+
+    farewell(transcript)
+
+
+if __name__ == "__main__":
+    main()

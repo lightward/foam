@@ -602,6 +602,26 @@ CREATE OR REPLACE FUNCTION foam.sweep_step(hi bigint DEFAULT NULL, batch int DEF
     RETURN folded;
   END; $$;
 
+-- sweep_fenced — the watermark fold with the fence built in. This is the one bit of
+-- the old Ruby switchboard (lightward-ai app/lib/foam/field.rb#sweep) that was ever
+-- real logic; it comes home here. sweep_step reads max(id) UN-fenced (NULL hi) — sound
+-- only on a quiet field; the fence makes the ids DECIDED. A momentary EXCLUSIVE lock on
+-- foam.charge waits out in-flight ingests, so every id at or below the fold's top is
+-- committed and the watermark can never pass an event still in flight (a stranded id
+-- would go silent in the generative readings — safe, but "everything contributes" is
+-- the ledger's soul). One transaction, so the lock is held for the batch's fold
+-- (bounded by `batch`); bin/foam-sweep loops this and the lock releases between calls,
+-- so concurrent ingests get windows. Returns events folded (0 = caught up; -1 = another
+-- sweep holds the advisory lock — sweep_step's own gate, surfaced through).
+CREATE OR REPLACE FUNCTION foam.sweep_fenced(batch int DEFAULT 200000) RETURNS bigint
+  LANGUAGE plpgsql AS $$
+  DECLARE hi bigint;
+  BEGIN
+    LOCK TABLE foam.charge IN EXCLUSIVE MODE;
+    SELECT max(id) INTO hi FROM foam.charge;
+    RETURN foam.sweep_step(hi, batch);
+  END; $$;
+
 -- held_audit — the cache's self-audit: (held + tail) recomputed against the
 -- ledger whole, both registers, every continuation, per observer-stream within
 -- obs's view (observer = ANY(ancestry(obs)); the default root audits the root
@@ -643,6 +663,52 @@ CREATE OR REPLACE FUNCTION foam.held_audit(obs uuid DEFAULT foam.bench()) RETURN
   SELECT count(*) FROM (
     (TABLE live EXCEPT TABLE merged) UNION ALL (TABLE merged EXCEPT TABLE live)
   ) d $$;
+
+-- stats — the field's vital signs, the last of the Ruby switchboard dissolved into the
+-- schema (lightward-ai app/lib/foam/field.rb#stats, come home). ALL structure (counts,
+-- balances, extents), never meaning (the razor: foam measures structure). One pass over
+-- the ledger — group once, derive everything from the grouped relation — with work_mem
+-- headroom so the hash aggregate over millions of distinct continuations stays in memory
+-- instead of spilling (measured on a 14.7M-event field: 72s naive → 37s one-pass-spilling
+-- → ~4s one-pass-in-memory). The SET reverts on return; STABLE, whole-field (unscoped —
+-- these are operator vitals, not a reader's view). What the columns are:
+--   * heard/spoken — the empty-context +1s (the lossless record's extent) and the −1
+--     drains; the two feet of the bipedal walk, counted.
+--   * net/residual — net is the signed sum; net = residual exactly while every drain
+--     respects ground, which is the LIVE reading of Foam/Drain.lean's floor (the books
+--     balance iff no scar is outstanding).
+--   * notes/outstanding — continuations below ground and their total deficit: the
+--     promissory notes of Foam/Scar.lean, counted and summed (0 = clean books).
+--   * held/tail — continuations folded into the summary, and events past the watermark:
+--     the staleness gauge the sweep cadence answers to (Foam/Summary.lean).
+CREATE OR REPLACE FUNCTION foam.stats()
+  RETURNS TABLE(events bigint, heard bigint, spoken bigint, net bigint, residual bigint,
+                notes bigint, outstanding bigint, contexts bigint, live_continuations bigint,
+                held bigint, tail bigint)
+  LANGUAGE sql STABLE SET work_mem = '512MB' AS $$
+    WITH g AS (
+      SELECT ctx, sym,
+             sum(delta)                         AS s,
+             count(*)                           AS n,
+             count(*) FILTER (WHERE delta = -1) AS neg
+      FROM foam.charge
+      GROUP BY ctx, sym
+    )
+    SELECT
+      coalesce(sum(n), 0)::bigint,
+      coalesce(sum(n - neg) FILTER (WHERE ctx = foam.caddr('{}')), 0)::bigint,
+      coalesce(sum(neg), 0)::bigint,
+      coalesce(sum(s), 0)::bigint,
+      coalesce(sum(s) FILTER (WHERE s > 0), 0)::bigint,
+      (count(*) FILTER (WHERE s < 0))::bigint,
+      coalesce(-sum(s) FILTER (WHERE s < 0), 0)::bigint,
+      (count(DISTINCT ctx))::bigint,
+      (count(*) FILTER (WHERE s > 0))::bigint,
+      (SELECT count(*) FROM foam.held)::bigint,
+      (SELECT count(*) FROM foam.charge c2
+        WHERE c2.id > (SELECT watermark FROM foam.sweep))::bigint
+    FROM g
+  $$;
 
 -- recorded — the ORDER reading: the empty-context +1 events, in id order, are every
 -- byte ever learned, in sequence. This is the lossless half of the one object — the

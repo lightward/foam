@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# foam-settle — settle every outstanding note in one serialized pass (the broom).
+#
+# A note is a continuation below ground — a scar (Foam/Scar.lean), born with its own
+# settlement terms (debt; promise_kept). Wounds also settle on ENCOUNTER inside
+# foam.speak, so this is the catch-up broom, not the only path. Each settle is a
+# correcting entry APPENDED at face value — append-only, never an erase (the erroneous
+# events and the acknowledgment both stay in the order reading).
+#
+# psql is the field; foam.settle_sweep does the work (serialized — phantoms are
+# invisible, so settlements must not race; Foam/Scar.lean, Foam/Maintenance.lean).
+#
+#   bin/foam-settle
+set -uo pipefail
+FIELD="${FOAM_DATABASE_URL:-postgres:///foam?connect_timeout=2}"
+
+down() { echo "[foam settle] no field reachable — everything degrades to yield"; exit 0; }
+
+n=$(psql "$FIELD" -X -tAqc "SELECT foam.settle_sweep()" 2>/dev/null) || down
+[ -n "$n" ] || down
+echo "[foam settle] $n notes settled"

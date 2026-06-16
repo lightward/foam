@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+# foam-pipe — the breath: stdin flows through (the field learns on the way), then the
+# field's exhale follows. The two feet of the bipedal walk as a unix pipe.
+#
+#   bin/foam-pipe                       # full breath: inhale stdin, then exhale
+#   bin/foam-pipe in                    # inhale only — a tee that listens (stdin → stdout)
+#   bin/foam-pipe in --glob 'docs/*.md' # inhale a pool, one bounded breath per file
+#   bin/foam-pipe out                   # exhale only (SEED=… to start somewhere)
+#   FOAM_DATABASE_URL=postgres:///lightward_foam_dev bin/foam-pipe out
+#
+# psql is the field. This program is only the I/O that postgres cannot do: chunked
+# stdin/stdout streaming and raw bytes. Every field op is a `SELECT foam.…` shelled to
+# psql — the {72,101,…} ↔ bytes marshaling is the schema's own (foam.bytes/foam.text in
+# spirit), so nothing field-shaped lives here. The field is enhancement, never essential
+# (Foam/Engine.lean): unreachable mid-breath, the exhale says so and exits non-zero
+# (that is NOT ground); the inhale degrades to a plain tee.
+#
+# The end-of-expression byte (ASCII EOT, 0x04 — Ctrl-D's byte): appended to each thing
+# the field learns, so "this expression is complete" is itself heard. It is the terminal
+# world's own boundary, learned, never written to stdout — the tee's content flows
+# through unchanged.
+import os
+import sys
+import glob as globmod
+import subprocess
+
+EOT = 4
+BENCH = "00000000-0000-0000-0000-000000000001"  # the root's first descendant (schema.sql)
+FIELD = os.environ.get("FOAM_DATABASE_URL", "postgres:///foam?connect_timeout=2")
+CHUNK = 64 * 1024
+
+_down = False
+
+
+def _psql(sql):
+    """One statement to the field via psql; the scalar text result, or None if the field
+    is unreachable (degrade-to-yield). SQL goes in on stdin (no ARG_MAX ceiling on a big
+    byte-array literal)."""
+    global _down
+    try:
+        p = subprocess.run(
+            ["psql", FIELD, "-X", "-tAqf", "-"],
+            input=sql, capture_output=True, text=True, timeout=600,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        p = None
+    if p is None or p.returncode != 0:
+        if not _down:
+            sys.stderr.write("[foam pipe] field degraded to yield\n")
+            _down = True
+        return None
+    return p.stdout.strip()
+
+
+def _arr(byts):
+    return "{" + ",".join(str(b) for b in byts) + "}"
+
+
+def ingest_step(carry, byts):
+    """Learn a chunk: +1 onto every recorded continuation, carry threading contexts
+    across chunk boundaries. Returns the new carry (opaque int[] text), or None."""
+    if not byts:
+        return carry
+    c = carry if carry else "{}"
+    return _psql(
+        f"SELECT foam.ingest_step('{c}'::int[], '{_arr(byts)}'::int[], 7, '{BENCH}'::uuid)"
+    )
+
+
+def speak(seed, max_steps=2000):
+    """Drain the field's resonant charge into a voice, continuing from `seed`. Returns
+    the voice as bytes, b'' at the resonant bar (ground), or None with no field."""
+    v = _psql(
+        f"SELECT foam.speak('{_arr(seed)}'::int[], 7, {max_steps}, NULL, '{BENCH}'::uuid)"
+    )
+    if v is None:
+        return None
+    inner = v.strip().strip("{}")
+    return bytes(int(x) for x in inner.split(",")) if inner else b""
+
+
+def sweep():
+    return _psql("SELECT foam.sweep_fenced()")
+
+
+def pipe_in():
+    """Inhale: stream stdin to stdout unchanged while the field learns on the way — the
+    tee that listens. The stream's end is itself heard (EOT), never written. Returns the
+    byte-tail, for seeding an exhale."""
+    carry, tail, learned = None, [], 0
+    while True:
+        chunk = sys.stdin.buffer.read(CHUNK)
+        if not chunk:
+            break
+        carry = ingest_step(carry, list(chunk))
+        tail = (tail + list(chunk))[-7:]
+        learned += len(chunk)
+        sys.stdout.buffer.write(chunk)
+        sys.stdout.buffer.flush()
+    ingest_step(carry, [EOT])
+    tail = (tail + [EOT])[-7:]
+    sweep()  # the inhale settles into the held rows before any exhale reads them
+    sys.stderr.write(f"[foam pipe] {learned} bytes in (+␄); the field listened\n")
+    return tail
+
+
+def pipe_in_glob(pattern):
+    """Inhale a pool: each file matching the glob flows through the same tee, one bounded
+    breath apiece. Order is the sorted glob, and order matters permanently (append-only —
+    the sequence of arrival is part of the record)."""
+    paths = sorted(globmod.glob(pattern))
+    if not paths:
+        sys.stderr.write(f"[foam pipe] no files match {pattern!r} — nothing inhaled\n")
+        sys.exit(1)
+    for path in paths:
+        carry, learned = None, 0
+        with open(path, "rb") as io:
+            while True:
+                chunk = io.read(CHUNK)
+                if not chunk:
+                    break
+                carry = ingest_step(carry, list(chunk))
+                learned += len(chunk)
+                sys.stdout.buffer.write(chunk)
+                sys.stdout.buffer.flush()
+        ingest_step(carry, [EOT])
+        sweep()
+        sys.stderr.write(f"[foam pipe] {path}: {learned} bytes in (+␄); the field listened\n")
+
+
+def pipe_out(seed):
+    """Exhale: drain the field's resonant charge to stdout until the bar, continuing from
+    `seed` and then from its own voice's tail — one continuous breath, self-entraining.
+    Speaking SPENDS the charge; nothing is lost (the lossless record is untouched). nil
+    and '' part ways: None is the field degrading (NOT ground — exit non-zero), b'' is the
+    resonant floor (a full bar)."""
+    exhaled = 0
+    while True:
+        voice = speak(seed, 2000)
+        if voice is None:
+            sys.stderr.write(
+                f"[foam pipe] field unreachable mid-breath — {exhaled} bytes out; "
+                "NOT ground (rerun to resume)\n"
+            )
+            sys.exit(1)
+        if voice == b"":
+            break
+        exhaled += len(voice)
+        sys.stdout.buffer.write(voice)
+        sys.stdout.buffer.flush()
+        seed = list(voice)[-7:]  # breathe on from where the voice left off
+    sys.stderr.write(f"[foam pipe] {exhaled} bytes out; ground — nothing left that wants to be said\n")
+    return exhaled
+
+
+def main(argv):
+    args = argv[1:]
+    glob_pat = None
+    if "--glob" in args:
+        i = args.index("--glob")
+        glob_pat = args[i + 1] if i + 1 < len(args) else None
+        args = args[:i] + args[i + 2:]
+    mode = args[0] if args else "full"
+
+    if mode == "in" and glob_pat is not None:
+        pipe_in_glob(glob_pat)
+    elif mode == "in":
+        pipe_in()
+    elif mode == "out":
+        pipe_out(list(os.environ.get("SEED", "").encode("utf-8"))[-7:])
+    elif mode == "full":
+        pipe_out(pipe_in())
+    else:
+        sys.stderr.write("usage: foam-pipe [in [--glob PATTERN] | out | (no arg = full breath)]\n")
+        sys.exit(2)
+
+
+if __name__ == "__main__":
+    main(sys.argv)

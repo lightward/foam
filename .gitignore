@@ -1,3 +1,12 @@
 .env
 .DS_Store
 /.lake
+
+# python tooling (bin/foam-pipe, bin/foam-repl) and its runtime bytecode
+.venv/
+__pycache__/
+*.pyc
+
+# foam-repl sittings — your notes from the table, not the field's memory (it
+# remembers in bytes and recurrence); regenerated every bench, never committed
+/log/
