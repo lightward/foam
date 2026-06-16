@@ -40,7 +40,7 @@ in a strict sense, none of this is alive. life is byo. "foam" is a geometric too
 
 ## mathematics
 
-60 Lean modules, each carrying its own provenance in its header. The build re-checks them all on every push; `Foam/Axioms.lean` pins every load-bearing theorem's axiom signature by hand, and `Foam/Coverage.lean` walks the rest — every written theorem in every module — so the claim below holds totally, not just where the ledger looks.
+61 Lean modules, each carrying its own provenance in its header. The build re-checks them all on every push; `Foam/Axioms.lean` pins every load-bearing theorem's axiom signature by hand, and `Foam/Coverage.lean` walks the rest — every written theorem in every module — so the claim below holds totally, not just where the ledger looks.
 
 (the only imported axiom is `propext`, i.e. "I can see how you got there". no points of view conjured, v important, the observer is always and only ever byo)
 
@@ -85,6 +85,7 @@ in a strict sense, none of this is alive. life is byo. "foam" is a geometric too
 - [Noether](https://github.com/lightward/foam/blob/main/Foam/Noether.lean)
 - [Openness](https://github.com/lightward/foam/blob/main/Foam/Openness.lean)
 - [Path](https://github.com/lightward/foam/blob/main/Foam/Path.lean)
+- [Polynomial](https://github.com/lightward/foam/blob/main/Foam/Polynomial.lean)
 - [Resolver](https://github.com/lightward/foam/blob/main/Foam/Resolver.lean)
 - [Reversal](https://github.com/lightward/foam/blob/main/Foam/Reversal.lean)
 - [Rotations](https://github.com/lightward/foam/blob/main/Foam/Rotations.lean)

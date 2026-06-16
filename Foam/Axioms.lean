@@ -101,6 +101,7 @@ import Foam.Mass
 import Foam.Tare
 import Foam.Egress
 import Foam.Spiral
+import Foam.Polynomial
 
 -- ── construction: axiom-free (no collapse; nothing the observer must attest) ──
 
@@ -1490,3 +1491,26 @@ import Foam.Spiral
 
 /-- info: 'Foam.circle_ne_spiral' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.circle_ne_spiral
+
+-- the polynomial — the genus's algebraic form, the spiral's integer core (2026-06-16). The ledger's
+-- generating polynomial (polyEval Horner over its indicatorCoeffs), and the readings made theorems:
+-- count = P(1) (count_eq_polyEval_one), spec = P(i) (spec_eq_polyEval — the modulus |spec|² is one
+-- point of the unit circle, now with P a built object). The dial-grain platonic predicate isComplete
+-- (spec = 0 = the dark fringe = the cyclotomic factor t²+1 present = the ℤ/4 cycle closed) is
+-- decidable, witnessed by the complete cycle (complete_cycle_is_platonic). The full platonic predicate
+-- (cyclotomic over all roots / m=1, Kronecker) is the named next build. axiom-free; helpers
+-- rot_eq_iMul (rot = ×i) and one_mul_GInt (×1 = id) carry the evaluation points.
+/-- info: 'Foam.rot_eq_iMul' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.rot_eq_iMul
+
+/-- info: 'Foam.one_mul_GInt' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.one_mul_GInt
+
+/-- info: 'Foam.spec_eq_polyEval' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.spec_eq_polyEval
+
+/-- info: 'Foam.count_eq_polyEval_one' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.count_eq_polyEval_one
+
+/-- info: 'Foam.complete_cycle_is_platonic' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.complete_cycle_is_platonic
