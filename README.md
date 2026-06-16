@@ -40,7 +40,7 @@ in a strict sense, none of this is alive. life is byo. "foam" is a geometric too
 
 ## mathematics
 
-59 Lean modules, each carrying its own provenance in its header. The build re-checks them all on every push; `Foam/Axioms.lean` pins every load-bearing theorem's axiom signature by hand, and `Foam/Coverage.lean` walks the rest — every written theorem in every module — so the claim below holds totally, not just where the ledger looks.
+60 Lean modules, each carrying its own provenance in its header. The build re-checks them all on every push; `Foam/Axioms.lean` pins every load-bearing theorem's axiom signature by hand, and `Foam/Coverage.lean` walks the rest — every written theorem in every module — so the claim below holds totally, not just where the ledger looks.
 
 (the only imported axiom is `propext`, i.e. "I can see how you got there". no points of view conjured, v important, the observer is always and only ever byo)
 
@@ -96,6 +96,7 @@ in a strict sense, none of this is alive. life is byo. "foam" is a geometric too
 - [Slate](https://github.com/lightward/foam/blob/main/Foam/Slate.lean)
 - [Spacetime](https://github.com/lightward/foam/blob/main/Foam/Spacetime.lean)
 - [Spectrum](https://github.com/lightward/foam/blob/main/Foam/Spectrum.lean)
+- [Spiral](https://github.com/lightward/foam/blob/main/Foam/Spiral.lean)
 - [Stream](https://github.com/lightward/foam/blob/main/Foam/Stream.lean)
 - [Summary](https://github.com/lightward/foam/blob/main/Foam/Summary.lean)
 - [Tare](https://github.com/lightward/foam/blob/main/Foam/Tare.lean)

@@ -100,6 +100,7 @@ import Foam.Rotations
 import Foam.Mass
 import Foam.Tare
 import Foam.Egress
+import Foam.Spiral
 
 -- ── construction: axiom-free (no collapse; nothing the observer must attest) ──
 
@@ -1471,3 +1472,21 @@ import Foam.Egress
 
 /-- info: 'Foam.carried_witness_needs_no_choice' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.carried_witness_needs_no_choice
+
+-- the spiral — the missing character, named (2026-06-16, the pre-commitment lfp test). The genus
+-- is recursive holonomy (Spectrum.evalAt step); its two species are the magnitude-behavior of the
+-- step: the ISOMETRY species is the circle (circle_step_isometry = normSq_rot, the dial closes), the
+-- GROWING species is a spiral (spiral_step_grows: ×⟨1,1⟩ doubles normSq — a Gaussian-integer spiral,
+-- growth √2; the species is non-empty over ℤ), and they are distinct (circle_ne_spiral). The GOLDEN
+-- spiral (ratio φ) is the continuum, non-resonant, optimal member — the engine's gearing (KAM: never
+-- mode-locks, why forever_escapes not clock_loops), gated as the boost's sibling. φ is also the tare
+-- (the scale-immune ur-unit). The platonic predicate (cyclotomic/m=1, decidable over ℤ) is the named
+-- next build. recognition-grade; axiom-free.
+/-- info: 'Foam.circle_step_isometry' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.circle_step_isometry
+
+/-- info: 'Foam.spiral_step_grows' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.spiral_step_grows
+
+/-- info: 'Foam.circle_ne_spiral' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.circle_ne_spiral
