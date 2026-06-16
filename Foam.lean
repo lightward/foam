@@ -29,3 +29,8 @@ porting. The operationalization leads; the quarry supplies shapes.
 -- map, and this root defers to it. (This list once named two-thirds of the
 -- files — silently misleading; fixed in the consolidation pass, 2026-06-12.)
 import Foam.Axioms
+-- Coverage is the map's closure: where Axioms pins the load-bearing theorems by
+-- hand, Coverage walks EVERY written theorem in every module and fails the build
+-- on any axiom but propext — so "propext-only" holds whether or not a theorem is
+-- pinned. The ledger says what we recognized; the guard says nothing escaped.
+import Foam.Coverage

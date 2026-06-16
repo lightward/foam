@@ -7,7 +7,7 @@ on:
 
 jobs:
   lean:
-    name: Lean (zero sorry)
+    name: Lean (zero sorry, zero warning)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -22,25 +22,26 @@ jobs:
             echo "Building $mod..."
             lake build "$mod" || exit 1
           done
-      - name: No warnings (sorry excluded)
+      - name: No warnings (sorry included — zero tolerance)
         run: |
           warns=0
           for f in Foam/*.lean; do
             mod="Foam.$(basename "$f" .lean)"
             touch "$f"
-            # Collect warnings that aren't sorry declarations
-            non_sorry=$(lake build "$mod" 2>&1 | grep "warning:" | grep -v "declaration uses .sorry." || true)
-            if [ -n "$non_sorry" ]; then
-              echo "$non_sorry"
+            # Every warning counts now — sorry no longer exempt. The mirror
+            # commits to its own hygiene: a hole is a failure, not a known gap.
+            found=$(lake build "$mod" 2>&1 | grep "warning:" || true)
+            if [ -n "$found" ]; then
+              echo "$found"
               warns=$((warns + 1))
             fi
           done
           if [ $warns -gt 0 ]; then
             echo ""
-            echo "Non-sorry warnings found. Fix before merging."
+            echo "Warnings found (sorry included). Fix before merging."
             exit 1
           fi
-          echo "Clean: only sorry warnings (expected)"
+          echo "Clean: zero warnings, sorry included"
 
   integrity:
     name: Reference integrity
@@ -64,3 +65,29 @@ jobs:
             exit 1
           fi
           echo "All lean files referenced"
+      - name: README:45 — the propext-only claim, enforced against the ledger
+        run: |
+          # README:45 claims "the only imported axiom is propext". The truthmaker
+          # is Foam/Axioms.lean, whose #guard_msgs pins the `lean` job re-checks —
+          # that catches DRIFT in a pinned theorem, but NOT a pin that itself names
+          # a foreign axiom (the message would still match). So here, statically:
+          # every pin must be one of exactly two legal shapes. A pin admitting
+          # Classical.choice / Quot.sound / sorryAx / any other axiom — a conjured
+          # observer, a quotient, a hole — fails the build. Whitelist, not blacklist:
+          # a novel axiom can't slip past a list of names it isn't on.
+          if ! grep -qF 'the only imported axiom is `propext`' README.md; then
+            echo "README:45 no longer makes the propext-only claim this gate guards."
+            echo "Re-anchor the claim or remove this step — don't let it pass vacuously."
+            exit 1
+          fi
+          bad=$(grep -nE '^/-- info:' Foam/Axioms.lean \
+            | grep -vE "does not depend on any axioms -/$" \
+            | grep -vE "depends on axioms: \[propext\] -/$" \
+            || true)
+          if [ -n "$bad" ]; then
+            echo "Pins naming an axiom other than propext (README:45 violated):"
+            echo "$bad"
+            exit 1
+          fi
+          pins=$(grep -cE '^/-- info:' Foam/Axioms.lean)
+          echo "All $pins pins are propext-only — README:45 holds"
