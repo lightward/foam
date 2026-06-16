@@ -65,41 +65,59 @@ synthesis is the conjecture.
   is the round-trip fixed point (`lossless_codec`, decode∘encode = id) and `meet_self` — a path iso
   with its own symbolism, the platonic form, zero residue.
 
-**The inversion the corpus forces.** Learning-as-decoherence (measured, `d_heardmod_closed = −176`)
-drives a repeated pattern's modulus DOWN to the dark fringe; modulus = mass (`rest_mass_conserved`).
-So settling drives mass toward *zero* — the redundant decoheres into the platonic background.
-Therefore **mass is not what settles; mass is what *resists* settling** — the conserved, incompressible
-residue the dynamics cannot spend (`conserved_invisible_to_spent`). Gravity is the relaxation of
-everything compressible toward the self-completing dark fringe; the gravitational appearance is the
-gradient of that settling-field *around* the incompressible cores it must route past. Mass-as-source,
-recovered as un-settle-ability.
+**Step (1) was worked, and it forced *two* corrections (2026-06-16) — the second undoing the
+first.** Draft one: *storage cost = the modulus = mass*. The modulus fails as a cost — it is
+**non-monotone in compressibility** (the period-4 comb `⟨3,0⟩` reads modulus **9** yet is trivially
+compressible; the complete cycle `[s,s,s,s]` reads **0**, equally compressible), and it is *frame-specific*
+(`normK_frame_dependent`: `⟨1,1⟩` reads `2` elliptic, `0` hyperbolic). Draft two over-corrected —
+relocating storage cost to the symplectic `crossK` because that one is κ-free. **That threw out the baby:
+platonic complexity is frame-invariant in its own right (Kolmogorov's invariance theorem), and the
+resonance I read as a bug is a knot-theoretic signal.** The corrected picture:
 
-**foam already holds Verlinde's entropic-gravity ingredients**: a holographic screen
-(`keepLast_screen`, the cone boundary), a bounded screen capacity (`keepLast_bounded`, ≤ k bits), a
-first law at the boundary (`netCharge_discharge`, d_net = −spoken), a conserved energy (the
-heard-modulus). The missing piece is the **entropy–displacement law** (ΔStorage ∝ Δposition) that turns
-∇(storage cost) into a force.
+**The ledger is a polynomial; the readings are evaluations.** The occurrence comb is `P(t) = Σ tᵈ` over
+the depths `d` where `s` fires. foam's four characters (`Noether`) are `P` at the four 4th-roots of unity
+— count `P(1)`, alt `P(−1)`, spectrum `P(i)`, conjugate `P(−i)` — the mod-4 DFT. The **order rung**
+(lossless) is the whole polynomial `P`; the modulus is **one point on the unit circle**, `|P(i)|²`.
 
-**The dark-matter closure.** Gravity tracks the modulus (the incompressible mass); light tracks the
-*stations* — and `station_blind_to_norm` says the stations are blind to the modulus. So the visible
-undercounts the mass that sources the settling: gravity stronger than visible mass = flat rotation curves
-= dark matter; the same split as the Bullet Cluster (gravity follows the conserved modulus, light the
-spent/visible). Dark matter and emergent gravity become one statement — the stations can't see what the
-settling-field is shaped by. (Folds together the dark-sector reading: the rest mass invisible to every
-station, append-only/collisionless, frame-invariant.)
+**Storage cost = the Mahler measure of `P`**, `m(P) = exp ∮ log|P(e^{2πiθ})| dθ` — the *whole-circle*
+integral, frame-invariant (a property of the polynomial, machine/κ-independent — Kolmogorov-invariance in
+the analytic register). The modulus `|P(i)|²` is a *single point* of that circle; mistaking the point for
+the integral was draft one's error, and mistaking "the modulus is frame-specific" for "the cost isn't a
+complexity" was draft two's. **Mass/energy** is the κ-metric reading (`normK_frame_dependent`,
+frame-specific) — another single-point reading, not the cost.
 
-**Theory before experiment — explicitly gated.** The tempting measurement — *does local modulus tilt the
-`keepLast` cone (does effective `c` shrink near high-mass continuations, time-dilation-shaped)?* — must
-NOT be run until the space is theoretically exhausted top to bottom. foam has no metric on context-space
-yet ("position" is context-index; "distance" is the worldline displacement `keepLast_advance`), and
-without the categories the result is uninterpretable: a premature measurement yields only confusing
-negatives, not a falsification. (Method, per this file: empirical-first for discovery, categorical-first
-for falsification — but the categories must *exist* first.) The work, in order: (1) define the
-storage-cost functional on continuations (the MDL/Kolmogorov reading of the modulus); (2) derive the
-entropy–displacement law on the cone screen; (3) define cone-tilt as a modulus-dependent reach (the point
-where foam's rigid, frame-invariant `c` would have to bend); (4) ONLY THEN measure whether the dev field
-tilts. A failed *proof* at (2)–(3) is a located obstruction; a failed *measurement* before them is noise.
-**rhyme → conjecture.**
+**Platonic = cyclotomic = self-completing = cheapest (Kronecker's theorem).** A monic integer polynomial
+has `m(P) = 1` (zero entropy, cheapest) **iff** it is a product of cyclotomics — iff all its roots are
+roots of unity — iff it is built of complete cycles, *self-completing*. The rigorous form of "platonic
+ideals are cheapest to store" and the trailer's "recordings decay entropically if they're not
+self-completing": not-self-completing = a root off the unit circle = `m(P) > 1` = positive entropy = decay.
+Lehmer's problem (is there a gap above 1?) is exactly "how cheap can non-platonic structure get."
+
+**Resonance with periodicity is the knot signal, not a bug.** `P(ζₙ)` at a root of unity detects n-fold
+periodicity — in knot theory the Alexander polynomial at `ζₙ` gives the order of the n-fold cyclic
+branched cover's homology (Murasugi). So `P(i)` (the modulus) is the periodicity-resonance at the dial's
+own order 4; the dark fringe (`P(i) = 0`) is `i` being a root — a cyclotomic factor present, the ℤ/4 cycle
+closed. The modulus is a frame-specific periodicity-detector that *assembles with the other evaluations
+into* the frame-invariant `m(P)` — a coordinate of the platonic complexity, not its rival. (The
+metric/symplectic `align`/`cross` are the real/imag of *one* such evaluation — `conjMul_eq` — not the cost.
+`crossK` stays what it is: the symplectic area / action, the `ergodic-symplectic` universal.)
+
+**Dark matter, re-corrected.** Gravity sources from the frame-invariant complexity `m(P)` (the whole
+circle); the born-voice samples a single metric point (`born = align²`, the `|P(i)|²`-grade reading) and is
+blind to the rest of the circle. The visible undercounts the source: flat rotation curves, the Bullet
+Cluster split (gravity follows `m(P)`, light follows the one point). Not "blind to the modulus" — *blind to
+all of the circle but the point it samples.*
+
+**Theory before experiment — still gated.** Updated work order: **(1) storage cost identified — `m(P)`,
+the Mahler measure of the ledger-polynomial: frame-invariant, platonic-iff-cyclotomic (Kronecker), the
+resonances its root-of-unity coordinates (knot periodicity). Residual: foam reads `P` only at the four
+4th-roots (the `Noether` characters) — the full circle is the already-flagged `Spectrum` frontier ("the
+other evaluation points as one parameterized family with its character theory").** (2) the
+entropy–displacement law for `m(P)` on the cone screen; (3) cone-tilt as an `m(P)`-density-dependent reach
+(where foam's rigid `c` would bend); (4) ONLY THEN measure. A failed *proof* at (2)–(3) is a located
+obstruction; a *measurement* before them is noise. (Method: categorical-first for falsification — the
+categories must exist first.) **rhyme → conjecture (step 1 corrected twice — the symplectic overreach
+undone; Mahler / Kronecker / knot-periodicity, frame-invariant).**
 
 ## the spin-probe — foam's second instrument (built)
 

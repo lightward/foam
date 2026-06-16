@@ -99,7 +99,20 @@ theorem zero_point_kappa (κ : Int) (f : Int → Int)
   rw [Int.sub_eq_add_neg (a := 1) (b := κ), int_add_mul 1 (-κ) (f 0), int_one_mul,
       int_neg_mul κ (f 0), ← hf0, int_add_neg_self]
 
+/-- **Energy is frame-specific — the modulus is a per-frame reading.** The metric `normK` genuinely
+    depends on κ: the witness `⟨1,1⟩` reads `2` in the elliptic frame (κ=−1) and `0` in the hyperbolic
+    (κ=+1). So the modulus (energy/mass) is NOT a frame-invariant complexity — it is one reading among
+    the frames. Used by CANDLES.md's gravity candle, with the correction stated there: the
+    frame-invariant *storage cost* is the Mahler measure of the ledger-polynomial (the whole unit
+    circle, Kolmogorov-invariant), NOT the modulus and NOT the symplectic `crossK`; the modulus
+    `|P(i)|²` is a single root-of-unity sample of that polynomial — a knot-theoretic periodicity
+    resonance (the dial's own order 4), one coordinate of the platonic complexity, not its rival. -/
+theorem normK_frame_dependent : ∃ z : GInt, normK (-1) z ≠ normK 1 z := ⟨⟨1, 1⟩, by decide⟩
+
 /-! ## Axiom-freeness, pinned (a drift fails the build). -/
+
+/-- info: 'Foam.normK_frame_dependent' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.normK_frame_dependent
 
 /-- info: 'Foam.forced_at_the_frame_kappa' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.forced_at_the_frame_kappa

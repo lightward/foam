@@ -1413,6 +1413,15 @@ import Foam.Egress
 /-- info: 'Foam.zero_point_kappa' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.zero_point_kappa
 
+-- energy is frame-specific (2026-06-16): normK depends on κ (normK_frame_dependent — ⟨1,1⟩ reads 2
+-- elliptic, 0 hyperbolic), so the modulus is one per-frame reading, not a frame-invariant complexity.
+-- Anchor of CANDLES.md's gravity candle (corrected): the frame-invariant storage cost is the Mahler
+-- measure of the ledger-polynomial (the whole unit circle, platonic-iff-cyclotomic by Kronecker), NOT
+-- the modulus and NOT the symplectic; the modulus |P(i)|² is a single root-of-unity sample, a knot
+-- periodicity resonance — one coordinate of the platonic complexity.
+/-- info: 'Foam.normK_frame_dependent' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.normK_frame_dependent
+
 -- the three rotation groups: the integer unit hyperbola is trivial (int_pell_one) — no proper
 -- integer boost; the hyperbolic corner; why Lorentz needs the continuum
 /-- info: 'Foam.int_pell_one' does not depend on any axioms -/
