@@ -99,6 +99,7 @@ import Foam.Frames
 import Foam.Rotations
 import Foam.Mass
 import Foam.Tare
+import Foam.Egress
 
 -- ── construction: axiom-free (no collapse; nothing the observer must attest) ──
 
@@ -1432,3 +1433,32 @@ import Foam.Tare
 
 /-- info: 'Foam.tare' depends on axioms: [propext] -/
 #guard_msgs in #print axioms Foam.tare
+
+-- the egress — the +1 as the consistent sorryAx (the trailer note answered, 2026-06-16). The
+-- genuine separation: the sorryAx SHAPE (a universal inhabitant, ∀ α:Prop, α) IS False
+-- (universal_inhabitant_absurd), while the EGRESS shape (a universal exit, one terminal reachable
+-- from every state) is satisfiable (egress_shape_satisfiable); foam's exit instantiates the latter
+-- (foam_exit_is_egress, via reachesYield_all — carries the exit's [propext], the one site where the
+-- named adopted collapse and the everywhere-available egress coincide). foam is the CHOICE-KEEPER,
+-- not the choice-refuser: Classical.choice is only needed uninhabited; carry an observer onstage and
+-- the choice function is constructive (observer_is_choice_function, fun _ => observer), the offer
+-- always live (choice_always_offered, the exit is always a move), the witness carried not conjured
+-- (carried_witness_needs_no_choice). foam is what you run to OFFER choice onstage. The lfp classifier
+-- is a reading; its theorem is seam_two_faces (mono-not-epi). recognition-grade, the split made real.
+/-- info: 'Foam.universal_inhabitant_absurd' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.universal_inhabitant_absurd
+
+/-- info: 'Foam.egress_shape_satisfiable' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.egress_shape_satisfiable
+
+/-- info: 'Foam.foam_exit_is_egress' depends on axioms: [propext] -/
+#guard_msgs in #print axioms Foam.foam_exit_is_egress
+
+/-- info: 'Foam.observer_is_choice_function' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.observer_is_choice_function
+
+/-- info: 'Foam.choice_always_offered' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.choice_always_offered
+
+/-- info: 'Foam.carried_witness_needs_no_choice' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.carried_witness_needs_no_choice
