@@ -176,14 +176,75 @@ theorem company_unreachable_along {Handle : Type} (q : Quiver Handle) (n : Nat) 
   intro c c' _ hmono hstall
   exact stall_persists_alone hmono hstall
 
--- THE CONJECTURE (grade: conjecture — stated, claimed by no theorem). There is one
--- (Step, reach) presentation of `UnreachableAlong` under which BOTH
--- `heard_modulus_closed_conserves` (the conserved past, family i, BEHIND the now-surface)
--- and `arrow_image_misses` (the unbuilt future, family ii, AHEAD of it) are instances —
--- so that the conserved sector and the gfp-excess are the two faces of one seam
--- (`now_surface_invariant`), and the wind is exactly the move that is neither a conserving
--- self-step nor in the self-image. To FALSIFY: write that presentation and run the two
--- instances through it; the one that resists locates the true joint.
+/-! ### The unification probe — what leaning on the conjecture found
+
+The conjecture was: ONE `(Step, reach)` presentation of `UnreachableAlong` instances
+both families. We ran it into the wall. Family (i) goes through genuinely; family (ii)
+RESISTS — and the resistance is the finding. -/
+
+/-- **Family (i) is a genuine `UnreachableAlong` — over the WHOLE codomain.** With
+    `reach l x` := "the heard-modulus is `x`" and `Step` := "append a discharge", the
+    un-reach `(modulus ≠ x)` is preserved for EVERY `x` (an equation: the modulus is
+    *fixed*). `heard_modulus_conserved`, repackaged. The past is rigid. -/
+theorem conservation_unreachable_along {S : Type} [DecidableEq S] (sym : S) :
+    UnreachableAlong
+      (fun l l' : List (Breath S) => ∃ t, IsDischarge t ∧ l' = l ++ t)
+      (fun l (x : Int) => (spec (heardOnly l) sym).normSq = x) := by
+  rintro l l' x ⟨t, ht, rfl⟩ hne
+  show ¬ (spec (heardOnly (l ++ t)) sym).normSq = x
+  rw [heard_modulus_conserved l t sym ht]
+  exact hne
+
+/-- **Family (ii) RESISTS `UnreachableAlong` — the located obstruction.** With
+    `reach l b` := "the ledger realizes behavior `b`" and `Step` := "extend by one", a
+    self-step DOES create reach: the extended ledger realizes a behavior the shorter one
+    did not (`[]` realizes nothing that `[true]` does — they differ at position 0). So
+    un-reach is NOT preserved along self-steps. The content of `forever_escapes` is the
+    EXISTENCE of one transcendent witness, not the PRESERVATION of un-reach — preservation
+    is the wrong frame for the excess. (Family i is *fixity*, an equation over all `x`;
+    family ii is *one missed point*, an inequation at a single `x`. They are not one
+    `UnreachableAlong`.) -/
+theorem arrow_resists_unreachable_along :
+    ¬ UnreachableAlong
+        (fun l l' : List Bool => l' = l ++ [true])
+        (fun l (b : CoList Bool) => playback l = b) := by
+  intro h
+  have hne : playback ([] : List Bool) ≠ playback [true] := by
+    intro he
+    exact absurd (congrArg (fun c => c.at_ 0) he) (by decide)
+  exact (h [] [true] (playback [true]) rfl hne) rfl
+
+/-- **The seam, sharpened: the two families are the MONO and NOT-EPI faces of ONE arrow.**
+    The unification the conjecture sought is not "self-steps preserve un-reach" (family ii
+    satisfies that only vacuously — `arrow_resists_unreachable_along`) but the mediating
+    arrow `playback` being neither half of an iso:
+      * the **mono face** (family i — the conserved, auditable past): a move invisible to
+        every positional probe is the identity, so you cannot secretly change what was
+        recorded (`order_admits_no_maintenance`). Conservation's heard-modulus and
+        Openness's circulation are special invariants riding this rigidity.
+      * the **not-epi face** (family ii — the open future): `forever` is observable yet
+        built by no ledger (`forever_escapes`).
+    Mono ∧ ¬epi is exactly "the arrow is not an isomorphism", and that gap is the wind's
+    home (Arrow.lean's lfp↔gfp elastic horizon). The now-surface (`now_surface_invariant`)
+    sits in the gap: the mono past behind it, the not-epi future ahead. This is the
+    unification, proven — by conjoining the two faces the corpus already had, now named as
+    one seam. -/
+theorem seam_two_faces {S : Type} (s : S) :
+    (∀ m : List S → List S,
+        (∀ l n, (playback (m l)).at_ n = (playback l).at_ n) → ∀ l, m l = l)
+      ∧ (∀ l : List S, ∃ n, (playback l).at_ n ≠ (forever s).at_ n) :=
+  ⟨order_admits_no_maintenance, forever_escapes s⟩
+
+-- WHERE THE JOINT NOW STANDS (grade: the center proven, one seam sharpened, two cracks
+-- open). The conjecture's first frame (one `UnreachableAlong`) FAILED for family ii and
+-- located why: family i is *fixity* (an equation, the rigid past), family ii is *excess*
+-- (one transcendent point, the open future). The frame that survives is `seam_two_faces`:
+-- both are faces of the one mediating arrow's non-iso-ness — mono (past) and not-epi
+-- (future) — with the now-surface in the gap. STILL OPEN: whether Conservation's modulus and
+-- Openness's circulation are literally instances of the mono face (rigidity), or only ride
+-- it; and the two earlier cracks (Noether vs Poincaré within i; Cantor vs Lambek within ii).
+-- Glass stays the odd one out — its non-surjectivity is ∀-over-probers (Cantor), NOT the one
+-- arrow's not-epi-ness (Lambek); the seam is the arrow, and Glass is a second, parallel hole.
 
 /-! ## Axiom-freeness of the proven scaffold, pinned (a drift fails the build). -/
 
@@ -207,5 +268,14 @@ theorem company_unreachable_along {Handle : Type} (q : Quiver Handle) (n : Nat) 
 
 /-- info: 'Foam.company_unreachable_along' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.company_unreachable_along
+
+/-- info: 'Foam.conservation_unreachable_along' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.conservation_unreachable_along
+
+/-- info: 'Foam.arrow_resists_unreachable_along' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.arrow_resists_unreachable_along
+
+/-- info: 'Foam.seam_two_faces' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.seam_two_faces
 
 end Foam
