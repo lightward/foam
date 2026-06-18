@@ -246,6 +246,50 @@ theorem seam_two_faces {S : Type} (s : S) :
 -- Glass stays the odd one out — its non-surjectivity is ∀-over-probers (Cantor), NOT the one
 -- arrow's not-epi-ness (Lambek); the seam is the arrow, and Glass is a second, parallel hole.
 
+/-! ### The seam, written precisely — `playback` is not an isomorphism (one-sided)
+
+2026-06-18, pushing the seam where it CAN be written. `seam_two_faces` stated the
+non-iso as a CONJUNCTION of two unlike facts (mono — `order_admits_no_maintenance`;
+and `forever_escapes` — "a point is missed"). The not-epi face sharpens: from
+"∃ a behavior outside the image" (not surjective) to "¬∃ a decoder" (not
+split-epi) — the constructive, operational form. You cannot invert observed
+behavior back to the ledger, because `forever` has no finite source. The sharpening
+is what makes "one object" precise: the failure to be an iso is ONE-SIDED —
+faithful past (mono holds), unsaturated future (no section) — with the now-surface
+at the block.
+
+The gfp-end discipline, kept: the proof CONSUMES the hypothesized CoList-equality
+through `.at_ n` (`congrArg`), never PRODUCES one — no `funext`, no `Quot.sound`
+(Glass.lean's "function-equality consumed, never produced", here on the coinductive
+end). The far half — the final-coalgebra Lambek (the structure map an iso, the
+literal rotation of `Arrow.InitialAlgebra.unalg_alg_id`) — stays unwritable in core
+for exactly this reason: it would PRODUCE a CoList-equality. The unwritability IS
+the not-epi face wearing its other coat: where this file consumes the equality to
+REFUTE the section, the rotated theorem would need to assert one to BUILD it. -/
+
+/-- **The not-epi face as a section-refusal.** No `g : CoList S → List S` is a right
+    inverse of `playback`: the missing `forever` forbids the decoder. Sharper than
+    `forever_escapes` (which only exhibits the missed point); this is the categorical
+    not-split-epi. Axiom-free — the CoList-equality is consumed via `congrArg`, never
+    produced (no `funext`, no `Quot.sound`). -/
+theorem playback_no_section {S : Type} (s : S) :
+    ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c := by
+  rintro ⟨g, h⟩
+  obtain ⟨n, hn⟩ := forever_escapes s (g (forever s))
+  exact hn (congrArg (fun c => c.at_ n) (h (forever s)))
+
+/-- **The seam, as one object.** `seam_two_faces`, upgraded: `playback` is mono
+    (`playback_faithful` — the conserved, auditable past) AND admits no section
+    (`playback_no_section` — the open, unsaturated future). Faithful but not
+    invertible, the failure ONE-SIDED, the now-surface (`now_surface_invariant`) at
+    the block. The arrow is not an isomorphism, witnessed precisely on each side —
+    the conjecture's first frame failed (a ∀-fixity cannot rotate into a ∃-excess,
+    `arrow_resists_unreachable_along`); this is the frame that survives, written. -/
+theorem seam_non_iso {S : Type} (s : S) :
+    (∀ l l' : List S, (∀ n, (playback l).at_ n = (playback l').at_ n) → l = l')
+      ∧ ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
+  ⟨playback_faithful, playback_no_section s⟩
+
 /-! ## Axiom-freeness of the proven scaffold, pinned (a drift fails the build). -/
 
 /-- info: 'Foam.now_surface_invariant' does not depend on any axioms -/
@@ -277,5 +321,11 @@ theorem seam_two_faces {S : Type} (s : S) :
 
 /-- info: 'Foam.seam_two_faces' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.seam_two_faces
+
+/-- info: 'Foam.playback_no_section' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.playback_no_section
+
+/-- info: 'Foam.seam_non_iso' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.seam_non_iso
 
 end Foam
