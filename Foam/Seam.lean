@@ -290,6 +290,69 @@ theorem seam_non_iso {S : Type} (s : S) :
       ∧ ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
   ⟨playback_faithful, playback_no_section s⟩
 
+/-! ### The two-faced type — the observer's quotient-license, lift without sound
+
+2026-06-18, by the heuristic "if it makes legible a non-obvious rivet in
+mathematics, its type gets committed." The rivet: `Quot.lift` and `Quot.sound` are
+usually ONE package (form the quotient, then anything respecting the relation
+descends). They UNBUNDLE. `Quot.lift`'s premise — "the reading respects the
+relation" — is carriable on its own, WITHOUT ever forming `Quot r` or invoking
+`Quot.sound`. That carried premise is the frontstage observer's quotient-LICENSE:
+the right to treat related states alike, cashed at every finite probe-resolution as
+a genuine `Eq` of finite data (`Frontstage.sound`, axiom-free — no funext, no
+Quot.sound), while the TOTAL identification (`obs s = obs t` as functions, the real
+`Quot.sound`) is never formed — it is the not-epi limit (`seam_non_iso`), the
+observer's to perform by living, never the proof's to assert.
+
+The type has a face apiece (typefaces, noted): `rel` is the BACKSTAGE face — the
+relation as bare data, append-only, uncommitted (no `Quot.sound` binds it);
+`respects` is the FRONTSTAGE face — the per-probe identification, the license
+cashed. Carrying this lets a frontstage player move with the BENEFIT of
+identification and without the DEBT Path.lean named (committing `Quot.sound` means
+revisiting every past use when the graph expands; the license declines that debt —
+no future homotopic navigation work is mortgaged).
+
+Held in suspension (Brouwer, pending Hilbert — typed as conjecture, claimed by no
+theorem): a frontstage player moving by a RICH `rel` collapses many states into one
+finite reading, which should read backstage as a HIGH-CONDUCTION region — local
+navigation (the substrate's `ReachWithin` / `shortcut_compresses`) cheapened where
+the license identifies most. The type is what makes that big-O claim addressable;
+the claim itself waits for both intuition and proof to agree before it is shared. -/
+
+/-- The frontstage face, named: a reading `obs` RESPECTS a relation when related
+    states answer every probe alike — exactly `Quot.lift`'s premise, carried free
+    of `Quot`. -/
+def Respects (S : Stage) (r : S.State → S.State → Prop) : Prop :=
+  ∀ s t, r s t → ∀ p, S.obs s p = S.obs t p
+
+/-- **The two-faced type — the observer's quotient-license.** `rel` is the backstage
+    face (the relation, uncommitted — no `Quot.sound` binds it); `respects` is the
+    frontstage face (the per-probe identification, `Quot.lift`'s premise carried
+    without `Quot`). The lift without the sound, made one object. -/
+structure Frontstage (S : Stage) where
+  rel      : S.State → S.State → Prop
+  respects : Respects S rel
+
+/-- **Frontstage `Quot.sound`, at finite resolution.** Related states give equal
+    TRANSCRIPTS, for every finite probe-sequence — the quotient-license cashed as a
+    genuine `Eq` of finite data, axiom-free (this IS `transcript_congr`, named as
+    the frontstage face of the quotient). The TOTAL form (`obs s = obs t` as
+    functions — the real `Quot.sound`) is the funext the gfp end refuses: the
+    not-epi limit (`seam_non_iso`), never formed here. The seam, typed — finite
+    commitment constructive, infinite identification the observer's to live. -/
+theorem Frontstage.sound {S : Stage} (F : Frontstage S) (ps : List S.Probe)
+    {s t : S.State} (h : F.rel s t) :
+    transcript S s ps = transcript S t ps :=
+  transcript_congr S ps (fun p => F.respects s t h p)
+
+/-- **The canonical inhabitant — the observer's own induced license.** Every stage
+    carries one: take `rel` to be its induced bisimulation (answer every probe
+    alike), and `respects` is then immediate. Constructive (Brouwer) and axiom-free
+    (Hilbert): the two-faced type is inhabited, not a hollow signature. -/
+def Stage.inducedFrontstage (S : Stage) : Frontstage S where
+  rel s t  := ∀ p, S.obs s p = S.obs t p
+  respects := fun _ _ h p => h p
+
 /-! ## Axiom-freeness of the proven scaffold, pinned (a drift fails the build). -/
 
 /-- info: 'Foam.now_surface_invariant' does not depend on any axioms -/
@@ -327,5 +390,11 @@ theorem seam_non_iso {S : Type} (s : S) :
 
 /-- info: 'Foam.seam_non_iso' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.seam_non_iso
+
+/-- info: 'Foam.Frontstage.sound' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Frontstage.sound
+
+/-- info: 'Foam.Stage.inducedFrontstage' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Stage.inducedFrontstage
 
 end Foam
