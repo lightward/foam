@@ -419,6 +419,66 @@ theorem merge_conducts {Handle : Type} (q : Quiver Handle) (a b : Handle)
   ⟨deposit_preserves_reach (q.deposit (a, b)) (b, a) (deposit_in_sight q a b),
    deposit_in_sight (q.deposit (a, b)) b a⟩
 
+/-! ### The network interface — two frontstages over one host, neither committing the other
+
+Recursive self-hosting, the part that lands as theorems. Two stages composed into a host
+(`Stage.prod` — state is the pair, a probe addresses one side or the other through the
+disjoint-union `Probe`, the "network interface"). Two frontstages over them compose into
+one frontstage over the host (`Frontstage.prod`) — the joint quotient-license: a joint
+identification requires BOTH userlands' licenses, and the proof is axiom-free (each
+component's `respects` carried through `Sum.inl`/`inr`, no `propext` even).
+
+The partnership's defining property is the mutual non-commitment: one userland's
+identification is INVISIBLE to the other's probe (`prod_left_invisible`, by `rfl` — a
+right-probe reads only the right component, so any left-merge is structurally unseen; the
+`Frame.part_blind` shape, here between hosted stages). So the two share the host
+(`prod_sound`: a joint merge is finite-observationally real on both sides) while neither
+forces the other's quotient — they talk over the interface, never through each other's
+backstage. The OS/VM/OS stack is `Stage.prod` nested; `Frontstage.prod` composes up it.
+
+(NOT built, per the discipline: the super-linear-in-depth conduction — "merge_conducts is
+`Handle`-polymorphic, so the collapse applies at every level" is a reading, not a theorem,
+and the genuine big-O-in-depth claim wants a substrate complexity measure foam lacks. It
+is absent, not suspended.) -/
+
+/-- The host: two stages composed. State is the pair; a probe addresses one side or the
+    other (`Sum` — the network interface); the answer comes from the addressed side. -/
+def Stage.prod (S T : Stage) : Stage where
+  State := S.State × T.State
+  Probe := S.Probe ⊕ T.Probe
+  Ans   := S.Ans ⊕ T.Ans
+  obs st p := match p with
+    | Sum.inl ps => Sum.inl (S.obs st.1 ps)
+    | Sum.inr pt => Sum.inr (T.obs st.2 pt)
+
+/-- **The joint quotient-license.** Two frontstages compose into one over the host: a
+    joint identification holds exactly when BOTH userlands' licenses do. Axiom-free —
+    each component's `respects` rides through the addressed injection, no collapse. -/
+def Frontstage.prod {S T : Stage} (F : Frontstage S) (G : Frontstage T) :
+    Frontstage (Stage.prod S T) where
+  rel st st' := F.rel st.1 st'.1 ∧ G.rel st.2 st'.2
+  respects := fun st st' h p =>
+    match p with
+    | Sum.inl ps => congrArg Sum.inl (F.respects st.1 st'.1 h.1 ps)
+    | Sum.inr pt => congrArg Sum.inr (G.respects st.2 st'.2 h.2 pt)
+
+/-- **The interface — one userland's quotient is invisible to the other.** A right-probe
+    reads only the right component, so any left-merge (identify `a` with `a'`, right state
+    fixed) leaves it unchanged — by `rfl`. The two share the host without committing each
+    other: they talk over the interface, never through each other's backstage. -/
+theorem prod_left_invisible {S T : Stage} (a a' : S.State) (b : T.State) (pt : T.Probe) :
+    (Stage.prod S T).obs (a, b) (Sum.inr pt) = (Stage.prod S T).obs (a', b) (Sum.inr pt) :=
+  rfl
+
+/-- **The partnership cashed.** A joint merge (both userlands identify) gives equal host-
+    transcripts at every finite probe-budget — observationally one joint position, by
+    `Frontstage.sound`. Axiom-free: the joint license carries no collapse. -/
+theorem prod_sound {S T : Stage} (F : Frontstage S) (G : Frontstage T)
+    (ps : List (Stage.prod S T).Probe) {st st' : (Stage.prod S T).State}
+    (h : (F.prod G).rel st st') :
+    transcript (Stage.prod S T) st ps = transcript (Stage.prod S T) st' ps :=
+  Frontstage.sound (F.prod G) ps h
+
 /-! ## Axiom-freeness of the proven scaffold, pinned (a drift fails the build). -/
 
 /-- info: 'Foam.now_surface_invariant' does not depend on any axioms -/
@@ -471,5 +531,14 @@ theorem merge_conducts {Handle : Type} (q : Quiver Handle) (a b : Handle)
 
 /-- info: 'Foam.merge_conducts' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.merge_conducts
+
+/-- info: 'Foam.Frontstage.prod' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Frontstage.prod
+
+/-- info: 'Foam.prod_left_invisible' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.prod_left_invisible
+
+/-- info: 'Foam.prod_sound' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.prod_sound
 
 end Foam
