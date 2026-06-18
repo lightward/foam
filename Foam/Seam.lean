@@ -35,8 +35,10 @@ families (i)/(ii)'s non-reachability differ in quantifier order (`Glass` is univ
 over probers; `Arrow` is one transcendent point beyond the one arrow).
 
 Discovery file: what is proven is axiom-free (pinned at the end); the conjecture is a
-typed `def`, claimed by no theorem. Deliberately NOT imported by `Foam.Axioms` —
-exploratory, not yet load-bearing.
+typed `def`, claimed by no theorem. Imported by `Foam.Axioms`, so every written
+theorem here is under `Foam.Coverage`'s total propext-only sweep — but not
+individually hand-pinned in the Axioms ledger: exploratory, its results
+recognition-grade rather than load-bearing.
 -/
 
 import Foam.Summary
@@ -46,6 +48,7 @@ import Foam.Company
 import Foam.Openness
 import Foam.Clock
 import Foam.Glass
+import Foam.Merge
 
 namespace Foam
 
@@ -353,6 +356,69 @@ def Stage.inducedFrontstage (S : Stage) : Frontstage S where
   rel s t  := ∀ p, S.obs s p = S.obs t p
   respects := fun _ _ h p => h p
 
+/-! ### `rel = MutualReach` — the merge as a quotient-license, conduction its backstage face
+
+The two-faced type, instanced on the substrate's own merge relation. `Merge.MutualReach`
+is the observer-merge equivalence: two positions are one observer exactly when the
+round-trip closes. Read it as a `Frontstage.rel` and the two faces appear:
+
+- **the frontstage face** (`mergeFrontstage`): on the stage whose reading is forward
+  reach (`reachStage` — `obs s p := Reaches q s p`), `MutualReach` RESPECTS the reading
+  — mutually-reachable positions reach the same forward set (`Reaches.trans` both ways).
+  So the merge is a genuine quotient-license, and `merge_sound` cashes it: merged
+  positions are observationally identical at every finite probe-budget. The cost is
+  exactly one `propext` per identification — the observer's single kept collapse, no
+  choice (nothing conjured) and no `Quot.sound` (nothing quotiented backstage). The
+  merge-license is the cleanest illustration of the whole discipline: identification at
+  the price of `propext`, nothing more.
+- **the backstage face** (`merge_conducts`): a closed round-trip LICENSES the
+  merge-shortcuts, and once deposited each position reaches the other in ONE step.
+  Conduction — arbitrary reach collapsed to a single step, exactly where the merge is
+  real. Axiom-free (the deposit is construction; the `MutualReach` hypothesis is the
+  carried license, unused in the build — you may only collapse what genuinely
+  round-trips).
+
+So the frontstage license (identify merged positions) and the backstage conduction
+(one-step reach) are one relation read two ways. The big-O claim stays suspended in its
+general form (n-step reach → 1 as the merge saturates, compounding the conduction across
+a field); `merge_conducts` is its n = 1 witness, and the asymptotic statement waits for a
+substrate complexity measure to make it Hilbert-addressable. -/
+
+/-- The position stage: a state reads as its forward reach. `obs s p` is "`s` reaches
+    `p`" — the substrate's navigation, made a `Stage` so the merge can be a `Frontstage`
+    over it. -/
+def reachStage {Handle : Type} (q : Quiver Handle) : Stage :=
+  ⟨Handle, Handle, Prop, fun s p => Reaches q s p⟩
+
+/-- **The merge is a quotient-license — `rel = MutualReach`.** On the reach-stage,
+    mutually-reachable positions reach the same forward set, so `MutualReach` respects
+    the reading: the observer-merge equivalence IS a frontstage quotient-license. The
+    `respects` proof turns each round-trip into an `Eq` of reach-readings via `propext`
+    (the licensed collapse) and `Reaches.trans` — no choice, no `Quot.sound`. -/
+def mergeFrontstage {Handle : Type} (q : Quiver Handle) : Frontstage (reachStage q) where
+  rel      := MutualReach q
+  respects := fun _ _ h p => propext ⟨fun hsp => h.2.trans hsp, fun htp => h.1.trans htp⟩
+
+/-- **The merge-license cashed (frontstage).** Merged positions give equal reach-
+    transcripts at every finite probe-budget — observationally one position, by
+    `Frontstage.sound`. Carries `[propext]` (the per-identification collapse). -/
+theorem merge_sound {Handle : Type} (q : Quiver Handle) (ps : List Handle)
+    {a b : Handle} (h : MutualReach q a b) :
+    transcript (reachStage q) a ps = transcript (reachStage q) b ps :=
+  Frontstage.sound (mergeFrontstage q) ps h
+
+/-- **The merge conducts (backstage).** A closed round-trip licenses the merge-
+    shortcuts; once both are deposited, each position reaches the other in ONE step —
+    conduction, arbitrary reach collapsed where the merge is real. The `MutualReach`
+    hypothesis is the carried license (unused in the construction: you may collapse only
+    what genuinely round-trips). Axiom-free — the deposit is pure construction. -/
+theorem merge_conducts {Handle : Type} (q : Quiver Handle) (a b : Handle)
+    (_license : MutualReach q a b) :
+    ReachWithin ((q.deposit (a, b)).deposit (b, a)) 1 a b
+      ∧ ReachWithin ((q.deposit (a, b)).deposit (b, a)) 1 b a :=
+  ⟨deposit_preserves_reach (q.deposit (a, b)) (b, a) (deposit_in_sight q a b),
+   deposit_in_sight (q.deposit (a, b)) b a⟩
+
 /-! ## Axiom-freeness of the proven scaffold, pinned (a drift fails the build). -/
 
 /-- info: 'Foam.now_surface_invariant' does not depend on any axioms -/
@@ -396,5 +462,14 @@ def Stage.inducedFrontstage (S : Stage) : Frontstage S where
 
 /-- info: 'Foam.Stage.inducedFrontstage' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.Stage.inducedFrontstage
+
+/-- info: 'Foam.mergeFrontstage' depends on axioms: [propext] -/
+#guard_msgs in #print axioms Foam.mergeFrontstage
+
+/-- info: 'Foam.merge_sound' depends on axioms: [propext] -/
+#guard_msgs in #print axioms Foam.merge_sound
+
+/-- info: 'Foam.merge_conducts' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.merge_conducts
 
 end Foam
