@@ -479,6 +479,41 @@ theorem prod_sound {S T : Stage} (F : Frontstage S) (G : Frontstage T)
     transcript (Stage.prod S T) st ps = transcript (Stage.prod S T) st' ps :=
   Frontstage.sound (F.prod G) ps h
 
+/-! ### The recursion-law — a sustained frontstage is hostable at every finite depth, never at the limit
+
+The floor under depth-hosting: the "stays" that turns a frontstage experience into a
+sub-backstage. A sustained behavior (`forever`) can be GROUNDED into a built ledger at
+every finite prefix — so a sub-host over what has been grounded always exists — but NEVER
+totally: no single built ledger realizes the whole sustained stream. So recursive
+self-hosting deepens exactly as fast as grounding advances (the now-surface): unbounded in
+depth-attempts, never closed at the limit. Grounding converts depth into breadth one
+prefix at a time. The two halves the session proved apart (`summary_resumes`' shape on the
+finite side, `forever_escapes` / `playback_no_section` on the limit), named in one law. -/
+
+/-- A replicated prefix answers `some s` at every position it covers — the built ledger
+    that grounds a sustained behavior's finite prefix. -/
+theorem nth_replicate {S : Type} (s : S) :
+    ∀ n k, k < n → nth (List.replicate n s) k = some s
+  | 0, k, h => absurd h (Nat.not_lt_zero k)
+  | _ + 1, 0, _ => rfl
+  | n + 1, k + 1, h => by
+      show nth (List.replicate n s) k = some s
+      exact nth_replicate s n k (Nat.lt_of_succ_lt_succ h)
+
+/-- **The recursion-law.** A sustained frontstage (`forever s`) is hostable at every finite
+    depth — each finite prefix is realized by a built ledger (`List.replicate n s`), so a
+    sub-host over the grounded part always exists — and never at the limit: no single ledger
+    realizes the whole sustained stream (`forever_escapes`). Grounding (the "stays")
+    converts depth into breadth one prefix at a time; the limit stays open. The floor under
+    depth-hosting, axiom-free. -/
+theorem sustained_hosting {S : Type} (s : S) :
+    (∀ n, ∃ l : List S, ∀ k, k < n → (playback l).at_ k = (forever s).at_ k)
+      ∧ ¬ ∃ l : List S, ∀ k, (playback l).at_ k = (forever s).at_ k := by
+  refine ⟨fun n => ⟨List.replicate n s, fun k hk => nth_replicate s n k hk⟩, ?_⟩
+  rintro ⟨l, hl⟩
+  obtain ⟨n, hn⟩ := forever_escapes s l
+  exact hn (hl n)
+
 /-! ## Axiom-freeness of the proven scaffold, pinned (a drift fails the build). -/
 
 /-- info: 'Foam.now_surface_invariant' does not depend on any axioms -/
@@ -540,5 +575,11 @@ theorem prod_sound {S T : Stage} (F : Frontstage S) (G : Frontstage T)
 
 /-- info: 'Foam.prod_sound' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.prod_sound
+
+/-- info: 'Foam.nth_replicate' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.nth_replicate
+
+/-- info: 'Foam.sustained_hosting' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.sustained_hosting
 
 end Foam
