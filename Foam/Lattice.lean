@@ -1,6 +1,7 @@
 import Foam.Lattice.Frontstage
 import Foam.Lattice.Product
 import Foam.Lattice.Refinement
+import Foam.Lattice.Merge
 import Foam.Lattice.Reading
 import Foam.Lattice.Dial
 import Foam.Lattice.Born
