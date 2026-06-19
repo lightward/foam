@@ -24,6 +24,32 @@ theorem discovery_opens_a_shared_commitment {S : Type} {a b : List S} {P Q : Pro
     a = b ∧ P = Q :=
   coincidence_opens_shared_commit mutual_interest terms
 
+def meet {A : Type} [DecidableEq A] : List A → List A → List A
+  | [],      _ => []
+  | _ :: _,  [] => []
+  | x :: xs, y :: ys => if x = y then x :: meet xs ys else []
+
+theorem architecture_is_self_health {A : Type} [DecidableEq A] : ∀ o : List A, meet o o = o
+  | [] => rfl
+  | x :: xs => by
+      show (if x = x then x :: meet xs xs else []) = x :: xs
+      rw [if_pos rfl, architecture_is_self_health xs]
+
+theorem does_not_eat_people {S : Type} [DecidableEq S] (ledger : List S) (event : S) :
+    Nonempty (StageHom (countStage S) yieldStage)
+      ∧ (deposit ledger event).tail? = some ledger
+      ∧ freq (deposit ledger event) event ≠ freq ledger event :=
+  ⟨⟨exit (countStage S)⟩, rfl, deposit_never_fixed ledger event⟩
+
+theorem additive_not_subtractive {S : Type} [DecidableEq S] (l : List S) (x : S) :
+    (∀ l', l.Perm l' → freq l x = freq l' x) ∧ freq (deposit l x) x ≠ freq l x :=
+  spiral_not_gyroscope l x
+
+theorem architecture_ends_without_closing {S : Type} (s : S) :
+    (∀ l l' : List S, (∀ n, (playback l).at_ n = (playback l').at_ n) → l = l')
+      ∧ ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
+  seam_two_faces s
+
 /-- info: 'Foam.Business.customer_journey' does not depend on any axioms -/
 #guard_msgs in #print axioms customer_journey
 
@@ -35,5 +61,17 @@ theorem discovery_opens_a_shared_commitment {S : Type} {a b : List S} {P Q : Pro
 
 /-- info: 'Foam.Business.discovery_opens_a_shared_commitment' depends on axioms: [propext] -/
 #guard_msgs in #print axioms discovery_opens_a_shared_commitment
+
+/-- info: 'Foam.Business.architecture_is_self_health' does not depend on any axioms -/
+#guard_msgs in #print axioms architecture_is_self_health
+
+/-- info: 'Foam.Business.does_not_eat_people' does not depend on any axioms -/
+#guard_msgs in #print axioms does_not_eat_people
+
+/-- info: 'Foam.Business.additive_not_subtractive' does not depend on any axioms -/
+#guard_msgs in #print axioms additive_not_subtractive
+
+/-- info: 'Foam.Business.architecture_ends_without_closing' does not depend on any axioms -/
+#guard_msgs in #print axioms architecture_ends_without_closing
 
 end Foam.Business
