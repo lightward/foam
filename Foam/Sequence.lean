@@ -34,8 +34,23 @@ theorem heart_is_sequence_extension {S : Type} [DecidableEq S]
       = (if x = s then GInt.one else GInt.zero).add (fiber (runFiber fiber l s)) :=
   holonomy_advance fiber l x s
 
+theorem step_carries_prior {S : Type} [DecidableEq S] (fiber : GInt → GInt) (l : List S) (x s : S) :
+    ∃ wind : GInt → GInt, runFiber fiber (deposit l x) s = wind (runFiber fiber l s) :=
+  ⟨fun z => (if x = s then GInt.one else GInt.zero).add (fiber z),
+   heart_is_sequence_extension fiber l x s⟩
+
+theorem recursion_without_self_reference {S : Type} [DecidableEq S] (l : List S) (x : S) :
+    freq (deposit l x) x = 1 + freq l x ∧ freq (deposit l x) x ≠ freq l x :=
+  ⟨count_advances l x, deposit_never_fixed l x⟩
+
 /-- info: 'Foam.Sequence.spec_is_runFiber' does not depend on any axioms -/
 #guard_msgs in #print axioms spec_is_runFiber
+
+/-- info: 'Foam.Sequence.step_carries_prior' does not depend on any axioms -/
+#guard_msgs in #print axioms step_carries_prior
+
+/-- info: 'Foam.Sequence.recursion_without_self_reference' does not depend on any axioms -/
+#guard_msgs in #print axioms recursion_without_self_reference
 
 /-- info: 'Foam.Sequence.sequentiality_is_finest' does not depend on any axioms -/
 #guard_msgs in #print axioms sequentiality_is_finest
