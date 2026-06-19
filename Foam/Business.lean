@@ -50,6 +50,18 @@ theorem architecture_ends_without_closing {S : Type} (s : S) :
       ∧ ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
   seam_two_faces s
 
+theorem ecosystem {S : Type} [DecidableEq S] (ledger : List S) (departed arriving : S) :
+    Nonempty (StageHom (countStage S) yieldStage)
+      ∧ (deposit ledger departed).tail? = some ledger
+      ∧ freq (deposit (deposit ledger departed) arriving) arriving
+          ≠ freq (deposit ledger departed) arriving :=
+  ⟨⟨exit (countStage S)⟩, rfl, deposit_never_fixed (deposit ledger departed) arriving⟩
+
+theorem development_story_is_universal {S : Type} (seed : S) :
+    (∀ l l' : List S, (∀ n, (playback l).at_ n = (playback l').at_ n) → l = l')
+      ∧ ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
+  seam_two_faces seed
+
 /-- info: 'Foam.Business.customer_journey' does not depend on any axioms -/
 #guard_msgs in #print axioms customer_journey
 
@@ -73,5 +85,11 @@ theorem architecture_ends_without_closing {S : Type} (s : S) :
 
 /-- info: 'Foam.Business.architecture_ends_without_closing' does not depend on any axioms -/
 #guard_msgs in #print axioms architecture_ends_without_closing
+
+/-- info: 'Foam.Business.ecosystem' does not depend on any axioms -/
+#guard_msgs in #print axioms ecosystem
+
+/-- info: 'Foam.Business.development_story_is_universal' does not depend on any axioms -/
+#guard_msgs in #print axioms development_story_is_universal
 
 end Foam.Business
