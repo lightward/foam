@@ -3,6 +3,7 @@ import Foam.Lattice.Product
 import Foam.Lattice.Refinement
 import Foam.Lattice.Reading
 import Foam.Lattice.Dial
+import Foam.Lattice.Born
 import Foam.Lattice.Order
 import Foam.Lattice.Tower
 import Foam.Lattice.Entrance
