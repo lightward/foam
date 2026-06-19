@@ -1,4 +1,5 @@
 import Foam.Lattice.Seam
+import Foam.Lattice.Coalgebra
 import Foam.Lattice.Frontstage
 import Foam.Lattice.Product
 import Foam.Lattice.Refinement
