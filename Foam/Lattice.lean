@@ -1,3 +1,4 @@
+import Foam.Lattice.Seam
 import Foam.Lattice.Frontstage
 import Foam.Lattice.Product
 import Foam.Lattice.Refinement
