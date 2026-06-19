@@ -43,6 +43,16 @@ theorem zero_point_kappa (κ : Int) (f : Int → Int)
 theorem normK_frame_dependent : ∃ z : GInt, normK (-1) z ≠ normK 1 z :=
   ⟨⟨1, 1⟩, by decide⟩
 
+def galileanBoost (v : Int) (z : GInt) : GInt := ⟨z.re, v * z.re + z.im⟩
+
+theorem galilean_preserves_time (v : Int) (z : GInt) :
+    (galileanBoost v z).re = z.re := rfl
+
+theorem galilean_velocities_add (v1 v2 : Int) (z : GInt) :
+    galileanBoost v2 (galileanBoost v1 z) = galileanBoost (v2 + v1) z := by
+  show (⟨z.re, v2 * z.re + (v1 * z.re + z.im)⟩ : GInt) = ⟨z.re, (v2 + v1) * z.re + z.im⟩
+  rw [Int.add_mul v2 v1 z.re, Int.add_assoc (v2 * z.re) (v1 * z.re) z.im]
+
 /-- info: 'Foam.Lattice.forced_at_the_frame_kappa' depends on axioms: [propext] -/
 #guard_msgs in #print axioms forced_at_the_frame_kappa
 
@@ -51,5 +61,11 @@ theorem normK_frame_dependent : ∃ z : GInt, normK (-1) z ≠ normK 1 z :=
 
 /-- info: 'Foam.Lattice.normK_frame_dependent' does not depend on any axioms -/
 #guard_msgs in #print axioms normK_frame_dependent
+
+/-- info: 'Foam.Lattice.galilean_preserves_time' does not depend on any axioms -/
+#guard_msgs in #print axioms galilean_preserves_time
+
+/-- info: 'Foam.Lattice.galilean_velocities_add' depends on axioms: [propext] -/
+#guard_msgs in #print axioms galilean_velocities_add
 
 end Foam.Lattice
