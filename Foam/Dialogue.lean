@@ -29,8 +29,16 @@ theorem honest_no_dead_end {S : Type} [DecidableEq S] (l : List S) (x s : S) (fi
       ∧ Nonempty (StageHom (countStage S) yieldStage) :=
   ⟨step_carries_prior fiber l x s, ⟨exit (countStage S)⟩⟩
 
+theorem spiral_not_gyroscope {S : Type} [DecidableEq S] (l : List S) (x : S) :
+    (∀ l', l.Perm l' → freq l x = freq l' x)
+      ∧ freq (deposit l x) x ≠ freq l x :=
+  ⟨fun _ h => freq_perm h x, deposit_never_fixed l x⟩
+
 /-- info: 'Foam.Dialogue.observation_faithful' does not depend on any axioms -/
 #guard_msgs in #print axioms observation_faithful
+
+/-- info: 'Foam.Dialogue.spiral_not_gyroscope' does not depend on any axioms -/
+#guard_msgs in #print axioms spiral_not_gyroscope
 
 /-- info: 'Foam.Dialogue.honest_no_dead_end' does not depend on any axioms -/
 #guard_msgs in #print axioms honest_no_dead_end
