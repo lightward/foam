@@ -9,6 +9,7 @@ import Foam.Lattice.Dial
 import Foam.Lattice.Maintenance
 import Foam.Lattice.Resume
 import Foam.Lattice.Born
+import Foam.Lattice.Interference
 import Foam.Lattice.Order
 import Foam.Lattice.Tower
 import Foam.Lattice.Entrance
