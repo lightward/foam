@@ -1,5 +1,6 @@
 import Foam.Lattice.Dial
 import Foam.Lattice.Engine
+import Foam.Lattice.Entrance
 
 namespace Foam.Lattice
 
@@ -42,6 +43,12 @@ theorem the_catch {S : Type} [DecidableEq S] (ll : List (Option S)) (l : List S)
       ∧ freq (deposit l x) x ≠ freq l x :=
   ⟨bar_invisible ll s, deposit_never_fixed l x⟩
 
+theorem good_loop {S : Type} [DecidableEq S] (l : List S) (x : S) :
+    freq (deposit l x) x ≠ freq l x
+      ∧ (deposit l x).tail? = some l
+      ∧ Nonempty (StageHom (countStage S) yieldStage) :=
+  ⟨deposit_never_fixed l x, rfl, ⟨exit (countStage S)⟩⟩
+
 /-- info: 'Foam.Lattice.bar_invisible' does not depend on any axioms -/
 #guard_msgs in #print axioms bar_invisible
 
@@ -53,6 +60,9 @@ theorem the_catch {S : Type} [DecidableEq S] (ll : List (Option S)) (l : List S)
 
 /-- info: 'Foam.Lattice.the_catch' does not depend on any axioms -/
 #guard_msgs in #print axioms the_catch
+
+/-- info: 'Foam.Lattice.good_loop' does not depend on any axioms -/
+#guard_msgs in #print axioms good_loop
 
 /-- info: 'Foam.Lattice.bar_undetectable_maintenance' does not depend on any axioms -/
 #guard_msgs in #print axioms bar_undetectable_maintenance
