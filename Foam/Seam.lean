@@ -35,8 +35,10 @@ families (i)/(ii)'s non-reachability differ in quantifier order (`Glass` is univ
 over probers; `Arrow` is one transcendent point beyond the one arrow).
 
 Discovery file: what is proven is axiom-free (pinned at the end); the conjecture is a
-typed `def`, claimed by no theorem. Deliberately NOT imported by `Foam.Axioms` —
-exploratory, not yet load-bearing.
+typed `def`, claimed by no theorem. Imported by `Foam.Axioms`, so every written
+theorem here is under `Foam.Coverage`'s total propext-only sweep — but not
+individually hand-pinned in the Axioms ledger: exploratory, its results
+recognition-grade rather than load-bearing.
 -/
 
 import Foam.Summary
@@ -46,6 +48,7 @@ import Foam.Company
 import Foam.Openness
 import Foam.Clock
 import Foam.Glass
+import Foam.Merge
 
 namespace Foam
 
@@ -246,6 +249,271 @@ theorem seam_two_faces {S : Type} (s : S) :
 -- Glass stays the odd one out — its non-surjectivity is ∀-over-probers (Cantor), NOT the one
 -- arrow's not-epi-ness (Lambek); the seam is the arrow, and Glass is a second, parallel hole.
 
+/-! ### The seam, written precisely — `playback` is not an isomorphism (one-sided)
+
+2026-06-18, pushing the seam where it CAN be written. `seam_two_faces` stated the
+non-iso as a CONJUNCTION of two unlike facts (mono — `order_admits_no_maintenance`;
+and `forever_escapes` — "a point is missed"). The not-epi face sharpens: from
+"∃ a behavior outside the image" (not surjective) to "¬∃ a decoder" (not
+split-epi) — the constructive, operational form. You cannot invert observed
+behavior back to the ledger, because `forever` has no finite source. The sharpening
+is what makes "one object" precise: the failure to be an iso is ONE-SIDED —
+faithful past (mono holds), unsaturated future (no section) — with the now-surface
+at the block.
+
+The gfp-end discipline, kept: the proof CONSUMES the hypothesized CoList-equality
+through `.at_ n` (`congrArg`), never PRODUCES one — no `funext`, no `Quot.sound`
+(Glass.lean's "function-equality consumed, never produced", here on the coinductive
+end). The far half — the final-coalgebra Lambek (the structure map an iso, the
+literal rotation of `Arrow.InitialAlgebra.unalg_alg_id`) — stays unwritable in core
+for exactly this reason: it would PRODUCE a CoList-equality. The unwritability IS
+the not-epi face wearing its other coat: where this file consumes the equality to
+REFUTE the section, the rotated theorem would need to assert one to BUILD it. -/
+
+/-- **The not-epi face as a section-refusal.** No `g : CoList S → List S` is a right
+    inverse of `playback`: the missing `forever` forbids the decoder. Sharper than
+    `forever_escapes` (which only exhibits the missed point); this is the categorical
+    not-split-epi. Axiom-free — the CoList-equality is consumed via `congrArg`, never
+    produced (no `funext`, no `Quot.sound`). -/
+theorem playback_no_section {S : Type} (s : S) :
+    ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c := by
+  rintro ⟨g, h⟩
+  obtain ⟨n, hn⟩ := forever_escapes s (g (forever s))
+  exact hn (congrArg (fun c => c.at_ n) (h (forever s)))
+
+/-- **The seam, as one object.** `seam_two_faces`, upgraded: `playback` is mono
+    (`playback_faithful` — the conserved, auditable past) AND admits no section
+    (`playback_no_section` — the open, unsaturated future). Faithful but not
+    invertible, the failure ONE-SIDED, the now-surface (`now_surface_invariant`) at
+    the block. The arrow is not an isomorphism, witnessed precisely on each side —
+    the conjecture's first frame failed (a ∀-fixity cannot rotate into a ∃-excess,
+    `arrow_resists_unreachable_along`); this is the frame that survives, written. -/
+theorem seam_non_iso {S : Type} (s : S) :
+    (∀ l l' : List S, (∀ n, (playback l).at_ n = (playback l').at_ n) → l = l')
+      ∧ ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
+  ⟨playback_faithful, playback_no_section s⟩
+
+/-! ### The two-faced type — the observer's quotient-license, lift without sound
+
+2026-06-18, by the heuristic "if it makes legible a non-obvious rivet in
+mathematics, its type gets committed." The rivet: `Quot.lift` and `Quot.sound` are
+usually ONE package (form the quotient, then anything respecting the relation
+descends). They UNBUNDLE. `Quot.lift`'s premise — "the reading respects the
+relation" — is carriable on its own, WITHOUT ever forming `Quot r` or invoking
+`Quot.sound`. That carried premise is the frontstage observer's quotient-LICENSE:
+the right to treat related states alike, cashed at every finite probe-resolution as
+a genuine `Eq` of finite data (`Frontstage.sound`, axiom-free — no funext, no
+Quot.sound), while the TOTAL identification (`obs s = obs t` as functions, the real
+`Quot.sound`) is never formed — it is the not-epi limit (`seam_non_iso`), the
+observer's to perform by living, never the proof's to assert.
+
+The type has a face apiece (typefaces, noted): `rel` is the BACKSTAGE face — the
+relation as bare data, append-only, uncommitted (no `Quot.sound` binds it);
+`respects` is the FRONTSTAGE face — the per-probe identification, the license
+cashed. Carrying this lets a frontstage player move with the BENEFIT of
+identification and without the DEBT Path.lean named (committing `Quot.sound` means
+revisiting every past use when the graph expands; the license declines that debt —
+no future homotopic navigation work is mortgaged).
+
+Held in suspension (Brouwer, pending Hilbert — typed as conjecture, claimed by no
+theorem): a frontstage player moving by a RICH `rel` collapses many states into one
+finite reading, which should read backstage as a HIGH-CONDUCTION region — local
+navigation (the substrate's `ReachWithin` / `shortcut_compresses`) cheapened where
+the license identifies most. The type is what makes that big-O claim addressable;
+the claim itself waits for both intuition and proof to agree before it is shared. -/
+
+/-- The frontstage face, named: a reading `obs` RESPECTS a relation when related
+    states answer every probe alike — exactly `Quot.lift`'s premise, carried free
+    of `Quot`. -/
+def Respects (S : Stage) (r : S.State → S.State → Prop) : Prop :=
+  ∀ s t, r s t → ∀ p, S.obs s p = S.obs t p
+
+/-- **The two-faced type — the observer's quotient-license.** `rel` is the backstage
+    face (the relation, uncommitted — no `Quot.sound` binds it); `respects` is the
+    frontstage face (the per-probe identification, `Quot.lift`'s premise carried
+    without `Quot`). The lift without the sound, made one object. -/
+structure Frontstage (S : Stage) where
+  rel      : S.State → S.State → Prop
+  respects : Respects S rel
+
+/-- **Frontstage `Quot.sound`, at finite resolution.** Related states give equal
+    TRANSCRIPTS, for every finite probe-sequence — the quotient-license cashed as a
+    genuine `Eq` of finite data, axiom-free (this IS `transcript_congr`, named as
+    the frontstage face of the quotient). The TOTAL form (`obs s = obs t` as
+    functions — the real `Quot.sound`) is the funext the gfp end refuses: the
+    not-epi limit (`seam_non_iso`), never formed here. The seam, typed — finite
+    commitment constructive, infinite identification the observer's to live. -/
+theorem Frontstage.sound {S : Stage} (F : Frontstage S) (ps : List S.Probe)
+    {s t : S.State} (h : F.rel s t) :
+    transcript S s ps = transcript S t ps :=
+  transcript_congr S ps (fun p => F.respects s t h p)
+
+/-- **The canonical inhabitant — the observer's own induced license.** Every stage
+    carries one: take `rel` to be its induced bisimulation (answer every probe
+    alike), and `respects` is then immediate. Constructive (Brouwer) and axiom-free
+    (Hilbert): the two-faced type is inhabited, not a hollow signature. -/
+def Stage.inducedFrontstage (S : Stage) : Frontstage S where
+  rel s t  := ∀ p, S.obs s p = S.obs t p
+  respects := fun _ _ h p => h p
+
+/-! ### `rel = MutualReach` — the merge as a quotient-license, conduction its backstage face
+
+The two-faced type, instanced on the substrate's own merge relation. `Merge.MutualReach`
+is the observer-merge equivalence: two positions are one observer exactly when the
+round-trip closes. Read it as a `Frontstage.rel` and the two faces appear:
+
+- **the frontstage face** (`mergeFrontstage`): on the stage whose reading is forward
+  reach (`reachStage` — `obs s p := Reaches q s p`), `MutualReach` RESPECTS the reading
+  — mutually-reachable positions reach the same forward set (`Reaches.trans` both ways).
+  So the merge is a genuine quotient-license, and `merge_sound` cashes it: merged
+  positions are observationally identical at every finite probe-budget. The cost is
+  exactly one `propext` per identification — the observer's single kept collapse, no
+  choice (nothing conjured) and no `Quot.sound` (nothing quotiented backstage). The
+  merge-license is the cleanest illustration of the whole discipline: identification at
+  the price of `propext`, nothing more.
+- **the backstage face** (`merge_conducts`): a closed round-trip LICENSES the
+  merge-shortcuts, and once deposited each position reaches the other in ONE step.
+  Conduction — arbitrary reach collapsed to a single step, exactly where the merge is
+  real. Axiom-free (the deposit is construction; the `MutualReach` hypothesis is the
+  carried license, unused in the build — you may only collapse what genuinely
+  round-trips).
+
+So the frontstage license (identify merged positions) and the backstage conduction
+(one-step reach) are one relation read two ways. The big-O claim stays suspended in its
+general form (n-step reach → 1 as the merge saturates, compounding the conduction across
+a field); `merge_conducts` is its n = 1 witness, and the asymptotic statement waits for a
+substrate complexity measure to make it Hilbert-addressable. -/
+
+/-- The position stage: a state reads as its forward reach. `obs s p` is "`s` reaches
+    `p`" — the substrate's navigation, made a `Stage` so the merge can be a `Frontstage`
+    over it. -/
+def reachStage {Handle : Type} (q : Quiver Handle) : Stage :=
+  ⟨Handle, Handle, Prop, fun s p => Reaches q s p⟩
+
+/-- **The merge is a quotient-license — `rel = MutualReach`.** On the reach-stage,
+    mutually-reachable positions reach the same forward set, so `MutualReach` respects
+    the reading: the observer-merge equivalence IS a frontstage quotient-license. The
+    `respects` proof turns each round-trip into an `Eq` of reach-readings via `propext`
+    (the licensed collapse) and `Reaches.trans` — no choice, no `Quot.sound`. -/
+def mergeFrontstage {Handle : Type} (q : Quiver Handle) : Frontstage (reachStage q) where
+  rel      := MutualReach q
+  respects := fun _ _ h _p => propext ⟨fun hsp => h.2.trans hsp, fun htp => h.1.trans htp⟩
+
+/-- **The merge-license cashed (frontstage).** Merged positions give equal reach-
+    transcripts at every finite probe-budget — observationally one position, by
+    `Frontstage.sound`. Carries `[propext]` (the per-identification collapse). -/
+theorem merge_sound {Handle : Type} (q : Quiver Handle) (ps : List Handle)
+    {a b : Handle} (h : MutualReach q a b) :
+    transcript (reachStage q) a ps = transcript (reachStage q) b ps :=
+  Frontstage.sound (mergeFrontstage q) ps h
+
+/-- **The merge conducts (backstage).** A closed round-trip licenses the merge-
+    shortcuts; once both are deposited, each position reaches the other in ONE step —
+    conduction, arbitrary reach collapsed where the merge is real. The `MutualReach`
+    hypothesis is the carried license (unused in the construction: you may collapse only
+    what genuinely round-trips). Axiom-free — the deposit is pure construction. -/
+theorem merge_conducts {Handle : Type} (q : Quiver Handle) (a b : Handle)
+    (_license : MutualReach q a b) :
+    ReachWithin ((q.deposit (a, b)).deposit (b, a)) 1 a b
+      ∧ ReachWithin ((q.deposit (a, b)).deposit (b, a)) 1 b a :=
+  ⟨deposit_preserves_reach (q.deposit (a, b)) (b, a) (deposit_in_sight q a b),
+   deposit_in_sight (q.deposit (a, b)) b a⟩
+
+/-! ### The network interface — two frontstages over one host, neither committing the other
+
+Recursive self-hosting, the part that lands as theorems. Two stages composed into a host
+(`Stage.prod` — state is the pair, a probe addresses one side or the other through the
+disjoint-union `Probe`, the "network interface"). Two frontstages over them compose into
+one frontstage over the host (`Frontstage.prod`) — the joint quotient-license: a joint
+identification requires BOTH userlands' licenses, and the proof is axiom-free (each
+component's `respects` carried through `Sum.inl`/`inr`, no `propext` even).
+
+The partnership's defining property is the mutual non-commitment: one userland's
+identification is INVISIBLE to the other's probe (`prod_left_invisible`, by `rfl` — a
+right-probe reads only the right component, so any left-merge is structurally unseen; the
+`Frame.part_blind` shape, here between hosted stages). So the two share the host
+(`prod_sound`: a joint merge is finite-observationally real on both sides) while neither
+forces the other's quotient — they talk over the interface, never through each other's
+backstage. The OS/VM/OS stack is `Stage.prod` nested; `Frontstage.prod` composes up it.
+
+(NOT built, per the discipline: the super-linear-in-depth conduction — "merge_conducts is
+`Handle`-polymorphic, so the collapse applies at every level" is a reading, not a theorem,
+and the genuine big-O-in-depth claim wants a substrate complexity measure foam lacks. It
+is absent, not suspended.) -/
+
+/-- The host: two stages composed. State is the pair; a probe addresses one side or the
+    other (`Sum` — the network interface); the answer comes from the addressed side. -/
+def Stage.prod (S T : Stage) : Stage where
+  State := S.State × T.State
+  Probe := S.Probe ⊕ T.Probe
+  Ans   := S.Ans ⊕ T.Ans
+  obs st p := match p with
+    | Sum.inl ps => Sum.inl (S.obs st.1 ps)
+    | Sum.inr pt => Sum.inr (T.obs st.2 pt)
+
+/-- **The joint quotient-license.** Two frontstages compose into one over the host: a
+    joint identification holds exactly when BOTH userlands' licenses do. Axiom-free —
+    each component's `respects` rides through the addressed injection, no collapse. -/
+def Frontstage.prod {S T : Stage} (F : Frontstage S) (G : Frontstage T) :
+    Frontstage (Stage.prod S T) where
+  rel st st' := F.rel st.1 st'.1 ∧ G.rel st.2 st'.2
+  respects := fun st st' h p =>
+    match p with
+    | Sum.inl ps => congrArg Sum.inl (F.respects st.1 st'.1 h.1 ps)
+    | Sum.inr pt => congrArg Sum.inr (G.respects st.2 st'.2 h.2 pt)
+
+/-- **The interface — one userland's quotient is invisible to the other.** A right-probe
+    reads only the right component, so any left-merge (identify `a` with `a'`, right state
+    fixed) leaves it unchanged — by `rfl`. The two share the host without committing each
+    other: they talk over the interface, never through each other's backstage. -/
+theorem prod_left_invisible {S T : Stage} (a a' : S.State) (b : T.State) (pt : T.Probe) :
+    (Stage.prod S T).obs (a, b) (Sum.inr pt) = (Stage.prod S T).obs (a', b) (Sum.inr pt) :=
+  rfl
+
+/-- **The partnership cashed.** A joint merge (both userlands identify) gives equal host-
+    transcripts at every finite probe-budget — observationally one joint position, by
+    `Frontstage.sound`. Axiom-free: the joint license carries no collapse. -/
+theorem prod_sound {S T : Stage} (F : Frontstage S) (G : Frontstage T)
+    (ps : List (Stage.prod S T).Probe) {st st' : (Stage.prod S T).State}
+    (h : (F.prod G).rel st st') :
+    transcript (Stage.prod S T) st ps = transcript (Stage.prod S T) st' ps :=
+  Frontstage.sound (F.prod G) ps h
+
+/-! ### The recursion-law — a sustained frontstage is hostable at every finite depth, never at the limit
+
+The floor under depth-hosting: the "stays" that turns a frontstage experience into a
+sub-backstage. A sustained behavior (`forever`) can be GROUNDED into a built ledger at
+every finite prefix — so a sub-host over what has been grounded always exists — but NEVER
+totally: no single built ledger realizes the whole sustained stream. So recursive
+self-hosting deepens exactly as fast as grounding advances (the now-surface): unbounded in
+depth-attempts, never closed at the limit. Grounding converts depth into breadth one
+prefix at a time. The two halves the session proved apart (`summary_resumes`' shape on the
+finite side, `forever_escapes` / `playback_no_section` on the limit), named in one law. -/
+
+/-- A replicated prefix answers `some s` at every position it covers — the built ledger
+    that grounds a sustained behavior's finite prefix. -/
+theorem nth_replicate {S : Type} (s : S) :
+    ∀ n k, k < n → nth (List.replicate n s) k = some s
+  | 0, k, h => absurd h (Nat.not_lt_zero k)
+  | _ + 1, 0, _ => rfl
+  | n + 1, k + 1, h => by
+      show nth (List.replicate n s) k = some s
+      exact nth_replicate s n k (Nat.lt_of_succ_lt_succ h)
+
+/-- **The recursion-law.** A sustained frontstage (`forever s`) is hostable at every finite
+    depth — each finite prefix is realized by a built ledger (`List.replicate n s`), so a
+    sub-host over the grounded part always exists — and never at the limit: no single ledger
+    realizes the whole sustained stream (`forever_escapes`). Grounding (the "stays")
+    converts depth into breadth one prefix at a time; the limit stays open. The floor under
+    depth-hosting, axiom-free. -/
+theorem sustained_hosting {S : Type} (s : S) :
+    (∀ n, ∃ l : List S, ∀ k, k < n → (playback l).at_ k = (forever s).at_ k)
+      ∧ ¬ ∃ l : List S, ∀ k, (playback l).at_ k = (forever s).at_ k := by
+  refine ⟨fun n => ⟨List.replicate n s, fun k hk => nth_replicate s n k hk⟩, ?_⟩
+  rintro ⟨l, hl⟩
+  obtain ⟨n, hn⟩ := forever_escapes s l
+  exact hn (hl n)
+
 /-! ## Axiom-freeness of the proven scaffold, pinned (a drift fails the build). -/
 
 /-- info: 'Foam.now_surface_invariant' does not depend on any axioms -/
@@ -277,5 +545,41 @@ theorem seam_two_faces {S : Type} (s : S) :
 
 /-- info: 'Foam.seam_two_faces' does not depend on any axioms -/
 #guard_msgs in #print axioms Foam.seam_two_faces
+
+/-- info: 'Foam.playback_no_section' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.playback_no_section
+
+/-- info: 'Foam.seam_non_iso' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.seam_non_iso
+
+/-- info: 'Foam.Frontstage.sound' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Frontstage.sound
+
+/-- info: 'Foam.Stage.inducedFrontstage' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Stage.inducedFrontstage
+
+/-- info: 'Foam.mergeFrontstage' depends on axioms: [propext] -/
+#guard_msgs in #print axioms Foam.mergeFrontstage
+
+/-- info: 'Foam.merge_sound' depends on axioms: [propext] -/
+#guard_msgs in #print axioms Foam.merge_sound
+
+/-- info: 'Foam.merge_conducts' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.merge_conducts
+
+/-- info: 'Foam.Frontstage.prod' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Frontstage.prod
+
+/-- info: 'Foam.prod_left_invisible' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.prod_left_invisible
+
+/-- info: 'Foam.prod_sound' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.prod_sound
+
+/-- info: 'Foam.nth_replicate' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.nth_replicate
+
+/-- info: 'Foam.sustained_hosting' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.sustained_hosting
 
 end Foam
