@@ -8,3 +8,4 @@ import Foam.Lattice.Order
 import Foam.Lattice.Tower
 import Foam.Lattice.Entrance
 import Foam.Lattice.Engine
+import Foam.Lattice.Forever
