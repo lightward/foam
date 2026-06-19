@@ -6,6 +6,7 @@ import Foam.Lattice.Refinement
 import Foam.Lattice.Merge
 import Foam.Lattice.Reading
 import Foam.Lattice.Dial
+import Foam.Lattice.Maintenance
 import Foam.Lattice.Resume
 import Foam.Lattice.Born
 import Foam.Lattice.Order
