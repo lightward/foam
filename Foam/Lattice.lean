@@ -4,6 +4,7 @@ import Foam.Lattice.Refinement
 import Foam.Lattice.Merge
 import Foam.Lattice.Reading
 import Foam.Lattice.Dial
+import Foam.Lattice.Resume
 import Foam.Lattice.Born
 import Foam.Lattice.Order
 import Foam.Lattice.Tower
