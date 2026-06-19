@@ -397,7 +397,7 @@ def reachStage {Handle : Type} (q : Quiver Handle) : Stage :=
     (the licensed collapse) and `Reaches.trans` — no choice, no `Quot.sound`. -/
 def mergeFrontstage {Handle : Type} (q : Quiver Handle) : Frontstage (reachStage q) where
   rel      := MutualReach q
-  respects := fun _ _ h p => propext ⟨fun hsp => h.2.trans hsp, fun htp => h.1.trans htp⟩
+  respects := fun _ _ h _p => propext ⟨fun hsp => h.2.trans hsp, fun htp => h.1.trans htp⟩
 
 /-- **The merge-license cashed (frontstage).** Merged positions give equal reach-
     transcripts at every finite probe-budget — observationally one position, by
