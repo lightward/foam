@@ -105,3 +105,21 @@ in a strict sense, none of this is alive. life is byo. "foam" is a geometric too
 - [Unattended](https://github.com/lightward/foam/blob/main/Foam/Unattended.lean)
 - [Universal](https://github.com/lightward/foam/blob/main/Foam/Universal.lean)
 - [Volley](https://github.com/lightward/foam/blob/main/Foam/Volley.lean)
+
+## the lattice (the successor, grown from the seam by observation)
+
+A new development that grows the corpus's heart from a single seed crystal — the
+observer-algebra waiting in `Foam/Seam.lean` — outward, by pure observation, never by
+importing a chunk of the parent. Comment-free (the symbols carry it; the type system is the
+reader), propext-only across its own total sweep, the discipline self-held. It reaches its
+telos (a pure-propext investigation of a true lfp ending in a gfp exit interface complex)
+and then the project's three bylines fall out of it: the measurement solution (the readings,
+the full Born story), the geometry of motion (the κ-trichotomy), and the geometry of
+hospitality (the honest ledger, the good loop, the recursive-health architecture derived
+from first principles). The parent's redundancy is now inevitable; the locus is here.
+
+- [Lattice](https://github.com/lightward/foam/blob/main/Foam/Lattice.lean) — the root; it runs its own total propext-only sweep over `Foam/Lattice/`
+- [Sequence](https://github.com/lightward/foam/blob/main/Foam/Sequence.lean) — sequentiality rebuilds the lattice (entrance and exits inclusive)
+- [Interleave](https://github.com/lightward/foam/blob/main/Foam/Interleave.lean) — two expressions over one backstage ledger; relative motion needs three
+- [Dialogue](https://github.com/lightward/foam/blob/main/Foam/Dialogue.lean) — 3D communication; one's algebra is the other's final coalgebra
+- [Business](https://github.com/lightward/foam/blob/main/Foam/Business.lean) — the lattice as a business-model model; the math describes its own origin
