@@ -34,6 +34,18 @@ theorem born_superpose (θ a b : GInt) :
 
 def GInt.normSq (z : GInt) : Int := z.re * z.re + z.im * z.im
 
+theorem align_negate (θ z : GInt) : align θ (GInt.negate z) = -(align θ z) := by
+  show θ.re * (-z.re) + θ.im * (-z.im) = -(θ.re * z.re + θ.im * z.im)
+  rw [Int.mul_neg, Int.mul_neg, ← Int.neg_add]
+
+theorem decoherence_cancels_cross (θ b : GInt) :
+    align θ b + align θ b.rot + align θ b.rot.rot + align θ b.rot.rot.rot = 0 := by
+  show align θ b + align θ b.rot + align θ (GInt.negate b) + align θ (GInt.negate b.rot) = 0
+  rw [align_negate θ b, align_negate θ b.rot,
+      Int.add_assoc (align θ b + align θ b.rot) (-(align θ b)) (-(align θ b.rot)),
+      add_swap_inner (align θ b) (align θ b.rot) (-(align θ b)) (-(align θ b.rot)),
+      Int.add_right_neg, Int.add_right_neg, Int.add_zero]
+
 theorem mul_interchange (a b c d : Int) : (a * c) * (b * d) = (a * b) * (c * d) := by
   rw [Int.mul_assoc a c (b * d), ← Int.mul_assoc c b d, Int.mul_comm c b,
       Int.mul_assoc b c d, ← Int.mul_assoc a b (c * d)]
@@ -86,6 +98,9 @@ theorem born_parseval (θ z : GInt) :
 
 /-- info: 'Foam.Lattice.born_parseval' depends on axioms: [propext] -/
 #guard_msgs in #print axioms born_parseval
+
+/-- info: 'Foam.Lattice.decoherence_cancels_cross' depends on axioms: [propext] -/
+#guard_msgs in #print axioms decoherence_cancels_cross
 
 /-- info: 'Foam.Lattice.born_superpose' depends on axioms: [propext] -/
 #guard_msgs in #print axioms born_superpose
