@@ -37,6 +37,11 @@ theorem maintenance_settles_to_coherence (z : GInt) :
     drainOne 0 = 0 ∧ rotPow 0 z = z :=
   ⟨drain_floor, ground_is_unwound z⟩
 
+theorem the_catch {S : Type} [DecidableEq S] (ll : List (Option S)) (l : List S) (x s : S) :
+    evalBeats GInt.rot (none :: none :: none :: none :: ll) s = evalBeats GInt.rot ll s
+      ∧ freq (deposit l x) x ≠ freq l x :=
+  ⟨bar_invisible ll s, deposit_never_fixed l x⟩
+
 /-- info: 'Foam.Lattice.bar_invisible' does not depend on any axioms -/
 #guard_msgs in #print axioms bar_invisible
 
@@ -45,6 +50,9 @@ theorem maintenance_settles_to_coherence (z : GInt) :
 
 /-- info: 'Foam.Lattice.maintenance_settles_to_coherence' does not depend on any axioms -/
 #guard_msgs in #print axioms maintenance_settles_to_coherence
+
+/-- info: 'Foam.Lattice.the_catch' does not depend on any axioms -/
+#guard_msgs in #print axioms the_catch
 
 /-- info: 'Foam.Lattice.bar_undetectable_maintenance' does not depend on any axioms -/
 #guard_msgs in #print axioms bar_undetectable_maintenance
