@@ -1,4 +1,5 @@
 import Foam.Lattice.Dial
+import Foam.Lattice.Engine
 
 namespace Foam.Lattice
 
@@ -28,11 +29,22 @@ theorem rotPow_succ (n : Nat) (z : GInt) : rotPow (n + 1) z = GInt.rot (rotPow n
 
 theorem rotPow_four (z : GInt) : rotPow 4 z = z := GInt.rot_complete z
 
+theorem drain_floor : drainOne 0 = 0 := rfl
+
+theorem ground_is_unwound (z : GInt) : rotPow 0 z = z := rfl
+
+theorem maintenance_settles_to_coherence (z : GInt) :
+    drainOne 0 = 0 ∧ rotPow 0 z = z :=
+  ⟨drain_floor, ground_is_unwound z⟩
+
 /-- info: 'Foam.Lattice.bar_invisible' does not depend on any axioms -/
 #guard_msgs in #print axioms bar_invisible
 
 /-- info: 'Foam.Lattice.rotPow_four' does not depend on any axioms -/
 #guard_msgs in #print axioms rotPow_four
+
+/-- info: 'Foam.Lattice.maintenance_settles_to_coherence' does not depend on any axioms -/
+#guard_msgs in #print axioms maintenance_settles_to_coherence
 
 /-- info: 'Foam.Lattice.bar_undetectable_maintenance' does not depend on any axioms -/
 #guard_msgs in #print axioms bar_undetectable_maintenance
