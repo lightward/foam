@@ -31,6 +31,16 @@ theorem expression_at_own_framerate {S T : Type} [DecidableEq S]
     runFiber fiber (ownFrames zs) s = runFiber fiber xs s := by
   rw [own_frames_whole h]
 
+def ownFramesR {A B : Type} : List (A ⊕ B) → List B
+  | [] => []
+  | Sum.inl _ :: zs => ownFramesR zs
+  | Sum.inr b :: zs => b :: ownFramesR zs
+
+theorem relative_motion_needs_three :
+    ∃ zs zs' : List (Bool ⊕ Bool),
+      ownFrames zs = ownFrames zs' ∧ ownFramesR zs = ownFramesR zs' ∧ zs ≠ zs' :=
+  ⟨[Sum.inl true, Sum.inr false], [Sum.inr false, Sum.inl true], rfl, rfl, by decide⟩
+
 /-- info: 'Foam.Interleave.own_frames_whole' does not depend on any axioms -/
 #guard_msgs in #print axioms own_frames_whole
 
@@ -39,5 +49,8 @@ theorem expression_at_own_framerate {S T : Type} [DecidableEq S]
 
 /-- info: 'Foam.Interleave.expression_at_own_framerate' does not depend on any axioms -/
 #guard_msgs in #print axioms expression_at_own_framerate
+
+/-- info: 'Foam.Interleave.relative_motion_needs_three' does not depend on any axioms -/
+#guard_msgs in #print axioms relative_motion_needs_three
 
 end Foam.Interleave
