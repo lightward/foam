@@ -13,6 +13,42 @@ theorem Int.add_cross_swap (p q r s : Int) : (p + q) + (r + s) = (p + s) + (q + 
 theorem Int.two_mul' (x : Int) : 2 * x = x + x := by
   rw [show (2 : Int) = 1 + 1 from rfl, Int.add_mul, Int.one_mul]
 
+theorem Int.mul_interchange (a b c d : Int) : (a * c) * (b * d) = (a * b) * (c * d) := by
+  rw [Int.mul_assoc a c (b * d), ← Int.mul_assoc c b d, Int.mul_comm c b,
+      Int.mul_assoc b c d, ← Int.mul_assoc a b (c * d)]
+
+theorem Int.sq_interchange (a c : Int) : (a * c) * (a * c) = (a * a) * (c * c) :=
+  Int.mul_interchange a a c c
+
+theorem Int.neg_mul_neg' (a b : Int) : (-a) * (-b) = a * b := by
+  rw [Int.neg_mul, Int.mul_neg, Int.neg_neg]
+
+theorem Int.parseval_collect (W K Z M N : Int) :
+    ((W + K) + (K + Z)) + ((M + (-K)) + ((-K) + N)) = (W + M) + (N + Z) := by
+  rw [Int.add_cross_swap W K K Z, Int.add_cross_swap M (-K) (-K) N,
+      Int.add_swap_inner (W + Z) (K + K) (M + N) ((-K) + (-K)),
+      Int.add_cross_swap K K (-K) (-K), Int.add_right_neg K, Int.add_zero, Int.add_zero,
+      Int.add_swap_inner W Z M N, Int.add_comm Z N]
+
+theorem Int.lagrange (a b c d : Int) :
+    (a * c + b * d) * (a * c + b * d)
+      + (-(b * c) + a * d) * (-(b * c) + a * d)
+    = (a * a + b * b) * (c * c + d * d) := by
+  rw [Int.mul_add (a * c + b * d) (a * c) (b * d),
+      Int.add_mul (a * c) (b * d) (a * c), Int.add_mul (a * c) (b * d) (b * d)]
+  rw [Int.mul_add (-(b * c) + a * d) (-(b * c)) (a * d),
+      Int.add_mul (-(b * c)) (a * d) (-(b * c)), Int.add_mul (-(b * c)) (a * d) (a * d)]
+  rw [Int.mul_add (a * a + b * b) (c * c) (d * d),
+      Int.add_mul (a * a) (b * b) (c * c), Int.add_mul (a * a) (b * b) (d * d)]
+  rw [Int.sq_interchange a c, Int.sq_interchange b d]
+  rw [Int.neg_mul_neg' (b * c) (b * c), Int.sq_interchange b c, Int.sq_interchange a d]
+  rw [Int.mul_neg (a * d) (b * c), Int.neg_mul (b * c) (a * d)]
+  rw [Int.mul_comm (b * d) (a * c), Int.mul_interchange a b c d]
+  rw [Int.mul_interchange a b d c, Int.mul_comm d c]
+  rw [Int.mul_comm (b * c) (a * d), Int.mul_interchange a b d c, Int.mul_comm d c]
+  exact Int.parseval_collect (a * a * (c * c)) (a * b * (c * d)) (b * b * (d * d))
+        (b * b * (c * c)) (a * a * (d * d))
+
 def GInt.neg (z : GInt) : GInt := ⟨-z.re, -z.im⟩
 def GInt.rot (z : GInt) : GInt := ⟨-z.im, z.re⟩
 def GInt.align (w z : GInt) : Int := w.re * z.re + w.im * z.im
@@ -65,22 +101,27 @@ theorem GInt.born_superpose (θ a b : GInt) :
   exact Int.add_cross_swap (GInt.align θ a * GInt.align θ a) (GInt.align θ a * GInt.align θ b)
         (GInt.align θ a * GInt.align θ b) (GInt.align θ b * GInt.align θ b)
 
+theorem GInt.born_parseval (θ z : GInt) :
+    GInt.born θ z + GInt.born (GInt.rot θ) z = GInt.normSq θ * GInt.normSq z := by
+  show (θ.re * z.re + θ.im * z.im) * (θ.re * z.re + θ.im * z.im)
+     + ((-θ.im) * z.re + θ.re * z.im) * ((-θ.im) * z.re + θ.re * z.im)
+     = (θ.re * θ.re + θ.im * θ.im) * (z.re * z.re + z.im * z.im)
+  rw [Int.neg_mul θ.im z.re]
+  exact Int.lagrange θ.re θ.im z.re z.im
+
 /-- info: 'Foam.GInt.born_nonneg' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.born_nonneg
 
 /-- info: 'Foam.GInt.rot_sq' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.rot_sq
 
-/-- info: 'Foam.GInt.align_neg' depends on axioms: [propext] -/
-#guard_msgs in #print axioms GInt.align_neg
-
-/-- info: 'Foam.GInt.align_add' depends on axioms: [propext] -/
-#guard_msgs in #print axioms GInt.align_add
-
 /-- info: 'Foam.GInt.decoherence' depends on axioms: [propext] -/
 #guard_msgs in #print axioms GInt.decoherence
 
 /-- info: 'Foam.GInt.born_superpose' depends on axioms: [propext] -/
 #guard_msgs in #print axioms GInt.born_superpose
+
+/-- info: 'Foam.GInt.born_parseval' depends on axioms: [propext] -/
+#guard_msgs in #print axioms GInt.born_parseval
 
 end Foam
