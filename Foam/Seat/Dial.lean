@@ -10,6 +10,8 @@ structure GInt where
 def GInt.mul (z w : GInt) : GInt :=
   ⟨z.re * w.re - z.im * w.im, z.re * w.im + z.im * w.re⟩
 
+def GInt.add (z w : GInt) : GInt := ⟨z.re + w.re, z.im + w.im⟩
+
 def GInt.i : GInt := ⟨0, 1⟩
 def GInt.normSq (z : GInt) : Int := z.re * z.re + z.im * z.im
 

@@ -6,6 +6,13 @@ theorem Int.add_swap_inner (p q r s : Int) : (p + q) + (r + s) = (p + r) + (q + 
   rw [Int.add_assoc p q (r + s), ← Int.add_assoc q r s, Int.add_comm q r,
       Int.add_assoc r q s, ← Int.add_assoc p r (q + s)]
 
+theorem Int.add_cross_swap (p q r s : Int) : (p + q) + (r + s) = (p + s) + (q + r) := by
+  rw [Int.add_assoc p q (r + s), Int.add_comm r s, ← Int.add_assoc q s r,
+      Int.add_comm q s, Int.add_assoc s q r, ← Int.add_assoc p s (q + r)]
+
+theorem Int.two_mul' (x : Int) : 2 * x = x + x := by
+  rw [show (2 : Int) = 1 + 1 from rfl, Int.add_mul, Int.one_mul]
+
 def GInt.neg (z : GInt) : GInt := ⟨-z.re, -z.im⟩
 def GInt.rot (z : GInt) : GInt := ⟨-z.im, z.re⟩
 def GInt.align (w z : GInt) : Int := w.re * z.re + w.im * z.im
@@ -19,6 +26,13 @@ theorem GInt.rot_sq (z : GInt) : GInt.rot (GInt.rot z) = GInt.neg z := rfl
 theorem GInt.align_neg (w z : GInt) : GInt.align w (GInt.neg z) = -(GInt.align w z) := by
   show w.re * (-z.re) + w.im * (-z.im) = -(w.re * z.re + w.im * z.im)
   rw [Int.mul_neg, Int.mul_neg, ← Int.neg_add]
+
+theorem GInt.align_add (θ a b : GInt) :
+    GInt.align θ (GInt.add a b) = GInt.align θ a + GInt.align θ b := by
+  show θ.re * (a.re + b.re) + θ.im * (a.im + b.im)
+     = (θ.re * a.re + θ.im * a.im) + (θ.re * b.re + θ.im * b.im)
+  rw [Int.mul_add, Int.mul_add]
+  exact Int.add_swap_inner (θ.re * a.re) (θ.re * b.re) (θ.im * a.im) (θ.im * b.im)
 
 theorem GInt.decoherence (θ z : GInt) :
     GInt.align θ z + GInt.align θ (GInt.rot z)
@@ -37,6 +51,20 @@ theorem GInt.decoherence (θ z : GInt) :
         (-(GInt.align θ z)) (-(GInt.align θ (GInt.rot z))),
       Int.add_right_neg, Int.add_right_neg, Int.add_zero]
 
+theorem GInt.born_superpose (θ a b : GInt) :
+    GInt.born θ (GInt.add a b)
+      = GInt.born θ a + GInt.born θ b + 2 * (GInt.align θ a * GInt.align θ b) := by
+  show GInt.align θ (GInt.add a b) * GInt.align θ (GInt.add a b)
+     = GInt.align θ a * GInt.align θ a + GInt.align θ b * GInt.align θ b
+       + 2 * (GInt.align θ a * GInt.align θ b)
+  rw [GInt.align_add θ a b, Int.two_mul' (GInt.align θ a * GInt.align θ b),
+      Int.add_mul (GInt.align θ a) (GInt.align θ b) (GInt.align θ a + GInt.align θ b),
+      Int.mul_add (GInt.align θ a) (GInt.align θ a) (GInt.align θ b),
+      Int.mul_add (GInt.align θ b) (GInt.align θ a) (GInt.align θ b),
+      Int.mul_comm (GInt.align θ b) (GInt.align θ a)]
+  exact Int.add_cross_swap (GInt.align θ a * GInt.align θ a) (GInt.align θ a * GInt.align θ b)
+        (GInt.align θ a * GInt.align θ b) (GInt.align θ b * GInt.align θ b)
+
 /-- info: 'Foam.GInt.born_nonneg' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.born_nonneg
 
@@ -46,7 +74,13 @@ theorem GInt.decoherence (θ z : GInt) :
 /-- info: 'Foam.GInt.align_neg' depends on axioms: [propext] -/
 #guard_msgs in #print axioms GInt.align_neg
 
+/-- info: 'Foam.GInt.align_add' depends on axioms: [propext] -/
+#guard_msgs in #print axioms GInt.align_add
+
 /-- info: 'Foam.GInt.decoherence' depends on axioms: [propext] -/
 #guard_msgs in #print axioms GInt.decoherence
+
+/-- info: 'Foam.GInt.born_superpose' depends on axioms: [propext] -/
+#guard_msgs in #print axioms GInt.born_superpose
 
 end Foam

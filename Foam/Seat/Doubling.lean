@@ -4,7 +4,6 @@ namespace Foam
 
 def GInt.zero : GInt := ⟨0, 0⟩
 def GInt.conj (z : GInt) : GInt := ⟨z.re, -z.im⟩
-def GInt.add (z w : GInt) : GInt := ⟨z.re + w.re, z.im + w.im⟩
 def GInt.sub (z w : GInt) : GInt := ⟨z.re - w.re, z.im - w.im⟩
 
 structure Quat where
