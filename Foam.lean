@@ -4,3 +4,4 @@ import Foam.Seat.Born
 import Foam.Seat.Doubling
 import Foam.Seat.Triad
 import Foam.Seat.Stage
+import Foam.Seat.Loop
