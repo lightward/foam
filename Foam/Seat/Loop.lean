@@ -22,6 +22,15 @@ theorem Seat.quad_unwinds (S : Seat G) (p q r s : S.Pos) :
   rw [← S.sub_cocycle p q r, ← S.sub_cocycle p r s]
   exact S.sub_inv s p
 
+theorem Seat.repeat_unwinds (S : Seat G) (g : G) (p : S.Pos) :
+    S.sub p (S.act g p)
+      * S.sub (S.act g p) (S.act g (S.act g p))
+      * S.sub (S.act g (S.act g p)) p = 1 :=
+  S.triangle_unwinds p (S.act g p) (S.act g (S.act g p))
+
+/-- info: 'Foam.Seat.repeat_unwinds' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.repeat_unwinds
+
 /-- info: 'Foam.Seat.path_telescopes' does not depend on any axioms -/
 #guard_msgs in #print axioms Seat.path_telescopes
 
