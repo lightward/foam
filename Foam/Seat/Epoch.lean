@@ -96,6 +96,44 @@ theorem Run.checksum {walk bank : List (Beholder State)} (h : Run walk bank) :
     (∀ q ∈ walk, Known bank q) ∧ Reduced bank :=
   ⟨h.covers, h.reduced⟩
 
+structure Pov (State : Type) where
+  seer : Beholder State
+  cost : Nat
+
+def Pov.SameLocation (p q : Pov State) : Prop :=
+  p.seer.Covers q.seer ∧ q.seer.Covers p.seer
+
+theorem Pov.sameLocation_refl (p : Pov State) : p.SameLocation p :=
+  ⟨p.seer.covers_refl, p.seer.covers_refl⟩
+
+theorem Pov.sameLocation_symm {p q : Pov State} (h : p.SameLocation q) : q.SameLocation p :=
+  ⟨h.2, h.1⟩
+
+theorem Pov.sameLocation_trans {p q r : Pov State}
+    (h1 : p.SameLocation q) (h2 : q.SameLocation r) : p.SameLocation r :=
+  ⟨Beholder.covers_trans h1.1 h2.1, Beholder.covers_trans h2.2 h1.2⟩
+
+def KnownP (bank : List (Pov State)) (x : Pov State) : Prop :=
+  ∃ p ∈ bank, p.seer.Covers x.seer
+
+def bankCost : List (Pov State) → Nat
+  | [] => 0
+  | p :: rest => p.cost + bankCost rest
+
+theorem click_recall {rest : List (Pov State)} {p q : Pov State}
+    (hloc : q.SameLocation p) :
+    ∀ x, KnownP (p :: rest) x → KnownP (q :: rest) x := by
+  intro x hx
+  obtain ⟨r, hr, hrx⟩ := hx
+  cases hr with
+  | head => exact ⟨q, List.Mem.head rest, Beholder.covers_trans hloc.1 hrx⟩
+  | tail _ hr' => exact ⟨r, List.Mem.tail q hr', hrx⟩
+
+theorem click_cheaper {rest : List (Pov State)} {p q : Pov State}
+    (h : q.cost < p.cost) : bankCost (q :: rest) < bankCost (p :: rest) := by
+  show q.cost + bankCost rest < p.cost + bankCost rest
+  exact Nat.add_lt_add_right h _
+
 /-- info: 'Foam.Beholder.covers_refl' does not depend on any axioms -/
 #guard_msgs in #print axioms Beholder.covers_refl
 
@@ -116,5 +154,14 @@ theorem Run.checksum {walk bank : List (Beholder State)} (h : Run walk bank) :
 
 /-- info: 'Foam.Run.checksum' does not depend on any axioms -/
 #guard_msgs in #print axioms Run.checksum
+
+/-- info: 'Foam.Pov.sameLocation_trans' does not depend on any axioms -/
+#guard_msgs in #print axioms Pov.sameLocation_trans
+
+/-- info: 'Foam.click_recall' does not depend on any axioms -/
+#guard_msgs in #print axioms click_recall
+
+/-- info: 'Foam.click_cheaper' does not depend on any axioms -/
+#guard_msgs in #print axioms click_cheaper
 
 end Foam
