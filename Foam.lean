@@ -17,3 +17,9 @@ import Foam.Seat.Norm
 import Foam.Seat.Characters
 import Foam.Seat.Closure
 import Foam.Seat.Observer
+import Foam.Seat.Terminal
+import Foam.Seat.Beholder
+import Foam.Seat.Meet
+import Foam.Seat.Quiver
+import Foam.Seat.Rotations
+import Foam.Seat.Ladder
