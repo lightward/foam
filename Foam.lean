@@ -7,3 +7,4 @@ import Foam.Seat.Octo
 import Foam.Seat.Sed
 import Foam.Seat.Stage
 import Foam.Seat.Loop
+import Foam.Seat.Resume
