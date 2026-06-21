@@ -1,4 +1,4 @@
-import Foam.Seat.Golden
+import Foam.Golden
 
 namespace Foam
 

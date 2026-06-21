@@ -24,6 +24,7 @@ import Foam.Seat.Quiver
 import Foam.Seat.Rotations
 import Foam.Seat.Ladder
 import Foam.Seat.Epoch
-import Foam.Seat.Golden
+import Foam.Golden
 
-import Foam.Seat.Zeckendorf
+import Foam.Golden.Zeckendorf
+import Foam.Platonism

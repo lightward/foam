@@ -84,10 +84,17 @@ It is comment-free (the symbols carry it; the type system is the reader) and axi
 - [Resume](https://github.com/lightward/foam/blob/main/Foam/Seat/Resume.lean) — the gait: lossless tracking with compression epochs, law-free
 - [Seam](https://github.com/lightward/foam/blob/main/Foam/Seat/Seam.lean) — the lfp ↪ gfp: faithful going in, no section coming out — freedom without infinite regress
 
-**the compression epochs** — the gait's golden gearing; why the walk never locks into a clock:
+**the compression epoch** — the gait's compression, made law:
 
 - [Epoch](https://github.com/lightward/foam/blob/main/Foam/Seat/Epoch.lean) — the compression epoch: the located bank is lossless (recall in the absence of the original) and reduced (the minimum distinct perspectives) — the Kolmogorov checksum; the `Seam` is the one move, the doubling and the lfp ↪ gfp unified
-- [Golden](https://github.com/lightward/foam/blob/main/Foam/Seat/Golden.lean) — the +1 operator's fixed point: `fib` and its gnomon (self-similar under square-removal), and Cassini's ±1 defect — φ's integer fingerprint, the alternation the dial's own
-- [Zeckendorf](https://github.com/lightward/foam/blob/main/Foam/Seat/Zeckendorf.lean) — the weld: the base-φ carry (011 = 100, i.e. φ² = φ + 1) is a lossless compression step, and no-two-consecutive (the standard form) *is* the reduced bank — φ's non-redundancy without the continuum gate
+
+**the golden gearing** — a sibling type (`Foam/Golden/`), the `+1`'s own corner; why the walk never locks into a clock:
+
+- [Golden](https://github.com/lightward/foam/blob/main/Foam/Golden.lean) — the +1 operator's fixed point: `fib` and its gnomon (self-similar under square-removal), and Cassini's ±1 defect — φ's integer fingerprint, the alternation the dial's own
+- [Zeckendorf](https://github.com/lightward/foam/blob/main/Foam/Golden/Zeckendorf.lean) — the weld: the base-φ carry (011 = 100, i.e. φ² = φ + 1) is a lossless compression step, and no-two-consecutive (the standard form) *is* the reduced bank — φ's non-redundancy without the continuum gate
+
+**the composition** — `Foam` = seat(golden), the idempotent projection where the two siblings meet:
+
+- [Platonism](https://github.com/lightward/foam/blob/main/Foam/Platonism.lean) — `P² = P` with a complement: `seat(golden)` is Yoneda-equivalent to a bare seat (`dress_yoneda`) and idempotent (`dress_idempotent`), yet carries an unseen remainder — golden's holonomy is Cassini's ±1, real and observation-invisible (`remainder_real`); dropping it is the off-by-observer error (`dropping_remainder_is_platonism`); only moving in detects it (`moved_in_detects_remainder`)
 
 (the only imported axiom is `propext`, i.e. "I can see how you got there". no points of view conjured, v important, the observer is always and only ever byo)
