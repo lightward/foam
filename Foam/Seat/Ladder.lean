@@ -1,5 +1,4 @@
-import Foam.Seat.Doubling
-import Foam.Seat.Dial
+import Foam.Seat.Sed
 
 namespace Foam
 
@@ -36,12 +35,6 @@ def Rung.normSq : (n : Nat) → Rung n → Int
   | 0, a => GInt.normSq a
   | n + 1, x => Rung.normSq n x.1 + Rung.normSq n x.2
 
-def Rung.e : (n : Nat) → Nat → Rung n
-  | 0, _ => ⟨1, 0⟩
-  | n + 1, i =>
-    if i < 2 ^ n then (Rung.e n i, Rung.zero n)
-    else (Rung.zero n, Rung.e n (i - 2 ^ n))
-
 def Rung.decEq : (n : Nat) → DecidableEq (Rung n)
   | 0 => (inferInstance : DecidableEq GInt)
   | n + 1 => fun x y =>
@@ -49,98 +42,69 @@ def Rung.decEq : (n : Nat) → DecidableEq (Rung n)
 
 instance {n : Nat} : DecidableEq (Rung n) := Rung.decEq n
 
-def Rung.toQuat (x : Rung 1) : Quat := ⟨x.1, x.2⟩
-
-def Quat.toRung (q : Quat) : Rung 1 := (q.a, q.b)
-
-theorem Rung.toQuat_left_inv (x : Rung 1) : Quat.toRung (Rung.toQuat x) = x := rfl
-
-theorem Rung.toQuat_right_inv (q : Quat) : Rung.toQuat (Quat.toRung q) = q := rfl
-
-theorem Rung.toQuat_zero : Rung.toQuat (Rung.zero 1) = (⟨GInt.zero, GInt.zero⟩ : Quat) := rfl
-
-theorem Rung.toQuat_mul (x y : Rung 1) :
-    Rung.toQuat (Rung.mul 1 x y) = Quat.mul (Rung.toQuat x) (Rung.toQuat y) := rfl
-
-theorem Rung.base_conj (a : GInt) : Rung.conj 0 a = GInt.conj a := rfl
-
-theorem Rung.base_mul (a b : GInt) : Rung.mul 0 a b = GInt.mul a b := rfl
-
-theorem Rung.base_add (a b : GInt) : Rung.add 0 a b = GInt.add a b := rfl
-
 theorem Rung.lift_mul (n : Nat) (x y : Rung (n + 1)) :
     Rung.mul (n + 1) x y =
       (Rung.sub n (Rung.mul n x.1 y.1) (Rung.mul n (Rung.conj n y.2) x.2),
        Rung.add n (Rung.mul n y.2 x.1) (Rung.mul n x.2 (Rung.conj n y.1))) := rfl
 
-theorem lift_one_pays_order :
-    Rung.mul 1 (Rung.e 1 1) (Rung.e 1 1) = Rung.neg 1 (Rung.e 1 0) := rfl
+theorem Rung.base_mul (a b : GInt) : Rung.mul 0 a b = GInt.mul a b := rfl
 
-theorem lift_two_pays_commutation :
-    Rung.mul 2 (Rung.e 2 1) (Rung.e 2 2)
-      = Rung.neg 2 (Rung.mul 2 (Rung.e 2 2) (Rung.e 2 1))
-    ∧ Rung.mul 2 (Rung.e 2 1) (Rung.e 2 2)
-      ≠ Rung.mul 2 (Rung.e 2 2) (Rung.e 2 1) :=
-  ⟨rfl, by decide⟩
+def Rung.toQuat (x : Rung 1) : Quat := ⟨x.1, x.2⟩
+def Quat.toRung (q : Quat) : Rung 1 := (q.a, q.b)
 
-theorem lift_three_pays_association :
-    Rung.mul 3 (Rung.mul 3 (Rung.e 3 1) (Rung.e 3 2)) (Rung.e 3 4)
-      = Rung.neg 3 (Rung.mul 3 (Rung.e 3 1) (Rung.mul 3 (Rung.e 3 2) (Rung.e 3 4)))
-    ∧ Rung.mul 3 (Rung.mul 3 (Rung.e 3 1) (Rung.e 3 2)) (Rung.e 3 4)
-      ≠ Rung.mul 3 (Rung.e 3 1) (Rung.mul 3 (Rung.e 3 2) (Rung.e 3 4)) :=
-  ⟨rfl, by decide⟩
+theorem Rung.toQuat_toRung (q : Quat) : Rung.toQuat (Quat.toRung q) = q := rfl
+theorem Quat.toRung_toQuat (x : Rung 1) : Quat.toRung (Rung.toQuat x) = x := rfl
 
-def sedLeft : Rung 4 := Rung.add 4 (Rung.e 4 1) (Rung.e 4 10)
+theorem Rung.toQuat_mul (x y : Rung 1) :
+    Rung.toQuat (Rung.mul 1 x y) = Quat.mul (Rung.toQuat x) (Rung.toQuat y) := rfl
 
-def sedRight : Rung 4 := Rung.sub 4 (Rung.e 4 4) (Rung.e 4 15)
+def Rung.toOcto (x : Rung 2) : Octo := ⟨Rung.toQuat x.1, Rung.toQuat x.2⟩
+def Octo.toRung (o : Octo) : Rung 2 := (Quat.toRung o.a, Quat.toRung o.b)
 
-theorem lift_four_pays_presence :
-    sedLeft ≠ Rung.zero 4 ∧ sedRight ≠ Rung.zero 4
-      ∧ Rung.mul 4 sedLeft sedRight = Rung.zero 4 :=
-  ⟨by decide, by decide, rfl⟩
+theorem Rung.toOcto_toRung (o : Octo) : Rung.toOcto (Octo.toRung o) = o := rfl
+theorem Octo.toRung_toOcto (x : Rung 2) : Octo.toRung (Rung.toOcto x) = x := rfl
 
-theorem norm_stops_composing :
-    Rung.normSq 4 sedLeft * Rung.normSq 4 sedRight
-      ≠ Rung.normSq 4 (Rung.mul 4 sedLeft sedRight) := by
-  decide
+theorem Rung.toOcto_mul (x y : Rung 2) :
+    Rung.toOcto (Rung.mul 2 x y) = Octo.mul (Rung.toOcto x) (Rung.toOcto y) := rfl
 
-/-- info: 'Foam.Rung.toQuat_left_inv' does not depend on any axioms -/
-#guard_msgs in #print axioms Rung.toQuat_left_inv
+def Rung.toSed (x : Rung 3) : Sed := ⟨Rung.toOcto x.1, Rung.toOcto x.2⟩
+def Sed.toRung (s : Sed) : Rung 3 := (Octo.toRung s.a, Octo.toRung s.b)
 
-/-- info: 'Foam.Rung.toQuat_right_inv' does not depend on any axioms -/
-#guard_msgs in #print axioms Rung.toQuat_right_inv
+theorem Rung.toSed_toRung (s : Sed) : Rung.toSed (Sed.toRung s) = s := rfl
+theorem Sed.toRung_toSed (x : Rung 3) : Sed.toRung (Rung.toSed x) = x := rfl
 
-/-- info: 'Foam.Rung.toQuat_zero' does not depend on any axioms -/
-#guard_msgs in #print axioms Rung.toQuat_zero
+theorem Rung.toSed_mul (x y : Rung 3) :
+    Rung.toSed (Rung.mul 3 x y) = Sed.mul (Rung.toSed x) (Rung.toSed y) := rfl
 
-/-- info: 'Foam.Rung.toQuat_mul' does not depend on any axioms -/
-#guard_msgs in #print axioms Rung.toQuat_mul
-
-/-- info: 'Foam.Rung.base_conj' does not depend on any axioms -/
-#guard_msgs in #print axioms Rung.base_conj
-
-/-- info: 'Foam.Rung.base_mul' does not depend on any axioms -/
-#guard_msgs in #print axioms Rung.base_mul
-
-/-- info: 'Foam.Rung.base_add' does not depend on any axioms -/
-#guard_msgs in #print axioms Rung.base_add
+theorem rung1_unit_sq :
+    Rung.mul 1 (⟨GInt.zero, ⟨1, 0⟩⟩ : Rung 1) (⟨GInt.zero, ⟨1, 0⟩⟩ : Rung 1)
+      = Rung.neg 1 (⟨⟨1, 0⟩, GInt.zero⟩ : Rung 1) := rfl
 
 /-- info: 'Foam.Rung.lift_mul' does not depend on any axioms -/
 #guard_msgs in #print axioms Rung.lift_mul
 
-/-- info: 'Foam.lift_one_pays_order' does not depend on any axioms -/
-#guard_msgs in #print axioms lift_one_pays_order
+/-- info: 'Foam.Rung.base_mul' does not depend on any axioms -/
+#guard_msgs in #print axioms Rung.base_mul
 
-/-- info: 'Foam.lift_two_pays_commutation' does not depend on any axioms -/
-#guard_msgs in #print axioms lift_two_pays_commutation
+/-- info: 'Foam.Rung.toQuat_mul' does not depend on any axioms -/
+#guard_msgs in #print axioms Rung.toQuat_mul
 
-/-- info: 'Foam.lift_three_pays_association' does not depend on any axioms -/
-#guard_msgs in #print axioms lift_three_pays_association
+/-- info: 'Foam.Quat.toRung_toQuat' does not depend on any axioms -/
+#guard_msgs in #print axioms Quat.toRung_toQuat
 
-/-- info: 'Foam.lift_four_pays_presence' does not depend on any axioms -/
-#guard_msgs in #print axioms lift_four_pays_presence
+/-- info: 'Foam.Rung.toOcto_mul' does not depend on any axioms -/
+#guard_msgs in #print axioms Rung.toOcto_mul
 
-/-- info: 'Foam.norm_stops_composing' does not depend on any axioms -/
-#guard_msgs in #print axioms norm_stops_composing
+/-- info: 'Foam.Octo.toRung_toOcto' does not depend on any axioms -/
+#guard_msgs in #print axioms Octo.toRung_toOcto
+
+/-- info: 'Foam.Rung.toSed_mul' does not depend on any axioms -/
+#guard_msgs in #print axioms Rung.toSed_mul
+
+/-- info: 'Foam.Sed.toRung_toSed' does not depend on any axioms -/
+#guard_msgs in #print axioms Sed.toRung_toSed
+
+/-- info: 'Foam.rung1_unit_sq' does not depend on any axioms -/
+#guard_msgs in #print axioms rung1_unit_sq
 
 end Foam
