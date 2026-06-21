@@ -43,11 +43,7 @@ theorem GInt.neg_neg (z : GInt) : GInt.neg (GInt.neg z) = z := by
     rw [Int.neg_neg, Int.neg_neg]
 
 theorem GInt.rot_complete (z : GInt) :
-    GInt.rot (GInt.rot (GInt.rot (GInt.rot z))) = z := by
-  cases z with
-  | mk a b =>
-    show (⟨- -a, - -b⟩ : GInt) = ⟨a, b⟩
-    rw [Int.neg_neg, Int.neg_neg]
+    GInt.rot (GInt.rot (GInt.rot (GInt.rot z))) = z := GInt.neg_neg z
 
 theorem alt_closes_two : Closes GInt.neg 2 := fun z => GInt.neg_neg z
 
