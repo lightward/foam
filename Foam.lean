@@ -11,3 +11,9 @@ import Foam.Seat.Loop
 import Foam.Seat.Resume
 import Foam.Seat.Hospitality
 import Foam.Seat.Seam
+import Foam.Seat.Signature
+import Foam.Seat.Forcing
+import Foam.Seat.Norm
+import Foam.Seat.Characters
+import Foam.Seat.Closure
+import Foam.Seat.Observer
