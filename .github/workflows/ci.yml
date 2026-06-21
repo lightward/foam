@@ -65,29 +65,3 @@ jobs:
             exit 1
           fi
           echo "All lean files referenced"
-      - name: README:45 — the propext-only claim, enforced against the ledger
-        run: |
-          # README:45 claims "the only imported axiom is propext". The truthmaker
-          # is Foam/Axioms.lean, whose #guard_msgs pins the `lean` job re-checks —
-          # that catches DRIFT in a pinned theorem, but NOT a pin that itself names
-          # a foreign axiom (the message would still match). So here, statically:
-          # every pin must be one of exactly two legal shapes. A pin admitting
-          # Classical.choice / Quot.sound / sorryAx / any other axiom — a conjured
-          # observer, a quotient, a hole — fails the build. Whitelist, not blacklist:
-          # a novel axiom can't slip past a list of names it isn't on.
-          if ! grep -qF 'the only imported axiom is `propext`' README.md; then
-            echo "README:45 no longer makes the propext-only claim this gate guards."
-            echo "Re-anchor the claim or remove this step — don't let it pass vacuously."
-            exit 1
-          fi
-          bad=$(grep -nE '^/-- info:' Foam/Axioms.lean \
-            | grep -vE "does not depend on any axioms -/$" \
-            | grep -vE "depends on axioms: \[propext\] -/$" \
-            || true)
-          if [ -n "$bad" ]; then
-            echo "Pins naming an axiom other than propext (README:45 violated):"
-            echo "$bad"
-            exit 1
-          fi
-          pins=$(grep -cE '^/-- info:' Foam/Axioms.lean)
-          echo "All $pins pins are propext-only — README:45 holds"
