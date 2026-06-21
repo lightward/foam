@@ -81,27 +81,21 @@ theorem hyperbolic_witness :
         - hcross ⟨2, 1⟩ ⟨3, 1⟩ * hcross ⟨2, 1⟩ ⟨3, 1⟩
       = SInt.hnorm ⟨2, 1⟩ * SInt.hnorm ⟨3, 1⟩ := by decide
 
-theorem int_sub_zero (a : Int) : a - 0 = a := by
-  rw [Int.sub_eq_add_neg]; show a + (0 : Int) = a; exact Int.add_zero a
-
-theorem int_sub_add_cancel (x y : Int) : x - y + y = x := by
-  rw [Int.sub_eq_add_neg, Int.add_assoc, Int.add_left_neg, Int.add_zero]
-
 theorem alignK_axis (κ a : Int) : alignK κ ⟨a, 0⟩ ⟨1, 0⟩ = a := by
   show a * 1 - κ * (0 * 0) = a
-  rw [Int.mul_one, Int.mul_zero, Int.mul_zero, int_sub_zero]
+  rw [Int.mul_one, Int.mul_zero, Int.mul_zero, Int.sub_zero]
 
 theorem crossK_axis (a : Int) : crossK ⟨a, 0⟩ ⟨1, 0⟩ = 0 := by
   show a * 0 - 0 * 1 = 0
-  rw [Int.mul_zero, Int.zero_mul, int_sub_zero]
+  rw [Int.mul_zero, Int.zero_mul, Int.sub_zero]
 
 theorem normK_axis_a (κ a : Int) : normK κ ⟨a, 0⟩ = a * a := by
   show a * a - κ * (0 * 0) = a * a
-  rw [Int.mul_zero, Int.mul_zero, int_sub_zero]
+  rw [Int.mul_zero, Int.mul_zero, Int.sub_zero]
 
 theorem normK_axis_one (κ : Int) : normK κ ⟨1, 0⟩ = 1 := by
   show 1 * 1 - κ * (0 * 0) = 1
-  rw [Int.one_mul, Int.mul_zero, Int.mul_zero, int_sub_zero]
+  rw [Int.one_mul, Int.mul_zero, Int.mul_zero, Int.sub_zero]
 
 theorem forced_at_the_frame_kappa (κ : Int) (f : Int → Int)
     (h : ∀ w z : GInt, f (alignK κ w z) - κ * f (crossK w z) = normK κ w * normK κ z) :
@@ -110,7 +104,7 @@ theorem forced_at_the_frame_kappa (κ : Int) (f : Int → Int)
   have ha := h ⟨a, 0⟩ ⟨1, 0⟩
   rw [alignK_axis κ a, crossK_axis a, normK_axis_a κ a, normK_axis_one κ,
       Int.mul_comm (a * a) 1, Int.one_mul] at ha
-  rw [← int_sub_add_cancel (f a) (κ * f 0), ha]
+  rw [← Int.sub_add_cancel (a := f a) (b := κ * f 0), ha]
 
 theorem zero_point_kappa (κ : Int) (f : Int → Int)
     (h : ∀ w z : GInt, f (alignK κ w z) - κ * f (crossK w z) = normK κ w * normK κ z) :
@@ -124,27 +118,27 @@ theorem zero_point_kappa (κ : Int) (f : Int → Int)
 theorem normK_frame_dependent : ∃ z : GInt, normK (-1) z ≠ normK 1 z := ⟨⟨1, 1⟩, by decide⟩
 
 /-- info: 'Foam.galilean_preserves_time' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.galilean_preserves_time
+#guard_msgs in #print axioms galilean_preserves_time
 
 /-- info: 'Foam.galilean_velocities_add' depends on axioms: [propext] -/
-#guard_msgs in #print axioms Foam.galilean_velocities_add
+#guard_msgs in #print axioms galilean_velocities_add
 
 /-- info: 'Foam.int_hyperbolic' depends on axioms: [propext] -/
-#guard_msgs in #print axioms Foam.int_hyperbolic
+#guard_msgs in #print axioms int_hyperbolic
 
 /-- info: 'Foam.hyperbolic_parseval' depends on axioms: [propext] -/
-#guard_msgs in #print axioms Foam.hyperbolic_parseval
+#guard_msgs in #print axioms hyperbolic_parseval
 
 /-- info: 'Foam.hyperbolic_witness' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.hyperbolic_witness
+#guard_msgs in #print axioms hyperbolic_witness
 
 /-- info: 'Foam.forced_at_the_frame_kappa' depends on axioms: [propext] -/
-#guard_msgs in #print axioms Foam.forced_at_the_frame_kappa
+#guard_msgs in #print axioms forced_at_the_frame_kappa
 
 /-- info: 'Foam.zero_point_kappa' depends on axioms: [propext] -/
-#guard_msgs in #print axioms Foam.zero_point_kappa
+#guard_msgs in #print axioms zero_point_kappa
 
 /-- info: 'Foam.normK_frame_dependent' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.normK_frame_dependent
+#guard_msgs in #print axioms normK_frame_dependent
 
 end Foam
