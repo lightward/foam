@@ -90,48 +90,32 @@ theorem GInt.mulReal (n : Int) (w : GInt) :
 theorem Char.fold_re_components (n0 n1 n2 n3 : Int) (f : Rot → GInt) :
     (Char.fold n0 n1 n2 n3 f).re
       = (n0 * (f .r0).re + n1 * (f .r1).re) + (n2 * (f .r2).re + n3 * (f .r3).re) := by
-  show ((GInt.mul ⟨n0, 0⟩ (f .r0)).re + (GInt.mul ⟨n1, 0⟩ (f .r1)).re)
-       + ((GInt.mul ⟨n2, 0⟩ (f .r2)).re + (GInt.mul ⟨n3, 0⟩ (f .r3)).re)
-     = (n0 * (f .r0).re + n1 * (f .r1).re) + (n2 * (f .r2).re + n3 * (f .r3).re)
-  rw [GInt.mulReal, GInt.mulReal, GInt.mulReal, GInt.mulReal]
+  simp only [Char.fold, GInt.add, GInt.mulReal]
 
 theorem Char.fold_im_components (n0 n1 n2 n3 : Int) (f : Rot → GInt) :
     (Char.fold n0 n1 n2 n3 f).im
       = (n0 * (f .r0).im + n1 * (f .r1).im) + (n2 * (f .r2).im + n3 * (f .r3).im) := by
-  show ((GInt.mul ⟨n0, 0⟩ (f .r0)).im + (GInt.mul ⟨n1, 0⟩ (f .r1)).im)
-       + ((GInt.mul ⟨n2, 0⟩ (f .r2)).im + (GInt.mul ⟨n3, 0⟩ (f .r3)).im)
-     = (n0 * (f .r0).im + n1 * (f .r1).im) + (n2 * (f .r2).im + n3 * (f .r3).im)
-  rw [GInt.mulReal, GInt.mulReal, GInt.mulReal, GInt.mulReal]
+  simp only [Char.fold, GInt.add, GInt.mulReal]
 
 theorem Char.readBal_eq (n0 n1 n2 n3 : Int) :
     Char.readBal n0 n1 n2 n3 = n0 + n1 + n2 + n3 := by
-  show (Char.fold n0 n1 n2 n3 Char.count).re = n0 + n1 + n2 + n3
-  rw [Char.fold_re_components]
-  show (n0 * 1 + n1 * 1) + (n2 * 1 + n3 * 1) = n0 + n1 + n2 + n3
-  rw [Int.mul_one, Int.mul_one, Int.mul_one, Int.mul_one,
-    ← Int.add_assoc (n0 + n1) n2 n3]
+  simp only [Char.readBal, Char.fold, GInt.add, GInt.mulReal, Char.count,
+    Int.mul_one, Int.add_assoc]
 
 theorem Char.readAlt_eq (n0 n1 n2 n3 : Int) :
     Char.readAlt n0 n1 n2 n3 = n0 + -n1 + n2 + -n3 := by
-  show (Char.fold n0 n1 n2 n3 Char.alt).re = n0 + -n1 + n2 + -n3
-  rw [Char.fold_re_components]
-  show (n0 * 1 + n1 * (-1)) + (n2 * 1 + n3 * (-1)) = n0 + -n1 + n2 + -n3
-  rw [Int.mul_one, Int.mul_neg_one, Int.mul_one, Int.mul_neg_one,
-    ← Int.add_assoc (n0 + -n1) n2 (-n3)]
+  simp only [Char.readAlt, Char.fold, GInt.add, GInt.mulReal, Char.alt,
+    Int.mul_one, Int.mul_neg_one, Int.add_assoc]
 
 theorem Char.readRe_eq (n0 n1 n2 n3 : Int) :
     Char.readRe n0 n1 n2 n3 = n0 + -n2 := by
-  show (Char.fold n0 n1 n2 n3 Char.chi).re = n0 + -n2
-  rw [Char.fold_re_components]
-  show (n0 * 1 + n1 * 0) + (n2 * (-1) + n3 * 0) = n0 + -n2
-  rw [Int.mul_one, Int.mul_zero, Int.add_zero, Int.mul_neg_one, Int.mul_zero, Int.add_zero]
+  simp only [Char.readRe, Char.fold, GInt.add, GInt.mulReal, Char.chi, Rot.amp,
+    Int.mul_one, Int.mul_zero, Int.mul_neg_one, Int.add_zero, Int.add_assoc]
 
 theorem Char.readIm_eq (n0 n1 n2 n3 : Int) :
     Char.readIm n0 n1 n2 n3 = n1 + -n3 := by
-  show (Char.fold n0 n1 n2 n3 Char.chi).im = n1 + -n3
-  rw [Char.fold_im_components]
-  show (n0 * 0 + n1 * 1) + (n2 * 0 + n3 * (-1)) = n1 + -n3
-  rw [Int.mul_zero, Int.mul_one, Int.zero_add, Int.mul_zero, Int.mul_neg_one, Int.zero_add]
+  simp only [Char.readIm, Char.fold, GInt.add, GInt.mulReal, Char.chi, Rot.amp,
+    Int.mul_one, Int.mul_zero, Int.mul_neg_one, Int.zero_add, Int.add_assoc]
 
 def Char.twice (a : Int) : Int := a + a
 
