@@ -119,19 +119,6 @@ theorem Rung.inl_not_onto (n : Nat) :
 theorem inl_escapes_jay (x : Rung 0) : Rung.inl 0 x ≠ Quat.toRung jay :=
   fun h => jay_outside (congrArg Prod.snd h).symm
 
-structure Seam (A B : Type) where
-  up       : A → B
-  faithful : ∀ {x y : A}, up x = up y → x = y
-  escapes  : ∃ y : B, ∀ x : A, up x ≠ y
-
-def Seam.prime {A B : Type} (S : Seam A B) (q : B) : Prop := ∀ x : A, S.up x ≠ q
-
-theorem Seam.no_section {A B : Type} (S : Seam A B) :
-    ¬ ∃ g : B → A, ∀ b, S.up (g b) = b := by
-  rintro ⟨g, hg⟩
-  obtain ⟨y, hy⟩ := S.escapes
-  exact hy (g y) (hg y)
-
 def rungSeam (n : Nat) : Seam (Rung n) (Rung (n + 1)) where
   up       := Rung.inl n
   faithful := fun h => Rung.inl_faithful n h
@@ -139,11 +126,6 @@ def rungSeam (n : Nat) : Seam (Rung n) (Rung (n + 1)) where
 
 theorem jay_prime : (rungSeam 0).prime (Quat.toRung jay) :=
   fun x => inl_escapes_jay x
-
-def playbackSeam {S : Type} (s : S) : Seam (List S) (CoList S) where
-  up       := playback
-  faithful := fun {l l'} h => playback_faithful l l' (fun n => congrArg (fun c => c.at_ n) h)
-  escapes  := ⟨forever s, fun l h => (forever_escapes s l).elim (fun n hn => hn (congrArg (fun c => c.at_ n) h))⟩
 
 /-- info: 'Foam.Beholder.covers_refl' does not depend on any axioms -/
 #guard_msgs in #print axioms Beholder.covers_refl
@@ -178,13 +160,7 @@ def playbackSeam {S : Type} (s : S) : Seam (List S) (CoList S) where
 /-- info: 'Foam.inl_escapes_jay' does not depend on any axioms -/
 #guard_msgs in #print axioms inl_escapes_jay
 
-/-- info: 'Foam.Seam.no_section' does not depend on any axioms -/
-#guard_msgs in #print axioms Seam.no_section
-
 /-- info: 'Foam.jay_prime' does not depend on any axioms -/
 #guard_msgs in #print axioms jay_prime
-
-/-- info: 'Foam.playbackSeam' does not depend on any axioms -/
-#guard_msgs in #print axioms playbackSeam
 
 end Foam
