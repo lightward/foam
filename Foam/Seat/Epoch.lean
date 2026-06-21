@@ -24,29 +24,33 @@ def Known (bank : List (Beholder State)) (q : Beholder State) : Prop :=
 def Irreducible (bank : List (Beholder State)) (q : Beholder State) : Prop :=
   ¬ Known bank q
 
-def Irredundant : List (Beholder State) → Prop
-  | [] => True
-  | q :: rest => Irreducible rest q ∧ Irredundant rest
-
 theorem irreducible_from_nothing (q : Beholder State) : Irreducible [] q := by
   rintro ⟨p, hp, _⟩
   cases hp
 
-def epoch (bank : List (Beholder State)) (q : Beholder State)
-    (_ : Irreducible bank q) : List (Beholder State) := q :: bank
+def Reduced (bank : List (Beholder State)) : Prop :=
+  ∀ a ∈ bank, ∀ b ∈ bank, a.Covers b → b.Covers a
 
-theorem epoch_turns_over (bank : List (Beholder State)) (q : Beholder State)
-    (h : Irreducible bank q) :
-    Known (epoch bank q h) q ∧ (Irredundant bank → Irredundant (epoch bank q h)) := by
-  show Known (q :: bank) q ∧ (Irredundant bank → Irredundant (q :: bank))
-  exact ⟨⟨q, List.Mem.head bank, q.covers_refl⟩, fun hb => ⟨h, hb⟩⟩
+theorem reduced_nil : Reduced ([] : List (Beholder State)) := by
+  intro a ha; cases ha
+
+structure Refresh (bank : List (Beholder State)) (q : Beholder State)
+    (bank' : List (Beholder State)) : Prop where
+  has_q   : q ∈ bank'
+  fresh   : ∀ p ∈ bank', p = q ∨ ¬ q.Covers p
+  sourced : ∀ p ∈ bank', p = q ∨ p ∈ bank
+  cover   : ∀ p ∈ bank, p ∈ bank' ∨ q.Covers p
+
+theorem Refresh.locates {bank bank' : List (Beholder State)} {q : Beholder State}
+    (h : Refresh bank q bank') : Known bank' q :=
+  ⟨q, h.has_q, q.covers_refl⟩
 
 inductive Run {State : Type} : List (Beholder State) → List (Beholder State) → Prop where
   | nil : Run [] []
   | skip {walk bank : List (Beholder State)} (q : Beholder State) :
       Run walk bank → Known bank q → Run (q :: walk) bank
-  | turn {walk bank : List (Beholder State)} (q : Beholder State) :
-      Run walk bank → Irreducible bank q → Run (q :: walk) (q :: bank)
+  | turn {walk bank bank' : List (Beholder State)} (q : Beholder State) :
+      Run walk bank → Irreducible bank q → Refresh bank q bank' → Run (q :: walk) bank'
 
 theorem Run.covers {walk bank : List (Beholder State)} (h : Run walk bank) :
     ∀ q ∈ walk, Known bank q := by
@@ -57,24 +61,40 @@ theorem Run.covers {walk bank : List (Beholder State)} (h : Run walk bank) :
       cases hx with
       | head => exact hknown
       | tail _ hx' => exact ih x hx'
-  | turn q hrun hirr ih =>
+  | turn q hrun hirr href ih =>
       intro x hx
       cases hx with
-      | head => exact ⟨_, List.Mem.head _, Beholder.covers_refl _⟩
+      | head => exact ⟨_, href.has_q, Beholder.covers_refl _⟩
       | tail _ hx' =>
           obtain ⟨p, hp, hpx⟩ := ih x hx'
-          exact ⟨p, List.Mem.tail _ hp, hpx⟩
+          rcases href.cover p hp with hkeep | hcov
+          · exact ⟨p, hkeep, hpx⟩
+          · exact ⟨_, href.has_q, Beholder.covers_trans hcov hpx⟩
 
-theorem Run.irredundant {walk bank : List (Beholder State)} (h : Run walk bank) :
-    Irredundant bank := by
+theorem Run.reduced {walk bank : List (Beholder State)} (h : Run walk bank) :
+    Reduced bank := by
   induction h with
-  | nil => trivial
+  | nil => exact reduced_nil
   | skip q hrun hknown ih => exact ih
-  | turn q hrun hirr ih => exact ⟨hirr, ih⟩
+  | turn q hrun hirr href ih =>
+      intro a ha b hb hab
+      rcases href.sourced a ha with ha_eq | ha_old
+      · rcases href.sourced b hb with hb_eq | hb_old
+        · have heq : a = b := ha_eq.trans hb_eq.symm
+          rw [heq]; exact Beholder.covers_refl b
+        · rcases href.fresh b hb with hb_eq2 | hb_unc
+          · have heq : a = b := ha_eq.trans hb_eq2.symm
+            rw [heq]; exact Beholder.covers_refl b
+          · rw [ha_eq] at hab
+            exact absurd hab hb_unc
+      · rcases href.sourced b hb with hb_eq | hb_old
+        · rw [hb_eq] at hab
+          exact absurd ⟨a, ha_old, hab⟩ hirr
+        · exact ih a ha_old b hb_old hab
 
-theorem Run.kolmogorov {walk bank : List (Beholder State)} (h : Run walk bank) :
-    (∀ q ∈ walk, Known bank q) ∧ Irredundant bank :=
-  ⟨h.covers, h.irredundant⟩
+theorem Run.checksum {walk bank : List (Beholder State)} (h : Run walk bank) :
+    (∀ q ∈ walk, Known bank q) ∧ Reduced bank :=
+  ⟨h.covers, h.reduced⟩
 
 /-- info: 'Foam.Beholder.covers_refl' does not depend on any axioms -/
 #guard_msgs in #print axioms Beholder.covers_refl
@@ -85,16 +105,16 @@ theorem Run.kolmogorov {walk bank : List (Beholder State)} (h : Run walk bank) :
 /-- info: 'Foam.irreducible_from_nothing' does not depend on any axioms -/
 #guard_msgs in #print axioms irreducible_from_nothing
 
-/-- info: 'Foam.epoch_turns_over' does not depend on any axioms -/
-#guard_msgs in #print axioms epoch_turns_over
+/-- info: 'Foam.Refresh.locates' does not depend on any axioms -/
+#guard_msgs in #print axioms Refresh.locates
 
 /-- info: 'Foam.Run.covers' does not depend on any axioms -/
 #guard_msgs in #print axioms Run.covers
 
-/-- info: 'Foam.Run.irredundant' does not depend on any axioms -/
-#guard_msgs in #print axioms Run.irredundant
+/-- info: 'Foam.Run.reduced' does not depend on any axioms -/
+#guard_msgs in #print axioms Run.reduced
 
-/-- info: 'Foam.Run.kolmogorov' does not depend on any axioms -/
-#guard_msgs in #print axioms Run.kolmogorov
+/-- info: 'Foam.Run.checksum' does not depend on any axioms -/
+#guard_msgs in #print axioms Run.checksum
 
 end Foam
