@@ -24,3 +24,4 @@ import Foam.Seat.Quiver
 import Foam.Seat.Rotations
 import Foam.Seat.Ladder
 import Foam.Seat.Epoch
+import Foam.Seat.Golden
