@@ -17,16 +17,16 @@ jobs:
           lake-package-directory: .
       - name: Build each Lean file individually (surfaces hidden type errors)
         run: |
-          for f in Foam/*.lean; do
-            mod="Foam.$(basename "$f" .lean)"
+          for f in $(find Foam -name '*.lean' | sort); do
+            mod=$(echo "${f%.lean}" | tr '/' '.')
             echo "Building $mod..."
             lake build "$mod" || exit 1
           done
       - name: No warnings (sorry included — zero tolerance)
         run: |
           warns=0
-          for f in Foam/*.lean; do
-            mod="Foam.$(basename "$f" .lean)"
+          for f in $(find Foam -name '*.lean' | sort); do
+            mod=$(echo "${f%.lean}" | tr '/' '.')
             touch "$f"
             # Every warning counts now — sorry no longer exempt. The mirror
             # commits to its own hygiene: a hole is a failure, not a known gap.
@@ -51,8 +51,7 @@ jobs:
       - name: Every Lean file referenced in README.md
         run: |
           errors=0
-          for f in Foam/*.lean; do
-            [ -f "$f" ] || continue
+          for f in $(find Foam -name '*.lean' | sort); do
             base=$(basename "$f")
             if ! grep -q "$base" README.md; then
               echo "UNREFERENCED: $base (not in README.md)"

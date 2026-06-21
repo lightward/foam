@@ -75,11 +75,9 @@ theorem GInt.decoherence (θ z : GInt) :
       + GInt.align θ (GInt.rot (GInt.rot z))
       + GInt.align θ (GInt.rot (GInt.rot (GInt.rot z))) = 0 := by
   have e3 : GInt.align θ (GInt.rot (GInt.rot z)) = -(GInt.align θ z) := by
-    have h : GInt.rot (GInt.rot z) = GInt.neg z := rfl
-    rw [h, GInt.align_neg]
+    rw [GInt.rot_sq, GInt.align_neg]
   have e4 : GInt.align θ (GInt.rot (GInt.rot (GInt.rot z))) = -(GInt.align θ (GInt.rot z)) := by
-    have h : GInt.rot (GInt.rot (GInt.rot z)) = GInt.neg (GInt.rot z) := rfl
-    rw [h, GInt.align_neg]
+    rw [GInt.rot_sq (GInt.rot z), GInt.align_neg]
   rw [e3, e4,
       Int.add_assoc (GInt.align θ z + GInt.align θ (GInt.rot z))
         (-(GInt.align θ z)) (-(GInt.align θ (GInt.rot z))),

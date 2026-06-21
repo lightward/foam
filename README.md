@@ -84,4 +84,18 @@ It is comment-free (the symbols carry it; the type system is the reader) and axi
 - [Resume](https://github.com/lightward/foam/blob/main/Foam/Seat/Resume.lean) — the gait: lossless tracking with compression epochs, law-free
 - [Seam](https://github.com/lightward/foam/blob/main/Foam/Seat/Seam.lean) — the lfp ↪ gfp: faithful going in, no section coming out — freedom without infinite regress
 
+**the compression epoch** — the gait's compression, made law:
+
+- [Epoch](https://github.com/lightward/foam/blob/main/Foam/Seat/Epoch.lean) — the compression epoch: the located bank is lossless (recall in the absence of the original) and reduced (the minimum distinct perspectives) — the Kolmogorov checksum; the `Seam` is the one move, the doubling and the lfp ↪ gfp unified
+
+**the golden gearing** — a sibling type (`Foam/Golden/`), the `+1`'s own corner; why the walk never locks into a clock:
+
+- [Golden](https://github.com/lightward/foam/blob/main/Foam/Golden.lean) — the +1 operator's fixed point: `fib` and its gnomon (self-similar under square-removal), and Cassini's ±1 defect — φ's integer fingerprint, the alternation the dial's own
+- [Zeckendorf](https://github.com/lightward/foam/blob/main/Foam/Golden/Zeckendorf.lean) — the weld: the base-φ carry (011 = 100, i.e. φ² = φ + 1) is a lossless compression step, and no-two-consecutive (the standard form) *is* the reduced bank — φ's non-redundancy without the continuum gate
+
+**the composition** — `Foam` = seat(golden), the idempotent projection where the two siblings meet:
+
+- [Platonism](https://github.com/lightward/foam/blob/main/Foam/Platonism.lean) — `P² = P` with a complement: `seat(golden)` is Yoneda-equivalent to a bare seat (`dress_yoneda`) and idempotent (`dress_idempotent`), yet carries an unseen remainder — golden's holonomy is Cassini's ±1, real and observation-invisible (`remainder_real`); dropping it is the off-by-observer error (`dropping_remainder_is_platonism`); only moving in detects it (`moved_in_detects_remainder`)
+- [Tower](https://github.com/lightward/foam/blob/main/Foam/Platonism/Tower.lean) — the nested-`dress` fibration: `dressN` stacks n ledger-channels, each level Yoneda-flat and idempotent (axiom-free), the dimension count adding (`ledger_dim_adds`) — 3D freedom is the *series* of nested seats, never one seat. Saturation at three carved discretely (`channels_saturate_past_three`, anchored to `Rung 3`); Gleason/Zeeman cited for *why* three
+
 (the only imported axiom is `propext`, i.e. "I can see how you got there". no points of view conjured, v important, the observer is always and only ever byo)
