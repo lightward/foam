@@ -28,3 +28,4 @@ import Foam.Golden
 
 import Foam.Golden.Zeckendorf
 import Foam.Platonism
+import Foam.Platonism.Tower
