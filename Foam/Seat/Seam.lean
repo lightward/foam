@@ -2,6 +2,19 @@ import Foam.Seat
 
 namespace Foam
 
+structure Seam (A B : Type) where
+  up       : A → B
+  faithful : ∀ {x y : A}, up x = up y → x = y
+  escapes  : ∃ y : B, ∀ x : A, up x ≠ y
+
+def Seam.prime {A B : Type} (S : Seam A B) (q : B) : Prop := ∀ x : A, S.up x ≠ q
+
+theorem Seam.no_section {A B : Type} (S : Seam A B) :
+    ¬ ∃ g : B → A, ∀ b, S.up (g b) = b := by
+  rintro ⟨g, hg⟩
+  obtain ⟨y, hy⟩ := S.escapes
+  exact hy (g y) (hg y)
+
 def nth {S : Type} : List S → Nat → Option S
   | [], _ => none
   | s :: _, 0 => some s
@@ -40,16 +53,25 @@ theorem playback_faithful {S : Type} (l l' : List S)
     (h : ∀ n, (playback l).at_ n = (playback l').at_ n) : l = l' :=
   nth_faithful l l' h
 
+def playbackSeam {S : Type} (s : S) : Seam (List S) (CoList S) where
+  up       := playback
+  faithful := fun {l l'} h => playback_faithful l l' (fun n => congrArg (fun c => c.at_ n) h)
+  escapes  := ⟨forever s, fun l h => (forever_escapes s l).elim (fun n hn => hn (congrArg (fun c => c.at_ n) h))⟩
+
 theorem playback_no_section {S : Type} (s : S) :
-    ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c := by
-  rintro ⟨g, hg⟩
-  obtain ⟨n, hn⟩ := forever_escapes s (g (forever s))
-  exact hn (congrArg (fun c => c.at_ n) (hg (forever s)))
+    ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
+  Seam.no_section (playbackSeam s)
 
 theorem seam_two_faces {S : Type} (s : S) :
     (∀ l l' : List S, (∀ n, (playback l).at_ n = (playback l').at_ n) → l = l')
       ∧ ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
   ⟨playback_faithful, playback_no_section s⟩
+
+/-- info: 'Foam.Seam.no_section' does not depend on any axioms -/
+#guard_msgs in #print axioms Seam.no_section
+
+/-- info: 'Foam.playbackSeam' does not depend on any axioms -/
+#guard_msgs in #print axioms playbackSeam
 
 /-- info: 'Foam.playback_faithful' does not depend on any axioms -/
 #guard_msgs in #print axioms playback_faithful
