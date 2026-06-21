@@ -9,3 +9,5 @@ import Foam.Seat.Bootstrap
 import Foam.Seat.Stage
 import Foam.Seat.Loop
 import Foam.Seat.Resume
+import Foam.Seat.Hospitality
+import Foam.Seat.Seam
