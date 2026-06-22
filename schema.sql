@@ -68,12 +68,12 @@ CREATE TABLE IF NOT EXISTS foam.charge (
   delta    int  NOT NULL
 );
 CREATE INDEX IF NOT EXISTS foam_charge_ctx ON foam.charge (observer, ctx, sym);
--- tail index: HELD + TAIL folds events past the watermark (Foam/Summary.lean); INCLUDE keeps it index-only.
+-- tail index: HELD + TAIL folds events past the watermark (Foam/Engine/Summary.lean); INCLUDE keeps it index-only.
 CREATE INDEX IF NOT EXISTS foam_charge_ctx_id ON foam.charge (ctx, id) INCLUDE (observer, sym, delta);
 
 -- foam.held — the resumable fold, cached per continuation per observer-stream: the
 -- four-character dial of ℤ/4 (Foam/Seat/Characters.lean) — bal at +1, re/im at i, alt at −1,
--- plus n the phase clock. Exact as HELD + TAIL (Foam/Summary.lean: summary_resumes); a derived
+-- plus n the phase clock. Exact as HELD + TAIL (Foam/Engine/Summary.lean: summary_resumes); a derived
 -- observation, not the object — droppable and refoldable from the ledger, no path in it
 -- (Foam/Maintenance.lean: sweep_invisible licenses any refresh, so UPDATE here keeps append-only).
 CREATE TABLE IF NOT EXISTS foam.held (
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS foam.held (
   PRIMARY KEY (observer, ctx, sym)
 );
 
--- the watermark: at-or-below is folded into foam.held, past it is the tail folded live (Foam/Summary.lean).
+-- the watermark: at-or-below is folded into foam.held, past it is the tail folded live (Foam/Engine/Summary.lean).
 CREATE TABLE IF NOT EXISTS foam.sweep (
   one       boolean PRIMARY KEY DEFAULT true CHECK (one),
   watermark bigint  NOT NULL DEFAULT 0
@@ -129,7 +129,7 @@ CREATE OR REPLACE FUNCTION foam.ingest_step(carry int[], bytes int[], kmax int D
   END; $$;
 
 -- depth — the gate signal: the longest charged context for `seed`, read HELD + TAIL
--- (Foam/Summary.lean) and summed over the visible streams (ancestry = Below). Structure, never meaning.
+-- (Foam/Engine/Summary.lean) and summed over the visible streams (ancestry = Below). Structure, never meaning.
 CREATE OR REPLACE FUNCTION foam.depth(seed int[], kmax int DEFAULT 7, obs uuid DEFAULT foam.bench()) RETURNS int
   LANGUAGE plpgsql STABLE AS $$
   DECLARE l int := coalesce(array_length(seed,1),0); j int; c int[]; cid uuid; tot bigint;
@@ -482,12 +482,12 @@ CREATE OR REPLACE FUNCTION foam.held_audit(obs uuid DEFAULT foam.bench()) RETURN
 --   * heard/spoken — the empty-context +1s (the lossless record's extent) and the −1
 --     drains; the two feet of the bipedal walk, counted.
 --   * net/residual — net is the signed sum; net = residual exactly while every drain
---     respects ground, which is the LIVE reading of Foam/Drain.lean's floor (the books
+--     respects ground, which is the LIVE reading of Foam/Engine/Drain.lean's floor (the books
 --     balance iff no scar is outstanding).
 --   * notes/outstanding — continuations below ground and their total deficit: the
 --     promissory notes of Foam/Scar.lean, counted and summed (0 = clean books).
 --   * held/tail — continuations folded into the summary, and events past the watermark:
---     the staleness gauge the sweep cadence answers to (Foam/Summary.lean).
+--     the staleness gauge the sweep cadence answers to (Foam/Engine/Summary.lean).
 CREATE OR REPLACE FUNCTION foam.stats()
   RETURNS TABLE(events bigint, heard bigint, spoken bigint, net bigint, residual bigint,
                 notes bigint, outstanding bigint, contexts bigint, live_continuations bigint,
@@ -517,12 +517,10 @@ CREATE OR REPLACE FUNCTION foam.stats()
     FROM g
   $$;
 
--- recorded — the ORDER reading: the empty-context +1 events, in id order, are every
--- byte ever learned, in sequence. This is the lossless half of the one object — the
--- self-audit that nothing was lost. The forward flow NEVER calls this (the order is
--- present and untouched; everything contributes to the voice via frequency whether or
--- not it is ever recalled in sequence). Exists so the box can certify itself. Scoped
--- like every reader: the record as obs's view holds it.
+-- recorded — the ORDER reading (Foam/Ledger.lean: order, order_finer): the empty-
+-- context +1 events in id order are every byte learned, in sequence — the lossless
+-- half, never read by the forward flow, present so the box can self-certify. Scoped
+-- like every reader.
 CREATE OR REPLACE FUNCTION foam.recorded(obs uuid DEFAULT foam.bench()) RETURNS text LANGUAGE sql STABLE AS
   $$ SELECT coalesce(foam.text(array_agg(sym ORDER BY id)), '')
      FROM foam.charge
