@@ -93,7 +93,7 @@ theorem moved_in_detects_remainder :
 /-- info: 'Foam.remainder_unseen' does not depend on any axioms -/
 #guard_msgs in #print axioms remainder_unseen
 
-/-- info: 'Foam.remainder_real' depends on axioms: [propext] -/
+/-- info: 'Foam.remainder_real' does not depend on any axioms -/
 #guard_msgs in #print axioms remainder_real
 
 /-- info: 'Foam.dropping_remainder_is_platonism' does not depend on any axioms -/
