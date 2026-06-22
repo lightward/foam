@@ -100,6 +100,10 @@ It is comment-free (the symbols carry it; the type system is the reader) and **f
 - [Summary](https://github.com/lightward/foam/blob/main/Foam/Engine/Summary.lean) — the held cache: the reading of `new ++ old` resumes from the held reading of `old` (`summary_resumes`, `∀` over the evaluation point — `count_resumes`/`spec_resumes` the stations), so the watermark fold never re-reads what it folded — HELD + TAIL, exact
 - [Engine](https://github.com/lightward/foam/blob/main/Foam/Engine.lean) — the assembly: the append-only `deposit` (`deposit_monotone`, monotone — no edge removed or merged, which would quotient the path-space). Its safety is *inherited*, not re-proven — the exit is forced for any stage (`Terminal`) and always open (`Hospitality`), so no deposit, no amount of learning, can close it; the floor was never a function of the dynamics
 
+**the operational layer** — the runtime made legible, self-derived over the floors:
+
+- [Scar](https://github.com/lightward/foam/blob/main/Foam/Scar.lean) — the signed-charge race: the operational drain is observe-then-append, so two drains on one stale snapshot escape the `Nat` floor to `−1` (`stale_escapes_floor`) — but only at the margin (`stale_safe_off_margin`). A scar is a value outside the carrier, a promissory note settled at face value by appending its debt (`scar_repair`/`promise_kept`), never erased. Settlement has the mirror race but lands *inside* the carrier (`phantom_invisible`) — so drains may race, settlements must serialize
+
 **the golden gearing** — a sibling type (`Foam/Golden/`), the `+1`'s own corner; why the walk never locks into a clock:
 
 - [Golden](https://github.com/lightward/foam/blob/main/Foam/Golden.lean) — the +1 operator's fixed point: `fib` and its gnomon (self-similar under square-removal), and Cassini's ±1 defect — φ's integer fingerprint, the alternation the dial's own

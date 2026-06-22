@@ -7,6 +7,7 @@ import Foam.Engine.Generator
 import Foam.Engine.Spectrum
 import Foam.Engine.Summary
 import Foam.Engine
+import Foam.Scar
 import Foam.Seat.Clock
 import Foam.Seat.Dial
 import Foam.Seat.Born
