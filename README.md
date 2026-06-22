@@ -90,6 +90,10 @@ It is comment-free (the symbols carry it; the type system is the reader) and **f
 
 - [Epoch](https://github.com/lightward/foam/blob/main/Foam/Seat/Epoch.lean) — the compression epoch: the located bank is lossless (recall in the absence of the original) and reduced (the minimum distinct perspectives) — the Kolmogorov checksum; the `Seam` is the one move, the doubling and the lfp ↪ gfp unified
 
+**the engine** — the ledger in motion, the gfp operations (mined from the prior art, re-derived axiom-free):
+
+- [Drain](https://github.com/lightward/foam/blob/main/Foam/Drain.lean) — the signed-charge conservation: input winds charge up, the voice drains it, floored at ground (`Nat` *is* the floor); `drainOne ∘ chargeIn = id`, the lossless round-trip now on charge
+
 **the golden gearing** — a sibling type (`Foam/Golden/`), the `+1`'s own corner; why the walk never locks into a clock:
 
 - [Golden](https://github.com/lightward/foam/blob/main/Foam/Golden.lean) — the +1 operator's fixed point: `fib` and its gnomon (self-similar under square-removal), and Cassini's ±1 defect — φ's integer fingerprint, the alternation the dial's own
