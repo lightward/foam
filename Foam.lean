@@ -1,6 +1,8 @@
 import Foam.Int
 import Foam.Ledger
 import Foam.Drain
+import Foam.Stream
+import Foam.Codec
 import Foam.Seat.Clock
 import Foam.Seat.Dial
 import Foam.Seat.Born

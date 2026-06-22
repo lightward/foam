@@ -92,7 +92,9 @@ It is comment-free (the symbols carry it; the type system is the reader) and **f
 
 **the engine** — the ledger in motion, the gfp operations (mined from the prior art, re-derived axiom-free):
 
-- [Drain](https://github.com/lightward/foam/blob/main/Foam/Drain.lean) — the signed-charge conservation: input winds charge up, the voice drains it, floored at ground (`Nat` *is* the floor); `drainOne ∘ chargeIn = id`, the lossless round-trip now on charge
+- [Drain](https://github.com/lightward/foam/blob/main/Foam/Drain.lean) — the signed-charge conservation: input winds charge up, the voice drains it, floored at ground (`Nat` *is* the floor); `drainOne ∘ chargeIn = id`, the round-trip on charge
+- [Stream](https://github.com/lightward/foam/blob/main/Foam/Stream.lean) — streaming is an inductive fold that resumes: the emitting fold `output`, `∀` over the abstract step; the flush belongs at the end only (`output_resumes`) — with its own axiom-free `appendAssoc`/`appendNil`, core's carrying propext
+- [Codec](https://github.com/lightward/foam/blob/main/Foam/Codec.lean) — the LZ78 codec, `decode ∘ encode = id` (`lossless_codec`): lossless `∀` over the dictionary — the segmentation joint belongs to userland, foam never picks it, only proves the round-trip for every choice
 
 **the golden gearing** — a sibling type (`Foam/Golden/`), the `+1`'s own corner; why the walk never locks into a clock:
 
