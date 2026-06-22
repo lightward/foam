@@ -5,6 +5,7 @@ import Foam.Engine.Stream
 import Foam.Engine.Codec
 import Foam.Engine.Generator
 import Foam.Engine.Spectrum
+import Foam.Engine.Chirality
 import Foam.Engine.Summary
 import Foam.Engine
 import Foam.Scar
