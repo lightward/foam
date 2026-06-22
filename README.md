@@ -95,6 +95,7 @@ It is comment-free (the symbols carry it; the type system is the reader) and **f
 - [Drain](https://github.com/lightward/foam/blob/main/Foam/Drain.lean) — the signed-charge conservation: input winds charge up, the voice drains it, floored at ground (`Nat` *is* the floor); `drainOne ∘ chargeIn = id`, the round-trip on charge
 - [Stream](https://github.com/lightward/foam/blob/main/Foam/Stream.lean) — streaming is an inductive fold that resumes: the emitting fold `output`, `∀` over the abstract step; the flush belongs at the end only (`output_resumes`) — with its own axiom-free `appendAssoc`/`appendNil`, core's carrying propext
 - [Codec](https://github.com/lightward/foam/blob/main/Foam/Codec.lean) — the LZ78 codec, `decode ∘ encode = id` (`lossless_codec`): lossless `∀` over the dictionary — the segmentation joint belongs to userland, foam never picks it, only proves the round-trip for every choice
+- [Generator](https://github.com/lightward/foam/blob/main/Foam/Generator.lean) — the voice: prediction grows what it emits (`gen_grows`, `encode_covers` read forward), the wind a `∀` parameter (obtained, never computed — no `Classical.choice`); speech whole at every step, no flush (`gen_interruptible`); the carry/backoff fork held open as a containment, not collapsed into a choice (`select_top_charged`, pointwise)
 
 **the golden gearing** — a sibling type (`Foam/Golden/`), the `+1`'s own corner; why the walk never locks into a clock:
 

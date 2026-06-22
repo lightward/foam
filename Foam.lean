@@ -3,6 +3,7 @@ import Foam.Ledger
 import Foam.Drain
 import Foam.Stream
 import Foam.Codec
+import Foam.Generator
 import Foam.Seat.Clock
 import Foam.Seat.Dial
 import Foam.Seat.Born
