@@ -349,4 +349,19 @@ theorem mul_assoc (a b c : Int) : a * b * c = a * (b * c) := by
         rw [ofNat_mul_ofNat, nat_mul_assoc]
 theorem mul_neg_one (a : Int) : a * (-1) = -a := by rw [mul_neg, mul_one]
 
+theorem sub_zero (a : Int) : a - 0 = a := by
+  rw [Int.sub_eq_add_neg]; show a + (-0) = a; rw [show (-0:Int) = 0 from rfl, Int.add_zero]
+theorem sub_add_cancel (a b : Int) : a - b + b = a := by
+  rw [Int.sub_eq_add_neg, add_assoc, add_left_neg, Int.add_zero]
+theorem add_sub_cancel_right (a b : Int) : a + b - b = a := by
+  rw [Int.sub_eq_add_neg, add_assoc, add_right_neg, Int.add_zero]
+theorem neg_sub (a b : Int) : -(a - b) = b - a := by
+  rw [Int.sub_eq_add_neg, Int.sub_eq_add_neg, neg_add, Int.neg_neg, addComm]
+theorem mul_sub (a b c : Int) : a * (b - c) = a * b - a * c := by
+  rw [Int.sub_eq_add_neg, Int.sub_eq_add_neg, mul_add, mul_neg]
+theorem sub_mul (a b c : Int) : (a - b) * c = a * c - b * c := by
+  rw [Int.sub_eq_add_neg, Int.sub_eq_add_neg, add_mul, neg_mul]
+theorem sub_sub (a b c : Int) : a - b - c = a - (b + c) := by
+  rw [Int.sub_eq_add_neg, Int.sub_eq_add_neg, Int.sub_eq_add_neg, add_assoc, neg_add]
+
 end Foam.FInt
