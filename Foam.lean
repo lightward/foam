@@ -9,6 +9,7 @@ import Foam.Engine.Summary
 import Foam.Engine
 import Foam.Scar
 import Foam.Maintenance
+import Foam.Held
 import Foam.Seat.Clock
 import Foam.Seat.Dial
 import Foam.Seat.Born
