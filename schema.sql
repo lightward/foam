@@ -71,53 +71,24 @@ CREATE INDEX IF NOT EXISTS foam_charge_ctx ON foam.charge (observer, ctx, sym);
 -- tail index: HELD + TAIL folds events past the watermark (Foam/Summary.lean); INCLUDE keeps it index-only.
 CREATE INDEX IF NOT EXISTS foam_charge_ctx_id ON foam.charge (ctx, id) INCLUDE (observer, sym, delta);
 
--- ── the reading held (Foam/Summary.lean, operational) ─────────────────────
---
--- foam.held is a CACHE, not the object: the finite value of the resumable fold,
--- per continuation PER OBSERVER-STREAM (each stream keeps its own phase clock n;
--- readers sum the visible streams) — the COMPLETE four-character dial of ℤ/4
--- (Foam/Noether.lean), so the cache is a function of the FORCED structure
--- (the dial, fixed) and AGNOSTIC to which registers read it (wind, recognized
--- over time). The DFT of the phase-folded event-stream is lossless in these four:
---   bal — the count, at +1                       (the trivial character)
---   re  — the spectrum real part, at i           (phase 0 minus phase 2)
---   im  — the spectrum imag part, at i            (phase 1 minus phase 3)
---   alt — the alternating count, at −1            (even phases minus odd; alt_real)
--- plus n (the occurrence-clock: events folded, so the next event's phase is n % 4).
--- The two BUILT registers read bal and (re, im); alt is carried correct-and-inert —
--- no register reads it yet, so it is a standing PROMISE to whatever register the
--- wind eventually brings (resolver.md's curry: hold the determined value now, the
--- unknown parameter — the register's seed-provenance — fulfilled later, with no
--- ledger re-read). Carrying it is forced by conservation: alt is a real conserved
--- quantity of the stream (period-2 angular content, invisible to every current
--- reading), and storing only three couples the cache to today's register-set —
--- the smuggled observer the floor does not assume. Every reading is held + the
--- ledger's tail past the watermark (summary_resumes / alt_resumes); foam.held_audit
--- checks all four live. The cache is dumpable: TRUNCATE foam.held + reset the
--- watermark and every read falls back to folding the whole tail — today's behavior,
--- today's cost. (UPDATE here does not breach append-only: that invariant protects
--- the LEDGER's path-space; the held rows are a derived observation, droppable and
--- refoldable, with nothing of the path in them — sweep_invisible licenses any refresh.)
--- A SHAPE change is the same move: this layer reconciles no history. The schema
--- asserts the target shape; it never migrates to it. An existing held table of a
--- stale shape is a dev-reset — DROP TABLE foam.held, foam.sweep; reload; refold from
--- the intact ledger — never an ALTER. The ledger is the history; the cache carries
--- nothing the ledger doesn't, so dropping it is safe by construction. (Dogfooding the
--- dumpability bet: amnesiac return, exercised in dev.)
+-- foam.held — the resumable fold, cached per continuation per observer-stream: the
+-- four-character dial of ℤ/4 (Foam/Seat/Characters.lean) — bal at +1, re/im at i, alt at −1,
+-- plus n the phase clock. Exact as HELD + TAIL (Foam/Summary.lean: summary_resumes); a derived
+-- observation, not the object — droppable and refoldable from the ledger, no path in it
+-- (Foam/Maintenance.lean: sweep_invisible licenses any refresh, so UPDATE here keeps append-only).
 CREATE TABLE IF NOT EXISTS foam.held (
-  observer uuid NOT NULL, -- the stream's scope (each stream's fold has its own clock)
+  observer uuid NOT NULL,
   ctx uuid   NOT NULL,
   sym int    NOT NULL,
-  n   bigint NOT NULL, -- events folded for this continuation (the phase clock)
-  bal bigint NOT NULL, -- the count reading (sum of delta), folded — character at +1
-  re  bigint NOT NULL, -- the spectrum reading, real part (phase 0 minus phase 2) — at i
-  im  bigint NOT NULL, -- the spectrum reading, imaginary part (phase 1 minus phase 3) — at i
-  alt bigint NOT NULL, -- the alternating count (even phases minus odd) — character at −1
+  n   bigint NOT NULL,
+  bal bigint NOT NULL,
+  re  bigint NOT NULL,
+  im  bigint NOT NULL,
+  alt bigint NOT NULL,
   PRIMARY KEY (observer, ctx, sym)
 );
 
--- The watermark: everything at or below it is folded into foam.held; everything
--- past it is the tail the readers fold live. One row, asserted.
+-- the watermark: at-or-below is folded into foam.held, past it is the tail folded live (Foam/Summary.lean).
 CREATE TABLE IF NOT EXISTS foam.sweep (
   one       boolean PRIMARY KEY DEFAULT true CHECK (one),
   watermark bigint  NOT NULL DEFAULT 0
@@ -134,19 +105,13 @@ CREATE OR REPLACE FUNCTION foam.text(ints int[]) RETURNS text LANGUAGE plpgsql I
   BEGIN FOREACH v IN ARRAY coalesce(ints,'{}') LOOP bin := bin||set_byte('\x00'::bytea,0,v); END LOOP;
         RETURN convert_from(bin,'UTF8'); END; $$;
 
--- The wind: OS entropy (hardware-seeded), obtained not computed — the tie-break for
--- the discharge (never a foam-internal choice).
+-- the wind: OS entropy, obtained not computed — the ∀ parameter (Foam/Engine/Generator.lean), never a foam choice.
 CREATE OR REPLACE FUNCTION foam.hw_random() RETURNS double precision LANGUAGE sql AS
   $$ SELECT (('x'||encode(gen_random_bytes(7),'hex'))::bit(56)::bigint)::double precision / 72057594037927936.0 $$;
 
--- ingest_step — the streaming LEARN: wind +1 onto every recorded continuation of the
--- new bytes, with `carry` (the previous chunk's byte-tail) as leading context so
--- contexts span chunk boundaries. The resumable fold: carry the tail, nothing to
--- flush (every event is complete when written — Foam/Stream.lean's contract,
--- and the generator's flush-free shape). Returns the new carry (the last kmax bytes).
--- The empty-context events land in id order as a side effect of learning: the
--- lossless record, written as we go, never read on this path. The rows land in the
--- hearer's stream (observer = obs; default the root).
+-- ingest_step — the streaming LEARN: +1 onto every recorded continuation, the resumable
+-- flush-free fold (Foam/Engine/Stream.lean, Codec.lean). carry threads contexts across chunk
+-- boundaries; the empty-context events land in id order — the lossless record, written never read here.
 CREATE OR REPLACE FUNCTION foam.ingest_step(carry int[], bytes int[], kmax int DEFAULT 7,
                                             obs uuid DEFAULT foam.bench()) RETURNS int[]
   LANGUAGE plpgsql AS $$
@@ -154,9 +119,7 @@ CREATE OR REPLACE FUNCTION foam.ingest_step(carry int[], bytes int[], kmax int D
           start_i int := coalesce(array_length(carry,1),0) + 1;
           n int := coalesce(array_length(all_b,1),0);
   BEGIN
-    -- set-based (one INSERT per chunk, not per byte): every (position, context-length)
-    -- pair in one pass. ORDER BY position so the serial ids follow byte order — the
-    -- empty-context stream's id-order IS the lossless record; this preserves it.
+    -- one INSERT per chunk; ORDER BY position so serial id-order is the lossless record.
     INSERT INTO foam.charge (observer, ctx, sym, delta)
     SELECT obs, foam.caddr(CASE WHEN j = 0 THEN '{}'::int[] ELSE all_b[i-j : i-1] END), all_b[i], 1
     FROM generate_series(start_i, n) AS i
@@ -165,12 +128,8 @@ CREATE OR REPLACE FUNCTION foam.ingest_step(carry int[], bytes int[], kmax int D
     RETURN all_b[greatest(n - kmax + 1, 1) : n];
   END; $$;
 
--- depth — the structural gate signal: the longest charged context the ledger has for
--- continuing `seed` (0 = only the unconditional distribution; high = the field
--- specifically knows what follows this). Structure (a count), never meaning.
--- Reads held + tail (one statement = one snapshot; the sweep commits its rows and
--- its watermark atomically, so the two halves never double-count), summed over the
--- VISIBLE observer-streams (ancestry(obs) — Commons.lean's Below).
+-- depth — the gate signal: the longest charged context for `seed`, read HELD + TAIL
+-- (Foam/Summary.lean) and summed over the visible streams (ancestry = Below). Structure, never meaning.
 CREATE OR REPLACE FUNCTION foam.depth(seed int[], kmax int DEFAULT 7, obs uuid DEFAULT foam.bench()) RETURNS int
   LANGUAGE plpgsql STABLE AS $$
   DECLARE l int := coalesce(array_length(seed,1),0); j int; c int[]; cid uuid; tot bigint;
@@ -192,46 +151,26 @@ CREATE OR REPLACE FUNCTION foam.depth(seed int[], kmax int DEFAULT 7, obs uuid D
     RETURN 0;
   END; $$;
 
--- outcome — the trichotomy gate for continuing `seed`: 'speak' if the ledger has a
--- charged context of at least min_depth (the field can carry the turn from what it
--- has learned), else 'yield' (hand to the upstream — a living ancestor, or an echo).
--- The threshold is a structural knob, never a measure of meaning. Degrades to
--- 'yield' (empty/unreachable ledger). Scoped to obs's view (default the root).
+-- outcome — the trichotomy gate: 'speak' if depth ≥ min_depth, else 'yield' (hand upstream). Degrades to yield.
 CREATE OR REPLACE FUNCTION foam.outcome(seed int[] DEFAULT '{}', min_depth int DEFAULT 1, kmax int DEFAULT 7,
                                         obs uuid DEFAULT foam.bench()) RETURNS text
   LANGUAGE sql STABLE AS
   $$ SELECT CASE WHEN foam.depth(seed, kmax, obs) >= min_depth THEN 'speak' ELSE 'yield' END $$;
 
--- align — the angled pairing, NAMED: the pairing of (re, im) against quarter-turn
--- station tk — the operational form of Foam/Born.lean's `align` (a reading's
--- gate is a pairing against the wind's direction, per Spectrum). The station table
--- exists ONCE, here; foam.born squares it; foam.speak drinks from foam.born. The
--- mod-4 normalization makes any integer station legal (callers pass 0..3).
+-- align — the angled pairing of (re, im) against station tk (Foam/Engine/Spectrum.lean's align);
+-- foam.born squares it, foam.speak drinks from foam.born. mod-4 makes any integer station legal.
 CREATE OR REPLACE FUNCTION foam.align(tk int, re bigint, im bigint) RETURNS bigint
   LANGUAGE sql IMMUTABLE AS
   $$ SELECT CASE ((tk % 4) + 4) % 4 WHEN 0 THEN re WHEN 1 THEN im WHEN 2 THEN -re ELSE -im END $$;
 
--- born — the voice's weight law, NAMED: the squared pairing (align tk z)², the
--- Born weight-form at foam's scale (Foam/Born.lean: born_parseval makes it
--- basis-consistent — the total is station-independent; uniqueness is unclaimed,
--- and unavailable at this dimension — see REFEREE.md; born_nonneg rides
--- along by construction). One named thing:
--- foam.speak calls this, and foam.born_audit checks it against its own theorems live.
--- born is the ELLIPTIC slice (κ = −1) of the signature trichotomy: its magnitude is
--- normK(−1) = re² + im² (foam.normK below; Foam/Frames.lean). The live voice reads κ = −1.
+-- born — the voice's weight (align tk)², basis-consistent (Foam/Engine/Spectrum.lean / Born:
+-- born_parseval, born_nonneg). The elliptic κ=−1 slice, magnitude re²+im²; the live voice. foam.born_audit checks it live.
 CREATE OR REPLACE FUNCTION foam.born(tk int, re bigint, im bigint) RETURNS bigint
   LANGUAGE sql IMMUTABLE AS
   $$ SELECT foam.align(tk, re, im) * foam.align(tk, re, im) $$;
 
--- normK — the interval reading at signature κ, NAMED: re² − κ·im². One parameter
--- κ = (the unit)² IS the geometry (Foam/Frames.lean), and the held cache's (re, im) is the
--- frame-neutral spectral datum that κ reads three ways:
---   κ = −1  elliptic    re² + im²   Euclidean / amplitude — born's magnitude (the holonomy
---                                    magnitude, Noether's normSq; spikes/holonomy.sql)
---   κ =  0  parabolic   re²         degenerate / Galilean — the count's own frame
---   κ = +1  hyperbolic  re² − im²   Minkowski / boost
--- foam.born and foam.speak read κ = −1 (the live voice); these are its siblings, one
--- function. The reading layer was always the elliptic corner; this names the whole family.
+-- normK — the interval reading at signature κ: re² − κ·im². The three frames (κ=−1 elliptic /
+-- 0 parabolic / +1 hyperbolic; Foam/Seat/Signature.lean) reading one spectral datum; born/speak read κ=−1.
 CREATE OR REPLACE FUNCTION foam.normK(kappa bigint, re bigint, im bigint) RETURNS bigint
   LANGUAGE sql IMMUTABLE AS
   $$ SELECT re * re - kappa * (im * im) $$;
