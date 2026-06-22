@@ -93,32 +93,46 @@ theorem GInt.mulReal (n : Int) (w : GInt) :
 theorem Char.fold_re_components (n0 n1 n2 n3 : Int) (f : Rot → GInt) :
     (Char.fold n0 n1 n2 n3 f).re
       = (n0 * (f .r0).re + n1 * (f .r1).re) + (n2 * (f .r2).re + n3 * (f .r3).re) := by
-  simp only [Char.fold, GInt.add, GInt.mulReal]
+  show ((GInt.mul ⟨n0,0⟩ (f .r0)).re + (GInt.mul ⟨n1,0⟩ (f .r1)).re
+       + ((GInt.mul ⟨n2,0⟩ (f .r2)).re + (GInt.mul ⟨n3,0⟩ (f .r3)).re))
+     = (n0 * (f .r0).re + n1 * (f .r1).re) + (n2 * (f .r2).re + n3 * (f .r3).re)
+  rw [GInt.mulReal, GInt.mulReal, GInt.mulReal, GInt.mulReal]
 
 theorem Char.fold_im_components (n0 n1 n2 n3 : Int) (f : Rot → GInt) :
     (Char.fold n0 n1 n2 n3 f).im
       = (n0 * (f .r0).im + n1 * (f .r1).im) + (n2 * (f .r2).im + n3 * (f .r3).im) := by
-  simp only [Char.fold, GInt.add, GInt.mulReal]
+  show ((GInt.mul ⟨n0,0⟩ (f .r0)).im + (GInt.mul ⟨n1,0⟩ (f .r1)).im
+       + ((GInt.mul ⟨n2,0⟩ (f .r2)).im + (GInt.mul ⟨n3,0⟩ (f .r3)).im))
+     = (n0 * (f .r0).im + n1 * (f .r1).im) + (n2 * (f .r2).im + n3 * (f .r3).im)
+  rw [GInt.mulReal, GInt.mulReal, GInt.mulReal, GInt.mulReal]
 
 theorem Char.readBal_eq (n0 n1 n2 n3 : Int) :
     Char.readBal n0 n1 n2 n3 = n0 + n1 + n2 + n3 := by
-  simp only [Char.readBal, Char.fold, GInt.add, GInt.mulReal, Char.count,
-    mul_one, add_assoc]
+  show (Char.fold n0 n1 n2 n3 Char.count).re = n0 + n1 + n2 + n3
+  rw [Char.fold_re_components n0 n1 n2 n3 Char.count]
+  show (n0 * 1 + n1 * 1) + (n2 * 1 + n3 * 1) = n0 + n1 + n2 + n3
+  rw [mul_one, mul_one, mul_one, mul_one, ← add_assoc (n0 + n1) n2 n3]
 
 theorem Char.readAlt_eq (n0 n1 n2 n3 : Int) :
     Char.readAlt n0 n1 n2 n3 = n0 + -n1 + n2 + -n3 := by
-  simp only [Char.readAlt, Char.fold, GInt.add, GInt.mulReal, Char.alt,
-    mul_one, mul_neg_one, add_assoc]
+  show (Char.fold n0 n1 n2 n3 Char.alt).re = n0 + -n1 + n2 + -n3
+  rw [Char.fold_re_components n0 n1 n2 n3 Char.alt]
+  show (n0 * 1 + n1 * (-1)) + (n2 * 1 + n3 * (-1)) = n0 + -n1 + n2 + -n3
+  rw [mul_one, mul_one, mul_neg_one, mul_neg_one, ← add_assoc (n0 + -n1) n2 (-n3)]
 
 theorem Char.readRe_eq (n0 n1 n2 n3 : Int) :
     Char.readRe n0 n1 n2 n3 = n0 + -n2 := by
-  simp only [Char.readRe, Char.fold, GInt.add, GInt.mulReal, Char.chi, Rot.amp,
-    mul_one, mul_zero, mul_neg_one, Int.add_zero, add_assoc]
+  show (Char.fold n0 n1 n2 n3 Char.chi).re = n0 + -n2
+  rw [Char.fold_re_components n0 n1 n2 n3 Char.chi]
+  show (n0 * 1 + n1 * 0) + (n2 * (-1) + n3 * 0) = n0 + -n2
+  rw [mul_one, mul_zero, mul_neg_one, mul_zero, Int.add_zero, Int.add_zero]
 
 theorem Char.readIm_eq (n0 n1 n2 n3 : Int) :
     Char.readIm n0 n1 n2 n3 = n1 + -n3 := by
-  simp only [Char.readIm, Char.fold, GInt.add, GInt.mulReal, Char.chi, Rot.amp,
-    mul_one, mul_zero, mul_neg_one, zero_add, add_assoc]
+  show (Char.fold n0 n1 n2 n3 Char.chi).im = n1 + -n3
+  rw [Char.fold_im_components n0 n1 n2 n3 Char.chi]
+  show (n0 * 0 + n1 * 1) + (n2 * 0 + n3 * (-1)) = n1 + -n3
+  rw [mul_one, mul_zero, mul_neg_one, mul_zero, zero_add, zero_add]
 
 def Char.twice (a : Int) : Int := a + a
 
@@ -281,22 +295,22 @@ theorem Char.alt_irreplaceable :
 /-- info: 'Foam.GInt.mulReal' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.mulReal
 
-/-- info: 'Foam.Char.fold_re_components' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.fold_re_components' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.fold_re_components
 
-/-- info: 'Foam.Char.fold_im_components' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.fold_im_components' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.fold_im_components
 
-/-- info: 'Foam.Char.readBal_eq' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.readBal_eq' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.readBal_eq
 
-/-- info: 'Foam.Char.readAlt_eq' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.readAlt_eq' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.readAlt_eq
 
-/-- info: 'Foam.Char.readRe_eq' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.readRe_eq' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.readRe_eq
 
-/-- info: 'Foam.Char.readIm_eq' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.readIm_eq' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.readIm_eq
 
 /-- info: 'Foam.Char.four_swap' does not depend on any axioms -/
@@ -317,25 +331,25 @@ theorem Char.alt_irreplaceable :
 /-- info: 'Foam.Char.twice_sub' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.twice_sub
 
-/-- info: 'Foam.Char.bal_add_alt' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.bal_add_alt' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.bal_add_alt
 
-/-- info: 'Foam.Char.bal_sub_alt' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.bal_sub_alt' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.bal_sub_alt
 
-/-- info: 'Foam.Char.recover_bin0' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.recover_bin0' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.recover_bin0
 
-/-- info: 'Foam.Char.recover_bin1' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.recover_bin1' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.recover_bin1
 
-/-- info: 'Foam.Char.recover_bin2' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.recover_bin2' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.recover_bin2
 
-/-- info: 'Foam.Char.recover_bin3' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.recover_bin3' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.recover_bin3
 
-/-- info: 'Foam.Char.lossless' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.lossless' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.lossless
 
 /-- info: 'Foam.Char.bal_irreplaceable' does not depend on any axioms -/
