@@ -6,6 +6,7 @@ import Foam.Codec
 import Foam.Generator
 import Foam.Spectrum
 import Foam.Summary
+import Foam.Engine
 import Foam.Seat.Clock
 import Foam.Seat.Dial
 import Foam.Seat.Born
