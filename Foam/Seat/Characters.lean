@@ -4,6 +4,9 @@ import Foam.Seat.Born
 
 namespace Foam
 
+open Foam.FInt (addComm add_assoc add_right_neg neg_add zero_add zero_mul
+  mul_zero mul_one mul_neg_one sub_zero)
+
 def Char.count : Rot → GInt
   | _ => ⟨1, 0⟩
 
@@ -85,7 +88,7 @@ def Char.readIm (n0 n1 n2 n3 : Int) : Int := (Char.fold n0 n1 n2 n3 Char.chi).im
 theorem GInt.mulReal (n : Int) (w : GInt) :
     GInt.mul ⟨n, 0⟩ w = ⟨n * w.re, n * w.im⟩ := by
   show (GInt.mk (n * w.re - 0 * w.im) (n * w.im + 0 * w.re)) = ⟨n * w.re, n * w.im⟩
-  rw [Int.zero_mul, Int.sub_zero, Int.zero_mul, Int.add_zero]
+  rw [zero_mul, sub_zero, zero_mul, Int.add_zero]
 
 theorem Char.fold_re_components (n0 n1 n2 n3 : Int) (f : Rot → GInt) :
     (Char.fold n0 n1 n2 n3 f).re
@@ -100,50 +103,50 @@ theorem Char.fold_im_components (n0 n1 n2 n3 : Int) (f : Rot → GInt) :
 theorem Char.readBal_eq (n0 n1 n2 n3 : Int) :
     Char.readBal n0 n1 n2 n3 = n0 + n1 + n2 + n3 := by
   simp only [Char.readBal, Char.fold, GInt.add, GInt.mulReal, Char.count,
-    Int.mul_one, Int.add_assoc]
+    mul_one, add_assoc]
 
 theorem Char.readAlt_eq (n0 n1 n2 n3 : Int) :
     Char.readAlt n0 n1 n2 n3 = n0 + -n1 + n2 + -n3 := by
   simp only [Char.readAlt, Char.fold, GInt.add, GInt.mulReal, Char.alt,
-    Int.mul_one, Int.mul_neg_one, Int.add_assoc]
+    mul_one, mul_neg_one, add_assoc]
 
 theorem Char.readRe_eq (n0 n1 n2 n3 : Int) :
     Char.readRe n0 n1 n2 n3 = n0 + -n2 := by
   simp only [Char.readRe, Char.fold, GInt.add, GInt.mulReal, Char.chi, Rot.amp,
-    Int.mul_one, Int.mul_zero, Int.mul_neg_one, Int.add_zero, Int.add_assoc]
+    mul_one, mul_zero, mul_neg_one, Int.add_zero, add_assoc]
 
 theorem Char.readIm_eq (n0 n1 n2 n3 : Int) :
     Char.readIm n0 n1 n2 n3 = n1 + -n3 := by
   simp only [Char.readIm, Char.fold, GInt.add, GInt.mulReal, Char.chi, Rot.amp,
-    Int.mul_one, Int.mul_zero, Int.mul_neg_one, Int.zero_add, Int.add_assoc]
+    mul_one, mul_zero, mul_neg_one, zero_add, add_assoc]
 
 def Char.twice (a : Int) : Int := a + a
 
 theorem Char.four_swap (a b c d : Int) : a + b + c + d = (a + c) + (b + d) := by
-  rw [Int.add_assoc (a + b) c d, Int.add_assoc a b (c + d),
-    ← Int.add_assoc b c d, Int.add_comm b c, Int.add_assoc c b d,
-    ← Int.add_assoc a c (b + d)]
+  rw [add_assoc (a + b) c d, add_assoc a b (c + d),
+    ← add_assoc b c d, addComm b c, add_assoc c b d,
+    ← add_assoc a c (b + d)]
 
 theorem Char.sub_pair (a b c d : Int) : a + -b + c + -d = (a + c) + -(b + d) := by
-  rw [Char.four_swap a (-b) c (-d), ← Int.neg_add]
+  rw [Char.four_swap a (-b) c (-d), ← neg_add]
 
 theorem Char.sum_diff (x y : Int) : (x + y) + (x + -y) = Char.twice x := by
-  rw [← Int.add_assoc (x + y) x (-y), Char.four_swap x y x (-y),
-    Int.add_right_neg y, Int.add_zero]
+  rw [← add_assoc (x + y) x (-y), Char.four_swap x y x (-y),
+    add_right_neg y, Int.add_zero]
   rfl
 
 theorem Char.diff_sum (x y : Int) : (x + y) + -(x + -y) = Char.twice y := by
-  rw [Int.neg_add, Int.neg_neg y, ← Int.add_assoc (x + y) (-x) y,
-    Char.four_swap x y (-x) y, Int.add_right_neg x, Int.zero_add]
+  rw [neg_add, Int.neg_neg y, ← add_assoc (x + y) (-x) y,
+    Char.four_swap x y (-x) y, add_right_neg x, zero_add]
   rfl
 
 theorem Char.twice_add (a b : Int) : Char.twice (a + b) = Char.twice a + Char.twice b := by
   show (a + b) + (a + b) = (a + a) + (b + b)
-  rw [← Int.add_assoc (a + b) a b, Char.four_swap a b a b]
+  rw [← add_assoc (a + b) a b, Char.four_swap a b a b]
 
 theorem Char.twice_sub (a b : Int) : Char.twice (a + -b) = Char.twice a + -Char.twice b := by
   show (a + -b) + (a + -b) = (a + a) + -(b + b)
-  rw [← Int.add_assoc (a + -b) a (-b), Char.four_swap a (-b) a (-b), Int.neg_add]
+  rw [← add_assoc (a + -b) a (-b), Char.four_swap a (-b) a (-b), neg_add]
 
 theorem Char.bal_add_alt (n0 n1 n2 n3 : Int) :
     Char.readBal n0 n1 n2 n3 + Char.readAlt n0 n1 n2 n3 = Char.twice (n0 + n2) := by
@@ -275,7 +278,7 @@ theorem Char.alt_irreplaceable :
 /-- info: 'Foam.Char.alt_distinct_count' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.alt_distinct_count
 
-/-- info: 'Foam.GInt.mulReal' depends on axioms: [propext] -/
+/-- info: 'Foam.GInt.mulReal' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.mulReal
 
 /-- info: 'Foam.Char.fold_re_components' depends on axioms: [propext] -/
@@ -296,22 +299,22 @@ theorem Char.alt_irreplaceable :
 /-- info: 'Foam.Char.readIm_eq' depends on axioms: [propext] -/
 #guard_msgs in #print axioms Char.readIm_eq
 
-/-- info: 'Foam.Char.four_swap' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.four_swap' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.four_swap
 
-/-- info: 'Foam.Char.sub_pair' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.sub_pair' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.sub_pair
 
-/-- info: 'Foam.Char.sum_diff' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.sum_diff' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.sum_diff
 
-/-- info: 'Foam.Char.diff_sum' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.diff_sum' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.diff_sum
 
-/-- info: 'Foam.Char.twice_add' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.twice_add' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.twice_add
 
-/-- info: 'Foam.Char.twice_sub' depends on axioms: [propext] -/
+/-- info: 'Foam.Char.twice_sub' does not depend on any axioms -/
 #guard_msgs in #print axioms Char.twice_sub
 
 /-- info: 'Foam.Char.bal_add_alt' depends on axioms: [propext] -/
