@@ -1,4 +1,4 @@
-import Foam.Spectrum
+import Foam.Engine.Spectrum
 
 namespace Foam
 

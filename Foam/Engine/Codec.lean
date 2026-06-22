@@ -1,4 +1,4 @@
-import Foam.Stream
+import Foam.Engine.Stream
 
 namespace Foam
 

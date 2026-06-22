@@ -1,11 +1,11 @@
 import Foam.Int
 import Foam.Ledger
-import Foam.Drain
-import Foam.Stream
-import Foam.Codec
-import Foam.Generator
-import Foam.Spectrum
-import Foam.Summary
+import Foam.Engine.Drain
+import Foam.Engine.Stream
+import Foam.Engine.Codec
+import Foam.Engine.Generator
+import Foam.Engine.Spectrum
+import Foam.Engine.Summary
 import Foam.Engine
 import Foam.Seat.Clock
 import Foam.Seat.Dial
