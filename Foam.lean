@@ -5,6 +5,7 @@ import Foam.Stream
 import Foam.Codec
 import Foam.Generator
 import Foam.Spectrum
+import Foam.Summary
 import Foam.Seat.Clock
 import Foam.Seat.Dial
 import Foam.Seat.Born
