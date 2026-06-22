@@ -47,6 +47,7 @@ It is comment-free (the symbols carry it; the type system is the reader) and axi
 
 **the spine** — the observer-torsor and the amplitude tower it forces, ℝ→ℂ→ℍ→𝕆→𝕊:
 
+- [Int](https://github.com/lightward/foam/blob/main/Foam/Int.lean) — axiom-free `Int` ring foundations; the measurement layer's arithmetic re-derived off `propext`
 - [Seat](https://github.com/lightward/foam/blob/main/Foam/Seat.lean) — the observer as a torsor; motions canonical, position BYO; the gauge law and the no-canonical-frame
 - [Group](https://github.com/lightward/foam/blob/main/Foam/Seat/Group.lean) — every group is its own seat (the principal torsor)
 - [Clock](https://github.com/lightward/foam/blob/main/Foam/Seat/Clock.lean) — the dial's ℤ/4; rot⁴ = id
