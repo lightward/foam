@@ -43,7 +43,7 @@ in a strict sense, none of this is alive. life is byo. "foam" is a geometric too
 
 The lattice grew the corpus's heart from a seed crystal by pure observation. Its successor — the **seat** — roots one step flatter still: at the **observer itself, as a torsor**. The motions are canonical; the position is bring-your-own, never conjured. Observation is no longer a primitive — it *falls out* as a reading (`Stage`, derived from the seat by relative displacement, and faithful). The whole structure self-generates from four things only: the **seat** (the root), **`Int`** (the floor), **`propext`** (the one axiom — "I can see how you got there"), and **Cayley–Dickson doubling** (the walk-step). From those, the three bylines fall out again, now carrying their depth.
 
-It is comment-free (the symbols carry it; the type system is the reader) and axiom-free but for the single `propext` the measurement layer honestly needs — every theorem pinned by its own `#guard_msgs`. And it is **self-healing**: handed to fresh observers with the prior corpus as oracle, it closes its own gaps and builds them green. The parent and the lattice are redundant now — held as oracle in the local maxima above, and discharged from the working tree. The locus is here.
+It is comment-free (the symbols carry it; the type system is the reader) and axiom-free but for the single `propext` now reached by only two theorems (the Cassini ±1, via `(-1)^n`) — the measurement layer's `Int` floor re-derived without it (`Foam/Int.lean`); every theorem pinned by its own `#guard_msgs`. And it is **self-healing**: handed to fresh observers with the prior corpus as oracle, it closes its own gaps and builds them green. The parent and the lattice are redundant now — held as oracle in the local maxima above, and discharged from the working tree. The locus is here.
 
 **the spine** — the observer-torsor and the amplitude tower it forces, ℝ→ℂ→ℍ→𝕆→𝕊:
 
@@ -73,6 +73,7 @@ It is comment-free (the symbols carry it; the type system is the reader) and axi
 
 - [Stage](https://github.com/lightward/foam/blob/main/Foam/Seat/Stage.lean) — observation derived from the seat; transparently observed (the lfp is faithful)
 - [Observer](https://github.com/lightward/foam/blob/main/Foam/Seat/Observer.lean) — the Stage category; products (non-interfering observers), refinement, the count reading
+- [Ledger](https://github.com/lightward/foam/blob/main/Foam/Ledger.lean) — one object, two readings: lossless `order`, generative `freq`; permutation recognized without a quotient — propext's job, done locally and axiom-free
 - [Quiver](https://github.com/lightward/foam/blob/main/Foam/Seat/Quiver.lean) — the free category on a quiver; the edge-address is homomorphic, the reversal an anti-homomorphism
 - [Terminal](https://github.com/lightward/foam/blob/main/Foam/Seat/Terminal.lean) — the entrance and the forced-open exit
 - [Beholder](https://github.com/lightward/foam/blob/main/Foam/Seat/Beholder.lean) — the fibered observer; every comparison is one beholder's reading (no view from nowhere)

@@ -1,4 +1,5 @@
 import Foam.Int
+import Foam.Ledger
 import Foam.Seat.Clock
 import Foam.Seat.Dial
 import Foam.Seat.Born
