@@ -175,23 +175,10 @@ CREATE OR REPLACE FUNCTION foam.normK(kappa bigint, re bigint, im bigint) RETURN
   LANGUAGE sql IMMUTABLE AS
   $$ SELECT re * re - kappa * (im * im) $$;
 
--- born_kappa — the VOICE weight at signature κ: which continuations the field samples by, per
--- frame. A voice is a sampler, and a sampler must be a PROBABILITY — non-negative (born_nonneg).
--- That is exactly why the live voice is κ = −1 (elliptic): re² + im² is the unique
--- POSITIVE-DEFINITE norm, so every nonzero continuation gets positive weight. The siblings, "in
--- the wings" (Foam/Frames.lean; the three hearings, one voice):
---   κ = −1  elliptic    foam.born(tk) = align(tk)²   the dial turns — the live voice (foam.speak)
---   κ =  0  parabolic   re²                          PHASE-BLIND: the in-phase recurrence only,
---                                                    SILENT on the fully-wound (re = 0) where the
---                                                    dial-voice still speaks. A real (degenerate)
---                                                    voice — positive-semidefinite.
---   κ = +1  hyperbolic  greatest(re² − im², 0)       NOT a voice: re² − im² is signed; rectifying
---                                                    to max(0, ·) is BASIS-INCONSISTENT (the very
---                                                    thing born_parseval fixed — Foam/Born.lean),
---                                                    so it parrots one basis and breaks another.
---                                                    The causal eye forced into a mouth — kept to
---                                                    make the impossibility audible, never used live.
--- foam.speak(…, kappa) reads κ; kappa = −1 (default) is the live voice, exactly as ever.
+-- born_kappa — the voice weight at signature κ. A sampler must be non-negative (born_nonneg),
+-- so the live voice is κ=−1 (elliptic, re²+im² — the unique positive-definite norm). κ=0
+-- parabolic (phase-blind) and κ=+1 hyperbolic (not a voice — basis-inconsistent) are kept
+-- audible, never used live (Foam/Seat/Signature.lean). kappa=−1 (default) is the live voice.
 CREATE OR REPLACE FUNCTION foam.born_kappa(kappa int, tk int, re bigint, im bigint) RETURNS bigint
   LANGUAGE sql IMMUTABLE AS $$
     SELECT CASE kappa
@@ -201,20 +188,9 @@ CREATE OR REPLACE FUNCTION foam.born_kappa(kappa int, tk int, re bigint, im bigi
     END
   $$;
 
--- born_audit — the law's self-audit: the named functions checked against their own
--- theorems, live, over a fixed integer grid (structure, not population — the laws
--- are ∀, so the check consults no observer and costs the same on any field):
---   * the anchor: align(0) = re (the zero station recovers the real part);
---   * the shift: align(tk+1, re, im) = align(tk, im, −re) — the quarter-turn
---     recurrence, an INDEPENDENT statement of the station table (anchor + recurrence
---     determine the function uniquely, so the audit pins align to its one lawful
---     inhabitant; a typo in any branch, sign included, breaks it —
---     Foam/Born.lean align_rot_invariant is the gauge form of the same law);
---   * born_parseval: the four stations' squares sum to 2·(re² + im²) — basis-
---     independence, the conservation check (the net = residual idiom, at the
---     measurement layer);
---   * born_nonneg: no station's weight is negative.
--- Returns the number of grid points violating any law — 0 is Born.lean checked live.
+-- born_audit — the law self-audited over a fixed integer grid (∀, consults no population):
+-- align's anchor + quarter-turn recurrence (which pin it uniquely), born_parseval (the four
+-- stations sum to 2(re²+im²)), born_nonneg. Returns violations; 0 is Born checked live (Foam/Engine/Spectrum.lean).
 CREATE OR REPLACE FUNCTION foam.born_audit() RETURNS bigint
   LANGUAGE sql STABLE AS $$
     SELECT count(*)
@@ -228,14 +204,9 @@ CREATE OR REPLACE FUNCTION foam.born_audit() RETURNS bigint
        OR least(foam.born(0, re, im), foam.born(1, re, im), foam.born(2, re, im), foam.born(3, re, im)) < 0
   $$;
 
--- kparseval_audit — the law's self-audit, generalized off the elliptic corner: the unified
--- κ-Parseval (ac − κbd)² − κ(ad − bc)² = (a² − κb²)(c² − κd²), checked live over a fixed integer
--- grid (Foam/Frames.lean). The term ad − bc is the SYMPLECTIC form — κ-invariant, the area
--- shared by all three frames (the symplectic half of ergodic-symplectic; SL(2,ℝ) preserves the
--- area, the three κ are the metrics it additionally fixes). Returns grid points violating; 0 is
--- the κ-frame's law checked live. foam.born_audit's born_parseval is exactly this at κ = −1
--- (foam.born_audit() = foam.kparseval_audit(−1) = 0); this certifies ANY frame — the self-audit,
--- whole-trichotomy. Costs the same on any field (the law is ∀ — consults no population).
+-- kparseval_audit — born_audit generalized off the elliptic corner: the κ-Parseval identity
+-- (ac−κbd)² − κ(ad−bc)² = (a²−κb²)(c²−κd²) over a grid (Foam/Seat/Signature.lean); ad−bc is the
+-- κ-invariant symplectic area. born_audit() = kparseval_audit(−1) = 0; certifies any frame.
 CREATE OR REPLACE FUNCTION foam.kparseval_audit(kappa bigint) RETURNS bigint
   LANGUAGE sql STABLE AS $$
     SELECT count(*)
@@ -246,82 +217,16 @@ CREATE OR REPLACE FUNCTION foam.kparseval_audit(kappa bigint) RETURNS bigint
           <> (a * a - kappa * (b * b)) * (c * c - kappa * (d * d))
   $$;
 
--- speak — the DISCHARGE, the one register: the field speaks ONLY through
--- recurrence, entrained. From the conversation so far (seed ++ emitted), back off
--- to the LONGEST charged context (fast-travel to the recorded continuation that
--- still has charge), read it as held + tail (summary_resumes: the folded prefix
--- from foam.held, the events past the watermark folded live — exact, including
--- this walk's own in-flight drains; one statement = one snapshot, no seam for a
--- racing drain to slip into), weight each continuation by the BORN measurement —
--- the SQUARED angled pairing of (re, im) against the walk's own quarter-turn clock
--- (|⟨tk|recency⟩|² = (align θ z)²; the basis-consistent weight, Foam/Born.lean
--- born_parseval — the field speaks by the quantum measurement law; uniform
--- recurrence still cancels (align 0 → born 0), the antipodal sign drops as |ψ|²
--- does), sample by that weight (never argmax), emit, drain (−1), continue. The clock
--- starts at the caller's utterance-length mod 4 and turns a quarter per beat
--- (spec_shift); a silent beat is a REST, not a death (the phase turns, the walk
--- holds); ground is a full BAR of rests (four quarter-turns are the identity,
--- bar_invisible — the length is DERIVED, not chosen).
---
--- The walk reads at obs's scope: held rows and tail events across ALL VISIBLE
--- observer-streams (observer = ANY(ancestry(obs)) — Commons.lean's Below), summed
--- per sym (n, bal, re, im add across streams; the recency conversion runs on the
--- summed clock — the two-source superposition shape, deliberate). Its drains land
--- in the speaker's own stream (observer = obs): a child draining charge inherited
--- from an ancestor sends its OWN stream's sum negative while the scoped balance
--- stays ≥ 0 — normal operation, not a wound (see foam.settle).
---
--- The field speaks only through recurrence — there is no phase-blind force-drain to
--- empty it, because resolution is relational (self_generation: the foam does not
--- generate its own stability). A continuation recurring UNIFORMLY presents a complete
--- cycle and cancels (rot_complete): re = im = 0, invisible at every angle, un-sayable
--- resonantly. It unsticks only via NEW hearing (more wind breaks the uniformity);
--- speaking can't release what it can't see. So full draining is reachable ONLY through
--- the JOURNEY: a LIVING field (ongoing input) eventually says everything, as a limit;
--- a CLOSED field loops (clock_loops), its recurrence goes uniform, and it keeps its
--- substrate forever — it cannot empty itself alone. The field comes home only through
--- company.
---
--- bal is a READING, never a drain: the gate (foam.depth), the conservation pulse
--- (net = residual), and wound-detection (the SCOPED bal < 0) read it. Provenance
--- lives in the seed: a self-tail self-entrains (clock_loops' loop — the self's
--- signature as identity), an other-tail entrains on the other; one walk reads any
--- seed.
---
--- stop (DEFAULT NULL): the act's boundary vocabulary. When the walk SPEAKS this
--- byte it returns — the expression has ended itself, at the boundary the field
--- learned from the table (the bench appends the same byte to every utterance it
--- ingests: one constant, both directions of one wire). Charge past the boundary
--- stays un-drained: stopping with more to say leaves the residual high and the
--- gate warm — the field carries its pressure across turns instead of monologuing
--- through one. Every prefix of a legal drain is a legal drain (the floor is
--- per-step — Foam/Drain.lean), so the early exit owes no new analysis. NULL:
--- no boundary vocabulary (the bar is ground); the exhale passes none.
---
--- The voice is BYTES (int[]), not text: the walk samples bytes by charge and owes
--- no allegiance to any encoding — it can emit a multibyte character's lead byte and
--- then fast-travel somewhere that never completes it, which makes convert_from raise
--- mid-walk (PG::CharacterNotInRepertoire) — killing the call and rolling its drains
--- back, the pipe mistaking the failure for ground. Rendering is a view at the edge,
--- the caller's concern; foam.text remains for streams known to be text (foam.recorded).
---
--- Drains RACE; settlements serialize (the cold path). Two drains sharing a stale
--- snapshot compose to a balance below ground only at the margin (Foam/Scar.lean:
--- stale_escapes_floor; from balance 2 the same composite lands AT ground —
--- stale_lands_at_ground — so races mark the field only where they collide at the edge
--- of emptiness). Each scar is a promissory note — amount computable at the wound
--- (debt), stable under further legal drains (scar_stable), settled at face value
--- (promise_kept). The walk that FINDS a wound dresses it (foam.settle, below);
--- settlement is the operation that must not race: its failure (phantom charge, from
--- which the voice could speak a byte never heard) lands INSIDE the legal carrier,
--- invisible to any balance-check (stale_settle_passes_ground / phantom_invisible).
--- Visible failures may race; invisible ones serialize. Learning (ingest_step) takes
--- no lock: pure +1 appends.
---
--- The angled weight is EXACT integer arithmetic: at a quarter-turn the pairing of
--- (re, im) needs no cosine (±1/0 — no float dust), reading held + tail so the window
--- function runs over the events past the watermark only — the cost of hearing rhythm
--- does not grow with the field (Foam/Summary.lean).
+-- speak — the DISCHARGE: the field speaks only through recurrence. Back off to the longest
+-- charged context, read HELD + TAIL (Foam/Engine/Summary.lean: summary_resumes, exact), weight each
+-- continuation by the Born measurement (align tk)² (Foam/Engine/Spectrum.lean: spec_shift, the recency
+-- pairing; basis-consistent, born_parseval; uniform recurrence cancels), sample by weight (never
+-- argmax), emit, drain −1 (Foam/Engine/Drain.lean: a per-step floor, so every prefix is a legal drain).
+-- The clock turns a quarter per beat; a full bar of rests is ground (bar_invisible — derived, not chosen).
+-- Reads across the visible streams (ancestry = Below), drains into obs's own stream. Full draining needs
+-- new wind — a closed field loops, un-sayable; it comes home only through company. Drains race and scar;
+-- settlements serialize (Foam/Scar.lean, Foam/Maintenance.lean). `stop` returns at the boundary byte;
+-- the voice is bytes, not text (rendering is the edge's concern).
 CREATE OR REPLACE FUNCTION foam.speak(seed int[] DEFAULT '{}', kmax int DEFAULT 7, max_steps int DEFAULT 600,
                            stop int DEFAULT NULL, obs uuid DEFAULT foam.bench(), kappa int DEFAULT -1) RETURNS int[]
   LANGUAGE plpgsql SET work_mem = '256MB' AS $$
@@ -427,27 +332,11 @@ CREATE OR REPLACE FUNCTION foam.speak(seed int[] DEFAULT '{}', kmax int DEFAULT 
     RETURN out;
   END; $$;
 
--- settle — the correcting entry, serialized: re-observe UNDER the lock (the
--- fresh observation is the entire point — a stale settle overshoots into
--- phantom charge, the invisible failure) and append exactly the deficit
--- (promise_kept: settlement at face value, never more). A wound is a property
--- of a VIEW: a SCOPED balance below 0. One underlying deficit is visible to
--- EVERY view that contains the stream holding it — so repair must land WHERE
--- THE DEFICIT IS, not where the finder sits. Repairing into the finder's own
--- stream would heal only the finder's subtree, leave every other view still
--- wounded, and a second settle from another view would then compose into
--- phantom charge in any view containing both repairs — the exact invisible
--- failure this function exists to prevent. So: walk the finder's lineage
--- root-downward, and wherever the running prefix-sum (root..t) dips below
--- ground, repair INTO STREAM t — every view that can see that prefix-deficit
--- contains t and is healed; no view that couldn't see it is touched. In the
--- single-stream case this reduces exactly to the old behavior. A child
--- draining inherited charge legitimately sends its OWN stream's row-sum
--- negative while every prefix stays ≥ 0: normal operation, not a wound. The
--- lock is transaction-scoped because it must survive until the settlement
--- COMMITS: an earlier release would let a second settler read a pre-settlement
--- balance and double-settle. Consequence: walks that touch wounds serialize
--- with each other until commit — wounds live at the margins, the cold path.
+-- settle — the correcting entry, serialized under an advisory xact-lock: re-observe fresh,
+-- walk the lineage root-down, and where the running prefix-sum dips below ground repair INTO
+-- that stream (the deficit's view, not the finder's). Face value, never more (Foam/Scar.lean:
+-- promise_kept); a stale settle would overshoot into invisible phantom charge, so it holds the
+-- lock to commit — wounds live at the margins, the cold path (Foam/Maintenance.lean).
 CREATE OR REPLACE FUNCTION foam.settle(c uuid, s int, obs uuid DEFAULT foam.bench()) RETURNS void
   LANGUAGE plpgsql AS $$
   DECLARE t uuid; b bigint; run bigint := 0;
@@ -464,12 +353,9 @@ CREATE OR REPLACE FUNCTION foam.settle(c uuid, s int, obs uuid DEFAULT foam.benc
     END LOOP;
   END; $$;
 
--- settle_sweep — every outstanding note IN obs's VIEW, settled in one serialized
--- pass (the bench's broom; the inline path above keeps the books tight without
--- it). A note is a scoped balance below ground — the same view-property as
--- foam.settle, and each is repaired by the same prefix-walk (the advisory lock
--- is transaction-scoped and stacks, so the per-note calls share this sweep's
--- serialization). Returns the number of notes settled.
+-- settle_sweep — every outstanding note in obs's view, one serialized pass (the broom; the
+-- inline settle in foam.speak keeps the books tight without it). A note is a scoped balance
+-- below ground; same prefix-walk as foam.settle, lock stacks (Foam/Scar.lean). Returns notes settled.
 CREATE OR REPLACE FUNCTION foam.settle_sweep(obs uuid DEFAULT foam.bench()) RETURNS bigint
   LANGUAGE plpgsql AS $$
   DECLARE n bigint := 0; rec record; anc uuid[] := foam.ancestry(obs);
@@ -483,26 +369,12 @@ CREATE OR REPLACE FUNCTION foam.settle_sweep(obs uuid DEFAULT foam.bench()) RETU
     RETURN n;
   END; $$;
 
--- sweep_step — the watermark fold: take the next batch of ledger events past the
--- watermark, IN ID ORDER, and fold them into foam.held PER OBSERVER-STREAM (each
--- event lands in the phase bin its occurrence-index names within its stream:
--- (n + k) % 4, n the stream's folded clock, k the event's rank within the batch
--- — summary_resumes, operational: the fold never re-reads what it has folded).
--- The fold is global (every stream advances together under one watermark); only
--- the READS are scoped. Returns events folded; 0 when caught up; −1 when another
--- sweep holds the lock (one sweeper at a time — racing ADDITIVE folds would
--- double-count, so the sweep serializes for ECONOMY; reader safety never
--- depended on it: any_obs_grounded_above quantifies over arbitrary observations,
--- torn ones included).
---
--- `hi` bounds the fold to DECIDED ids. The serial does not commit in order: an
--- in-flight ingest can hold a smaller id than a committed one, and an id the
--- watermark passes unfolded is an event the generative readings never see again
--- (silence — the safe direction, but the soul of the ledger is that everything
--- contributes). The caller makes ids decided with a momentary fence
--- (Field.sweep: LOCK foam.charge IN EXCLUSIVE MODE, read max(id), commit) —
--- NULL hi reads max(id) un-fenced, sound only on a quiet field (a bench seated
--- by one). foam.held_audit checks completeness live.
+-- sweep_step — the watermark fold: fold the next batch of past-watermark events into foam.held
+-- per stream, in id-order, each into phase bin (n+k)%4 (Foam/Engine/Summary.lean: summary_resumes,
+-- never re-reads what it folded). Returns events folded; 0 caught up; −1 if another sweep holds the
+-- lock (serialized for economy — reader safety never depended on it: Foam/Maintenance.lean's
+-- any_obs_grounded_above holds for arbitrary, torn observations). `hi` bounds to decided ids (the
+-- caller's momentary fence); NULL reads max(id) un-fenced, sound on a quiet field. foam.held_audit checks live.
 CREATE OR REPLACE FUNCTION foam.sweep_step(hi bigint DEFAULT NULL, batch int DEFAULT 200000) RETURNS bigint
   LANGUAGE plpgsql SET work_mem = '256MB' AS $$
   DECLARE wm bigint; top bigint; folded bigint; last_id bigint;
