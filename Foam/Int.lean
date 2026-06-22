@@ -364,4 +364,38 @@ theorem sub_mul (a b c : Int) : (a - b) * c = a * c - b * c := by
 theorem sub_sub (a b c : Int) : a - b - c = a - (b + c) := by
   rw [Int.sub_eq_add_neg, Int.sub_eq_add_neg, Int.sub_eq_add_neg, add_assoc, neg_add]
 
+theorem two_mul (a : Int) : 2 * a = a + a := by
+  rw [show (2:Int) = 1 + 1 from rfl, add_mul, one_mul]
+theorem mul_eq_zero {a b : Int} : a * b = 0 ↔ a = 0 ∨ b = 0 := by
+  constructor
+  · intro h
+    cases a with
+    | ofNat m => cases m with
+      | zero => exact Or.inl rfl
+      | succ k => cases b with
+        | ofNat n => cases n with
+          | zero => exact Or.inr rfl
+          | succ j => exact absurd h (by
+              show Int.ofNat ((k+1)*(j+1)) ≠ 0
+              rw [show (k+1)*(j+1) = k*(j+1)+(j+1) from Nat.succ_mul k (j+1)]
+              intro hc; exact Nat.noConfusion (Int.ofNat.inj hc))
+        | negSucc n => exact absurd h (by
+            show Int.negOfNat ((k+1)*(n+1)) ≠ 0
+            rw [show (k+1)*(n+1) = k*(n+1)+(n+1) from Nat.succ_mul k (n+1)]
+            intro hc; exact Int.noConfusion hc)
+    | negSucc m => cases b with
+      | ofNat n => cases n with
+        | zero => exact Or.inr rfl
+        | succ j => exact absurd h (by
+            show Int.negOfNat ((m+1)*(j+1)) ≠ 0
+            rw [show (m+1)*(j+1) = m*(j+1)+(j+1) from Nat.succ_mul m (j+1)]
+            intro hc; exact Int.noConfusion hc)
+      | negSucc n => exact absurd h (by
+          show Int.ofNat ((m+1)*(n+1)) ≠ 0
+          rw [show (m+1)*(n+1) = m*(n+1)+(n+1) from Nat.succ_mul m (n+1)]
+          intro hc; exact Nat.noConfusion (Int.ofNat.inj hc))
+  · intro h; cases h with
+    | inl ha => rw [ha, zero_mul]
+    | inr hb => rw [hb, mul_zero]
+
 end Foam.FInt
