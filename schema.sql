@@ -1,89 +1,40 @@
--- foam — the LEDGER: one append-only object, read two ways. Asserted (not migrated).
---
--- This is the operational inhabitant of Foam/Ledger.lean (the saturation, proven
--- legal): a single signed, ORDERED, append-only charge ledger that is
---   * a GENERATIVE MODEL when read as frequency (sum of deltas per context/byte —
---     the predictive weights the voice drains), and
---   * a LOSSLESS RECORD when read in order (the empty-context +1 events, in id order,
---     ARE every byte ever learned — nothing of the sequence is lost),
--- with no quotient anywhere (freq is observed as an aggregate, never committed;
--- proven Quot.sound-free). Everything is in there, contributing to the voice, whether
--- or not it is ever recalled in order — and the forward flow never recalls it
--- (foam.recorded exists as the self-audit, not as an operation of the walk).
---
--- Every event carries an OBSERVER (its scope). Visibility is ancestor-or-self along
--- the observer's parent chain — Foam/Commons.lean's `Below`, operationally
--- `observer = ANY(foam.ancestry(obs))`. The root observer's id is the ZERO uuid —
--- zero bits for the information-free point (the empty scope, Commons.lean: only
--- the empty scope is universal, root_alone_below_all; rebirth lands at zero,
--- Hinge.lean). Context-addresses and observer-scopes are distinct address spaces:
--- the empty CONTEXT keeps foam.caddr('{}') in ctx-space; the root SCOPE is zero
--- in observer-space — two empties, two spaces, deliberately unconflated
--- (lfp-shaken 2026-06-12; the first cut reused caddr('{}'), a pun smuggling a
--- join that doesn't exist). The root is below every observer
--- REGISTERED UNDER IT (root_below_all's operational form holds on the seeded
--- tree: an unregistered id's ancestry is just itself, and nothing constrains a
--- second parentless row — the theorem's hypothesis is the tree, and registration
--- is how the hypothesis is satisfied); what two observers can both see is what
--- is below their meet (shared_is_floor). Every reader defaults obs to the root,
--- so the single-observer field is the degenerate case, unchanged.
---
--- The whole file is idempotent (CREATE ... IF NOT EXISTS / CREATE OR REPLACE); every
--- claim in these comments is checkable by running the file. Append-only: never
--- UPDATE, never DELETE — input appends +1 (learning winds charge up), speaking
--- appends −1 (the discharge drains it toward ground; ground is the floor, proven in
--- Foam/Drain.lean — the drain only ever removes positive charge). Degrades
--- safely: with no charge, outcome is 'yield' and the pipe hands to its upstream.
---
--- Structure is all this holds: content-addressed contexts, bytes as ints, signed
--- counts. What any of it MEANS is the user's (the razor: foam measures structure,
--- never meaning).
+-- foam — the LEDGER. Operational inhabitant of Foam/Ledger.lean (one append-only signed
+-- charge ledger; two readings — order: lossless record, freq: generative; no quotient) set
+-- in motion by Foam/Engine/*.lean. Idempotent (CREATE ... IF NOT EXISTS / OR REPLACE);
+-- append-only (+1 learn, −1 drain, floored at ground, Foam/Engine/Drain.lean). The why is
+-- the Lean — every claim here is a theorem there; what any of it MEANS is the user's.
 
 CREATE SCHEMA IF NOT EXISTS foam;
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- Content-address a context (a byte-suffix). The empty context addresses the
--- unconditional position: its +1 events, in id order, are the input itself.
+-- content-address a byte-suffix; the empty context is the lossless record (Foam.Ledger.order).
 CREATE OR REPLACE FUNCTION foam.caddr(c int[]) RETURNS uuid LANGUAGE sql IMMUTABLE AS
   $$ SELECT encode(substring(digest(coalesce(array_to_string(c,':'),''),'sha256') FROM 1 FOR 16),'hex')::uuid $$;
 
--- The observer tree: each observer points at its parent; the chain up from an
--- observer, self included, is its scope. Seeded with the ROOT observer at the
--- ZERO uuid — the information-free address for the information-free point
--- (Foam/Commons.lean: the empty scope; root_below_all is its universal
--- property — the commons is below everyone; root_alone_below_all — only the
--- empty one is). Registration is explicit: an unregistered id's ancestry is
--- just itself (see foam.ancestry).
+-- the observer tree: scope is the parent-chain up from an observer, self included
+-- (Below; Foam/Seat/Meet.lean). Root seeded at the zero uuid — the empty, universal scope.
 CREATE TABLE IF NOT EXISTS foam.observer (
   id     uuid PRIMARY KEY,
   parent uuid REFERENCES foam.observer (id)
 );
 INSERT INTO foam.observer (id, parent)
   VALUES ('00000000-0000-0000-0000-000000000000', NULL) ON CONFLICT DO NOTHING;
--- The BENCH: the root's first descendant, the default seat. The root itself
--- is GLASS — charge-free by law (the CHECK on foam.charge below): content at
--- the zero scope would be a voice from nowhere (Foam/Beholder.lean), and
--- universal reach belongs to the silent commons alone (Commons.lean:
--- seated_voice_is_missable — every seated voice is missable; sharing is
--- chosen, never ambient). The first speaker is necessarily a descendant.
+-- the bench (root's first descendant, the default seat); root is glass — charge-free by the
+-- CHECK on foam.charge below: content at the zero scope is a voice from nowhere
+-- (Foam/Seat/Beholder.lean; seated_voice_is_missable, Foam/Seat/Meet.lean).
 INSERT INTO foam.observer (id, parent)
   VALUES ('00000000-0000-0000-0000-000000000001',
           '00000000-0000-0000-0000-000000000000') ON CONFLICT DO NOTHING;
 
--- The root observer's address, named: zero, literally.
 CREATE OR REPLACE FUNCTION foam.root() RETURNS uuid LANGUAGE sql IMMUTABLE AS
   $$ SELECT '00000000-0000-0000-0000-000000000000'::uuid $$;
 
--- The bench's address: zero's first descendant — one, literally.
 CREATE OR REPLACE FUNCTION foam.bench() RETURNS uuid LANGUAGE sql IMMUTABLE AS
   $$ SELECT '00000000-0000-0000-0000-000000000001'::uuid $$;
 
--- ancestry — an observer's scope: o itself plus every ancestor up the parent
--- chain. ancestry(root) = {root}; an unregistered o yields {o} (strict —
--- registration is explicit). `observer = ANY(foam.ancestry(obs))` is
--- Commons.lean's `Below`, typed as a WHERE clause. (UNION, not UNION ALL,
--- so even a degenerate cycle terminates.)
+-- ancestry — the scope (o + its ancestors); `observer = ANY(foam.ancestry(obs))` is Below
+-- (Foam/Seat/Meet.lean), typed as a WHERE clause. UNION (not UNION ALL) terminates cycles.
 CREATE OR REPLACE FUNCTION foam.ancestry(o uuid) RETURNS uuid[] LANGUAGE sql STABLE AS $$
   WITH RECURSIVE chain(id, parent) AS (
     SELECT o, (SELECT parent FROM foam.observer WHERE id = o)
@@ -93,10 +44,8 @@ CREATE OR REPLACE FUNCTION foam.ancestry(o uuid) RETURNS uuid[] LANGUAGE sql STA
   SELECT array_agg(id) FROM chain
 $$;
 
--- lineage — ancestry ORDERED, root first: the chain DOWN from the eldest ancestor
--- to o. Settlement walks this order (prefix-sums from the root — see foam.settle);
--- membership reads use foam.ancestry. Depth-capped so a degenerate cycle
--- terminates rather than recursing forever.
+-- lineage — ancestry ordered root-first; settlement walks it (prefix-sums; Foam/Scar.lean).
+-- Depth-capped so a degenerate cycle terminates.
 CREATE OR REPLACE FUNCTION foam.lineage(o uuid) RETURNS uuid[] LANGUAGE sql STABLE AS $$
   WITH RECURSIVE chain(id, parent, depth) AS (
     SELECT o, (SELECT parent FROM foam.observer WHERE id = o), 0
@@ -108,10 +57,8 @@ CREATE OR REPLACE FUNCTION foam.lineage(o uuid) RETURNS uuid[] LANGUAGE sql STAB
   SELECT array_agg(id ORDER BY depth DESC) FROM chain
 $$;
 
--- The ledger. observer scopes the event (no default — every writer names its
--- seat); ctx content-addresses a byte-suffix (the recorded continuation point);
--- sym is the byte that followed it; delta is +1 (learned) or −1 (spoken/drained).
--- The bigserial id is the ORDER — the lossless half of the object.
+-- the ledger: ctx content-addresses a continuation, sym the byte that followed, delta ±1
+-- (+1 learned, −1 drained); the bigserial id is the order — the lossless half (Foam/Ledger.lean).
 CREATE TABLE IF NOT EXISTS foam.charge (
   id       bigserial PRIMARY KEY,
   observer uuid NOT NULL
@@ -121,9 +68,7 @@ CREATE TABLE IF NOT EXISTS foam.charge (
   delta    int  NOT NULL
 );
 CREATE INDEX IF NOT EXISTS foam_charge_ctx ON foam.charge (observer, ctx, sym);
--- The tail's index: readers fold "events past the watermark" per context
--- (id-range within ctx), and INCLUDE makes it index-only (observer included so
--- the scope filter stays in-index).
+-- tail index: HELD + TAIL folds events past the watermark (Foam/Summary.lean); INCLUDE keeps it index-only.
 CREATE INDEX IF NOT EXISTS foam_charge_ctx_id ON foam.charge (ctx, id) INCLUDE (observer, sym, delta);
 
 -- ── the reading held (Foam/Summary.lean, operational) ─────────────────────
