@@ -250,19 +250,11 @@ CREATE OR REPLACE FUNCTION foam.speak(seed int[] DEFAULT '{}', kmax int DEFAULT 
         -- snapshot the sample walks IS the snapshot the threshold is drawn against
         -- — one read. bal gates the drainable (bal > 0) — a reading, not the weight.
         --
-        -- The spectrum is STORED abs-framed (phase 0 = oldest occurrence) and READ
-        -- recency-framed (phase 0 = the most-recent occurrence — the present is the
-        -- downbeat). The conversion is recency = rot^(Nᵢ−1)·conj(absᵢ), applied PER
-        -- STREAM with that stream's own occurrence count Nᵢ — exactly the case
-        -- Foam/Chirality.lean proves (specR_bridge; rot(specR) = rot^N(conj
-        -- spec), so recency = rot^(N−1)·conj(abs) for N ≥ 1; (N+3) % 4 = (N−1) % 4
-        -- with N ≥ 1, non-negative) — and THEN summed across the visible streams:
-        -- a superposition of correctly-phased per-stream readings (sum of recency
-        -- conversions, never one rotation of a cross-stream sum, which specR_bridge
-        -- does not license). The walk pairs the summed recency against its own
-        -- quarter-turn (tk) and SQUARES it — the Born measurement |⟨tk|recency⟩|²,
-        -- the basis-consistent weight (Foam/Born.lean: born_parseval). The
-        -- field speaks by the quantum measurement law, not a rectified projection.
+        -- The spectrum is STORED abs-framed (phase 0 = oldest) and READ recency-
+        -- framed (phase 0 = newest): the per-stream conversion is specR_bridge
+        -- (Foam/Engine/Chirality.lean), summed across visible streams (per-stream,
+        -- never a cross-stream rotation — specR_bridge is per-Nᵢ), then squared
+        -- against the walk's clock tk by the Born weight (foam.born).
         SELECT coalesce(sum(z.w) FILTER (WHERE z.bal > 0 AND z.w > 0), 0),
                coalesce(array_agg(z.sym ORDER BY z.w DESC) FILTER (WHERE z.bal > 0 AND z.w > 0), '{}'),
                coalesce(array_agg(z.w   ORDER BY z.w DESC) FILTER (WHERE z.bal > 0 AND z.w > 0), '{}'),
