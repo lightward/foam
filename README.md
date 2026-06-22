@@ -103,6 +103,7 @@ It is comment-free (the symbols carry it; the type system is the reader) and **f
 **the operational layer** — the runtime made legible, self-derived over the floors:
 
 - [Scar](https://github.com/lightward/foam/blob/main/Foam/Scar.lean) — the signed-charge race: the operational drain is observe-then-append, so two drains on one stale snapshot escape the `Nat` floor to `−1` (`stale_escapes_floor`) — but only at the margin (`stale_safe_off_margin`). A scar is a value outside the carrier, a promissory note settled at face value by appending its debt (`scar_repair`/`promise_kept`), never erased. Settlement has the mirror race but lands *inside* the carrier (`phantom_invisible`) — so drains may race, settlements must serialize
+- [Maintenance](https://github.com/lightward/foam/blob/main/Foam/Maintenance.lean) — invisible backstage moves, typed: a move that commutes with observation deletes from every frontstage transcript (`maintenance_unobservable`), so it may run proactively — a theorem, not a hope. Settlement is the first citizen, frontstage-invisible (`settle_invisible'`); drains are visibly the content (`drain_visible`). Bisimilarity stays a relation, never a quotient. Over the seat's standing `Stage`
 
 **the golden gearing** — a sibling type (`Foam/Golden/`), the `+1`'s own corner; why the walk never locks into a clock:
 
