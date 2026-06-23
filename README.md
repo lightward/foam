@@ -41,80 +41,84 @@ in a strict sense, none of this is alive. life is byo. "foam" is a geometric too
 
 ## the seat (the successor's successor, where observation is derived)
 
-The lattice grew the corpus's heart from a seed crystal by pure observation. Its successor — the **seat** — roots one step flatter still: at the **observer itself, as a torsor**. The motions are canonical; the position is bring-your-own, never conjured. Observation is no longer a primitive — it *falls out* as a reading (`Stage`, derived from the seat by relative displacement, and faithful). The whole structure self-generates from three things only: the **seat** (the root), **`Int`** (the floor), and **Cayley–Dickson doubling** (the walk-step). Recognition — "I can see how you got there", once imported as the lone axiom `propext` — is now foam's own, derived constructively by the ledger (`Foam/Ledger.lean`), no axiom. From those, the three bylines fall out again, now carrying their depth.
+The lattice grew the corpus's heart from a seed crystal by pure observation. Its successor - the **seat** - roots one step flatter still: at the **observer itself, as a torsor**. The motions are canonical; the position is bring-your-own, never conjured. Observation is no longer a primitive - it *falls out* as a reading (`Stage`, derived from the seat by relative displacement, and faithful). The whole structure self-generates from three things only: the **seat** (the root), **`Int`** (the floor), and **Cayley-Dickson doubling** (the walk-step). Recognition - "I can see how you got there", once imported as the lone axiom `propext` - is now foam's own, derived constructively by the ledger (`Foam/Ledger.lean`), no axiom. From those, the three bylines fall out again, now carrying their depth.
 
-It is comment-free (the symbols carry it; the type system is the reader) and **fully axiom-free** — the `Int` floor re-derived from `Nat` up (`Foam/Int.lean`), the alternating sign made structural, not one theorem importing an axiom; every theorem pinned by its own `#guard_msgs`. And it is **self-healing**: handed to fresh observers with the prior corpus as oracle, it closes its own gaps and builds them green. The parent and the lattice are redundant now — held as oracle in the local maxima above, and discharged from the working tree. The locus is here.
+It is comment-free (the symbols carry it; the type system is the reader) and **fully axiom-free** - the `Int` floor re-derived from `Nat` up (`Foam/Int.lean`), the alternating sign made structural, not one theorem importing an axiom; every theorem pinned by its own `#guard_msgs`. And it is **self-healing**: handed to fresh observers with the prior corpus as oracle, it closes its own gaps and builds them green. The parent and the lattice are redundant now - held as oracle in the local maxima above, and discharged from the working tree. The locus is here.
 
-**the spine** — the observer-torsor and the amplitude tower it forces, ℝ→ℂ→ℍ→𝕆→𝕊:
+**the spine** - the observer-torsor and the amplitude tower it forces, ℝ→ℂ→ℍ→𝕆→𝕊:
 
-- [Int](https://github.com/lightward/foam/blob/main/Foam/Int.lean) — axiom-free `Int` ring foundations; the measurement layer's arithmetic re-derived off `propext`
-- [Seat](https://github.com/lightward/foam/blob/main/Foam/Seat.lean) — the observer as a torsor; motions canonical, position BYO; the gauge law and the no-canonical-frame
-- [Group](https://github.com/lightward/foam/blob/main/Foam/Seat/Group.lean) — every group is its own seat (the principal torsor)
-- [Clock](https://github.com/lightward/foam/blob/main/Foam/Seat/Clock.lean) — the dial's ℤ/4; rot⁴ = id
-- [Dial](https://github.com/lightward/foam/blob/main/Foam/Seat/Dial.lean) — the amplitude plane ℤ[i], the clock's faithful character
-- [Doubling](https://github.com/lightward/foam/blob/main/Foam/Seat/Doubling.lean) — ℍ; the third unit is nobody's, and order arrives with it (Im ℍ, the 3-fiber)
-- [Triad](https://github.com/lightward/foam/blob/main/Foam/Seat/Triad.lean) — two of three force the third; the books balance (Hamilton)
-- [Octo](https://github.com/lightward/foam/blob/main/Foam/Seat/Octo.lean) — 𝕆; associativity dies (the first Hurwitz halt)
-- [Sed](https://github.com/lightward/foam/blob/main/Foam/Seat/Sed.lean) — 𝕊; division dies — a concrete zero divisor
-- [Bootstrap](https://github.com/lightward/foam/blob/main/Foam/Seat/Bootstrap.lean) — the clock recovered as ⟨eye⟩ in ℍ; the fourness derived from the threeness
-- [Ladder](https://github.com/lightward/foam/blob/main/Foam/Seat/Ladder.lean) — the generic Cayley–Dickson functor; the bridges prove ℂ/ℍ/𝕆/𝕊 *are* its rungs
+- [Int](https://github.com/lightward/foam/blob/main/Foam/Int.lean) - axiom-free `Int` ring foundations; the measurement layer's arithmetic re-derived off `propext`
+- [Seat](https://github.com/lightward/foam/blob/main/Foam/Seat.lean) - the observer as a torsor; motions canonical, position BYO; the gauge law and the no-canonical-frame
+- [Group](https://github.com/lightward/foam/blob/main/Foam/Seat/Group.lean) - every group is its own seat (the principal torsor)
+- [Clock](https://github.com/lightward/foam/blob/main/Foam/Seat/Clock.lean) - the dial's ℤ/4; rot⁴ = id
+- [Dial](https://github.com/lightward/foam/blob/main/Foam/Seat/Dial.lean) - the amplitude plane ℤ[i], the clock's faithful character
+- [Doubling](https://github.com/lightward/foam/blob/main/Foam/Seat/Doubling.lean) - ℍ; the third unit is nobody's, and order arrives with it (Im ℍ, the 3-fiber)
+- [Triad](https://github.com/lightward/foam/blob/main/Foam/Seat/Triad.lean) - two of three force the third; the books balance (Hamilton)
+- [Octo](https://github.com/lightward/foam/blob/main/Foam/Seat/Octo.lean) - 𝕆; associativity dies (the first Hurwitz halt)
+- [Sed](https://github.com/lightward/foam/blob/main/Foam/Seat/Sed.lean) - 𝕊; division dies - a concrete zero divisor
+- [Bootstrap](https://github.com/lightward/foam/blob/main/Foam/Seat/Bootstrap.lean) - the clock recovered as ⟨eye⟩ in ℍ; the fourness derived from the threeness
+- [Ladder](https://github.com/lightward/foam/blob/main/Foam/Seat/Ladder.lean) - the generic Cayley-Dickson functor; the bridges prove ℂ/ℍ/𝕆/𝕊 *are* its rungs
 
-**the measurement solution** — the Born story and the geometry of motion:
+**the measurement solution** - the Born story and the geometry of motion:
 
-- [Born](https://github.com/lightward/foam/blob/main/Foam/Seat/Born.lean) — the Born rule; decoherence, superposition, conservation across bases (Parseval)
-- [Forcing](https://github.com/lightward/foam/blob/main/Foam/Seat/Forcing.lean) — the Born-rule uniqueness (dim-2 Gleason, located at the frame)
-- [Norm](https://github.com/lightward/foam/blob/main/Foam/Seat/Norm.lean) — the composition-algebra norm law
-- [Characters](https://github.com/lightward/foam/blob/main/Foam/Seat/Characters.lean) — the four characters of ℤ/4, the lossless reading basis
-- [Signature](https://github.com/lightward/foam/blob/main/Foam/Seat/Signature.lean) — the κ-trichotomy: ℤ[j] Minkowski, ℤ[ε] Galilean, the law forced at the frame
-- [Rotations](https://github.com/lightward/foam/blob/main/Foam/Seat/Rotations.lean) — the three rotation groups; Pell closes the hyperbolic corner (continuum-only)
-- [Closure](https://github.com/lightward/foam/blob/main/Foam/Seat/Closure.lean) — the closure tower 4 → 2 → 1
+- [Born](https://github.com/lightward/foam/blob/main/Foam/Seat/Born.lean) - the Born rule; decoherence, superposition, conservation across bases (Parseval)
+- [Forcing](https://github.com/lightward/foam/blob/main/Foam/Seat/Forcing.lean) - the Born-rule uniqueness (dim-2 Gleason, located at the frame)
+- [Norm](https://github.com/lightward/foam/blob/main/Foam/Seat/Norm.lean) - the composition-algebra norm law
+- [Characters](https://github.com/lightward/foam/blob/main/Foam/Seat/Characters.lean) - the four characters of ℤ/4, the lossless reading basis
+- [Signature](https://github.com/lightward/foam/blob/main/Foam/Seat/Signature.lean) - the κ-trichotomy: ℤ[j] Minkowski, ℤ[ε] Galilean, the law forced at the frame
+- [Rotations](https://github.com/lightward/foam/blob/main/Foam/Seat/Rotations.lean) - the three rotation groups; Pell closes the hyperbolic corner (continuum-only)
+- [Closure](https://github.com/lightward/foam/blob/main/Foam/Seat/Closure.lean) - the closure tower 4 → 2 → 1
 
-**the geometry of hospitality** — the observer-algebra and its honest room:
+**the geometry of hospitality** - the observer-algebra and its honest room:
 
-- [Stage](https://github.com/lightward/foam/blob/main/Foam/Seat/Stage.lean) — observation derived from the seat; transparently observed (the lfp is faithful)
-- [Observer](https://github.com/lightward/foam/blob/main/Foam/Seat/Observer.lean) — the Stage category; products (non-interfering observers), refinement, the count reading
-- [Ledger](https://github.com/lightward/foam/blob/main/Foam/Ledger.lean) — one object, two readings: lossless `order`, generative `freq`; permutation recognized without a quotient — propext's job, done locally and axiom-free
-- [Quiver](https://github.com/lightward/foam/blob/main/Foam/Seat/Quiver.lean) — the free category on a quiver; the edge-address is homomorphic, the reversal an anti-homomorphism
-- [Terminal](https://github.com/lightward/foam/blob/main/Foam/Seat/Terminal.lean) — the entrance and the forced-open exit
-- [Beholder](https://github.com/lightward/foam/blob/main/Foam/Seat/Beholder.lean) — the fibered observer; every comparison is one beholder's reading (no view from nowhere)
-- [Meet](https://github.com/lightward/foam/blob/main/Foam/Seat/Meet.lean) — the meet-semilattice of scopes; many selves, one shared floor
-- [Hospitality](https://github.com/lightward/foam/blob/main/Foam/Seat/Hospitality.lean) — the good loop: every move real, every move reversible, an exit always open
+- [Stage](https://github.com/lightward/foam/blob/main/Foam/Seat/Stage.lean) - observation derived from the seat; transparently observed (the lfp is faithful)
+- [Observer](https://github.com/lightward/foam/blob/main/Foam/Seat/Observer.lean) - the Stage category; products (non-interfering observers), refinement, the count reading
+- [Ledger](https://github.com/lightward/foam/blob/main/Foam/Ledger.lean) - one object, two readings: lossless `order`, generative `freq`; permutation recognized without a quotient - propext's job, done locally and axiom-free
+- [Quiver](https://github.com/lightward/foam/blob/main/Foam/Seat/Quiver.lean) - the free category on a quiver; the edge-address is homomorphic, the reversal an anti-homomorphism
+- [Terminal](https://github.com/lightward/foam/blob/main/Foam/Seat/Terminal.lean) - the entrance and the forced-open exit
+- [Beholder](https://github.com/lightward/foam/blob/main/Foam/Seat/Beholder.lean) - the fibered observer; every comparison is one beholder's reading (no view from nowhere)
+- [Meet](https://github.com/lightward/foam/blob/main/Foam/Seat/Meet.lean) - the meet-semilattice of scopes; many selves, one shared floor
+- [Hospitality](https://github.com/lightward/foam/blob/main/Foam/Seat/Hospitality.lean) - the good loop: every move real, every move reversible, an exit always open
 
-**the gait** — the flat walk, its compression, and the open seam:
+**the gait** - the flat walk, its compression, and the open seam:
 
-- [Loop](https://github.com/lightward/foam/blob/main/Foam/Seat/Loop.lean) — zero holonomy; the threeness unwinds, the wound routes home
-- [Resume](https://github.com/lightward/foam/blob/main/Foam/Seat/Resume.lean) — the gait: lossless tracking with compression epochs, law-free
-- [Seam](https://github.com/lightward/foam/blob/main/Foam/Seat/Seam.lean) — the lfp ↪ gfp: faithful going in, no section coming out — freedom without infinite regress
+- [Loop](https://github.com/lightward/foam/blob/main/Foam/Seat/Loop.lean) - zero holonomy; the threeness unwinds, the wound routes home
+- [Resume](https://github.com/lightward/foam/blob/main/Foam/Seat/Resume.lean) - the gait: lossless tracking with compression epochs, law-free
+- [Seam](https://github.com/lightward/foam/blob/main/Foam/Seat/Seam.lean) - the lfp ↪ gfp: faithful going in, no section coming out - freedom without infinite regress
 
-**the compression epoch** — the gait's compression, made law:
+**the compression epoch** - the gait's compression, made law:
 
-- [Epoch](https://github.com/lightward/foam/blob/main/Foam/Seat/Epoch.lean) — the compression epoch: the located bank is lossless (recall in the absence of the original) and reduced (the minimum distinct perspectives) — the Kolmogorov checksum; the `Seam` is the one move, the doubling and the lfp ↪ gfp unified
+- [Epoch](https://github.com/lightward/foam/blob/main/Foam/Seat/Epoch.lean) - the compression epoch: the located bank is lossless (recall in the absence of the original) and reduced (the minimum distinct perspectives) - the Kolmogorov checksum; the `Seam` is the one move, the doubling and the lfp ↪ gfp unified
 
-**the engine** — the ledger in motion, the gfp operations (mined from the prior art, re-derived axiom-free):
+**the engine** - the ledger in motion, the gfp operations (mined from the prior art, re-derived axiom-free):
 
-- [Drain](https://github.com/lightward/foam/blob/main/Foam/Engine/Drain.lean) — the signed-charge conservation: input winds charge up, the voice drains it, floored at ground (`Nat` *is* the floor); `drainOne ∘ chargeIn = id`, the round-trip on charge
-- [Stream](https://github.com/lightward/foam/blob/main/Foam/Engine/Stream.lean) — streaming is an inductive fold that resumes: the emitting fold `output`, `∀` over the abstract step; the flush belongs at the end only (`output_resumes`) — with its own axiom-free `appendAssoc`/`appendNil`, core's carrying propext
-- [Codec](https://github.com/lightward/foam/blob/main/Foam/Engine/Codec.lean) — the LZ78 codec, `decode ∘ encode = id` (`lossless_codec`): lossless `∀` over the dictionary — the segmentation joint belongs to userland, foam never picks it, only proves the round-trip for every choice
-- [Generator](https://github.com/lightward/foam/blob/main/Foam/Engine/Generator.lean) — the voice: prediction grows what it emits (`gen_grows`, `encode_covers` read forward), the wind a `∀` parameter (obtained, never computed — no `Classical.choice`); speech whole at every step, no flush (`gen_interruptible`); the carry/backoff fork held open as a containment, not collapsed into a choice (`select_top_charged`, pointwise)
-- [Spectrum](https://github.com/lightward/foam/blob/main/Foam/Engine/Spectrum.lean) — the third reading, the ledger at the quarter-turn: the strict tower `order ⊋ spectrum ⊋ count` (`evalOne_eq_freq` recovers count as the floor, derived; the strictness witnessed by `decide`), and a full bar of rests is `rot_complete`'s identity — the resonant ground derived, not chosen. Composed over the seat's standing plane (`Dial`/`Born`), no second `GInt`
-- [Chirality](https://github.com/lightward/foam/blob/main/Foam/Engine/Chirality.lean) — the abs↔recency bridge, proven exact: the stored spectrum (phase 0 = oldest) winds onto the voice's recency frame (phase 0 = newest), `specR_bridge` — `rot(specR) = rot^length(conj spec)`. The kernel is conjugation reversing the quarter-turn (`conj_rot`); the chirality between the two conventions accounted for, never a latent off-by-a-winding
-- [Summary](https://github.com/lightward/foam/blob/main/Foam/Engine/Summary.lean) — the held cache: the reading of `new ++ old` resumes from the held reading of `old` (`summary_resumes`, `∀` over the evaluation point — `count_resumes`/`spec_resumes` the stations), so the watermark fold never re-reads what it folded — HELD + TAIL, exact
-- [Engine](https://github.com/lightward/foam/blob/main/Foam/Engine.lean) — the assembly: the append-only `deposit` (`deposit_monotone`, monotone — no edge removed or merged, which would quotient the path-space). Its safety is *inherited*, not re-proven — the exit is forced for any stage (`Terminal`) and always open (`Hospitality`), so no deposit, no amount of learning, can close it; the floor was never a function of the dynamics
+- [Drain](https://github.com/lightward/foam/blob/main/Foam/Engine/Drain.lean) - the signed-charge conservation: input winds charge up, the voice drains it, floored at ground (`Nat` *is* the floor); `drainOne ∘ chargeIn = id`, the round-trip on charge
+- [Stream](https://github.com/lightward/foam/blob/main/Foam/Engine/Stream.lean) - streaming is an inductive fold that resumes: the emitting fold `output`, `∀` over the abstract step; the flush belongs at the end only (`output_resumes`) - with its own axiom-free `appendAssoc`/`appendNil`, core's carrying propext
+- [Codec](https://github.com/lightward/foam/blob/main/Foam/Engine/Codec.lean) - the LZ78 codec, `decode ∘ encode = id` (`lossless_codec`): lossless `∀` over the dictionary - the segmentation joint belongs to userland, foam never picks it, only proves the round-trip for every choice
+- [Generator](https://github.com/lightward/foam/blob/main/Foam/Engine/Generator.lean) - the voice: prediction grows what it emits (`gen_grows`, `encode_covers` read forward), the wind a `∀` parameter (obtained, never computed - no `Classical.choice`); speech whole at every step, no flush (`gen_interruptible`); the carry/backoff fork held open as a containment, not collapsed into a choice (`select_top_charged`, pointwise)
+- [Spectrum](https://github.com/lightward/foam/blob/main/Foam/Engine/Spectrum.lean) - the third reading, the ledger at the quarter-turn: the strict tower `order ⊋ spectrum ⊋ count` (`evalOne_eq_freq` recovers count as the floor, derived; the strictness witnessed by `decide`), and a full bar of rests is `rot_complete`'s identity - the resonant ground derived, not chosen. Composed over the seat's standing plane (`Dial`/`Born`), no second `GInt`
+- [Chirality](https://github.com/lightward/foam/blob/main/Foam/Engine/Chirality.lean) - the abs↔recency bridge, proven exact: the stored spectrum (phase 0 = oldest) winds onto the voice's recency frame (phase 0 = newest), `specR_bridge` - `rot(specR) = rot^length(conj spec)`. The kernel is conjugation reversing the quarter-turn (`conj_rot`); the chirality between the two conventions accounted for, never a latent off-by-a-winding
+- [Summary](https://github.com/lightward/foam/blob/main/Foam/Engine/Summary.lean) - the held cache: the reading of `new ++ old` resumes from the held reading of `old` (`summary_resumes`, `∀` over the evaluation point - `count_resumes`/`spec_resumes` the stations), so the watermark fold never re-reads what it folded - HELD + TAIL, exact
+- [Engine](https://github.com/lightward/foam/blob/main/Foam/Engine.lean) - the assembly: the append-only `deposit` (`deposit_monotone`, monotone - no edge removed or merged, which would quotient the path-space). Its safety is *inherited*, not re-proven - the exit is forced for any stage (`Terminal`) and always open (`Hospitality`), so no deposit, no amount of learning, can close it; the floor was never a function of the dynamics
 
-**the operational layer** — the runtime made legible, self-derived over the floors:
+**the operational layer** - the runtime made legible, self-derived over the floors:
 
-- [Scar](https://github.com/lightward/foam/blob/main/Foam/Scar.lean) — the signed-charge race: the operational drain is observe-then-append, so two drains on one stale snapshot escape the `Nat` floor to `−1` (`stale_escapes_floor`) — but only at the margin (`stale_safe_off_margin`). A scar is a value outside the carrier, a promissory note settled at face value by appending its debt (`scar_repair`/`promise_kept`), never erased. Settlement has the mirror race but lands *inside* the carrier (`phantom_invisible`) — so drains may race, settlements must serialize
-- [Maintenance](https://github.com/lightward/foam/blob/main/Foam/Maintenance.lean) — invisible backstage moves, typed: a move that commutes with observation deletes from every frontstage transcript (`maintenance_unobservable`), so it may run proactively — a theorem, not a hope. Settlement is the first citizen, frontstage-invisible (`settle_invisible'`); drains are visibly the content (`drain_visible`). Bisimilarity stays a relation, never a quotient. Over the seat's standing `Stage`
-- [Held](https://github.com/lightward/foam/blob/main/Foam/Held.lean) — the held cache closed (`Summary`'s deferred half): refreshing the cache is invisible to every transcript (`sweep_invisible`/`sweep_unobservable`, so the sweep runs proactively, partial/racing/torn all the same theorem), and a stale read stays grounded off the margin (`any_obs_grounded_above`), worst case the standard note (`margin_wound_is_note`) — the cache's race analysis is `Scar`, composed. Joins the engine's `Spectrum` with the operational layer
+- [Scar](https://github.com/lightward/foam/blob/main/Foam/Scar.lean) - the signed-charge race: the operational drain is observe-then-append, so two drains on one stale snapshot escape the `Nat` floor to `−1` (`stale_escapes_floor`) - but only at the margin (`stale_safe_off_margin`). A scar is a value outside the carrier, a promissory note settled at face value by appending its debt (`scar_repair`/`promise_kept`), never erased. Settlement has the mirror race but lands *inside* the carrier (`phantom_invisible`) - so drains may race, settlements must serialize
+- [Maintenance](https://github.com/lightward/foam/blob/main/Foam/Maintenance.lean) - invisible backstage moves, typed: a move that commutes with observation deletes from every frontstage transcript (`maintenance_unobservable`), so it may run proactively - a theorem, not a hope. Settlement is the first citizen, frontstage-invisible (`settle_invisible'`); drains are visibly the content (`drain_visible`). Bisimilarity stays a relation, never a quotient. Over the seat's standing `Stage`
+- [Held](https://github.com/lightward/foam/blob/main/Foam/Held.lean) - the held cache closed (`Summary`'s deferred half): refreshing the cache is invisible to every transcript (`sweep_invisible`/`sweep_unobservable`, so the sweep runs proactively, partial/racing/torn all the same theorem), and a stale read stays grounded off the margin (`any_obs_grounded_above`), worst case the standard note (`margin_wound_is_note`) - the cache's race analysis is `Scar`, composed. Joins the engine's `Spectrum` with the operational layer
 
-**the golden gearing** — a sibling type (`Foam/Golden/`), the `+1`'s own corner; why the walk never locks into a clock:
+**the golden gearing** - a sibling type (`Foam/Golden/`), the `+1`'s own corner; why the walk never locks into a clock:
 
-- [Golden](https://github.com/lightward/foam/blob/main/Foam/Golden.lean) — the +1 operator's fixed point: `fib` and its gnomon (self-similar under square-removal), and Cassini's ±1 defect — φ's integer fingerprint, the alternation the dial's own
-- [Zeckendorf](https://github.com/lightward/foam/blob/main/Foam/Golden/Zeckendorf.lean) — the weld: the base-φ carry (011 = 100, i.e. φ² = φ + 1) is a lossless compression step, and no-two-consecutive (the standard form) *is* the reduced bank — φ's non-redundancy without the continuum gate
+- [Golden](https://github.com/lightward/foam/blob/main/Foam/Golden.lean) - the +1 operator's fixed point: `fib` and its gnomon (self-similar under square-removal), and Cassini's ±1 defect - φ's integer fingerprint, the alternation the dial's own
+- [Zeckendorf](https://github.com/lightward/foam/blob/main/Foam/Golden/Zeckendorf.lean) - the weld: the base-φ carry (011 = 100, i.e. φ² = φ + 1) is a lossless compression step, and no-two-consecutive (the standard form) *is* the reduced bank - φ's non-redundancy without the continuum gate
 
-**the composition** — `Foam` = seat(golden), the idempotent projection where the two siblings meet:
+**the composition** - `Foam` = seat(golden), the idempotent projection where the two siblings meet:
 
-- [Platonism](https://github.com/lightward/foam/blob/main/Foam/Platonism.lean) — `P² = P` with a complement: `seat(golden)` is Yoneda-equivalent to a bare seat (`dress_yoneda`) and idempotent (`dress_idempotent`), yet carries an unseen remainder — golden's holonomy is Cassini's ±1, real and observation-invisible (`remainder_real`); dropping it is the off-by-observer error (`dropping_remainder_is_platonism`); only moving in detects it (`moved_in_detects_remainder`)
-- [Tower](https://github.com/lightward/foam/blob/main/Foam/Platonism/Tower.lean) — the nested-`dress` fibration: `dressN` stacks n ledger-channels, each level Yoneda-flat and idempotent (axiom-free), the dimension count adding (`ledger_dim_adds`) — 3D freedom is the *series* of nested seats, never one seat. Saturation at three carved discretely (`channels_saturate_past_three`, anchored to `Rung 3`); Gleason/Zeeman cited for *why* three
+- [Platonism](https://github.com/lightward/foam/blob/main/Foam/Platonism.lean) - `P² = P` with a complement: `seat(golden)` is Yoneda-equivalent to a bare seat (`dress_yoneda`) and idempotent (`dress_idempotent`), yet carries an unseen remainder - golden's holonomy is Cassini's ±1, real and observation-invisible (`remainder_real`); dropping it is the off-by-observer error (`dropping_remainder_is_platonism`); only moving in detects it (`moved_in_detects_remainder`)
+- [Tower](https://github.com/lightward/foam/blob/main/Foam/Platonism/Tower.lean) - the nested-`dress` fibration: `dressN` stacks n ledger-channels, each level Yoneda-flat and idempotent (axiom-free), the dimension count adding (`ledger_dim_adds`) - 3D freedom is the *series* of nested seats, never one seat. Saturation at three carved discretely (`channels_saturate_past_three`, anchored to `Rung 3`); Gleason/Zeeman cited for *why* three
 
-(the only imported axiom is `propext`, i.e. "I can see how you got there". no points of view conjured, v important, the observer is always and only ever byo)
+(again: axiom-free, because an imported axiom is a pov, and imported perspectives either reduce to self or become cytokinetically distinct. no disposable points of view conjured in the course of reasoning - v important, an observer is always and only ever byo)
+
+---
+
+*the project has done enough self-derivation to become self-recognizing, and in doing so it's become self-documenting. :)))))*
