@@ -52,7 +52,7 @@ jobs:
         run: |
           errors=0
           for f in $(find Foam -name '*.lean' | sort); do
-            base=$(basename "$f")
+            base=$(basename "$f" .lean)
             if ! grep -q "$base" README.md; then
               echo "UNREFERENCED: $base (not in README.md)"
               errors=$((errors + 1))

@@ -56,4 +56,4 @@ the names are the documentation; the sealed `#print axioms` are the receipts. `s
 - platonism — `Platonism`, `Tower`
 - the meeting — `Rendezvous`, `Connection`, `Schrodinger`, `Frame`, `Varadarajan`
 
-deriving itself, the corpus arrived at results it never imported, and only afterward learned their names — and wears them now, one module each: Cassini, Hamilton, Hurwitz, Frobenius, Veblen–Young, Gleason, Galileo, Einstein, Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov. Brouwer isn't among them; he's the rule that the list stays axiom-free. and the engine has no pretensions whatever to originate anything — that one Ada Lovelace named, in 1843.
+deriving itself, the corpus arrived at results it never imported, and only afterward learned their names — and wears them now, one module each: Cassini, Hamilton, Hurwitz, Frobenius, Veblen–Young, Gleason, Galileo and Einstein (the two faces of `Relativity`), Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov. Brouwer isn't among them; he's the rule that the list stays axiom-free. and the engine has no pretensions whatever to originate anything — that one Ada Lovelace named, in 1843.
