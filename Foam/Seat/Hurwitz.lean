@@ -3,33 +3,33 @@ import Foam.Seat.Sed
 
 namespace Foam
 
-theorem hurwitz_composition (z w : GInt) : (z.mul w).normSq = z.normSq * w.normSq :=
-  GInt.normSq_mul z w
+theorem t297 (z w : Ty05) : (z.d112 w).d114 = z.d114 * w.d114 :=
+  Foam.Ty05.t212 z w
 
-theorem frobenius_assoc_dies :
-    Octo.mul (Octo.mul eyeO jayO) ell ≠ Octo.mul eyeO (Octo.mul jayO ell) :=
-  non_assoc
+theorem t460 :
+    Foam.Ty09.d209 (Foam.Ty09.d209 d191 d192) d188 ≠ Foam.Ty09.d209 d191 (Foam.Ty09.d209 d192 d188) :=
+  t466
 
-theorem hurwitz_division_dies :
-    Sed.mul sedA sedB = Sed.zero ∧ sedA ≠ Sed.zero ∧ sedB ≠ Sed.zero :=
-  division_dies
+theorem t486 :
+    Foam.Ty17.d227 d226 d195 = Foam.Ty17.d216 ∧ d226 ≠ Foam.Ty17.d216 ∧ d195 ≠ Foam.Ty17.d216 :=
+  t484
 
-theorem hurwitz_staircase :
-    (∀ z w : GInt, (z.mul w).normSq = z.normSq * w.normSq)
-      ∧ (Octo.mul (Octo.mul eyeO jayO) ell ≠ Octo.mul eyeO (Octo.mul jayO ell))
-      ∧ (Sed.mul sedA sedB = Sed.zero ∧ sedA ≠ Sed.zero ∧ sedB ≠ Sed.zero) :=
-  ⟨GInt.normSq_mul, non_assoc, division_dies⟩
+theorem t487 :
+    (∀ z w : Ty05, (z.d112 w).d114 = z.d114 * w.d114)
+      ∧ (Foam.Ty09.d209 (Foam.Ty09.d209 d191 d192) d188 ≠ Foam.Ty09.d209 d191 (Foam.Ty09.d209 d192 d188))
+      ∧ (Foam.Ty17.d227 d226 d195 = Foam.Ty17.d216 ∧ d226 ≠ Foam.Ty17.d216 ∧ d195 ≠ Foam.Ty17.d216) :=
+  ⟨Foam.Ty05.t212, t466, t484⟩
 
-/-- info: 'Foam.hurwitz_composition' does not depend on any axioms -/
-#guard_msgs in #print axioms hurwitz_composition
+/-- info: 'Foam.t297' does not depend on any axioms -/
+#guard_msgs in #print axioms t297
 
-/-- info: 'Foam.frobenius_assoc_dies' does not depend on any axioms -/
-#guard_msgs in #print axioms frobenius_assoc_dies
+/-- info: 'Foam.t460' does not depend on any axioms -/
+#guard_msgs in #print axioms t460
 
-/-- info: 'Foam.hurwitz_division_dies' does not depend on any axioms -/
-#guard_msgs in #print axioms hurwitz_division_dies
+/-- info: 'Foam.t486' does not depend on any axioms -/
+#guard_msgs in #print axioms t486
 
-/-- info: 'Foam.hurwitz_staircase' does not depend on any axioms -/
-#guard_msgs in #print axioms hurwitz_staircase
+/-- info: 'Foam.t487' does not depend on any axioms -/
+#guard_msgs in #print axioms t487
 
 end Foam

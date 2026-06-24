@@ -4,39 +4,39 @@ import Foam.Seat.Schrodinger
 
 namespace Foam
 
-theorem wigner_unitary (z : GInt) : (GInt.rot z).normSq = z.normSq :=
-  evolve_unitary z
+theorem t330 (z : Ty05) : (Foam.Ty05.d115 z).d114 = z.d114 :=
+  t280 z
 
-theorem wigner_antiunitary (z : GInt) : z.conj.normSq = z.normSq :=
-  GInt.normSq_conj z
+theorem t328 (z : Ty05) : z.d110.d114 = z.d114 :=
+  Foam.Ty05.t211 z
 
-theorem wigner_two_kinds : Char.chi ≠ Char.chiBar :=
-  Char.chi_distinct_chiBar
+theorem t407 : Foam.d103 ≠ Foam.d162 :=
+  Foam.t342
 
-theorem wigner_classification (a b : Rot) :
-    Char.chi (a * b) = GInt.mul (Char.chi a) (Char.chi b) :=
-  Char.chi_hom a b
+theorem t329 (a b : Ty12) :
+    Foam.d103 (a * b) = Foam.Ty05.d112 (Foam.d103 a) (Foam.d103 b) :=
+  Foam.t201 a b
 
-theorem wigner (z : GInt) :
-    ((GInt.rot z).normSq = z.normSq)
-      ∧ (z.conj.normSq = z.normSq)
-      ∧ (Char.chi ≠ Char.chiBar)
-      ∧ (∀ a b, Char.chi (a * b) = GInt.mul (Char.chi a) (Char.chi b)) :=
-  ⟨evolve_unitary z, GInt.normSq_conj z, Char.chi_distinct_chiBar, Char.chi_hom⟩
+theorem t406 (z : Ty05) :
+    ((Foam.Ty05.d115 z).d114 = z.d114)
+      ∧ (z.d110.d114 = z.d114)
+      ∧ (Foam.d103 ≠ Foam.d162)
+      ∧ (∀ a b, Foam.d103 (a * b) = Foam.Ty05.d112 (Foam.d103 a) (Foam.d103 b)) :=
+  ⟨t280 z, Foam.Ty05.t211 z, Foam.t342, Foam.t201⟩
 
-/-- info: 'Foam.wigner_unitary' does not depend on any axioms -/
-#guard_msgs in #print axioms wigner_unitary
+/-- info: 'Foam.t330' does not depend on any axioms -/
+#guard_msgs in #print axioms t330
 
-/-- info: 'Foam.wigner_antiunitary' does not depend on any axioms -/
-#guard_msgs in #print axioms wigner_antiunitary
+/-- info: 'Foam.t328' does not depend on any axioms -/
+#guard_msgs in #print axioms t328
 
-/-- info: 'Foam.wigner_two_kinds' does not depend on any axioms -/
-#guard_msgs in #print axioms wigner_two_kinds
+/-- info: 'Foam.t407' does not depend on any axioms -/
+#guard_msgs in #print axioms t407
 
-/-- info: 'Foam.wigner_classification' does not depend on any axioms -/
-#guard_msgs in #print axioms wigner_classification
+/-- info: 'Foam.t329' does not depend on any axioms -/
+#guard_msgs in #print axioms t329
 
-/-- info: 'Foam.wigner' does not depend on any axioms -/
-#guard_msgs in #print axioms wigner
+/-- info: 'Foam.t406' does not depend on any axioms -/
+#guard_msgs in #print axioms t406
 
 end Foam

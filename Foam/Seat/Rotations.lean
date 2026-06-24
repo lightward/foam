@@ -4,29 +4,28 @@ import Foam.Seat.Closure
 
 namespace Foam
 
-open Foam.FInt (add_assoc add_left_neg add_right_neg zero_add two_mul mul_eq_zero sub_zero)
 
-theorem ellipticRot_closes : Closes GInt.rot 4 := spec_closes_four
+theorem t279 : t137 Foam.Ty05.d115 4 := t322
 
-theorem ellipticRot_turns : (Rot.r1 * Rot.r1 : Rot) ≠ 1 := Rot.clock_turns
+theorem t165 : (Foam.Ty12.c2 * Foam.Ty12.c2 : Ty12) ≠ 1 := Foam.Ty12.t151
 
-theorem parabolicBoost_add (v1 v2 : Int) (z : DInt) :
-    galileanBoost v2 (galileanBoost v1 z) = galileanBoost (v2 + v1) z :=
-  galilean_velocities_add v1 v2 z
+theorem t308 (v1 v2 : Int) (z : Ty03) :
+    d146 v2 (d146 v1 z) = d146 (v2 + v1) z :=
+  t290 v1 v2 z
 
-theorem parabolicBoost_never_closes (v : Int) (hv : v ≠ 0) :
-    galileanBoost v ⟨1, 0⟩ ≠ (⟨1, 0⟩ : DInt) := by
+theorem t309 (v : Int) (hv : v ≠ 0) :
+    d146 v ⟨1, 0⟩ ≠ (⟨1, 0⟩ : Ty03) := by
   intro h
-  have hx : v * 1 + 0 = 0 := congrArg DInt.x h
-  rw [Foam.FInt.mul_one, Int.add_zero] at hx
+  have hx : v * 1 + 0 = 0 := congrArg Foam.Ty03.d037 h
+  rw [Foam.t020, Int.add_zero] at hx
   exact hv hx
 
-theorem int_add_left_cancel (a x y : Int) (h : a + x = a + y) : x = y := by
+theorem t077 (a x y : Int) (h : a + x = a + y) : x = y := by
   have h2 : -a + (a + x) = -a + (a + y) := congrArg (-a + ·) h
-  rw [← add_assoc, ← add_assoc, add_left_neg, zero_add, zero_add] at h2
+  rw [← t005, ← t005, t006, t054, t054] at h2
   exact h2
 
-theorem nat_mul_eq_one : ∀ (m n : Nat), m * n = 1 → m = 1 ∧ n = 1
+theorem t083 : ∀ (m n : Nat), m * n = 1 → m = 1 ∧ n = 1
   | 0, n, h => by rw [Nat.zero_mul] at h; exact Nat.noConfusion h
   | _ + 1, 0, h => by rw [Nat.mul_zero] at h; exact Nat.noConfusion h
   | j + 1, k + 1, h => by
@@ -39,10 +38,10 @@ theorem nat_mul_eq_one : ∀ (m n : Nat), m * n = 1 → m = 1 ∧ n = 1
     rw [Nat.one_mul] at h
     exact ⟨rfl, congrArg Nat.succ (Nat.succ.inj h)⟩
 
-theorem int_mul_eq_one : ∀ (x y : Int), x * y = 1 → (x = 1 ∧ y = 1) ∨ (x = -1 ∧ y = -1)
+theorem t080 : ∀ (x y : Int), x * y = 1 → (x = 1 ∧ y = 1) ∨ (x = -1 ∧ y = -1)
   | Int.ofNat m, Int.ofNat n, h => by
     have h2 : Int.ofNat (m * n) = Int.ofNat 1 := h
-    obtain ⟨hm, hn⟩ := nat_mul_eq_one m n (Int.ofNat.inj h2)
+    obtain ⟨hm, hn⟩ := t083 m n (Int.ofNat.inj h2)
     subst hm; subst hn; exact Or.inl ⟨rfl, rfl⟩
   | Int.ofNat m, Int.negSucc n, h => by
     exfalso
@@ -58,71 +57,71 @@ theorem int_mul_eq_one : ∀ (x y : Int), x * y = 1 → (x = 1 ∧ y = 1) ∨ (x
     | succ s => rw [hk] at h'; exact Int.noConfusion h'
   | Int.negSucc m, Int.negSucc n, h => by
     have h2 : Int.ofNat ((m + 1) * (n + 1)) = Int.ofNat 1 := h
-    obtain ⟨hm, hn⟩ := nat_mul_eq_one (m + 1) (n + 1) (Int.ofNat.inj h2)
+    obtain ⟨hm, hn⟩ := t083 (m + 1) (n + 1) (Int.ofNat.inj h2)
     have hm0 : m = 0 := Nat.succ.inj hm
     have hn0 : n = 0 := Nat.succ.inj hn
     subst hm0; subst hn0; exact Or.inr ⟨rfl, rfl⟩
 
-theorem int_pell_one (a b : Int) (h : a * a - b * b = 1) :
+theorem t081 (a b : Int) (h : a * a - b * b = 1) :
     (a = 1 ∧ b = 0) ∨ (a = -1 ∧ b = 0) := by
-  rw [int_sq_diff a b] at h
+  rw [t082 a b] at h
   have key : (a - b) = (a + b) → b = 0 := by
     intro heq
     rw [Int.sub_eq_add_neg] at heq
-    have hnb : -b = b := int_add_left_cancel a (-b) b heq
+    have hnb : -b = b := t077 a (-b) b heq
     have hbb : b + b = 0 := by
-      have hh := add_right_neg b
+      have hh := t008 b
       rw [hnb] at hh
       exact hh
     have hcancel : (b + b) = 0 → b = 0 := by
       intro hbb0
-      have h2 : b + b = 2 * b := by rw [two_mul]
+      have h2 : b + b = 2 * b := by rw [t053]
       rw [h2] at hbb0
-      rcases mul_eq_zero.mp hbb0 with h20 | hb
+      rcases t017.mp hbb0 with h20 | hb
       · exact absurd h20 (by decide)
       · exact hb
     exact hcancel hbb
-  cases int_mul_eq_one (a - b) (a + b) h with
+  cases t080 (a - b) (a + b) h with
   | inl hpq =>
     obtain ⟨hp, hq⟩ := hpq
     have hb0 : b = 0 := key (hp.trans hq.symm)
-    rw [hb0, sub_zero] at hp
+    rw [hb0, t052] at hp
     exact Or.inl ⟨hp, hb0⟩
   | inr hpq =>
     obtain ⟨hp, hq⟩ := hpq
     have hb0 : b = 0 := key (hp.trans hq.symm)
-    rw [hb0, sub_zero] at hp
+    rw [hb0, t052] at hp
     exact Or.inr ⟨hp, hb0⟩
 
-theorem hyperbolicRot_trivial (a b : Int) (h : SInt.hnorm ⟨a, b⟩ = 1) :
+theorem t298 (a b : Int) (h : Foam.Ty14.d130 ⟨a, b⟩ = 1) :
     (a = 1 ∧ b = 0) ∨ (a = -1 ∧ b = 0) :=
-  int_pell_one a b h
+  t081 a b h
 
-/-- info: 'Foam.ellipticRot_closes' does not depend on any axioms -/
-#guard_msgs in #print axioms ellipticRot_closes
+/-- info: 'Foam.t279' does not depend on any axioms -/
+#guard_msgs in #print axioms t279
 
-/-- info: 'Foam.ellipticRot_turns' does not depend on any axioms -/
-#guard_msgs in #print axioms ellipticRot_turns
+/-- info: 'Foam.t165' does not depend on any axioms -/
+#guard_msgs in #print axioms t165
 
-/-- info: 'Foam.parabolicBoost_add' does not depend on any axioms -/
-#guard_msgs in #print axioms parabolicBoost_add
+/-- info: 'Foam.t308' does not depend on any axioms -/
+#guard_msgs in #print axioms t308
 
-/-- info: 'Foam.parabolicBoost_never_closes' does not depend on any axioms -/
-#guard_msgs in #print axioms parabolicBoost_never_closes
+/-- info: 'Foam.t309' does not depend on any axioms -/
+#guard_msgs in #print axioms t309
 
-/-- info: 'Foam.int_add_left_cancel' does not depend on any axioms -/
-#guard_msgs in #print axioms int_add_left_cancel
+/-- info: 'Foam.t077' does not depend on any axioms -/
+#guard_msgs in #print axioms t077
 
-/-- info: 'Foam.nat_mul_eq_one' does not depend on any axioms -/
-#guard_msgs in #print axioms nat_mul_eq_one
+/-- info: 'Foam.t083' does not depend on any axioms -/
+#guard_msgs in #print axioms t083
 
-/-- info: 'Foam.int_mul_eq_one' does not depend on any axioms -/
-#guard_msgs in #print axioms int_mul_eq_one
+/-- info: 'Foam.t080' does not depend on any axioms -/
+#guard_msgs in #print axioms t080
 
-/-- info: 'Foam.int_pell_one' does not depend on any axioms -/
-#guard_msgs in #print axioms int_pell_one
+/-- info: 'Foam.t081' does not depend on any axioms -/
+#guard_msgs in #print axioms t081
 
-/-- info: 'Foam.hyperbolicRot_trivial' does not depend on any axioms -/
-#guard_msgs in #print axioms hyperbolicRot_trivial
+/-- info: 'Foam.t298' does not depend on any axioms -/
+#guard_msgs in #print axioms t298
 
 end Foam

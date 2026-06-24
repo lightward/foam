@@ -2,46 +2,46 @@ import Foam.Engine.Spectrum
 
 namespace Foam
 
-def evalFrom {S : Type} [DecidableEq S] (step : GInt → GInt) : List S → S → GInt → GInt
+def d091 {S : Type} [DecidableEq S] (step : Ty05 → Ty05) : List S → S → Ty05 → Ty05
   | [], _, z => z
-  | x :: l, s, z => (if x = s then GInt.one else GInt.zero).add (step (evalFrom step l s z))
+  | x :: l, s, z => (if x = s then Foam.Ty05.d042 else Foam.Ty05.d044).d108 (step (d091 step l s z))
 
-theorem held_exact {S : Type} [DecidableEq S] (step : GInt → GInt) (s : S) (z : GInt) :
-    evalFrom step [] s z = z := rfl
+theorem t172 {S : Type} [DecidableEq S] (step : Ty05 → Ty05) (s : S) (z : Ty05) :
+    d091 step [] s z = z := rfl
 
-theorem summary_resumes {S : Type} [DecidableEq S] (step : GInt → GInt) :
+theorem t197 {S : Type} [DecidableEq S] (step : Ty05 → Ty05) :
     ∀ (new old : List S) (s : S),
-      evalAt step (new ++ old) s = evalFrom step new s (evalAt step old s)
+      d089 step (new ++ old) s = d091 step new s (d089 step old s)
   | [], _, _ => rfl
   | x :: new, old, s =>
-      congrArg (fun z => (if x = s then GInt.one else GInt.zero).add (step z))
-        (summary_resumes step new old s)
+      congrArg (fun z => (if x = s then Foam.Ty05.d042 else Foam.Ty05.d044).d108 (step z))
+        (t197 step new old s)
 
-theorem evalAt_from_blank {S : Type} [DecidableEq S] (step : GInt → GInt) :
-    ∀ (l : List S) (s : S), evalAt step l s = evalFrom step l s GInt.zero
+theorem t167 {S : Type} [DecidableEq S] (step : Ty05 → Ty05) :
+    ∀ (l : List S) (s : S), d089 step l s = d091 step l s Foam.Ty05.d044
   | [], _ => rfl
   | x :: l, s =>
-      congrArg (fun z => (if x = s then GInt.one else GInt.zero).add (step z))
-        (evalAt_from_blank step l s)
+      congrArg (fun z => (if x = s then Foam.Ty05.d042 else Foam.Ty05.d044).d108 (step z))
+        (t167 step l s)
 
-theorem count_resumes {S : Type} [DecidableEq S] (new old : List S) (s : S) :
-    evalAt id (new ++ old) s = evalFrom id new s (evalAt id old s) :=
-  summary_resumes id new old s
+theorem t162 {S : Type} [DecidableEq S] (new old : List S) (s : S) :
+    d089 id (new ++ old) s = d091 id new s (d089 id old s) :=
+  t197 id new old s
 
-theorem spec_resumes {S : Type} [DecidableEq S] (new old : List S) (s : S) :
-    evalAt GInt.rot (new ++ old) s = evalFrom GInt.rot new s (evalAt GInt.rot old s) :=
-  summary_resumes GInt.rot new old s
+theorem t323 {S : Type} [DecidableEq S] (new old : List S) (s : S) :
+    d089 Foam.Ty05.d115 (new ++ old) s = d091 Foam.Ty05.d115 new s (d089 Foam.Ty05.d115 old s) :=
+  t197 Foam.Ty05.d115 new old s
 
-/-- info: 'Foam.summary_resumes' does not depend on any axioms -/
-#guard_msgs in #print axioms summary_resumes
+/-- info: 'Foam.t197' does not depend on any axioms -/
+#guard_msgs in #print axioms t197
 
-/-- info: 'Foam.evalAt_from_blank' does not depend on any axioms -/
-#guard_msgs in #print axioms evalAt_from_blank
+/-- info: 'Foam.t167' does not depend on any axioms -/
+#guard_msgs in #print axioms t167
 
-/-- info: 'Foam.count_resumes' does not depend on any axioms -/
-#guard_msgs in #print axioms count_resumes
+/-- info: 'Foam.t162' does not depend on any axioms -/
+#guard_msgs in #print axioms t162
 
-/-- info: 'Foam.spec_resumes' does not depend on any axioms -/
-#guard_msgs in #print axioms spec_resumes
+/-- info: 'Foam.t323' does not depend on any axioms -/
+#guard_msgs in #print axioms t323
 
 end Foam

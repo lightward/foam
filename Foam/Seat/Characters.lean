@@ -4,364 +4,362 @@ import Foam.Seat.Born
 
 namespace Foam
 
-open Foam.FInt (addComm add_assoc add_right_neg neg_add zero_add zero_mul
-  mul_zero mul_one mul_neg_one sub_zero)
 
-def Char.count : Rot → GInt
+def d032 : Ty12 → Ty05
   | _ => ⟨1, 0⟩
 
-def Char.alt : Rot → GInt
-  | .r0 => ⟨1, 0⟩
-  | .r1 => ⟨-1, 0⟩
-  | .r2 => ⟨1, 0⟩
-  | .r3 => ⟨-1, 0⟩
+def d031 : Ty12 → Ty05
+  | Foam.Ty12.c1 => ⟨1, 0⟩
+  | Foam.Ty12.c2 => ⟨-1, 0⟩
+  | Foam.Ty12.c3 => ⟨1, 0⟩
+  | Foam.Ty12.c4 => ⟨-1, 0⟩
 
-def Char.chi : Rot → GInt := Rot.amp
+def d103 : Ty12 → Ty05 := Foam.Ty12.d063
 
-def Char.chiBar : Rot → GInt := fun a => GInt.conj (Rot.amp a)
+def d162 : Ty12 → Ty05 := fun a => Foam.Ty05.d110 (Foam.Ty12.d063 a)
 
-theorem Char.count_hom (a b : Rot) :
-    Char.count (a * b) = GInt.mul (Char.count a) (Char.count b) := by
+theorem t203 (a b : Ty12) :
+    Foam.d032 (a * b) = Foam.Ty05.d112 (Foam.d032 a) (Foam.d032 b) := by
   cases a <;> cases b <;> decide
 
-theorem Char.alt_hom (a b : Rot) :
-    Char.alt (a * b) = GInt.mul (Char.alt a) (Char.alt b) := by
+theorem t199 (a b : Ty12) :
+    Foam.d031 (a * b) = Foam.Ty05.d112 (Foam.d031 a) (Foam.d031 b) := by
   cases a <;> cases b <;> decide
 
-theorem Char.chi_hom (a b : Rot) :
-    Char.chi (a * b) = GInt.mul (Char.chi a) (Char.chi b) := by
+theorem t201 (a b : Ty12) :
+    Foam.d103 (a * b) = Foam.Ty05.d112 (Foam.d103 a) (Foam.d103 b) := by
   cases a <;> cases b <;> decide
 
-theorem Char.chiBar_hom (a b : Rot) :
-    Char.chiBar (a * b) = GInt.mul (Char.chiBar a) (Char.chiBar b) := by
+theorem t338 (a b : Ty12) :
+    Foam.d162 (a * b) = Foam.Ty05.d112 (Foam.d162 a) (Foam.d162 b) := by
   cases a <;> cases b <;> decide
 
-theorem Char.count_unit (a : Rot) : (Char.count a).normSq = 1 := by
+theorem t204 (a : Ty12) : (Foam.d032 a).d114 = 1 := by
   cases a <;> decide
 
-theorem Char.alt_unit (a : Rot) : (Char.alt a).normSq = 1 := by
+theorem t200 (a : Ty12) : (Foam.d031 a).d114 = 1 := by
   cases a <;> decide
 
-theorem Char.chi_unit (a : Rot) : (Char.chi a).normSq = 1 := by
+theorem t202 (a : Ty12) : (Foam.d103 a).d114 = 1 := by
   cases a <;> decide
 
-theorem Char.chiBar_unit (a : Rot) : (Char.chiBar a).normSq = 1 := by
+theorem t340 (a : Ty12) : (Foam.d162 a).d114 = 1 := by
   cases a <;> decide
 
-def Char.inner (f g : Rot → GInt) : GInt :=
-  GInt.add
-    (GInt.add (GInt.mul (f .r0) (GInt.conj (g .r0))) (GInt.mul (f .r1) (GInt.conj (g .r1))))
-    (GInt.add (GInt.mul (f .r2) (GInt.conj (g .r2))) (GInt.mul (f .r3) (GInt.conj (g .r3))))
+def d164 (f g : Ty12 → Ty05) : Ty05 :=
+  Foam.Ty05.d108
+    (Foam.Ty05.d108 (Foam.Ty05.d112 (f Foam.Ty12.c1) (Foam.Ty05.d110 (g Foam.Ty12.c1))) (Foam.Ty05.d112 (f Foam.Ty12.c2) (Foam.Ty05.d110 (g Foam.Ty12.c2))))
+    (Foam.Ty05.d108 (Foam.Ty05.d112 (f Foam.Ty12.c3) (Foam.Ty05.d110 (g Foam.Ty12.c3))) (Foam.Ty05.d112 (f Foam.Ty12.c4) (Foam.Ty05.d110 (g Foam.Ty12.c4))))
 
-theorem Char.count_norm : Char.inner Char.count Char.count = ⟨4, 0⟩ := by decide
-theorem Char.alt_norm : Char.inner Char.alt Char.alt = ⟨4, 0⟩ := by decide
-theorem Char.chi_norm : Char.inner Char.chi Char.chi = ⟨4, 0⟩ := by decide
-theorem Char.chiBar_norm : Char.inner Char.chiBar Char.chiBar = ⟨4, 0⟩ := by decide
+theorem t347 : Foam.d164 Foam.d032 Foam.d032 = ⟨4, 0⟩ := by decide
+theorem t337 : Foam.d164 Foam.d031 Foam.d031 = ⟨4, 0⟩ := by decide
+theorem t343 : Foam.d164 Foam.d103 Foam.d103 = ⟨4, 0⟩ := by decide
+theorem t339 : Foam.d164 Foam.d162 Foam.d162 = ⟨4, 0⟩ := by decide
 
-theorem Char.count_alt_orth : Char.inner Char.count Char.alt = GInt.zero := by decide
-theorem Char.count_chi_orth : Char.inner Char.count Char.chi = GInt.zero := by decide
-theorem Char.count_chiBar_orth : Char.inner Char.count Char.chiBar = GInt.zero := by decide
-theorem Char.alt_chi_orth : Char.inner Char.alt Char.chi = GInt.zero := by decide
-theorem Char.alt_chiBar_orth : Char.inner Char.alt Char.chiBar = GInt.zero := by decide
-theorem Char.chi_chiBar_orth : Char.inner Char.chi Char.chiBar = GInt.zero := by decide
+theorem t344 : Foam.d164 Foam.d032 Foam.d031 = Foam.Ty05.d044 := by decide
+theorem t346 : Foam.d164 Foam.d032 Foam.d103 = Foam.Ty05.d044 := by decide
+theorem t345 : Foam.d164 Foam.d032 Foam.d162 = Foam.Ty05.d044 := by decide
+theorem t336 : Foam.d164 Foam.d031 Foam.d103 = Foam.Ty05.d044 := by decide
+theorem t335 : Foam.d164 Foam.d031 Foam.d162 = Foam.Ty05.d044 := by decide
+theorem t341 : Foam.d164 Foam.d103 Foam.d162 = Foam.Ty05.d044 := by decide
 
-theorem Char.chi_distinct_chiBar : Char.chi ≠ Char.chiBar := by
+theorem t342 : Foam.d103 ≠ Foam.d162 := by
   intro h
-  have : Char.chi .r1 = Char.chiBar .r1 := by rw [h]
+  have : Foam.d103 Foam.Ty12.c2 = Foam.d162 Foam.Ty12.c2 := by rw [h]
   exact absurd this (by decide)
 
-theorem Char.alt_distinct_count : Char.alt ≠ Char.count := by
+theorem t136 : Foam.d031 ≠ Foam.d032 := by
   intro h
-  have : Char.alt .r1 = Char.count .r1 := by rw [h]
+  have : Foam.d031 Foam.Ty12.c2 = Foam.d032 Foam.Ty12.c2 := by rw [h]
   exact absurd this (by decide)
 
-def Char.fold (n0 n1 n2 n3 : Int) (f : Rot → GInt) : GInt :=
-  GInt.add
-    (GInt.add (GInt.mul ⟨n0, 0⟩ (f .r0)) (GInt.mul ⟨n1, 0⟩ (f .r1)))
-    (GInt.add (GInt.mul ⟨n2, 0⟩ (f .r2)) (GInt.mul ⟨n3, 0⟩ (f .r3)))
+def d163 (n0 n1 n2 n3 : Int) (f : Ty12 → Ty05) : Ty05 :=
+  Foam.Ty05.d108
+    (Foam.Ty05.d108 (Foam.Ty05.d112 ⟨n0, 0⟩ (f Foam.Ty12.c1)) (Foam.Ty05.d112 ⟨n1, 0⟩ (f Foam.Ty12.c2)))
+    (Foam.Ty05.d108 (Foam.Ty05.d112 ⟨n2, 0⟩ (f Foam.Ty12.c3)) (Foam.Ty05.d112 ⟨n3, 0⟩ (f Foam.Ty12.c4)))
 
-def Char.readBal (n0 n1 n2 n3 : Int) : Int := (Char.fold n0 n1 n2 n3 Char.count).re
-def Char.readAlt (n0 n1 n2 n3 : Int) : Int := (Char.fold n0 n1 n2 n3 Char.alt).re
-def Char.readRe (n0 n1 n2 n3 : Int) : Int := (Char.fold n0 n1 n2 n3 Char.chi).re
-def Char.readIm (n0 n1 n2 n3 : Int) : Int := (Char.fold n0 n1 n2 n3 Char.chi).im
+def d202 (n0 n1 n2 n3 : Int) : Int := (Foam.d163 n0 n1 n2 n3 Foam.d032).d043
+def d201 (n0 n1 n2 n3 : Int) : Int := (Foam.d163 n0 n1 n2 n3 Foam.d031).d043
+def d204 (n0 n1 n2 n3 : Int) : Int := (Foam.d163 n0 n1 n2 n3 Foam.d103).d043
+def d203 (n0 n1 n2 n3 : Int) : Int := (Foam.d163 n0 n1 n2 n3 Foam.d103).d041
 
-theorem GInt.mulReal (n : Int) (w : GInt) :
-    GInt.mul ⟨n, 0⟩ w = ⟨n * w.re, n * w.im⟩ := by
-  show (GInt.mk (n * w.re - 0 * w.im) (n * w.im + 0 * w.re)) = ⟨n * w.re, n * w.im⟩
-  rw [zero_mul, sub_zero, zero_mul, Int.add_zero]
+theorem Ty05.t209 (n : Int) (w : Ty05) :
+    Foam.Ty05.d112 ⟨n, 0⟩ w = ⟨n * w.d043, n * w.d041⟩ := by
+  show (Foam.Ty05.mk (n * w.d043 - 0 * w.d041) (n * w.d041 + 0 * w.d043)) = ⟨n * w.d043, n * w.d041⟩
+  rw [t055, t052, t055, Int.add_zero]
 
-theorem Char.fold_re_components (n0 n1 n2 n3 : Int) (f : Rot → GInt) :
-    (Char.fold n0 n1 n2 n3 f).re
-      = (n0 * (f .r0).re + n1 * (f .r1).re) + (n2 * (f .r2).re + n3 * (f .r3).re) := by
-  show ((GInt.mul ⟨n0,0⟩ (f .r0)).re + (GInt.mul ⟨n1,0⟩ (f .r1)).re
-       + ((GInt.mul ⟨n2,0⟩ (f .r2)).re + (GInt.mul ⟨n3,0⟩ (f .r3)).re))
-     = (n0 * (f .r0).re + n1 * (f .r1).re) + (n2 * (f .r2).re + n3 * (f .r3).re)
-  rw [GInt.mulReal, GInt.mulReal, GInt.mulReal, GInt.mulReal]
+theorem t349 (n0 n1 n2 n3 : Int) (f : Ty12 → Ty05) :
+    (Foam.d163 n0 n1 n2 n3 f).d043
+      = (n0 * (f Foam.Ty12.c1).d043 + n1 * (f Foam.Ty12.c2).d043) + (n2 * (f Foam.Ty12.c3).d043 + n3 * (f Foam.Ty12.c4).d043) := by
+  show ((Foam.Ty05.d112 ⟨n0,0⟩ (f Foam.Ty12.c1)).d043 + (Foam.Ty05.d112 ⟨n1,0⟩ (f Foam.Ty12.c2)).d043
+       + ((Foam.Ty05.d112 ⟨n2,0⟩ (f Foam.Ty12.c3)).d043 + (Foam.Ty05.d112 ⟨n3,0⟩ (f Foam.Ty12.c4)).d043))
+     = (n0 * (f Foam.Ty12.c1).d043 + n1 * (f Foam.Ty12.c2).d043) + (n2 * (f Foam.Ty12.c3).d043 + n3 * (f Foam.Ty12.c4).d043)
+  rw [Foam.Ty05.t209, Foam.Ty05.t209, Foam.Ty05.t209, Foam.Ty05.t209]
 
-theorem Char.fold_im_components (n0 n1 n2 n3 : Int) (f : Rot → GInt) :
-    (Char.fold n0 n1 n2 n3 f).im
-      = (n0 * (f .r0).im + n1 * (f .r1).im) + (n2 * (f .r2).im + n3 * (f .r3).im) := by
-  show ((GInt.mul ⟨n0,0⟩ (f .r0)).im + (GInt.mul ⟨n1,0⟩ (f .r1)).im
-       + ((GInt.mul ⟨n2,0⟩ (f .r2)).im + (GInt.mul ⟨n3,0⟩ (f .r3)).im))
-     = (n0 * (f .r0).im + n1 * (f .r1).im) + (n2 * (f .r2).im + n3 * (f .r3).im)
-  rw [GInt.mulReal, GInt.mulReal, GInt.mulReal, GInt.mulReal]
+theorem t348 (n0 n1 n2 n3 : Int) (f : Ty12 → Ty05) :
+    (Foam.d163 n0 n1 n2 n3 f).d041
+      = (n0 * (f Foam.Ty12.c1).d041 + n1 * (f Foam.Ty12.c2).d041) + (n2 * (f Foam.Ty12.c3).d041 + n3 * (f Foam.Ty12.c4).d041) := by
+  show ((Foam.Ty05.d112 ⟨n0,0⟩ (f Foam.Ty12.c1)).d041 + (Foam.Ty05.d112 ⟨n1,0⟩ (f Foam.Ty12.c2)).d041
+       + ((Foam.Ty05.d112 ⟨n2,0⟩ (f Foam.Ty12.c3)).d041 + (Foam.Ty05.d112 ⟨n3,0⟩ (f Foam.Ty12.c4)).d041))
+     = (n0 * (f Foam.Ty12.c1).d041 + n1 * (f Foam.Ty12.c2).d041) + (n2 * (f Foam.Ty12.c3).d041 + n3 * (f Foam.Ty12.c4).d041)
+  rw [Foam.Ty05.t209, Foam.Ty05.t209, Foam.Ty05.t209, Foam.Ty05.t209]
 
-theorem Char.readBal_eq (n0 n1 n2 n3 : Int) :
-    Char.readBal n0 n1 n2 n3 = n0 + n1 + n2 + n3 := by
-  show (Char.fold n0 n1 n2 n3 Char.count).re = n0 + n1 + n2 + n3
-  rw [Char.fold_re_components n0 n1 n2 n3 Char.count]
+theorem t419 (n0 n1 n2 n3 : Int) :
+    Foam.d202 n0 n1 n2 n3 = n0 + n1 + n2 + n3 := by
+  show (Foam.d163 n0 n1 n2 n3 Foam.d032).d043 = n0 + n1 + n2 + n3
+  rw [Foam.t349 n0 n1 n2 n3 Foam.d032]
   show (n0 * 1 + n1 * 1) + (n2 * 1 + n3 * 1) = n0 + n1 + n2 + n3
-  rw [mul_one, mul_one, mul_one, mul_one, ← add_assoc (n0 + n1) n2 n3]
+  rw [t020, t020, t020, t020, ← t005 (n0 + n1) n2 n3]
 
-theorem Char.readAlt_eq (n0 n1 n2 n3 : Int) :
-    Char.readAlt n0 n1 n2 n3 = n0 + -n1 + n2 + -n3 := by
-  show (Char.fold n0 n1 n2 n3 Char.alt).re = n0 + -n1 + n2 + -n3
-  rw [Char.fold_re_components n0 n1 n2 n3 Char.alt]
+theorem t418 (n0 n1 n2 n3 : Int) :
+    Foam.d201 n0 n1 n2 n3 = n0 + -n1 + n2 + -n3 := by
+  show (Foam.d163 n0 n1 n2 n3 Foam.d031).d043 = n0 + -n1 + n2 + -n3
+  rw [Foam.t349 n0 n1 n2 n3 Foam.d031]
   show (n0 * 1 + n1 * (-1)) + (n2 * 1 + n3 * (-1)) = n0 + -n1 + n2 + -n3
-  rw [mul_one, mul_one, mul_neg_one, mul_neg_one, ← add_assoc (n0 + -n1) n2 (-n3)]
+  rw [t020, t020, t019, t019, ← t005 (n0 + -n1) n2 (-n3)]
 
-theorem Char.readRe_eq (n0 n1 n2 n3 : Int) :
-    Char.readRe n0 n1 n2 n3 = n0 + -n2 := by
-  show (Char.fold n0 n1 n2 n3 Char.chi).re = n0 + -n2
-  rw [Char.fold_re_components n0 n1 n2 n3 Char.chi]
+theorem t421 (n0 n1 n2 n3 : Int) :
+    Foam.d204 n0 n1 n2 n3 = n0 + -n2 := by
+  show (Foam.d163 n0 n1 n2 n3 Foam.d103).d043 = n0 + -n2
+  rw [Foam.t349 n0 n1 n2 n3 Foam.d103]
   show (n0 * 1 + n1 * 0) + (n2 * (-1) + n3 * 0) = n0 + -n2
-  rw [mul_one, mul_zero, mul_neg_one, mul_zero, Int.add_zero, Int.add_zero]
+  rw [t020, t022, t019, t022, Int.add_zero, Int.add_zero]
 
-theorem Char.readIm_eq (n0 n1 n2 n3 : Int) :
-    Char.readIm n0 n1 n2 n3 = n1 + -n3 := by
-  show (Char.fold n0 n1 n2 n3 Char.chi).im = n1 + -n3
-  rw [Char.fold_im_components n0 n1 n2 n3 Char.chi]
+theorem t420 (n0 n1 n2 n3 : Int) :
+    Foam.d203 n0 n1 n2 n3 = n1 + -n3 := by
+  show (Foam.d163 n0 n1 n2 n3 Foam.d103).d041 = n1 + -n3
+  rw [Foam.t348 n0 n1 n2 n3 Foam.d103]
   show (n0 * 0 + n1 * 1) + (n2 * 0 + n3 * (-1)) = n1 + -n3
-  rw [mul_one, mul_zero, mul_neg_one, mul_zero, zero_add, zero_add]
+  rw [t020, t022, t019, t022, t054, t054]
 
-def Char.twice (a : Int) : Int := a + a
+def d001 (a : Int) : Int := a + a
 
-theorem Char.four_swap (a b c d : Int) : a + b + c + d = (a + c) + (b + d) := by
-  rw [add_assoc (a + b) c d, add_assoc a b (c + d),
-    ← add_assoc b c d, addComm b c, add_assoc c b d,
-    ← add_assoc a c (b + d)]
+theorem t002 (a b c d : Int) : a + b + c + d = (a + c) + (b + d) := by
+  rw [t005 (a + b) c d, t005 a b (c + d),
+    ← t005 b c d, t004 b c, t005 c b d,
+    ← t005 a c (b + d)]
 
-theorem Char.sub_pair (a b c d : Int) : a + -b + c + -d = (a + c) + -(b + d) := by
-  rw [Char.four_swap a (-b) c (-d), ← neg_add]
+theorem t003 (a b c d : Int) : a + -b + c + -d = (a + c) + -(b + d) := by
+  rw [Foam.t002 a (-b) c (-d), ← t025]
 
-theorem Char.sum_diff (x y : Int) : (x + y) + (x + -y) = Char.twice x := by
-  rw [← add_assoc (x + y) x (-y), Char.four_swap x y x (-y),
-    add_right_neg y, Int.add_zero]
+theorem t090 (x y : Int) : (x + y) + (x + -y) = Foam.d001 x := by
+  rw [← t005 (x + y) x (-y), Foam.t002 x y x (-y),
+    t008 y, Int.add_zero]
   rfl
 
-theorem Char.diff_sum (x y : Int) : (x + y) + -(x + -y) = Char.twice y := by
-  rw [neg_add, Int.neg_neg y, ← add_assoc (x + y) (-x) y,
-    Char.four_swap x y (-x) y, add_right_neg x, zero_add]
+theorem t089 (x y : Int) : (x + y) + -(x + -y) = Foam.d001 y := by
+  rw [t025, Int.neg_neg y, ← t005 (x + y) (-x) y,
+    Foam.t002 x y (-x) y, t008 x, t054]
   rfl
 
-theorem Char.twice_add (a b : Int) : Char.twice (a + b) = Char.twice a + Char.twice b := by
+theorem t091 (a b : Int) : Foam.d001 (a + b) = Foam.d001 a + Foam.d001 b := by
   show (a + b) + (a + b) = (a + a) + (b + b)
-  rw [← add_assoc (a + b) a b, Char.four_swap a b a b]
+  rw [← t005 (a + b) a b, Foam.t002 a b a b]
 
-theorem Char.twice_sub (a b : Int) : Char.twice (a + -b) = Char.twice a + -Char.twice b := by
+theorem t092 (a b : Int) : Foam.d001 (a + -b) = Foam.d001 a + -Foam.d001 b := by
   show (a + -b) + (a + -b) = (a + a) + -(b + b)
-  rw [← add_assoc (a + -b) a (-b), Char.four_swap a (-b) a (-b), neg_add]
+  rw [← t005 (a + -b) a (-b), Foam.t002 a (-b) a (-b), t025]
 
-theorem Char.bal_add_alt (n0 n1 n2 n3 : Int) :
-    Char.readBal n0 n1 n2 n3 + Char.readAlt n0 n1 n2 n3 = Char.twice (n0 + n2) := by
-  rw [Char.readBal_eq, Char.readAlt_eq, Char.four_swap n0 n1 n2 n3,
-    Char.sub_pair n0 n1 n2 n3, Char.sum_diff (n0 + n2) (n1 + n3)]
+theorem t412 (n0 n1 n2 n3 : Int) :
+    Foam.d202 n0 n1 n2 n3 + Foam.d201 n0 n1 n2 n3 = Foam.d001 (n0 + n2) := by
+  rw [Foam.t419, Foam.t418, Foam.t002 n0 n1 n2 n3,
+    Foam.t003 n0 n1 n2 n3, Foam.t090 (n0 + n2) (n1 + n3)]
 
-theorem Char.bal_sub_alt (n0 n1 n2 n3 : Int) :
-    Char.readBal n0 n1 n2 n3 + -Char.readAlt n0 n1 n2 n3 = Char.twice (n1 + n3) := by
-  rw [Char.readBal_eq, Char.readAlt_eq, Char.four_swap n0 n1 n2 n3,
-    Char.sub_pair n0 n1 n2 n3, Char.diff_sum (n0 + n2) (n1 + n3)]
+theorem t414 (n0 n1 n2 n3 : Int) :
+    Foam.d202 n0 n1 n2 n3 + -Foam.d201 n0 n1 n2 n3 = Foam.d001 (n1 + n3) := by
+  rw [Foam.t419, Foam.t418, Foam.t002 n0 n1 n2 n3,
+    Foam.t003 n0 n1 n2 n3, Foam.t089 (n0 + n2) (n1 + n3)]
 
-theorem Char.recover_bin0 (n0 n1 n2 n3 : Int) :
-    (Char.readBal n0 n1 n2 n3 + Char.readAlt n0 n1 n2 n3)
-      + Char.twice (Char.readRe n0 n1 n2 n3) = Char.twice (Char.twice n0) := by
-  rw [Char.bal_add_alt, Char.readRe_eq, ← Char.twice_add (n0 + n2) (n0 + -n2),
-    Char.sum_diff n0 n2]
+theorem t422 (n0 n1 n2 n3 : Int) :
+    (Foam.d202 n0 n1 n2 n3 + Foam.d201 n0 n1 n2 n3)
+      + Foam.d001 (Foam.d204 n0 n1 n2 n3) = Foam.d001 (Foam.d001 n0) := by
+  rw [Foam.t412, Foam.t421, ← Foam.t091 (n0 + n2) (n0 + -n2),
+    Foam.t090 n0 n2]
 
-theorem Char.recover_bin2 (n0 n1 n2 n3 : Int) :
-    (Char.readBal n0 n1 n2 n3 + Char.readAlt n0 n1 n2 n3)
-      + -Char.twice (Char.readRe n0 n1 n2 n3) = Char.twice (Char.twice n2) := by
-  rw [Char.bal_add_alt, Char.readRe_eq, ← Char.twice_sub (n0 + n2) (n0 + -n2),
-    Char.diff_sum n0 n2]
+theorem t424 (n0 n1 n2 n3 : Int) :
+    (Foam.d202 n0 n1 n2 n3 + Foam.d201 n0 n1 n2 n3)
+      + -Foam.d001 (Foam.d204 n0 n1 n2 n3) = Foam.d001 (Foam.d001 n2) := by
+  rw [Foam.t412, Foam.t421, ← Foam.t092 (n0 + n2) (n0 + -n2),
+    Foam.t089 n0 n2]
 
-theorem Char.recover_bin1 (n0 n1 n2 n3 : Int) :
-    (Char.readBal n0 n1 n2 n3 + -Char.readAlt n0 n1 n2 n3)
-      + Char.twice (Char.readIm n0 n1 n2 n3) = Char.twice (Char.twice n1) := by
-  rw [Char.bal_sub_alt, Char.readIm_eq, ← Char.twice_add (n1 + n3) (n1 + -n3),
-    Char.sum_diff n1 n3]
+theorem t423 (n0 n1 n2 n3 : Int) :
+    (Foam.d202 n0 n1 n2 n3 + -Foam.d201 n0 n1 n2 n3)
+      + Foam.d001 (Foam.d203 n0 n1 n2 n3) = Foam.d001 (Foam.d001 n1) := by
+  rw [Foam.t414, Foam.t420, ← Foam.t091 (n1 + n3) (n1 + -n3),
+    Foam.t090 n1 n3]
 
-theorem Char.recover_bin3 (n0 n1 n2 n3 : Int) :
-    (Char.readBal n0 n1 n2 n3 + -Char.readAlt n0 n1 n2 n3)
-      + -Char.twice (Char.readIm n0 n1 n2 n3) = Char.twice (Char.twice n3) := by
-  rw [Char.bal_sub_alt, Char.readIm_eq, ← Char.twice_sub (n1 + n3) (n1 + -n3),
-    Char.diff_sum n1 n3]
+theorem t425 (n0 n1 n2 n3 : Int) :
+    (Foam.d202 n0 n1 n2 n3 + -Foam.d201 n0 n1 n2 n3)
+      + -Foam.d001 (Foam.d203 n0 n1 n2 n3) = Foam.d001 (Foam.d001 n3) := by
+  rw [Foam.t414, Foam.t420, ← Foam.t092 (n1 + n3) (n1 + -n3),
+    Foam.t089 n1 n3]
 
-theorem Char.lossless (n0 n1 n2 n3 : Int) :
-    (Char.readBal n0 n1 n2 n3 + Char.readAlt n0 n1 n2 n3)
-        + Char.twice (Char.readRe n0 n1 n2 n3) = Char.twice (Char.twice n0) ∧
-    (Char.readBal n0 n1 n2 n3 + -Char.readAlt n0 n1 n2 n3)
-        + Char.twice (Char.readIm n0 n1 n2 n3) = Char.twice (Char.twice n1) ∧
-    (Char.readBal n0 n1 n2 n3 + Char.readAlt n0 n1 n2 n3)
-        + -Char.twice (Char.readRe n0 n1 n2 n3) = Char.twice (Char.twice n2) ∧
-    (Char.readBal n0 n1 n2 n3 + -Char.readAlt n0 n1 n2 n3)
-        + -Char.twice (Char.readIm n0 n1 n2 n3) = Char.twice (Char.twice n3) :=
-  ⟨Char.recover_bin0 n0 n1 n2 n3, Char.recover_bin1 n0 n1 n2 n3,
-    Char.recover_bin2 n0 n1 n2 n3, Char.recover_bin3 n0 n1 n2 n3⟩
+theorem t416 (n0 n1 n2 n3 : Int) :
+    (Foam.d202 n0 n1 n2 n3 + Foam.d201 n0 n1 n2 n3)
+        + Foam.d001 (Foam.d204 n0 n1 n2 n3) = Foam.d001 (Foam.d001 n0) ∧
+    (Foam.d202 n0 n1 n2 n3 + -Foam.d201 n0 n1 n2 n3)
+        + Foam.d001 (Foam.d203 n0 n1 n2 n3) = Foam.d001 (Foam.d001 n1) ∧
+    (Foam.d202 n0 n1 n2 n3 + Foam.d201 n0 n1 n2 n3)
+        + -Foam.d001 (Foam.d204 n0 n1 n2 n3) = Foam.d001 (Foam.d001 n2) ∧
+    (Foam.d202 n0 n1 n2 n3 + -Foam.d201 n0 n1 n2 n3)
+        + -Foam.d001 (Foam.d203 n0 n1 n2 n3) = Foam.d001 (Foam.d001 n3) :=
+  ⟨Foam.t422 n0 n1 n2 n3, Foam.t423 n0 n1 n2 n3,
+    Foam.t424 n0 n1 n2 n3, Foam.t425 n0 n1 n2 n3⟩
 
-theorem Char.bal_irreplaceable :
-    Char.readRe 1 1 1 1 = Char.readRe 0 0 0 0 ∧
-    Char.readIm 1 1 1 1 = Char.readIm 0 0 0 0 ∧
-    Char.readAlt 1 1 1 1 = Char.readAlt 0 0 0 0 ∧
-    Char.readBal 1 1 1 1 ≠ Char.readBal 0 0 0 0 := by decide
+theorem t413 :
+    Foam.d204 1 1 1 1 = Foam.d204 0 0 0 0 ∧
+    Foam.d203 1 1 1 1 = Foam.d203 0 0 0 0 ∧
+    Foam.d201 1 1 1 1 = Foam.d201 0 0 0 0 ∧
+    Foam.d202 1 1 1 1 ≠ Foam.d202 0 0 0 0 := by decide
 
-theorem Char.re_irreplaceable :
-    Char.readBal 1 0 0 0 = Char.readBal 0 0 1 0 ∧
-    Char.readIm 1 0 0 0 = Char.readIm 0 0 1 0 ∧
-    Char.readAlt 1 0 0 0 = Char.readAlt 0 0 1 0 ∧
-    Char.readRe 1 0 0 0 ≠ Char.readRe 0 0 1 0 := by decide
+theorem t417 :
+    Foam.d202 1 0 0 0 = Foam.d202 0 0 1 0 ∧
+    Foam.d203 1 0 0 0 = Foam.d203 0 0 1 0 ∧
+    Foam.d201 1 0 0 0 = Foam.d201 0 0 1 0 ∧
+    Foam.d204 1 0 0 0 ≠ Foam.d204 0 0 1 0 := by decide
 
-theorem Char.im_irreplaceable :
-    Char.readBal 0 1 0 0 = Char.readBal 0 0 0 1 ∧
-    Char.readRe 0 1 0 0 = Char.readRe 0 0 0 1 ∧
-    Char.readAlt 0 1 0 0 = Char.readAlt 0 0 0 1 ∧
-    Char.readIm 0 1 0 0 ≠ Char.readIm 0 0 0 1 := by decide
+theorem t415 :
+    Foam.d202 0 1 0 0 = Foam.d202 0 0 0 1 ∧
+    Foam.d204 0 1 0 0 = Foam.d204 0 0 0 1 ∧
+    Foam.d201 0 1 0 0 = Foam.d201 0 0 0 1 ∧
+    Foam.d203 0 1 0 0 ≠ Foam.d203 0 0 0 1 := by decide
 
-theorem Char.alt_irreplaceable :
-    Char.readBal 1 0 1 0 = Char.readBal 0 1 0 1 ∧
-    Char.readRe 1 0 1 0 = Char.readRe 0 1 0 1 ∧
-    Char.readIm 1 0 1 0 = Char.readIm 0 1 0 1 ∧
-    Char.readAlt 1 0 1 0 ≠ Char.readAlt 0 1 0 1 := by decide
+theorem t411 :
+    Foam.d202 1 0 1 0 = Foam.d202 0 1 0 1 ∧
+    Foam.d204 1 0 1 0 = Foam.d204 0 1 0 1 ∧
+    Foam.d203 1 0 1 0 = Foam.d203 0 1 0 1 ∧
+    Foam.d201 1 0 1 0 ≠ Foam.d201 0 1 0 1 := by decide
 
-/-- info: 'Foam.Char.count_hom' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.count_hom
+/-- info: 'Foam.t203' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t203
 
-/-- info: 'Foam.Char.alt_hom' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.alt_hom
+/-- info: 'Foam.t199' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t199
 
-/-- info: 'Foam.Char.chi_hom' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.chi_hom
+/-- info: 'Foam.t201' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t201
 
-/-- info: 'Foam.Char.chiBar_hom' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.chiBar_hom
+/-- info: 'Foam.t338' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t338
 
-/-- info: 'Foam.Char.count_unit' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.count_unit
+/-- info: 'Foam.t204' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t204
 
-/-- info: 'Foam.Char.alt_unit' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.alt_unit
+/-- info: 'Foam.t200' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t200
 
-/-- info: 'Foam.Char.chi_unit' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.chi_unit
+/-- info: 'Foam.t202' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t202
 
-/-- info: 'Foam.Char.chiBar_unit' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.chiBar_unit
+/-- info: 'Foam.t340' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t340
 
-/-- info: 'Foam.Char.count_norm' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.count_norm
+/-- info: 'Foam.t347' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t347
 
-/-- info: 'Foam.Char.alt_norm' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.alt_norm
+/-- info: 'Foam.t337' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t337
 
-/-- info: 'Foam.Char.chi_norm' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.chi_norm
+/-- info: 'Foam.t343' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t343
 
-/-- info: 'Foam.Char.chiBar_norm' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.chiBar_norm
+/-- info: 'Foam.t339' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t339
 
-/-- info: 'Foam.Char.count_alt_orth' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.count_alt_orth
+/-- info: 'Foam.t344' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t344
 
-/-- info: 'Foam.Char.count_chi_orth' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.count_chi_orth
+/-- info: 'Foam.t346' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t346
 
-/-- info: 'Foam.Char.count_chiBar_orth' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.count_chiBar_orth
+/-- info: 'Foam.t345' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t345
 
-/-- info: 'Foam.Char.alt_chi_orth' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.alt_chi_orth
+/-- info: 'Foam.t336' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t336
 
-/-- info: 'Foam.Char.alt_chiBar_orth' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.alt_chiBar_orth
+/-- info: 'Foam.t335' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t335
 
-/-- info: 'Foam.Char.chi_chiBar_orth' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.chi_chiBar_orth
+/-- info: 'Foam.t341' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t341
 
-/-- info: 'Foam.Char.chi_distinct_chiBar' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.chi_distinct_chiBar
+/-- info: 'Foam.t342' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t342
 
-/-- info: 'Foam.Char.alt_distinct_count' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.alt_distinct_count
+/-- info: 'Foam.t136' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t136
 
-/-- info: 'Foam.GInt.mulReal' does not depend on any axioms -/
-#guard_msgs in #print axioms GInt.mulReal
+/-- info: 'Foam.Ty05.t209' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Ty05.t209
 
-/-- info: 'Foam.Char.fold_re_components' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.fold_re_components
+/-- info: 'Foam.t349' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t349
 
-/-- info: 'Foam.Char.fold_im_components' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.fold_im_components
+/-- info: 'Foam.t348' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t348
 
-/-- info: 'Foam.Char.readBal_eq' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.readBal_eq
+/-- info: 'Foam.t419' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t419
 
-/-- info: 'Foam.Char.readAlt_eq' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.readAlt_eq
+/-- info: 'Foam.t418' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t418
 
-/-- info: 'Foam.Char.readRe_eq' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.readRe_eq
+/-- info: 'Foam.t421' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t421
 
-/-- info: 'Foam.Char.readIm_eq' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.readIm_eq
+/-- info: 'Foam.t420' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t420
 
-/-- info: 'Foam.Char.four_swap' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.four_swap
+/-- info: 'Foam.t002' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t002
 
-/-- info: 'Foam.Char.sub_pair' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.sub_pair
+/-- info: 'Foam.t003' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t003
 
-/-- info: 'Foam.Char.sum_diff' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.sum_diff
+/-- info: 'Foam.t090' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t090
 
-/-- info: 'Foam.Char.diff_sum' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.diff_sum
+/-- info: 'Foam.t089' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t089
 
-/-- info: 'Foam.Char.twice_add' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.twice_add
+/-- info: 'Foam.t091' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t091
 
-/-- info: 'Foam.Char.twice_sub' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.twice_sub
+/-- info: 'Foam.t092' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t092
 
-/-- info: 'Foam.Char.bal_add_alt' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.bal_add_alt
+/-- info: 'Foam.t412' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t412
 
-/-- info: 'Foam.Char.bal_sub_alt' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.bal_sub_alt
+/-- info: 'Foam.t414' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t414
 
-/-- info: 'Foam.Char.recover_bin0' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.recover_bin0
+/-- info: 'Foam.t422' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t422
 
-/-- info: 'Foam.Char.recover_bin1' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.recover_bin1
+/-- info: 'Foam.t423' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t423
 
-/-- info: 'Foam.Char.recover_bin2' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.recover_bin2
+/-- info: 'Foam.t424' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t424
 
-/-- info: 'Foam.Char.recover_bin3' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.recover_bin3
+/-- info: 'Foam.t425' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t425
 
-/-- info: 'Foam.Char.lossless' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.lossless
+/-- info: 'Foam.t416' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t416
 
-/-- info: 'Foam.Char.bal_irreplaceable' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.bal_irreplaceable
+/-- info: 'Foam.t413' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t413
 
-/-- info: 'Foam.Char.re_irreplaceable' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.re_irreplaceable
+/-- info: 'Foam.t417' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t417
 
-/-- info: 'Foam.Char.im_irreplaceable' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.im_irreplaceable
+/-- info: 'Foam.t415' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t415
 
-/-- info: 'Foam.Char.alt_irreplaceable' does not depend on any axioms -/
-#guard_msgs in #print axioms Char.alt_irreplaceable
+/-- info: 'Foam.t411' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t411
 
 end Foam

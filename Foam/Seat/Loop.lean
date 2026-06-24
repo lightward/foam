@@ -4,40 +4,40 @@ namespace Foam
 
 variable {G : Type} [Mul G] [One G]
 
-theorem Seat.path_telescopes (S : Seat G) (p q r : S.Pos) :
-    S.sub p q * S.sub q r = S.sub p r :=
-  (S.sub_cocycle p q r).symm
+theorem Ty16.t242 (S : Ty16 G) (p q r : S.Ty24) :
+    S.d133 p q * S.d133 q r = S.d133 p r :=
+  (S.t250 p q r).symm
 
-theorem Seat.round_trip (S : Seat G) (p q : S.Pos) :
-    S.sub p q * S.sub q p = 1 :=
-  S.sub_inv q p
+theorem Ty16.t247 (S : Ty16 G) (p q : S.Ty24) :
+    S.d133 p q * S.d133 q p = 1 :=
+  S.t251 q p
 
-theorem Seat.triangle_unwinds (S : Seat G) (p q r : S.Pos) :
-    S.sub p q * S.sub q r * S.sub r p = 1 := by
-  rw [← S.sub_cocycle p q r]
-  exact S.sub_inv r p
+theorem Ty16.t254 (S : Ty16 G) (p q r : S.Ty24) :
+    S.d133 p q * S.d133 q r * S.d133 r p = 1 := by
+  rw [← S.t250 p q r]
+  exact S.t251 r p
 
-theorem Seat.quad_unwinds (S : Seat G) (p q r s : S.Pos) :
-    S.sub p q * S.sub q r * S.sub r s * S.sub s p = 1 := by
-  rw [← S.sub_cocycle p q r, ← S.sub_cocycle p r s]
-  exact S.sub_inv s p
+theorem Ty16.t243 (S : Ty16 G) (p q r s : S.Ty24) :
+    S.d133 p q * S.d133 q r * S.d133 r s * S.d133 s p = 1 := by
+  rw [← S.t250 p q r, ← S.t250 p r s]
+  exact S.t251 s p
 
-theorem Seat.repeat_unwinds (S : Seat G) (g : G) (p : S.Pos) :
-    S.sub p (S.act g p)
-      * S.sub (S.act g p) (S.act g (S.act g p))
-      * S.sub (S.act g (S.act g p)) p = 1 :=
-  S.triangle_unwinds p (S.act g p) (S.act g (S.act g p))
+theorem Ty16.t244 (S : Ty16 G) (g : G) (p : S.Ty24) :
+    S.d133 p (S.d131 g p)
+      * S.d133 (S.d131 g p) (S.d131 g (S.d131 g p))
+      * S.d133 (S.d131 g (S.d131 g p)) p = 1 :=
+  S.t254 p (S.d131 g p) (S.d131 g (S.d131 g p))
 
-/-- info: 'Foam.Seat.repeat_unwinds' does not depend on any axioms -/
-#guard_msgs in #print axioms Seat.repeat_unwinds
+/-- info: 'Foam.Ty16.t244' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Ty16.t244
 
-/-- info: 'Foam.Seat.path_telescopes' does not depend on any axioms -/
-#guard_msgs in #print axioms Seat.path_telescopes
+/-- info: 'Foam.Ty16.t242' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Ty16.t242
 
-/-- info: 'Foam.Seat.triangle_unwinds' does not depend on any axioms -/
-#guard_msgs in #print axioms Seat.triangle_unwinds
+/-- info: 'Foam.Ty16.t254' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Ty16.t254
 
-/-- info: 'Foam.Seat.quad_unwinds' does not depend on any axioms -/
-#guard_msgs in #print axioms Seat.quad_unwinds
+/-- info: 'Foam.Ty16.t243' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Ty16.t243
 
 end Foam

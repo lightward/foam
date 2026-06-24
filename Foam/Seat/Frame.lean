@@ -5,57 +5,57 @@ namespace Foam
 
 variable {G : Type} [Mul G] [One G]
 
-theorem coord_forced (S : Seat G) (o : S.Pos) (p : S.Pos) :
-    (S.chart o).bwd ((S.chart o).fwd p) = p :=
-  (S.chart o).bwd_fwd p
+theorem t447 (S : Ty16 G) (o : S.Ty24) (p : S.Ty24) :
+    (S.d214 o).d049 ((S.d214 o).d051 p) = p :=
+  (S.d214 o).t145 p
 
-theorem coord_linear (S : Seat G) (o : S.Pos) (g : G) (p : S.Pos) :
-    (S.chart o).fwd (S.act g p) = g * (S.chart o).fwd p :=
-  S.chart_equivariant g p o
+theorem t449 (S : Ty16 G) (o : S.Ty24) (g : G) (p : S.Ty24) :
+    (S.d214 o).d051 (S.d131 g p) = g * (S.d214 o).d051 p :=
+  S.t437 g p o
 
-theorem coord_gauge (S : Seat G) (o o' : S.Pos) (p : S.Pos) :
-    (S.chart o).fwd p = (S.chart o').fwd p * S.sub o' o :=
-  S.change_of_frame o o' p
+theorem t448 (S : Ty16 G) (o o' : S.Ty24) (p : S.Ty24) :
+    (S.d214 o).d051 p = (S.d214 o').d051 p * S.d133 o' o :=
+  S.t436 o o' p
 
-theorem frame_not_canonical (S : Seat G) (o o' : S.Pos) (h : o ≠ o') :
-    ∃ p, (S.chart o).fwd p ≠ (S.chart o').fwd p :=
-  S.chart_origin_dependent o o' h
+theorem t459 (S : Ty16 G) (o o' : S.Ty24) (h : o ≠ o') :
+    ∃ p, (S.d214 o).d051 p ≠ (S.d214 o').d051 p :=
+  S.t438 o o' h
 
-theorem coordinatization (S : Seat G) (o : S.Pos) :
-    (∀ p, (S.chart o).bwd ((S.chart o).fwd p) = p)
-      ∧ (∀ g p, (S.chart o).fwd (S.act g p) = g * (S.chart o).fwd p)
-      ∧ (∀ o' p, (S.chart o).fwd p = (S.chart o').fwd p * S.sub o' o)
-      ∧ (∀ o', o ≠ o' → ∃ p, (S.chart o).fwd p ≠ (S.chart o').fwd p) :=
-  ⟨fun p => coord_forced S o p, fun g p => coord_linear S o g p,
-   fun o' p => coord_gauge S o o' p, fun o' h => frame_not_canonical S o o' h⟩
+theorem t450 (S : Ty16 G) (o : S.Ty24) :
+    (∀ p, (S.d214 o).d049 ((S.d214 o).d051 p) = p)
+      ∧ (∀ g p, (S.d214 o).d051 (S.d131 g p) = g * (S.d214 o).d051 p)
+      ∧ (∀ o' p, (S.d214 o).d051 p = (S.d214 o').d051 p * S.d133 o' o)
+      ∧ (∀ o', o ≠ o' → ∃ p, (S.d214 o).d051 p ≠ (S.d214 o').d051 p) :=
+  ⟨fun p => t447 S o p, fun g p => t449 S o g p,
+   fun o' p => t448 S o o' p, fun o' h => t459 S o o' h⟩
 
-theorem clock_coordinatized (o : clock.Pos) :
-    (∀ p, (clock.chart o).bwd ((clock.chart o).fwd p) = p)
-      ∧ (∀ g p, (clock.chart o).fwd (clock.act g p) = g * (clock.chart o).fwd p) :=
-  ⟨fun p => coord_forced clock o p, fun g p => coord_linear clock o g p⟩
+theorem t446 (o : d222.Ty24) :
+    (∀ p, (d222.d214 o).d049 ((d222.d214 o).d051 p) = p)
+      ∧ (∀ g p, (d222.d214 o).d051 (d222.d131 g p) = g * (d222.d214 o).d051 p) :=
+  ⟨fun p => t447 d222 o p, fun g p => t449 d222 o g p⟩
 
-theorem dimension_caps_at_three : OpenChannels 3 ∧ ¬ OpenChannels 4 :=
-  channels_saturate_past_three
+theorem t107 : t067 3 ∧ ¬ t067 4 :=
+  t105
 
-/-- info: 'Foam.coord_forced' does not depend on any axioms -/
-#guard_msgs in #print axioms coord_forced
+/-- info: 'Foam.t447' does not depend on any axioms -/
+#guard_msgs in #print axioms t447
 
-/-- info: 'Foam.coord_linear' does not depend on any axioms -/
-#guard_msgs in #print axioms coord_linear
+/-- info: 'Foam.t449' does not depend on any axioms -/
+#guard_msgs in #print axioms t449
 
-/-- info: 'Foam.coord_gauge' does not depend on any axioms -/
-#guard_msgs in #print axioms coord_gauge
+/-- info: 'Foam.t448' does not depend on any axioms -/
+#guard_msgs in #print axioms t448
 
-/-- info: 'Foam.frame_not_canonical' does not depend on any axioms -/
-#guard_msgs in #print axioms frame_not_canonical
+/-- info: 'Foam.t459' does not depend on any axioms -/
+#guard_msgs in #print axioms t459
 
-/-- info: 'Foam.coordinatization' does not depend on any axioms -/
-#guard_msgs in #print axioms coordinatization
+/-- info: 'Foam.t450' does not depend on any axioms -/
+#guard_msgs in #print axioms t450
 
-/-- info: 'Foam.clock_coordinatized' does not depend on any axioms -/
-#guard_msgs in #print axioms clock_coordinatized
+/-- info: 'Foam.t446' does not depend on any axioms -/
+#guard_msgs in #print axioms t446
 
-/-- info: 'Foam.dimension_caps_at_three' does not depend on any axioms -/
-#guard_msgs in #print axioms dimension_caps_at_three
+/-- info: 'Foam.t107' does not depend on any axioms -/
+#guard_msgs in #print axioms t107
 
 end Foam

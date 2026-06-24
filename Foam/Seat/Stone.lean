@@ -2,26 +2,26 @@ import Foam.Seat.Noether
 
 namespace Foam
 
-theorem stone_group (m n : Nat) (z : GInt) :
-    rotPow m (rotPow n z) = rotPow (m + n) z :=
-  rotPow_compose m n z
+theorem t196 (m n : Nat) (z : Ty05) :
+    d098 m (d098 n z) = d098 (m + n) z :=
+  t186 m n z
 
-theorem stone_unitary (n : Nat) (z : GInt) : (rotPow n z).normSq = z.normSq :=
-  rotPow_conserves_normSq n z
+theorem t326 (n : Nat) (z : Ty05) : (d098 n z).d114 = z.d114 :=
+  t317 n z
 
-theorem stone (m n : Nat) (z : GInt) :
-    (rotPow m (rotPow n z) = rotPow (m + n) z)
-      ∧ ((rotPow n z).normSq = z.normSq)
-      ∧ (rotPow 4 z = z) :=
-  ⟨rotPow_compose m n z, rotPow_conserves_normSq n z, rotPow_four z⟩
+theorem t325 (m n : Nat) (z : Ty05) :
+    (d098 m (d098 n z) = d098 (m + n) z)
+      ∧ ((d098 n z).d114 = z.d114)
+      ∧ (d098 4 z = z) :=
+  ⟨t186 m n z, t317 n z, t187 z⟩
 
-/-- info: 'Foam.stone_group' does not depend on any axioms -/
-#guard_msgs in #print axioms stone_group
+/-- info: 'Foam.t196' does not depend on any axioms -/
+#guard_msgs in #print axioms t196
 
-/-- info: 'Foam.stone_unitary' does not depend on any axioms -/
-#guard_msgs in #print axioms stone_unitary
+/-- info: 'Foam.t326' does not depend on any axioms -/
+#guard_msgs in #print axioms t326
 
-/-- info: 'Foam.stone' does not depend on any axioms -/
-#guard_msgs in #print axioms stone
+/-- info: 'Foam.t325' does not depend on any axioms -/
+#guard_msgs in #print axioms t325
 
 end Foam

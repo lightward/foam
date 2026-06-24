@@ -3,36 +3,35 @@ import Foam.Int
 
 namespace Foam
 
-open Foam.FInt (addComm add_assoc)
 
-def zval : Nat → List Bool → Int
+def d028 : Nat → List Bool → Int
   | _, [] => 0
-  | i, false :: ds => zval (i + 1) ds
-  | i, true :: ds => fib i + zval (i + 1) ds
+  | i, false :: ds => d028 (i + 1) ds
+  | i, true :: ds => d014 i + d028 (i + 1) ds
 
-def ones : List Bool → Nat
+def d021 : List Bool → Nat
   | [] => 0
-  | false :: ds => ones ds
-  | true :: ds => ones ds + 1
+  | false :: ds => d021 ds
+  | true :: ds => d021 ds + 1
 
-def NoConsec : List Bool → Prop
+def t066 : List Bool → Prop
   | [] => True
   | [_] => True
   | true :: true :: _ => False
-  | _ :: ds => NoConsec ds
+  | _ :: ds => t066 ds
 
-theorem carry_lossless (i : Nat) (rest : List Bool) :
-    zval i (true :: true :: false :: rest) = zval i (false :: false :: true :: rest) := by
-  show fib i + (fib (i + 1) + zval (i + 3) rest) = fib (i + 2) + zval (i + 3) rest
-  rw [fib_gnomon i, ← add_assoc, addComm (fib i) (fib (i + 1))]
+theorem t103 (i : Nat) (rest : List Bool) :
+    d028 i (true :: true :: false :: rest) = d028 i (false :: false :: true :: rest) := by
+  show d014 i + (d014 (i + 1) + d028 (i + 3) rest) = d014 (i + 2) + d028 (i + 3) rest
+  rw [t113 i, ← t005, t004 (d014 i) (d014 (i + 1))]
 
-theorem carry_compresses (rest : List Bool) :
-    ones (true :: true :: false :: rest) = ones (false :: false :: true :: rest) + 1 := rfl
+theorem t102 (rest : List Bool) :
+    d021 (true :: true :: false :: rest) = d021 (false :: false :: true :: rest) + 1 := rfl
 
-/-- info: 'Foam.carry_lossless' does not depend on any axioms -/
-#guard_msgs in #print axioms carry_lossless
+/-- info: 'Foam.t103' does not depend on any axioms -/
+#guard_msgs in #print axioms t103
 
-/-- info: 'Foam.carry_compresses' does not depend on any axioms -/
-#guard_msgs in #print axioms carry_compresses
+/-- info: 'Foam.t102' does not depend on any axioms -/
+#guard_msgs in #print axioms t102
 
 end Foam

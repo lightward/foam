@@ -2,43 +2,43 @@ import Foam.Seat.Group
 
 namespace Foam
 
-inductive Rot | r0 | r1 | r2 | r3
+inductive Ty12 | c1 | c2 | c3 | c4
   deriving DecidableEq
 
-def Rot.n : Rot → Nat
-  | .r0 => 0
-  | .r1 => 1
-  | .r2 => 2
-  | .r3 => 3
+def Ty12.d065 : Ty12 → Nat
+  | Foam.Ty12.c1 => 0
+  | Foam.Ty12.c2 => 1
+  | Foam.Ty12.c3 => 2
+  | Foam.Ty12.c4 => 3
 
-def Rot.ofN (k : Nat) : Rot :=
+def Ty12.d125 (k : Nat) : Ty12 :=
   match k % 4 with
-  | 0 => .r0
-  | 1 => .r1
-  | 2 => .r2
-  | _ => .r3
+  | 0 => Foam.Ty12.c1
+  | 1 => Foam.Ty12.c2
+  | 2 => Foam.Ty12.c3
+  | _ => Foam.Ty12.c4
 
-def Rot.mul (a b : Rot) : Rot := Rot.ofN (a.n + b.n)
-def Rot.inv (a : Rot) : Rot := Rot.ofN (4 - a.n)
+def Ty12.d175 (a b : Ty12) : Ty12 := Foam.Ty12.d125 (a.d065 + b.d065)
+def Ty12.d174 (a : Ty12) : Ty12 := Foam.Ty12.d125 (4 - a.d065)
 
-instance : Mul Rot := ⟨Rot.mul⟩
-instance : One Rot := ⟨Rot.r0⟩
+instance : Mul Ty12 := ⟨Foam.Ty12.d175⟩
+instance : One Ty12 := ⟨Foam.Ty12.c1⟩
 
-instance : Grp Rot where
-  inv       := Rot.inv
-  one_mul   := by intro a; cases a <;> decide
-  mul_one   := by intro a; cases a <;> decide
-  mul_assoc := by intro a b c; cases a <;> cases b <;> cases c <;> decide
-  mul_inv   := by intro a; cases a <;> decide
-  inv_mul   := by intro a; cases a <;> decide
+instance : Ty06 Ty12 where
+  d046       := Foam.Ty12.d174
+  t144   := by intro a; cases a <;> decide
+  t143   := by intro a; cases a <;> decide
+  t141 := by intro a b c; cases a <;> cases b <;> cases c <;> decide
+  t142   := by intro a; cases a <;> decide
+  t140   := by intro a; cases a <;> decide
 
-def clock : Seat Rot := Seat.principal Rot
+def d222 : Ty16 Ty12 := Foam.Ty16.d181 Ty12
 
-theorem Rot.clock_closes : (Rot.r1 * Rot.r1 * Rot.r1 * Rot.r1 : Rot) = 1 := by decide
+theorem Ty12.t150 : (Foam.Ty12.c2 * Foam.Ty12.c2 * Foam.Ty12.c2 * Foam.Ty12.c2 : Ty12) = 1 := by decide
 
-theorem Rot.clock_turns : (Rot.r1 * Rot.r1 : Rot) ≠ 1 := by decide
+theorem Ty12.t151 : (Foam.Ty12.c2 * Foam.Ty12.c2 : Ty12) ≠ 1 := by decide
 
-/-- info: 'Foam.Rot.clock_closes' does not depend on any axioms -/
-#guard_msgs in #print axioms Rot.clock_closes
+/-- info: 'Foam.Ty12.t150' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Ty12.t150
 
 end Foam

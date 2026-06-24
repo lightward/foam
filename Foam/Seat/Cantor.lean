@@ -2,18 +2,18 @@ import Foam.Seat.Seam
 
 namespace Foam
 
-theorem cantor_diagonal {S : Type} (s : S) (l : List S) :
-    ∃ n, (playback l).at_ n ≠ (forever s).at_ n :=
-  forever_escapes s l
+theorem t262 {S : Type} (s : S) (l : List S) :
+    ∃ n, (d152 l).d033 n ≠ (d093 s).d033 n :=
+  t285 s l
 
-theorem cantor_no_retraction {S : Type} (s : S) :
-    ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
-  playback_no_section s
+theorem t263 {S : Type} (s : S) :
+    ¬ ∃ g : Ty02 S → List S, ∀ c, d152 (g c) = c :=
+  t312 s
 
-/-- info: 'Foam.cantor_diagonal' does not depend on any axioms -/
-#guard_msgs in #print axioms cantor_diagonal
+/-- info: 'Foam.t262' does not depend on any axioms -/
+#guard_msgs in #print axioms t262
 
-/-- info: 'Foam.cantor_no_retraction' does not depend on any axioms -/
-#guard_msgs in #print axioms cantor_no_retraction
+/-- info: 'Foam.t263' does not depend on any axioms -/
+#guard_msgs in #print axioms t263
 
 end Foam

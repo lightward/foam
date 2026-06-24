@@ -5,103 +5,103 @@ import Foam.Int
 
 namespace Foam
 
-def GInt.one : GInt := ⟨1, 0⟩
+def Ty05.d042 : Ty05 := ⟨1, 0⟩
 
 variable {S : Type}
 
-def evalAt [DecidableEq S] (step : GInt → GInt) : List S → S → GInt
-  | [], _ => GInt.zero
-  | x :: l, s => (if x = s then GInt.one else GInt.zero).add (step (evalAt step l s))
+def d089 [DecidableEq S] (step : Ty05 → Ty05) : List S → S → Ty05
+  | [], _ => Foam.Ty05.d044
+  | x :: l, s => (if x = s then Foam.Ty05.d042 else Foam.Ty05.d044).d108 (step (d089 step l s))
 
-def spec [DecidableEq S] : List S → S → GInt := evalAt GInt.rot
+def d197 [DecidableEq S] : List S → S → Ty05 := d089 Foam.Ty05.d115
 
-theorem spec_shift [DecidableEq S] (x : S) (l : List S) (s : S) :
-    spec (x :: l) s = (if x = s then GInt.one else GInt.zero).add (GInt.rot (spec l s)) := rfl
+theorem t403 [DecidableEq S] (x : S) (l : List S) (s : S) :
+    d197 (x :: l) s = (if x = s then Foam.Ty05.d042 else Foam.Ty05.d044).d108 (Foam.Ty05.d115 (d197 l s)) := rfl
 
-theorem ofNat_ite (c : Prop) [inst : Decidable c] :
+theorem t084 (c : Prop) [inst : Decidable c] :
     (if c then (1 : Int) else 0) = Int.ofNat (if c then 1 else 0) := by
   cases inst with
   | isTrue _ => rfl
   | isFalse _ => rfl
 
-theorem ite_mk (c : Prop) [inst : Decidable c] :
-    (if c then GInt.one else GInt.zero) = (⟨if c then (1 : Int) else 0, 0⟩ : GInt) := by
+theorem t173 (c : Prop) [inst : Decidable c] :
+    (if c then Foam.Ty05.d042 else Foam.Ty05.d044) = (⟨if c then (1 : Int) else 0, 0⟩ : Ty05) := by
   cases inst with
   | isTrue _ => rfl
   | isFalse _ => rfl
 
-theorem evalOne_eq_freq [DecidableEq S] (l : List S) (s : S) :
-    evalAt id l s = ⟨Int.ofNat (Ledger.freq l s), 0⟩ := by
+theorem t168 [DecidableEq S] (l : List S) (s : S) :
+    d089 id l s = ⟨Int.ofNat (Foam.Ty08.d003 l s), 0⟩ := by
   induction l with
   | nil => rfl
   | cons x l ih =>
-    show (if x = s then GInt.one else GInt.zero).add (evalAt id l s) = _
-    rw [ih, ite_mk (x = s), ofNat_ite (x = s)]
+    show (if x = s then Foam.Ty05.d042 else Foam.Ty05.d044).d108 (d089 id l s) = _
+    rw [ih, t173 (x = s), t084 (x = s)]
     rfl
 
-theorem spec_finer_than_freq :
-    (Ledger.freq [true, false] true = Ledger.freq [false, true] true ∧
-        Ledger.freq [true, false] false = Ledger.freq [false, true] false) ∧
-      spec [true, false] true ≠ spec [false, true] true :=
+theorem t402 :
+    (Foam.Ty08.d003 [true, false] true = Foam.Ty08.d003 [false, true] true ∧
+        Foam.Ty08.d003 [true, false] false = Foam.Ty08.d003 [false, true] false) ∧
+      d197 [true, false] true ≠ d197 [false, true] true :=
   ⟨⟨rfl, rfl⟩, by decide⟩
 
-theorem align_one (z : GInt) : GInt.align GInt.one z = z.re := by
-  show 1 * z.re + 0 * z.im = z.re
-  rw [FInt.one_mul, FInt.zero_mul, FInt.addComm z.re 0, FInt.zero_add]
+theorem t258 (z : Ty05) : Foam.Ty05.d109 Foam.Ty05.d042 z = z.d043 := by
+  show 1 * z.d043 + 0 * z.d041 = z.d043
+  rw [Foam.t037, Foam.t055, Foam.t004 z.d043 0, Foam.t054]
 
-theorem align_i (z : GInt) : GInt.align GInt.one.rot z = z.im := by
-  show (0 : Int) * z.re + 1 * z.im = z.im
-  rw [FInt.zero_mul, FInt.one_mul, FInt.zero_add]
+theorem t257 (z : Ty05) : Foam.Ty05.d109 Foam.Ty05.d042.d115 z = z.d041 := by
+  show (0 : Int) * z.d043 + 1 * z.d041 = z.d041
+  rw [Foam.t055, Foam.t037, Foam.t054]
 
-theorem align_one_evalOne [DecidableEq S] (l : List S) (s : S) :
-    GInt.align GInt.one (evalAt id l s) = Int.ofNat (Ledger.freq l s) := by
-  rw [evalOne_eq_freq, align_one]
+theorem t259 [DecidableEq S] (l : List S) (s : S) :
+    Foam.Ty05.d109 Foam.Ty05.d042 (d089 id l s) = Int.ofNat (Foam.Ty08.d003 l s) := by
+  rw [t168, t258]
 
-def evalBeats [DecidableEq S] (step : GInt → GInt) : List (Option S) → S → GInt
-  | [], _ => GInt.zero
-  | none :: l, s => step (evalBeats step l s)
-  | some x :: l, s => (if x = s then GInt.one else GInt.zero).add (step (evalBeats step l s))
+def d090 [DecidableEq S] (step : Ty05 → Ty05) : List (Option S) → S → Ty05
+  | [], _ => Foam.Ty05.d044
+  | none :: l, s => step (d090 step l s)
+  | some x :: l, s => (if x = s then Foam.Ty05.d042 else Foam.Ty05.d044).d108 (step (d090 step l s))
 
-theorem rest_turns [DecidableEq S] (step : GInt → GInt) (l : List (Option S)) (s : S) :
-    evalBeats step (none :: l) s = step (evalBeats step l s) := rfl
+theorem t184 [DecidableEq S] (step : Ty05 → Ty05) (l : List (Option S)) (s : S) :
+    d090 step (none :: l) s = step (d090 step l s) := rfl
 
-theorem rest_invisible_to_count [DecidableEq S] (l : List (Option S)) (s : S) :
-    evalBeats id (none :: l) s = evalBeats id l s := rfl
+theorem t183 [DecidableEq S] (l : List (Option S)) (s : S) :
+    d090 id (none :: l) s = d090 id l s := rfl
 
-theorem rest_audible :
-    evalBeats GInt.rot [some true] true ≠ evalBeats GInt.rot [none, some true] true := by
+theorem t315 :
+    d090 Foam.Ty05.d115 [some true] true ≠ d090 Foam.Ty05.d115 [none, some true] true := by
   decide
 
-theorem bar_invisible [DecidableEq S] (l : List (Option S)) (s : S) :
-    evalBeats GInt.rot (none :: none :: none :: none :: l) s = evalBeats GInt.rot l s := by
-  show ((((evalBeats GInt.rot l s).rot).rot).rot).rot = evalBeats GInt.rot l s
-  exact GInt.rot_complete _
+theorem t261 [DecidableEq S] (l : List (Option S)) (s : S) :
+    d090 Foam.Ty05.d115 (none :: none :: none :: none :: l) s = d090 Foam.Ty05.d115 l s := by
+  show ((((d090 Foam.Ty05.d115 l s).d115).d115).d115).d115 = d090 Foam.Ty05.d115 l s
+  exact Foam.Ty05.t214 _
 
-theorem order_finer_than_spec :
-    (Ledger.freq [true, false, false, false, false] true =
-          Ledger.freq [false, false, false, false, true] true ∧
-        Ledger.freq [true, false, false, false, false] false =
-          Ledger.freq [false, false, false, false, true] false) ∧
-      (spec [true, false, false, false, false] true =
-          spec [false, false, false, false, true] true ∧
-        spec [true, false, false, false, false] false =
-          spec [false, false, false, false, true] false) ∧
+theorem t393 :
+    (Foam.Ty08.d003 [true, false, false, false, false] true =
+          Foam.Ty08.d003 [false, false, false, false, true] true ∧
+        Foam.Ty08.d003 [true, false, false, false, false] false =
+          Foam.Ty08.d003 [false, false, false, false, true] false) ∧
+      (d197 [true, false, false, false, false] true =
+          d197 [false, false, false, false, true] true ∧
+        d197 [true, false, false, false, false] false =
+          d197 [false, false, false, false, true] false) ∧
       [true, false, false, false, false] ≠ [false, false, false, false, true] :=
   ⟨⟨rfl, rfl⟩, ⟨by decide, by decide⟩, by decide⟩
 
-/-- info: 'Foam.evalOne_eq_freq' does not depend on any axioms -/
-#guard_msgs in #print axioms evalOne_eq_freq
+/-- info: 'Foam.t168' does not depend on any axioms -/
+#guard_msgs in #print axioms t168
 
-/-- info: 'Foam.spec_finer_than_freq' does not depend on any axioms -/
-#guard_msgs in #print axioms spec_finer_than_freq
+/-- info: 'Foam.t402' does not depend on any axioms -/
+#guard_msgs in #print axioms t402
 
-/-- info: 'Foam.align_one_evalOne' does not depend on any axioms -/
-#guard_msgs in #print axioms align_one_evalOne
+/-- info: 'Foam.t259' does not depend on any axioms -/
+#guard_msgs in #print axioms t259
 
-/-- info: 'Foam.bar_invisible' does not depend on any axioms -/
-#guard_msgs in #print axioms bar_invisible
+/-- info: 'Foam.t261' does not depend on any axioms -/
+#guard_msgs in #print axioms t261
 
-/-- info: 'Foam.order_finer_than_spec' does not depend on any axioms -/
-#guard_msgs in #print axioms order_finer_than_spec
+/-- info: 'Foam.t393' does not depend on any axioms -/
+#guard_msgs in #print axioms t393
 
 end Foam

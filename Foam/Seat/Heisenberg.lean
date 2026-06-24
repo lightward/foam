@@ -2,27 +2,27 @@ import Foam.Seat.Forcing
 
 namespace Foam
 
-theorem heisenberg_complementarity (z w : GInt) :
-    GInt.align z w * GInt.align z w + GInt.cross z w * GInt.cross z w
-      = z.normSq * w.normSq :=
-  invariants_complete z w
+theorem t296 (z w : Ty05) :
+    Foam.Ty05.d109 z w * Foam.Ty05.d109 z w + Foam.Ty05.d111 z w * Foam.Ty05.d111 z w
+      = z.d114 * w.d114 :=
+  t302 z w
 
-theorem heisenberg_area_invariant (w z : GInt) :
-    GInt.cross w.rot z.rot = GInt.cross w z :=
-  cross_rot_invariant w z
+theorem t295 (w z : Ty05) :
+    Foam.Ty05.d111 w.d115 z.d115 = Foam.Ty05.d111 w z :=
+  t276 w z
 
-theorem heisenberg (z w : GInt) :
-    (GInt.align z w * GInt.align z w + GInt.cross z w * GInt.cross z w = z.normSq * w.normSq)
-      ∧ (GInt.cross w.rot z.rot = GInt.cross w z) :=
-  ⟨invariants_complete z w, cross_rot_invariant w z⟩
+theorem t294 (z w : Ty05) :
+    (Foam.Ty05.d109 z w * Foam.Ty05.d109 z w + Foam.Ty05.d111 z w * Foam.Ty05.d111 z w = z.d114 * w.d114)
+      ∧ (Foam.Ty05.d111 w.d115 z.d115 = Foam.Ty05.d111 w z) :=
+  ⟨t302 z w, t276 w z⟩
 
-/-- info: 'Foam.heisenberg_complementarity' does not depend on any axioms -/
-#guard_msgs in #print axioms heisenberg_complementarity
+/-- info: 'Foam.t296' does not depend on any axioms -/
+#guard_msgs in #print axioms t296
 
-/-- info: 'Foam.heisenberg_area_invariant' does not depend on any axioms -/
-#guard_msgs in #print axioms heisenberg_area_invariant
+/-- info: 'Foam.t295' does not depend on any axioms -/
+#guard_msgs in #print axioms t295
 
-/-- info: 'Foam.heisenberg' does not depend on any axioms -/
-#guard_msgs in #print axioms heisenberg
+/-- info: 'Foam.t294' does not depend on any axioms -/
+#guard_msgs in #print axioms t294
 
 end Foam

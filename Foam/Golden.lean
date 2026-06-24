@@ -2,34 +2,34 @@ import Foam.Int
 
 namespace Foam
 
-def fib : Nat → Int
+def d014 : Nat → Int
   | 0 => 0
   | 1 => 1
-  | (n + 2) => fib (n + 1) + fib n
+  | (n + 2) => d014 (n + 1) + d014 n
 
-theorem fib_gnomon (n : Nat) : fib (n + 2) = fib (n + 1) + fib n := rfl
+theorem t113 (n : Nat) : d014 (n + 2) = d014 (n + 1) + d014 n := rfl
 
-def altSign : Nat → Int
+def d005 : Nat → Int
   | 0 => 1
-  | (n + 1) => -(altSign n)
+  | (n + 1) => -(d005 n)
 
-theorem fib_cassini (n : Nat) :
-    fib (n + 1) * fib (n + 1) - fib (n + 2) * fib n = altSign n := by
+theorem t112 (n : Nat) :
+    d014 (n + 1) * d014 (n + 1) - d014 (n + 2) * d014 n = d005 n := by
   induction n with
   | zero => decide
   | succ k ih =>
-      have hsum : fib (k + 2) = fib (k + 1) + fib k := rfl
-      have hdiff : fib (k + 2) - fib (k + 1) = fib k := by
-        rw [hsum, FInt.addComm, FInt.add_sub_cancel_right]
-      show fib (k + 2) * fib (k + 2) - fib (k + 3) * fib (k + 1) = altSign (k + 1)
-      rw [show fib (k + 3) = fib (k + 2) + fib (k + 1) from rfl, FInt.add_mul,
-          show altSign (k + 1) = -(altSign k) from rfl, ← ih, FInt.neg_sub,
-          ← FInt.sub_sub, ← FInt.mul_sub, hdiff]
+      have hsum : d014 (k + 2) = d014 (k + 1) + d014 k := rfl
+      have hdiff : d014 (k + 2) - d014 (k + 1) = d014 k := by
+        rw [hsum, Foam.t004, Foam.t013]
+      show d014 (k + 2) * d014 (k + 2) - d014 (k + 3) * d014 (k + 1) = d005 (k + 1)
+      rw [show d014 (k + 3) = d014 (k + 2) + d014 (k + 1) from rfl, Foam.t007,
+          show d005 (k + 1) = -(d005 k) from rfl, ← ih, Foam.t030,
+          ← Foam.t051, ← Foam.t021, hdiff]
 
-/-- info: 'Foam.fib_gnomon' does not depend on any axioms -/
-#guard_msgs in #print axioms fib_gnomon
+/-- info: 'Foam.t113' does not depend on any axioms -/
+#guard_msgs in #print axioms t113
 
-/-- info: 'Foam.fib_cassini' does not depend on any axioms -/
-#guard_msgs in #print axioms fib_cassini
+/-- info: 'Foam.t112' does not depend on any axioms -/
+#guard_msgs in #print axioms t112
 
 end Foam

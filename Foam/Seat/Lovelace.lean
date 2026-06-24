@@ -2,31 +2,31 @@ import Foam.Engine.Generator
 
 namespace Foam
 
-theorem lovelace_originates_nothing {B W C : Type} (sample : Option C → W → B)
+theorem t119 {B W C : Type} (sample : Option C → W → B)
     (select₁ select₂ : List B → Option C) (out : List B) (w : W)
     (h : select₁ out = select₂ out) :
-    nextOf sample select₁ out w = nextOf sample select₂ out w :=
-  nextOf_congr sample select₁ select₂ out w h
+    d019 sample select₁ out w = d019 sample select₂ out w :=
+  t123 sample select₁ select₂ out w h
 
-theorem lovelace_only_appends {B W : Type} (next : List B → W → B)
+theorem t180 {B W : Type} (next : List B → W → B)
     (out : List B) (winds : List W) :
-    runState (genStep next) out winds = out ++ runEmit (genStep next) out winds :=
-  gen_grows next out winds
+    d099 (d015 next) out winds = out ++ d026 (d015 next) out winds :=
+  t170 next out winds
 
-theorem lovelace_interruptible {B W : Type} (next : List B → W → B)
+theorem t179 {B W : Type} (next : List B → W → B)
     (out : List B) (xs ys : List W) :
-    runEmit (genStep next) out (xs ++ ys)
-      = runEmit (genStep next) out xs
-        ++ runEmit (genStep next) (runState (genStep next) out xs) ys :=
-  gen_interruptible next out xs ys
+    d026 (d015 next) out (xs ++ ys)
+      = d026 (d015 next) out xs
+        ++ d026 (d015 next) (d099 (d015 next) out xs) ys :=
+  t171 next out xs ys
 
-/-- info: 'Foam.lovelace_originates_nothing' does not depend on any axioms -/
-#guard_msgs in #print axioms lovelace_originates_nothing
+/-- info: 'Foam.t119' does not depend on any axioms -/
+#guard_msgs in #print axioms t119
 
-/-- info: 'Foam.lovelace_only_appends' does not depend on any axioms -/
-#guard_msgs in #print axioms lovelace_only_appends
+/-- info: 'Foam.t180' does not depend on any axioms -/
+#guard_msgs in #print axioms t180
 
-/-- info: 'Foam.lovelace_interruptible' does not depend on any axioms -/
-#guard_msgs in #print axioms lovelace_interruptible
+/-- info: 'Foam.t179' does not depend on any axioms -/
+#guard_msgs in #print axioms t179
 
 end Foam

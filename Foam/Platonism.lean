@@ -5,104 +5,104 @@ namespace Foam
 
 variable {State : Type}
 
-def Beholder.dress (b : Beholder State) : Beholder (State × Int) where
-  Probe := b.Probe
-  Ans := b.Ans
-  obs := fun s p => b.obs s.1 p
+def Ty01.d155 (b : Ty01 State) : Ty01 (State × Int) where
+  Ty20 := b.Ty20
+  Ty19 := b.Ty19
+  d102 := fun s p => b.d102 s.1 p
 
-def Beholder.ledgerless (b : Beholder (State × Int)) : Beholder State where
-  Probe := b.Probe
-  Ans := b.Ans
-  obs := fun s p => b.obs (s, 0) p
+def Ty01.d157 (b : Ty01 (State × Int)) : Ty01 State where
+  Ty20 := b.Ty20
+  Ty19 := b.Ty19
+  d102 := fun s p => b.d102 (s, 0) p
 
-theorem dress_yoneda (b : Beholder State) :
-    b.dress.ledgerless.Covers b ∧ b.Covers b.dress.ledgerless :=
+theorem t374 (b : Ty01 State) :
+    b.d155.d157.t198 b ∧ b.t198 b.d155.d157 :=
   ⟨⟨id, id, fun _ _ => rfl⟩, ⟨id, id, fun _ _ => rfl⟩⟩
 
-theorem dress_obs_drops_ledger (b : Beholder State)
-    (s : State) (n m : Int) (p : b.Probe) :
-    b.dress.obs (s, n) p = b.dress.obs (s, m) p := rfl
+theorem t373 (b : Ty01 State)
+    (s : State) (n m : Int) (p : b.Ty20) :
+    b.d155.d102 (s, n) p = b.d155.d102 (s, m) p := rfl
 
-theorem dress_idempotent (b : Beholder State) :
-    b.dress.ledgerless.Covers b.dress.ledgerless ∧
-      b.dress.ledgerless.Covers b ∧ b.Covers b.dress.ledgerless :=
-  ⟨Beholder.covers_refl _, dress_yoneda b⟩
+theorem t372 (b : Ty01 State) :
+    b.d155.d157.t198 b.d155.d157 ∧
+      b.d155.d157.t198 b ∧ b.t198 b.d155.d157 :=
+  ⟨Foam.Ty01.t332 _, t374 b⟩
 
-def cassini : Beholder (Nat × Int) where
-  Probe := Unit
-  Ans := Int
-  obs := fun s _ => fib s.1
+def d085 : Ty01 (Nat × Int) where
+  Ty20 := Unit
+  Ty19 := Int
+  d102 := fun s _ => d014 s.1
 
-theorem cassini_obs_blind_to_ledger (n : Nat) (a c : Int) (p : Unit) :
-    cassini.obs (n, a) p = cassini.obs (n, c) p := rfl
+theorem t264 (n : Nat) (a c : Int) (p : Unit) :
+    d085.d102 (n, a) p = d085.d102 (n, c) p := rfl
 
-theorem remainder_unseen (b : Beholder State)
+theorem t396 (b : Ty01 State)
     (s : State) (n m : Int) :
-    indist b.dress.obs (s, n) (s, m) :=
+    t076 b.d155.d102 (s, n) (s, m) :=
   fun _ => rfl
 
-theorem remainder_real :
-    ∃ s t : Nat × Int, (∀ p : Unit, cassini.obs s p = cassini.obs t p) ∧ s ≠ t :=
-  ⟨(0, fib 1 * fib 1 - fib 2 * fib 0),
+theorem t314 :
+    ∃ s t : Nat × Int, (∀ p : Unit, d085.d102 s p = d085.d102 t p) ∧ s ≠ t :=
+  ⟨(0, d014 1 * d014 1 - d014 2 * d014 0),
    (0, 0),
    fun _ => rfl,
    fun h => by
-     have hc := fib_cassini 0
-     have : fib 1 * fib 1 - fib 2 * fib 0 = (0 : Int) := congrArg Prod.snd h
+     have hc := t112 0
+     have : d014 1 * d014 1 - d014 2 * d014 0 = (0 : Int) := congrArg Prod.snd h
      rw [this] at hc
      exact absurd hc (by decide)⟩
 
-theorem dropping_remainder_is_platonism
+theorem t072
     (h : ∀ s t : State × Int, s.1 = t.1 → s = t) :
     ∀ s : State, ∀ n : Int, (s, n) = (s, (0 : Int)) :=
   fun s n => h (s, n) (s, 0) rfl
 
-def Beholder.movedIn {S : Type} (b : Beholder (S × Int)) (target : Int) :
-    Beholder (S × Int) where
-  Probe := Option b.Probe
-  Ans := b.Ans ⊕ Bool
-  obs := fun s p =>
+def Ty01.d158 {S : Type} (b : Ty01 (S × Int)) (target : Int) :
+    Ty01 (S × Int) where
+  Ty20 := Option b.Ty20
+  Ty19 := b.Ty19 ⊕ Bool
+  d102 := fun s p =>
     match p with
     | none => Sum.inr (decide (s.2 = target))
-    | some q => Sum.inl (b.obs s q)
+    | some q => Sum.inl (b.d102 s q)
 
-theorem moved_in_extends (b : Beholder State) (target : Int)
-    (s : State × Int) (q : b.dress.Probe) :
-    (b.dress.movedIn target).obs s (some q) = Sum.inl (b.dress.obs s q) := rfl
+theorem t388 (b : Ty01 State) (target : Int)
+    (s : State × Int) (q : b.d155.Ty20) :
+    (b.d155.d158 target).d102 s (some q) = Sum.inl (b.d155.d102 s q) := rfl
 
-theorem moved_in_detects_remainder :
-    ∃ (s t : Nat × Int) (p : (cassini.movedIn 0).Probe),
-      indist cassini.obs s t ∧
-        (cassini.movedIn 0).obs s p ≠ (cassini.movedIn 0).obs t p :=
+theorem t387 :
+    ∃ (s t : Nat × Int) (p : (d085.d158 0).Ty20),
+      t076 d085.d102 s t ∧
+        (d085.d158 0).d102 s p ≠ (d085.d158 0).d102 t p :=
   ⟨(0, 0), (0, 1), none, fun _ => rfl, by
     intro h
     exact absurd (Sum.inr.inj h) (by decide)⟩
 
-/-- info: 'Foam.dress_yoneda' does not depend on any axioms -/
-#guard_msgs in #print axioms dress_yoneda
+/-- info: 'Foam.t374' does not depend on any axioms -/
+#guard_msgs in #print axioms t374
 
-/-- info: 'Foam.dress_obs_drops_ledger' does not depend on any axioms -/
-#guard_msgs in #print axioms dress_obs_drops_ledger
+/-- info: 'Foam.t373' does not depend on any axioms -/
+#guard_msgs in #print axioms t373
 
-/-- info: 'Foam.dress_idempotent' does not depend on any axioms -/
-#guard_msgs in #print axioms dress_idempotent
+/-- info: 'Foam.t372' does not depend on any axioms -/
+#guard_msgs in #print axioms t372
 
-/-- info: 'Foam.cassini_obs_blind_to_ledger' does not depend on any axioms -/
-#guard_msgs in #print axioms cassini_obs_blind_to_ledger
+/-- info: 'Foam.t264' does not depend on any axioms -/
+#guard_msgs in #print axioms t264
 
-/-- info: 'Foam.remainder_unseen' does not depend on any axioms -/
-#guard_msgs in #print axioms remainder_unseen
+/-- info: 'Foam.t396' does not depend on any axioms -/
+#guard_msgs in #print axioms t396
 
-/-- info: 'Foam.remainder_real' does not depend on any axioms -/
-#guard_msgs in #print axioms remainder_real
+/-- info: 'Foam.t314' does not depend on any axioms -/
+#guard_msgs in #print axioms t314
 
-/-- info: 'Foam.dropping_remainder_is_platonism' does not depend on any axioms -/
-#guard_msgs in #print axioms dropping_remainder_is_platonism
+/-- info: 'Foam.t072' does not depend on any axioms -/
+#guard_msgs in #print axioms t072
 
-/-- info: 'Foam.moved_in_extends' does not depend on any axioms -/
-#guard_msgs in #print axioms moved_in_extends
+/-- info: 'Foam.t388' does not depend on any axioms -/
+#guard_msgs in #print axioms t388
 
-/-- info: 'Foam.moved_in_detects_remainder' does not depend on any axioms -/
-#guard_msgs in #print axioms moved_in_detects_remainder
+/-- info: 'Foam.t387' does not depend on any axioms -/
+#guard_msgs in #print axioms t387
 
 end Foam

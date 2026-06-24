@@ -2,11 +2,11 @@ import Foam.Seat.Epoch
 
 namespace Foam
 
-theorem kolmogorov_checksum {State : Type} {walk bank : List (Beholder State)}
-    (h : Run walk bank) : (∀ q ∈ walk, Known bank q) ∧ Reduced bank :=
-  h.checksum
+theorem t464 {State : Type} {walk bank : List (Ty01 State)}
+    (h : t100 walk bank) : (∀ q ∈ walk, t354 bank q) ∧ t356 bank :=
+  h.t431
 
-/-- info: 'Foam.kolmogorov_checksum' does not depend on any axioms -/
-#guard_msgs in #print axioms kolmogorov_checksum
+/-- info: 'Foam.t464' does not depend on any axioms -/
+#guard_msgs in #print axioms t464
 
 end Foam

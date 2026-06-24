@@ -2,13 +2,13 @@ import Foam.Seat.Quiver
 
 namespace Foam
 
-def Quiver.deposit {Handle : Type} (q : Quiver Handle) (e : Handle × Handle) :
-    Quiver Handle := e :: q
+def Ty11.d061 {Handle : Type} (q : Ty11 Handle) (e : Handle × Handle) :
+    Ty11 Handle := e :: q
 
-theorem deposit_monotone {Handle : Type} (q : Quiver Handle) (e : Handle × Handle) :
-    (q.deposit e).length = q.length + 1 := rfl
+theorem t163 {Handle : Type} (q : Ty11 Handle) (e : Handle × Handle) :
+    (q.d061 e).length = q.length + 1 := rfl
 
-/-- info: 'Foam.deposit_monotone' does not depend on any axioms -/
-#guard_msgs in #print axioms deposit_monotone
+/-- info: 'Foam.t163' does not depend on any axioms -/
+#guard_msgs in #print axioms t163
 
 end Foam

@@ -2,37 +2,37 @@ import Foam.Seat.Triad
 
 namespace Foam
 
-theorem pauli_squares :
-    Quat.mul eye eye = Quat.negOne
-      ∧ Quat.mul jay jay = Quat.negOne
-      ∧ Quat.mul kay kay = Quat.negOne :=
-  three_imaginaries
+theorem t472 :
+    Foam.Ty10.d172 d092 d092 = Foam.Ty10.d059
+      ∧ Foam.Ty10.d172 d097 d097 = Foam.Ty10.d059
+      ∧ Foam.Ty10.d172 d224 d224 = Foam.Ty10.d059 :=
+  t480
 
-theorem pauli_cyclic :
-    Quat.mul eye jay = kay ∧ Quat.mul jay kay = eye ∧ Quat.mul kay eye = jay :=
-  triad_closes
+theorem t471 :
+    Foam.Ty10.d172 d092 d097 = d224 ∧ Foam.Ty10.d172 d097 d224 = d092 ∧ Foam.Ty10.d172 d224 d092 = d097 :=
+  t482
 
-theorem pauli_anticommute : Quat.mul jay eye = Quat.mul Quat.negOne kay :=
-  triad_anticomm
+theorem t470 : Foam.Ty10.d172 d097 d092 = Foam.Ty10.d172 Foam.Ty10.d059 d224 :=
+  t481
 
-theorem pauli :
-    (Quat.mul eye eye = Quat.negOne
-        ∧ Quat.mul jay jay = Quat.negOne
-        ∧ Quat.mul kay kay = Quat.negOne)
-      ∧ (Quat.mul eye jay = kay ∧ Quat.mul jay kay = eye ∧ Quat.mul kay eye = jay)
-      ∧ (Quat.mul jay eye = Quat.mul Quat.negOne kay) :=
-  ⟨three_imaginaries, triad_closes, triad_anticomm⟩
+theorem t469 :
+    (Foam.Ty10.d172 d092 d092 = Foam.Ty10.d059
+        ∧ Foam.Ty10.d172 d097 d097 = Foam.Ty10.d059
+        ∧ Foam.Ty10.d172 d224 d224 = Foam.Ty10.d059)
+      ∧ (Foam.Ty10.d172 d092 d097 = d224 ∧ Foam.Ty10.d172 d097 d224 = d092 ∧ Foam.Ty10.d172 d224 d092 = d097)
+      ∧ (Foam.Ty10.d172 d097 d092 = Foam.Ty10.d172 Foam.Ty10.d059 d224) :=
+  ⟨t480, t482, t481⟩
 
-/-- info: 'Foam.pauli_squares' does not depend on any axioms -/
-#guard_msgs in #print axioms pauli_squares
+/-- info: 'Foam.t472' does not depend on any axioms -/
+#guard_msgs in #print axioms t472
 
-/-- info: 'Foam.pauli_cyclic' does not depend on any axioms -/
-#guard_msgs in #print axioms pauli_cyclic
+/-- info: 'Foam.t471' does not depend on any axioms -/
+#guard_msgs in #print axioms t471
 
-/-- info: 'Foam.pauli_anticommute' does not depend on any axioms -/
-#guard_msgs in #print axioms pauli_anticommute
+/-- info: 'Foam.t470' does not depend on any axioms -/
+#guard_msgs in #print axioms t470
 
-/-- info: 'Foam.pauli' does not depend on any axioms -/
-#guard_msgs in #print axioms pauli
+/-- info: 'Foam.t469' does not depend on any axioms -/
+#guard_msgs in #print axioms t469
 
 end Foam

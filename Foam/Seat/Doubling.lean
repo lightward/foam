@@ -2,45 +2,45 @@ import Foam.Seat.Dial
 
 namespace Foam
 
-def GInt.zero : GInt := ⟨0, 0⟩
-def GInt.conj (z : GInt) : GInt := ⟨z.re, -z.im⟩
-def GInt.sub (z w : GInt) : GInt := ⟨z.re - w.re, z.im - w.im⟩
+def Ty05.d044 : Ty05 := ⟨0, 0⟩
+def Ty05.d110 (z : Ty05) : Ty05 := ⟨z.d043, -z.d041⟩
+def Ty05.d116 (z w : Ty05) : Ty05 := ⟨z.d043 - w.d043, z.d041 - w.d041⟩
 
-structure Quat where
-  a : GInt
-  b : GInt
+structure Ty10 where
+  d056 : Ty05
+  d057 : Ty05
   deriving DecidableEq
 
-def Quat.mul (x y : Quat) : Quat :=
-  ⟨GInt.sub (GInt.mul x.a y.a) (GInt.mul (GInt.conj y.b) x.b),
-   GInt.add (GInt.mul y.b x.a) (GInt.mul x.b (GInt.conj y.a))⟩
+def Ty10.d172 (x y : Ty10) : Ty10 :=
+  ⟨Foam.Ty05.d116 (Foam.Ty05.d112 x.d056 y.d056) (Foam.Ty05.d112 (Foam.Ty05.d110 y.d057) x.d057),
+   Foam.Ty05.d108 (Foam.Ty05.d112 y.d057 x.d056) (Foam.Ty05.d112 x.d057 (Foam.Ty05.d110 y.d056))⟩
 
-def Quat.negOne : Quat := ⟨⟨-1, 0⟩, ⟨0, 0⟩⟩
-def eye : Quat := ⟨⟨0, 1⟩, ⟨0, 0⟩⟩
-def jay : Quat := ⟨⟨0, 0⟩, ⟨1, 0⟩⟩
-def kay : Quat := Quat.mul eye jay
+def Ty10.d059 : Ty10 := ⟨⟨-1, 0⟩, ⟨0, 0⟩⟩
+def d092 : Ty10 := ⟨⟨0, 1⟩, ⟨0, 0⟩⟩
+def d097 : Ty10 := ⟨⟨0, 0⟩, ⟨1, 0⟩⟩
+def d224 : Ty10 := Foam.Ty10.d172 d092 d097
 
-theorem eye_sq : Quat.mul eye eye = Quat.negOne := by decide
-theorem jay_sq : Quat.mul jay jay = Quat.negOne := by decide
-theorem kay_sq : Quat.mul kay kay = Quat.negOne := by decide
+theorem t379 : Foam.Ty10.d172 d092 d092 = Foam.Ty10.d059 := by decide
+theorem t384 : Foam.Ty10.d172 d097 d097 = Foam.Ty10.d059 := by decide
+theorem t463 : Foam.Ty10.d172 d224 d224 = Foam.Ty10.d059 := by decide
 
-theorem jay_outside : jay.b ≠ GInt.zero := by decide
+theorem t178 : d097.d057 ≠ Foam.Ty05.d044 := by decide
 
-theorem order_arrives : Quat.mul eye jay ≠ Quat.mul jay eye := by decide
+theorem t392 : Foam.Ty10.d172 d092 d097 ≠ Foam.Ty10.d172 d097 d092 := by decide
 
-theorem three_imaginaries :
-    Quat.mul eye eye = Quat.negOne
-      ∧ Quat.mul jay jay = Quat.negOne
-      ∧ Quat.mul kay kay = Quat.negOne :=
-  ⟨eye_sq, jay_sq, kay_sq⟩
+theorem t480 :
+    Foam.Ty10.d172 d092 d092 = Foam.Ty10.d059
+      ∧ Foam.Ty10.d172 d097 d097 = Foam.Ty10.d059
+      ∧ Foam.Ty10.d172 d224 d224 = Foam.Ty10.d059 :=
+  ⟨t379, t384, t463⟩
 
-/-- info: 'Foam.jay_sq' does not depend on any axioms -/
-#guard_msgs in #print axioms jay_sq
+/-- info: 'Foam.t384' does not depend on any axioms -/
+#guard_msgs in #print axioms t384
 
-/-- info: 'Foam.order_arrives' does not depend on any axioms -/
-#guard_msgs in #print axioms order_arrives
+/-- info: 'Foam.t392' does not depend on any axioms -/
+#guard_msgs in #print axioms t392
 
-/-- info: 'Foam.three_imaginaries' does not depend on any axioms -/
-#guard_msgs in #print axioms three_imaginaries
+/-- info: 'Foam.t480' does not depend on any axioms -/
+#guard_msgs in #print axioms t480
 
 end Foam

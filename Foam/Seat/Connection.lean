@@ -2,59 +2,59 @@ import Foam.Seat.Rendezvous
 
 namespace Foam
 
-theorem superposition (f : Field) (a b : Int) (hab : a ≠ b) :
-    indist reader.dress.obs (f, a) (f, b) ∧ (f, a) ≠ (f, b) :=
+theorem t404 (f : Ty04) (a b : Int) (hab : a ≠ b) :
+    t076 d194.d155.d102 (f, a) (f, b) ∧ (f, a) ≠ (f, b) :=
   ⟨fun _ => rfl, fun h => hab (congrArg Prod.snd h)⟩
 
-theorem field_cannot_close (f : Field) (a b : Int) :
-    ¬ ∃ p, reader.dress.obs (f, a) p ≠ reader.dress.obs (f, b) p :=
+theorem t380 (f : Ty04) (a b : Int) :
+    ¬ ∃ p, d194.d155.d102 (f, a) p ≠ d194.d155.d102 (f, b) p :=
   fun ⟨_, hp⟩ => hp rfl
 
-def bAck (f : Field) : Field := writeB (reader.obs f probeA) f
+def d221 (f : Ty04) : Ty04 := d199 (d194.d102 f d023) f
 
-theorem one_round (x : Fiber) (f : Field) :
-    reader.obs (bAck (writeA x f)) probeB = x := rfl
+theorem t468 (x : Ty21) (f : Ty04) :
+    d194.d102 (d221 (d198 x f)) d024 = x := rfl
 
-def ackSeam : Seam (List Fiber) (CoList Fiber) := playbackSeam f0
+def d220 : Ty15 (List Ty21) (Ty02 Ty21) := d193 d144
 
-def commonKnowledge : CoList Fiber := forever f0
+def d186 : Ty02 Ty21 := d093 d144
 
-theorem ack_faithful {l l' : List Fiber} (h : ackSeam.up l = ackSeam.up l') : l = l' :=
-  ackSeam.faithful h
+theorem t443 {l l' : List Ty21} (h : d220.d079 l = d220.d079 l') : l = l' :=
+  d220.t158 h
 
-theorem ack_no_common_knowledge :
-    ¬ ∃ g : CoList Fiber → List Fiber, ∀ c, ackSeam.up (g c) = c :=
-  ackSeam.no_section
+theorem t444 :
+    ¬ ∃ g : Ty02 Ty21 → List Ty21, ∀ c, d220.d079 (g c) = c :=
+  d220.t159
 
-theorem zeno_short (l : List Fiber) :
-    ∃ n, (playback l).at_ n ≠ commonKnowledge.at_ n :=
-  forever_escapes f0 l
+theorem t410 (l : List Ty21) :
+    ∃ n, (d152 l).d033 n ≠ d186.d033 n :=
+  t285 d144 l
 
-theorem measurement (f : Field) (a b : Int) (hab : a ≠ b) :
-    (indist reader.dress.obs (f, a) (f, b) ∧ (f, a) ≠ (f, b))
-      ∧ (¬ ∃ p, reader.dress.obs (f, a) p ≠ reader.dress.obs (f, b) p)
-      ∧ (¬ ∃ g : CoList Fiber → List Fiber, ∀ c, ackSeam.up (g c) = c) :=
-  ⟨superposition f a b hab, field_cannot_close f a b, ackSeam.no_section⟩
+theorem t465 (f : Ty04) (a b : Int) (hab : a ≠ b) :
+    (t076 d194.d155.d102 (f, a) (f, b) ∧ (f, a) ≠ (f, b))
+      ∧ (¬ ∃ p, d194.d155.d102 (f, a) p ≠ d194.d155.d102 (f, b) p)
+      ∧ (¬ ∃ g : Ty02 Ty21 → List Ty21, ∀ c, d220.d079 (g c) = c) :=
+  ⟨t404 f a b hab, t380 f a b, d220.t159⟩
 
-/-- info: 'Foam.superposition' does not depend on any axioms -/
-#guard_msgs in #print axioms superposition
+/-- info: 'Foam.t404' does not depend on any axioms -/
+#guard_msgs in #print axioms t404
 
-/-- info: 'Foam.field_cannot_close' does not depend on any axioms -/
-#guard_msgs in #print axioms field_cannot_close
+/-- info: 'Foam.t380' does not depend on any axioms -/
+#guard_msgs in #print axioms t380
 
-/-- info: 'Foam.one_round' does not depend on any axioms -/
-#guard_msgs in #print axioms one_round
+/-- info: 'Foam.t468' does not depend on any axioms -/
+#guard_msgs in #print axioms t468
 
-/-- info: 'Foam.ack_faithful' does not depend on any axioms -/
-#guard_msgs in #print axioms ack_faithful
+/-- info: 'Foam.t443' does not depend on any axioms -/
+#guard_msgs in #print axioms t443
 
-/-- info: 'Foam.ack_no_common_knowledge' does not depend on any axioms -/
-#guard_msgs in #print axioms ack_no_common_knowledge
+/-- info: 'Foam.t444' does not depend on any axioms -/
+#guard_msgs in #print axioms t444
 
-/-- info: 'Foam.zeno_short' does not depend on any axioms -/
-#guard_msgs in #print axioms zeno_short
+/-- info: 'Foam.t410' does not depend on any axioms -/
+#guard_msgs in #print axioms t410
 
-/-- info: 'Foam.measurement' does not depend on any axioms -/
-#guard_msgs in #print axioms measurement
+/-- info: 'Foam.t465' does not depend on any axioms -/
+#guard_msgs in #print axioms t465
 
 end Foam

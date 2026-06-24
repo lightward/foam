@@ -4,21 +4,21 @@ namespace Foam
 
 variable {G : Type} [Mul G] [One G]
 
-theorem Seat.good_loop (S : Seat G) (g : G) (p : S.Pos) (hg : g ≠ 1) :
-    S.act g p ≠ p
-      ∧ S.sub (S.act g p) p * S.sub p (S.act g p) = 1
-      ∧ Nonempty (S.Pos → Unit) := by
-  refine ⟨?_, S.sub_inv p (S.act g p), ⟨fun _ => ()⟩⟩
+theorem Ty16.t238 (S : Ty16 G) (g : G) (p : S.Ty24) (hg : g ≠ 1) :
+    S.d131 g p ≠ p
+      ∧ S.d133 (S.d131 g p) p * S.d133 p (S.d131 g p) = 1
+      ∧ Nonempty (S.Ty24 → Unit) := by
+  refine ⟨?_, S.t251 p (S.d131 g p), ⟨fun _ => ()⟩⟩
   intro h
   apply hg
-  have hs := S.sub_act g p
-  rw [h, S.sub_self] at hs
+  have hs := S.t249 g p
+  rw [h, S.t252] at hs
   exact hs.symm
 
-theorem Seat.self_health (S : Seat G) (p : S.Pos) : S.sub p p = 1 :=
-  S.sub_self p
+theorem Ty16.t248 (S : Ty16 G) (p : S.Ty24) : S.d133 p p = 1 :=
+  S.t252 p
 
-/-- info: 'Foam.Seat.good_loop' does not depend on any axioms -/
-#guard_msgs in #print axioms Seat.good_loop
+/-- info: 'Foam.Ty16.t238' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Ty16.t238
 
 end Foam

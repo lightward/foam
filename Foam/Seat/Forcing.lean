@@ -3,55 +3,54 @@ import Foam.Seat.Doubling
 
 namespace Foam
 
-open Foam.FInt (addComm mulComm neg_mul mul_neg zero_mul)
 
-def GInt.cross (w z : GInt) : Int := w.re * z.im - w.im * z.re
+def Ty05.d111 (w z : Ty05) : Int := w.d043 * z.d041 - w.d041 * z.d043
 
-theorem conjMul_eq (w z : GInt) :
-    GInt.mul w.conj z = ⟨GInt.align w z, GInt.cross w z⟩ := by
-  show (⟨w.re * z.re - -w.im * z.im, w.re * z.im + -w.im * z.re⟩ : GInt)
-    = ⟨w.re * z.re + w.im * z.im, w.re * z.im - w.im * z.re⟩
-  rw [neg_mul w.im z.im, neg_mul w.im z.re,
-    Int.sub_eq_add_neg (a := w.re * z.re) (b := -(w.im * z.im)),
+theorem t267 (w z : Ty05) :
+    Foam.Ty05.d112 w.d110 z = ⟨Foam.Ty05.d109 w z, Foam.Ty05.d111 w z⟩ := by
+  show (⟨w.d043 * z.d043 - -w.d041 * z.d041, w.d043 * z.d041 + -w.d041 * z.d043⟩ : Ty05)
+    = ⟨w.d043 * z.d043 + w.d041 * z.d041, w.d043 * z.d041 - w.d041 * z.d043⟩
+  rw [t027 w.d041 z.d041, t027 w.d041 z.d043,
+    Int.sub_eq_add_neg (a := w.d043 * z.d043) (b := -(w.d041 * z.d041)),
     Int.neg_neg, ← Int.sub_eq_add_neg]
 
-theorem cross_rot_invariant (w z : GInt) :
-    GInt.cross w.rot z.rot = GInt.cross w z := by
-  show -w.im * z.re - w.re * -z.im = w.re * z.im - w.im * z.re
-  rw [neg_mul w.im z.re, mul_neg w.re z.im,
-    Int.sub_eq_add_neg (a := -(w.im * z.re)) (b := -(w.re * z.im)),
+theorem t276 (w z : Ty05) :
+    Foam.Ty05.d111 w.d115 z.d115 = Foam.Ty05.d111 w z := by
+  show -w.d041 * z.d043 - w.d043 * -z.d041 = w.d043 * z.d041 - w.d041 * z.d043
+  rw [t027 w.d041 z.d043, t018 w.d043 z.d041,
+    Int.sub_eq_add_neg (a := -(w.d041 * z.d043)) (b := -(w.d043 * z.d041)),
     Int.neg_neg,
-    Int.sub_eq_add_neg (a := w.re * z.im) (b := w.im * z.re),
-    addComm (-(w.im * z.re)) (w.re * z.im)]
+    Int.sub_eq_add_neg (a := w.d043 * z.d041) (b := w.d041 * z.d043),
+    t004 (-(w.d041 * z.d043)) (w.d043 * z.d041)]
 
-theorem normSq_eq_align_self (z : GInt) : z.normSq = GInt.align z z := rfl
+theorem t306 (z : Ty05) : z.d114 = Foam.Ty05.d109 z z := rfl
 
-theorem invariants_complete (z w : GInt) :
-    GInt.align z w * GInt.align z w + GInt.cross z w * GInt.cross z w
-      = z.normSq * w.normSq := by
-  show GInt.align z w * GInt.align z w + GInt.cross z w * GInt.cross z w
-    = (z.re * z.re + z.im * z.im) * (w.re * w.re + w.im * w.im)
-  rw [show GInt.cross z w = -(z.im * w.re) + z.re * w.im by
-    show z.re * w.im - z.im * w.re = -(z.im * w.re) + z.re * w.im
-    rw [Int.sub_eq_add_neg (a := z.re * w.im) (b := z.im * w.re),
-      addComm (z.re * w.im) (-(z.im * w.re))]]
-  exact Int.lagrange z.re z.im w.re w.im
+theorem t302 (z w : Ty05) :
+    Foam.Ty05.d109 z w * Foam.Ty05.d109 z w + Foam.Ty05.d111 z w * Foam.Ty05.d111 z w
+      = z.d114 * w.d114 := by
+  show Foam.Ty05.d109 z w * Foam.Ty05.d109 z w + Foam.Ty05.d111 z w * Foam.Ty05.d111 z w
+    = (z.d043 * z.d043 + z.d041 * z.d041) * (w.d043 * w.d043 + w.d041 * w.d041)
+  rw [show Foam.Ty05.d111 z w = -(z.d041 * w.d043) + z.d043 * w.d041 by
+    show z.d043 * w.d041 - z.d041 * w.d043 = -(z.d041 * w.d043) + z.d043 * w.d041
+    rw [Int.sub_eq_add_neg (a := z.d043 * w.d041) (b := z.d041 * w.d043),
+      t004 (z.d043 * w.d041) (-(z.d041 * w.d043))]]
+  exact Foam.t059 z.d043 z.d041 w.d043 w.d041
 
-theorem cross_eq_align_rot (θ z : GInt) :
-    GInt.align θ.rot z = GInt.cross θ z := by
-  show -θ.im * z.re + θ.re * z.im = θ.re * z.im - θ.im * z.re
-  rw [neg_mul θ.im z.re,
-    Int.sub_eq_add_neg (a := θ.re * z.im) (b := θ.im * z.re),
-    addComm (-(θ.im * z.re)) (θ.re * z.im)]
+theorem t275 (θ z : Ty05) :
+    Foam.Ty05.d109 θ.d115 z = Foam.Ty05.d111 θ z := by
+  show -θ.d041 * z.d043 + θ.d043 * z.d041 = θ.d043 * z.d041 - θ.d041 * z.d043
+  rw [t027 θ.d041 z.d043,
+    Int.sub_eq_add_neg (a := θ.d043 * z.d041) (b := θ.d041 * z.d043),
+    t004 (-(θ.d041 * z.d043)) (θ.d043 * z.d041)]
 
-theorem born_parseval_is_invariants (θ z : GInt) :
-    GInt.born θ z + GInt.born θ.rot z
-      = GInt.align θ z * GInt.align θ z + GInt.cross θ z * GInt.cross θ z := by
-  show GInt.align θ z * GInt.align θ z + GInt.align θ.rot z * GInt.align θ.rot z
-    = GInt.align θ z * GInt.align θ z + GInt.cross θ z * GInt.cross θ z
-  rw [cross_eq_align_rot θ z]
+theorem t367 (θ z : Ty05) :
+    Foam.Ty05.d165 θ z + Foam.Ty05.d165 θ.d115 z
+      = Foam.Ty05.d109 θ z * Foam.Ty05.d109 θ z + Foam.Ty05.d111 θ z * Foam.Ty05.d111 θ z := by
+  show Foam.Ty05.d109 θ z * Foam.Ty05.d109 θ z + Foam.Ty05.d109 θ.d115 z * Foam.Ty05.d109 θ.d115 z
+    = Foam.Ty05.d109 θ z * Foam.Ty05.d109 θ z + Foam.Ty05.d111 θ z * Foam.Ty05.d111 θ z
+  rw [t275 θ z]
 
-theorem int_add_self_zero : ∀ x : Int, x + x = 0 → x = 0
+theorem t078 : ∀ x : Int, x + x = 0 → x = 0
   | .ofNat 0, _ => rfl
   | .ofNat (n + 1), h => by
     have h' : Int.ofNat ((n + 1) + (n + 1)) = Int.ofNat 0 := h
@@ -59,38 +58,38 @@ theorem int_add_self_zero : ∀ x : Int, x + x = 0 → x = 0
     exact Nat.noConfusion h''
   | .negSucc _, h => nomatch h
 
-theorem forced_at_the_frame (f : Int → Int)
-    (h : ∀ θ z : GInt,
-      f (GInt.align θ z) + f (GInt.cross θ z) = θ.normSq * z.normSq) :
+theorem t283 (f : Int → Int)
+    (h : ∀ θ z : Ty05,
+      f (Foam.Ty05.d109 θ z) + f (Foam.Ty05.d111 θ z) = θ.d114 * z.d114) :
     ∀ a : Int, f a = a * a := by
-  have h0 : f 0 = 0 := int_add_self_zero (f 0) (h GInt.zero GInt.zero)
+  have h0 : f 0 = 0 := t078 (f 0) (h Foam.Ty05.d044 Foam.Ty05.d044)
   intro a
   have ha : f (a * 1 + 0 * 0) + f (a * 0 - 0 * 1)
       = (a * a + 0 * 0) * (1 * 1 + 0 * 0) := h ⟨a, 0⟩ ⟨1, 0⟩
-  rw [mulComm a 1, Int.one_mul a, mulComm a 0, zero_mul a,
+  rw [t014 a 1, Int.one_mul a, t014 a 0, t055 a,
     show (0 : Int) * 0 = 0 from rfl, show (0 : Int) * 1 = 0 from rfl,
     show (1 : Int) * 1 = 1 from rfl, show (0 : Int) - 0 = 0 from rfl,
     Int.add_zero a, Int.add_zero (a * a),
     show (1 : Int) + 0 = 1 from rfl,
-    mulComm (a * a) 1, Int.one_mul (a * a), h0, Int.add_zero (f a)] at ha
+    t014 (a * a) 1, Int.one_mul (a * a), h0, Int.add_zero (f a)] at ha
   exact ha
 
-/-- info: 'Foam.conjMul_eq' does not depend on any axioms -/
-#guard_msgs in #print axioms conjMul_eq
+/-- info: 'Foam.t267' does not depend on any axioms -/
+#guard_msgs in #print axioms t267
 
-/-- info: 'Foam.cross_rot_invariant' does not depend on any axioms -/
-#guard_msgs in #print axioms cross_rot_invariant
+/-- info: 'Foam.t276' does not depend on any axioms -/
+#guard_msgs in #print axioms t276
 
-/-- info: 'Foam.invariants_complete' does not depend on any axioms -/
-#guard_msgs in #print axioms invariants_complete
+/-- info: 'Foam.t302' does not depend on any axioms -/
+#guard_msgs in #print axioms t302
 
-/-- info: 'Foam.cross_eq_align_rot' does not depend on any axioms -/
-#guard_msgs in #print axioms cross_eq_align_rot
+/-- info: 'Foam.t275' does not depend on any axioms -/
+#guard_msgs in #print axioms t275
 
-/-- info: 'Foam.born_parseval_is_invariants' does not depend on any axioms -/
-#guard_msgs in #print axioms born_parseval_is_invariants
+/-- info: 'Foam.t367' does not depend on any axioms -/
+#guard_msgs in #print axioms t367
 
-/-- info: 'Foam.forced_at_the_frame' does not depend on any axioms -/
-#guard_msgs in #print axioms forced_at_the_frame
+/-- info: 'Foam.t283' does not depend on any axioms -/
+#guard_msgs in #print axioms t283
 
 end Foam

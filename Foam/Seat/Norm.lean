@@ -3,33 +3,32 @@ import Foam.Seat.Doubling
 
 namespace Foam
 
-open Foam.FInt (addComm neg_mul mul_neg)
 
-theorem Int.neg_sq (a : Int) : -a * -a = a * a := by
-  rw [neg_mul, mul_neg, Int.neg_neg]
+theorem t062 (a : Int) : -a * -a = a * a := by
+  rw [t027, t018, Int.neg_neg]
 
-theorem GInt.normSq_conj (z : GInt) : z.conj.normSq = z.normSq := by
-  show z.re * z.re + -z.im * -z.im = z.re * z.re + z.im * z.im
-  rw [Int.neg_sq z.im]
+theorem Ty05.t211 (z : Ty05) : z.d110.d114 = z.d114 := by
+  show z.d043 * z.d043 + -z.d041 * -z.d041 = z.d043 * z.d043 + z.d041 * z.d041
+  rw [Foam.t062 z.d041]
 
-theorem GInt.normSq_mul (z w : GInt) :
-    (z.mul w).normSq = z.normSq * w.normSq := by
-  show (z.re * w.re - z.im * w.im) * (z.re * w.re - z.im * w.im)
-      + (z.re * w.im + z.im * w.re) * (z.re * w.im + z.im * w.re)
-    = (z.re * z.re + z.im * z.im) * (w.re * w.re + w.im * w.im)
-  have L := Int.lagrange z.re (-z.im) w.re w.im
-  rw [neg_mul z.im w.im, neg_mul z.im w.re, Int.neg_neg,
-      Int.neg_sq z.im, ← Int.sub_eq_add_neg,
-      addComm (z.im * w.re) (z.re * w.im)] at L
+theorem Ty05.t212 (z w : Ty05) :
+    (z.d112 w).d114 = z.d114 * w.d114 := by
+  show (z.d043 * w.d043 - z.d041 * w.d041) * (z.d043 * w.d043 - z.d041 * w.d041)
+      + (z.d043 * w.d041 + z.d041 * w.d043) * (z.d043 * w.d041 + z.d041 * w.d043)
+    = (z.d043 * z.d043 + z.d041 * z.d041) * (w.d043 * w.d043 + w.d041 * w.d041)
+  have L := Foam.t059 z.d043 (-z.d041) w.d043 w.d041
+  rw [t027 z.d041 w.d041, t027 z.d041 w.d043, Int.neg_neg,
+      Foam.t062 z.d041, ← Int.sub_eq_add_neg,
+      t004 (z.d041 * w.d043) (z.d043 * w.d041)] at L
   exact L
 
-/-- info: 'Foam.Int.neg_sq' does not depend on any axioms -/
-#guard_msgs in #print axioms Int.neg_sq
+/-- info: 'Foam.t062' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.t062
 
-/-- info: 'Foam.GInt.normSq_conj' does not depend on any axioms -/
-#guard_msgs in #print axioms GInt.normSq_conj
+/-- info: 'Foam.Ty05.t211' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Ty05.t211
 
-/-- info: 'Foam.GInt.normSq_mul' does not depend on any axioms -/
-#guard_msgs in #print axioms GInt.normSq_mul
+/-- info: 'Foam.Ty05.t212' does not depend on any axioms -/
+#guard_msgs in #print axioms Foam.Ty05.t212
 
 end Foam
