@@ -108,16 +108,18 @@ def rolePrefix : String → String
   | "proof" => "t"
   | _       => "d"
 
-/-- Under B, the only surviving nesting is host-forced: a constructor under its
-    inductive, a field/projection under its structure. Everything else flattens
-    to a flat `Foam.<token>`. -/
-def nestedParent? (env : Environment) (n : Name) (ci : ConstantInfo) : Option Name :=
-  match ci with
-  | .ctorInfo c => some c.induct
-  | _ =>
-    let p := n.getPrefix
-    if isStructure env p && (getStructureFields env p).contains (Name.mkSimple (lastStr n))
-    then some p else none
+/-- Redacted qualified name. A name nests under its parent's token iff the parent
+    is itself a foam-authored constant (type/def) — host-forced bundling, which
+    Lean's dot-notation, projections, and constructors all require. Names under a
+    pure organizational namespace (`FInt`, `Char`) or at top level flatten to a
+    flat `Foam.<token>`. Pov-strip where it isn't load-bearing; nest where the
+    host forces it. -/
+partial def qnameOf (tokenMap : NameMap String) (n : Name) : String :=
+  match tokenMap.find? n with
+  | none => "Foam.?"
+  | some tok =>
+    if (tokenMap.find? n.getPrefix).isSome then s!"{qnameOf tokenMap n.getPrefix}.{tok}"
+    else s!"Foam.{tok}"
 
 #eval show MetaM Unit from do
   let env ← getEnv
@@ -163,20 +165,10 @@ def nestedParent? (env : Environment) (n : Name) (ci : ConstantInfo) : Option Na
     let token := rolePrefix role ++ pad i (widthOf role)
     tokenMap := tokenMap.insert n token
     toks := toks.push (n, role, d, token)
-  -- pass B: compute the redacted qualified name (B-rule) and emit
+  -- pass B: compute the redacted qualified name and emit
   let mut lines : Array String := #[]
   for (n, role, d, token) in toks do
-    let qname :=
-      match env.find? n with
-      | some ci =>
-        match nestedParent? env n ci with
-        | some parent =>
-          match tokenMap.find? parent with
-          | some ptok => s!"Foam.{ptok}.{token}"
-          | none      => s!"Foam.{token}"
-        | none => s!"Foam.{token}"
-      | none => s!"Foam.{token}"
-    lines := lines.push s!"{token}\t{role}\t{d}\t{n}\t{qname}"
+    lines := lines.push s!"{token}\t{role}\t{d}\t{n}\t{qnameOf tokenMap n}"
   -- 6. write + summarize
   IO.FS.writeFile outPath (String.intercalate "\n" lines.toList ++ "\n")
   IO.println s!"primaries: {prims.size}"
