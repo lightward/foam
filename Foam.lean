@@ -46,3 +46,4 @@ import Foam.Seat.Rendezvous
 import Foam.Seat.Connection
 import Foam.Seat.Schrodinger
 import Foam.Seat.Frame
+import Foam.Seat.Varadarajan
