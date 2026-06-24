@@ -45,3 +45,4 @@ import Foam.Platonism.Tower
 import Foam.Seat.Rendezvous
 import Foam.Seat.Connection
 import Foam.Seat.Schrodinger
+import Foam.Seat.Frame
