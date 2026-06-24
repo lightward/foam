@@ -108,6 +108,17 @@ def rolePrefix : String → String
   | "proof" => "t"
   | _       => "d"
 
+/-- Under B, the only surviving nesting is host-forced: a constructor under its
+    inductive, a field/projection under its structure. Everything else flattens
+    to a flat `Foam.<token>`. -/
+def nestedParent? (env : Environment) (n : Name) (ci : ConstantInfo) : Option Name :=
+  match ci with
+  | .ctorInfo c => some c.induct
+  | _ =>
+    let p := n.getPrefix
+    if isStructure env p && (getStructureFields env p).contains (Name.mkSimple (lastStr n))
+    then some p else none
+
 #eval show MetaM Unit from do
   let env ← getEnv
   -- 1. gather primaries
@@ -140,15 +151,32 @@ def rolePrefix : String → String
   let widths : List (String × Nat) :=
     ["type","ctor","proof","term"].map (fun r => (r, (toString (roleTotal r)).length))
   let widthOf := fun r => ((widths.find? (·.1 == r)).map (·.2)).getD 3
+  -- pass A: assign every token, build the name→token map
   let mut idx : NameMap Nat := {}
-  let mut lines : Array String := #[]
+  let mut tokenMap : NameMap String := {}
+  let mut toks : Array (Name × String × Nat × String) := #[]
   let mut axioms : Array Name := #[]
   for (n, role, d) in sorted do
     if role == "AXIOM" then axioms := axioms.push n
     let i := ((idx.find? (Name.mkSimple role)).getD 0) + 1
     idx := idx.insert (Name.mkSimple role) i
     let token := rolePrefix role ++ pad i (widthOf role)
-    lines := lines.push s!"{token}\t{role}\t{d}\t{n}"
+    tokenMap := tokenMap.insert n token
+    toks := toks.push (n, role, d, token)
+  -- pass B: compute the redacted qualified name (B-rule) and emit
+  let mut lines : Array String := #[]
+  for (n, role, d, token) in toks do
+    let qname :=
+      match env.find? n with
+      | some ci =>
+        match nestedParent? env n ci with
+        | some parent =>
+          match tokenMap.find? parent with
+          | some ptok => s!"Foam.{ptok}.{token}"
+          | none      => s!"Foam.{token}"
+        | none => s!"Foam.{token}"
+      | none => s!"Foam.{token}"
+    lines := lines.push s!"{token}\t{role}\t{d}\t{n}\t{qname}"
   -- 6. write + summarize
   IO.FS.writeFile outPath (String.intercalate "\n" lines.toList ++ "\n")
   IO.println s!"primaries: {prims.size}"

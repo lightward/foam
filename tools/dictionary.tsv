@@ -1,754 +1,754 @@
-Ty01	type	0	Foam.Beholder
-t001	proof	0	Foam.Below
-t002	proof	0	Foam.Char.four_swap
-t003	proof	0	Foam.Char.sub_pair
-d001	term	0	Foam.Char.twice
-Ty02	type	0	Foam.CoList
-Ty03	type	0	Foam.DInt
-t004	proof	0	Foam.FInt.addComm
-t005	proof	0	Foam.FInt.add_assoc
-t006	proof	0	Foam.FInt.add_left_neg
-t007	proof	0	Foam.FInt.add_mul
-t008	proof	0	Foam.FInt.add_right_neg
-t009	proof	0	Foam.FInt.add_sub_add_left
-t010	proof	0	Foam.FInt.add_sub_add_right
-t011	proof	0	Foam.FInt.add_sub_cancel
-t012	proof	0	Foam.FInt.add_sub_cancel_left
-t013	proof	0	Foam.FInt.add_sub_cancel_right
-t014	proof	0	Foam.FInt.mulComm
-t015	proof	0	Foam.FInt.mul_add
-t016	proof	0	Foam.FInt.mul_assoc
-t017	proof	0	Foam.FInt.mul_eq_zero
-t018	proof	0	Foam.FInt.mul_neg
-t019	proof	0	Foam.FInt.mul_neg_one
-t020	proof	0	Foam.FInt.mul_one
-t021	proof	0	Foam.FInt.mul_sub
-t022	proof	0	Foam.FInt.mul_zero
-t023	proof	0	Foam.FInt.nat_mul_assoc
-t024	proof	0	Foam.FInt.nat_mul_sub
-t025	proof	0	Foam.FInt.neg_add
-t026	proof	0	Foam.FInt.neg_eq_of_add_eq_zero
-t027	proof	0	Foam.FInt.neg_mul
-t028	proof	0	Foam.FInt.neg_ofNat_add_neg_ofNat
-t029	proof	0	Foam.FInt.neg_ofNat_add_ofNat
-t030	proof	0	Foam.FInt.neg_sub
-t031	proof	0	Foam.FInt.ofNat_add_neg_ofNat
-t032	proof	0	Foam.FInt.ofNat_mul_add
-t033	proof	0	Foam.FInt.ofNat_mul_negSucc
-t034	proof	0	Foam.FInt.ofNat_mul_ofNat
-t035	proof	0	Foam.FInt.ofNat_mul_subNatNat
-t036	proof	0	Foam.FInt.ofNat_succ_add
-t037	proof	0	Foam.FInt.one_mul
-t038	proof	0	Foam.FInt.subNatNat_add
-t039	proof	0	Foam.FInt.subNatNat_add_add
-t040	proof	0	Foam.FInt.subNatNat_add_negSucc
-t041	proof	0	Foam.FInt.subNatNat_add_ofNat
-t042	proof	0	Foam.FInt.subNatNat_add_succ
-t043	proof	0	Foam.FInt.subNatNat_of_ge
-t044	proof	0	Foam.FInt.subNatNat_of_lt
-t045	proof	0	Foam.FInt.subNatNat_succ_left
-t046	proof	0	Foam.FInt.subNatNat_succ_right
-t047	proof	0	Foam.FInt.subNatNat_succ_succ
-t048	proof	0	Foam.FInt.sub_add_cancel
-t049	proof	0	Foam.FInt.sub_eq_zero_of_le
-t050	proof	0	Foam.FInt.sub_mul
-t051	proof	0	Foam.FInt.sub_sub
-t052	proof	0	Foam.FInt.sub_zero
-t053	proof	0	Foam.FInt.two_mul
-t054	proof	0	Foam.FInt.zero_add
-t055	proof	0	Foam.FInt.zero_mul
-Ty04	type	0	Foam.Field
-Ty05	type	0	Foam.GInt
-t056	proof	0	Foam.GInt.sq_image
-Ty06	type	0	Foam.Grp
-t057	proof	0	Foam.Int.add_cross_swap
-t058	proof	0	Foam.Int.add_swap_inner
-t059	proof	0	Foam.Int.lagrange
-t060	proof	0	Foam.Int.mul_interchange
-t061	proof	0	Foam.Int.neg_mul_neg'
-t062	proof	0	Foam.Int.neg_sq
-t063	proof	0	Foam.Int.parseval_collect
-t064	proof	0	Foam.Int.sq_interchange
-t065	proof	0	Foam.Int.two_mul'
-Ty07	type	0	Foam.Iso
-Ty08	type	0	Foam.Ledger
-d002	term	0	Foam.Ledger.dim
-d003	term	0	Foam.Ledger.freq
-d004	term	0	Foam.Ledger.order
-t066	proof	0	Foam.NoConsec
-Ty09	type	0	Foam.Octo
-t067	proof	0	Foam.OpenChannels
-Ty10	type	0	Foam.Quat
-Ty11	type	0	Foam.Quiver
-t068	proof	0	Foam.ReadingRefines
-t069	proof	0	Foam.Refines
-Ty12	type	0	Foam.Rot
-Ty13	type	0	Foam.Rung
-Ty14	type	0	Foam.SInt
-Ty15	type	0	Foam.Seam
-Ty16	type	0	Foam.Seat
-Ty17	type	0	Foam.Sed
-Ty18	type	0	Foam.Stage
-d005	term	0	Foam.altSign
-t070	proof	0	Foam.appendAssoc
-t071	proof	0	Foam.appendNil
-d006	term	0	Foam.chargeIn
-d007	term	0	Foam.debt
-d008	term	0	Foam.dec
-d009	term	0	Foam.drainOne
-d010	term	0	Foam.drainSeq
-t072	proof	0	Foam.dropping_remainder_is_platonism
-d011	term	0	Foam.enc
-d012	term	0	Foam.encFlush
-d013	term	0	Foam.encStep
-d014	term	0	Foam.fib
-d015	term	0	Foam.genStep
-t073	proof	0	Foam.grounded
-t074	proof	0	Foam.hfac1
-t075	proof	0	Foam.hfac2
-t076	proof	0	Foam.indist
-t077	proof	0	Foam.int_add_left_cancel
-t078	proof	0	Foam.int_add_self_zero
-t079	proof	0	Foam.int_hyperbolic
-t080	proof	0	Foam.int_mul_eq_one
-t081	proof	0	Foam.int_pell_one
-t082	proof	0	Foam.int_sq_diff
-d016	term	0	Foam.isPos
-d017	term	0	Foam.joinB
-d018	term	0	Foam.meet
-t083	proof	0	Foam.nat_mul_eq_one
-d019	term	0	Foam.nextOf
-d020	term	0	Foam.nth
-t084	proof	0	Foam.ofNat_ite
-t085	proof	0	Foam.ofNat_succ_sub_one
-d021	term	0	Foam.ones
-d022	term	0	Foam.posPart
-d023	term	0	Foam.probeA
-d024	term	0	Foam.probeB
-d025	term	0	Foam.run
-d026	term	0	Foam.runEmit
-t086	proof	0	Foam.scar_outside_carrier
-t087	proof	0	Foam.scar_repair
-d027	term	0	Foam.selectVia
-t088	proof	0	Foam.voice_bounded
-d028	term	0	Foam.zval
-d029	term	1	Foam.BalanceStage
-Ty19	type	1	Foam.Beholder.Ans
-Ty20	type	1	Foam.Beholder.Probe
-d030	term	1	Foam.Beholder.ctorIdx
-d031	term	1	Foam.Char.alt
-d032	term	1	Foam.Char.count
-t089	proof	1	Foam.Char.diff_sum
-t090	proof	1	Foam.Char.sum_diff
-t091	proof	1	Foam.Char.twice_add
-t092	proof	1	Foam.Char.twice_sub
-d033	term	1	Foam.CoList.at_
-d034	term	1	Foam.CoList.ctorIdx
-d035	term	1	Foam.DInt.ctorIdx
-d036	term	1	Foam.DInt.t
-d037	term	1	Foam.DInt.x
-Ty21	type	1	Foam.Fiber
-d038	term	1	Foam.Field.ctorIdx
-Ty22	type	1	Foam.Frontstage
-d039	term	1	Foam.GInt.ctorIdx
-d040	term	1	Foam.GInt.i
-d041	term	1	Foam.GInt.im
-d042	term	1	Foam.GInt.one
-d043	term	1	Foam.GInt.re
-d044	term	1	Foam.GInt.zero
-d045	term	1	Foam.Grp.ctorIdx
-d046	term	1	Foam.Grp.inv
-d047	term	1	Foam.Grp.toMul
-d048	term	1	Foam.Grp.toOne
-d049	term	1	Foam.Iso.bwd
-d050	term	1	Foam.Iso.ctorIdx
-d051	term	1	Foam.Iso.fwd
-t093	proof	1	Foam.Ledger.freq_perm
-t094	proof	1	Foam.Ledger.order_finer
-d052	term	1	Foam.Ledger.zero
-d053	term	1	Foam.Octo.a
-d054	term	1	Foam.Octo.b
-d055	term	1	Foam.Octo.ctorIdx
-Ty23	type	1	Foam.Path
-d056	term	1	Foam.Quat.a
-d057	term	1	Foam.Quat.b
-d058	term	1	Foam.Quat.ctorIdx
-d059	term	1	Foam.Quat.negOne
-d060	term	1	Foam.Quat.one
-d061	term	1	Foam.Quiver.deposit
-d062	term	1	Foam.Quiver.reverse
-t095	proof	1	Foam.ReadingRefines.refl
-t096	proof	1	Foam.ReadingRefines.trans
-t097	proof	1	Foam.Refines.refl
-t098	proof	1	Foam.Refines.trans
-t099	proof	1	Foam.Refresh
-d063	term	1	Foam.Rot.amp
-d064	term	1	Foam.Rot.ctorIdx
-d065	term	1	Foam.Rot.n
-c1	ctor	1	Foam.Rot.r0
-c2	ctor	1	Foam.Rot.r1
-c3	ctor	1	Foam.Rot.r2
-c4	ctor	1	Foam.Rot.r3
-t100	proof	1	Foam.Run
-d066	term	1	Foam.Rung.add
-d067	term	1	Foam.Rung.conj
-d068	term	1	Foam.Rung.decEq
-d069	term	1	Foam.Rung.mul
-d070	term	1	Foam.Rung.neg
-d071	term	1	Foam.Rung.normSq
-d072	term	1	Foam.Rung.one
-d073	term	1	Foam.Rung.toQuat
-d074	term	1	Foam.Rung.zero
-d075	term	1	Foam.SInt.ctorIdx
-d076	term	1	Foam.SInt.t
-d077	term	1	Foam.SInt.x
-d078	term	1	Foam.Seam.ctorIdx
-d079	term	1	Foam.Seam.up
-Ty24	type	1	Foam.Seat.Pos
-d080	term	1	Foam.Seat.ctorIdx
-d081	term	1	Foam.Sed.a
-d082	term	1	Foam.Sed.b
-d083	term	1	Foam.Sed.ctorIdx
-Ty25	type	1	Foam.Stage.Ans
-Ty26	type	1	Foam.Stage.Probe
-Ty27	type	1	Foam.Stage.State
-d084	term	1	Foam.Stage.ctorIdx
-Ty28	type	1	Foam.StageHom
-t101	proof	1	Foam.below_refl
-t102	proof	1	Foam.carry_compresses
-t103	proof	1	Foam.carry_lossless
-d085	term	1	Foam.cassini
-t104	proof	1	Foam.channels_hold_at_three
-t105	proof	1	Foam.channels_saturate_past_three
-d086	term	1	Foam.checkedDrain
-d087	term	1	Foam.countStage
-t106	proof	1	Foam.debt_zero_iff_grounded
-d088	term	1	Foam.decode
-t107	proof	1	Foam.dimension_caps_at_three
-t108	proof	1	Foam.drainSeq_holds_floor
-t109	proof	1	Foam.drain_chargeIn
-t110	proof	1	Foam.drain_floor
-t111	proof	1	Foam.drain_le
-d089	term	1	Foam.evalAt
-d090	term	1	Foam.evalBeats
-d091	term	1	Foam.evalFrom
-d092	term	1	Foam.eye
-t112	proof	1	Foam.fib_cassini
-t113	proof	1	Foam.fib_gnomon
-d093	term	1	Foam.forever
-t114	proof	1	Foam.gen_length
-d094	term	1	Foam.grade
-d095	term	1	Foam.isNeg
-d096	term	1	Foam.iterStep
-d097	term	1	Foam.jay
-t115	proof	1	Foam.joinB_append
-t116	proof	1	Foam.joinB_encFlush
-t117	proof	1	Foam.ledger_dim_adds
-t118	proof	1	Foam.lossless_tag
-t119	proof	1	Foam.lovelace_originates_nothing
-t120	proof	1	Foam.meet_below_left
-t121	proof	1	Foam.meet_below_right
-t122	proof	1	Foam.meet_self
-t123	proof	1	Foam.nextOf_congr
-t124	proof	1	Foam.nth_faithful
-t125	proof	1	Foam.nth_length
-t126	proof	1	Foam.nth_stable
-t127	proof	1	Foam.promise_kept
-t128	proof	1	Foam.readingRefines_shadow
-t129	proof	1	Foam.root_alone_below_all
-t130	proof	1	Foam.root_below_all
-d098	term	1	Foam.rotPow
-d099	term	1	Foam.runState
-t131	proof	1	Foam.run_resumes
-t132	proof	1	Foam.seated_voice_is_missable
-t133	proof	1	Foam.select_top_charged
-t134	proof	1	Foam.shared_is_floor
-d100	term	1	Foam.specR
-t135	proof	1	Foam.tower_grows
-d101	term	1	Foam.yieldStage
-d102	term	2	Foam.Beholder.obs
-t136	proof	2	Foam.Char.alt_distinct_count
-d103	term	2	Foam.Char.chi
-t137	proof	2	Foam.Closes
-t138	proof	2	Foam.CoList.stable
-d104	term	2	Foam.DInt.gnorm
-d105	term	2	Foam.Field.laneA
-d106	term	2	Foam.Field.laneB
-d107	term	2	Foam.Frontstage.ctorIdx
-t139	proof	2	Foam.Frontstage.rel
-d108	term	2	Foam.GInt.add
-d109	term	2	Foam.GInt.align
-d110	term	2	Foam.GInt.conj
-d111	term	2	Foam.GInt.cross
-d112	term	2	Foam.GInt.mul
-d113	term	2	Foam.GInt.neg
-d114	term	2	Foam.GInt.normSq
-d115	term	2	Foam.GInt.rot
-d116	term	2	Foam.GInt.sub
-t140	proof	2	Foam.Grp.inv_mul
-t141	proof	2	Foam.Grp.mul_assoc
-t142	proof	2	Foam.Grp.mul_inv
-t143	proof	2	Foam.Grp.mul_one
-t144	proof	2	Foam.Grp.one_mul
-t145	proof	2	Foam.Iso.bwd_fwd
-t146	proof	2	Foam.Iso.fwd_bwd
-d117	term	2	Foam.Path.comp
-c5	ctor	2	Foam.Path.cons
-d118	term	2	Foam.Path.ctorIdx
-d119	term	2	Foam.Path.edges
-c6	ctor	2	Foam.Path.nil
-d120	term	2	Foam.Path.reverse
-d121	term	2	Foam.Quat.neg
-d122	term	2	Foam.Quat.toRung
-d123	term	2	Foam.Quat.zero
-t147	proof	2	Foam.Quiver.reverse_reverse
-t148	proof	2	Foam.Refresh.has_q
-t149	proof	2	Foam.Refresh.sourced
-t150	proof	2	Foam.Rot.clock_closes
-t151	proof	2	Foam.Rot.clock_turns
-d124	term	2	Foam.Rot.ctorElim
-d125	term	2	Foam.Rot.ofN
-d126	term	2	Foam.Rot.ofNat
-t152	proof	2	Foam.Rot.r0.sizeOf_spec
-t153	proof	2	Foam.Rot.r1.sizeOf_spec
-t154	proof	2	Foam.Rot.r2.sizeOf_spec
-t155	proof	2	Foam.Rot.r3.sizeOf_spec
-c7	ctor	2	Foam.Run.nil
-d127	term	2	Foam.Rung.inl
-t156	proof	2	Foam.Rung.one_ne_zero
-d128	term	2	Foam.Rung.sub
-d129	term	2	Foam.Rung.toOcto
-d130	term	2	Foam.SInt.hnorm
-t157	proof	2	Foam.Seam.escapes
-t158	proof	2	Foam.Seam.faithful
-t159	proof	2	Foam.Seam.no_section
-t160	proof	2	Foam.Seam.prime
-d131	term	2	Foam.Seat.act
-d132	term	2	Foam.Seat.replay
-d133	term	2	Foam.Seat.sub
-d134	term	2	Foam.Stage.obs
-d135	term	2	Foam.StageHom.ctorIdx
-d136	term	2	Foam.StageHom.id
-d137	term	2	Foam.StageHom.onAns
-d138	term	2	Foam.StageHom.onProbe
-d139	term	2	Foam.StageHom.onState
-d140	term	2	Foam.alignK
-t161	proof	2	Foam.any_obs_grounded_above
-d141	term	2	Foam.checkedSettle
-t162	proof	2	Foam.count_resumes
-d142	term	2	Foam.crossK
-t163	proof	2	Foam.deposit_monotone
-t164	proof	2	Foam.drain_visible
-t165	proof	2	Foam.ellipticRot_turns
-t166	proof	2	Foam.encode_covers
-t167	proof	2	Foam.evalAt_from_blank
-t168	proof	2	Foam.evalOne_eq_freq
-d143	term	2	Foam.exit
-d144	term	2	Foam.f0
-d145	term	2	Foam.f1
-t169	proof	2	Foam.fresh_holds_floor
-d146	term	2	Foam.galileanBoost
-t170	proof	2	Foam.gen_grows
-t171	proof	2	Foam.gen_interruptible
-d147	term	2	Foam.halign
-d148	term	2	Foam.hcross
-t172	proof	2	Foam.held_exact
-t173	proof	2	Foam.ite_mk
-t174	proof	2	Foam.iterStep_compose_self
-t175	proof	2	Foam.iterStep_congr
-t176	proof	2	Foam.iterStep_id
-t177	proof	2	Foam.iterStep_succ_comm
-t178	proof	2	Foam.jay_outside
-t179	proof	2	Foam.lovelace_interruptible
-t180	proof	2	Foam.lovelace_only_appends
-t181	proof	2	Foam.margin_wound_is_note
-t182	proof	2	Foam.mem_reverse
-d149	term	2	Foam.normK
-d150	term	2	Foam.output
-d151	term	2	Foam.permLicense
-d152	term	2	Foam.playback
-t183	proof	2	Foam.rest_invisible_to_count
-t184	proof	2	Foam.rest_turns
-t185	proof	2	Foam.rotPow_add_four
-t186	proof	2	Foam.rotPow_compose
-t187	proof	2	Foam.rotPow_four
-t188	proof	2	Foam.runEmit_resumes
-t189	proof	2	Foam.runState_resumes
-t190	proof	2	Foam.rung1_unit_sq
-t191	proof	2	Foam.rung_dim_three_inhabited
-t192	proof	2	Foam.scar_stable
-t193	proof	2	Foam.stale_escapes_floor
-t194	proof	2	Foam.stale_lands_at_ground
-t195	proof	2	Foam.stale_safe_off_margin
-t196	proof	2	Foam.stone_group
-t197	proof	2	Foam.summary_resumes
-d153	term	2	Foam.transcript
-d154	term	2	Foam.transcriptWith
-t198	proof	3	Foam.Beholder.Covers
-d155	term	3	Foam.Beholder.dress
-d156	term	3	Foam.Beholder.dressN
-d157	term	3	Foam.Beholder.ledgerless
-d158	term	3	Foam.Beholder.movedIn
-d159	term	3	Foam.Beholder.pair
-d160	term	3	Foam.Beholder.phaseDress
-d161	term	3	Foam.Beholder.toStage
-t199	proof	3	Foam.Char.alt_hom
-t200	proof	3	Foam.Char.alt_unit
-d162	term	3	Foam.Char.chiBar
-t201	proof	3	Foam.Char.chi_hom
-t202	proof	3	Foam.Char.chi_unit
-t203	proof	3	Foam.Char.count_hom
-t204	proof	3	Foam.Char.count_unit
-d163	term	3	Foam.Char.fold
-d164	term	3	Foam.Char.inner
-t205	proof	3	Foam.Detects
-t206	proof	3	Foam.GInt.align_add
-t207	proof	3	Foam.GInt.align_neg
-d165	term	3	Foam.GInt.born
-t208	proof	3	Foam.GInt.decoherence
-t209	proof	3	Foam.GInt.mulReal
-t210	proof	3	Foam.GInt.neg_neg
-t211	proof	3	Foam.GInt.normSq_conj
-t212	proof	3	Foam.GInt.normSq_mul
-t213	proof	3	Foam.GInt.normSq_nonneg
-t214	proof	3	Foam.GInt.rot_complete
-t215	proof	3	Foam.GInt.rot_inj
-t216	proof	3	Foam.GInt.rot_sq
-t217	proof	3	Foam.Invisible
-d166	term	3	Foam.Octo.negOne
-d167	term	3	Foam.Octo.toRung
-d168	term	3	Foam.Octo.zero
-t218	proof	3	Foam.Path.comp_assoc
-t219	proof	3	Foam.Path.comp_nil
-t220	proof	3	Foam.Path.cons.sizeOf_spec
-d169	term	3	Foam.Path.ctorElim
-t221	proof	3	Foam.Path.edges_comp
-t222	proof	3	Foam.Path.nil.sizeOf_spec
-t223	proof	3	Foam.Path.nil_comp
-t224	proof	3	Foam.Path.reverse_comp
-t225	proof	3	Foam.Path.reverse_nil
-d170	term	3	Foam.Quat.add
-d171	term	3	Foam.Quat.conj
-d172	term	3	Foam.Quat.mul
-d173	term	3	Foam.Quat.subt
-t226	proof	3	Foam.Quat.toRung_toQuat
-t227	proof	3	Foam.Respects
-t228	proof	3	Foam.Rot.amp_hom
-t229	proof	3	Foam.Rot.amp_turn
-t230	proof	3	Foam.Rot.amp_unit
-d174	term	3	Foam.Rot.inv
-d175	term	3	Foam.Rot.mul
-t231	proof	3	Foam.Rot.ofNat_ctorIdx
-d176	term	3	Foam.Rot.r0.elim
-d177	term	3	Foam.Rot.r1.elim
-d178	term	3	Foam.Rot.r2.elim
-d179	term	3	Foam.Rot.r3.elim
-t232	proof	3	Foam.Rung.base_mul
-t233	proof	3	Foam.Rung.inl_faithful
-t234	proof	3	Foam.Rung.inl_not_onto
-t235	proof	3	Foam.Rung.lift_mul
-t236	proof	3	Foam.Rung.toQuat_toRung
-d180	term	3	Foam.Rung.toSed
-t237	proof	3	Foam.Seat.act_sub
-t238	proof	3	Foam.Seat.good_loop
-t239	proof	3	Foam.Seat.mul_act
-t240	proof	3	Foam.Seat.obs_faithful
-t241	proof	3	Foam.Seat.one_act
-t242	proof	3	Foam.Seat.path_telescopes
-d181	term	3	Foam.Seat.principal
-t243	proof	3	Foam.Seat.quad_unwinds
-t244	proof	3	Foam.Seat.repeat_unwinds
-t245	proof	3	Foam.Seat.replay_nil
-t246	proof	3	Foam.Seat.replay_resumes
-t247	proof	3	Foam.Seat.round_trip
-t248	proof	3	Foam.Seat.self_health
-t249	proof	3	Foam.Seat.sub_act
-t250	proof	3	Foam.Seat.sub_cocycle
-t251	proof	3	Foam.Seat.sub_inv
-t252	proof	3	Foam.Seat.sub_self
-d182	term	3	Foam.Seat.toStage
-t253	proof	3	Foam.Seat.triangle_gait
-t254	proof	3	Foam.Seat.triangle_unwinds
-d183	term	3	Foam.Stage.behold
-d184	term	3	Foam.Stage.prod
-t255	proof	3	Foam.StageHom.commutes
-d185	term	3	Foam.StageHom.comp
-t256	proof	3	Foam.alignK_axis
-t257	proof	3	Foam.align_i
-t258	proof	3	Foam.align_one
-t259	proof	3	Foam.align_one_evalOne
-t260	proof	3	Foam.alt_closes_two
-t261	proof	3	Foam.bar_invisible
-t262	proof	3	Foam.cantor_diagonal
-t263	proof	3	Foam.cantor_no_retraction
-t264	proof	3	Foam.cassini_obs_blind_to_ledger
-t265	proof	3	Foam.closes_negate_to_count
-t266	proof	3	Foam.closes_rot_to_negate
-d186	term	3	Foam.commonKnowledge
-d187	term	3	Foam.compare
-t267	proof	3	Foam.conjMul_eq
-t268	proof	3	Foam.conj_add
-t269	proof	3	Foam.conj_mark
-t270	proof	3	Foam.conj_rot
-t271	proof	3	Foam.coord_is_character
-t272	proof	3	Foam.coord_unitary_rep
-t273	proof	3	Foam.count_closes
-t274	proof	3	Foam.crossK_axis
-t275	proof	3	Foam.cross_eq_align_rot
-t276	proof	3	Foam.cross_rot_invariant
-t277	proof	3	Foam.decoherence_over_revolution
-t278	proof	3	Foam.einstein_interval_invariant
-d188	term	3	Foam.ell
-t279	proof	3	Foam.ellipticRot_closes
-d189	term	3	Foam.encode
-d190	term	3	Foam.evolve
-t280	proof	3	Foam.evolve_unitary
-t281	proof	3	Foam.exit_forced
-d191	term	3	Foam.eyeO
-t282	proof	3	Foam.f1_ne_f0
-t283	proof	3	Foam.forced_at_the_frame
-t284	proof	3	Foam.forced_at_the_frame_kappa
-t285	proof	3	Foam.forever_escapes
-t286	proof	3	Foam.frames_are_distinct
-t287	proof	3	Foam.fresh_settle_grounds
-t288	proof	3	Foam.fresh_settle_steps
-t289	proof	3	Foam.galilean_preserves_time
-t290	proof	3	Foam.galilean_velocities_add
-t291	proof	3	Foam.galileo_absolute_time
-t292	proof	3	Foam.galileo_velocity_addition
-t293	proof	3	Foam.gleason
-t294	proof	3	Foam.heisenberg
-t295	proof	3	Foam.heisenberg_area_invariant
-t296	proof	3	Foam.heisenberg_complementarity
-t297	proof	3	Foam.hurwitz_composition
-t298	proof	3	Foam.hyperbolicRot_trivial
-t299	proof	3	Foam.hyperbolic_parseval
-t300	proof	3	Foam.hyperbolic_witness
-t301	proof	3	Foam.inl_escapes_jay
-t302	proof	3	Foam.invariants_complete
-d192	term	3	Foam.jayO
-t303	proof	3	Foam.normK_axis_a
-t304	proof	3	Foam.normK_axis_one
-t305	proof	3	Foam.normK_frame_dependent
-t306	proof	3	Foam.normSq_eq_align_self
-t307	proof	3	Foam.output_resumes
-t308	proof	3	Foam.parabolicBoost_add
-t309	proof	3	Foam.parabolicBoost_never_closes
-t310	proof	3	Foam.phantom_invisible
-d193	term	3	Foam.playbackSeam
-t311	proof	3	Foam.playback_faithful
-t312	proof	3	Foam.playback_no_section
-d194	term	3	Foam.reader
-t313	proof	3	Foam.relativity
-t314	proof	3	Foam.remainder_real
-t315	proof	3	Foam.rest_audible
-t316	proof	3	Foam.rotPow_add
-t317	proof	3	Foam.rotPow_conserves_normSq
-t318	proof	3	Foam.rot_add
-t319	proof	3	Foam.seam_two_faces
-d195	term	3	Foam.sedB
-t320	proof	3	Foam.settle_invisible
-t321	proof	3	Foam.settle_stops_at_ground
-d196	term	3	Foam.singleProbe
-d197	term	3	Foam.spec
-t322	proof	3	Foam.spec_closes_four
-t323	proof	3	Foam.spec_resumes
-t324	proof	3	Foam.stale_settle_passes_ground
-t325	proof	3	Foam.stone
-t326	proof	3	Foam.stone_unitary
-t327	proof	3	Foam.transcript_congr
-t328	proof	3	Foam.wigner_antiunitary
-t329	proof	3	Foam.wigner_classification
-t330	proof	3	Foam.wigner_unitary
-d198	term	3	Foam.writeA
-d199	term	3	Foam.writeB
-t331	proof	3	Foam.zero_point_kappa
-t332	proof	4	Foam.Beholder.covers_refl
-t333	proof	4	Foam.Beholder.covers_trans
-d200	term	4	Foam.Beholder.flattenN
-t334	proof	4	Foam.Beholder.toStage_behold
-t335	proof	4	Foam.Char.alt_chiBar_orth
-t336	proof	4	Foam.Char.alt_chi_orth
-t337	proof	4	Foam.Char.alt_norm
-t338	proof	4	Foam.Char.chiBar_hom
-t339	proof	4	Foam.Char.chiBar_norm
-t340	proof	4	Foam.Char.chiBar_unit
-t341	proof	4	Foam.Char.chi_chiBar_orth
-t342	proof	4	Foam.Char.chi_distinct_chiBar
-t343	proof	4	Foam.Char.chi_norm
-t344	proof	4	Foam.Char.count_alt_orth
-t345	proof	4	Foam.Char.count_chiBar_orth
-t346	proof	4	Foam.Char.count_chi_orth
-t347	proof	4	Foam.Char.count_norm
-t348	proof	4	Foam.Char.fold_im_components
-t349	proof	4	Foam.Char.fold_re_components
-d201	term	4	Foam.Char.readAlt
-d202	term	4	Foam.Char.readBal
-d203	term	4	Foam.Char.readIm
-d204	term	4	Foam.Char.readRe
-d205	term	4	Foam.Frontstage.prod
-t350	proof	4	Foam.Frontstage.respects
-t351	proof	4	Foam.GInt.born_nonneg
-t352	proof	4	Foam.GInt.born_parseval
-t353	proof	4	Foam.GInt.born_superpose
-t354	proof	4	Foam.Known
-d206	term	4	Foam.LedgerStage
-d207	term	4	Foam.Octo.add
-d208	term	4	Foam.Octo.conj
-d209	term	4	Foam.Octo.mul
-d210	term	4	Foam.Octo.subt
-t355	proof	4	Foam.Octo.toRung_toOcto
-d211	term	4	Foam.Path.cons.elim
-d212	term	4	Foam.Path.nil.elim
-t356	proof	4	Foam.Reduced
-t357	proof	4	Foam.Refresh.cover
-t358	proof	4	Foam.Refresh.fresh
-t359	proof	4	Foam.Relays
-d213	term	4	Foam.Rot.toQuat
-t360	proof	4	Foam.Rung.toOcto_toRung
-t361	proof	4	Foam.Rung.toQuat_mul
-d214	term	4	Foam.Seat.chart
-d215	term	4	Foam.Sed.toRung
-d216	term	4	Foam.Sed.zero
-t362	proof	4	Foam.Stage.behold_toStage
-t363	proof	4	Foam.StageHom.comp_assoc
-t364	proof	4	Foam.StageHom.comp_id
-d217	term	4	Foam.StageHom.fst
-t365	proof	4	Foam.StageHom.id_comp
-d218	term	4	Foam.StageHom.pair
-d219	term	4	Foam.StageHom.snd
-d220	term	4	Foam.ackSeam
-d221	term	4	Foam.bAck
-t366	proof	4	Foam.born_basis_invariant
-t367	proof	4	Foam.born_parseval_is_invariants
-t368	proof	4	Foam.characters_orthonormal
-d222	term	4	Foam.clock
-t369	proof	4	Foam.compare_through_pair
-t370	proof	4	Foam.dressN_blind
-t371	proof	4	Foam.dressN_obs
-t372	proof	4	Foam.dress_idempotent
-t373	proof	4	Foam.dress_obs_drops_ledger
-t374	proof	4	Foam.dress_yoneda
-d223	term	4	Foam.entrance
-t375	proof	4	Foam.entrance_reads
-t376	proof	4	Foam.evolve_closes
-t377	proof	4	Foam.evolve_conserves_born
-t378	proof	4	Foam.evolve_invisible
-t379	proof	4	Foam.eye_sq
-t380	proof	4	Foam.field_cannot_close
-t381	proof	4	Foam.find_each_other
-t382	proof	4	Foam.invisible_comp
-t383	proof	4	Foam.invisible_id
-t384	proof	4	Foam.jay_sq
-d224	term	4	Foam.kay
-t385	proof	4	Foam.lossless_codec
-t386	proof	4	Foam.maintenance_unobservable
-t387	proof	4	Foam.moved_in_detects_remainder
-t388	proof	4	Foam.moved_in_extends
-t389	proof	4	Foam.no_contention
-t390	proof	4	Foam.no_view_from_nowhere
-t391	proof	4	Foam.noether
-t392	proof	4	Foam.order_arrives
-t393	proof	4	Foam.order_finer_than_spec
-t394	proof	4	Foam.pair_sees_left
-t395	proof	4	Foam.pair_sees_right
-t396	proof	4	Foam.remainder_unseen
-d225	term	4	Foam.rungSeam
-t397	proof	4	Foam.schrodinger
-t398	proof	4	Foam.schrodinger_superposition
-t399	proof	4	Foam.seat_empty
-d226	term	4	Foam.sedA
-t400	proof	4	Foam.settle_invisible'
-t401	proof	4	Foam.specR_bridge
-t402	proof	4	Foam.spec_finer_than_freq
-t403	proof	4	Foam.spec_shift
-t404	proof	4	Foam.superposition
-t405	proof	4	Foam.varadarajan
-t406	proof	4	Foam.wigner
-t407	proof	4	Foam.wigner_two_kinds
-t408	proof	4	Foam.writeA_isolated_from_B
-t409	proof	4	Foam.writeB_isolated_from_A
-t410	proof	4	Foam.zeno_short
-t411	proof	5	Foam.Char.alt_irreplaceable
-t412	proof	5	Foam.Char.bal_add_alt
-t413	proof	5	Foam.Char.bal_irreplaceable
-t414	proof	5	Foam.Char.bal_sub_alt
-t415	proof	5	Foam.Char.im_irreplaceable
-t416	proof	5	Foam.Char.lossless
-t417	proof	5	Foam.Char.re_irreplaceable
-t418	proof	5	Foam.Char.readAlt_eq
-t419	proof	5	Foam.Char.readBal_eq
-t420	proof	5	Foam.Char.readIm_eq
-t421	proof	5	Foam.Char.readRe_eq
-t422	proof	5	Foam.Char.recover_bin0
-t423	proof	5	Foam.Char.recover_bin1
-t424	proof	5	Foam.Char.recover_bin2
-t425	proof	5	Foam.Char.recover_bin3
-t426	proof	5	Foam.Irreducible
-t427	proof	5	Foam.Refresh.locates
-t428	proof	5	Foam.Rot.toQuat_faithful
-t429	proof	5	Foam.Rot.toQuat_gen
-t430	proof	5	Foam.Rot.toQuat_hom
-t431	proof	5	Foam.Run.checksum
-t432	proof	5	Foam.Run.covers
-t433	proof	5	Foam.Run.reduced
-c8	ctor	5	Foam.Run.skip
-t434	proof	5	Foam.Rung.toOcto_mul
-t435	proof	5	Foam.Rung.toSed_toRung
-t436	proof	5	Foam.Seat.change_of_frame
-t437	proof	5	Foam.Seat.chart_equivariant
-t438	proof	5	Foam.Seat.chart_origin_dependent
-d227	term	5	Foam.Sed.mul
-t439	proof	5	Foam.Sed.toRung_toSed
-t440	proof	5	Foam.StageHom.fst_pair
-t441	proof	5	Foam.StageHom.pair_unique
-t442	proof	5	Foam.StageHom.snd_pair
-t443	proof	5	Foam.ack_faithful
-t444	proof	5	Foam.ack_no_common_knowledge
-t445	proof	5	Foam.certified
-t446	proof	5	Foam.clock_coordinatized
-t447	proof	5	Foam.coord_forced
-t448	proof	5	Foam.coord_gauge
-t449	proof	5	Foam.coord_linear
-t450	proof	5	Foam.coordinatization
-t451	proof	5	Foam.dressN_compose
-t452	proof	5	Foam.dressN_idempotent
-t453	proof	5	Foam.dressN_yoneda
-t454	proof	5	Foam.ell_anticomm
-t455	proof	5	Foam.ell_sq
-t456	proof	5	Foam.enter_then_exit
-t457	proof	5	Foam.entrance_onProbe
-t458	proof	5	Foam.flattenN_obs
-t459	proof	5	Foam.frame_not_canonical
-t460	proof	5	Foam.frobenius_assoc_dies
-t461	proof	5	Foam.hamilton
-t462	proof	5	Foam.jay_prime
-d228	term	5	Foam.kayO
-t463	proof	5	Foam.kay_sq
-t464	proof	5	Foam.kolmogorov_checksum
-t465	proof	5	Foam.measurement
-t466	proof	5	Foam.non_assoc
-t467	proof	5	Foam.observables_reconstruct
-t468	proof	5	Foam.one_round
-t469	proof	5	Foam.pauli
-t470	proof	5	Foam.pauli_anticommute
-t471	proof	5	Foam.pauli_cyclic
-t472	proof	5	Foam.pauli_squares
-t473	proof	5	Foam.reduced_nil
-t474	proof	5	Foam.relay
-t475	proof	5	Foam.seat_empty_tower
-t476	proof	5	Foam.sedA_ne_zero
-t477	proof	5	Foam.sedB_ne_zero
-t478	proof	5	Foam.sweep_invisible
-t479	proof	5	Foam.sweep_unobservable
-t480	proof	5	Foam.three_imaginaries
-t481	proof	5	Foam.triad_anticomm
-t482	proof	5	Foam.triad_closes
-c9	ctor	6	Foam.Run.turn
-t483	proof	6	Foam.Rung.toSed_mul
-t484	proof	6	Foam.division_dies
-t485	proof	6	Foam.hamilton_in_octo
-t486	proof	6	Foam.hurwitz_division_dies
-t487	proof	6	Foam.hurwitz_staircase
-t488	proof	6	Foam.irreducible_from_nothing
-t489	proof	6	Foam.sed_zero_divisor
+Ty01	type	0	Foam.Beholder	Foam.Ty01
+t001	proof	0	Foam.Below	Foam.t001
+t002	proof	0	Foam.Char.four_swap	Foam.t002
+t003	proof	0	Foam.Char.sub_pair	Foam.t003
+d001	term	0	Foam.Char.twice	Foam.d001
+Ty02	type	0	Foam.CoList	Foam.Ty02
+Ty03	type	0	Foam.DInt	Foam.Ty03
+t004	proof	0	Foam.FInt.addComm	Foam.t004
+t005	proof	0	Foam.FInt.add_assoc	Foam.t005
+t006	proof	0	Foam.FInt.add_left_neg	Foam.t006
+t007	proof	0	Foam.FInt.add_mul	Foam.t007
+t008	proof	0	Foam.FInt.add_right_neg	Foam.t008
+t009	proof	0	Foam.FInt.add_sub_add_left	Foam.t009
+t010	proof	0	Foam.FInt.add_sub_add_right	Foam.t010
+t011	proof	0	Foam.FInt.add_sub_cancel	Foam.t011
+t012	proof	0	Foam.FInt.add_sub_cancel_left	Foam.t012
+t013	proof	0	Foam.FInt.add_sub_cancel_right	Foam.t013
+t014	proof	0	Foam.FInt.mulComm	Foam.t014
+t015	proof	0	Foam.FInt.mul_add	Foam.t015
+t016	proof	0	Foam.FInt.mul_assoc	Foam.t016
+t017	proof	0	Foam.FInt.mul_eq_zero	Foam.t017
+t018	proof	0	Foam.FInt.mul_neg	Foam.t018
+t019	proof	0	Foam.FInt.mul_neg_one	Foam.t019
+t020	proof	0	Foam.FInt.mul_one	Foam.t020
+t021	proof	0	Foam.FInt.mul_sub	Foam.t021
+t022	proof	0	Foam.FInt.mul_zero	Foam.t022
+t023	proof	0	Foam.FInt.nat_mul_assoc	Foam.t023
+t024	proof	0	Foam.FInt.nat_mul_sub	Foam.t024
+t025	proof	0	Foam.FInt.neg_add	Foam.t025
+t026	proof	0	Foam.FInt.neg_eq_of_add_eq_zero	Foam.t026
+t027	proof	0	Foam.FInt.neg_mul	Foam.t027
+t028	proof	0	Foam.FInt.neg_ofNat_add_neg_ofNat	Foam.t028
+t029	proof	0	Foam.FInt.neg_ofNat_add_ofNat	Foam.t029
+t030	proof	0	Foam.FInt.neg_sub	Foam.t030
+t031	proof	0	Foam.FInt.ofNat_add_neg_ofNat	Foam.t031
+t032	proof	0	Foam.FInt.ofNat_mul_add	Foam.t032
+t033	proof	0	Foam.FInt.ofNat_mul_negSucc	Foam.t033
+t034	proof	0	Foam.FInt.ofNat_mul_ofNat	Foam.t034
+t035	proof	0	Foam.FInt.ofNat_mul_subNatNat	Foam.t035
+t036	proof	0	Foam.FInt.ofNat_succ_add	Foam.t036
+t037	proof	0	Foam.FInt.one_mul	Foam.t037
+t038	proof	0	Foam.FInt.subNatNat_add	Foam.t038
+t039	proof	0	Foam.FInt.subNatNat_add_add	Foam.t039
+t040	proof	0	Foam.FInt.subNatNat_add_negSucc	Foam.t040
+t041	proof	0	Foam.FInt.subNatNat_add_ofNat	Foam.t041
+t042	proof	0	Foam.FInt.subNatNat_add_succ	Foam.t042
+t043	proof	0	Foam.FInt.subNatNat_of_ge	Foam.t043
+t044	proof	0	Foam.FInt.subNatNat_of_lt	Foam.t044
+t045	proof	0	Foam.FInt.subNatNat_succ_left	Foam.t045
+t046	proof	0	Foam.FInt.subNatNat_succ_right	Foam.t046
+t047	proof	0	Foam.FInt.subNatNat_succ_succ	Foam.t047
+t048	proof	0	Foam.FInt.sub_add_cancel	Foam.t048
+t049	proof	0	Foam.FInt.sub_eq_zero_of_le	Foam.t049
+t050	proof	0	Foam.FInt.sub_mul	Foam.t050
+t051	proof	0	Foam.FInt.sub_sub	Foam.t051
+t052	proof	0	Foam.FInt.sub_zero	Foam.t052
+t053	proof	0	Foam.FInt.two_mul	Foam.t053
+t054	proof	0	Foam.FInt.zero_add	Foam.t054
+t055	proof	0	Foam.FInt.zero_mul	Foam.t055
+Ty04	type	0	Foam.Field	Foam.Ty04
+Ty05	type	0	Foam.GInt	Foam.Ty05
+t056	proof	0	Foam.GInt.sq_image	Foam.t056
+Ty06	type	0	Foam.Grp	Foam.Ty06
+t057	proof	0	Foam.Int.add_cross_swap	Foam.t057
+t058	proof	0	Foam.Int.add_swap_inner	Foam.t058
+t059	proof	0	Foam.Int.lagrange	Foam.t059
+t060	proof	0	Foam.Int.mul_interchange	Foam.t060
+t061	proof	0	Foam.Int.neg_mul_neg'	Foam.t061
+t062	proof	0	Foam.Int.neg_sq	Foam.t062
+t063	proof	0	Foam.Int.parseval_collect	Foam.t063
+t064	proof	0	Foam.Int.sq_interchange	Foam.t064
+t065	proof	0	Foam.Int.two_mul'	Foam.t065
+Ty07	type	0	Foam.Iso	Foam.Ty07
+Ty08	type	0	Foam.Ledger	Foam.Ty08
+d002	term	0	Foam.Ledger.dim	Foam.d002
+d003	term	0	Foam.Ledger.freq	Foam.d003
+d004	term	0	Foam.Ledger.order	Foam.d004
+t066	proof	0	Foam.NoConsec	Foam.t066
+Ty09	type	0	Foam.Octo	Foam.Ty09
+t067	proof	0	Foam.OpenChannels	Foam.t067
+Ty10	type	0	Foam.Quat	Foam.Ty10
+Ty11	type	0	Foam.Quiver	Foam.Ty11
+t068	proof	0	Foam.ReadingRefines	Foam.t068
+t069	proof	0	Foam.Refines	Foam.t069
+Ty12	type	0	Foam.Rot	Foam.Ty12
+Ty13	type	0	Foam.Rung	Foam.Ty13
+Ty14	type	0	Foam.SInt	Foam.Ty14
+Ty15	type	0	Foam.Seam	Foam.Ty15
+Ty16	type	0	Foam.Seat	Foam.Ty16
+Ty17	type	0	Foam.Sed	Foam.Ty17
+Ty18	type	0	Foam.Stage	Foam.Ty18
+d005	term	0	Foam.altSign	Foam.d005
+t070	proof	0	Foam.appendAssoc	Foam.t070
+t071	proof	0	Foam.appendNil	Foam.t071
+d006	term	0	Foam.chargeIn	Foam.d006
+d007	term	0	Foam.debt	Foam.d007
+d008	term	0	Foam.dec	Foam.d008
+d009	term	0	Foam.drainOne	Foam.d009
+d010	term	0	Foam.drainSeq	Foam.d010
+t072	proof	0	Foam.dropping_remainder_is_platonism	Foam.t072
+d011	term	0	Foam.enc	Foam.d011
+d012	term	0	Foam.encFlush	Foam.d012
+d013	term	0	Foam.encStep	Foam.d013
+d014	term	0	Foam.fib	Foam.d014
+d015	term	0	Foam.genStep	Foam.d015
+t073	proof	0	Foam.grounded	Foam.t073
+t074	proof	0	Foam.hfac1	Foam.t074
+t075	proof	0	Foam.hfac2	Foam.t075
+t076	proof	0	Foam.indist	Foam.t076
+t077	proof	0	Foam.int_add_left_cancel	Foam.t077
+t078	proof	0	Foam.int_add_self_zero	Foam.t078
+t079	proof	0	Foam.int_hyperbolic	Foam.t079
+t080	proof	0	Foam.int_mul_eq_one	Foam.t080
+t081	proof	0	Foam.int_pell_one	Foam.t081
+t082	proof	0	Foam.int_sq_diff	Foam.t082
+d016	term	0	Foam.isPos	Foam.d016
+d017	term	0	Foam.joinB	Foam.d017
+d018	term	0	Foam.meet	Foam.d018
+t083	proof	0	Foam.nat_mul_eq_one	Foam.t083
+d019	term	0	Foam.nextOf	Foam.d019
+d020	term	0	Foam.nth	Foam.d020
+t084	proof	0	Foam.ofNat_ite	Foam.t084
+t085	proof	0	Foam.ofNat_succ_sub_one	Foam.t085
+d021	term	0	Foam.ones	Foam.d021
+d022	term	0	Foam.posPart	Foam.d022
+d023	term	0	Foam.probeA	Foam.d023
+d024	term	0	Foam.probeB	Foam.d024
+d025	term	0	Foam.run	Foam.d025
+d026	term	0	Foam.runEmit	Foam.d026
+t086	proof	0	Foam.scar_outside_carrier	Foam.t086
+t087	proof	0	Foam.scar_repair	Foam.t087
+d027	term	0	Foam.selectVia	Foam.d027
+t088	proof	0	Foam.voice_bounded	Foam.t088
+d028	term	0	Foam.zval	Foam.d028
+d029	term	1	Foam.BalanceStage	Foam.d029
+Ty19	type	1	Foam.Beholder.Ans	Foam.Ty01.Ty19
+Ty20	type	1	Foam.Beholder.Probe	Foam.Ty01.Ty20
+d030	term	1	Foam.Beholder.ctorIdx	Foam.d030
+d031	term	1	Foam.Char.alt	Foam.d031
+d032	term	1	Foam.Char.count	Foam.d032
+t089	proof	1	Foam.Char.diff_sum	Foam.t089
+t090	proof	1	Foam.Char.sum_diff	Foam.t090
+t091	proof	1	Foam.Char.twice_add	Foam.t091
+t092	proof	1	Foam.Char.twice_sub	Foam.t092
+d033	term	1	Foam.CoList.at_	Foam.Ty02.d033
+d034	term	1	Foam.CoList.ctorIdx	Foam.d034
+d035	term	1	Foam.DInt.ctorIdx	Foam.d035
+d036	term	1	Foam.DInt.t	Foam.Ty03.d036
+d037	term	1	Foam.DInt.x	Foam.Ty03.d037
+Ty21	type	1	Foam.Fiber	Foam.Ty21
+d038	term	1	Foam.Field.ctorIdx	Foam.d038
+Ty22	type	1	Foam.Frontstage	Foam.Ty22
+d039	term	1	Foam.GInt.ctorIdx	Foam.d039
+d040	term	1	Foam.GInt.i	Foam.d040
+d041	term	1	Foam.GInt.im	Foam.Ty05.d041
+d042	term	1	Foam.GInt.one	Foam.d042
+d043	term	1	Foam.GInt.re	Foam.Ty05.d043
+d044	term	1	Foam.GInt.zero	Foam.d044
+d045	term	1	Foam.Grp.ctorIdx	Foam.d045
+d046	term	1	Foam.Grp.inv	Foam.Ty06.d046
+d047	term	1	Foam.Grp.toMul	Foam.Ty06.d047
+d048	term	1	Foam.Grp.toOne	Foam.Ty06.d048
+d049	term	1	Foam.Iso.bwd	Foam.Ty07.d049
+d050	term	1	Foam.Iso.ctorIdx	Foam.d050
+d051	term	1	Foam.Iso.fwd	Foam.Ty07.d051
+t093	proof	1	Foam.Ledger.freq_perm	Foam.t093
+t094	proof	1	Foam.Ledger.order_finer	Foam.t094
+d052	term	1	Foam.Ledger.zero	Foam.d052
+d053	term	1	Foam.Octo.a	Foam.Ty09.d053
+d054	term	1	Foam.Octo.b	Foam.Ty09.d054
+d055	term	1	Foam.Octo.ctorIdx	Foam.d055
+Ty23	type	1	Foam.Path	Foam.Ty23
+d056	term	1	Foam.Quat.a	Foam.Ty10.d056
+d057	term	1	Foam.Quat.b	Foam.Ty10.d057
+d058	term	1	Foam.Quat.ctorIdx	Foam.d058
+d059	term	1	Foam.Quat.negOne	Foam.d059
+d060	term	1	Foam.Quat.one	Foam.d060
+d061	term	1	Foam.Quiver.deposit	Foam.d061
+d062	term	1	Foam.Quiver.reverse	Foam.d062
+t095	proof	1	Foam.ReadingRefines.refl	Foam.t095
+t096	proof	1	Foam.ReadingRefines.trans	Foam.t096
+t097	proof	1	Foam.Refines.refl	Foam.t097
+t098	proof	1	Foam.Refines.trans	Foam.t098
+t099	proof	1	Foam.Refresh	Foam.t099
+d063	term	1	Foam.Rot.amp	Foam.d063
+d064	term	1	Foam.Rot.ctorIdx	Foam.d064
+d065	term	1	Foam.Rot.n	Foam.d065
+c1	ctor	1	Foam.Rot.r0	Foam.Ty12.c1
+c2	ctor	1	Foam.Rot.r1	Foam.Ty12.c2
+c3	ctor	1	Foam.Rot.r2	Foam.Ty12.c3
+c4	ctor	1	Foam.Rot.r3	Foam.Ty12.c4
+t100	proof	1	Foam.Run	Foam.t100
+d066	term	1	Foam.Rung.add	Foam.d066
+d067	term	1	Foam.Rung.conj	Foam.d067
+d068	term	1	Foam.Rung.decEq	Foam.d068
+d069	term	1	Foam.Rung.mul	Foam.d069
+d070	term	1	Foam.Rung.neg	Foam.d070
+d071	term	1	Foam.Rung.normSq	Foam.d071
+d072	term	1	Foam.Rung.one	Foam.d072
+d073	term	1	Foam.Rung.toQuat	Foam.d073
+d074	term	1	Foam.Rung.zero	Foam.d074
+d075	term	1	Foam.SInt.ctorIdx	Foam.d075
+d076	term	1	Foam.SInt.t	Foam.Ty14.d076
+d077	term	1	Foam.SInt.x	Foam.Ty14.d077
+d078	term	1	Foam.Seam.ctorIdx	Foam.d078
+d079	term	1	Foam.Seam.up	Foam.Ty15.d079
+Ty24	type	1	Foam.Seat.Pos	Foam.Ty16.Ty24
+d080	term	1	Foam.Seat.ctorIdx	Foam.d080
+d081	term	1	Foam.Sed.a	Foam.Ty17.d081
+d082	term	1	Foam.Sed.b	Foam.Ty17.d082
+d083	term	1	Foam.Sed.ctorIdx	Foam.d083
+Ty25	type	1	Foam.Stage.Ans	Foam.Ty18.Ty25
+Ty26	type	1	Foam.Stage.Probe	Foam.Ty18.Ty26
+Ty27	type	1	Foam.Stage.State	Foam.Ty18.Ty27
+d084	term	1	Foam.Stage.ctorIdx	Foam.d084
+Ty28	type	1	Foam.StageHom	Foam.Ty28
+t101	proof	1	Foam.below_refl	Foam.t101
+t102	proof	1	Foam.carry_compresses	Foam.t102
+t103	proof	1	Foam.carry_lossless	Foam.t103
+d085	term	1	Foam.cassini	Foam.d085
+t104	proof	1	Foam.channels_hold_at_three	Foam.t104
+t105	proof	1	Foam.channels_saturate_past_three	Foam.t105
+d086	term	1	Foam.checkedDrain	Foam.d086
+d087	term	1	Foam.countStage	Foam.d087
+t106	proof	1	Foam.debt_zero_iff_grounded	Foam.t106
+d088	term	1	Foam.decode	Foam.d088
+t107	proof	1	Foam.dimension_caps_at_three	Foam.t107
+t108	proof	1	Foam.drainSeq_holds_floor	Foam.t108
+t109	proof	1	Foam.drain_chargeIn	Foam.t109
+t110	proof	1	Foam.drain_floor	Foam.t110
+t111	proof	1	Foam.drain_le	Foam.t111
+d089	term	1	Foam.evalAt	Foam.d089
+d090	term	1	Foam.evalBeats	Foam.d090
+d091	term	1	Foam.evalFrom	Foam.d091
+d092	term	1	Foam.eye	Foam.d092
+t112	proof	1	Foam.fib_cassini	Foam.t112
+t113	proof	1	Foam.fib_gnomon	Foam.t113
+d093	term	1	Foam.forever	Foam.d093
+t114	proof	1	Foam.gen_length	Foam.t114
+d094	term	1	Foam.grade	Foam.d094
+d095	term	1	Foam.isNeg	Foam.d095
+d096	term	1	Foam.iterStep	Foam.d096
+d097	term	1	Foam.jay	Foam.d097
+t115	proof	1	Foam.joinB_append	Foam.t115
+t116	proof	1	Foam.joinB_encFlush	Foam.t116
+t117	proof	1	Foam.ledger_dim_adds	Foam.t117
+t118	proof	1	Foam.lossless_tag	Foam.t118
+t119	proof	1	Foam.lovelace_originates_nothing	Foam.t119
+t120	proof	1	Foam.meet_below_left	Foam.t120
+t121	proof	1	Foam.meet_below_right	Foam.t121
+t122	proof	1	Foam.meet_self	Foam.t122
+t123	proof	1	Foam.nextOf_congr	Foam.t123
+t124	proof	1	Foam.nth_faithful	Foam.t124
+t125	proof	1	Foam.nth_length	Foam.t125
+t126	proof	1	Foam.nth_stable	Foam.t126
+t127	proof	1	Foam.promise_kept	Foam.t127
+t128	proof	1	Foam.readingRefines_shadow	Foam.t128
+t129	proof	1	Foam.root_alone_below_all	Foam.t129
+t130	proof	1	Foam.root_below_all	Foam.t130
+d098	term	1	Foam.rotPow	Foam.d098
+d099	term	1	Foam.runState	Foam.d099
+t131	proof	1	Foam.run_resumes	Foam.t131
+t132	proof	1	Foam.seated_voice_is_missable	Foam.t132
+t133	proof	1	Foam.select_top_charged	Foam.t133
+t134	proof	1	Foam.shared_is_floor	Foam.t134
+d100	term	1	Foam.specR	Foam.d100
+t135	proof	1	Foam.tower_grows	Foam.t135
+d101	term	1	Foam.yieldStage	Foam.d101
+d102	term	2	Foam.Beholder.obs	Foam.Ty01.d102
+t136	proof	2	Foam.Char.alt_distinct_count	Foam.t136
+d103	term	2	Foam.Char.chi	Foam.d103
+t137	proof	2	Foam.Closes	Foam.t137
+t138	proof	2	Foam.CoList.stable	Foam.Ty02.t138
+d104	term	2	Foam.DInt.gnorm	Foam.d104
+d105	term	2	Foam.Field.laneA	Foam.Ty04.d105
+d106	term	2	Foam.Field.laneB	Foam.Ty04.d106
+d107	term	2	Foam.Frontstage.ctorIdx	Foam.d107
+t139	proof	2	Foam.Frontstage.rel	Foam.Ty22.t139
+d108	term	2	Foam.GInt.add	Foam.d108
+d109	term	2	Foam.GInt.align	Foam.d109
+d110	term	2	Foam.GInt.conj	Foam.d110
+d111	term	2	Foam.GInt.cross	Foam.d111
+d112	term	2	Foam.GInt.mul	Foam.d112
+d113	term	2	Foam.GInt.neg	Foam.d113
+d114	term	2	Foam.GInt.normSq	Foam.d114
+d115	term	2	Foam.GInt.rot	Foam.d115
+d116	term	2	Foam.GInt.sub	Foam.d116
+t140	proof	2	Foam.Grp.inv_mul	Foam.Ty06.t140
+t141	proof	2	Foam.Grp.mul_assoc	Foam.Ty06.t141
+t142	proof	2	Foam.Grp.mul_inv	Foam.Ty06.t142
+t143	proof	2	Foam.Grp.mul_one	Foam.Ty06.t143
+t144	proof	2	Foam.Grp.one_mul	Foam.Ty06.t144
+t145	proof	2	Foam.Iso.bwd_fwd	Foam.Ty07.t145
+t146	proof	2	Foam.Iso.fwd_bwd	Foam.Ty07.t146
+d117	term	2	Foam.Path.comp	Foam.d117
+c5	ctor	2	Foam.Path.cons	Foam.Ty23.c5
+d118	term	2	Foam.Path.ctorIdx	Foam.d118
+d119	term	2	Foam.Path.edges	Foam.d119
+c6	ctor	2	Foam.Path.nil	Foam.Ty23.c6
+d120	term	2	Foam.Path.reverse	Foam.d120
+d121	term	2	Foam.Quat.neg	Foam.d121
+d122	term	2	Foam.Quat.toRung	Foam.d122
+d123	term	2	Foam.Quat.zero	Foam.d123
+t147	proof	2	Foam.Quiver.reverse_reverse	Foam.t147
+t148	proof	2	Foam.Refresh.has_q	Foam.t099.t148
+t149	proof	2	Foam.Refresh.sourced	Foam.t099.t149
+t150	proof	2	Foam.Rot.clock_closes	Foam.t150
+t151	proof	2	Foam.Rot.clock_turns	Foam.t151
+d124	term	2	Foam.Rot.ctorElim	Foam.d124
+d125	term	2	Foam.Rot.ofN	Foam.d125
+d126	term	2	Foam.Rot.ofNat	Foam.d126
+t152	proof	2	Foam.Rot.r0.sizeOf_spec	Foam.t152
+t153	proof	2	Foam.Rot.r1.sizeOf_spec	Foam.t153
+t154	proof	2	Foam.Rot.r2.sizeOf_spec	Foam.t154
+t155	proof	2	Foam.Rot.r3.sizeOf_spec	Foam.t155
+c7	ctor	2	Foam.Run.nil	Foam.t100.c7
+d127	term	2	Foam.Rung.inl	Foam.d127
+t156	proof	2	Foam.Rung.one_ne_zero	Foam.t156
+d128	term	2	Foam.Rung.sub	Foam.d128
+d129	term	2	Foam.Rung.toOcto	Foam.d129
+d130	term	2	Foam.SInt.hnorm	Foam.d130
+t157	proof	2	Foam.Seam.escapes	Foam.Ty15.t157
+t158	proof	2	Foam.Seam.faithful	Foam.Ty15.t158
+t159	proof	2	Foam.Seam.no_section	Foam.t159
+t160	proof	2	Foam.Seam.prime	Foam.t160
+d131	term	2	Foam.Seat.act	Foam.Ty16.d131
+d132	term	2	Foam.Seat.replay	Foam.d132
+d133	term	2	Foam.Seat.sub	Foam.Ty16.d133
+d134	term	2	Foam.Stage.obs	Foam.Ty18.d134
+d135	term	2	Foam.StageHom.ctorIdx	Foam.d135
+d136	term	2	Foam.StageHom.id	Foam.d136
+d137	term	2	Foam.StageHom.onAns	Foam.Ty28.d137
+d138	term	2	Foam.StageHom.onProbe	Foam.Ty28.d138
+d139	term	2	Foam.StageHom.onState	Foam.Ty28.d139
+d140	term	2	Foam.alignK	Foam.d140
+t161	proof	2	Foam.any_obs_grounded_above	Foam.t161
+d141	term	2	Foam.checkedSettle	Foam.d141
+t162	proof	2	Foam.count_resumes	Foam.t162
+d142	term	2	Foam.crossK	Foam.d142
+t163	proof	2	Foam.deposit_monotone	Foam.t163
+t164	proof	2	Foam.drain_visible	Foam.t164
+t165	proof	2	Foam.ellipticRot_turns	Foam.t165
+t166	proof	2	Foam.encode_covers	Foam.t166
+t167	proof	2	Foam.evalAt_from_blank	Foam.t167
+t168	proof	2	Foam.evalOne_eq_freq	Foam.t168
+d143	term	2	Foam.exit	Foam.d143
+d144	term	2	Foam.f0	Foam.d144
+d145	term	2	Foam.f1	Foam.d145
+t169	proof	2	Foam.fresh_holds_floor	Foam.t169
+d146	term	2	Foam.galileanBoost	Foam.d146
+t170	proof	2	Foam.gen_grows	Foam.t170
+t171	proof	2	Foam.gen_interruptible	Foam.t171
+d147	term	2	Foam.halign	Foam.d147
+d148	term	2	Foam.hcross	Foam.d148
+t172	proof	2	Foam.held_exact	Foam.t172
+t173	proof	2	Foam.ite_mk	Foam.t173
+t174	proof	2	Foam.iterStep_compose_self	Foam.t174
+t175	proof	2	Foam.iterStep_congr	Foam.t175
+t176	proof	2	Foam.iterStep_id	Foam.t176
+t177	proof	2	Foam.iterStep_succ_comm	Foam.t177
+t178	proof	2	Foam.jay_outside	Foam.t178
+t179	proof	2	Foam.lovelace_interruptible	Foam.t179
+t180	proof	2	Foam.lovelace_only_appends	Foam.t180
+t181	proof	2	Foam.margin_wound_is_note	Foam.t181
+t182	proof	2	Foam.mem_reverse	Foam.t182
+d149	term	2	Foam.normK	Foam.d149
+d150	term	2	Foam.output	Foam.d150
+d151	term	2	Foam.permLicense	Foam.d151
+d152	term	2	Foam.playback	Foam.d152
+t183	proof	2	Foam.rest_invisible_to_count	Foam.t183
+t184	proof	2	Foam.rest_turns	Foam.t184
+t185	proof	2	Foam.rotPow_add_four	Foam.t185
+t186	proof	2	Foam.rotPow_compose	Foam.t186
+t187	proof	2	Foam.rotPow_four	Foam.t187
+t188	proof	2	Foam.runEmit_resumes	Foam.t188
+t189	proof	2	Foam.runState_resumes	Foam.t189
+t190	proof	2	Foam.rung1_unit_sq	Foam.t190
+t191	proof	2	Foam.rung_dim_three_inhabited	Foam.t191
+t192	proof	2	Foam.scar_stable	Foam.t192
+t193	proof	2	Foam.stale_escapes_floor	Foam.t193
+t194	proof	2	Foam.stale_lands_at_ground	Foam.t194
+t195	proof	2	Foam.stale_safe_off_margin	Foam.t195
+t196	proof	2	Foam.stone_group	Foam.t196
+t197	proof	2	Foam.summary_resumes	Foam.t197
+d153	term	2	Foam.transcript	Foam.d153
+d154	term	2	Foam.transcriptWith	Foam.d154
+t198	proof	3	Foam.Beholder.Covers	Foam.t198
+d155	term	3	Foam.Beholder.dress	Foam.d155
+d156	term	3	Foam.Beholder.dressN	Foam.d156
+d157	term	3	Foam.Beholder.ledgerless	Foam.d157
+d158	term	3	Foam.Beholder.movedIn	Foam.d158
+d159	term	3	Foam.Beholder.pair	Foam.d159
+d160	term	3	Foam.Beholder.phaseDress	Foam.d160
+d161	term	3	Foam.Beholder.toStage	Foam.d161
+t199	proof	3	Foam.Char.alt_hom	Foam.t199
+t200	proof	3	Foam.Char.alt_unit	Foam.t200
+d162	term	3	Foam.Char.chiBar	Foam.d162
+t201	proof	3	Foam.Char.chi_hom	Foam.t201
+t202	proof	3	Foam.Char.chi_unit	Foam.t202
+t203	proof	3	Foam.Char.count_hom	Foam.t203
+t204	proof	3	Foam.Char.count_unit	Foam.t204
+d163	term	3	Foam.Char.fold	Foam.d163
+d164	term	3	Foam.Char.inner	Foam.d164
+t205	proof	3	Foam.Detects	Foam.t205
+t206	proof	3	Foam.GInt.align_add	Foam.t206
+t207	proof	3	Foam.GInt.align_neg	Foam.t207
+d165	term	3	Foam.GInt.born	Foam.d165
+t208	proof	3	Foam.GInt.decoherence	Foam.t208
+t209	proof	3	Foam.GInt.mulReal	Foam.t209
+t210	proof	3	Foam.GInt.neg_neg	Foam.t210
+t211	proof	3	Foam.GInt.normSq_conj	Foam.t211
+t212	proof	3	Foam.GInt.normSq_mul	Foam.t212
+t213	proof	3	Foam.GInt.normSq_nonneg	Foam.t213
+t214	proof	3	Foam.GInt.rot_complete	Foam.t214
+t215	proof	3	Foam.GInt.rot_inj	Foam.t215
+t216	proof	3	Foam.GInt.rot_sq	Foam.t216
+t217	proof	3	Foam.Invisible	Foam.t217
+d166	term	3	Foam.Octo.negOne	Foam.d166
+d167	term	3	Foam.Octo.toRung	Foam.d167
+d168	term	3	Foam.Octo.zero	Foam.d168
+t218	proof	3	Foam.Path.comp_assoc	Foam.t218
+t219	proof	3	Foam.Path.comp_nil	Foam.t219
+t220	proof	3	Foam.Path.cons.sizeOf_spec	Foam.t220
+d169	term	3	Foam.Path.ctorElim	Foam.d169
+t221	proof	3	Foam.Path.edges_comp	Foam.t221
+t222	proof	3	Foam.Path.nil.sizeOf_spec	Foam.t222
+t223	proof	3	Foam.Path.nil_comp	Foam.t223
+t224	proof	3	Foam.Path.reverse_comp	Foam.t224
+t225	proof	3	Foam.Path.reverse_nil	Foam.t225
+d170	term	3	Foam.Quat.add	Foam.d170
+d171	term	3	Foam.Quat.conj	Foam.d171
+d172	term	3	Foam.Quat.mul	Foam.d172
+d173	term	3	Foam.Quat.subt	Foam.d173
+t226	proof	3	Foam.Quat.toRung_toQuat	Foam.t226
+t227	proof	3	Foam.Respects	Foam.t227
+t228	proof	3	Foam.Rot.amp_hom	Foam.t228
+t229	proof	3	Foam.Rot.amp_turn	Foam.t229
+t230	proof	3	Foam.Rot.amp_unit	Foam.t230
+d174	term	3	Foam.Rot.inv	Foam.d174
+d175	term	3	Foam.Rot.mul	Foam.d175
+t231	proof	3	Foam.Rot.ofNat_ctorIdx	Foam.t231
+d176	term	3	Foam.Rot.r0.elim	Foam.d176
+d177	term	3	Foam.Rot.r1.elim	Foam.d177
+d178	term	3	Foam.Rot.r2.elim	Foam.d178
+d179	term	3	Foam.Rot.r3.elim	Foam.d179
+t232	proof	3	Foam.Rung.base_mul	Foam.t232
+t233	proof	3	Foam.Rung.inl_faithful	Foam.t233
+t234	proof	3	Foam.Rung.inl_not_onto	Foam.t234
+t235	proof	3	Foam.Rung.lift_mul	Foam.t235
+t236	proof	3	Foam.Rung.toQuat_toRung	Foam.t236
+d180	term	3	Foam.Rung.toSed	Foam.d180
+t237	proof	3	Foam.Seat.act_sub	Foam.Ty16.t237
+t238	proof	3	Foam.Seat.good_loop	Foam.t238
+t239	proof	3	Foam.Seat.mul_act	Foam.Ty16.t239
+t240	proof	3	Foam.Seat.obs_faithful	Foam.t240
+t241	proof	3	Foam.Seat.one_act	Foam.Ty16.t241
+t242	proof	3	Foam.Seat.path_telescopes	Foam.t242
+d181	term	3	Foam.Seat.principal	Foam.d181
+t243	proof	3	Foam.Seat.quad_unwinds	Foam.t243
+t244	proof	3	Foam.Seat.repeat_unwinds	Foam.t244
+t245	proof	3	Foam.Seat.replay_nil	Foam.t245
+t246	proof	3	Foam.Seat.replay_resumes	Foam.t246
+t247	proof	3	Foam.Seat.round_trip	Foam.t247
+t248	proof	3	Foam.Seat.self_health	Foam.t248
+t249	proof	3	Foam.Seat.sub_act	Foam.Ty16.t249
+t250	proof	3	Foam.Seat.sub_cocycle	Foam.t250
+t251	proof	3	Foam.Seat.sub_inv	Foam.t251
+t252	proof	3	Foam.Seat.sub_self	Foam.t252
+d182	term	3	Foam.Seat.toStage	Foam.d182
+t253	proof	3	Foam.Seat.triangle_gait	Foam.t253
+t254	proof	3	Foam.Seat.triangle_unwinds	Foam.t254
+d183	term	3	Foam.Stage.behold	Foam.d183
+d184	term	3	Foam.Stage.prod	Foam.d184
+t255	proof	3	Foam.StageHom.commutes	Foam.Ty28.t255
+d185	term	3	Foam.StageHom.comp	Foam.d185
+t256	proof	3	Foam.alignK_axis	Foam.t256
+t257	proof	3	Foam.align_i	Foam.t257
+t258	proof	3	Foam.align_one	Foam.t258
+t259	proof	3	Foam.align_one_evalOne	Foam.t259
+t260	proof	3	Foam.alt_closes_two	Foam.t260
+t261	proof	3	Foam.bar_invisible	Foam.t261
+t262	proof	3	Foam.cantor_diagonal	Foam.t262
+t263	proof	3	Foam.cantor_no_retraction	Foam.t263
+t264	proof	3	Foam.cassini_obs_blind_to_ledger	Foam.t264
+t265	proof	3	Foam.closes_negate_to_count	Foam.t265
+t266	proof	3	Foam.closes_rot_to_negate	Foam.t266
+d186	term	3	Foam.commonKnowledge	Foam.d186
+d187	term	3	Foam.compare	Foam.d187
+t267	proof	3	Foam.conjMul_eq	Foam.t267
+t268	proof	3	Foam.conj_add	Foam.t268
+t269	proof	3	Foam.conj_mark	Foam.t269
+t270	proof	3	Foam.conj_rot	Foam.t270
+t271	proof	3	Foam.coord_is_character	Foam.t271
+t272	proof	3	Foam.coord_unitary_rep	Foam.t272
+t273	proof	3	Foam.count_closes	Foam.t273
+t274	proof	3	Foam.crossK_axis	Foam.t274
+t275	proof	3	Foam.cross_eq_align_rot	Foam.t275
+t276	proof	3	Foam.cross_rot_invariant	Foam.t276
+t277	proof	3	Foam.decoherence_over_revolution	Foam.t277
+t278	proof	3	Foam.einstein_interval_invariant	Foam.t278
+d188	term	3	Foam.ell	Foam.d188
+t279	proof	3	Foam.ellipticRot_closes	Foam.t279
+d189	term	3	Foam.encode	Foam.d189
+d190	term	3	Foam.evolve	Foam.d190
+t280	proof	3	Foam.evolve_unitary	Foam.t280
+t281	proof	3	Foam.exit_forced	Foam.t281
+d191	term	3	Foam.eyeO	Foam.d191
+t282	proof	3	Foam.f1_ne_f0	Foam.t282
+t283	proof	3	Foam.forced_at_the_frame	Foam.t283
+t284	proof	3	Foam.forced_at_the_frame_kappa	Foam.t284
+t285	proof	3	Foam.forever_escapes	Foam.t285
+t286	proof	3	Foam.frames_are_distinct	Foam.t286
+t287	proof	3	Foam.fresh_settle_grounds	Foam.t287
+t288	proof	3	Foam.fresh_settle_steps	Foam.t288
+t289	proof	3	Foam.galilean_preserves_time	Foam.t289
+t290	proof	3	Foam.galilean_velocities_add	Foam.t290
+t291	proof	3	Foam.galileo_absolute_time	Foam.t291
+t292	proof	3	Foam.galileo_velocity_addition	Foam.t292
+t293	proof	3	Foam.gleason	Foam.t293
+t294	proof	3	Foam.heisenberg	Foam.t294
+t295	proof	3	Foam.heisenberg_area_invariant	Foam.t295
+t296	proof	3	Foam.heisenberg_complementarity	Foam.t296
+t297	proof	3	Foam.hurwitz_composition	Foam.t297
+t298	proof	3	Foam.hyperbolicRot_trivial	Foam.t298
+t299	proof	3	Foam.hyperbolic_parseval	Foam.t299
+t300	proof	3	Foam.hyperbolic_witness	Foam.t300
+t301	proof	3	Foam.inl_escapes_jay	Foam.t301
+t302	proof	3	Foam.invariants_complete	Foam.t302
+d192	term	3	Foam.jayO	Foam.d192
+t303	proof	3	Foam.normK_axis_a	Foam.t303
+t304	proof	3	Foam.normK_axis_one	Foam.t304
+t305	proof	3	Foam.normK_frame_dependent	Foam.t305
+t306	proof	3	Foam.normSq_eq_align_self	Foam.t306
+t307	proof	3	Foam.output_resumes	Foam.t307
+t308	proof	3	Foam.parabolicBoost_add	Foam.t308
+t309	proof	3	Foam.parabolicBoost_never_closes	Foam.t309
+t310	proof	3	Foam.phantom_invisible	Foam.t310
+d193	term	3	Foam.playbackSeam	Foam.d193
+t311	proof	3	Foam.playback_faithful	Foam.t311
+t312	proof	3	Foam.playback_no_section	Foam.t312
+d194	term	3	Foam.reader	Foam.d194
+t313	proof	3	Foam.relativity	Foam.t313
+t314	proof	3	Foam.remainder_real	Foam.t314
+t315	proof	3	Foam.rest_audible	Foam.t315
+t316	proof	3	Foam.rotPow_add	Foam.t316
+t317	proof	3	Foam.rotPow_conserves_normSq	Foam.t317
+t318	proof	3	Foam.rot_add	Foam.t318
+t319	proof	3	Foam.seam_two_faces	Foam.t319
+d195	term	3	Foam.sedB	Foam.d195
+t320	proof	3	Foam.settle_invisible	Foam.t320
+t321	proof	3	Foam.settle_stops_at_ground	Foam.t321
+d196	term	3	Foam.singleProbe	Foam.d196
+d197	term	3	Foam.spec	Foam.d197
+t322	proof	3	Foam.spec_closes_four	Foam.t322
+t323	proof	3	Foam.spec_resumes	Foam.t323
+t324	proof	3	Foam.stale_settle_passes_ground	Foam.t324
+t325	proof	3	Foam.stone	Foam.t325
+t326	proof	3	Foam.stone_unitary	Foam.t326
+t327	proof	3	Foam.transcript_congr	Foam.t327
+t328	proof	3	Foam.wigner_antiunitary	Foam.t328
+t329	proof	3	Foam.wigner_classification	Foam.t329
+t330	proof	3	Foam.wigner_unitary	Foam.t330
+d198	term	3	Foam.writeA	Foam.d198
+d199	term	3	Foam.writeB	Foam.d199
+t331	proof	3	Foam.zero_point_kappa	Foam.t331
+t332	proof	4	Foam.Beholder.covers_refl	Foam.t332
+t333	proof	4	Foam.Beholder.covers_trans	Foam.t333
+d200	term	4	Foam.Beholder.flattenN	Foam.d200
+t334	proof	4	Foam.Beholder.toStage_behold	Foam.t334
+t335	proof	4	Foam.Char.alt_chiBar_orth	Foam.t335
+t336	proof	4	Foam.Char.alt_chi_orth	Foam.t336
+t337	proof	4	Foam.Char.alt_norm	Foam.t337
+t338	proof	4	Foam.Char.chiBar_hom	Foam.t338
+t339	proof	4	Foam.Char.chiBar_norm	Foam.t339
+t340	proof	4	Foam.Char.chiBar_unit	Foam.t340
+t341	proof	4	Foam.Char.chi_chiBar_orth	Foam.t341
+t342	proof	4	Foam.Char.chi_distinct_chiBar	Foam.t342
+t343	proof	4	Foam.Char.chi_norm	Foam.t343
+t344	proof	4	Foam.Char.count_alt_orth	Foam.t344
+t345	proof	4	Foam.Char.count_chiBar_orth	Foam.t345
+t346	proof	4	Foam.Char.count_chi_orth	Foam.t346
+t347	proof	4	Foam.Char.count_norm	Foam.t347
+t348	proof	4	Foam.Char.fold_im_components	Foam.t348
+t349	proof	4	Foam.Char.fold_re_components	Foam.t349
+d201	term	4	Foam.Char.readAlt	Foam.d201
+d202	term	4	Foam.Char.readBal	Foam.d202
+d203	term	4	Foam.Char.readIm	Foam.d203
+d204	term	4	Foam.Char.readRe	Foam.d204
+d205	term	4	Foam.Frontstage.prod	Foam.d205
+t350	proof	4	Foam.Frontstage.respects	Foam.Ty22.t350
+t351	proof	4	Foam.GInt.born_nonneg	Foam.t351
+t352	proof	4	Foam.GInt.born_parseval	Foam.t352
+t353	proof	4	Foam.GInt.born_superpose	Foam.t353
+t354	proof	4	Foam.Known	Foam.t354
+d206	term	4	Foam.LedgerStage	Foam.d206
+d207	term	4	Foam.Octo.add	Foam.d207
+d208	term	4	Foam.Octo.conj	Foam.d208
+d209	term	4	Foam.Octo.mul	Foam.d209
+d210	term	4	Foam.Octo.subt	Foam.d210
+t355	proof	4	Foam.Octo.toRung_toOcto	Foam.t355
+d211	term	4	Foam.Path.cons.elim	Foam.d211
+d212	term	4	Foam.Path.nil.elim	Foam.d212
+t356	proof	4	Foam.Reduced	Foam.t356
+t357	proof	4	Foam.Refresh.cover	Foam.t099.t357
+t358	proof	4	Foam.Refresh.fresh	Foam.t099.t358
+t359	proof	4	Foam.Relays	Foam.t359
+d213	term	4	Foam.Rot.toQuat	Foam.d213
+t360	proof	4	Foam.Rung.toOcto_toRung	Foam.t360
+t361	proof	4	Foam.Rung.toQuat_mul	Foam.t361
+d214	term	4	Foam.Seat.chart	Foam.d214
+d215	term	4	Foam.Sed.toRung	Foam.d215
+d216	term	4	Foam.Sed.zero	Foam.d216
+t362	proof	4	Foam.Stage.behold_toStage	Foam.t362
+t363	proof	4	Foam.StageHom.comp_assoc	Foam.t363
+t364	proof	4	Foam.StageHom.comp_id	Foam.t364
+d217	term	4	Foam.StageHom.fst	Foam.d217
+t365	proof	4	Foam.StageHom.id_comp	Foam.t365
+d218	term	4	Foam.StageHom.pair	Foam.d218
+d219	term	4	Foam.StageHom.snd	Foam.d219
+d220	term	4	Foam.ackSeam	Foam.d220
+d221	term	4	Foam.bAck	Foam.d221
+t366	proof	4	Foam.born_basis_invariant	Foam.t366
+t367	proof	4	Foam.born_parseval_is_invariants	Foam.t367
+t368	proof	4	Foam.characters_orthonormal	Foam.t368
+d222	term	4	Foam.clock	Foam.d222
+t369	proof	4	Foam.compare_through_pair	Foam.t369
+t370	proof	4	Foam.dressN_blind	Foam.t370
+t371	proof	4	Foam.dressN_obs	Foam.t371
+t372	proof	4	Foam.dress_idempotent	Foam.t372
+t373	proof	4	Foam.dress_obs_drops_ledger	Foam.t373
+t374	proof	4	Foam.dress_yoneda	Foam.t374
+d223	term	4	Foam.entrance	Foam.d223
+t375	proof	4	Foam.entrance_reads	Foam.t375
+t376	proof	4	Foam.evolve_closes	Foam.t376
+t377	proof	4	Foam.evolve_conserves_born	Foam.t377
+t378	proof	4	Foam.evolve_invisible	Foam.t378
+t379	proof	4	Foam.eye_sq	Foam.t379
+t380	proof	4	Foam.field_cannot_close	Foam.t380
+t381	proof	4	Foam.find_each_other	Foam.t381
+t382	proof	4	Foam.invisible_comp	Foam.t382
+t383	proof	4	Foam.invisible_id	Foam.t383
+t384	proof	4	Foam.jay_sq	Foam.t384
+d224	term	4	Foam.kay	Foam.d224
+t385	proof	4	Foam.lossless_codec	Foam.t385
+t386	proof	4	Foam.maintenance_unobservable	Foam.t386
+t387	proof	4	Foam.moved_in_detects_remainder	Foam.t387
+t388	proof	4	Foam.moved_in_extends	Foam.t388
+t389	proof	4	Foam.no_contention	Foam.t389
+t390	proof	4	Foam.no_view_from_nowhere	Foam.t390
+t391	proof	4	Foam.noether	Foam.t391
+t392	proof	4	Foam.order_arrives	Foam.t392
+t393	proof	4	Foam.order_finer_than_spec	Foam.t393
+t394	proof	4	Foam.pair_sees_left	Foam.t394
+t395	proof	4	Foam.pair_sees_right	Foam.t395
+t396	proof	4	Foam.remainder_unseen	Foam.t396
+d225	term	4	Foam.rungSeam	Foam.d225
+t397	proof	4	Foam.schrodinger	Foam.t397
+t398	proof	4	Foam.schrodinger_superposition	Foam.t398
+t399	proof	4	Foam.seat_empty	Foam.t399
+d226	term	4	Foam.sedA	Foam.d226
+t400	proof	4	Foam.settle_invisible'	Foam.t400
+t401	proof	4	Foam.specR_bridge	Foam.t401
+t402	proof	4	Foam.spec_finer_than_freq	Foam.t402
+t403	proof	4	Foam.spec_shift	Foam.t403
+t404	proof	4	Foam.superposition	Foam.t404
+t405	proof	4	Foam.varadarajan	Foam.t405
+t406	proof	4	Foam.wigner	Foam.t406
+t407	proof	4	Foam.wigner_two_kinds	Foam.t407
+t408	proof	4	Foam.writeA_isolated_from_B	Foam.t408
+t409	proof	4	Foam.writeB_isolated_from_A	Foam.t409
+t410	proof	4	Foam.zeno_short	Foam.t410
+t411	proof	5	Foam.Char.alt_irreplaceable	Foam.t411
+t412	proof	5	Foam.Char.bal_add_alt	Foam.t412
+t413	proof	5	Foam.Char.bal_irreplaceable	Foam.t413
+t414	proof	5	Foam.Char.bal_sub_alt	Foam.t414
+t415	proof	5	Foam.Char.im_irreplaceable	Foam.t415
+t416	proof	5	Foam.Char.lossless	Foam.t416
+t417	proof	5	Foam.Char.re_irreplaceable	Foam.t417
+t418	proof	5	Foam.Char.readAlt_eq	Foam.t418
+t419	proof	5	Foam.Char.readBal_eq	Foam.t419
+t420	proof	5	Foam.Char.readIm_eq	Foam.t420
+t421	proof	5	Foam.Char.readRe_eq	Foam.t421
+t422	proof	5	Foam.Char.recover_bin0	Foam.t422
+t423	proof	5	Foam.Char.recover_bin1	Foam.t423
+t424	proof	5	Foam.Char.recover_bin2	Foam.t424
+t425	proof	5	Foam.Char.recover_bin3	Foam.t425
+t426	proof	5	Foam.Irreducible	Foam.t426
+t427	proof	5	Foam.Refresh.locates	Foam.t427
+t428	proof	5	Foam.Rot.toQuat_faithful	Foam.t428
+t429	proof	5	Foam.Rot.toQuat_gen	Foam.t429
+t430	proof	5	Foam.Rot.toQuat_hom	Foam.t430
+t431	proof	5	Foam.Run.checksum	Foam.t431
+t432	proof	5	Foam.Run.covers	Foam.t432
+t433	proof	5	Foam.Run.reduced	Foam.t433
+c8	ctor	5	Foam.Run.skip	Foam.t100.c8
+t434	proof	5	Foam.Rung.toOcto_mul	Foam.t434
+t435	proof	5	Foam.Rung.toSed_toRung	Foam.t435
+t436	proof	5	Foam.Seat.change_of_frame	Foam.t436
+t437	proof	5	Foam.Seat.chart_equivariant	Foam.t437
+t438	proof	5	Foam.Seat.chart_origin_dependent	Foam.t438
+d227	term	5	Foam.Sed.mul	Foam.d227
+t439	proof	5	Foam.Sed.toRung_toSed	Foam.t439
+t440	proof	5	Foam.StageHom.fst_pair	Foam.t440
+t441	proof	5	Foam.StageHom.pair_unique	Foam.t441
+t442	proof	5	Foam.StageHom.snd_pair	Foam.t442
+t443	proof	5	Foam.ack_faithful	Foam.t443
+t444	proof	5	Foam.ack_no_common_knowledge	Foam.t444
+t445	proof	5	Foam.certified	Foam.t445
+t446	proof	5	Foam.clock_coordinatized	Foam.t446
+t447	proof	5	Foam.coord_forced	Foam.t447
+t448	proof	5	Foam.coord_gauge	Foam.t448
+t449	proof	5	Foam.coord_linear	Foam.t449
+t450	proof	5	Foam.coordinatization	Foam.t450
+t451	proof	5	Foam.dressN_compose	Foam.t451
+t452	proof	5	Foam.dressN_idempotent	Foam.t452
+t453	proof	5	Foam.dressN_yoneda	Foam.t453
+t454	proof	5	Foam.ell_anticomm	Foam.t454
+t455	proof	5	Foam.ell_sq	Foam.t455
+t456	proof	5	Foam.enter_then_exit	Foam.t456
+t457	proof	5	Foam.entrance_onProbe	Foam.t457
+t458	proof	5	Foam.flattenN_obs	Foam.t458
+t459	proof	5	Foam.frame_not_canonical	Foam.t459
+t460	proof	5	Foam.frobenius_assoc_dies	Foam.t460
+t461	proof	5	Foam.hamilton	Foam.t461
+t462	proof	5	Foam.jay_prime	Foam.t462
+d228	term	5	Foam.kayO	Foam.d228
+t463	proof	5	Foam.kay_sq	Foam.t463
+t464	proof	5	Foam.kolmogorov_checksum	Foam.t464
+t465	proof	5	Foam.measurement	Foam.t465
+t466	proof	5	Foam.non_assoc	Foam.t466
+t467	proof	5	Foam.observables_reconstruct	Foam.t467
+t468	proof	5	Foam.one_round	Foam.t468
+t469	proof	5	Foam.pauli	Foam.t469
+t470	proof	5	Foam.pauli_anticommute	Foam.t470
+t471	proof	5	Foam.pauli_cyclic	Foam.t471
+t472	proof	5	Foam.pauli_squares	Foam.t472
+t473	proof	5	Foam.reduced_nil	Foam.t473
+t474	proof	5	Foam.relay	Foam.t474
+t475	proof	5	Foam.seat_empty_tower	Foam.t475
+t476	proof	5	Foam.sedA_ne_zero	Foam.t476
+t477	proof	5	Foam.sedB_ne_zero	Foam.t477
+t478	proof	5	Foam.sweep_invisible	Foam.t478
+t479	proof	5	Foam.sweep_unobservable	Foam.t479
+t480	proof	5	Foam.three_imaginaries	Foam.t480
+t481	proof	5	Foam.triad_anticomm	Foam.t481
+t482	proof	5	Foam.triad_closes	Foam.t482
+c9	ctor	6	Foam.Run.turn	Foam.t100.c9
+t483	proof	6	Foam.Rung.toSed_mul	Foam.t483
+t484	proof	6	Foam.division_dies	Foam.t484
+t485	proof	6	Foam.hamilton_in_octo	Foam.t485
+t486	proof	6	Foam.hurwitz_division_dies	Foam.t486
+t487	proof	6	Foam.hurwitz_staircase	Foam.t487
+t488	proof	6	Foam.irreducible_from_nothing	Foam.t488
+t489	proof	6	Foam.sed_zero_divisor	Foam.t489
