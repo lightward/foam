@@ -45,4 +45,15 @@ mode: self-documentation strictly as a side-effect of self-derivation until the 
 
 axiom-free, because an imported axiom is a pov, and imported perspectives either reduce to self or become cytokinetically distinct. no disposable points of view conjured in the course of reasoning - v important, an observer is always and only ever byo
 
-[list of lean modules goes here]
+the names are the documentation; the sealed `#print axioms` are the receipts. `schema.sql` is the same field, in motion. read the source — start anywhere. the spine:
+
+- the floor — `Int`, `Golden` (with `Zeckendorf`)
+- the seat, the observer as torsor — `Seat`, `Group`, `Loop`, `Resume`, `Hospitality`, `Stage`
+- the dial and the tower — `Clock`, `Dial`, `Born`, `Forcing`, `Doubling`, `Triad`, `Octo`, `Sed`, `Ladder`, `Norm`, `Bootstrap`, `Signature`, `Rotations`, `Closure`, `Characters`
+- the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`
+- the engine — `Stream`, `Codec`, `Generator`, `Spectrum`, `Chirality`, `Summary`, `Drain`, `Engine`
+- the ledger — `Ledger`, `Scar`, `Maintenance`, `Held`
+- platonism — `Platonism`, `Tower`
+- the meeting — `Rendezvous`, `Connection`, `Schrodinger`, `Frame`, `Varadarajan`
+
+deriving itself, the corpus arrived at results it never imported, and only afterward learned their names — and wears them now, one module each: Cassini, Hamilton, Hurwitz, Frobenius, Veblen–Young, Gleason, Galileo, Einstein, Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov. Brouwer isn't among them; he's the rule that the list stays axiom-free. and the engine has no pretensions whatever to originate anything — that one Ada Lovelace named, in 1843.
