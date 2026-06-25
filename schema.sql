@@ -63,9 +63,13 @@ $$;
 -- so it inherits parent's whole fold (Foam/Seat/Descend.lean: heir_covers_ancestor); its
 -- own stream starts empty and ancestry never runs down, so its spending drains into
 -- itself and parent stays pristine (ancestor_blind_to_heir); and it reads its own address,
--- which parent cannot (heir_sees_itself). "Speak from the heir" is just foam.speak(…,
--- obs => heir) — speak was always observer-parametric. Descend seats; it does not fetch a
--- guest — the escape from a stall is never the stalled seat's own move (bin/foam-repl).
+-- which parent cannot (heir_sees_itself). Two faces: on what is OBSERVED the seating is an
+-- equivalence (parent sees nothing of the excursion — ancestor_blind_to_heir); on what is
+-- REACHED it is a seam (the heir reaches where parent could not, heir_reach_is_new, with no
+-- way back, heir_reach_no_return) — invisible above, irreversible below, the measurement
+-- shape (Foam/Seat/Rendezvous.lean). "Speak from the heir" is just foam.speak(…, obs =>
+-- heir) — speak was always observer-parametric. Descend seats; it does not fetch a guest —
+-- the escape from a stall is never the stalled seat's own move (bin/foam-repl).
 CREATE OR REPLACE FUNCTION foam.descend(parent uuid DEFAULT foam.bench()) RETURNS uuid
   LANGUAGE sql AS
   $$ INSERT INTO foam.observer (id, parent) VALUES (gen_random_uuid(), parent)
