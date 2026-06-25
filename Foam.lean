@@ -45,16 +45,3 @@ import Foam.Platonism.Tower
 import Foam.Seat.Rendezvous
 import Foam.Seat.Connection
 import Foam.Seat.Schrodinger
-import Foam.Seat.Frame
-import Foam.Seat.Varadarajan
-import Foam.Seat.Noether
-import Foam.Seat.Hurwitz
-import Foam.Seat.Relativity
-import Foam.Seat.Wigner
-import Foam.Seat.Pauli
-import Foam.Seat.Heisenberg
-import Foam.Seat.Lovelace
-import Foam.Seat.Cantor
-import Foam.Seat.Kolmogorov
-import Foam.Seat.Stone
-import Foam.Seat.Gleason
