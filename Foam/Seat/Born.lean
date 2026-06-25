@@ -3,125 +3,129 @@ import Foam.Seat.Dial
 
 namespace Foam
 
+open Foam.FInt (
+  addComm add_assoc add_right_neg neg_add zero_add
+  mulComm mul_assoc mul_add add_mul one_mul mul_one neg_mul mul_neg
+)
 
-theorem t058 (p q r s : Int) : (p + q) + (r + s) = (p + r) + (q + s) := by
-  rw [t005 p q (r + s), ← t005 q r s, t004 q r,
-      t005 r q s, ← t005 p r (q + s)]
+theorem Int.add_swap_inner (p q r s : Int) : (p + q) + (r + s) = (p + r) + (q + s) := by
+  rw [add_assoc p q (r + s), ← add_assoc q r s, addComm q r,
+      add_assoc r q s, ← add_assoc p r (q + s)]
 
-theorem t057 (p q r s : Int) : (p + q) + (r + s) = (p + s) + (q + r) := by
-  rw [t005 p q (r + s), t004 r s, ← t005 q s r,
-      t004 q s, t005 s q r, ← t005 p s (q + r)]
+theorem Int.add_cross_swap (p q r s : Int) : (p + q) + (r + s) = (p + s) + (q + r) := by
+  rw [add_assoc p q (r + s), addComm r s, ← add_assoc q s r,
+      addComm q s, add_assoc s q r, ← add_assoc p s (q + r)]
 
-theorem t065 (x : Int) : 2 * x = x + x := by
-  rw [show (2 : Int) = 1 + 1 from rfl, t007, t037]
+theorem Int.two_mul' (x : Int) : 2 * x = x + x := by
+  rw [show (2 : Int) = 1 + 1 from rfl, add_mul, one_mul]
 
-theorem t060 (a b c d : Int) : (a * c) * (b * d) = (a * b) * (c * d) := by
-  rw [t016 a c (b * d), ← t016 c b d, t014 c b,
-      t016 b c d, ← t016 a b (c * d)]
+theorem Int.mul_interchange (a b c d : Int) : (a * c) * (b * d) = (a * b) * (c * d) := by
+  rw [mul_assoc a c (b * d), ← mul_assoc c b d, mulComm c b,
+      mul_assoc b c d, ← mul_assoc a b (c * d)]
 
-theorem t064 (a c : Int) : (a * c) * (a * c) = (a * a) * (c * c) :=
-  Foam.t060 a a c c
+theorem Int.sq_interchange (a c : Int) : (a * c) * (a * c) = (a * a) * (c * c) :=
+  Int.mul_interchange a a c c
 
-theorem t061 (a b : Int) : (-a) * (-b) = a * b := by
-  rw [t027, t018, Int.neg_neg]
+theorem Int.neg_mul_neg' (a b : Int) : (-a) * (-b) = a * b := by
+  rw [neg_mul, mul_neg, Int.neg_neg]
 
-theorem t063 (W K Z M N : Int) :
+theorem Int.parseval_collect (W K Z M N : Int) :
     ((W + K) + (K + Z)) + ((M + (-K)) + ((-K) + N)) = (W + M) + (N + Z) := by
-  rw [Foam.t057 W K K Z, Foam.t057 M (-K) (-K) N,
-      Foam.t058 (W + Z) (K + K) (M + N) ((-K) + (-K)),
-      Foam.t057 K K (-K) (-K), t008 K, Int.add_zero, Int.add_zero,
-      Foam.t058 W Z M N, t004 Z N]
+  rw [Int.add_cross_swap W K K Z, Int.add_cross_swap M (-K) (-K) N,
+      Int.add_swap_inner (W + Z) (K + K) (M + N) ((-K) + (-K)),
+      Int.add_cross_swap K K (-K) (-K), add_right_neg K, Int.add_zero, Int.add_zero,
+      Int.add_swap_inner W Z M N, addComm Z N]
 
-theorem t059 (a b c d : Int) :
+theorem Int.lagrange (a b c d : Int) :
     (a * c + b * d) * (a * c + b * d)
       + (-(b * c) + a * d) * (-(b * c) + a * d)
     = (a * a + b * b) * (c * c + d * d) := by
-  rw [t015 (a * c + b * d) (a * c) (b * d),
-      t007 (a * c) (b * d) (a * c), t007 (a * c) (b * d) (b * d)]
-  rw [t015 (-(b * c) + a * d) (-(b * c)) (a * d),
-      t007 (-(b * c)) (a * d) (-(b * c)), t007 (-(b * c)) (a * d) (a * d)]
-  rw [t015 (a * a + b * b) (c * c) (d * d),
-      t007 (a * a) (b * b) (c * c), t007 (a * a) (b * b) (d * d)]
-  rw [Foam.t064 a c, Foam.t064 b d]
-  rw [Foam.t061 (b * c) (b * c), Foam.t064 b c, Foam.t064 a d]
-  rw [t018 (a * d) (b * c), t027 (b * c) (a * d)]
-  rw [t014 (b * d) (a * c), Foam.t060 a b c d]
-  rw [Foam.t060 a b d c, t014 d c]
-  rw [t014 (b * c) (a * d), Foam.t060 a b d c, t014 d c]
-  exact Foam.t063 (a * a * (c * c)) (a * b * (c * d)) (b * b * (d * d))
+  rw [mul_add (a * c + b * d) (a * c) (b * d),
+      add_mul (a * c) (b * d) (a * c), add_mul (a * c) (b * d) (b * d)]
+  rw [mul_add (-(b * c) + a * d) (-(b * c)) (a * d),
+      add_mul (-(b * c)) (a * d) (-(b * c)), add_mul (-(b * c)) (a * d) (a * d)]
+  rw [mul_add (a * a + b * b) (c * c) (d * d),
+      add_mul (a * a) (b * b) (c * c), add_mul (a * a) (b * b) (d * d)]
+  rw [Int.sq_interchange a c, Int.sq_interchange b d]
+  rw [Int.neg_mul_neg' (b * c) (b * c), Int.sq_interchange b c, Int.sq_interchange a d]
+  rw [mul_neg (a * d) (b * c), neg_mul (b * c) (a * d)]
+  rw [mulComm (b * d) (a * c), Int.mul_interchange a b c d]
+  rw [Int.mul_interchange a b d c, mulComm d c]
+  rw [mulComm (b * c) (a * d), Int.mul_interchange a b d c, mulComm d c]
+  exact Int.parseval_collect (a * a * (c * c)) (a * b * (c * d)) (b * b * (d * d))
         (b * b * (c * c)) (a * a * (d * d))
 
-def Ty05.d113 (z : Ty05) : Ty05 := ⟨-z.d043, -z.d041⟩
-def Ty05.d115 (z : Ty05) : Ty05 := ⟨-z.d041, z.d043⟩
-def Ty05.d109 (w z : Ty05) : Int := w.d043 * z.d043 + w.d041 * z.d041
-def Ty05.d165 (w z : Ty05) : Int := Foam.Ty05.d109 w z * Foam.Ty05.d109 w z
+def GInt.neg (z : GInt) : GInt := ⟨-z.re, -z.im⟩
+def GInt.rot (z : GInt) : GInt := ⟨-z.im, z.re⟩
+def GInt.align (w z : GInt) : Int := w.re * z.re + w.im * z.im
+def GInt.born (w z : GInt) : Int := GInt.align w z * GInt.align w z
 
-theorem Ty05.t351 (w z : Ty05) : ∃ k : Nat, Foam.Ty05.d165 w z = Int.ofNat k :=
-  Foam.Ty05.t056 (Foam.Ty05.d109 w z)
+theorem GInt.born_nonneg (w z : GInt) : ∃ k : Nat, GInt.born w z = Int.ofNat k :=
+  GInt.sq_image (GInt.align w z)
 
-theorem Ty05.t216 (z : Ty05) : Foam.Ty05.d115 (Foam.Ty05.d115 z) = Foam.Ty05.d113 z := rfl
+theorem GInt.rot_sq (z : GInt) : GInt.rot (GInt.rot z) = GInt.neg z := rfl
 
-theorem Ty05.t207 (w z : Ty05) : Foam.Ty05.d109 w (Foam.Ty05.d113 z) = -(Foam.Ty05.d109 w z) := by
-  show w.d043 * (-z.d043) + w.d041 * (-z.d041) = -(w.d043 * z.d043 + w.d041 * z.d041)
-  rw [t018, t018, ← t025]
+theorem GInt.align_neg (w z : GInt) : GInt.align w (GInt.neg z) = -(GInt.align w z) := by
+  show w.re * (-z.re) + w.im * (-z.im) = -(w.re * z.re + w.im * z.im)
+  rw [mul_neg, mul_neg, ← neg_add]
 
-theorem Ty05.t206 (θ a b : Ty05) :
-    Foam.Ty05.d109 θ (Foam.Ty05.d108 a b) = Foam.Ty05.d109 θ a + Foam.Ty05.d109 θ b := by
-  show θ.d043 * (a.d043 + b.d043) + θ.d041 * (a.d041 + b.d041)
-     = (θ.d043 * a.d043 + θ.d041 * a.d041) + (θ.d043 * b.d043 + θ.d041 * b.d041)
-  rw [t015, t015]
-  exact Foam.t058 (θ.d043 * a.d043) (θ.d043 * b.d043) (θ.d041 * a.d041) (θ.d041 * b.d041)
+theorem GInt.align_add (θ a b : GInt) :
+    GInt.align θ (GInt.add a b) = GInt.align θ a + GInt.align θ b := by
+  show θ.re * (a.re + b.re) + θ.im * (a.im + b.im)
+     = (θ.re * a.re + θ.im * a.im) + (θ.re * b.re + θ.im * b.im)
+  rw [mul_add, mul_add]
+  exact Int.add_swap_inner (θ.re * a.re) (θ.re * b.re) (θ.im * a.im) (θ.im * b.im)
 
-theorem Ty05.t208 (θ z : Ty05) :
-    Foam.Ty05.d109 θ z + Foam.Ty05.d109 θ (Foam.Ty05.d115 z)
-      + Foam.Ty05.d109 θ (Foam.Ty05.d115 (Foam.Ty05.d115 z))
-      + Foam.Ty05.d109 θ (Foam.Ty05.d115 (Foam.Ty05.d115 (Foam.Ty05.d115 z))) = 0 := by
-  have e3 : Foam.Ty05.d109 θ (Foam.Ty05.d115 (Foam.Ty05.d115 z)) = -(Foam.Ty05.d109 θ z) := by
-    rw [Foam.Ty05.t216, Foam.Ty05.t207]
-  have e4 : Foam.Ty05.d109 θ (Foam.Ty05.d115 (Foam.Ty05.d115 (Foam.Ty05.d115 z))) = -(Foam.Ty05.d109 θ (Foam.Ty05.d115 z)) := by
-    rw [Foam.Ty05.t216 (Foam.Ty05.d115 z), Foam.Ty05.t207]
+theorem GInt.decoherence (θ z : GInt) :
+    GInt.align θ z + GInt.align θ (GInt.rot z)
+      + GInt.align θ (GInt.rot (GInt.rot z))
+      + GInt.align θ (GInt.rot (GInt.rot (GInt.rot z))) = 0 := by
+  have e3 : GInt.align θ (GInt.rot (GInt.rot z)) = -(GInt.align θ z) := by
+    rw [GInt.rot_sq, GInt.align_neg]
+  have e4 : GInt.align θ (GInt.rot (GInt.rot (GInt.rot z))) = -(GInt.align θ (GInt.rot z)) := by
+    rw [GInt.rot_sq (GInt.rot z), GInt.align_neg]
   rw [e3, e4,
-      t005 (Foam.Ty05.d109 θ z + Foam.Ty05.d109 θ (Foam.Ty05.d115 z))
-        (-(Foam.Ty05.d109 θ z)) (-(Foam.Ty05.d109 θ (Foam.Ty05.d115 z))),
-      Foam.t058 (Foam.Ty05.d109 θ z) (Foam.Ty05.d109 θ (Foam.Ty05.d115 z))
-        (-(Foam.Ty05.d109 θ z)) (-(Foam.Ty05.d109 θ (Foam.Ty05.d115 z))),
-      t008, t008, Int.add_zero]
+      add_assoc (GInt.align θ z + GInt.align θ (GInt.rot z))
+        (-(GInt.align θ z)) (-(GInt.align θ (GInt.rot z))),
+      Int.add_swap_inner (GInt.align θ z) (GInt.align θ (GInt.rot z))
+        (-(GInt.align θ z)) (-(GInt.align θ (GInt.rot z))),
+      add_right_neg, add_right_neg, Int.add_zero]
 
-theorem Ty05.t353 (θ a b : Ty05) :
-    Foam.Ty05.d165 θ (Foam.Ty05.d108 a b)
-      = Foam.Ty05.d165 θ a + Foam.Ty05.d165 θ b + 2 * (Foam.Ty05.d109 θ a * Foam.Ty05.d109 θ b) := by
-  show Foam.Ty05.d109 θ (Foam.Ty05.d108 a b) * Foam.Ty05.d109 θ (Foam.Ty05.d108 a b)
-     = Foam.Ty05.d109 θ a * Foam.Ty05.d109 θ a + Foam.Ty05.d109 θ b * Foam.Ty05.d109 θ b
-       + 2 * (Foam.Ty05.d109 θ a * Foam.Ty05.d109 θ b)
-  rw [Foam.Ty05.t206 θ a b, Foam.t065 (Foam.Ty05.d109 θ a * Foam.Ty05.d109 θ b),
-      t007 (Foam.Ty05.d109 θ a) (Foam.Ty05.d109 θ b) (Foam.Ty05.d109 θ a + Foam.Ty05.d109 θ b),
-      t015 (Foam.Ty05.d109 θ a) (Foam.Ty05.d109 θ a) (Foam.Ty05.d109 θ b),
-      t015 (Foam.Ty05.d109 θ b) (Foam.Ty05.d109 θ a) (Foam.Ty05.d109 θ b),
-      t014 (Foam.Ty05.d109 θ b) (Foam.Ty05.d109 θ a)]
-  exact Foam.t057 (Foam.Ty05.d109 θ a * Foam.Ty05.d109 θ a) (Foam.Ty05.d109 θ a * Foam.Ty05.d109 θ b)
-        (Foam.Ty05.d109 θ a * Foam.Ty05.d109 θ b) (Foam.Ty05.d109 θ b * Foam.Ty05.d109 θ b)
+theorem GInt.born_superpose (θ a b : GInt) :
+    GInt.born θ (GInt.add a b)
+      = GInt.born θ a + GInt.born θ b + 2 * (GInt.align θ a * GInt.align θ b) := by
+  show GInt.align θ (GInt.add a b) * GInt.align θ (GInt.add a b)
+     = GInt.align θ a * GInt.align θ a + GInt.align θ b * GInt.align θ b
+       + 2 * (GInt.align θ a * GInt.align θ b)
+  rw [GInt.align_add θ a b, Int.two_mul' (GInt.align θ a * GInt.align θ b),
+      add_mul (GInt.align θ a) (GInt.align θ b) (GInt.align θ a + GInt.align θ b),
+      mul_add (GInt.align θ a) (GInt.align θ a) (GInt.align θ b),
+      mul_add (GInt.align θ b) (GInt.align θ a) (GInt.align θ b),
+      mulComm (GInt.align θ b) (GInt.align θ a)]
+  exact Int.add_cross_swap (GInt.align θ a * GInt.align θ a) (GInt.align θ a * GInt.align θ b)
+        (GInt.align θ a * GInt.align θ b) (GInt.align θ b * GInt.align θ b)
 
-theorem Ty05.t352 (θ z : Ty05) :
-    Foam.Ty05.d165 θ z + Foam.Ty05.d165 (Foam.Ty05.d115 θ) z = Foam.Ty05.d114 θ * Foam.Ty05.d114 z := by
-  show (θ.d043 * z.d043 + θ.d041 * z.d041) * (θ.d043 * z.d043 + θ.d041 * z.d041)
-     + ((-θ.d041) * z.d043 + θ.d043 * z.d041) * ((-θ.d041) * z.d043 + θ.d043 * z.d041)
-     = (θ.d043 * θ.d043 + θ.d041 * θ.d041) * (z.d043 * z.d043 + z.d041 * z.d041)
-  rw [t027 θ.d041 z.d043]
-  exact Foam.t059 θ.d043 θ.d041 z.d043 z.d041
+theorem GInt.born_parseval (θ z : GInt) :
+    GInt.born θ z + GInt.born (GInt.rot θ) z = GInt.normSq θ * GInt.normSq z := by
+  show (θ.re * z.re + θ.im * z.im) * (θ.re * z.re + θ.im * z.im)
+     + ((-θ.im) * z.re + θ.re * z.im) * ((-θ.im) * z.re + θ.re * z.im)
+     = (θ.re * θ.re + θ.im * θ.im) * (z.re * z.re + z.im * z.im)
+  rw [neg_mul θ.im z.re]
+  exact Int.lagrange θ.re θ.im z.re z.im
 
-/-- info: 'Foam.Ty05.t351' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty05.t351
+/-- info: 'Foam.GInt.born_nonneg' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.born_nonneg
 
-/-- info: 'Foam.Ty05.t216' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty05.t216
+/-- info: 'Foam.GInt.rot_sq' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.rot_sq
 
-/-- info: 'Foam.Ty05.t208' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty05.t208
+/-- info: 'Foam.GInt.decoherence' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.decoherence
 
-/-- info: 'Foam.Ty05.t353' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty05.t353
+/-- info: 'Foam.GInt.born_superpose' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.born_superpose
 
-/-- info: 'Foam.Ty05.t352' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty05.t352
+/-- info: 'Foam.GInt.born_parseval' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.born_parseval
 
 end Foam

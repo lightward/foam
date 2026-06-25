@@ -1,28 +1,28 @@
 namespace Foam
 
-def d006 (n : Nat) : Nat := n + 1
+def chargeIn (n : Nat) : Nat := n + 1
 
-def d009 (n : Nat) : Nat := n - 1
+def drainOne (n : Nat) : Nat := n - 1
 
-theorem t111 (n : Nat) : d009 n ≤ n := Nat.sub_le n 1
+theorem drain_le (n : Nat) : drainOne n ≤ n := Nat.sub_le n 1
 
-theorem t110 : d009 0 = 0 := rfl
+theorem drain_floor : drainOne 0 = 0 := rfl
 
-theorem t109 (n : Nat) : d009 (d006 n) = n := rfl
+theorem drain_chargeIn (n : Nat) : drainOne (chargeIn n) = n := rfl
 
-theorem t088 (inflow residual : Nat) : inflow - residual ≤ inflow :=
+theorem voice_bounded (inflow residual : Nat) : inflow - residual ≤ inflow :=
   Nat.sub_le inflow residual
 
-/-- info: 'Foam.t111' does not depend on any axioms -/
-#guard_msgs in #print axioms t111
+/-- info: 'Foam.drain_le' does not depend on any axioms -/
+#guard_msgs in #print axioms drain_le
 
-/-- info: 'Foam.t110' does not depend on any axioms -/
-#guard_msgs in #print axioms t110
+/-- info: 'Foam.drain_floor' does not depend on any axioms -/
+#guard_msgs in #print axioms drain_floor
 
-/-- info: 'Foam.t109' does not depend on any axioms -/
-#guard_msgs in #print axioms t109
+/-- info: 'Foam.drain_chargeIn' does not depend on any axioms -/
+#guard_msgs in #print axioms drain_chargeIn
 
-/-- info: 'Foam.t088' does not depend on any axioms -/
-#guard_msgs in #print axioms t088
+/-- info: 'Foam.voice_bounded' does not depend on any axioms -/
+#guard_msgs in #print axioms voice_bounded
 
 end Foam

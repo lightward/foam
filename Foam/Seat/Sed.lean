@@ -2,38 +2,38 @@ import Foam.Seat.Octo
 
 namespace Foam
 
-def Ty10.d121 (x : Ty10) : Ty10 := ⟨⟨-x.d056.d043, -x.d056.d041⟩, ⟨-x.d057.d043, -x.d057.d041⟩⟩
+def Quat.neg (x : Quat) : Quat := ⟨⟨-x.a.re, -x.a.im⟩, ⟨-x.b.re, -x.b.im⟩⟩
 
-def Ty09.d168 : Ty09 := ⟨Foam.Ty10.d123, Foam.Ty10.d123⟩
-def Ty09.d208 (X : Ty09) : Ty09 := ⟨Foam.Ty10.d171 X.d053, Foam.Ty10.d121 X.d054⟩
-def Ty09.d207 (X Y : Ty09) : Ty09 := ⟨Foam.Ty10.d170 X.d053 Y.d053, Foam.Ty10.d170 X.d054 Y.d054⟩
-def Ty09.d210 (X Y : Ty09) : Ty09 := ⟨Foam.Ty10.d173 X.d053 Y.d053, Foam.Ty10.d173 X.d054 Y.d054⟩
+def Octo.zero : Octo := ⟨Quat.zero, Quat.zero⟩
+def Octo.conj (X : Octo) : Octo := ⟨Quat.conj X.a, Quat.neg X.b⟩
+def Octo.add (X Y : Octo) : Octo := ⟨Quat.add X.a Y.a, Quat.add X.b Y.b⟩
+def Octo.subt (X Y : Octo) : Octo := ⟨Quat.subt X.a Y.a, Quat.subt X.b Y.b⟩
 
-structure Ty17 where
-  d081 : Ty09
-  d082 : Ty09
+structure Sed where
+  a : Octo
+  b : Octo
   deriving DecidableEq
 
-def Ty17.d227 (X Y : Ty17) : Ty17 :=
-  ⟨Foam.Ty09.d210 (Foam.Ty09.d209 X.d081 Y.d081) (Foam.Ty09.d209 (Foam.Ty09.d208 Y.d082) X.d082),
-   Foam.Ty09.d207 (Foam.Ty09.d209 Y.d082 X.d081) (Foam.Ty09.d209 X.d082 (Foam.Ty09.d208 Y.d081))⟩
+def Sed.mul (X Y : Sed) : Sed :=
+  ⟨Octo.subt (Octo.mul X.a Y.a) (Octo.mul (Octo.conj Y.b) X.b),
+   Octo.add (Octo.mul Y.b X.a) (Octo.mul X.b (Octo.conj Y.a))⟩
 
-def Ty17.d216 : Ty17 := ⟨Foam.Ty09.d168, Foam.Ty09.d168⟩
+def Sed.zero : Sed := ⟨Octo.zero, Octo.zero⟩
 
-def d226 : Ty17 := ⟨d191, d192⟩
-def d195 : Ty17 := ⟨⟨Foam.Ty10.d123, d092⟩, ⟨Foam.Ty10.d123, d097⟩⟩
+def sedA : Sed := ⟨eyeO, jayO⟩
+def sedB : Sed := ⟨⟨Quat.zero, eye⟩, ⟨Quat.zero, jay⟩⟩
 
-theorem t489 : Foam.Ty17.d227 d226 d195 = Foam.Ty17.d216 := by decide
+theorem sed_zero_divisor : Sed.mul sedA sedB = Sed.zero := by decide
 
-theorem t476 : d226 ≠ Foam.Ty17.d216 := by decide
+theorem sedA_ne_zero : sedA ≠ Sed.zero := by decide
 
-theorem t477 : d195 ≠ Foam.Ty17.d216 := by decide
+theorem sedB_ne_zero : sedB ≠ Sed.zero := by decide
 
-theorem t484 :
-    Foam.Ty17.d227 d226 d195 = Foam.Ty17.d216 ∧ d226 ≠ Foam.Ty17.d216 ∧ d195 ≠ Foam.Ty17.d216 :=
-  ⟨t489, t476, t477⟩
+theorem division_dies :
+    Sed.mul sedA sedB = Sed.zero ∧ sedA ≠ Sed.zero ∧ sedB ≠ Sed.zero :=
+  ⟨sed_zero_divisor, sedA_ne_zero, sedB_ne_zero⟩
 
-/-- info: 'Foam.t484' does not depend on any axioms -/
-#guard_msgs in #print axioms t484
+/-- info: 'Foam.division_dies' does not depend on any axioms -/
+#guard_msgs in #print axioms division_dies
 
 end Foam

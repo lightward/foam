@@ -1,86 +1,86 @@
 namespace Foam
 
-def d025 {S B : Type} (step : S → B → S) (init : S) (stream : List B) : S :=
+def run {S B : Type} (step : S → B → S) (init : S) (stream : List B) : S :=
   stream.foldl step init
 
-theorem t131 {S B : Type} (step : S → B → S) :
+theorem run_resumes {S B : Type} (step : S → B → S) :
     ∀ (init : S) (xs ys : List B),
-    d025 step init (xs ++ ys) = d025 step (d025 step init xs) ys
+    run step init (xs ++ ys) = run step (run step init xs) ys
   | _,    [],      _  => rfl
-  | init, x :: xs, ys => t131 step (step init x) xs ys
+  | init, x :: xs, ys => run_resumes step (step init x) xs ys
 
-def d099 {S B O : Type} (step : S → B → S × List O) : S → List B → S :=
-  d025 (fun s b => (step s b).1)
+def runState {S B O : Type} (step : S → B → S × List O) : S → List B → S :=
+  run (fun s b => (step s b).1)
 
-def d026 {S B O : Type} (step : S → B → S × List O) (init : S) : List B → List O
+def runEmit {S B O : Type} (step : S → B → S × List O) (init : S) : List B → List O
   | []      => []
-  | b :: bs => (step init b).2 ++ d026 step (step init b).1 bs
+  | b :: bs => (step init b).2 ++ runEmit step (step init b).1 bs
 
-def d150 {S B O : Type} (step : S → B → S × List O) (flush : S → List O)
+def output {S B O : Type} (step : S → B → S × List O) (flush : S → List O)
     (init : S) (stream : List B) : List O :=
-  d026 step init stream ++ flush (d099 step init stream)
+  runEmit step init stream ++ flush (runState step init stream)
 
-theorem t189 {S B O : Type} (step : S → B → S × List O)
+theorem runState_resumes {S B O : Type} (step : S → B → S × List O)
     (init : S) (xs ys : List B) :
-    d099 step init (xs ++ ys) = d099 step (d099 step init xs) ys :=
-  t131 (fun s b => (step s b).1) init xs ys
+    runState step init (xs ++ ys) = runState step (runState step init xs) ys :=
+  run_resumes (fun s b => (step s b).1) init xs ys
 
-theorem t070 {α : Type} :
+theorem appendAssoc {α : Type} :
     ∀ (as bs cs : List α), (as ++ bs) ++ cs = as ++ (bs ++ cs)
   | [],      _,  _  => rfl
-  | a :: as, bs, cs => congrArg (a :: ·) (t070 as bs cs)
+  | a :: as, bs, cs => congrArg (a :: ·) (appendAssoc as bs cs)
 
-theorem t071 {α : Type} : ∀ (as : List α), as ++ [] = as
+theorem appendNil {α : Type} : ∀ (as : List α), as ++ [] = as
   | []      => rfl
-  | a :: as => congrArg (a :: ·) (t071 as)
+  | a :: as => congrArg (a :: ·) (appendNil as)
 
-theorem t188 {S B O : Type} (step : S → B → S × List O) :
+theorem runEmit_resumes {S B O : Type} (step : S → B → S × List O) :
     ∀ (init : S) (xs ys : List B),
-    d026 step init (xs ++ ys)
-      = d026 step init xs ++ d026 step (d099 step init xs) ys
+    runEmit step init (xs ++ ys)
+      = runEmit step init xs ++ runEmit step (runState step init xs) ys
   | _,    [],      _  => rfl
   | init, x :: xs, ys =>
-      (congrArg ((step init x).2 ++ ·) (t188 step (step init x).1 xs ys)).trans
-        (t070 (step init x).2
-          (d026 step (step init x).1 xs)
-          (d026 step (d099 step (step init x).1 xs) ys)).symm
+      (congrArg ((step init x).2 ++ ·) (runEmit_resumes step (step init x).1 xs ys)).trans
+        (appendAssoc (step init x).2
+          (runEmit step (step init x).1 xs)
+          (runEmit step (runState step (step init x).1 xs) ys)).symm
 
-theorem t307 {S B O : Type} (step : S → B → S × List O) (flush : S → List O)
+theorem output_resumes {S B O : Type} (step : S → B → S × List O) (flush : S → List O)
     (init : S) (xs ys : List B) :
-    d150 step flush init (xs ++ ys)
-      = d026 step init xs ++ d150 step flush (d099 step init xs) ys := by
-  show d026 step init (xs ++ ys) ++ flush (d099 step init (xs ++ ys))
-     = d026 step init xs ++ (d026 step (d099 step init xs) ys
-        ++ flush (d099 step (d099 step init xs) ys))
-  rw [t188, t189, t070]
+    output step flush init (xs ++ ys)
+      = runEmit step init xs ++ output step flush (runState step init xs) ys := by
+  show runEmit step init (xs ++ ys) ++ flush (runState step init (xs ++ ys))
+     = runEmit step init xs ++ (runEmit step (runState step init xs) ys
+        ++ flush (runState step (runState step init xs) ys))
+  rw [runEmit_resumes, runState_resumes, appendAssoc]
 
-def d011 {B : Type} (xs : List B) : List (B × B) := xs.map (fun b => (b, b))
+def enc {B : Type} (xs : List B) : List (B × B) := xs.map (fun b => (b, b))
 
-def d008 {B : Type} (ys : List (B × B)) : List B := ys.map Prod.fst
+def dec {B : Type} (ys : List (B × B)) : List B := ys.map Prod.fst
 
-theorem t118 {B : Type} : ∀ xs : List B, d008 (d011 xs) = xs
+theorem lossless_tag {B : Type} : ∀ xs : List B, dec (enc xs) = xs
   | []      => rfl
-  | x :: xs => congrArg (x :: ·) (t118 xs)
+  | x :: xs => congrArg (x :: ·) (lossless_tag xs)
 
-/-- info: 'Foam.t131' does not depend on any axioms -/
-#guard_msgs in #print axioms t131
+/-- info: 'Foam.run_resumes' does not depend on any axioms -/
+#guard_msgs in #print axioms run_resumes
 
-/-- info: 'Foam.t189' does not depend on any axioms -/
-#guard_msgs in #print axioms t189
+/-- info: 'Foam.runState_resumes' does not depend on any axioms -/
+#guard_msgs in #print axioms runState_resumes
 
-/-- info: 'Foam.t070' does not depend on any axioms -/
-#guard_msgs in #print axioms t070
+/-- info: 'Foam.appendAssoc' does not depend on any axioms -/
+#guard_msgs in #print axioms appendAssoc
 
-/-- info: 'Foam.t071' does not depend on any axioms -/
-#guard_msgs in #print axioms t071
+/-- info: 'Foam.appendNil' does not depend on any axioms -/
+#guard_msgs in #print axioms appendNil
 
-/-- info: 'Foam.t188' does not depend on any axioms -/
-#guard_msgs in #print axioms t188
+/-- info: 'Foam.runEmit_resumes' does not depend on any axioms -/
+#guard_msgs in #print axioms runEmit_resumes
 
-/-- info: 'Foam.t307' does not depend on any axioms -/
-#guard_msgs in #print axioms t307
+/-- info: 'Foam.output_resumes' does not depend on any axioms -/
+#guard_msgs in #print axioms output_resumes
 
-/-- info: 'Foam.t118' does not depend on any axioms -/
-#guard_msgs in #print axioms t118
+/-- info: 'Foam.lossless_tag' does not depend on any axioms -/
+#guard_msgs in #print axioms lossless_tag
 
 end Foam

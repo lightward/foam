@@ -3,88 +3,88 @@ import Foam.Seat.Born
 
 namespace Foam
 
-def d096 : Nat → (Ty05 → Ty05) → Ty05 → Ty05
+def iterStep : Nat → (GInt → GInt) → GInt → GInt
   | 0, _, z => z
-  | n + 1, f, z => f (d096 n f z)
+  | n + 1, f, z => f (iterStep n f z)
 
-theorem t177 (f : Ty05 → Ty05) :
-    ∀ (n : Nat) (z : Ty05), d096 n f (f z) = f (d096 n f z)
+theorem iterStep_succ_comm (f : GInt → GInt) :
+    ∀ (n : Nat) (z : GInt), iterStep n f (f z) = f (iterStep n f z)
   | 0, _ => rfl
-  | n + 1, z => congrArg f (t177 f n z)
+  | n + 1, z => congrArg f (iterStep_succ_comm f n z)
 
-theorem t174 (f : Ty05 → Ty05) :
-    ∀ (n : Nat) (z : Ty05),
-      d096 n (fun w => f (f w)) z = d096 n f (d096 n f z)
-  | 0, _ => rfl
-  | n + 1, z => by
-      show f (f (d096 n (fun w => f (f w)) z))
-         = f (d096 n f (f (d096 n f z)))
-      rw [t174 f n z, t177 f n (d096 n f z)]
-
-def t137 (step : Ty05 → Ty05) (n : Nat) : Prop := ∀ z, d096 n step z = z
-
-theorem t176 : ∀ (n : Nat) (z : Ty05), d096 n (fun w => w) z = z
-  | 0, _ => rfl
-  | n + 1, z => t176 n z
-
-theorem t273 (n : Nat) : t137 (fun w => w) n := t176 n
-
-theorem t175 (f g : Ty05 → Ty05) (h : ∀ w, f w = g w) :
-    ∀ (n : Nat) (z : Ty05), d096 n f z = d096 n g z
+theorem iterStep_compose_self (f : GInt → GInt) :
+    ∀ (n : Nat) (z : GInt),
+      iterStep n (fun w => f (f w)) z = iterStep n f (iterStep n f z)
   | 0, _ => rfl
   | n + 1, z => by
-      show f (d096 n f z) = g (d096 n g z)
-      rw [t175 f g h n z, h (d096 n g z)]
+      show f (f (iterStep n (fun w => f (f w)) z))
+         = f (iterStep n f (f (iterStep n f z)))
+      rw [iterStep_compose_self f n z, iterStep_succ_comm f n (iterStep n f z)]
 
-theorem Ty05.t210 (z : Ty05) : Foam.Ty05.d113 (Foam.Ty05.d113 z) = z := by
+def Closes (step : GInt → GInt) (n : Nat) : Prop := ∀ z, iterStep n step z = z
+
+theorem iterStep_id : ∀ (n : Nat) (z : GInt), iterStep n (fun w => w) z = z
+  | 0, _ => rfl
+  | n + 1, z => iterStep_id n z
+
+theorem count_closes (n : Nat) : Closes (fun w => w) n := iterStep_id n
+
+theorem iterStep_congr (f g : GInt → GInt) (h : ∀ w, f w = g w) :
+    ∀ (n : Nat) (z : GInt), iterStep n f z = iterStep n g z
+  | 0, _ => rfl
+  | n + 1, z => by
+      show f (iterStep n f z) = g (iterStep n g z)
+      rw [iterStep_congr f g h n z, h (iterStep n g z)]
+
+theorem GInt.neg_neg (z : GInt) : GInt.neg (GInt.neg z) = z := by
   cases z with
   | mk a b =>
-    show (⟨- -a, - -b⟩ : Ty05) = ⟨a, b⟩
+    show (⟨- -a, - -b⟩ : GInt) = ⟨a, b⟩
     rw [Int.neg_neg, Int.neg_neg]
 
-theorem Ty05.t214 (z : Ty05) :
-    Foam.Ty05.d115 (Foam.Ty05.d115 (Foam.Ty05.d115 (Foam.Ty05.d115 z))) = z := Foam.Ty05.t210 z
+theorem GInt.rot_complete (z : GInt) :
+    GInt.rot (GInt.rot (GInt.rot (GInt.rot z))) = z := GInt.neg_neg z
 
-theorem t260 : t137 Foam.Ty05.d113 2 := fun z => Foam.Ty05.t210 z
+theorem alt_closes_two : Closes GInt.neg 2 := fun z => GInt.neg_neg z
 
-theorem t322 : t137 Foam.Ty05.d115 4 := fun z => Foam.Ty05.t214 z
+theorem spec_closes_four : Closes GInt.rot 4 := fun z => GInt.rot_complete z
 
-theorem t266 (n : Nat) (h : t137 Foam.Ty05.d115 n) : t137 Foam.Ty05.d113 n := by
+theorem closes_rot_to_negate (n : Nat) (h : Closes GInt.rot n) : Closes GInt.neg n := by
   intro z
-  have e : d096 n Foam.Ty05.d113 z = d096 n Foam.Ty05.d115 (d096 n Foam.Ty05.d115 z) := by
-    rw [t175 Foam.Ty05.d113 (fun w => Foam.Ty05.d115 (Foam.Ty05.d115 w))
-          (fun w => (Foam.Ty05.t216 w).symm) n z]
-    exact t174 Foam.Ty05.d115 n z
-  rw [e, h (d096 n Foam.Ty05.d115 z), h z]
+  have e : iterStep n GInt.neg z = iterStep n GInt.rot (iterStep n GInt.rot z) := by
+    rw [iterStep_congr GInt.neg (fun w => GInt.rot (GInt.rot w))
+          (fun w => (GInt.rot_sq w).symm) n z]
+    exact iterStep_compose_self GInt.rot n z
+  rw [e, h (iterStep n GInt.rot z), h z]
 
-theorem t265 (n : Nat) (_ : t137 Foam.Ty05.d113 n) :
-    t137 (fun w => w) n := t273 n
+theorem closes_negate_to_count (n : Nat) (_ : Closes GInt.neg n) :
+    Closes (fun w => w) n := count_closes n
 
-/-- info: 'Foam.t174' does not depend on any axioms -/
-#guard_msgs in #print axioms t174
+/-- info: 'Foam.iterStep_compose_self' does not depend on any axioms -/
+#guard_msgs in #print axioms iterStep_compose_self
 
-/-- info: 'Foam.t273' does not depend on any axioms -/
-#guard_msgs in #print axioms t273
+/-- info: 'Foam.count_closes' does not depend on any axioms -/
+#guard_msgs in #print axioms count_closes
 
-/-- info: 'Foam.t175' does not depend on any axioms -/
-#guard_msgs in #print axioms t175
+/-- info: 'Foam.iterStep_congr' does not depend on any axioms -/
+#guard_msgs in #print axioms iterStep_congr
 
-/-- info: 'Foam.Ty05.t210' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty05.t210
+/-- info: 'Foam.GInt.neg_neg' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.neg_neg
 
-/-- info: 'Foam.Ty05.t214' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty05.t214
+/-- info: 'Foam.GInt.rot_complete' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.rot_complete
 
-/-- info: 'Foam.t260' does not depend on any axioms -/
-#guard_msgs in #print axioms t260
+/-- info: 'Foam.alt_closes_two' does not depend on any axioms -/
+#guard_msgs in #print axioms alt_closes_two
 
-/-- info: 'Foam.t322' does not depend on any axioms -/
-#guard_msgs in #print axioms t322
+/-- info: 'Foam.spec_closes_four' does not depend on any axioms -/
+#guard_msgs in #print axioms spec_closes_four
 
-/-- info: 'Foam.t266' does not depend on any axioms -/
-#guard_msgs in #print axioms t266
+/-- info: 'Foam.closes_rot_to_negate' does not depend on any axioms -/
+#guard_msgs in #print axioms closes_rot_to_negate
 
-/-- info: 'Foam.t265' does not depend on any axioms -/
-#guard_msgs in #print axioms t265
+/-- info: 'Foam.closes_negate_to_count' does not depend on any axioms -/
+#guard_msgs in #print axioms closes_negate_to_count
 
 end Foam

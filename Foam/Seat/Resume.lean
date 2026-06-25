@@ -4,30 +4,30 @@ namespace Foam
 
 variable {G : Type} [Mul G] [One G]
 
-def Ty16.d132 (S : Ty16 G) : List G → S.Ty24 → S.Ty24
+def Seat.replay (S : Seat G) : List G → S.Pos → S.Pos
   | [], p => p
-  | g :: rest, p => S.d132 rest (S.d131 g p)
+  | g :: rest, p => S.replay rest (S.act g p)
 
-theorem Ty16.t245 (S : Ty16 G) (p : S.Ty24) : S.d132 [] p = p := rfl
+theorem Seat.replay_nil (S : Seat G) (p : S.Pos) : S.replay [] p = p := rfl
 
-theorem Ty16.t246 (S : Ty16 G) (xs ys : List G) (p : S.Ty24) :
-    S.d132 (xs ++ ys) p = S.d132 ys (S.d132 xs p) := by
+theorem Seat.replay_resumes (S : Seat G) (xs ys : List G) (p : S.Pos) :
+    S.replay (xs ++ ys) p = S.replay ys (S.replay xs p) := by
   induction xs generalizing p with
   | nil => rfl
-  | cons g rest ih => exact ih (S.d131 g p)
+  | cons g rest ih => exact ih (S.act g p)
 
-theorem Ty16.t253 (S : Ty16 G) (p q r : S.Ty24) :
-    S.d132 [S.d133 q p, S.d133 r q, S.d133 p r] p = p := by
-  show S.d131 (S.d133 p r) (S.d131 (S.d133 r q) (S.d131 (S.d133 q p) p)) = p
-  rw [S.t237 p q, S.t237 q r, S.t237 r p]
+theorem Seat.triangle_gait (S : Seat G) (p q r : S.Pos) :
+    S.replay [S.sub q p, S.sub r q, S.sub p r] p = p := by
+  show S.act (S.sub p r) (S.act (S.sub r q) (S.act (S.sub q p) p)) = p
+  rw [S.act_sub p q, S.act_sub q r, S.act_sub r p]
 
-/-- info: 'Foam.Ty16.t253' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty16.t253
+/-- info: 'Foam.Seat.triangle_gait' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.triangle_gait
 
-/-- info: 'Foam.Ty16.t245' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty16.t245
+/-- info: 'Foam.Seat.replay_nil' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.replay_nil
 
-/-- info: 'Foam.Ty16.t246' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty16.t246
+/-- info: 'Foam.Seat.replay_resumes' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.replay_resumes
 
 end Foam

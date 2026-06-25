@@ -2,44 +2,44 @@ import Foam.Seat.Triad
 
 namespace Foam
 
-def Ty10.d123 : Ty10 := ⟨Foam.Ty05.d044, Foam.Ty05.d044⟩
-def Ty10.d060 : Ty10 := ⟨⟨1, 0⟩, ⟨0, 0⟩⟩
-def Ty10.d171 (x : Ty10) : Ty10 := ⟨Foam.Ty05.d110 x.d056, ⟨-x.d057.d043, -x.d057.d041⟩⟩
-def Ty10.d170 (x y : Ty10) : Ty10 := ⟨Foam.Ty05.d108 x.d056 y.d056, Foam.Ty05.d108 x.d057 y.d057⟩
-def Ty10.d173 (x y : Ty10) : Ty10 := ⟨Foam.Ty05.d116 x.d056 y.d056, Foam.Ty05.d116 x.d057 y.d057⟩
+def Quat.zero : Quat := ⟨GInt.zero, GInt.zero⟩
+def Quat.one : Quat := ⟨⟨1, 0⟩, ⟨0, 0⟩⟩
+def Quat.conj (x : Quat) : Quat := ⟨GInt.conj x.a, ⟨-x.b.re, -x.b.im⟩⟩
+def Quat.add (x y : Quat) : Quat := ⟨GInt.add x.a y.a, GInt.add x.b y.b⟩
+def Quat.subt (x y : Quat) : Quat := ⟨GInt.sub x.a y.a, GInt.sub x.b y.b⟩
 
-structure Ty09 where
-  d053 : Ty10
-  d054 : Ty10
+structure Octo where
+  a : Quat
+  b : Quat
   deriving DecidableEq
 
-def Ty09.d209 (X Y : Ty09) : Ty09 :=
-  ⟨Foam.Ty10.d173 (Foam.Ty10.d172 X.d053 Y.d053) (Foam.Ty10.d172 (Foam.Ty10.d171 Y.d054) X.d054),
-   Foam.Ty10.d170 (Foam.Ty10.d172 Y.d054 X.d053) (Foam.Ty10.d172 X.d054 (Foam.Ty10.d171 Y.d053))⟩
+def Octo.mul (X Y : Octo) : Octo :=
+  ⟨Quat.subt (Quat.mul X.a Y.a) (Quat.mul (Quat.conj Y.b) X.b),
+   Quat.add (Quat.mul Y.b X.a) (Quat.mul X.b (Quat.conj Y.a))⟩
 
-def Ty09.d166 : Ty09 := ⟨Foam.Ty10.d059, Foam.Ty10.d123⟩
+def Octo.negOne : Octo := ⟨Quat.negOne, Quat.zero⟩
 
-def d191 : Ty09 := ⟨d092, Foam.Ty10.d123⟩
-def d192 : Ty09 := ⟨d097, Foam.Ty10.d123⟩
-def d228 : Ty09 := ⟨d224, Foam.Ty10.d123⟩
-def d188 : Ty09 := ⟨Foam.Ty10.d123, Foam.Ty10.d060⟩
+def eyeO : Octo := ⟨eye, Quat.zero⟩
+def jayO : Octo := ⟨jay, Quat.zero⟩
+def kayO : Octo := ⟨kay, Quat.zero⟩
+def ell : Octo := ⟨Quat.zero, Quat.one⟩
 
-theorem t485 : Foam.Ty09.d209 (Foam.Ty09.d209 d191 d192) d228 = Foam.Ty09.d166 := by decide
+theorem hamilton_in_octo : Octo.mul (Octo.mul eyeO jayO) kayO = Octo.negOne := by decide
 
-theorem t455 : Foam.Ty09.d209 d188 d188 = Foam.Ty09.d166 := by decide
+theorem ell_sq : Octo.mul ell ell = Octo.negOne := by decide
 
-theorem t454 : Foam.Ty09.d209 d191 d188 ≠ Foam.Ty09.d209 d188 d191 := by decide
+theorem ell_anticomm : Octo.mul eyeO ell ≠ Octo.mul ell eyeO := by decide
 
-theorem t466 :
-    Foam.Ty09.d209 (Foam.Ty09.d209 d191 d192) d188 ≠ Foam.Ty09.d209 d191 (Foam.Ty09.d209 d192 d188) := by decide
+theorem non_assoc :
+    Octo.mul (Octo.mul eyeO jayO) ell ≠ Octo.mul eyeO (Octo.mul jayO ell) := by decide
 
-/-- info: 'Foam.t485' does not depend on any axioms -/
-#guard_msgs in #print axioms t485
+/-- info: 'Foam.hamilton_in_octo' does not depend on any axioms -/
+#guard_msgs in #print axioms hamilton_in_octo
 
-/-- info: 'Foam.t455' does not depend on any axioms -/
-#guard_msgs in #print axioms t455
+/-- info: 'Foam.ell_sq' does not depend on any axioms -/
+#guard_msgs in #print axioms ell_sq
 
-/-- info: 'Foam.t466' does not depend on any axioms -/
-#guard_msgs in #print axioms t466
+/-- info: 'Foam.non_assoc' does not depend on any axioms -/
+#guard_msgs in #print axioms non_assoc
 
 end Foam

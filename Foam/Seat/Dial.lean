@@ -2,56 +2,56 @@ import Foam.Seat.Clock
 
 namespace Foam
 
-structure Ty05 where
-  d043 : Int
-  d041 : Int
+structure GInt where
+  re : Int
+  im : Int
   deriving DecidableEq
 
-def Ty05.d112 (z w : Ty05) : Ty05 :=
-  ⟨z.d043 * w.d043 - z.d041 * w.d041, z.d043 * w.d041 + z.d041 * w.d043⟩
+def GInt.mul (z w : GInt) : GInt :=
+  ⟨z.re * w.re - z.im * w.im, z.re * w.im + z.im * w.re⟩
 
-def Ty05.d108 (z w : Ty05) : Ty05 := ⟨z.d043 + w.d043, z.d041 + w.d041⟩
+def GInt.add (z w : GInt) : GInt := ⟨z.re + w.re, z.im + w.im⟩
 
-def Ty05.d040 : Ty05 := ⟨0, 1⟩
-def Ty05.d114 (z : Ty05) : Int := z.d043 * z.d043 + z.d041 * z.d041
+def GInt.i : GInt := ⟨0, 1⟩
+def GInt.normSq (z : GInt) : Int := z.re * z.re + z.im * z.im
 
-def Ty12.d063 : Ty12 → Ty05
-  | Foam.Ty12.c1 => ⟨1, 0⟩
-  | Foam.Ty12.c2 => ⟨0, 1⟩
-  | Foam.Ty12.c3 => ⟨-1, 0⟩
-  | Foam.Ty12.c4 => ⟨0, -1⟩
+def Rot.amp : Rot → GInt
+  | .r0 => ⟨1, 0⟩
+  | .r1 => ⟨0, 1⟩
+  | .r2 => ⟨-1, 0⟩
+  | .r3 => ⟨0, -1⟩
 
-theorem Ty12.t228 (a b : Ty12) : (a * b).d063 = Foam.Ty05.d112 a.d063 b.d063 := by
+theorem Rot.amp_hom (a b : Rot) : (a * b).amp = GInt.mul a.amp b.amp := by
   cases a <;> cases b <;> decide
 
-theorem Ty12.t229 (a : Ty12) : (Foam.Ty12.c2 * a).d063 = Foam.Ty05.d112 Foam.Ty05.d040 a.d063 := by
+theorem Rot.amp_turn (a : Rot) : (Rot.r1 * a).amp = GInt.mul GInt.i a.amp := by
   cases a <;> decide
 
-theorem Ty12.t230 (a : Ty12) : a.d063.d114 = 1 := by
+theorem Rot.amp_unit (a : Rot) : a.amp.normSq = 1 := by
   cases a <;> decide
 
-theorem Ty05.t056 (a : Int) : ∃ k : Nat, a * a = Int.ofNat k := by
+theorem GInt.sq_image (a : Int) : ∃ k : Nat, a * a = Int.ofNat k := by
   cases a with
   | ofNat m => exact ⟨m * m, rfl⟩
   | negSucc m => exact ⟨(m + 1) * (m + 1), rfl⟩
 
-theorem Ty05.t213 (z : Ty05) : ∃ k : Nat, z.d114 = Int.ofNat k := by
-  obtain ⟨k1, h1⟩ := Foam.Ty05.t056 z.d043
-  obtain ⟨k2, h2⟩ := Foam.Ty05.t056 z.d041
+theorem GInt.normSq_nonneg (z : GInt) : ∃ k : Nat, z.normSq = Int.ofNat k := by
+  obtain ⟨k1, h1⟩ := GInt.sq_image z.re
+  obtain ⟨k2, h2⟩ := GInt.sq_image z.im
   refine ⟨k1 + k2, ?_⟩
-  show z.d043 * z.d043 + z.d041 * z.d041 = Int.ofNat (k1 + k2)
+  show z.re * z.re + z.im * z.im = Int.ofNat (k1 + k2)
   rw [h1, h2]; rfl
 
-/-- info: 'Foam.Ty12.t228' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty12.t228
+/-- info: 'Foam.Rot.amp_hom' does not depend on any axioms -/
+#guard_msgs in #print axioms Rot.amp_hom
 
-/-- info: 'Foam.Ty12.t229' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty12.t229
+/-- info: 'Foam.Rot.amp_turn' does not depend on any axioms -/
+#guard_msgs in #print axioms Rot.amp_turn
 
-/-- info: 'Foam.Ty12.t230' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty12.t230
+/-- info: 'Foam.Rot.amp_unit' does not depend on any axioms -/
+#guard_msgs in #print axioms Rot.amp_unit
 
-/-- info: 'Foam.Ty05.t213' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty05.t213
+/-- info: 'Foam.GInt.normSq_nonneg' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.normSq_nonneg
 
 end Foam

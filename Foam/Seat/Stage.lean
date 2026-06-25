@@ -2,29 +2,29 @@ import Foam.Seat
 
 namespace Foam
 
-structure Ty18 where
-  Ty27 : Type
-  Ty26 : Type
-  Ty25   : Type
-  d134   : Ty27 → Ty26 → Ty25
+structure Stage where
+  State : Type
+  Probe : Type
+  Ans   : Type
+  obs   : State → Probe → Ans
 
 variable {G : Type} [Mul G] [One G]
 
-def Ty16.d182 (S : Ty16 G) : Ty18 where
-  Ty27 := S.Ty24
-  Ty26 := S.Ty24
-  Ty25   := G
-  d134   := S.d133
+def Seat.toStage (S : Seat G) : Stage where
+  State := S.Pos
+  Probe := S.Pos
+  Ans   := G
+  obs   := S.sub
 
-theorem Ty16.t240 (S : Ty16 G) (s t : S.Ty24)
-    (h : ∀ p, S.d133 s p = S.d133 t p) : s = t := by
+theorem Seat.obs_faithful (S : Seat G) (s t : S.Pos)
+    (h : ∀ p, S.sub s p = S.sub t p) : s = t := by
   have h1 := h t
-  rw [S.t252] at h1
-  have h2 := S.t237 t s
-  rw [h1, S.t241] at h2
+  rw [S.sub_self] at h1
+  have h2 := S.act_sub t s
+  rw [h1, S.one_act] at h2
   exact h2.symm
 
-/-- info: 'Foam.Ty16.t240' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty16.t240
+/-- info: 'Foam.Seat.obs_faithful' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.obs_faithful
 
 end Foam

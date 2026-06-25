@@ -2,84 +2,84 @@ import Foam.Seat
 
 namespace Foam
 
-structure Ty15 (A B : Type) where
-  d079       : A → B
-  t158 : ∀ {x y : A}, d079 x = d079 y → x = y
-  t157  : ∃ y : B, ∀ x : A, d079 x ≠ y
+structure Seam (A B : Type) where
+  up       : A → B
+  faithful : ∀ {x y : A}, up x = up y → x = y
+  escapes  : ∃ y : B, ∀ x : A, up x ≠ y
 
-def Ty15.t160 {A B : Type} (S : Ty15 A B) (q : B) : Prop := ∀ x : A, S.d079 x ≠ q
+def Seam.prime {A B : Type} (S : Seam A B) (q : B) : Prop := ∀ x : A, S.up x ≠ q
 
-theorem Ty15.t159 {A B : Type} (S : Ty15 A B) :
-    ¬ ∃ g : B → A, ∀ b, S.d079 (g b) = b := by
+theorem Seam.no_section {A B : Type} (S : Seam A B) :
+    ¬ ∃ g : B → A, ∀ b, S.up (g b) = b := by
   rintro ⟨g, hg⟩
-  obtain ⟨y, hy⟩ := S.t157
+  obtain ⟨y, hy⟩ := S.escapes
   exact hy (g y) (hg y)
 
-def d020 {S : Type} : List S → Nat → Option S
+def nth {S : Type} : List S → Nat → Option S
   | [], _ => none
   | s :: _, 0 => some s
-  | _ :: l, n + 1 => d020 l n
+  | _ :: l, n + 1 => nth l n
 
-theorem t124 {S : Type} : ∀ s t : List S, (∀ n, d020 s n = d020 t n) → s = t
+theorem nth_faithful {S : Type} : ∀ s t : List S, (∀ n, nth s n = nth t n) → s = t
   | [], [], _ => rfl
   | [], _ :: _, h => nomatch h 0
   | _ :: _, [], h => nomatch h 0
   | a :: s, b :: t, h => by
     injection h 0 with hab
-    rw [hab, t124 s t (fun n => h (n + 1))]
+    rw [hab, nth_faithful s t (fun n => h (n + 1))]
 
-theorem t126 {S : Type} : ∀ (l : List S) (n : Nat), d020 l n = none → d020 l (n + 1) = none
+theorem nth_stable {S : Type} : ∀ (l : List S) (n : Nat), nth l n = none → nth l (n + 1) = none
   | [], _, _ => rfl
   | _ :: _, 0, h => nomatch h
-  | _ :: l, n + 1, h => t126 l n h
+  | _ :: l, n + 1, h => nth_stable l n h
 
-theorem t125 {S : Type} : ∀ l : List S, d020 l l.length = none
+theorem nth_length {S : Type} : ∀ l : List S, nth l l.length = none
   | [] => rfl
-  | _ :: l => t125 l
+  | _ :: l => nth_length l
 
-structure Ty02 (S : Type) where
-  d033    : Nat → Option S
-  t138 : ∀ n, d033 n = none → d033 (n + 1) = none
+structure CoList (S : Type) where
+  at_    : Nat → Option S
+  stable : ∀ n, at_ n = none → at_ (n + 1) = none
 
-def d152 {S : Type} (l : List S) : Ty02 S := ⟨d020 l, t126 l⟩
+def playback {S : Type} (l : List S) : CoList S := ⟨nth l, nth_stable l⟩
 
-def d093 {S : Type} (s : S) : Ty02 S := ⟨fun _ => some s, fun _ h => nomatch h⟩
+def forever {S : Type} (s : S) : CoList S := ⟨fun _ => some s, fun _ h => nomatch h⟩
 
-theorem t285 {S : Type} (s : S) (l : List S) :
-    ∃ n, (d152 l).d033 n ≠ (d093 s).d033 n :=
-  ⟨l.length, fun h => nomatch (t125 l).symm.trans h⟩
+theorem forever_escapes {S : Type} (s : S) (l : List S) :
+    ∃ n, (playback l).at_ n ≠ (forever s).at_ n :=
+  ⟨l.length, fun h => nomatch (nth_length l).symm.trans h⟩
 
-theorem t311 {S : Type} (l l' : List S)
-    (h : ∀ n, (d152 l).d033 n = (d152 l').d033 n) : l = l' :=
-  t124 l l' h
+theorem playback_faithful {S : Type} (l l' : List S)
+    (h : ∀ n, (playback l).at_ n = (playback l').at_ n) : l = l' :=
+  nth_faithful l l' h
 
-def d193 {S : Type} (s : S) : Ty15 (List S) (Ty02 S) where
-  d079       := d152
-  t158 := fun {l l'} h => t311 l l' (fun n => congrArg (fun c => c.d033 n) h)
-  t157  := ⟨d093 s, fun l h => (t285 s l).elim (fun n hn => hn (congrArg (fun c => c.d033 n) h))⟩
+def playbackSeam {S : Type} (s : S) : Seam (List S) (CoList S) where
+  up       := playback
+  faithful := fun {l l'} h => playback_faithful l l' (fun n => congrArg (fun c => c.at_ n) h)
+  escapes  := ⟨forever s, fun l h => (forever_escapes s l).elim (fun n hn => hn (congrArg (fun c => c.at_ n) h))⟩
 
-theorem t312 {S : Type} (s : S) :
-    ¬ ∃ g : Ty02 S → List S, ∀ c, d152 (g c) = c :=
-  Foam.Ty15.t159 (d193 s)
+theorem playback_no_section {S : Type} (s : S) :
+    ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
+  Seam.no_section (playbackSeam s)
 
-theorem t319 {S : Type} (s : S) :
-    (∀ l l' : List S, (∀ n, (d152 l).d033 n = (d152 l').d033 n) → l = l')
-      ∧ ¬ ∃ g : Ty02 S → List S, ∀ c, d152 (g c) = c :=
-  ⟨t311, t312 s⟩
+theorem seam_two_faces {S : Type} (s : S) :
+    (∀ l l' : List S, (∀ n, (playback l).at_ n = (playback l').at_ n) → l = l')
+      ∧ ¬ ∃ g : CoList S → List S, ∀ c, playback (g c) = c :=
+  ⟨playback_faithful, playback_no_section s⟩
 
-/-- info: 'Foam.Ty15.t159' does not depend on any axioms -/
-#guard_msgs in #print axioms Foam.Ty15.t159
+/-- info: 'Foam.Seam.no_section' does not depend on any axioms -/
+#guard_msgs in #print axioms Seam.no_section
 
-/-- info: 'Foam.d193' does not depend on any axioms -/
-#guard_msgs in #print axioms d193
+/-- info: 'Foam.playbackSeam' does not depend on any axioms -/
+#guard_msgs in #print axioms playbackSeam
 
-/-- info: 'Foam.t311' does not depend on any axioms -/
-#guard_msgs in #print axioms t311
+/-- info: 'Foam.playback_faithful' does not depend on any axioms -/
+#guard_msgs in #print axioms playback_faithful
 
-/-- info: 'Foam.t312' does not depend on any axioms -/
-#guard_msgs in #print axioms t312
+/-- info: 'Foam.playback_no_section' does not depend on any axioms -/
+#guard_msgs in #print axioms playback_no_section
 
-/-- info: 'Foam.t319' does not depend on any axioms -/
-#guard_msgs in #print axioms t319
+/-- info: 'Foam.seam_two_faces' does not depend on any axioms -/
+#guard_msgs in #print axioms seam_two_faces
 
 end Foam
