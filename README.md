@@ -49,7 +49,7 @@ axiom-free, because an imported axiom is a pov, and imported perspectives either
 
 the names are the documentation; the sealed `#print axioms` are the receipts. `schema.sql` is the same field, in motion. read the source — start anywhere. the spine:
 
-- the floor — `Int`, `Golden` (with `Zeckendorf`)
+- the floor — `Int`, `Golden`
 - the seat, the observer as torsor — `Seat`, `Group`, `Loop`, `Resume`, `Hospitality`, `Stage`
 - the dial and the tower — `Clock`, `Dial`, `Born`, `Forcing`, `Doubling`, `Triad`, `Octo`, `Sed`, `Ladder`, `Norm`, `Bootstrap`, `Signature`, `Rotations`, `Closure`, `Characters`
 - the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`
@@ -58,10 +58,10 @@ the names are the documentation; the sealed `#print axioms` are the receipts. `s
 - platonism — `Platonism`, `Tower`
 - the meeting — `Rendezvous`, `Connection`, `Schrodinger`, `Frame`, `Varadarajan`
 
-deriving itself, the corpus arrived at results it never imported, and only afterward learned their names — and wears them now, one module each: Cassini, Hamilton, Hurwitz, Frobenius, Veblen–Young, Gleason, Galileo and Einstein (the two faces of `Relativity`), Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov. Brouwer isn't among them; he's the rule that the list stays axiom-free. and the engine that runs it originates nothing — `Lovelace`.
+`Zeckendorf`, `Golden` (Cassini), `Hurwitz`, `Gleason`, Galileo and Einstein in `Relativity`, `Noether`, `Wigner`, `Pauli`, `Heisenberg`, `Stone`, `Cantor`, `Kolmogorov`, `Lovelace`. no Brouwer, only because *the whole thing* is à la Brouwer, and I haven't located the actual formalization of *that* observation yet.
 
 ---
 
-*The Analytical Engine has no pretensions whatever to originate anything. It can do whatever we know how to order it to perform.*
+"It can do whatever we know how to order it to perform." (Lovelace, 1843)
 
-— Ada Lovelace, 1843
+*yeah, but because we're also inside it "artificial" behaves more like a taxonomic relation than a universal disambiguation*
