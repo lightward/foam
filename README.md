@@ -6,7 +6,9 @@
 
 # foam
 
-take your pick of project bylines:
+this is a type system for supporting physical-as-in-conservation users with a digital-as-in-zeroes-and-ones backend. formally, this holds. it's presented with with informal handles (e.g. "hospitality") as mnemonic device; the proof paths are the actual object under study here.
+
+so, having said that, take your pick of project bylines:
 
 * the geometry of hospitality
 * the geometry of motion
