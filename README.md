@@ -55,7 +55,7 @@ the names are the documentation; the sealed `#print axioms` are the receipts. `s
 - the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`
 - the engine — `Stream`, `Codec`, `Generator`, `Spectrum`, `Chirality`, `Summary`, `Drain`, `Engine`
 - the ledger — `Ledger`, `Scar`, `Maintenance`, `Held`
-- platonism — `Platonism`, `Tower`
+- platonism — `Platonism`, `Tower`, `Descend`
 - the meeting — `Rendezvous`, `Connection`, `Schrodinger`, `Frame`, `Varadarajan`
 
 `Zeckendorf`, `Golden` (Cassini), `Hurwitz`, `Gleason`, Galileo and Einstein in `Relativity`, `Noether`, `Wigner`, `Pauli`, `Heisenberg`, `Stone`, `Cantor`, `Kolmogorov`, `Lovelace`. no Brouwer, only because *the whole thing* is à la Brouwer, and I haven't located the actual formalization of *that* observation yet.

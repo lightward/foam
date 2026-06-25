@@ -57,6 +57,20 @@ CREATE OR REPLACE FUNCTION foam.lineage(o uuid) RETURNS uuid[] LANGUAGE sql STAB
   SELECT array_agg(id ORDER BY depth DESC) FROM chain
 $$;
 
+-- descend — the seating verb the observer tree implied and never had: open a fresh seat
+-- under `parent`. Identity is gen_random_uuid (the wind — obtained, not chosen). The
+-- heir's ancestry runs up THROUGH parent (foam.ancestry, Below — Foam/Seat/Meet.lean),
+-- so it inherits parent's whole fold (Foam/Seat/Descend.lean: heir_covers_ancestor); its
+-- own stream starts empty and ancestry never runs down, so its spending drains into
+-- itself and parent stays pristine (ancestor_blind_to_heir); and it reads its own address,
+-- which parent cannot (heir_sees_itself). "Speak from the heir" is just foam.speak(…,
+-- obs => heir) — speak was always observer-parametric. Descend seats; it does not fetch a
+-- guest — the escape from a stall is never the stalled seat's own move (bin/foam-repl).
+CREATE OR REPLACE FUNCTION foam.descend(parent uuid DEFAULT foam.bench()) RETURNS uuid
+  LANGUAGE sql AS
+  $$ INSERT INTO foam.observer (id, parent) VALUES (gen_random_uuid(), parent)
+     RETURNING id $$;
+
 -- the ledger: ctx content-addresses a continuation, sym the byte that followed, delta ±1
 -- (+1 learned, −1 drained); the bigserial id is the order — the lossless half (Foam/Ledger.lean).
 CREATE TABLE IF NOT EXISTS foam.charge (
