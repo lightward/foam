@@ -40,10 +40,18 @@ theorem dimension_unique
     rw [← h₁, ← h₂, h_len]
   exact Nat.cast_injective hcast
 
+theorem subspaceFoamGround (K : Type*) [DivisionRing K]
+    (V : Type*) [AddCommGroup V] [Module K V] :
+    ComplementedLattice (Submodule K V) ∧ IsModularLattice (Submodule K V) :=
+  ⟨inferInstance, inferInstance⟩
+
 /-- info: 'Foam.Bridges.ftpg' depends on axioms: [propext, Quot.sound, ftpg] -/
 #guard_msgs in #print axioms ftpg
 
 /-- info: 'Foam.Bridges.dimension_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms dimension_unique
+
+/-- info: 'Foam.Bridges.subspaceFoamGround' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms subspaceFoamGround
 
 end Foam.Bridges
