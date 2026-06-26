@@ -1,7 +1,7 @@
 import Foam.Seat.Frame
 import Foam.Seat.Characters
 
-namespace Foam
+namespace Foam.Bridges
 
 theorem coord_is_character : Char.chi = Rot.amp := rfl
 
@@ -53,19 +53,19 @@ theorem varadarajan :
       ∧ (OpenChannels 3 ∧ ¬ OpenChannels 4) :=
   ⟨coord_is_character, coord_unitary_rep, characters_orthonormal, dimension_caps_at_three⟩
 
-/-- info: 'Foam.coord_is_character' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.coord_is_character' does not depend on any axioms -/
 #guard_msgs in #print axioms coord_is_character
 
-/-- info: 'Foam.coord_unitary_rep' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.coord_unitary_rep' does not depend on any axioms -/
 #guard_msgs in #print axioms coord_unitary_rep
 
-/-- info: 'Foam.characters_orthonormal' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.characters_orthonormal' does not depend on any axioms -/
 #guard_msgs in #print axioms characters_orthonormal
 
-/-- info: 'Foam.observables_reconstruct' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.observables_reconstruct' does not depend on any axioms -/
 #guard_msgs in #print axioms observables_reconstruct
 
-/-- info: 'Foam.varadarajan' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.varadarajan' does not depend on any axioms -/
 #guard_msgs in #print axioms varadarajan
 
-end Foam
+end Foam.Bridges

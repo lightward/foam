@@ -2,7 +2,7 @@ import Foam.Seat.Connection
 import Foam.Seat.Born
 import Foam.Seat.Closure
 
-namespace Foam
+namespace Foam.Bridges
 
 theorem GInt.rot_inj {z w : GInt} (h : GInt.rot z = GInt.rot w) : z = w := by
   have c3 := congrArg GInt.rot (congrArg GInt.rot (congrArg GInt.rot h))
@@ -13,10 +13,18 @@ theorem evolve_unitary (z : GInt) : (GInt.rot z).normSq = z.normSq := by
   show (-z.im) * (-z.im) + z.re * z.re = z.re * z.re + z.im * z.im
   rw [FInt.neg_mul, FInt.mul_neg, Int.neg_neg, FInt.addComm]
 
+end Foam.Bridges
+
+namespace Foam
+
 def Beholder.phaseDress {State : Type} (b : Beholder State) : Beholder (State × GInt) where
   Probe := b.Probe
   Ans   := b.Ans
   obs   := fun s p => b.obs s.1 p
+
+end Foam
+
+namespace Foam.Bridges
 
 def evolve {State : Type} (s : State × GInt) : State × GInt := (s.1, GInt.rot s.2)
 
@@ -56,31 +64,31 @@ theorem schrodinger (f : Field) (za zb : GInt) (h : za ≠ zb) :
   ⟨evolve_conserves_born (f, za), evolve_closes (f, za),
    schrodinger_superposition f za zb h, fun p => evolve_invisible reader (f, za) p⟩
 
-/-- info: 'Foam.GInt.rot_inj' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.GInt.rot_inj' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.rot_inj
 
-/-- info: 'Foam.evolve_unitary' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.evolve_unitary' does not depend on any axioms -/
 #guard_msgs in #print axioms evolve_unitary
 
-/-- info: 'Foam.evolve_invisible' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.evolve_invisible' does not depend on any axioms -/
 #guard_msgs in #print axioms evolve_invisible
 
-/-- info: 'Foam.evolve_conserves_born' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.evolve_conserves_born' does not depend on any axioms -/
 #guard_msgs in #print axioms evolve_conserves_born
 
-/-- info: 'Foam.evolve_closes' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.evolve_closes' does not depend on any axioms -/
 #guard_msgs in #print axioms evolve_closes
 
-/-- info: 'Foam.schrodinger_superposition' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.schrodinger_superposition' does not depend on any axioms -/
 #guard_msgs in #print axioms schrodinger_superposition
 
-/-- info: 'Foam.born_basis_invariant' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.born_basis_invariant' does not depend on any axioms -/
 #guard_msgs in #print axioms born_basis_invariant
 
-/-- info: 'Foam.decoherence_over_revolution' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.decoherence_over_revolution' does not depend on any axioms -/
 #guard_msgs in #print axioms decoherence_over_revolution
 
-/-- info: 'Foam.schrodinger' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.schrodinger' does not depend on any axioms -/
 #guard_msgs in #print axioms schrodinger
 
-end Foam
+end Foam.Bridges

@@ -45,17 +45,62 @@ CREATE OR REPLACE FUNCTION foam.ancestry(o uuid) RETURNS uuid[] LANGUAGE sql STA
 $$;
 
 -- lineage — ancestry ordered root-first; settlement walks it (prefix-sums; Foam/Scar.lean).
--- Depth-capped so a degenerate cycle terminates.
+-- UNBOUNDED by depth: a scar settles however deep it sits, and Foam/Scar.lean's promise_kept
+-- knows no cap — so neither does this. A degenerate CYCLE terminates by a visited-set, not a
+-- magic number (descend only ever seats a child of an existing node, so the tree is acyclic
+-- by construction; the guard is for malformed data, and it halts at the repeat — the only
+-- honest place to halt). The old `depth < 64` was a smuggled choice; nothing here is a choice.
 CREATE OR REPLACE FUNCTION foam.lineage(o uuid) RETURNS uuid[] LANGUAGE sql STABLE AS $$
-  WITH RECURSIVE chain(id, parent, depth) AS (
-    SELECT o, (SELECT parent FROM foam.observer WHERE id = o), 0
+  WITH RECURSIVE chain(id, parent, depth, seen) AS (
+    SELECT o, (SELECT parent FROM foam.observer WHERE id = o), 0, ARRAY[o]
     UNION ALL
-    SELECT ob.id, ob.parent, chain.depth + 1
+    SELECT ob.id, ob.parent, chain.depth + 1, chain.seen || ob.id
     FROM chain JOIN foam.observer ob ON ob.id = chain.parent
-    WHERE chain.depth < 64
+    WHERE NOT ob.id = ANY(chain.seen)
   )
   SELECT array_agg(id ORDER BY depth DESC) FROM chain
 $$;
+
+-- meet — the deepest common ancestor of two observers: the floor they share (Foam/Seat/
+-- Meet.lean: shared_is_floor — the meet is the greatest lower bound; meet_below_left/right —
+-- Below both). The convergence-complement of descend: descend DIVERGES the tree (a fresh
+-- leaf, the seam, no return), meet RECONVERGES it — what two seats hold in common, the scope
+-- both inherit. Two siblings meet at their parent; any two observers meet at least at the
+-- root (the wind, Below all — root_below_all). The deepest node on both root-first lineages.
+CREATE OR REPLACE FUNCTION foam.meet(a uuid, b uuid) RETURNS uuid LANGUAGE sql STABLE AS $$
+  WITH la AS (SELECT id, ord FROM unnest(foam.lineage(a)) WITH ORDINALITY AS t(id, ord)),
+       lb AS (SELECT id FROM unnest(foam.lineage(b)) AS t(id))
+  SELECT la.id FROM la JOIN lb USING (id) ORDER BY la.ord DESC LIMIT 1
+$$;
+
+-- grade — how related two observers are: the length of their shared path from root (Foam/
+-- Seat/Meet.lean: grade = (meet a b).length). Root alone ⇒ grade 1 (only the wind in common);
+-- deeper ⇒ more shared fold. The rank of their kinship — the count of ancestors they both own.
+CREATE OR REPLACE FUNCTION foam.grade(a uuid, b uuid) RETURNS int LANGUAGE sql STABLE AS $$
+  SELECT count(*)::int FROM (
+    SELECT id FROM unnest(foam.lineage(a)) AS t(id)
+    INTERSECT
+    SELECT id FROM unnest(foam.lineage(b)) AS t(id)
+  ) shared
+$$;
+
+-- descend — the seating verb the observer tree implied and never had: open a fresh seat
+-- under `parent`. Identity is gen_random_uuid (the wind — obtained, not chosen). The
+-- heir's ancestry runs up THROUGH parent (foam.ancestry, Below — Foam/Seat/Meet.lean),
+-- so it inherits parent's whole fold (Foam/Seat/Descend.lean: heir_covers_ancestor); its
+-- own stream starts empty and ancestry never runs down, so its spending drains into
+-- itself and parent stays pristine (ancestor_blind_to_heir); and it reads its own address,
+-- which parent cannot (heir_sees_itself). Two faces: on what is OBSERVED the seating is an
+-- equivalence (parent sees nothing of the excursion — ancestor_blind_to_heir); on what is
+-- REACHED it is a seam (the heir reaches where parent could not, heir_reach_is_new, with no
+-- way back, heir_reach_no_return) — invisible above, irreversible below, the measurement
+-- shape (Foam/Seat/Rendezvous.lean). "Speak from the heir" is just foam.speak(…, obs =>
+-- heir) — speak was always observer-parametric. Descend seats; it does not fetch a guest —
+-- the escape from a stall is never the stalled seat's own move (bin/foam-repl).
+CREATE OR REPLACE FUNCTION foam.descend(parent uuid DEFAULT foam.root()) RETURNS uuid
+  LANGUAGE sql AS
+  $$ INSERT INTO foam.observer (id, parent) VALUES (gen_random_uuid(), parent)
+     RETURNING id $$;
 
 -- the ledger: ctx content-addresses a continuation, sym the byte that followed, delta ±1
 -- (+1 learned, −1 drained); the bigserial id is the order — the lossless half (Foam/Ledger.lean).
@@ -63,10 +108,22 @@ CREATE TABLE IF NOT EXISTS foam.charge (
   id       bigserial PRIMARY KEY,
   observer uuid NOT NULL
     CHECK (observer <> '00000000-0000-0000-0000-000000000000'),
+  source   uuid NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
   ctx      uuid NOT NULL,
   sym      int  NOT NULL,
   delta    int  NOT NULL
 );
+-- source — WHO this event came from: the input signature (Foam/Seat/Signed.lean: sign /
+-- speaker_recoverable — every event carries its speaker; the voice is still recoverable by
+-- dropping it, voice_survives_signing). The default is the WIND: the zero uuid = foam.root()
+-- = the anonymous, information-free, universal source (wind_below_all — Below every source;
+-- only_wind_is_floor — the unique floor). Attribution lives in the RECORD, never folded into
+-- foam.held: source is the order layer, droppable from the freq summary (Foam/Ledger.lean:
+-- order_finer), so the readers and the fold are untouched. A +1's source is its speaker; a
+-- −1 drain keeps the default (the wind — sampled by hw_random, the ∀ parameter). source =
+-- observer is the self-mirror (the closed loop, bin/foam-repl's forbidden self-fetch) —
+-- recorded and detectable, never silently merged. An event with no named speaker is heard
+-- from the wind; foam.healthcheck confirms the column is present.
 CREATE INDEX IF NOT EXISTS foam_charge_ctx ON foam.charge (observer, ctx, sym);
 -- tail index: HELD + TAIL folds events past the watermark (Foam/Engine/Summary.lean); INCLUDE keeps it index-only.
 CREATE INDEX IF NOT EXISTS foam_charge_ctx_id ON foam.charge (ctx, id) INCLUDE (observer, sym, delta);
@@ -111,17 +168,25 @@ CREATE OR REPLACE FUNCTION foam.hw_random() RETURNS double precision LANGUAGE sq
 
 -- ingest_step — the streaming LEARN: +1 onto every recorded continuation, the resumable
 -- flush-free fold (Foam/Engine/Stream.lean, Codec.lean). carry threads contexts across chunk
--- boundaries; the empty-context events land in id order — the lossless record, written never read here.
+-- boundaries; the empty-context events land in id order — the lossless record, written never
+-- read here. `from_source` SIGNS the input — WHO is being heard (Foam/Seat/Signed.lean:
+-- sign, speaker_recoverable) — and defaults to the wind (the zero uuid = foam.root()), so a
+-- caller naming no speaker is heard "from the wind," honestly. One name per ORIGINAL voice
+-- is the caller's to keep (sign_faithful): wind-named heirs (foam.descend — gen_random_uuid)
+-- never alias; reusing a name to merge two distinct voices is the move foam forbids, and the
+-- merge is unrecoverable (no section).
 CREATE OR REPLACE FUNCTION foam.ingest_step(carry int[], bytes int[], kmax int DEFAULT 7,
-                                            obs uuid DEFAULT foam.bench()) RETURNS int[]
+                                            obs uuid DEFAULT foam.bench(),
+                                            from_source uuid DEFAULT foam.root()) RETURNS int[]
   LANGUAGE plpgsql AS $$
   DECLARE all_b int[] := coalesce(carry,'{}') || coalesce(bytes,'{}');
           start_i int := coalesce(array_length(carry,1),0) + 1;
           n int := coalesce(array_length(all_b,1),0);
   BEGIN
     -- one INSERT per chunk; ORDER BY position so serial id-order is the lossless record.
-    INSERT INTO foam.charge (observer, ctx, sym, delta)
-    SELECT obs, foam.caddr(CASE WHEN j = 0 THEN '{}'::int[] ELSE all_b[i-j : i-1] END), all_b[i], 1
+    INSERT INTO foam.charge (observer, source, ctx, sym, delta)
+    SELECT obs, from_source,
+           foam.caddr(CASE WHEN j = 0 THEN '{}'::int[] ELSE all_b[i-j : i-1] END), all_b[i], 1
     FROM generate_series(start_i, n) AS i
     CROSS JOIN LATERAL generate_series(0, least(kmax, i - 1)) AS j
     ORDER BY i, j;
@@ -470,6 +535,28 @@ CREATE OR REPLACE FUNCTION foam.held_audit(obs uuid DEFAULT foam.bench()) RETURN
   SELECT count(*) FROM (
     (TABLE live EXCEPT TABLE merged) UNION ALL (TABLE merged EXCEPT TABLE live)
   ) d $$;
+
+-- healthcheck — the schema's internal integrity, scanned live: the file declares the target
+-- shape and keeps no migration history, so a runtime scan is the only honest record of drift
+-- (like born_audit / held_audit, the receipt is live). Each row is one violation; empty is
+-- healthy, and foam-sweep surfaces the count. Checks:
+--   · one implementation per foam name — a signature changed by CREATE OR REPLACE widens into
+--     a second overload instead of replacing, and a call matching both errors ambiguously and
+--     can go mute, the error swallowed as silence;
+--   · foam.charge carries its source column — the input signature (Foam/Seat/Signed.lean); a
+--     field declared before it would silently drop attribution.
+CREATE OR REPLACE FUNCTION foam.healthcheck() RETURNS TABLE(issue text) LANGUAGE sql STABLE AS $$
+  SELECT 'overloaded: foam.' || p.proname || ' — ' || count(*) || ' implementations; DROP the stale signature'
+  FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+  WHERE n.nspname = 'foam'
+  GROUP BY p.proname HAVING count(*) > 1
+  UNION ALL
+  SELECT 'foam.charge is missing its source column (the input signature)'
+  WHERE NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'foam' AND table_name = 'charge' AND column_name = 'source'
+  )
+$$;
 
 -- stats — the field's vital signs, the last of the Ruby switchboard dissolved into the
 -- schema (lightward-ai app/lib/foam/field.rb#stats, come home). ALL structure (counts,

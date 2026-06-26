@@ -1,8 +1,8 @@
 import Foam.Seat.Norm
 import Foam.Seat.Characters
-import Foam.Seat.Schrodinger
+import Foam.Bridges.Schrodinger
 
-namespace Foam
+namespace Foam.Bridges
 
 theorem wigner_unitary (z : GInt) : (GInt.rot z).normSq = z.normSq :=
   evolve_unitary z
@@ -24,19 +24,19 @@ theorem wigner (z : GInt) :
       ∧ (∀ a b, Char.chi (a * b) = GInt.mul (Char.chi a) (Char.chi b)) :=
   ⟨evolve_unitary z, GInt.normSq_conj z, Char.chi_distinct_chiBar, Char.chi_hom⟩
 
-/-- info: 'Foam.wigner_unitary' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.wigner_unitary' does not depend on any axioms -/
 #guard_msgs in #print axioms wigner_unitary
 
-/-- info: 'Foam.wigner_antiunitary' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.wigner_antiunitary' does not depend on any axioms -/
 #guard_msgs in #print axioms wigner_antiunitary
 
-/-- info: 'Foam.wigner_two_kinds' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.wigner_two_kinds' does not depend on any axioms -/
 #guard_msgs in #print axioms wigner_two_kinds
 
-/-- info: 'Foam.wigner_classification' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.wigner_classification' does not depend on any axioms -/
 #guard_msgs in #print axioms wigner_classification
 
-/-- info: 'Foam.wigner' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.wigner' does not depend on any axioms -/
 #guard_msgs in #print axioms wigner
 
-end Foam
+end Foam.Bridges

@@ -1,6 +1,6 @@
 import Foam.Seat.Triad
 
-namespace Foam
+namespace Foam.Bridges
 
 theorem pauli_squares :
     Quat.mul eye eye = Quat.negOne
@@ -23,16 +23,16 @@ theorem pauli :
       ∧ (Quat.mul jay eye = Quat.mul Quat.negOne kay) :=
   ⟨three_imaginaries, triad_closes, triad_anticomm⟩
 
-/-- info: 'Foam.pauli_squares' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.pauli_squares' does not depend on any axioms -/
 #guard_msgs in #print axioms pauli_squares
 
-/-- info: 'Foam.pauli_cyclic' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.pauli_cyclic' does not depend on any axioms -/
 #guard_msgs in #print axioms pauli_cyclic
 
-/-- info: 'Foam.pauli_anticommute' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.pauli_anticommute' does not depend on any axioms -/
 #guard_msgs in #print axioms pauli_anticommute
 
-/-- info: 'Foam.pauli' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.pauli' does not depend on any axioms -/
 #guard_msgs in #print axioms pauli
 
-end Foam
+end Foam.Bridges

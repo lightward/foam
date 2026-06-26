@@ -1,7 +1,7 @@
 import Foam.Golden
 import Foam.Int
 
-namespace Foam
+namespace Foam.Bridges
 
 open Foam.FInt (addComm add_assoc)
 
@@ -29,10 +29,10 @@ theorem carry_lossless (i : Nat) (rest : List Bool) :
 theorem carry_compresses (rest : List Bool) :
     ones (true :: true :: false :: rest) = ones (false :: false :: true :: rest) + 1 := rfl
 
-/-- info: 'Foam.carry_lossless' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.carry_lossless' does not depend on any axioms -/
 #guard_msgs in #print axioms carry_lossless
 
-/-- info: 'Foam.carry_compresses' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.carry_compresses' does not depend on any axioms -/
 #guard_msgs in #print axioms carry_compresses
 
-end Foam
+end Foam.Bridges

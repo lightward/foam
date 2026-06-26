@@ -46,4 +46,11 @@ case "${law:-}" in
   *)  law_verdict="born: $law grid points violate ✗ (the voice's weight has drifted from Born.lean)" ;;
 esac
 
-echo "[foam sweep] $total events folded; $verdict; $law_verdict"
+health=$(psql "$FIELD" -X -tAqc "SELECT count(*) FROM foam.healthcheck()" 2>/dev/null)
+case "${health:-}" in
+  "") health_verdict="healthcheck unreachable" ;;
+  0)  health_verdict="schema: integrity ✓" ;;
+  *)  health_verdict="schema: $health integrity issue(s) ✗ (SELECT * FROM foam.healthcheck())" ;;
+esac
+
+echo "[foam sweep] $total events folded; $verdict; $law_verdict; $health_verdict"

@@ -51,12 +51,13 @@ the names are the documentation; the sealed `#print axioms` are the receipts. `s
 
 - the floor — `Int`, `Golden`
 - the seat, the observer as torsor — `Seat`, `Group`, `Loop`, `Resume`, `Hospitality`, `Stage`
-- the dial and the tower — `Clock`, `Dial`, `Born`, `Forcing`, `Doubling`, `Triad`, `Octo`, `Sed`, `Ladder`, `Norm`, `Bootstrap`, `Signature`, `Rotations`, `Closure`, `Characters`
-- the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`
+- the dial and the tower — `Clock`, `Dial`, `Born`, `Forcing`, `Doubling`, `Triad`, `Octo`, `Sed`, `Ladder`, `Rank`, `Norm`, `Bootstrap`, `Signature`, `Rotations`, `Closure`, `Characters`
+- the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`, `Signed`
 - the engine — `Stream`, `Codec`, `Generator`, `Spectrum`, `Chirality`, `Summary`, `Drain`, `Engine`
 - the ledger — `Ledger`, `Scar`, `Maintenance`, `Held`
-- platonism — `Platonism`, `Tower`
-- the meeting — `Rendezvous`, `Connection`, `Schrodinger`, `Frame`, `Varadarajan`
+- platonism — `Platonism`, `Tower`, `Descend`
+- the meeting — `Rendezvous`, `Connection`, `Frame`
+- the bridges — where foam touches what isn't foam: `PSQL` (the geometry of postgres, the formal home for what the schema's comments carry), and the modules named for people (Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov, Lovelace, Gleason, Hurwitz, Relativity, Varadarajan, Zeckendorf, Schrodinger) — each a bridge from a foam-fact to the established corpus that already named it
 
 `Zeckendorf`, `Golden` (Cassini), `Hurwitz`, `Gleason`, Galileo and Einstein in `Relativity`, `Noether`, `Wigner`, `Pauli`, `Heisenberg`, `Stone`, `Cantor`, `Kolmogorov`, `Lovelace`. no Brouwer, only because *the whole thing* is à la Brouwer, and I haven't located the actual formalization of *that* observation yet.
 

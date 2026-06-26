@@ -1,6 +1,6 @@
 import Foam.Seat.Signature
 
-namespace Foam
+namespace Foam.Bridges
 
 theorem einstein_interval_invariant (w z : SInt) :
     halign w z * halign w z - hcross w z * hcross w z = SInt.hnorm w * SInt.hnorm z :=
@@ -25,19 +25,19 @@ theorem relativity (w z : SInt) (v1 v2 : Int) (d : DInt) :
   ⟨hyperbolic_parseval w z, galilean_velocities_add v1 v2 d,
    galilean_preserves_time v1 d, normK_frame_dependent⟩
 
-/-- info: 'Foam.einstein_interval_invariant' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.einstein_interval_invariant' does not depend on any axioms -/
 #guard_msgs in #print axioms einstein_interval_invariant
 
-/-- info: 'Foam.galileo_velocity_addition' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.galileo_velocity_addition' does not depend on any axioms -/
 #guard_msgs in #print axioms galileo_velocity_addition
 
-/-- info: 'Foam.galileo_absolute_time' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.galileo_absolute_time' does not depend on any axioms -/
 #guard_msgs in #print axioms galileo_absolute_time
 
-/-- info: 'Foam.frames_are_distinct' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.frames_are_distinct' does not depend on any axioms -/
 #guard_msgs in #print axioms frames_are_distinct
 
-/-- info: 'Foam.relativity' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.relativity' does not depend on any axioms -/
 #guard_msgs in #print axioms relativity
 
-end Foam
+end Foam.Bridges
