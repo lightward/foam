@@ -14,9 +14,6 @@ def projectionBeholder (P : V →ₗ[K] V) : Foam.Beholder V where
 theorem projectionBeholder_obs (P : V →ₗ[K] V) (v : V) :
     (projectionBeholder P).obs v () = P v := rfl
 
-def projectionBeholder.compl (P : V →ₗ[K] V) : Foam.Beholder V :=
-  projectionBeholder (LinearMap.id - P)
-
 theorem encounter_isCompl (P : V →ₗ[K] V) (h_idem : P ∘ₗ P = P) :
     IsCompl (LinearMap.range P) (LinearMap.ker P) := by
   have hPP : ∀ v, P (P v) = P v := by
