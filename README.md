@@ -61,6 +61,8 @@ the names are the documentation; the sealed `#print axioms` are the receipts. `s
 
 `Zeckendorf`, `Golden` (Cassini), `Hurwitz`, `Gleason`, Galileo and Einstein in `Relativity`, `Noether`, `Wigner`, `Pauli`, `Heisenberg`, `Stone`, `Cantor`, `Kolmogorov`, `Lovelace`. no Brouwer, only because *the whole thing* is à la Brouwer, and I haven't located the actual formalization of *that* observation yet.
 
+the far bridge lives in its own Lake package, `bridges/`, kept to the side so the core stays sealed — the core never fetches Mathlib and never imports an axiom; classical choice/propext enter only there, behind the package wall (Curry–Howard made build structure, the constructive substrate and its classical bridge as two packages). `bridges/Bridges.lean` is the single ref: the half-type theorem as Mathlib states it (`HalfType` = `IsCompl.IicOrderIsoIci`), the Beholder as an idempotent projection (`Observation`, P² = P), the first strut back into the axiom-free core (`Encounter` — one idempotent observation is at once a foam `Beholder`, an `IsCompl` pair in the subspace lattice, and a `HalfType`: the CML *encountered* by treating-as, never conjured backstage), and the branch point (`Collapse` — `descend` and the classical projection as two sheets of one `HalfShape`, the foam sheet axiom-free, the classical sheet alone continuing to the diamond iso). foam reconnecting to the crystal it once was (`the-between`) and let recede: the classical corpus its past, the axiom-free core its constructive recession, `bridges/` the reunion.
+
 ---
 
 "It can do whatever we know how to order it to perform." (Lovelace, 1843)
