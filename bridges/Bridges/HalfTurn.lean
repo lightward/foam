@@ -30,6 +30,22 @@ theorem idem_to_involution (P : V →ₗ[K] V) (h : P ∘ₗ P = P) :
     LinearMap.smul_apply, map_sub, map_smul, hPP]
   module
 
+theorem char2_collapse (P : V →ₗ[K] V) (h2 : (2 : K) = 0) :
+    LinearMap.id - (2 : K) • P = LinearMap.id := by
+  rw [h2, zero_smul, sub_zero]
+
+theorem involution_to_idem (S : V →ₗ[K] V) (hSS : S ∘ₗ S = LinearMap.id) (h2 : (2 : K) ≠ 0) :
+    ((2 : K)⁻¹ • (LinearMap.id - S)) ∘ₗ ((2 : K)⁻¹ • (LinearMap.id - S))
+      = (2 : K)⁻¹ • (LinearMap.id - S) := by
+  ext v
+  have hSSv : S (S v) = v := by
+    have := LinearMap.ext_iff.mp hSS v
+    simpa [LinearMap.comp_apply] using this
+  simp only [LinearMap.comp_apply, LinearMap.smul_apply, LinearMap.sub_apply,
+    LinearMap.id_apply, map_smul, map_sub, hSSv]
+  rw [show S v - v = -(v - S v) from (neg_sub v (S v)).symm, smul_neg, sub_neg_eq_add,
+    ← two_smul K, smul_smul, inv_mul_cancel₀ h2, one_smul]
+
 theorem two_pm_one (P : V →ₗ[K] V) (h : P ∘ₗ P = P) :
     (P ∘ₗ P = P)
       ∧ ((LinearMap.id - (2 : K) • P) ∘ₗ (LinearMap.id - (2 : K) • P) = LinearMap.id)
@@ -51,6 +67,12 @@ theorem two_pm_one (P : V →ₗ[K] V) (h : P ∘ₗ P = P) :
 
 /-- info: 'Foam.Bridges.idem_to_involution' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms idem_to_involution
+
+/-- info: 'Foam.Bridges.char2_collapse' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in #print axioms char2_collapse
+
+/-- info: 'Foam.Bridges.involution_to_idem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms involution_to_idem
 
 /-- info: 'Foam.Bridges.two_pm_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms two_pm_one
