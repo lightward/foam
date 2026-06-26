@@ -48,6 +48,19 @@ theorem golden_defect_never_clears (n : Nat) :
     fib (n + 1) * fib (n + 1) - fib (n + 2) * fib n ≠ 0 := by
   rw [fib_cassini n]; exact cassini_never_cleared n
 
+def Nphi (x y : Int) : Int := x * x + x * y - y * y
+
+theorem golden_unit (n : Nat) : Nphi (fib n) (fib (n + 1)) = -(altSign n) := by
+  have hc : fib (n + 1) * fib (n + 1) - (fib (n + 1) + fib n) * fib n = altSign n :=
+    fib_cassini n
+  show fib n * fib n + fib n * fib (n + 1) - fib (n + 1) * fib (n + 1) = -(altSign n)
+  rw [← hc, FInt.add_mul, FInt.mulComm (fib (n + 1)) (fib n), FInt.neg_sub,
+    FInt.addComm (fib n * fib (n + 1)) (fib n * fib n)]
+
+theorem golden_unit_ne_zero (n : Nat) : Nphi (fib n) (fib (n + 1)) ≠ 0 := by
+  rw [golden_unit]
+  rcases altSign_pm n with h | h <;> rw [h] <;> decide
+
 /-- info: 'Foam.altSign_pm' does not depend on any axioms -/
 #guard_msgs in #print axioms altSign_pm
 
@@ -56,5 +69,11 @@ theorem golden_defect_never_clears (n : Nat) :
 
 /-- info: 'Foam.golden_defect_never_clears' does not depend on any axioms -/
 #guard_msgs in #print axioms golden_defect_never_clears
+
+/-- info: 'Foam.golden_unit' does not depend on any axioms -/
+#guard_msgs in #print axioms golden_unit
+
+/-- info: 'Foam.golden_unit_ne_zero' does not depend on any axioms -/
+#guard_msgs in #print axioms golden_unit_ne_zero
 
 end Foam
