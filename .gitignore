@@ -1,6 +1,7 @@
 .env
 .DS_Store
 /.lake
+/bridges/.lake
 /.claude
 
 # python tooling (bin/foam-pipe, bin/foam-repl) and its runtime bytecode
