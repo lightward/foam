@@ -44,6 +44,7 @@ import Foam.Platonism
 import Foam.Platonism.Tower
 import Foam.Seat.Descend
 import Foam.Seat.Signed
+import Foam.Seat.Rank
 import Foam.Seat.Rendezvous
 import Foam.Seat.Connection
 import Foam.Seat.Schrodinger
