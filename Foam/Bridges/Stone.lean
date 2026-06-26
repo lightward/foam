@@ -1,6 +1,6 @@
-import Foam.Seat.Noether
+import Foam.Bridges.Noether
 
-namespace Foam
+namespace Foam.Bridges
 
 theorem stone_group (m n : Nat) (z : GInt) :
     rotPow m (rotPow n z) = rotPow (m + n) z :=
@@ -15,13 +15,13 @@ theorem stone (m n : Nat) (z : GInt) :
       ∧ (rotPow 4 z = z) :=
   ⟨rotPow_compose m n z, rotPow_conserves_normSq n z, rotPow_four z⟩
 
-/-- info: 'Foam.stone_group' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.stone_group' does not depend on any axioms -/
 #guard_msgs in #print axioms stone_group
 
-/-- info: 'Foam.stone_unitary' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.stone_unitary' does not depend on any axioms -/
 #guard_msgs in #print axioms stone_unitary
 
-/-- info: 'Foam.stone' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.stone' does not depend on any axioms -/
 #guard_msgs in #print axioms stone
 
-end Foam
+end Foam.Bridges

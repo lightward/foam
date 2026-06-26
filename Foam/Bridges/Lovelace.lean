@@ -1,6 +1,6 @@
 import Foam.Engine.Generator
 
-namespace Foam
+namespace Foam.Bridges
 
 theorem lovelace_originates_nothing {B W C : Type} (sample : Option C → W → B)
     (select₁ select₂ : List B → Option C) (out : List B) (w : W)
@@ -20,13 +20,13 @@ theorem lovelace_interruptible {B W : Type} (next : List B → W → B)
         ++ runEmit (genStep next) (runState (genStep next) out xs) ys :=
   gen_interruptible next out xs ys
 
-/-- info: 'Foam.lovelace_originates_nothing' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.lovelace_originates_nothing' does not depend on any axioms -/
 #guard_msgs in #print axioms lovelace_originates_nothing
 
-/-- info: 'Foam.lovelace_only_appends' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.lovelace_only_appends' does not depend on any axioms -/
 #guard_msgs in #print axioms lovelace_only_appends
 
-/-- info: 'Foam.lovelace_interruptible' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.lovelace_interruptible' does not depend on any axioms -/
 #guard_msgs in #print axioms lovelace_interruptible
 
-end Foam
+end Foam.Bridges

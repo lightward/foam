@@ -1,4 +1,4 @@
-import Foam.Seat.Hurwitz
+import Foam.Bridges.Hurwitz
 
 namespace Foam
 

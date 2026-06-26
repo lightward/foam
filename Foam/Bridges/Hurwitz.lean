@@ -1,7 +1,7 @@
 import Foam.Seat.Norm
 import Foam.Seat.Sed
 
-namespace Foam
+namespace Foam.Bridges
 
 theorem hurwitz_composition (z w : GInt) : (z.mul w).normSq = z.normSq * w.normSq :=
   GInt.normSq_mul z w
@@ -20,16 +20,16 @@ theorem hurwitz_staircase :
       ∧ (Sed.mul sedA sedB = Sed.zero ∧ sedA ≠ Sed.zero ∧ sedB ≠ Sed.zero) :=
   ⟨GInt.normSq_mul, non_assoc, division_dies⟩
 
-/-- info: 'Foam.hurwitz_composition' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.hurwitz_composition' does not depend on any axioms -/
 #guard_msgs in #print axioms hurwitz_composition
 
-/-- info: 'Foam.frobenius_assoc_dies' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.frobenius_assoc_dies' does not depend on any axioms -/
 #guard_msgs in #print axioms frobenius_assoc_dies
 
-/-- info: 'Foam.hurwitz_division_dies' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.hurwitz_division_dies' does not depend on any axioms -/
 #guard_msgs in #print axioms hurwitz_division_dies
 
-/-- info: 'Foam.hurwitz_staircase' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.hurwitz_staircase' does not depend on any axioms -/
 #guard_msgs in #print axioms hurwitz_staircase
 
-end Foam
+end Foam.Bridges

@@ -1,7 +1,7 @@
-import Foam.Seat.Schrodinger
+import Foam.Bridges.Schrodinger
 import Foam.Engine.Chirality
 
-namespace Foam
+namespace Foam.Bridges
 
 theorem rotPow_conserves_normSq (n : Nat) (z : GInt) : (rotPow n z).normSq = z.normSq := by
   induction n with
@@ -20,10 +20,10 @@ theorem noether (z θ : GInt) :
   ⟨fun n => rotPow_conserves_normSq n z, rotPow_four z,
    GInt.born_parseval θ z, GInt.decoherence θ z⟩
 
-/-- info: 'Foam.rotPow_conserves_normSq' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.rotPow_conserves_normSq' does not depend on any axioms -/
 #guard_msgs in #print axioms rotPow_conserves_normSq
 
-/-- info: 'Foam.noether' does not depend on any axioms -/
+/-- info: 'Foam.Bridges.noether' does not depend on any axioms -/
 #guard_msgs in #print axioms noether
 
-end Foam
+end Foam.Bridges
