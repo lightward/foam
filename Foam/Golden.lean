@@ -48,6 +48,30 @@ theorem golden_defect_never_clears (n : Nat) :
     fib (n + 1) * fib (n + 1) - fib (n + 2) * fib n ≠ 0 := by
   rw [fib_cassini n]; exact cassini_never_cleared n
 
+theorem fib_ofNat : ∀ n, ∃ k, fib n = Int.ofNat k
+  | 0 => ⟨0, rfl⟩
+  | 1 => ⟨1, rfl⟩
+  | (n + 2) => by
+    obtain ⟨a, ha⟩ := fib_ofNat (n + 1)
+    obtain ⟨b, hb⟩ := fib_ofNat n
+    refine ⟨a + b, ?_⟩
+    show fib (n + 1) + fib n = Int.ofNat (a + b)
+    rw [ha, hb]; rfl
+
+theorem fib_succ_pos : ∀ n, ∃ k, fib (n + 1) = Int.ofNat (k + 1)
+  | 0 => ⟨0, rfl⟩
+  | (n + 1) => by
+    obtain ⟨a, ha⟩ := fib_succ_pos n
+    obtain ⟨b, hb⟩ := fib_ofNat n
+    refine ⟨a + b, ?_⟩
+    show fib (n + 1) + fib n = Int.ofNat (a + b + 1)
+    rw [ha, hb]
+    exact congrArg Int.ofNat (Nat.add_right_comm a 1 b)
+
+theorem fib_succ_ne_zero (n : Nat) : fib (n + 1) ≠ 0 := by
+  obtain ⟨k, hk⟩ := fib_succ_pos n
+  rw [hk]; intro h; exact Nat.noConfusion (Int.ofNat.inj h)
+
 def Nphi (x y : Int) : Int := x * x + x * y - y * y
 
 theorem golden_unit (n : Nat) : Nphi (fib n) (fib (n + 1)) = -(altSign n) := by
@@ -75,5 +99,11 @@ theorem golden_unit_ne_zero (n : Nat) : Nphi (fib n) (fib (n + 1)) ≠ 0 := by
 
 /-- info: 'Foam.golden_unit_ne_zero' does not depend on any axioms -/
 #guard_msgs in #print axioms golden_unit_ne_zero
+
+/-- info: 'Foam.fib_ofNat' does not depend on any axioms -/
+#guard_msgs in #print axioms fib_ofNat
+
+/-- info: 'Foam.fib_succ_ne_zero' does not depend on any axioms -/
+#guard_msgs in #print axioms fib_succ_ne_zero
 
 end Foam
