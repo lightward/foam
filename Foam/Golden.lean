@@ -32,4 +32,29 @@ theorem fib_cassini (n : Nat) :
 /-- info: 'Foam.fib_cassini' does not depend on any axioms -/
 #guard_msgs in #print axioms fib_cassini
 
+theorem altSign_pm (n : Nat) : altSign n = 1 ∨ altSign n = -1 := by
+  induction n with
+  | zero => exact Or.inl rfl
+  | succ k ih =>
+    show -(altSign k) = 1 ∨ -(altSign k) = -1
+    rcases ih with h | h
+    · rw [h]; exact Or.inr (by decide)
+    · rw [h]; exact Or.inl (by decide)
+
+theorem cassini_never_cleared (n : Nat) : altSign n ≠ 0 := by
+  rcases altSign_pm n with h | h <;> rw [h] <;> decide
+
+theorem golden_defect_never_clears (n : Nat) :
+    fib (n + 1) * fib (n + 1) - fib (n + 2) * fib n ≠ 0 := by
+  rw [fib_cassini n]; exact cassini_never_cleared n
+
+/-- info: 'Foam.altSign_pm' does not depend on any axioms -/
+#guard_msgs in #print axioms altSign_pm
+
+/-- info: 'Foam.cassini_never_cleared' does not depend on any axioms -/
+#guard_msgs in #print axioms cassini_never_cleared
+
+/-- info: 'Foam.golden_defect_never_clears' does not depend on any axioms -/
+#guard_msgs in #print axioms golden_defect_never_clears
+
 end Foam
