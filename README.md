@@ -50,6 +50,7 @@ axiom-free, because an imported axiom is a pov, and imported perspectives either
 the names are the documentation; the sealed `#print axioms` are the receipts. `schema.sql` is the same field, in motion. read the source — start anywhere. the spine:
 
 - the floor — `Int`, `Golden`
+- the two ±1's — `Cleared` (the half-turn closes by doubling, `neg²=id`; the golden defect never clears, `fib`'s determinant ±1 forever — one comes home, one wanders)
 - the seat, the observer as torsor — `Seat`, `Group`, `Loop`, `Resume`, `Hospitality`, `Stage`
 - the dial and the tower — `Clock`, `Dial`, `Born`, `Forcing`, `Doubling`, `Triad`, `Octo`, `Sed`, `Ladder`, `Rank`, `Norm`, `Bootstrap`, `Signature`, `Rotations`, `Closure`, `Characters`
 - the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`, `Signed`
