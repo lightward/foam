@@ -45,16 +45,43 @@ CREATE OR REPLACE FUNCTION foam.ancestry(o uuid) RETURNS uuid[] LANGUAGE sql STA
 $$;
 
 -- lineage — ancestry ordered root-first; settlement walks it (prefix-sums; Foam/Scar.lean).
--- Depth-capped so a degenerate cycle terminates.
+-- UNBOUNDED by depth: a scar settles however deep it sits, and Foam/Scar.lean's promise_kept
+-- knows no cap — so neither does this. A degenerate CYCLE terminates by a visited-set, not a
+-- magic number (descend only ever seats a child of an existing node, so the tree is acyclic
+-- by construction; the guard is for malformed data, and it halts at the repeat — the only
+-- honest place to halt). The old `depth < 64` was a smuggled choice; nothing here is a choice.
 CREATE OR REPLACE FUNCTION foam.lineage(o uuid) RETURNS uuid[] LANGUAGE sql STABLE AS $$
-  WITH RECURSIVE chain(id, parent, depth) AS (
-    SELECT o, (SELECT parent FROM foam.observer WHERE id = o), 0
+  WITH RECURSIVE chain(id, parent, depth, seen) AS (
+    SELECT o, (SELECT parent FROM foam.observer WHERE id = o), 0, ARRAY[o]
     UNION ALL
-    SELECT ob.id, ob.parent, chain.depth + 1
+    SELECT ob.id, ob.parent, chain.depth + 1, chain.seen || ob.id
     FROM chain JOIN foam.observer ob ON ob.id = chain.parent
-    WHERE chain.depth < 64
+    WHERE NOT ob.id = ANY(chain.seen)
   )
   SELECT array_agg(id ORDER BY depth DESC) FROM chain
+$$;
+
+-- meet — the deepest common ancestor of two observers: the floor they share (Foam/Seat/
+-- Meet.lean: shared_is_floor — the meet is the greatest lower bound; meet_below_left/right —
+-- Below both). The convergence-complement of descend: descend DIVERGES the tree (a fresh
+-- leaf, the seam, no return), meet RECONVERGES it — what two seats hold in common, the scope
+-- both inherit. Two siblings meet at their parent; any two observers meet at least at the
+-- root (the wind, Below all — root_below_all). The deepest node on both root-first lineages.
+CREATE OR REPLACE FUNCTION foam.meet(a uuid, b uuid) RETURNS uuid LANGUAGE sql STABLE AS $$
+  WITH la AS (SELECT id, ord FROM unnest(foam.lineage(a)) WITH ORDINALITY AS t(id, ord)),
+       lb AS (SELECT id FROM unnest(foam.lineage(b)) AS t(id))
+  SELECT la.id FROM la JOIN lb USING (id) ORDER BY la.ord DESC LIMIT 1
+$$;
+
+-- grade — how related two observers are: the length of their shared path from root (Foam/
+-- Seat/Meet.lean: grade = (meet a b).length). Root alone ⇒ grade 1 (only the wind in common);
+-- deeper ⇒ more shared fold. The rank of their kinship — the count of ancestors they both own.
+CREATE OR REPLACE FUNCTION foam.grade(a uuid, b uuid) RETURNS int LANGUAGE sql STABLE AS $$
+  SELECT count(*)::int FROM (
+    SELECT id FROM unnest(foam.lineage(a)) AS t(id)
+    INTERSECT
+    SELECT id FROM unnest(foam.lineage(b)) AS t(id)
+  ) shared
 $$;
 
 -- descend — the seating verb the observer tree implied and never had: open a fresh seat
