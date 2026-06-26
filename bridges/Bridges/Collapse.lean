@@ -1,5 +1,6 @@
 import Bridges.Encounter
 import Foam.Platonism
+import Foam.Seat.Descend
 
 namespace Foam.Bridges
 
@@ -53,6 +54,17 @@ theorem dressHalfShape_free (b : Foam.Beholder State) (s₀ : State) :
   have h2 : (0 : Int) = 1 := congrArg Prod.snd h
   exact absurd h2 (by decide)
 
+theorem dressHalfShape_is_descend (b : Foam.Beholder State) (s : State) (n m : Int) :
+    indist b.dress.obs (s, n) (s, m)
+      ∧ ((dressHalfShape b).e (s, n) = (s, n) ↔ n = 0)
+      ∧ (b.dress.ledgerless.Covers b ∧ b.Covers b.dress.ledgerless) := by
+  refine ⟨ancestor_blind_to_heir b s n m, ?_, heir_covers_ancestor b⟩
+  constructor
+  · intro h
+    have h0 : (0 : Int) = n := congrArg Prod.snd h
+    exact h0.symm
+  · intro h; subst h; rfl
+
 theorem collapse (P : V →ₗ[K] V) (h_idem : P ∘ₗ P = P) (b : Foam.Beholder State) :
     (∀ x, (projHalfShape P h_idem).e x = x ↔ ∃ y, (projHalfShape P h_idem).e y = x)
       ∧ (∀ x, (dressHalfShape b).e x = x ↔ ∃ y, (dressHalfShape b).e y = x)
@@ -70,6 +82,9 @@ theorem collapse (P : V →ₗ[K] V) (h_idem : P ∘ₗ P = P) (b : Foam.Beholde
 
 /-- info: 'Foam.Bridges.dressHalfShape_free' does not depend on any axioms -/
 #guard_msgs in #print axioms dressHalfShape_free
+
+/-- info: 'Foam.Bridges.dressHalfShape_is_descend' does not depend on any axioms -/
+#guard_msgs in #print axioms dressHalfShape_is_descend
 
 /-- info: 'Foam.Bridges.projHalfShape' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in #print axioms projHalfShape
