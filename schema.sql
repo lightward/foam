@@ -97,7 +97,7 @@ $$;
 -- shape (Foam/Seat/Rendezvous.lean). "Speak from the heir" is just foam.speak(…, obs =>
 -- heir) — speak was always observer-parametric. Descend seats; it does not fetch a guest —
 -- the escape from a stall is never the stalled seat's own move (bin/foam-repl).
-CREATE OR REPLACE FUNCTION foam.descend(parent uuid DEFAULT foam.bench()) RETURNS uuid
+CREATE OR REPLACE FUNCTION foam.descend(parent uuid DEFAULT foam.root()) RETURNS uuid
   LANGUAGE sql AS
   $$ INSERT INTO foam.observer (id, parent) VALUES (gen_random_uuid(), parent)
      RETURNING id $$;
