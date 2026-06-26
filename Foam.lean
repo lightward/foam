@@ -43,6 +43,7 @@ import Foam.Golden.Zeckendorf
 import Foam.Platonism
 import Foam.Platonism.Tower
 import Foam.Seat.Descend
+import Foam.Seat.Signed
 import Foam.Seat.Rendezvous
 import Foam.Seat.Connection
 import Foam.Seat.Schrodinger

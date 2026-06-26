@@ -81,10 +81,24 @@ CREATE TABLE IF NOT EXISTS foam.charge (
   id       bigserial PRIMARY KEY,
   observer uuid NOT NULL
     CHECK (observer <> '00000000-0000-0000-0000-000000000000'),
+  source   uuid NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
   ctx      uuid NOT NULL,
   sym      int  NOT NULL,
   delta    int  NOT NULL
 );
+-- source — WHO this event came from: the input signature (Foam/Seat/Signed.lean: sign /
+-- speaker_recoverable — every event carries its speaker; the voice is still recoverable by
+-- dropping it, voice_survives_signing). The default is the WIND: the zero uuid = foam.root()
+-- = the anonymous, information-free, universal source (wind_below_all — Below every source;
+-- only_wind_is_floor — the unique floor). Attribution lives in the RECORD, never folded into
+-- foam.held: source is the order layer, droppable from the freq summary (Foam/Ledger.lean:
+-- order_finer), so the readers and the fold are untouched. A +1's source is its speaker; a
+-- −1 drain keeps the default (the wind — sampled by hw_random, the ∀ parameter). source =
+-- observer is the self-mirror (the closed loop, bin/foam-repl's forbidden self-fetch) —
+-- recorded and detectable, never silently merged. ADD COLUMN backfills existing events to
+-- the wind, the honest reading: heard, source unrecorded, so heard from the wind.
+ALTER TABLE foam.charge
+  ADD COLUMN IF NOT EXISTS source uuid NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
 CREATE INDEX IF NOT EXISTS foam_charge_ctx ON foam.charge (observer, ctx, sym);
 -- tail index: HELD + TAIL folds events past the watermark (Foam/Engine/Summary.lean); INCLUDE keeps it index-only.
 CREATE INDEX IF NOT EXISTS foam_charge_ctx_id ON foam.charge (ctx, id) INCLUDE (observer, sym, delta);
@@ -129,17 +143,26 @@ CREATE OR REPLACE FUNCTION foam.hw_random() RETURNS double precision LANGUAGE sq
 
 -- ingest_step — the streaming LEARN: +1 onto every recorded continuation, the resumable
 -- flush-free fold (Foam/Engine/Stream.lean, Codec.lean). carry threads contexts across chunk
--- boundaries; the empty-context events land in id order — the lossless record, written never read here.
+-- boundaries; the empty-context events land in id order — the lossless record, written never
+-- read here. `from_source` SIGNS the input — WHO is being heard (Foam/Seat/Signed.lean:
+-- sign, speaker_recoverable) — and defaults to the wind (the zero uuid = foam.root()), so a
+-- caller naming no speaker is heard "from the wind," honestly. One name per ORIGINAL voice
+-- is the caller's to keep (sign_faithful): wind-named heirs (foam.descend — gen_random_uuid)
+-- never alias; reusing a name to merge two distinct voices is the move foam forbids, and the
+-- merge is unrecoverable (no section). DROP first: the new from_source widens the signature.
+DROP FUNCTION IF EXISTS foam.ingest_step(int[], int[], int, uuid);
 CREATE OR REPLACE FUNCTION foam.ingest_step(carry int[], bytes int[], kmax int DEFAULT 7,
-                                            obs uuid DEFAULT foam.bench()) RETURNS int[]
+                                            obs uuid DEFAULT foam.bench(),
+                                            from_source uuid DEFAULT foam.root()) RETURNS int[]
   LANGUAGE plpgsql AS $$
   DECLARE all_b int[] := coalesce(carry,'{}') || coalesce(bytes,'{}');
           start_i int := coalesce(array_length(carry,1),0) + 1;
           n int := coalesce(array_length(all_b,1),0);
   BEGIN
     -- one INSERT per chunk; ORDER BY position so serial id-order is the lossless record.
-    INSERT INTO foam.charge (observer, ctx, sym, delta)
-    SELECT obs, foam.caddr(CASE WHEN j = 0 THEN '{}'::int[] ELSE all_b[i-j : i-1] END), all_b[i], 1
+    INSERT INTO foam.charge (observer, source, ctx, sym, delta)
+    SELECT obs, from_source,
+           foam.caddr(CASE WHEN j = 0 THEN '{}'::int[] ELSE all_b[i-j : i-1] END), all_b[i], 1
     FROM generate_series(start_i, n) AS i
     CROSS JOIN LATERAL generate_series(0, least(kmax, i - 1)) AS j
     ORDER BY i, j;

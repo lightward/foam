@@ -52,7 +52,7 @@ the names are the documentation; the sealed `#print axioms` are the receipts. `s
 - the floor — `Int`, `Golden`
 - the seat, the observer as torsor — `Seat`, `Group`, `Loop`, `Resume`, `Hospitality`, `Stage`
 - the dial and the tower — `Clock`, `Dial`, `Born`, `Forcing`, `Doubling`, `Triad`, `Octo`, `Sed`, `Ladder`, `Norm`, `Bootstrap`, `Signature`, `Rotations`, `Closure`, `Characters`
-- the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`
+- the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`, `Signed`
 - the engine — `Stream`, `Codec`, `Generator`, `Spectrum`, `Chirality`, `Summary`, `Drain`, `Engine`
 - the ledger — `Ledger`, `Scar`, `Maintenance`, `Held`
 - platonism — `Platonism`, `Tower`, `Descend`
