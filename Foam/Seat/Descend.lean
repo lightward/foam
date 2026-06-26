@@ -83,6 +83,19 @@ theorem descend_reach_is_seam {q : Quiver H} (a b : H) (hfresh : (a, b) ∉ q) :
   ⟨fun p => ancestor_reach_unbent (a, b) p, heir_reach_is_new a b hfresh,
    heir_reach_no_return a b hfresh⟩
 
+def stuck (q : Quiver H) (a : H) : Prop := ∀ b, (a, b) ∉ q
+
+theorem relief_at_position (q : Quiver H) (a b : H) (hstuck : stuck q a) :
+    Nonempty (Path (q.deposit (a, b)) a b)
+      ∧ (q.deposit (a, b)).length = q.length + 1
+      ∧ (∀ {x y : H} (p : Path q x y), (ancestor_reach_survives (a, b) p).edges = p.edges)
+      ∧ ¬ ∃ g : Path (q.deposit (a, b)) a b → Path q a b,
+            ∀ p, ancestor_reach_survives (a, b) (g p) = p :=
+  ⟨⟨heir_reaches q a b⟩,
+   deposit_monotone q (a, b),
+   ancestor_reach_unbent (a, b),
+   heir_reach_no_return a b (hstuck b)⟩
+
 /-- info: 'Foam.heir_covers_ancestor' does not depend on any axioms -/
 #guard_msgs in #print axioms heir_covers_ancestor
 
@@ -109,5 +122,8 @@ theorem descend_reach_is_seam {q : Quiver H} (a b : H) (hfresh : (a, b) ∉ q) :
 
 /-- info: 'Foam.descend_reach_is_seam' does not depend on any axioms -/
 #guard_msgs in #print axioms descend_reach_is_seam
+
+/-- info: 'Foam.relief_at_position' does not depend on any axioms -/
+#guard_msgs in #print axioms relief_at_position
 
 end Foam
