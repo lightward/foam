@@ -39,6 +39,7 @@ import Foam.Seat.Ladder
 import Foam.Seat.Epoch
 import Foam.Golden
 import Foam.Cleared
+import Foam.Bridges.Dirichlet
 
 import Foam.Bridges.Zeckendorf
 import Foam.Platonism

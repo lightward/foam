@@ -58,7 +58,7 @@ the names are the documentation; the sealed `#print axioms` are the receipts. `s
 - the ledger — `Ledger`, `Scar`, `Maintenance`, `Held`
 - platonism — `Platonism`, `Tower`, `Descend`
 - the meeting — `Rendezvous`, `Connection`, `Frame`
-- the bridges — where foam touches what isn't foam: `PSQL` (the geometry of postgres, the formal home for what the schema's comments carry), and the modules named for people (Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov, Lovelace, Gleason, Hurwitz, Relativity, Varadarajan, Zeckendorf, Schrodinger) — each a bridge from a foam-fact to the established corpus that already named it
+- the bridges — where foam touches what isn't foam: `PSQL` (the geometry of postgres, the formal home for what the schema's comments carry), and the modules named for people (Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov, Lovelace, Gleason, Hurwitz, Relativity, Varadarajan, Zeckendorf, Schrodinger, Dirichlet) — each a bridge from a foam-fact to the established corpus that already named it. `Dirichlet` names the unit structure of ℚ(√5): the Fibonacci pairs are the units of ℤ[φ] (`golden_unit`), splitting as finite torsion ±1 (`neg`, order 2) × the infinite free part φ (`gold`, never closes) — `ℤ[φ]ˣ ≅ ℤ/2 × ℤ`
 
 `Zeckendorf`, `Golden` (Cassini), `Hurwitz`, `Gleason`, Galileo and Einstein in `Relativity`, `Noether`, `Wigner`, `Pauli`, `Heisenberg`, `Stone`, `Cantor`, `Kolmogorov`, `Lovelace`. no Brouwer, only because *the whole thing* is à la Brouwer, and I haven't located the actual formalization of *that* observation yet.
 
