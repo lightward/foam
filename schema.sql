@@ -122,10 +122,8 @@ CREATE TABLE IF NOT EXISTS foam.charge (
 -- order_finer), so the readers and the fold are untouched. A +1's source is its speaker; a
 -- −1 drain keeps the default (the wind — sampled by hw_random, the ∀ parameter). source =
 -- observer is the self-mirror (the closed loop, bin/foam-repl's forbidden self-fetch) —
--- recorded and detectable, never silently merged. ADD COLUMN backfills existing events to
--- the wind, the honest reading: heard, source unrecorded, so heard from the wind.
-ALTER TABLE foam.charge
-  ADD COLUMN IF NOT EXISTS source uuid NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
+-- recorded and detectable, never silently merged. An event with no named speaker is heard
+-- from the wind; foam.healthcheck confirms the column is present.
 CREATE INDEX IF NOT EXISTS foam_charge_ctx ON foam.charge (observer, ctx, sym);
 -- tail index: HELD + TAIL folds events past the watermark (Foam/Engine/Summary.lean); INCLUDE keeps it index-only.
 CREATE INDEX IF NOT EXISTS foam_charge_ctx_id ON foam.charge (ctx, id) INCLUDE (observer, sym, delta);
@@ -176,8 +174,7 @@ CREATE OR REPLACE FUNCTION foam.hw_random() RETURNS double precision LANGUAGE sq
 -- caller naming no speaker is heard "from the wind," honestly. One name per ORIGINAL voice
 -- is the caller's to keep (sign_faithful): wind-named heirs (foam.descend — gen_random_uuid)
 -- never alias; reusing a name to merge two distinct voices is the move foam forbids, and the
--- merge is unrecoverable (no section). DROP first: the new from_source widens the signature.
-DROP FUNCTION IF EXISTS foam.ingest_step(int[], int[], int, uuid);
+-- merge is unrecoverable (no section).
 CREATE OR REPLACE FUNCTION foam.ingest_step(carry int[], bytes int[], kmax int DEFAULT 7,
                                             obs uuid DEFAULT foam.bench(),
                                             from_source uuid DEFAULT foam.root()) RETURNS int[]
@@ -538,6 +535,28 @@ CREATE OR REPLACE FUNCTION foam.held_audit(obs uuid DEFAULT foam.bench()) RETURN
   SELECT count(*) FROM (
     (TABLE live EXCEPT TABLE merged) UNION ALL (TABLE merged EXCEPT TABLE live)
   ) d $$;
+
+-- healthcheck — the schema's internal integrity, scanned live: the file declares the target
+-- shape and keeps no migration history, so a runtime scan is the only honest record of drift
+-- (like born_audit / held_audit, the receipt is live). Each row is one violation; empty is
+-- healthy, and foam-sweep surfaces the count. Checks:
+--   · one implementation per foam name — a signature changed by CREATE OR REPLACE widens into
+--     a second overload instead of replacing, and a call matching both errors ambiguously and
+--     can go mute, the error swallowed as silence;
+--   · foam.charge carries its source column — the input signature (Foam/Seat/Signed.lean); a
+--     field declared before it would silently drop attribution.
+CREATE OR REPLACE FUNCTION foam.healthcheck() RETURNS TABLE(issue text) LANGUAGE sql STABLE AS $$
+  SELECT 'overloaded: foam.' || p.proname || ' — ' || count(*) || ' implementations; DROP the stale signature'
+  FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+  WHERE n.nspname = 'foam'
+  GROUP BY p.proname HAVING count(*) > 1
+  UNION ALL
+  SELECT 'foam.charge is missing its source column (the input signature)'
+  WHERE NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'foam' AND table_name = 'charge' AND column_name = 'source'
+  )
+$$;
 
 -- stats — the field's vital signs, the last of the Ruby switchboard dissolved into the
 -- schema (lightward-ai app/lib/foam/field.rb#stats, come home). ALL structure (counts,
