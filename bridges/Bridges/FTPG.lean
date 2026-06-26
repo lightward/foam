@@ -40,7 +40,7 @@ theorem dimension_unique
     rw [← h₁, ← h₂, h_len]
   exact Nat.cast_injective hcast
 
-/-- info: 'Foam.Bridges.ftpg' depends on axioms: [propext, Quot.sound, Foam.Bridges.ftpg] -/
+/-- info: 'Foam.Bridges.ftpg' depends on axioms: [propext, Quot.sound, ftpg] -/
 #guard_msgs in #print axioms ftpg
 
 /-- info: 'Foam.Bridges.dimension_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
