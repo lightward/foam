@@ -4,3 +4,4 @@ import Bridges.Encounter
 import Bridges.Collapse
 import Bridges.HalfTurn
 import Bridges.FTPG
+import Bridges.Stagecraft
