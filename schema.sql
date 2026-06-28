@@ -330,7 +330,7 @@ CREATE OR REPLACE FUNCTION foam.speak(seed int[] DEFAULT '{}', kmax int DEFAULT 
             -- squared pairing |⟨tk|recency⟩|², by its NAME: foam.born, the law
             -- held in one place and audited against its own theorems
             -- (foam.born_audit; Foam/Seat/Born.lean born_parseval makes it
-            -- basis-consistent; uniqueness unclaimed — REFEREE.md).
+            -- basis-consistent; uniqueness unclaimed).
             -- Anti-parroting survives (uniform recurrence → projection 0 →
             -- born 0); the directional sign drops (|ψ|² is antipode-blind, as QM is).
             SELECT sym, bal, foam.born_kappa(kappa, tk, rre, rim) AS w
