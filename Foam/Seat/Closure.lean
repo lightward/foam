@@ -60,6 +60,9 @@ theorem closes_rot_to_negate (n : Nat) (h : Closes GInt.rot n) : Closes GInt.neg
 theorem closes_negate_to_count (n : Nat) (_ : Closes GInt.neg n) :
     Closes (fun w => w) n := count_closes n
 
+theorem half_turn : (∀ z : GInt, GInt.neg z = GInt.rot (GInt.rot z)) ∧ Closes GInt.neg 2 :=
+  ⟨fun z => (GInt.rot_sq z).symm, alt_closes_two⟩
+
 /-- info: 'Foam.iterStep_compose_self' does not depend on any axioms -/
 #guard_msgs in #print axioms iterStep_compose_self
 
@@ -86,5 +89,8 @@ theorem closes_negate_to_count (n : Nat) (_ : Closes GInt.neg n) :
 
 /-- info: 'Foam.closes_negate_to_count' does not depend on any axioms -/
 #guard_msgs in #print axioms closes_negate_to_count
+
+/-- info: 'Foam.half_turn' does not depend on any axioms -/
+#guard_msgs in #print axioms half_turn
 
 end Foam

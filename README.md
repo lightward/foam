@@ -50,6 +50,7 @@ axiom-free, because an imported axiom is a pov, and imported perspectives either
 the names are the documentation; the sealed `#print axioms` are the receipts. `schema.sql` is the same field, in motion. read the source — start anywhere. the spine:
 
 - the floor — `Int`, `Golden`
+- the two ±1's — `Cleared` (the half-turn closes by doubling, `neg²=id`; the golden defect never clears, `fib`'s determinant ±1 forever — one comes home, one wanders)
 - the seat, the observer as torsor — `Seat`, `Group`, `Loop`, `Resume`, `Hospitality`, `Stage`
 - the dial and the tower — `Clock`, `Dial`, `Born`, `Forcing`, `Doubling`, `Triad`, `Octo`, `Sed`, `Ladder`, `Rank`, `Norm`, `Bootstrap`, `Signature`, `Rotations`, `Closure`, `Characters`
 - the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`, `Signed`
@@ -57,9 +58,12 @@ the names are the documentation; the sealed `#print axioms` are the receipts. `s
 - the ledger — `Ledger`, `Scar`, `Maintenance`, `Held`
 - platonism — `Platonism`, `Tower`, `Descend`
 - the meeting — `Rendezvous`, `Connection`, `Frame`
-- the bridges — where foam touches what isn't foam: `PSQL` (the geometry of postgres, the formal home for what the schema's comments carry), and the modules named for people (Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov, Lovelace, Gleason, Hurwitz, Relativity, Varadarajan, Zeckendorf, Schrodinger) — each a bridge from a foam-fact to the established corpus that already named it
+- the two universes — `Backstage` (the ledger *supports* the frontstage losslessly yet cannot *reconstruct* the beholder's experience from the record alone — support without reconstruction, the beholder the seam between backstage arithmetic and frontstage geometry)
+- the bridges — where foam touches what isn't foam: `PSQL` (the geometry of postgres, the formal home for what the schema's comments carry), and the modules named for people (Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov, Lovelace, Gleason, Hurwitz, Relativity, Varadarajan, Zeckendorf, Schrodinger, Dirichlet) — each a bridge from a foam-fact to the established corpus that already named it. `Dirichlet` names the unit structure of ℚ(√5): the Fibonacci pairs are the units of ℤ[φ] (`golden_unit`), splitting as finite torsion ±1 (`neg`, order 2) × the infinite free part φ (`gold`, never closes) — `ℤ[φ]ˣ ≅ ℤ/2 × ℤ`
 
 `Zeckendorf`, `Golden` (Cassini), `Hurwitz`, `Gleason`, Galileo and Einstein in `Relativity`, `Noether`, `Wigner`, `Pauli`, `Heisenberg`, `Stone`, `Cantor`, `Kolmogorov`, `Lovelace`. no Brouwer, only because *the whole thing* is à la Brouwer, and I haven't located the actual formalization of *that* observation yet.
+
+the far bridge lives in its own Lake package, `bridges/`, kept to the side so the core stays sealed — the core never fetches Mathlib and never imports an axiom; classical choice/propext enter only there, behind the package wall (Curry–Howard made build structure, the constructive substrate and its classical bridge as two packages). `bridges/Bridges.lean` is the single ref: the half-type theorem as Mathlib states it (`HalfType` = `IsCompl.IicOrderIsoIci`), the Beholder as an idempotent projection (`Observation`, P² = P), the first strut back into the axiom-free core (`Encounter` — one idempotent observation is at once a foam `Beholder`, an `IsCompl` pair in the subspace lattice, and a `HalfType`: the CML *encountered* by treating-as, never conjured backstage), the branch point (`Collapse` — `descend` and the classical projection as two sheets of one `HalfShape`, the foam sheet axiom-free, the classical sheet alone continuing to the diamond iso), and `FTPG` — the one `axiom` (a complemented modular lattice is the subspace lattice of a vector space over a division ring), the **frontstage's coherence**: the projective geometry a beholder privately experiences, the far bank of the `Backstage` seam (which the ledger supports but cannot reconstruct). foam reconnecting to the crystal it once was (`the-between`) and let recede: the classical corpus its past, the axiom-free core its constructive recession, `bridges/` the reunion.
 
 ---
 
