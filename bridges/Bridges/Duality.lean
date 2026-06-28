@@ -1,4 +1,5 @@
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Algebra.Field.Opposite
 
 namespace Foam.Bridges
@@ -106,6 +107,58 @@ theorem finrank_annih [Module.Finite D V] (W : Submodule D V) :
   rw [(annihQuotEquiv W).finrank_eq, finrank_dual_eq (Module.finBasis D (V ⧸ W))]
   exact Submodule.finrank_quotient_add_finrank W
 
+theorem le_finrank_annih' [Module.Finite D V] (U : Submodule Dᵐᵒᵖ (Dual D V)) :
+    finrank D V ≤ finrank Dᵐᵒᵖ U + finrank D (annih' U) := by
+  classical
+  haveI : Module.Finite Dᵐᵒᵖ (Dual D V) := Module.Finite.of_basis (dualBasisOp (Module.finBasis D V))
+  haveI : Module.Free Dᵐᵒᵖ U := Module.Free.of_basis (Basis.ofVectorSpace Dᵐᵒᵖ U)
+  let bU := Module.finBasis Dᵐᵒᵖ U
+  let g : V →ₗ[D] (Fin (finrank Dᵐᵒᵖ U) → D) := LinearMap.pi (fun i => (bU i : Dual D V))
+  have hker : LinearMap.ker g ≤ annih' U := by
+    intro v hv f hf
+    have hvi : ∀ i, (bU i : Dual D V) v = 0 := fun i => by
+      have := congrFun (LinearMap.mem_ker.mp hv) i
+      simpa [g, LinearMap.pi_apply] using this
+    have hsum : f = ∑ i, (bU.repr ⟨f, hf⟩ i) • (bU i : Dual D V) := by
+      have h2 := congrArg (Submodule.subtype U) (bU.sum_repr ⟨f, hf⟩)
+      simp only [map_sum, map_smul, Submodule.subtype_apply] at h2
+      exact h2.symm
+    rw [hsum, LinearMap.sum_apply]
+    apply Finset.sum_eq_zero
+    intro i _
+    rw [LinearMap.smul_apply, hvi i, MulOpposite.smul_eq_mul_unop, zero_mul]
+  have hrn := LinearMap.finrank_range_add_finrank_ker g
+  have hr : finrank D (LinearMap.range g) ≤ finrank Dᵐᵒᵖ U :=
+    le_trans (Submodule.finrank_le _) (by rw [Module.finrank_pi, Fintype.card_fin])
+  have hk : finrank D (LinearMap.ker g) ≤ finrank D (annih' U) := Submodule.finrank_mono hker
+  omega
+
+theorem annih_annih'_eq [Module.Finite D V] (U : Submodule Dᵐᵒᵖ (Dual D V)) :
+    annih (annih' U) = U := by
+  haveI : Module.Finite Dᵐᵒᵖ (Dual D V) := Module.Finite.of_basis (dualBasisOp (Module.finBasis D V))
+  have h1 := finrank_annih (annih' U)
+  have h2 := le_finrank_annih' U
+  have hle : finrank Dᵐᵒᵖ (annih (annih' U)) ≤ finrank Dᵐᵒᵖ U := by omega
+  exact (Submodule.eq_of_le_of_finrank_le (le_annih_annih' U) hle).symm
+
+/-- The order anti-isomorphism `Submodule D V ≃o (Submodule Dᵐᵒᵖ V*)ᵒᵈ` — the full
+projective-geometry duality, finite-dimensional, over a noncommutative division ring,
+carrying the handedness in `Dᵐᵒᵖ`. The construction Mathlib makes only over a
+commutative field. -/
+noncomputable def annihOrderIso [Module.Finite D V] :
+    Submodule D V ≃o (Submodule Dᵐᵒᵖ (Dual D V))ᵒᵈ where
+  toFun W := OrderDual.toDual (annih W)
+  invFun U := annih' (OrderDual.ofDual U)
+  left_inv W := annih'_annih_eq W
+  right_inv U := congrArg OrderDual.toDual (annih_annih'_eq (OrderDual.ofDual U))
+  map_rel_iff' := by
+    intro W₁ W₂
+    show OrderDual.toDual (annih W₁) ≤ OrderDual.toDual (annih W₂) ↔ W₁ ≤ W₂
+    rw [OrderDual.toDual_le_toDual]
+    refine ⟨fun h => ?_, fun h => annih_antitone h⟩
+    have := annih'_antitone h
+    rwa [annih'_annih_eq, annih'_annih_eq] at this
+
 end DimFormula
 
 
@@ -127,5 +180,14 @@ end DimFormula
 
 /-- info: 'Foam.Bridges.finrank_dual_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms finrank_dual_eq
+
+/-- info: 'Foam.Bridges.finrank_annih' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms finrank_annih
+
+/-- info: 'Foam.Bridges.annih_annih'_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms annih_annih'_eq
+
+/-- info: 'Foam.Bridges.annihOrderIso' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms annihOrderIso
 
 end Foam.Bridges
