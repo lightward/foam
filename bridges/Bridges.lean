@@ -6,3 +6,4 @@ import Bridges.HalfTurn
 import Bridges.FTPG
 import Bridges.Closure
 import Bridges.Stagecraft
+import Bridges.Handedness
