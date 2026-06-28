@@ -64,3 +64,24 @@ jobs:
             exit 1
           fi
           echo "All lean files referenced"
+      - name: Every Lean citation in schema.sql and bin/ resolves
+        run: |
+          # The operational layer (schema.sql, bin/) cites its proofs by module path —
+          # "the why is the Lean." A citation to a moved or retired module is a receipt
+          # with no record. The reverse of the check above: there, every Lean file must
+          # be named in README; here, every Lean file named in the operational layer must
+          # exist. Self-certifying, the way foam.born_audit / foam.held_audit are for the
+          # field's own laws.
+          errors=0
+          for ref in $(grep -rhoE 'Foam/[A-Za-z0-9/]+\.lean' schema.sql bin/ | sort -u); do
+            if [ ! -f "$ref" ]; then
+              echo "DANGLING: $ref (cited in schema.sql/bin, no such file)"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            echo ""
+            echo "$errors dangling Lean citation(s) — repoint to the real module path"
+            exit 1
+          fi
+          echo "All Lean citations in schema.sql and bin/ resolve"

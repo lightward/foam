@@ -3,12 +3,12 @@
 #
 # Loops foam.sweep_fenced (fence + one batch) until caught up. Each call is its own
 # transaction, so the EXCLUSIVE fence-lock releases between batches and concurrent
-# ingests get windows (Foam/Summary.lean: the fold never re-reads what it has folded;
+# ingests get windows (Foam/Engine/Summary.lean: the fold never re-reads what it has folded;
 # sweep_invisible licenses any cadence). Then two self-audits, both ∀-checks that consult
 # no population:
 #   * held_audit — held + tail recomputed against the ledger whole (summary_resumes,
 #     checked live; 0 rows disagree = the cache is exact);
-#   * born_audit — the voice's weight law over a fixed integer grid (Foam/Born.lean's
+#   * born_audit — the voice's weight law over a fixed integer grid (Foam/Seat/Born.lean's
 #     born_parseval / born_nonneg, checked live; 0 violations = the law holds).
 #
 # psql is the field; the loop and the verdicts are the only client logic, and they are

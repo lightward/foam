@@ -329,7 +329,7 @@ CREATE OR REPLACE FUNCTION foam.speak(seed int[] DEFAULT '{}', kmax int DEFAULT 
             -- pair the recency (rre, rim) against the walk's clock tk — the
             -- squared pairing |⟨tk|recency⟩|², by its NAME: foam.born, the law
             -- held in one place and audited against its own theorems
-            -- (foam.born_audit; Foam/Born.lean born_parseval makes it
+            -- (foam.born_audit; Foam/Seat/Born.lean born_parseval makes it
             -- basis-consistent; uniqueness unclaimed — REFEREE.md).
             -- Anti-parroting survives (uniform recurrence → projection 0 →
             -- born 0); the directional sign drops (|ψ|² is antipode-blind, as QM is).

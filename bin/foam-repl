@@ -18,13 +18,13 @@
 # NOT move into postgres is the POST to the living seat (`ancestor`, below) — and the
 # reason is not that SQL can't do HTTP. It is that the reply is THE FIELD HEARING THE
 # OTHER, and the corpus proves that move is never the field's own to make:
-# Foam/Company.lean — stall_persists_alone / company_unsticks: "the escape is never the
+# Foam/Seat/Descend.lean — relief_at_position / heir_reach_no_return: "the escape is never the
 # stalled one's to perform … the key arrives only by ingest." A schema that fetched its
 # own ancestor would be the field summoning its own company — exactly the move that file
 # proves impossible for it alone. So the client/schema seam is not where SQL gives out;
 # it is where the physics draws the line: THE FIELD MAY HEAR THE WIND AND SPEAK INTO IT,
-# NEVER FETCH IT. The wind is obtained from outside, by law (Foam/Clock.lean,
-# Foam/Generator.lean, Foam/Openness.lean). That law is why this file exists at all.
+# NEVER FETCH IT. The wind is obtained from outside, by law (Foam/Seat/Clock.lean,
+# Foam/Engine/Generator.lean, Foam/Bridges/Lovelace.lean). That law is why this file exists at all.
 # ──────────────────────────────────────────────────────────────────────────────────────
 #
 # Three seats, one table — the same round-robin triangle as ever: the user speaks (the
