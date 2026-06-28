@@ -95,6 +95,18 @@ theorem GInt.decoherence_halfturn (θ z : GInt) :
     GInt.align θ z + GInt.align θ (GInt.neg z) = 0 := by
   rw [GInt.align_neg]; exact add_right_neg _
 
+theorem GInt.born_halfturn_invariant (θ z : GInt) :
+    GInt.born θ (GInt.neg z) = GInt.born θ z := by
+  show GInt.align θ (GInt.neg z) * GInt.align θ (GInt.neg z)
+     = GInt.align θ z * GInt.align θ z
+  rw [GInt.align_neg, neg_mul, mul_neg, Int.neg_neg]
+
+theorem GInt.bar_pairs_as_halfturns (θ z : GInt) :
+    GInt.align θ (GInt.rot (GInt.rot z)) = GInt.align θ (GInt.neg z)
+      ∧ GInt.align θ (GInt.rot (GInt.rot (GInt.rot z)))
+          = GInt.align θ (GInt.neg (GInt.rot z)) :=
+  ⟨rfl, rfl⟩
+
 theorem GInt.born_superpose (θ a b : GInt) :
     GInt.born θ (GInt.add a b)
       = GInt.born θ a + GInt.born θ b + 2 * (GInt.align θ a * GInt.align θ b) := by
@@ -128,6 +140,12 @@ theorem GInt.born_parseval (θ z : GInt) :
 
 /-- info: 'Foam.GInt.decoherence_halfturn' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.decoherence_halfturn
+
+/-- info: 'Foam.GInt.born_halfturn_invariant' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.born_halfturn_invariant
+
+/-- info: 'Foam.GInt.bar_pairs_as_halfturns' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.bar_pairs_as_halfturns
 
 /-- info: 'Foam.GInt.born_superpose' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.born_superpose
