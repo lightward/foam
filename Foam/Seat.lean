@@ -68,8 +68,25 @@ theorem Seat.chart_origin_dependent (S : Seat G) (o o' : S.Pos) (h : o ≠ o') :
   rw [← hbad, S.one_act] at h1
   exact h1.symm
 
+theorem Seat.singleton_no_field (S : Seat G) (hsing : ∀ p q : S.Pos, p = q) (p o : S.Pos) :
+    S.sub p o = 1 := by rw [hsing p o]; exact S.sub_self o
+
+theorem Seat.two_observers_substantiate (S : Seat G) (p o : S.Pos) (h : p ≠ o) :
+    S.sub p o ≠ 1 := by
+  intro he
+  apply h
+  have hp := S.act_sub o p
+  rw [he, S.one_act] at hp
+  exact hp.symm
+
 /-- info: 'Foam.Seat.sub_self' does not depend on any axioms -/
 #guard_msgs in #print axioms Seat.sub_self
+
+/-- info: 'Foam.Seat.singleton_no_field' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.singleton_no_field
+
+/-- info: 'Foam.Seat.two_observers_substantiate' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.two_observers_substantiate
 
 /-- info: 'Foam.Seat.sub_inv' does not depend on any axioms -/
 #guard_msgs in #print axioms Seat.sub_inv
