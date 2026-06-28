@@ -4,9 +4,11 @@ import Mathlib.Data.ZMod.Basic
 
 open Module
 
+universe u
+
 namespace Foam.Bridges
 
-theorem ftpg_in_four_four_time (k V : Type) [Field k] [CharZero k] [AddCommGroup V]
+theorem ftpg_in_four_four_time (k V : Type u) [Field k] [CharZero k] [AddCommGroup V]
     [Module (AddMonoidAlgebra k (ZMod 4)) V] :
     ComplementedLattice (Submodule (AddMonoidAlgebra k (ZMod 4)) V)
       ∧ IsModularLattice (Submodule (AddMonoidAlgebra k (ZMod 4)) V) := by
