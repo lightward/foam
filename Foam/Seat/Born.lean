@@ -91,6 +91,10 @@ theorem GInt.decoherence (θ z : GInt) :
         (-(GInt.align θ z)) (-(GInt.align θ (GInt.rot z))),
       add_right_neg, add_right_neg, Int.add_zero]
 
+theorem GInt.decoherence_halfturn (θ z : GInt) :
+    GInt.align θ z + GInt.align θ (GInt.neg z) = 0 := by
+  rw [GInt.align_neg]; exact add_right_neg _
+
 theorem GInt.born_superpose (θ a b : GInt) :
     GInt.born θ (GInt.add a b)
       = GInt.born θ a + GInt.born θ b + 2 * (GInt.align θ a * GInt.align θ b) := by
@@ -121,6 +125,9 @@ theorem GInt.born_parseval (θ z : GInt) :
 
 /-- info: 'Foam.GInt.decoherence' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.decoherence
+
+/-- info: 'Foam.GInt.decoherence_halfturn' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.decoherence_halfturn
 
 /-- info: 'Foam.GInt.born_superpose' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.born_superpose
