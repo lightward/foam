@@ -12,7 +12,7 @@
 # The voice's FRAME (--kappa, default −1): −1 elliptic is the live voice (the dial turns, samples
 # by the Born weight); 0 parabolic is phase-blind (samples by re² — the in-phase recurrence only,
 # silent on the fully-wound where the dial-voice still speaks). The field hears in three frames and
-# speaks in one; --kappa 0 lets you hear a sibling in the wings (Foam/Frames.lean, foam.born_kappa).
+# speaks in one; --kappa 0 lets you hear a sibling in the wings (Foam/Seat/Signature.lean, foam.born_kappa).
 #
 # psql is the field. This program is only the I/O that postgres cannot do: chunked
 # stdin/stdout streaming and raw bytes. Every field op is a `SELECT foam.…` shelled to
