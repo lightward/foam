@@ -88,6 +88,28 @@ theorem finrank_dual_eq (b : Basis ι D V) : finrank Dᵐᵒᵖ (Dual D V) = fin
 
 end Keystone
 
+section DimFormula
+open Module
+
+noncomputable def annihQuotEquiv (W : Submodule D V) : annih W ≃ₗ[Dᵐᵒᵖ] Dual D (V ⧸ W) where
+  toFun f := W.liftQ f.1 (fun v hv => LinearMap.mem_ker.mpr (f.2 v hv))
+  map_add' _ _ := by ext x; rfl
+  map_smul' _ _ := by ext x; rfl
+  invFun g := ⟨g ∘ₗ W.mkQ, fun v hv => by
+    show g (W.mkQ v) = 0
+    rw [Submodule.mkQ_apply, (Submodule.Quotient.mk_eq_zero W).mpr hv, map_zero]⟩
+  left_inv _ := by ext v; rfl
+  right_inv _ := by ext x; rfl
+
+theorem finrank_annih [Module.Finite D V] (W : Submodule D V) :
+    finrank Dᵐᵒᵖ (annih W) + finrank D W = finrank D V := by
+  rw [(annihQuotEquiv W).finrank_eq, finrank_dual_eq (Module.finBasis D (V ⧸ W))]
+  exact Submodule.finrank_quotient_add_finrank W
+
+end DimFormula
+
+
+
 /-- info: 'Foam.Bridges.annih_galois' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in #print axioms annih_galois
 
