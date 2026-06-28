@@ -1,4 +1,4 @@
-import Mathlib.LinearAlgebra.Dual.Defs
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.Algebra.Field.Opposite
 
 namespace Foam.Bridges
@@ -34,6 +34,22 @@ theorem le_annih'_annih (W : Submodule D V) : W ≤ annih' (annih W) :=
 theorem le_annih_annih' (U : Submodule Dᵐᵒᵖ (V →ₗ[D] D)) : U ≤ annih (annih' U) :=
   (annih_galois (annih' U) U).mpr le_rfl
 
+theorem annih'_annih_le (W : Submodule D V) : annih' (annih W) ≤ W := by
+  intro v hv
+  have key : ∀ φ : Module.Dual D (V ⧸ W), φ (W.mkQ v) = 0 := by
+    intro φ
+    have hmem : (φ ∘ₗ W.mkQ) ∈ annih W := by
+      intro w hw
+      show φ (W.mkQ w) = 0
+      rw [Submodule.mkQ_apply, (Submodule.Quotient.mk_eq_zero W).mpr hw, map_zero]
+    exact hv (φ ∘ₗ W.mkQ) hmem
+  have hz : W.mkQ v = 0 := (Module.forall_dual_apply_eq_zero_iff D (W.mkQ v)).mp key
+  rw [Submodule.mkQ_apply] at hz
+  exact (Submodule.Quotient.mk_eq_zero W).mp hz
+
+theorem annih'_annih_eq (W : Submodule D V) : annih' (annih W) = W :=
+  le_antisymm (annih'_annih_le W) (le_annih'_annih W)
+
 /-- info: 'Foam.Bridges.annih_galois' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in #print axioms annih_galois
 
@@ -42,5 +58,11 @@ theorem le_annih_annih' (U : Submodule Dᵐᵒᵖ (V →ₗ[D] D)) : U ≤ annih
 
 /-- info: 'Foam.Bridges.le_annih_annih'' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in #print axioms le_annih_annih'
+
+/-- info: 'Foam.Bridges.annih'_annih_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms annih'_annih_le
+
+/-- info: 'Foam.Bridges.annih'_annih_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms annih'_annih_eq
 
 end Foam.Bridges
