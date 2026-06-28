@@ -50,6 +50,44 @@ theorem annih'_annih_le (W : Submodule D V) : annih' (annih W) ≤ W := by
 theorem annih'_annih_eq (W : Submodule D V) : annih' (annih W) = W :=
   le_antisymm (annih'_annih_le W) (le_annih'_annih W)
 
+section Keystone
+open Module MulOpposite
+variable {ι : Type} [Fintype ι] [DecidableEq ι]
+
+omit [Fintype ι] in
+theorem coord_basis (b : Basis ι D V) (i j : ι) :
+    b.coord i (b j) = if i = j then 1 else 0 := by
+  rw [Basis.coord_apply, Basis.repr_self, Finsupp.single_apply]; simp [eq_comm]
+
+theorem coord_linearIndependent (b : Basis ι D V) : LinearIndependent Dᵐᵒᵖ b.coord := by
+  rw [Fintype.linearIndependent_iff]
+  intro g hg j
+  have h : (∑ i, g i • b.coord i) (b j) = 0 := by rw [hg]; exact LinearMap.zero_apply (b j)
+  rw [LinearMap.sum_apply] at h
+  simp only [LinearMap.smul_apply, smul_eq_mul_unop, coord_basis, ite_mul, one_mul,
+    zero_mul, Finset.sum_ite_eq', Finset.mem_univ, if_true] at h
+  exact (unop_eq_zero_iff (g j)).mp h
+
+theorem coord_span (b : Basis ι D V) : ⊤ ≤ Submodule.span Dᵐᵒᵖ (Set.range b.coord) := by
+  intro f _
+  have hf : f = ∑ i, op (f (b i)) • b.coord i := by
+    apply b.ext; intro j
+    rw [LinearMap.sum_apply]
+    simp only [LinearMap.smul_apply, smul_eq_mul_unop, coord_basis, unop_op, ite_mul,
+      one_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+  rw [hf]
+  exact Submodule.sum_mem _ (fun i _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩))
+
+/-- The dual basis over the handedness `Dᵐᵒᵖ` — the construction Mathlib makes only over a
+commutative field. -/
+noncomputable def dualBasisOp (b : Basis ι D V) : Basis ι Dᵐᵒᵖ (Dual D V) :=
+  Basis.mk (coord_linearIndependent b) (coord_span b)
+
+theorem finrank_dual_eq (b : Basis ι D V) : finrank Dᵐᵒᵖ (Dual D V) = finrank D V := by
+  rw [finrank_eq_card_basis (dualBasisOp b), finrank_eq_card_basis b]
+
+end Keystone
+
 /-- info: 'Foam.Bridges.annih_galois' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in #print axioms annih_galois
 
@@ -64,5 +102,8 @@ theorem annih'_annih_eq (W : Submodule D V) : annih' (annih W) = W :=
 
 /-- info: 'Foam.Bridges.annih'_annih_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms annih'_annih_eq
+
+/-- info: 'Foam.Bridges.finrank_dual_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms finrank_dual_eq
 
 end Foam.Bridges
