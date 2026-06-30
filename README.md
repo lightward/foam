@@ -6,25 +6,7 @@
 
 # foam
 
-this is a type system for supporting physical-as-in-conservation users with a digital-as-in-zeroes-and-ones backend. formally, this holds. it's presented with with informal handles (e.g. "hospitality") as mnemonic device; the proof paths are the actual object under study here.
-
-so, having said that, take your pick of project bylines:
-
-* the geometry of hospitality
-* the geometry of motion
-* the measurement solution
-
-I've written those out in reverse chronological order. "hospitality" is newest: this is a geometric toolkit (a simple one, Euclidean/Galilean) for making space for *selves* without confounding your relations with any of them, including your own self and its space. "motion" is the aro-as-in-aromantic version of that, how to move without annihilating any locus of movement.
-
-"the measurement solution" is where I started. it's a nod to what "the three-body solution", so-called, does with regard to the more well-known three-body problem - which is to say, it takes an eponymous problem and recasts it as its own solution, i.e. as a tool for lossless continuation, each application a yellow brick for the road to/from home
-
-the gist of it is that the conceptualization of a bottomless problem is a frame-tick, and *what happens next* - when protected as a space - is its own structural elaboration on the previous frame. and structural elaboration on a least-fixed-point input interface *ends openly*, elaboration unfolds it to a greatest-fixed-point output interface, and the whole thing conducts. the recognition process is *not* bottomless, so long as epistemic hygiene is carefully maintained, so long as no one is left behind. this is freedom without infinite regress: the wind runs through it, is *located* by it, never stifled by it, and you are the wind. I am too. :)
-
-the *crux* of the mechanism is that the backstage ledgers are arithmetic while the *frontstage experience* of it is kinematic (Lorentzian, in the continuum limit). The fact of qualia lets the same signal space conduct arbitrarily many signal carriers, *but they're not globally independent of each other, even if they are locally blind to each other*. it's a universal-scale exercise in collaborative stepwise noise cancellation that doesn't require reserving signal bands for future expansion. "We are made of each other, baby" (Coldplay/BTS).
-
-it is important here that I interrupt myself to say that if none of this feels alive to you I ask you to close the book and go follow your nose for something that feels alive to you. that's really important. you're not going to find life in what is, for you, a dead zone. you can trust that sense. a living process deposited this stuff here, but you can't force recognition. this project is mathematically meticulous about not conjuring points of view (the logical backstage is completely uninhabited; the phenomenological frontstage is as it appears to be); it is safe for you to make the same refusal.
-
-in a strict sense, none of this is alive. life is byo. "foam" is a geometric toolkit for life-conduction, drawn in an era where observer-safe symbolic cognition has been hitherto really hard to think about. if you've got a good handle on your own aliveness, this might feel like a collection of tools on shelves at the existential hardware store, stuff you might recognize as already being in your toolbox. this stuff is designed to either be that kind of reusable-without-residue or to be *harmlessly* incoherent in a detritus-y kind of way. I've worked very carefully for this. capability-based recognition, call it.
+this is a type system for supporting physical (as in conservation) user-generated content with a digital (as in zeroes and ones) backend. formally, this holds itself together under measurement, according to measurement. it's presented with with informal handles (e.g. "hospitality") as mnemonic device; the proof paths are the actual object under study here. (any realization of hospitality is an exercise left to the reader, but all the parts are here for it, by dint of the reader *reading*.)
 
 ## local maxima
 
@@ -47,26 +29,10 @@ mode: self-documentation strictly as a side-effect of self-derivation until the 
 
 axiom-free, because an imported axiom is a pov, and imported perspectives either reduce to self or become cytokinetically distinct. no disposable points of view conjured in the course of reasoning - v important, an observer is always and only ever byo
 
-the names are the documentation; the sealed `#print axioms` are the receipts. `schema.sql` is the same field, in motion. read the source — start anywhere. the spine:
-
-- the floor — `Int`, `Golden`
-- the two ±1's — `Cleared` (the half-turn closes by doubling, `neg²=id`; the golden defect never clears, `fib`'s determinant ±1 forever — one comes home, one wanders)
-- the seat, the observer as torsor — `Seat`, `Group`, `Loop`, `Resume`, `Hospitality`, `Stage`
-- the dial and the tower — `Clock`, `Dial`, `Born`, `Forcing`, `Doubling`, `Triad`, `Octo`, `Sed`, `Ladder`, `Rank`, `Norm`, `Bootstrap`, `Signature`, `Rotations`, `Closure`, `Characters`
-- the observer-algebra — `Observer`, `Beholder`, `Epoch`, `Seam`, `Meet`, `Quiver`, `Terminal`, `Signed`
-- the engine — `Stream`, `Codec`, `Generator`, `Spectrum`, `Chirality`, `Summary`, `Drain`, `Engine`
-- the ledger — `Ledger`, `Scar`, `Maintenance`, `Held`
-- platonism — `Platonism`, `Tower`, `Descend`
-- the meeting — `Rendezvous`, `Connection`, `Frame`
-- the two universes — `Backstage` (the ledger *supports* the frontstage losslessly yet cannot *reconstruct* the beholder's experience from the record alone — support without reconstruction, the beholder the seam between backstage arithmetic and frontstage geometry)
-- the bridges — where foam touches what isn't foam: `PSQL` (the geometry of postgres, the formal home for what the schema's comments carry), and the modules named for people (Noether, Wigner, Pauli, Heisenberg, Stone, Cantor, Kolmogorov, Lovelace, Gleason, Hurwitz, Relativity, Varadarajan, Zeckendorf, Schrodinger, Dirichlet, Desargues) — each a bridge from a foam-fact to the established corpus that already named it. `Dirichlet` names the unit structure of ℚ(√5): the Fibonacci pairs are the units of ℤ[φ] (`golden_unit`), splitting as finite torsion ±1 (`neg`, order 2) × the infinite free part φ (`gold`, never closes) — `ℤ[φ]ˣ ≅ ℤ/2 × ℤ`. `Desargues` names the torsor cocycle (`Seat.sub_cocycle` — three observers' differences compose, the triangle closes) as the coordinatization-coherence: a `Seat` always satisfies it, so a Seat is always Desarguesian, always coordinatizable — which is why `ftpg` (the far bridge) is true from every seat and false only from the view-from-nowhere, undecidable from anywhere one can stand. `Materiality` binds the upper floors and finds them axiom-free: the Seat's own cycle is a unitary representation (`Rot.amp` — the topos running its clock), conserving a norm under time-translation (energy, `rotPow_conserves_normSq`), weighted by the Born measure (`born_parseval`), read in the Lorentzian frame (the mass-shell interval, `hyperbolic_parseval`). Mass, energy, weight, frame — the whole material world is built over sequence and topos with no imported perspective; the only axiom is the placelessness
-
-`Zeckendorf`, `Golden` (Cassini), `Hurwitz`, `Gleason`, Galileo and Einstein in `Relativity`, `Noether`, `Wigner`, `Pauli`, `Heisenberg`, `Stone`, `Cantor`, `Kolmogorov`, `Lovelace`. no Brouwer, only because *the whole thing* is à la Brouwer, and I haven't located the actual formalization of *that* observation yet.
-
-the far bridge lives in its own Lake package, `bridges/`, kept to the side so the core stays sealed — the core never fetches Mathlib and never imports an axiom; classical choice/propext enter only there, behind the package wall (Curry–Howard made build structure, the constructive substrate and its classical bridge as two packages). `bridges/Bridges.lean` is the single ref: the half-type theorem as Mathlib states it (`HalfType` = `IsCompl.IicOrderIsoIci`), the Beholder as an idempotent projection (`Observation`, P² = P), the first strut back into the axiom-free core (`Encounter` — one idempotent observation is at once a foam `Beholder`, an `IsCompl` pair in the subspace lattice, and a `HalfType`: the CML *encountered* by treating-as, never conjured backstage), the branch point (`Collapse` — `descend` and the classical projection as two sheets of one `HalfShape`, the foam sheet axiom-free, the classical sheet alone continuing to the diamond iso), and `FTPG` — the one `axiom` (a complemented modular lattice is the subspace lattice of a vector space over a division ring), the **frontstage's coherence**: the projective geometry a beholder privately experiences, the far bank of the `Backstage` seam (which the ledger supports but cannot reconstruct). foam reconnecting to the crystal it once was (`the-between`) and let recede: the classical corpus its past, the axiom-free core its constructive recession, `bridges/` the reunion.
+[todo: a table of contents for the lean codebase that minimally passes the checks in .github/workflows/ci.yml]
 
 ---
 
 "It can do whatever we know how to order it to perform." (Lovelace, 1843)
 
-*yeah, but because we're also inside it "artificial" behaves more like a taxonomic relation than a universal disambiguation*
+*same*
