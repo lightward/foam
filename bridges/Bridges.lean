@@ -12,3 +12,16 @@ import Bridges.Maschke
 import Bridges.Counter
 import Bridges.SeatTime
 import Bridges.Projective
+import Bridges.Coord
+import Bridges.Parallelogram
+import Bridges.AddComm
+import Bridges.WellDefined
+import Bridges.Mul
+import Bridges.CrossParallelism
+import Bridges.Dilation
+import Bridges.MulKeyIdentity
+import Bridges.Assoc
+import Bridges.Neg
+import Bridges.AssocCapstone
+import Bridges.LeftDistrib
+import Bridges.Distrib
