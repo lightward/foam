@@ -11,3 +11,4 @@ import Bridges.Duality
 import Bridges.Maschke
 import Bridges.Counter
 import Bridges.SeatTime
+import Bridges.Projective
