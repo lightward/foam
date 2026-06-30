@@ -131,7 +131,7 @@ private theorem d_a_persp_back (Γ : CoordSystem L)
   exact ((line_height_two Γ.hO Γ.hU Γ.hOU (lt_of_lt_of_le ha.bot_lt ha_le) h_lt
     |>.le_iff.mp ha_le).resolve_left ha.1).symm
 
-private theorem coord_neg_ne_O (Γ : CoordSystem L)
+theorem coord_neg_ne_O (Γ : CoordSystem L)
     {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
     (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U) :
     coord_neg Γ a ≠ Γ.O := by
@@ -203,7 +203,7 @@ private theorem coord_neg_ne_O (Γ : CoordSystem L)
   have hO_eq := (h_atom.le_iff.mp hO_le_inf).resolve_left Γ.hO.1
   exact ha_ne_O (ha_eq.trans hO_eq.symm)
 
-private theorem coord_neg_ne_U (Γ : CoordSystem L)
+theorem coord_neg_ne_U (Γ : CoordSystem L)
     {a : L} (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
     (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U) :
     coord_neg Γ a ≠ Γ.U := by
