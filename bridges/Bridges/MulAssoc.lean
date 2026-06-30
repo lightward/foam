@@ -1502,11 +1502,388 @@ theorem dilation_compose_at_beta (Γ : CoordSystem L)
   rw [hLHS, hRHS, crux_at_C Γ x y hx hy hx_on hy_on hx_ne_O hy_ne_O hx_ne_U hy_ne_U
     hx_ne_I hy_ne_I hxy_ne_O hxy_ne_U R hR hR_not h_irred]
 
+/-- The pure-lattice core of the E-recovery: if `σP` and `σP'` are atoms whose
+    join meets `m` exactly at `E`, with `σP` on the line `O⊔P` and `σP'` off `m`,
+    then `σP` is recovered as the meet of line `σP'⊔E` with line `O⊔P`. -/
+theorem recovery_core (Γ : CoordSystem L) {σP σP' P : L}
+    (hσP_atom : IsAtom σP) (hσP'_atom : IsAtom σP')
+    (hP : IsAtom P) (hP_ne_O : P ≠ Γ.O)
+    (hσP'_not_m : ¬ σP' ≤ Γ.U ⊔ Γ.V)
+    (hσP_ne_σP' : σP ≠ σP')
+    (h_inf : (σP ⊔ σP') ⊓ (Γ.U ⊔ Γ.V) = Γ.E)
+    (hσP_le_OP : σP ≤ Γ.O ⊔ P)
+    (hE_not_OP : ¬ Γ.E ≤ Γ.O ⊔ P) :
+    σP = (σP' ⊔ Γ.E) ⊓ (Γ.O ⊔ P) := by
+  set m := Γ.U ⊔ Γ.V
+  have hE_le_σσ' : Γ.E ≤ σP ⊔ σP' := h_inf ▸ inf_le_left
+  have hσP'_ne_E : σP' ≠ Γ.E := fun h => hσP'_not_m (h ▸ Γ.hE_on_m)
+  have hσP'_covBy_σP'σP : σP' ⋖ σP' ⊔ σP :=
+    atom_covBy_join hσP'_atom hσP_atom (Ne.symm hσP_ne_σP')
+  have hσP'E_le_σP'σP : σP' ⊔ Γ.E ≤ σP' ⊔ σP := by
+    refine sup_le le_sup_left ?_
+    exact hE_le_σσ'.trans (sup_comm σP σP' ▸ le_rfl)
+  have hσP'_lt_σP'E : σP' < σP' ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+    (fun h => hσP'_ne_E
+      ((hσP'_atom.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left Γ.hE_atom.1).symm)
+  have hσP'E_eq : σP' ⊔ Γ.E = σP' ⊔ σP :=
+    (hσP'_covBy_σP'σP.eq_or_eq hσP'_lt_σP'E.le hσP'E_le_σP'σP).resolve_left
+      (ne_of_gt hσP'_lt_σP'E)
+  have hσP_le_σP'E : σP ≤ σP' ⊔ Γ.E := hσP'E_eq.symm ▸ (le_sup_right : σP ≤ σP' ⊔ σP)
+  have hσP_le_meet : σP ≤ (σP' ⊔ Γ.E) ⊓ (Γ.O ⊔ P) := le_inf hσP_le_σP'E hσP_le_OP
+  have hRHS_atom : IsAtom ((σP' ⊔ Γ.E) ⊓ (Γ.O ⊔ P)) :=
+    meet_of_lines_is_atom hσP'_atom Γ.hE_atom Γ.hO hP hσP'_ne_E (Ne.symm hP_ne_O)
+      (fun h => hE_not_OP (le_sup_right.trans h))
+      (fun h => hσP_atom.1 (le_bot_iff.mp (h ▸ hσP_le_meet)))
+  exact (hRHS_atom.le_iff.mp hσP_le_meet).resolve_left hσP_atom.1
+
+/-- All witness facts for the β-image `βa = (U⊔C) ⊓ (a⊔E)` of an l-atom `a`. -/
+theorem beta_witness (Γ : CoordSystem L) {a : L} (ha : IsAtom a)
+    (ha_on : a ≤ Γ.O ⊔ Γ.U) (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U) :
+    IsAtom ((Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E)) ∧
+    (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E) ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ∧
+    ¬ (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E) ≤ Γ.O ⊔ Γ.U ∧
+    ¬ (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E) ≤ Γ.U ⊔ Γ.V ∧
+    ¬ (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E) ≤ Γ.O ⊔ Γ.C ∧
+    (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E) ≠ Γ.I ∧
+    (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E) ≠ Γ.O := by
+  set βa := (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E) with hβa_def
+  have hβa_atom : IsAtom βa := beta_atom Γ ha ha_on ha_ne_O ha_ne_U
+  have hβa_plane : βa ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := beta_plane Γ ha_on
+  have hβa_not_l : ¬ βa ≤ Γ.O ⊔ Γ.U := beta_not_l Γ ha ha_on ha_ne_O ha_ne_U
+  have hβa_ne_O : βa ≠ Γ.O := fun h => hβa_not_l (h ▸ le_sup_left)
+  have hβa_ne_I : βa ≠ Γ.I := fun h => hβa_not_l (h ▸ Γ.hI_on)
+  have hβa_le_q : βa ≤ Γ.U ⊔ Γ.C := inf_le_left
+  have hβa_le_aE : βa ≤ a ⊔ Γ.E := inf_le_right
+  have ha_not_m : ¬ a ≤ Γ.U ⊔ Γ.V := fun h => ha_ne_U (Γ.atom_on_both_eq_U ha ha_on h)
+  have ha_ne_E : a ≠ Γ.E := fun h => ha_not_m (h ▸ Γ.hE_on_m)
+  have hqm_eq_U : (Γ.U ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.U := by
+    rw [sup_inf_assoc_of_le Γ.C (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)]
+    have hCm : Γ.C ⊓ (Γ.U ⊔ Γ.V) = ⊥ :=
+      (Γ.hC.le_iff.mp inf_le_left).resolve_right (fun h => Γ.hC_not_m (h ▸ inf_le_right))
+    rw [hCm, sup_bot_eq]
+  have hβa_ne_E : βa ≠ Γ.E := by
+    intro h
+    have hE_le_q : Γ.E ≤ Γ.U ⊔ Γ.C := h ▸ hβa_le_q
+    exact Γ.hEU ((Γ.hU.le_iff.mp (le_inf hE_le_q Γ.hE_on_m |>.trans hqm_eq_U.le))
+      |>.resolve_left Γ.hE_atom.1)
+  have hβa_not_m : ¬ βa ≤ Γ.U ⊔ Γ.V := by
+    intro h
+    apply hβa_ne_E
+    exact (Γ.hE_atom.le_iff.mp (le_inf hβa_le_aE h |>.trans
+      (line_direction ha ha_not_m Γ.hE_on_m).le)).resolve_left hβa_atom.1
+  have hO_ne_E : Γ.O ≠ Γ.E := fun h => Γ.hO_not_m (h ▸ Γ.hE_on_m)
+  have hOC_ne : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  have hO_not_aE : ¬ Γ.O ≤ a ⊔ Γ.E := by
+    intro hO_le
+    have hO_lt_Oa : Γ.O < Γ.O ⊔ a := lt_of_le_of_ne le_sup_left
+      (fun h => ha_ne_O ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left ha.1))
+    have hOa_eq_l : Γ.O ⊔ a = Γ.O ⊔ Γ.U :=
+      ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq hO_lt_Oa.le
+        (sup_le le_sup_left ha_on)).resolve_left (ne_of_gt hO_lt_Oa)
+    have hl_le : Γ.O ⊔ Γ.U ≤ a ⊔ Γ.E := hOa_eq_l ▸ sup_le hO_le le_sup_left
+    have ha_lt_l : a < Γ.O ⊔ Γ.U :=
+      (line_covers_its_atoms Γ.hO Γ.hU Γ.hOU ha ha_on).lt
+    exact Γ.hE_not_l (le_sup_right.trans
+      (((atom_covBy_join ha Γ.hE_atom ha_ne_E).eq_or_eq ha_on hl_le).resolve_left
+        (ne_of_gt ha_lt_l)).symm.le)
+  have hβa_not_OC : ¬ βa ≤ Γ.O ⊔ Γ.C := by
+    intro h
+    have hO_lt_OE : Γ.O < Γ.O ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+      (fun h' => hO_ne_E ((Γ.hO.le_iff.mp (le_sup_right.trans h'.symm.le)).resolve_left
+        Γ.hE_atom.1).symm)
+    have hOE_le_OC : Γ.O ⊔ Γ.E ≤ Γ.O ⊔ Γ.C := sup_le le_sup_left CoordSystem.hE_le_OC
+    have hO_covBy_OC : Γ.O ⋖ Γ.O ⊔ Γ.C := atom_covBy_join Γ.hO Γ.hC hOC_ne
+    have hOE_eq_OC : Γ.O ⊔ Γ.E = Γ.O ⊔ Γ.C :=
+      (hO_covBy_OC.eq_or_eq hO_lt_OE.le hOE_le_OC).resolve_left (ne_of_gt hO_lt_OE)
+    have hmod : (Γ.E ⊔ a) ⊓ (Γ.E ⊔ Γ.O) = Γ.E :=
+      modular_intersection Γ.hE_atom ha Γ.hO ha_ne_E.symm hO_ne_E.symm ha_ne_O
+        (show ¬ Γ.O ≤ Γ.E ⊔ a from sup_comm a Γ.E ▸ hO_not_aE)
+    have hβa_le_meet : βa ≤ (Γ.E ⊔ a) ⊓ (Γ.E ⊔ Γ.O) := by
+      refine le_inf ?_ ?_
+      · exact sup_comm a Γ.E ▸ hβa_le_aE
+      · have hβa_le_OE : βa ≤ Γ.O ⊔ Γ.E := h.trans hOE_eq_OC.symm.le
+        exact sup_comm Γ.O Γ.E ▸ hβa_le_OE
+    apply hβa_ne_E
+    exact (Γ.hE_atom.le_iff.mp (hβa_le_meet.trans hmod.le)).resolve_left hβa_atom.1
+  exact ⟨hβa_atom, hβa_plane, hβa_not_l, hβa_not_m, hβa_not_OC, hβa_ne_I, hβa_ne_O⟩
+
+/-- The β-cast of a witness `P` is realized as the β-image of the l-atom
+    `a = (O⊔U) ⊓ (P⊔E)`. -/
+theorem beta_cast_realize (Γ : CoordSystem L) {P : L} (hP : IsAtom P)
+    (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U)
+    (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V) (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) :
+    IsAtom ((Γ.O ⊔ Γ.U) ⊓ (P ⊔ Γ.E)) ∧
+    (Γ.O ⊔ Γ.U) ⊓ (P ⊔ Γ.E) ≤ Γ.O ⊔ Γ.U ∧
+    (Γ.O ⊔ Γ.U) ⊓ (P ⊔ Γ.E) ≠ Γ.O ∧
+    (Γ.O ⊔ Γ.U) ⊓ (P ⊔ Γ.E) ≠ Γ.U ∧
+    beta_cast Γ P = (Γ.U ⊔ Γ.C) ⊓ ((Γ.O ⊔ Γ.U) ⊓ (P ⊔ Γ.E) ⊔ Γ.E) := by
+  set l := Γ.O ⊔ Γ.U with hl_def
+  set π := Γ.O ⊔ Γ.U ⊔ Γ.V with hπ_def
+  set a := l ⊓ (P ⊔ Γ.E) with ha_def
+  have hP_ne_O : P ≠ Γ.O := fun h => hP_not_l (h ▸ le_sup_left)
+  have hP_ne_E : P ≠ Γ.E := fun h => hP_not_m (h ▸ Γ.hE_on_m)
+  have hUV : Γ.U ≠ Γ.V := fun h => Γ.hV_off (h ▸ le_sup_right)
+  have hPE_le_π : P ⊔ Γ.E ≤ π :=
+    sup_le hP_plane (Γ.hE_on_m.trans Γ.m_covBy_π.le)
+  have hl_covBy_π : l ⋖ π :=
+    line_covBy_plane Γ.hO Γ.hU Γ.hV Γ.hOU (fun h => Γ.hV_off (h ▸ le_sup_left))
+      hUV Γ.hV_off
+  have ha_atom : IsAtom a := by
+    rw [ha_def, inf_comm]
+    exact line_meets_m_at_atom hP Γ.hE_atom hP_ne_E hPE_le_π hl_covBy_π.le hl_covBy_π hP_not_l
+  have ha_le_l : a ≤ l := inf_le_left
+  have ha_le_PE : a ≤ P ⊔ Γ.E := inf_le_right
+  have ha_ne_E : a ≠ Γ.E := fun h => Γ.hE_not_l (h ▸ ha_le_l)
+  -- a ⊔ E = P ⊔ E
+  have hPE_covBy_P : P ⋖ P ⊔ Γ.E := atom_covBy_join hP Γ.hE_atom hP_ne_E
+  have haE_le_PE : a ⊔ Γ.E ≤ P ⊔ Γ.E := sup_le ha_le_PE le_sup_right
+  have hE_covBy_PE : Γ.E ⋖ P ⊔ Γ.E := by
+    rw [sup_comm]; exact atom_covBy_join Γ.hE_atom hP hP_ne_E.symm
+  have haE_ne_E : a ⊔ Γ.E ≠ Γ.E := fun h =>
+    ha_ne_E ((Γ.hE_atom.le_iff.mp (le_sup_left.trans h.le)).resolve_left ha_atom.1)
+  have hE_lt_aE : Γ.E < a ⊔ Γ.E := lt_of_le_of_ne le_sup_right (Ne.symm haE_ne_E)
+  have haE_eq_PE : a ⊔ Γ.E = P ⊔ Γ.E :=
+    (hE_covBy_PE.eq_or_eq (le_sup_right : Γ.E ≤ a ⊔ Γ.E) haE_le_PE).resolve_left
+      (ne_of_gt hE_lt_aE)
+  -- a ≠ O (else P ≤ O⊔E ≤ O⊔C)
+  have ha_ne_O : a ≠ Γ.O := by
+    intro h
+    have hO_le_PE : Γ.O ≤ P ⊔ Γ.E := h ▸ ha_le_PE
+    have hO_ne_E : Γ.O ≠ Γ.E := fun h' => Γ.hO_not_m (h' ▸ Γ.hE_on_m)
+    have hOE_le_PE : Γ.O ⊔ Γ.E ≤ P ⊔ Γ.E := sup_le hO_le_PE le_sup_right
+    have hOE_ne_E : Γ.O ⊔ Γ.E ≠ Γ.E := fun h' =>
+      hO_ne_E ((Γ.hE_atom.le_iff.mp (le_sup_left.trans h'.le)).resolve_left Γ.hO.1)
+    have hOE_eq_PE : Γ.O ⊔ Γ.E = P ⊔ Γ.E :=
+      (hE_covBy_PE.eq_or_eq (le_sup_right : Γ.E ≤ Γ.O ⊔ Γ.E) hOE_le_PE).resolve_left hOE_ne_E
+    have hP_le_OE : P ≤ Γ.O ⊔ Γ.E := hOE_eq_PE ▸ le_sup_left
+    have hOE_le_OC : Γ.O ⊔ Γ.E ≤ Γ.O ⊔ Γ.C := sup_le le_sup_left CoordSystem.hE_le_OC
+    exact hP_not_OC (hP_le_OE.trans hOE_le_OC)
+  -- a ≠ U (else E ≤ P⊔U ∩ m = U)
+  have ha_ne_U : a ≠ Γ.U := by
+    intro h
+    have hU_le_PE : Γ.U ≤ P ⊔ Γ.E := h ▸ ha_le_PE
+    have hPU_le_PE : P ⊔ Γ.U ≤ P ⊔ Γ.E := sup_le le_sup_left hU_le_PE
+    have hU_ne_P : Γ.U ≠ P := fun h' => hP_not_l (h' ▸ le_sup_right)
+    have hP_lt_PU : P < P ⊔ Γ.U := lt_of_le_of_ne le_sup_left
+      (fun h' => hU_ne_P ((hP.le_iff.mp (le_sup_right.trans h'.symm.le)).resolve_left Γ.hU.1))
+    have hPU_eq_PE : P ⊔ Γ.U = P ⊔ Γ.E :=
+      (hPE_covBy_P.eq_or_eq hP_lt_PU.le hPU_le_PE).resolve_left (ne_of_gt hP_lt_PU)
+    have hPU_inf_m : (P ⊔ Γ.U) ⊓ (Γ.U ⊔ Γ.V) = Γ.U :=
+      line_direction hP hP_not_m (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)
+    have hE_le_PU : Γ.E ≤ P ⊔ Γ.U := hPU_eq_PE.symm ▸ le_sup_right
+    have hE_le_U : Γ.E ≤ Γ.U := hPU_inf_m ▸ le_inf hE_le_PU Γ.hE_on_m
+    exact Γ.hEU ((Γ.hU.le_iff.mp hE_le_U).resolve_left Γ.hE_atom.1)
+  refine ⟨ha_atom, ha_le_l, ha_ne_O, ha_ne_U, ?_⟩
+  show (Γ.U ⊔ Γ.C) ⊓ (P ⊔ Γ.E) = (Γ.U ⊔ Γ.C) ⊓ (a ⊔ Γ.E)
+  rw [haE_eq_PE]
+
+/-- Composite E-recovery: the σ_y∘σ_x image of a witness `P` is recovered from
+    its β-cast image, mirroring `recovery_via_E` but pushed through two dilations
+    via direction-preservation (so the inner `σ_x P` need not be off `q`). -/
+theorem composite_recovery (Γ : CoordSystem L)
+    (x y : L) (hx : IsAtom x) (hy : IsAtom y)
+    (hx_on : x ≤ Γ.O ⊔ Γ.U) (hy_on : y ≤ Γ.O ⊔ Γ.U)
+    (hx_ne_O : x ≠ Γ.O) (hy_ne_O : y ≠ Γ.O)
+    (hx_ne_U : x ≠ Γ.U) (hy_ne_U : y ≠ Γ.U)
+    (hx_ne_I : x ≠ Γ.I) (hy_ne_I : y ≠ Γ.I)
+    {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_not_q : ¬ P ≤ Γ.U ⊔ Γ.C)
+    (hP_ne_I : P ≠ Γ.I)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    dilation_ext Γ y (dilation_ext Γ x P) =
+      (dilation_ext Γ y (dilation_ext Γ x (beta_cast Γ P)) ⊔ Γ.E) ⊓ (Γ.O ⊔ P) := by
+  set m := Γ.U ⊔ Γ.V with hm_def
+  set B := beta_cast Γ P with hB_def
+  have hP_ne_O : P ≠ Γ.O := fun h => hP_not_l (h ▸ le_sup_left)
+  -- B's witness facts via realization as a β-image
+  obtain ⟨ha_atom, ha_le_l, ha_ne_O, ha_ne_U, hB_eq⟩ :=
+    beta_cast_realize Γ hP hP_plane hP_not_l hP_not_m hP_not_OC
+  obtain ⟨hBw_atom, hBw_plane, hBw_not_l, hBw_not_m, hBw_not_OC, hBw_ne_I, hBw_ne_O⟩ :=
+    beta_witness Γ ha_atom ha_le_l ha_ne_O ha_ne_U
+  rw [← hB_eq] at hBw_atom hBw_plane hBw_not_l hBw_not_m hBw_not_OC hBw_ne_I hBw_ne_O
+  -- E off O⊔P
+  have hE_not_OP : ¬ Γ.E ≤ Γ.O ⊔ P := by
+    intro hE_le
+    have hO_ne_E : Γ.O ≠ Γ.E := fun h => Γ.hO_not_m (h ▸ Γ.hE_on_m)
+    have hOE_le_OP : Γ.O ⊔ Γ.E ≤ Γ.O ⊔ P := sup_le le_sup_left hE_le
+    have hO_covBy_OE : Γ.O ⋖ Γ.O ⊔ Γ.E := atom_covBy_join Γ.hO Γ.hE_atom hO_ne_E
+    have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+    have hOE_eq_OP : Γ.O ⊔ Γ.E = Γ.O ⊔ P :=
+      (hO_covBy_OP.eq_or_eq le_sup_left hOE_le_OP).resolve_left
+        (ne_of_gt hO_covBy_OE.lt)
+    have hOE_le_OC : Γ.O ⊔ Γ.E ≤ Γ.O ⊔ Γ.C := sup_le le_sup_left CoordSystem.hE_le_OC
+    exact hP_not_OC (le_sup_right.trans (hOE_eq_OP ▸ hOE_le_OC))
+  -- recovery for σ_x at P
+  have hRecX : dilation_ext Γ x P =
+      (dilation_ext Γ x B ⊔ Γ.E) ⊓ (Γ.O ⊔ P) :=
+    recovery_via_E Γ x hx hx_on hx_ne_O hx_ne_U hx_ne_I hP hP_plane hP_not_l hP_not_m
+      hP_not_OC hP_not_q hP_ne_I R hR hR_not h_irred
+  set Q := dilation_ext Γ x P with hQ_def
+  set B₁ := dilation_ext Γ x B with hB1_def
+  have hQ_le_BE : Q ≤ B₁ ⊔ Γ.E := hRecX.le.trans inf_le_left
+  -- Q is a witness
+  obtain ⟨hQ_atom, hQ_plane, hQ_not_l, hQ_not_m, hQ_not_OC, hQ_ne_I⟩ :=
+    dilation_witness_preservation Γ x hx hx_on hx_ne_O hx_ne_U hx_ne_I
+      hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I hP_ne_O
+  have hQ_ne_O : Q ≠ Γ.O := fun h => hQ_not_l (h ▸ le_sup_left)
+  -- B₁ = σ_x B is a witness
+  obtain ⟨hB1_atom, hB1_plane, hB1_not_l, hB1_not_m, hB1_not_OC, hB1_ne_I⟩ :=
+    dilation_witness_preservation Γ x hx hx_on hx_ne_O hx_ne_U hx_ne_I
+      hBw_atom hBw_plane hBw_not_l hBw_not_m hBw_not_OC hBw_ne_I hBw_ne_O
+  have hB1_ne_O : B₁ ≠ Γ.O := fun h => hB1_not_l (h ▸ le_sup_left)
+  -- B ≠ P and ¬ B ≤ O⊔P  (uses P off q)
+  have hB_le_q : B ≤ Γ.U ⊔ Γ.C := by rw [hB_def, beta_cast]; exact inf_le_left
+  have hB_le_PE : B ≤ P ⊔ Γ.E := by rw [hB_def, beta_cast]; exact inf_le_right
+  have hB_ne_P : B ≠ P := fun h => hP_not_q (h ▸ hB_le_q)
+  have hP_ne_E : P ≠ Γ.E := fun h => hP_not_m (h ▸ Γ.hE_on_m)
+  have hO_ne_E : Γ.O ≠ Γ.E := fun h => Γ.hO_not_m (h ▸ Γ.hE_on_m)
+  have hB_not_OP : ¬ B ≤ Γ.O ⊔ P := by
+    intro hB_le
+    have hOP_PE_eq : (P ⊔ Γ.O) ⊓ (P ⊔ Γ.E) = P :=
+      modular_intersection hP Γ.hO Γ.hE_atom hP_ne_O hP_ne_E hO_ne_E
+        (fun h => hE_not_OP (sup_comm Γ.O P ▸ h))
+    have hB_le_P : B ≤ P :=
+      le_inf (sup_comm Γ.O P ▸ hB_le) hB_le_PE |>.trans hOP_PE_eq.le
+    exact hB_ne_P ((hP.le_iff.mp hB_le_P).resolve_left hBw_atom.1)
+  -- ¬ σ_x B ≤ O⊔P, hence Q ≠ B₁
+  have hB1_le_OB : B₁ ≤ Γ.O ⊔ B := inf_le_left
+  have hB1_not_OP : ¬ B₁ ≤ Γ.O ⊔ P := by
+    intro hB1_le
+    have hmeet : (Γ.O ⊔ P) ⊓ (Γ.O ⊔ B) = Γ.O :=
+      modular_intersection Γ.hO hP hBw_atom (Ne.symm hP_ne_O) (Ne.symm hBw_ne_O)
+        (Ne.symm hB_ne_P) hB_not_OP
+    exact hB1_ne_O ((Γ.hO.le_iff.mp (hmeet ▸ le_inf hB1_le hB1_le_OB)).resolve_left
+      hB1_atom.1)
+  have hQ_ne_B1 : Q ≠ B₁ := by
+    intro h
+    exact hB1_not_OP (h ▸ (hRecX.le.trans inf_le_right))
+  -- O ⊔ Q = O ⊔ P
+  have hQ_le_OP : Q ≤ Γ.O ⊔ P := hRecX.le.trans inf_le_right
+  have hOQ_eq_OP : Γ.O ⊔ Q = Γ.O ⊔ P := by
+    have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+    have hO_lt_OQ : Γ.O < Γ.O ⊔ Q := lt_of_le_of_ne le_sup_left
+      (fun h => hQ_ne_O ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        hQ_atom.1))
+    exact (hO_covBy_OP.eq_or_eq le_sup_left (sup_le le_sup_left hQ_le_OP)).resolve_left
+      (ne_of_gt hO_lt_OQ)
+  -- direction at the y-step
+  -- first: (Q ⊔ B₁) ⊓ m = E
+  have hB1_ne_E : B₁ ≠ Γ.E := fun h => hB1_not_m (le_of_eq h |>.trans Γ.hE_on_m)
+  have hQB1_eq_B1E : Q ⊔ B₁ = B₁ ⊔ Γ.E := by
+    have hB1_covBy_B1E : B₁ ⋖ B₁ ⊔ Γ.E := atom_covBy_join hB1_atom Γ.hE_atom hB1_ne_E
+    have hQB1_le : Q ⊔ B₁ ≤ B₁ ⊔ Γ.E := sup_le hQ_le_BE le_sup_left
+    have hB1_lt : B₁ < Q ⊔ B₁ := lt_of_le_of_ne le_sup_right
+      (fun h => hQ_ne_B1 ((hB1_atom.le_iff.mp (le_sup_left.trans h.symm.le)).resolve_left
+        hQ_atom.1))
+    exact (hB1_covBy_B1E.eq_or_eq hB1_lt.le hQB1_le).resolve_left (ne_of_gt hB1_lt)
+  have hQB1_inf_m : (Q ⊔ B₁) ⊓ m = Γ.E := by
+    rw [hQB1_eq_B1E]
+    exact line_direction hB1_atom hB1_not_m Γ.hE_on_m
+  -- σ_y Q ≠ σ_y B₁
+  set W := dilation_ext Γ y Q with hW_def
+  set W' := dilation_ext Γ y B₁ with hW'_def
+  obtain ⟨hW_atom, _hW_plane, hW_not_l, _hW_not_m, _hW_not_OC, _hW_ne_I⟩ :=
+    dilation_witness_preservation Γ y hy hy_on hy_ne_O hy_ne_U hy_ne_I
+      hQ_atom hQ_plane hQ_not_l hQ_not_m hQ_not_OC hQ_ne_I hQ_ne_O
+  obtain ⟨hW'_atom, _hW'_plane, hW'_not_l, hW'_not_m, _hW'_not_OC, _hW'_ne_I⟩ :=
+    dilation_witness_preservation Γ y hy hy_on hy_ne_O hy_ne_U hy_ne_I
+      hB1_atom hB1_plane hB1_not_l hB1_not_m hB1_not_OC hB1_ne_I hB1_ne_O
+  have hW_ne_O : W ≠ Γ.O := fun h => hW_not_l (h ▸ le_sup_left)
+  have hW_le_OQ : W ≤ Γ.O ⊔ Q := inf_le_left
+  have hW'_le_OB1 : W' ≤ Γ.O ⊔ B₁ := inf_le_left
+  have hW_ne_W' : W ≠ W' := by
+    intro h
+    have hB1_not_OQ : ¬ B₁ ≤ Γ.O ⊔ Q := by rw [hOQ_eq_OP]; exact hB1_not_OP
+    have hmeet : (Γ.O ⊔ Q) ⊓ (Γ.O ⊔ B₁) = Γ.O :=
+      modular_intersection Γ.hO hQ_atom hB1_atom (Ne.symm hQ_ne_O) (Ne.symm hB1_ne_O)
+        hQ_ne_B1 hB1_not_OQ
+    exact hW_ne_O ((Γ.hO.le_iff.mp (hmeet ▸ le_inf hW_le_OQ (h ▸ hW'_le_OB1))).resolve_left
+      hW_atom.1)
+  -- direction preservation
+  have hDPD : (Q ⊔ B₁) ⊓ m = (W ⊔ W') ⊓ m :=
+    dilation_preserves_direction Γ hQ_atom hB1_atom y hy hy_on hy_ne_O hy_ne_U
+      hQ_plane hB1_plane hQ_not_m hB1_not_m hQ_not_l hB1_not_l hQ_ne_O hB1_ne_O
+      hQ_ne_B1 hQ_ne_I hB1_ne_I hW_ne_W' R hR hR_not h_irred
+  have hWW'_inf_m : (W ⊔ W') ⊓ m = Γ.E := hDPD ▸ hQB1_inf_m
+  -- apply recovery_core with base point Q
+  have hE_not_OQ : ¬ Γ.E ≤ Γ.O ⊔ Q := by rw [hOQ_eq_OP]; exact hE_not_OP
+  have hcore : W = (W' ⊔ Γ.E) ⊓ (Γ.O ⊔ Q) :=
+    recovery_core Γ hW_atom hW'_atom hQ_atom hQ_ne_O hW'_not_m hW_ne_W'
+      hWW'_inf_m hW_le_OQ hE_not_OQ
+  rw [hcore, hOQ_eq_OP]
+
+/-- E-recovery for ALL non-degenerate parameters `c` (including `c = I`), where
+    `recovery_via_E` only handles `c ≠ I`. -/
+theorem recovery_all (Γ : CoordSystem L)
+    (c : L) (hc : IsAtom c) (hc_on : c ≤ Γ.O ⊔ Γ.U)
+    (hc_ne_O : c ≠ Γ.O) (hc_ne_U : c ≠ Γ.U)
+    {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_not_q : ¬ P ≤ Γ.U ⊔ Γ.C)
+    (hP_ne_I : P ≠ Γ.I)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    dilation_ext Γ c P =
+      (dilation_ext Γ c (beta_cast Γ P) ⊔ Γ.E) ⊓ (Γ.O ⊔ P) := by
+  by_cases hcI : c = Γ.I
+  · subst hcI
+    set B := beta_cast Γ P with hB_def
+    have hP_ne_O : P ≠ Γ.O := fun h => hP_not_l (h ▸ le_sup_left)
+    have hP_ne_E : P ≠ Γ.E := fun h => hP_not_m (h ▸ Γ.hE_on_m)
+    -- B facts
+    obtain ⟨ha_atom, ha_le_l, ha_ne_O, ha_ne_U, hB_eq⟩ :=
+      beta_cast_realize Γ hP hP_plane hP_not_l hP_not_m hP_not_OC
+    obtain ⟨hBw_atom, hBw_plane, hBw_not_l, hBw_not_m, _, _, _⟩ :=
+      beta_witness Γ ha_atom ha_le_l ha_ne_O ha_ne_U
+    rw [← hB_eq] at hBw_atom hBw_plane hBw_not_l hBw_not_m
+    have hE_not_OP : ¬ Γ.E ≤ Γ.O ⊔ P := by
+      intro hE_le
+      have hO_ne_E : Γ.O ≠ Γ.E := fun h => Γ.hO_not_m (h ▸ Γ.hE_on_m)
+      have hOE_le_OP : Γ.O ⊔ Γ.E ≤ Γ.O ⊔ P := sup_le le_sup_left hE_le
+      have hO_covBy_OE : Γ.O ⋖ Γ.O ⊔ Γ.E := atom_covBy_join Γ.hO Γ.hE_atom hO_ne_E
+      have hO_covBy_OP : Γ.O ⋖ Γ.O ⊔ P := atom_covBy_join Γ.hO hP (Ne.symm hP_ne_O)
+      have hOE_eq_OP : Γ.O ⊔ Γ.E = Γ.O ⊔ P :=
+        (hO_covBy_OP.eq_or_eq le_sup_left hOE_le_OP).resolve_left (ne_of_gt hO_covBy_OE.lt)
+      exact hP_not_OC (le_sup_right.trans (hOE_eq_OP ▸ sup_le le_sup_left CoordSystem.hE_le_OC))
+    rw [dilation_ext_identity Γ hP hP_plane hP_not_l,
+        dilation_ext_identity Γ hBw_atom hBw_plane hBw_not_l]
+    -- goal: P = (B ⊔ E) ⊓ (O ⊔ P)
+    have hB_le_PE : B ≤ P ⊔ Γ.E := by rw [hB_def, beta_cast]; exact inf_le_right
+    have hB_ne_E : B ≠ Γ.E := fun h => hBw_not_m (le_of_eq h |>.trans Γ.hE_on_m)
+    have hE_covBy_PE : Γ.E ⋖ P ⊔ Γ.E := by
+      rw [sup_comm]; exact atom_covBy_join Γ.hE_atom hP hP_ne_E.symm
+    have hBE_ne_E : B ⊔ Γ.E ≠ Γ.E := fun h =>
+      hB_ne_E ((Γ.hE_atom.le_iff.mp (le_sup_left.trans h.le)).resolve_left hBw_atom.1)
+    have hBE_eq_PE : B ⊔ Γ.E = P ⊔ Γ.E :=
+      (hE_covBy_PE.eq_or_eq (le_sup_right : Γ.E ≤ B ⊔ Γ.E)
+        (sup_le hB_le_PE le_sup_right)).resolve_left hBE_ne_E
+    have hO_not_PE : ¬ Γ.O ≤ P ⊔ Γ.E := by
+      intro hO_le
+      have hOP_le : Γ.O ⊔ P ≤ P ⊔ Γ.E := sup_le hO_le le_sup_left
+      have hP_lt : P < Γ.O ⊔ P := lt_of_le_of_ne le_sup_right
+        (fun h => hP_ne_O ((hP.le_iff.mp (le_sup_left.trans h.symm.le)).resolve_left Γ.hO.1).symm)
+      have hPE_eq : P ⊔ Γ.E = Γ.O ⊔ P :=
+        ((atom_covBy_join hP Γ.hE_atom hP_ne_E).eq_or_eq hP_lt.le hOP_le).resolve_left
+          (ne_of_gt hP_lt) |>.symm
+      exact hE_not_OP (le_sup_right.trans hPE_eq.le)
+    rw [hBE_eq_PE]
+    have hE_ne_O : Γ.E ≠ Γ.O := fun h => Γ.hO_not_m (h ▸ Γ.hE_on_m)
+    have hmeet : (P ⊔ Γ.E) ⊓ (P ⊔ Γ.O) = P :=
+      modular_intersection hP Γ.hE_atom Γ.hO hP_ne_E hP_ne_O hE_ne_O hO_not_PE
+    rw [show Γ.O ⊔ P = P ⊔ Γ.O from sup_comm _ _, hmeet]
+  · exact recovery_via_E Γ c hc hc_on hc_ne_O hc_ne_U hcI hP hP_plane hP_not_l hP_not_m
+      hP_not_OC hP_not_q hP_ne_I R hR hR_not h_irred
+
 theorem dilation_compose_at_witness (Γ : CoordSystem L)
     (x y : L) (hx : IsAtom x) (hy : IsAtom y)
     (hx_on : x ≤ Γ.O ⊔ Γ.U) (hy_on : y ≤ Γ.O ⊔ Γ.U)
     (hx_ne_O : x ≠ Γ.O) (hy_ne_O : y ≠ Γ.O)
     (hx_ne_U : x ≠ Γ.U) (hy_ne_U : y ≠ Γ.U)
+    (hxy_ne_O : coord_mul Γ x y ≠ Γ.O) (hxy_ne_U : coord_mul Γ x y ≠ Γ.U)
     {P : L} (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
     (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
     (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I)
@@ -1515,7 +1892,45 @@ theorem dilation_compose_at_witness (Γ : CoordSystem L)
       ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
     dilation_ext Γ (coord_mul Γ x y) P =
       dilation_ext Γ y (dilation_ext Γ x P) := by
-  sorry
+  have hP_ne_O : P ≠ Γ.O := fun h => hP_not_l (h ▸ le_sup_left)
+  by_cases hxI : x = Γ.I
+  · subst hxI
+    rw [dilation_ext_identity Γ hP hP_plane hP_not_l, coord_mul_left_one Γ y hy hy_on hy_ne_U]
+  by_cases hyI : y = Γ.I
+  · subst hyI
+    obtain ⟨hQ_atom, hQ_plane, hQ_not_l, _, _, _⟩ :=
+      dilation_witness_preservation Γ x hx hx_on hx_ne_O hx_ne_U hxI
+        hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I hP_ne_O
+    rw [coord_mul_right_one Γ x hx hx_on, dilation_ext_identity Γ hQ_atom hQ_plane hQ_not_l]
+  -- main case: x ≠ I, y ≠ I
+  obtain ⟨ha_atom, ha_le_l, ha_ne_O, ha_ne_U, hB_eq⟩ :=
+    beta_cast_realize Γ hP hP_plane hP_not_l hP_not_m hP_not_OC
+  have hcab : dilation_ext Γ y (dilation_ext Γ x (beta_cast Γ P)) =
+      dilation_ext Γ (coord_mul Γ x y) (beta_cast Γ P) := by
+    rw [hB_eq]
+    exact dilation_compose_at_beta Γ x y ((Γ.O ⊔ Γ.U) ⊓ (P ⊔ Γ.E)) hx hy ha_atom
+      hx_on hy_on ha_le_l hx_ne_O hy_ne_O ha_ne_O hx_ne_U hy_ne_U ha_ne_U hxI hyI
+      hxy_ne_O hxy_ne_U R hR hR_not h_irred
+  by_cases hPq : P ≤ Γ.U ⊔ Γ.C
+  · -- P is itself a β-image: P = beta_cast Γ P
+    have hbc_atom : IsAtom (beta_cast Γ P) :=
+      hB_eq ▸ (beta_witness Γ ha_atom ha_le_l ha_ne_O ha_ne_U).1
+    have hP_le_bc : P ≤ beta_cast Γ P := by
+      rw [beta_cast]; exact le_inf hPq le_sup_left
+    have hP_eq : P = beta_cast Γ P := (hbc_atom.le_iff.mp hP_le_bc).resolve_left hP.1
+    rw [hP_eq]; exact hcab.symm
+  · -- ¬ P ≤ q : recovery route
+    have hLHS : dilation_ext Γ (coord_mul Γ x y) P =
+        (dilation_ext Γ (coord_mul Γ x y) (beta_cast Γ P) ⊔ Γ.E) ⊓ (Γ.O ⊔ P) :=
+      recovery_all Γ (coord_mul Γ x y)
+        (coord_mul_atom Γ x y hx hy hx_on hy_on hx_ne_O hy_ne_O hx_ne_U hy_ne_U)
+        inf_le_right hxy_ne_O hxy_ne_U hP hP_plane hP_not_l hP_not_m hP_not_OC hPq hP_ne_I
+        R hR hR_not h_irred
+    have hRHS : dilation_ext Γ y (dilation_ext Γ x P) =
+        (dilation_ext Γ y (dilation_ext Γ x (beta_cast Γ P)) ⊔ Γ.E) ⊓ (Γ.O ⊔ P) :=
+      composite_recovery Γ x y hx hy hx_on hy_on hx_ne_O hy_ne_O hx_ne_U hy_ne_U hxI hyI
+        hP hP_plane hP_not_l hP_not_m hP_not_OC hPq hP_ne_I R hR hR_not h_irred
+    rw [hLHS, hRHS, hcab]
 
 theorem coord_mul_assoc (Γ : CoordSystem L)
     (a b c : L) (ha : IsAtom a) (hb : IsAtom b) (hc : IsAtom c)
@@ -1563,24 +1978,24 @@ theorem coord_mul_assoc (Γ : CoordSystem L)
   have h_LHS_step : dilation_ext Γ (coord_mul Γ s c) P =
       dilation_ext Γ c (dilation_ext Γ s P) :=
     dilation_compose_at_witness Γ s c hs_atom hc hs_on hc_on
-      hs_ne_O hc_ne_O hs_ne_U hc_ne_U
+      hs_ne_O hc_ne_O hs_ne_U hc_ne_U hsc_ne_O hsc_ne_U
       hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I R hR hR_not h_irred
 
   have h_s_decomp : dilation_ext Γ s P = dilation_ext Γ b (dilation_ext Γ a P) :=
     dilation_compose_at_witness Γ a b ha hb ha_on hb_on
-      ha_ne_O hb_ne_O ha_ne_U hb_ne_U
+      ha_ne_O hb_ne_O ha_ne_U hb_ne_U hs_ne_O hs_ne_U
       hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I R hR hR_not h_irred
 
   have h_RHS_step : dilation_ext Γ (coord_mul Γ a t) P =
       dilation_ext Γ t (dilation_ext Γ a P) :=
     dilation_compose_at_witness Γ a t ha ht_atom ha_on ht_on
-      ha_ne_O ht_ne_O ha_ne_U ht_ne_U
+      ha_ne_O ht_ne_O ha_ne_U ht_ne_U hat_ne_O hat_ne_U
       hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I R hR hR_not h_irred
 
   have h_t_decomp : dilation_ext Γ t (dilation_ext Γ a P) =
       dilation_ext Γ c (dilation_ext Γ b (dilation_ext Γ a P)) :=
     dilation_compose_at_witness Γ b c hb hc hb_on hc_on
-      hb_ne_O hc_ne_O hb_ne_U hc_ne_U
+      hb_ne_O hc_ne_O hb_ne_U hc_ne_U ht_ne_O ht_ne_U
       hσaP_atom hσaP_plane hσaP_not_l hσaP_not_m hσaP_not_OC hσaP_ne_I
       R hR hR_not h_irred
 
