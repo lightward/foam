@@ -29,3 +29,4 @@ import Bridges.Inverse
 import Bridges.DilationGroup
 import Bridges.MulAssoc
 import Bridges.MulAssocCrossings
+import Bridges.Capstone
