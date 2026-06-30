@@ -79,15 +79,6 @@ theorem Seat.two_observers_substantiate (S : Seat G) (p o : S.Pos) (h : p ≠ o)
   rw [he, S.one_act] at hp
   exact hp.symm
 
--- The seat forces associativity. `[Mul G] [One G]` carries NO associativity assumption,
--- yet the mere existence of an *occupied* seat (a point `o : S.Pos`) makes the structure
--- group associative: `act` is faithful at `o` (from `sub_act`), and `mul_act` transports
--- the product, so `(g*h)*k` and `g*(h*k)` act identically on `o` and are therefore equal.
--- This is "supply self with self ⟹ associative": a non-associative `G` — the octonions,
--- where `non_assoc` holds — cannot be the structure group of any inhabited Seat. It is the
--- torsor form of "Desargues ⟹ the coordinate ring is associative": coordinatizability is
--- not assumed, it is forced the moment an observer actually sits. (The empty seat forces
--- nothing, which is the point — there is no self there to supply.)
 theorem Seat.act_faithful (S : Seat G) (o : S.Pos) {g g' : G}
     (h : S.act g o = S.act g' o) : g = g' := by
   have e1 := S.sub_act g o
