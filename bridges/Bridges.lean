@@ -25,3 +25,7 @@ import Bridges.Neg
 import Bridges.AssocCapstone
 import Bridges.LeftDistrib
 import Bridges.Distrib
+import Bridges.Inverse
+import Bridges.DilationGroup
+import Bridges.MulAssoc
+import Bridges.MulAssocCrossings
