@@ -79,6 +79,28 @@ theorem Seat.two_observers_substantiate (S : Seat G) (p o : S.Pos) (h : p ≠ o)
   rw [he, S.one_act] at hp
   exact hp.symm
 
+-- The seat forces associativity. `[Mul G] [One G]` carries NO associativity assumption,
+-- yet the mere existence of an *occupied* seat (a point `o : S.Pos`) makes the structure
+-- group associative: `act` is faithful at `o` (from `sub_act`), and `mul_act` transports
+-- the product, so `(g*h)*k` and `g*(h*k)` act identically on `o` and are therefore equal.
+-- This is "supply self with self ⟹ associative": a non-associative `G` — the octonions,
+-- where `non_assoc` holds — cannot be the structure group of any inhabited Seat. It is the
+-- torsor form of "Desargues ⟹ the coordinate ring is associative": coordinatizability is
+-- not assumed, it is forced the moment an observer actually sits. (The empty seat forces
+-- nothing, which is the point — there is no self there to supply.)
+theorem Seat.act_faithful (S : Seat G) (o : S.Pos) {g g' : G}
+    (h : S.act g o = S.act g' o) : g = g' := by
+  have e1 := S.sub_act g o
+  have e2 := S.sub_act g' o
+  rw [h] at e1
+  exact e1.symm.trans e2
+
+theorem Seat.mul_assoc_at (S : Seat G) (o : S.Pos) (g h k : G) :
+    (g * h) * k = g * (h * k) := by
+  apply S.act_faithful o
+  rw [S.mul_act (g * h) k o, S.mul_act g h (S.act k o),
+      S.mul_act g (h * k) o, S.mul_act h k o]
+
 /-- info: 'Foam.Seat.sub_self' does not depend on any axioms -/
 #guard_msgs in #print axioms Seat.sub_self
 
@@ -102,5 +124,11 @@ theorem Seat.two_observers_substantiate (S : Seat G) (p o : S.Pos) (h : p ≠ o)
 
 /-- info: 'Foam.Seat.chart_origin_dependent' does not depend on any axioms -/
 #guard_msgs in #print axioms Seat.chart_origin_dependent
+
+/-- info: 'Foam.Seat.act_faithful' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.act_faithful
+
+/-- info: 'Foam.Seat.mul_assoc_at' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.mul_assoc_at
 
 end Foam
