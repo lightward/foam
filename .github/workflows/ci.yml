@@ -85,3 +85,11 @@ jobs:
             exit 1
           fi
           echo "All Lean citations in schema.sql and bin/ resolve"
+
+  comments:
+    name: Comment-free Lean (only #print axioms receipts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Audit Lean for reader-facing comments
+        run: python3 .github/comment_audit.py
