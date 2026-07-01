@@ -55,11 +55,11 @@ noncomputable instance : Mul (Coordinate Γ) :=
     inf_le_right,
     coord_mul_ne_U a b⟩⟩
 
+open Classical in
 noncomputable instance : Neg (Coordinate Γ) :=
-  ⟨fun a => ⟨coord_neg Γ a.1,
-    by sorry,
-    coord_neg_on_l Γ a.1,
-    by sorry⟩⟩
+  ⟨fun a => if h : a.1 = Γ.O then ⟨Γ.O, Γ.hO, le_sup_left, Γ.hOU⟩ else
+    ⟨coord_neg Γ a.1, coord_neg_atom Γ a.isAtom a.on_l h a.ne_U,
+     coord_neg_on_l Γ a.1, coord_neg_ne_U Γ a.isAtom a.on_l h a.ne_U⟩⟩
 
 open Classical in
 noncomputable instance : Inv (Coordinate Γ) :=
