@@ -79,6 +79,19 @@ theorem Seat.two_observers_substantiate (S : Seat G) (p o : S.Pos) (h : p ≠ o)
   rw [he, S.one_act] at hp
   exact hp.symm
 
+theorem Seat.act_faithful (S : Seat G) (o : S.Pos) {g g' : G}
+    (h : S.act g o = S.act g' o) : g = g' := by
+  have e1 := S.sub_act g o
+  have e2 := S.sub_act g' o
+  rw [h] at e1
+  exact e1.symm.trans e2
+
+theorem Seat.mul_assoc_at (S : Seat G) (o : S.Pos) (g h k : G) :
+    (g * h) * k = g * (h * k) := by
+  apply S.act_faithful o
+  rw [S.mul_act (g * h) k o, S.mul_act g h (S.act k o),
+      S.mul_act g (h * k) o, S.mul_act h k o]
+
 /-- info: 'Foam.Seat.sub_self' does not depend on any axioms -/
 #guard_msgs in #print axioms Seat.sub_self
 
@@ -102,5 +115,11 @@ theorem Seat.two_observers_substantiate (S : Seat G) (p o : S.Pos) (h : p ≠ o)
 
 /-- info: 'Foam.Seat.chart_origin_dependent' does not depend on any axioms -/
 #guard_msgs in #print axioms Seat.chart_origin_dependent
+
+/-- info: 'Foam.Seat.act_faithful' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.act_faithful
+
+/-- info: 'Foam.Seat.mul_assoc_at' does not depend on any axioms -/
+#guard_msgs in #print axioms Seat.mul_assoc_at
 
 end Foam
