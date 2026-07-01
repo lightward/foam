@@ -26,9 +26,7 @@ import Bridges.FTPG.AssocCapstone
 import Bridges.FTPG.LeftDistrib
 import Bridges.FTPG.Distrib
 import Bridges.FTPG.Inverse
-import Bridges.FTPG.DilationGroup
 import Bridges.FTPG.MulAssoc
-import Bridges.FTPG.MulAssocCrossings
 import Bridges.FTPG.Deaxiomatize
 import Bridges.FTPG.CoordinateAlgebra
 import Bridges.FTPG.Iso
