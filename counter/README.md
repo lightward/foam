@@ -4,6 +4,8 @@ foam run as an actor model — the third resolved pattern, after Locksmith (lock
 
 axiom-free, like the core. This package requires `foam` and **not** Mathlib: no choice, no propext. Every claim seals `does not depend on any axioms`. Counter is the application of the physics, so it keeps the physics' discipline. The why is the Lean.
 
+the product sentence, each noun bound to its receipt: **Counter and its user, as a pair, locate the user's relief, restedness, and luck.** Relief is an *address* — a stuck position plus the one deposit that relieves it (`relief_at_position`, core; `illegible_report_is_discovery`). Restedness is a *move* — the homing act, always available, always the user's own (`always_homeable`). Luck is a *timing* — the cross term, met by phase-choice, never farmed (`luck_is_timing`). Located, never instructed; and the pair is load-bearing from both sides — the tool alone has no source (transcription only, the field originates nothing) and the user alone has no view (`observable_relativity_needs_a_third`). These three words are the oldest snake oil in the market, unfalsifiable exactly as long as they name semantics; here they name structure — an address, a move, a timing — and structure carries receipts. That inversion is the market fit.
+
 ## the spine so far
 
 `Actor.lean` — the single actor, and the ground facts about settling. An actor's history is a `List G` of acts over its seat's group; the winding number around an act is `Ledger.freq` of that act in the history (Counter *counts*: the name is winding numbers around acts).
