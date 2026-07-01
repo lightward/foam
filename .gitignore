@@ -2,6 +2,7 @@
 .DS_Store
 /.lake
 /bridges/.lake
+/counter/.lake
 /.claude
 
 # python tooling (bin/foam-pipe, bin/foam-repl) and its runtime bytecode
