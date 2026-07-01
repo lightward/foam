@@ -40,6 +40,18 @@ This is also where Counter's entrypoint lives. A human arrives *torn*: two imagi
 
 `Luck.lean` — the lucky algebra: what working *with the grain* of the append-only ledger pays. The Born weight of acting into a charged field is not additive — **`luck_is_the_cross_term`** (= the core's `born_superpose`): payoff = your act's own weight + the field's + an interference term. The boost is real (**`boost_exceeds_the_input`** — marginal payoff strictly exceeding the act's intrinsic worth: charge that was waiting, released) and so is its converse (**`against_the_grain_costs`**). **`fortune_not_in_your_record`** — the same act with the same own-history meets different fortunes; the difference lives entirely in the field, meaningful in ways unknown to the actor and not unknown to the system. **`luck_is_timing`** — summed over the four phase-placements of the act, the cross term cancels (decoherence): luck cannot be farmed by repetition, only met by phase-choice; the grain rewards timing, not grinding (Rhythm.lean's law from the other side). **`about_you_geometrically`** — every chart sends its own seat to `1` and charts genuinely differ: the cross terms fire in every chart all the time, and the ones you notice are the ones that resolve at your origin. "About you" in the geometric sense, not the semantic: with no cross-drain nothing can aim at you, so the boost is a meeting, never a targeting — which is why the honest word is "lucky."
 
+`Declension.lean` — Counter grammar is a case-grammar, and the paradigm is written down. The chart *is* a declension: every node's form in your view is `sub p o`, a case-ending marking its relation to the subject. The paradigm:
+
+- **nominative** — the seat, and it is *unmarked* (`nominative_unmarked`: the subject's own ending is `1`, the identity — the bare stem); it never appears on the board. The camera never in frame is the nominative never occurring as a word in its own sentence.
+- **genitive** — every board-node: X-as-visible-from-here, possessive-marked to the chart (`winding_is_own`, `wound_act_is_own`).
+- **dative** — reception, only ever at your own seat, via ingest: heard from the wind, voluntary.
+- **ablative** — source-marking on heard speech, recoverable (core `speaker_recoverable`): from-whom survives on every byte.
+- **vocative** — address into the wind: real in the ledger, unfelt as force (`real_yet_unfelt`).
+- **accusative** — *does not exist.* No form in which an actor stands as the direct object of another actor's act. A defective declension, defective at exactly the case where the harm would go (`no_cross_drain`, `other_view_unmoved`; the type-level absence Bubble.lean shadows). The profane sentence is not censored; it cannot be declined.
+- **agreement** — declension is *regular*: a frame-change re-inflects every noun by the same factor, uniformly (`declension_is_regular` = the core's `change_of_frame`), and the factor is the rebase act (Authority.lean). Declination-between-charts and declension-of-nouns are the same group element.
+
+An action is a sentence; the act is the verb; the sim is the corpus of grammatical sentences (Path-space); an illegible report is an ungrammatical sentence revealing a missing word (Legible.lean). "Landing in Counter grammar" is exact, not figurative.
+
 ## sketching the knowable (the multi-bubble object)
 
 `always_homeable` is unilateral *because a `Seat` has one `Pos`*. Two bubbles change the shape: a path reaching into the other's positions must be **unconstructible** — you cannot `act` in another seat's `Pos`. No-cross-drain as a *type*, not a runtime rule: one actor can never draw a circle around another, because the circle does not typecheck. (The readable shadows of this are now theorems — `Bubble.lean`, above.)
