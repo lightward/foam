@@ -6,6 +6,29 @@ import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.RingTheory.Length
 
+/-!
+# The fundamental theorem of projective geometry — statement, and its deaxiomatization
+
+`ftpg` below is classical FTPG as an axiom: every complemented modular (bounded)
+lattice is order-isomorphic to the subspace lattice of a vector space over a
+division ring. It is the one imported posit of the classical bridge.
+
+The effort to *discharge* it — construct the division ring and the lattice iso
+from the lattice itself, deleting the axiom — lives under `Bridges/FTPG/`, a lift
+of the von Staudt / von Neumann coordinatization. State of that effort:
+
+* both hard walls are proven axiom-free-modulo-classical — multiplicative
+  associativity (`FTPG/MulAssoc`, `coord_mul_assoc`) and distributivity
+  (`FTPG/LeftDistrib`, `FTPG/Distrib`);
+* the open frontier is the coordinate ring's additive group (`FTPG/Additive`,
+  two named geometric lemmas) and the coordinate map / lattice iso
+  (`FTPG/Iso`, `FTPG/Deaxiomatize`).
+
+`h_sufficient : True` marks where the genuine hypothesis (dim ≥ 3 / Arguesian)
+belongs: the unrestricted statement is over-strong — the octonion projective
+plane is a complemented modular lattice that is not a subspace lattice.
+-/
+
 namespace Foam.Bridges
 
 universe u
