@@ -1,4 +1,4 @@
-import Bridges.Neg
+import Bridges.FTPG.Neg
 
 namespace Foam.Bridges
 

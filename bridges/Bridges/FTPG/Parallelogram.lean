@@ -1,4 +1,4 @@
-import Bridges.Coord
+import Bridges.FTPG.Coord
 
 namespace Foam.Bridges
 

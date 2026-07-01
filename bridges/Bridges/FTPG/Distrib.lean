@@ -1,5 +1,5 @@
-import Bridges.MulKeyIdentity
-import Bridges.Assoc
+import Bridges.FTPG.MulKeyIdentity
+import Bridges.FTPG.Assoc
 namespace Foam.Bridges
 universe u
 variable {L : Type u} [Lattice L] [BoundedOrder L]

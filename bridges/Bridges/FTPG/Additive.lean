@@ -1,7 +1,7 @@
-import Bridges.CoordinateAlgebra
-import Bridges.AddCancel
-import Bridges.AssocCapstone
-import Bridges.WellDefined
+import Bridges.FTPG.CoordinateAlgebra
+import Bridges.FTPG.AddCancel
+import Bridges.FTPG.AssocCapstone
+import Bridges.FTPG.WellDefined
 
 /-!
 # The additive group of the FTPG coordinate line

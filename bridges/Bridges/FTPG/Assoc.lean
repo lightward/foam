@@ -1,5 +1,5 @@
-import Bridges.CrossParallelism
-import Bridges.AddComm
+import Bridges.FTPG.CrossParallelism
+import Bridges.FTPG.AddComm
 
 namespace Foam.Bridges
 

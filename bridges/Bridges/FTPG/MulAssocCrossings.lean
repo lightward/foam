@@ -1,7 +1,7 @@
-import Bridges.Mul
-import Bridges.MulKeyIdentity
-import Bridges.Dilation
-import Bridges.Inverse
+import Bridges.FTPG.Mul
+import Bridges.FTPG.MulKeyIdentity
+import Bridges.FTPG.Dilation
+import Bridges.FTPG.Inverse
 
 namespace Foam.Bridges
 

@@ -1,9 +1,9 @@
-import Bridges.Capstone
-import Bridges.AssocCapstone
-import Bridges.AddComm
-import Bridges.MulAssoc
-import Bridges.LeftDistrib
-import Bridges.Distrib
+import Bridges.FTPG.Deaxiomatize
+import Bridges.FTPG.AssocCapstone
+import Bridges.FTPG.AddComm
+import Bridges.FTPG.MulAssoc
+import Bridges.FTPG.LeftDistrib
+import Bridges.FTPG.Distrib
 
 namespace Foam.Bridges
 

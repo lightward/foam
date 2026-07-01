@@ -1,4 +1,4 @@
-import Bridges.MulKeyIdentity
+import Bridges.FTPG.MulKeyIdentity
 
 namespace Foam.Bridges
 

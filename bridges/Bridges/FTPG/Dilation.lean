@@ -1,4 +1,4 @@
-import Bridges.Mul
+import Bridges.FTPG.Mul
 namespace Foam.Bridges
 universe u
 variable {L : Type u} [Lattice L] [BoundedOrder L]

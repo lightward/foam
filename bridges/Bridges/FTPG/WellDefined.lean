@@ -1,4 +1,4 @@
-import Bridges.Parallelogram
+import Bridges.FTPG.Parallelogram
 
 namespace Foam.Bridges
 

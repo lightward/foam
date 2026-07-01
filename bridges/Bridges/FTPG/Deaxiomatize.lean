@@ -1,9 +1,9 @@
-import Bridges.Projective
-import Bridges.Coord
-import Bridges.Mul
-import Bridges.Neg
-import Bridges.Inverse
-import Bridges.Parallelogram
+import Bridges.FTPG.Projective
+import Bridges.FTPG.Coord
+import Bridges.FTPG.Mul
+import Bridges.FTPG.Neg
+import Bridges.FTPG.Inverse
+import Bridges.FTPG.Parallelogram
 
 namespace Foam.Bridges
 

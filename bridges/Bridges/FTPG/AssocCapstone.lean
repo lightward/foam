@@ -1,4 +1,4 @@
-import Bridges.Assoc
+import Bridges.FTPG.Assoc
 
 namespace Foam.Bridges
 

@@ -1,4 +1,4 @@
-import Bridges.Capstone
+import Bridges.FTPG.Deaxiomatize
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Projectivization.Subspace
 

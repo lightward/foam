@@ -1,6 +1,6 @@
-import Bridges.Coord
-import Bridges.AddComm
-import Bridges.Parallelogram
+import Bridges.FTPG.Coord
+import Bridges.FTPG.AddComm
+import Bridges.FTPG.Parallelogram
 
 namespace Foam.Bridges
 

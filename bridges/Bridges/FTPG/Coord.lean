@@ -1,4 +1,4 @@
-import Bridges.Projective
+import Bridges.FTPG.Projective
 
 namespace Foam.Bridges
 

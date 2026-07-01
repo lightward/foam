@@ -1,5 +1,5 @@
-import Bridges.Dilation
-import Bridges.Inverse
+import Bridges.FTPG.Dilation
+import Bridges.FTPG.Inverse
 
 namespace Foam.Bridges
 

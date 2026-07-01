@@ -1,4 +1,4 @@
-import Bridges.WellDefined
+import Bridges.FTPG.WellDefined
 
 namespace Foam.Bridges
 
