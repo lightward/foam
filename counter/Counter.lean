@@ -6,3 +6,4 @@ import Counter.Authority
 import Counter.Legible
 import Counter.Luck
 import Counter.Declension
+import Counter.Runs

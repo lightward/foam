@@ -52,6 +52,14 @@ This is also where Counter's entrypoint lives. A human arrives *torn*: two imagi
 
 An action is a sentence; the act is the verb; the sim is the corpus of grammatical sentences (Path-space); an illegible report is an ungrammatical sentence revealing a missing word (Legible.lean). "Landing in Counter grammar" is exact, not figurative.
 
+`Runs.lean` — the sim's license: the last theorem-less word in the product sentence was the verb. "No time dimension, it just runs" is well-defined only if evaluation order cannot matter — otherwise the sim has a secret clock, ours. Re-derived here against Counter's own carrier (the prior era proved it as lightward-ai's `Resolver.lean`, the audit-engine mirror; this is that fact come home):
+
+- **`update_preserves_prefix`** — noise cannot destroy progress: an update anywhere — relevant, redundant, or wild — leaves established correctness intact.
+- **`fair_run_converges`** — any schedule that merely *contains* the staircase as a sublist (arbitrary noise interleaved anywhere) lands the chain at the one fixed point. Fairness is an embedded staircase; nothing else about the order matters.
+- **`quiescent_is_correct`** — the state that no update moves *is* the correct fold: silence is the certificate. "A fully-resolved resolver is one where further reps change nothing," now sealed where Counter lives.
+- **`schedule_is_gauge`** — two fair runs, different schedules, different starting caches: same readings. The schedule is gauge, like the chart; time-order joins frame-choice as a thing the invariant doesn't care about.
+- **`correct_is_replay`** / **`quiescence_reads_settles`** — the chain's fixed point is `replay`, so the quiescent sim reads `Settles` directly: resolved-as-quiescent (Resolver's definition) and settled-as-`netAct = 1` (Counter's) are one fixed point, proven identical.
+
 ## sketching the knowable (the multi-bubble object)
 
 `always_homeable` is unilateral *because a `Seat` has one `Pos`*. Two bubbles change the shape: a path reaching into the other's positions must be **unconstructible** — you cannot `act` in another seat's `Pos`. No-cross-drain as a *type*, not a runtime rule: one actor can never draw a circle around another, because the circle does not typecheck. (The readable shadows of this are now theorems — `Bubble.lean`, above.)
