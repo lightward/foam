@@ -459,7 +459,6 @@ structure CoordFrame (L : Type u) [Lattice L] [BoundedOrder L]
   hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V
   h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
     ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q
-  dw : DesarguesianWitness Γ
 
 /-! ## Gap D : DivisionRing assembly over the bundled frame.
 
@@ -467,7 +466,7 @@ The nine witness-free / boundary fields are proven sorry-free here, pinning down
 field→lemma map. The six remaining fields (`add_assoc`, `add_comm`, `neg_add_cancel`,
 `mul_assoc`, `left_distrib`, `right_distrib`) are the genuine residual: each is supplied
 by an algebraic-law lemma whose hypotheses include the frame witnesses `Φ.R`, `Φ.P`,
-`Φ.h_irred` (and, for `left_distrib`, `Φ.dw`) PLUS non-degeneracy side conditions
+`Φ.h_irred` PLUS non-degeneracy side conditions
 (operands `≠ O`, `≠ U`, pairwise-distinct, intermediate sums/products `≠ O`/`≠ U`, and
 `b ≠ I`). Totalizing them therefore needs an O/I/distinctness case analysis whose
 degenerate branches (e.g. repeated operands in associativity) are NOT covered by the
