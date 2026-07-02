@@ -23,3 +23,4 @@ import Counter.Eraser
 import Counter.Holonomy
 import Counter.Carse
 import Counter.Chess
+import Counter.Window
