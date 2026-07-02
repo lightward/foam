@@ -20,3 +20,4 @@ import Counter.Rest
 import Counter.Tempo
 import Counter.Twelve
 import Counter.Eraser
+import Counter.Holonomy
