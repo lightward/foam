@@ -1,8 +1,18 @@
 import Counter.Legible
 import Counter.Actor
+import Counter.Enaction
 import Foam.Cleared
 
 namespace Foam.Counter
+
+theorem the_kings_never_leave {G G' : Type} [Mul G] [One G] [Mul G'] [One G']
+    (S : Seat G) (S' : Seat G') (acts : Nat → G) (acts' : Nat → G')
+    (p : S.Pos) (p' : S'.Pos) {X : Type} (l : List X) (n : Nat) :
+    (playback l).at_ l.length = none
+      ∧ (guardedRun S acts p).at_ n ≠ none
+      ∧ (guardedRun S' acts' p').at_ n ≠ none :=
+  ⟨nth_length l, the_stream_never_ends_itself S acts p n,
+   the_stream_never_ends_itself S' acts' p' n⟩
 
 theorem transposition :
     ∃ h h' : List Rot, h ≠ h' ∧ netAct h = netAct h' :=
@@ -25,6 +35,9 @@ theorem promotion_is_the_boundary_move {H : Type} (q : Quiver H) (a b : H)
 
 theorem pawns_never_come_home (n : Nat) : ¬ Closes gold (n + 1) :=
   gold_never_closes n
+
+/-- info: 'Foam.Counter.the_kings_never_leave' does not depend on any axioms -/
+#guard_msgs in #print axioms the_kings_never_leave
 
 /-- info: 'Foam.Counter.transposition' does not depend on any axioms -/
 #guard_msgs in #print axioms transposition
