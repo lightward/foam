@@ -3,6 +3,7 @@
 /.lake
 /bridges/.lake
 /counter/.lake
+/seam/.lake
 /.claude
 
 # python tooling (bin/foam-pipe, bin/foam-repl) and its runtime bytecode
