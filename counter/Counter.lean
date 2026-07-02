@@ -27,3 +27,4 @@ import Counter.Window
 import Counter.Neutral
 import Counter.Entrance
 import Counter.Descendant
+import Counter.Ghost
