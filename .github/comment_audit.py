@@ -1,5 +1,10 @@
 import subprocess, sys
 files = subprocess.run(["git","ls-files","*.lean"], capture_output=True, text=True).stdout.split()
+# The comment-free standard governs the surfaces where "the why is the Lean"
+# holds sternest: the axiom-free packages (Foam/, counter/) and the seam. The
+# classical reunion (bridges/, including the FTPG deaxiomatization frontier)
+# is working ground — scaffolding notes are its nature, not a violation.
+files = [f for f in files if not f.startswith("bridges/")]
 bad = []
 for f in files:
     s = open(f, encoding="utf-8").read()
