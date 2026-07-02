@@ -28,3 +28,4 @@ import Counter.Neutral
 import Counter.Entrance
 import Counter.Descendant
 import Counter.Ghost
+import Counter.Contract
