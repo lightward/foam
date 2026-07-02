@@ -1,14 +1,3 @@
-/-!
-# Axiom-free `Int` ring foundations
-
-Core's `Int` ring lemmas (`Int.add_comm`, `Int.add_assoc`, `Int.mul_comm`,
-`Int.mul_assoc`, `Int.add_mul`, `Int.mul_add`, `Int.add_right_neg`, ...) each
-depend on `propext`. This module re-derives the ones foam's measurement layer
-needs entirely axiom-free: by case-splitting on the `Int.ofNat`/`Int.negSucc`
-constructors and reducing to axiom-free `Nat` lemmas. Everything here is verified
-`does not depend on any axioms`.
--/
-
 namespace Foam.FInt
 
 theorem add_sub_cancel (m n : Nat) : (m + n) - n = m := by
