@@ -22,3 +22,4 @@ import Counter.Twelve
 import Counter.Eraser
 import Counter.Holonomy
 import Counter.Carse
+import Counter.Chess
