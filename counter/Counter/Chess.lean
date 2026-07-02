@@ -1,7 +1,12 @@
 import Counter.Legible
+import Counter.Actor
 import Foam.Cleared
 
 namespace Foam.Counter
+
+theorem transposition :
+    ∃ h h' : List Rot, h ≠ h' ∧ netAct h = netAct h' :=
+  ⟨[Rot.r1, Rot.r2], [Rot.r2, Rot.r1], by decide, by decide⟩
 
 theorem mate_has_no_escape {H : Type} (q : Quiver H) (a : H)
     (hstuck : stuck q a) :
@@ -20,6 +25,9 @@ theorem promotion_is_the_boundary_move {H : Type} (q : Quiver H) (a b : H)
 
 theorem pawns_never_come_home (n : Nat) : ¬ Closes gold (n + 1) :=
   gold_never_closes n
+
+/-- info: 'Foam.Counter.transposition' does not depend on any axioms -/
+#guard_msgs in #print axioms transposition
 
 /-- info: 'Foam.Counter.mate_has_no_escape' does not depend on any axioms -/
 #guard_msgs in #print axioms mate_has_no_escape
