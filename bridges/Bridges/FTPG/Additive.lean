@@ -4,7 +4,7 @@ import Bridges.FTPG.AssocCapstone
 import Bridges.FTPG.WellDefined
 
 /-!
-# The additive group of the FTPG coordinate line
+# The additive group of the FTPG coordinate line — CLOSED
 
 This file is the additive-group construction for the FTPG *coordinate line*
 `Coordinate Φ.Γ` — the geometric model of the coordinate ring's additive group,
@@ -12,46 +12,39 @@ built synthetically inside a modular, complemented, atomistic lattice `L` (the
 subspace lattice of the fundamental theorem of projective geometry).  Addition is
 `fadd` (lattice-level `coord_add`, a parallelogram completion); negation is `fneg`.
 
-## What is PROVEN here (axiom-clean: `[propext, Classical.choice, Quot.sound]`)
+Everything is proven, axiom-clean-modulo-classical
+(`[propext, Classical.choice, Quot.sound]`): `fadd_assoc_total` seals the full
+abelian group, no `sorry` anywhere in its trace.
 
-* The full **abelian-group skeleton** at the `Coordinate` level, totalized from the
-  side-conditioned lattice lemmas: `fadd_comm`, `fadd_left_cancel`, `fadd_right_cancel`,
-  `fadd_zero`, `fzero_add`, `fadd_neg`, `fneg_add`, `fneg_fneg`, and the *generic*
-  associator `fadd_assoc_generic` (all non-degeneracy side conditions discharged).
+## The shape of the proof
 
-* The **geometric infrastructure** underneath the two remaining degenerate associators:
-  - `coord_add_eq_translation_diag`, `dbl_aux_point`, `beta_step_core`,
-    `key_identity_core`, `dbl_key_identity`, `dbl_beta_generic`,
-    `coord_double_left_generic'` — the characteristic-≠2 *doubling* core
-    `(a+a)+c = a+(a+c)`, built on the proven `dbl_beta_generic`;
-  - `C_O_eq_C`, `recover_std`, `reverse_completion`, `pc_id_left`, `C_tower_facts`,
-    `grounding_left`, `grounding_right`, `noncol_symm`, `base_change_hinv`,
-    `inv_absorb_core` — the *inverse-absorption* core `a+(-a+c) = c`, reduced (given a
-    general-position witness) to a four-fold `parallelogram_completion_well_defined`
-    base-change involution.
+* The **abelian-group skeleton**: `fadd_comm`, `fadd_left_cancel`,
+  `fadd_right_cancel`, `fadd_zero`, `fzero_add`, `fadd_neg`, `fneg_add`,
+  `fneg_fneg`, and the *generic* associator `fadd_assoc_generic`.
 
-## The OPEN FRONTIER
+* The **translation calculus**: `key_identity` (`τ_a(C_b) = C_{a+b}`),
+  `beta_step_core`/`dbl_beta_generic` (`τ_{a+b} = τ_a ∘ τ_b` on towers, composite
+  parameter good), `dbl_key_identity` (the coincident case), `recover_std`,
+  `reverse_completion`, `C_tower_facts`, `tower_meets_E_line`, `tower_inj`.
 
-Total associativity `fadd_assoc_total` is proven modulo exactly two coincident-operand
-associators, isolated here as labeled `sorry` bookmarks (each `sorry` is a resume-point):
+* The **τ-inverse master lemma** `tau_inv_tower` — `τ_x (τ_{-x} X) = X` for `X`
+  on the auxiliary line `q` in general position: the one composition law the
+  β-step cannot state (composite parameter `O`).  Proven by transporting both
+  translations through the auxiliary point `z = (x ⊔ Γ.E) ⊓ (w' ⊔ X)`
+  (`inv_aux_point`), with `neg_tower_reverse` (`pc x O C m = C_{-x}`)
+  identifying the base pairs.  This subsumes what the prior era isolated as the
+  base-change involution, the 17 witness-incidence leaves, AND the char-2 knot:
+  `char2_absorb` is just `tau_inv_tower` with `-a` rewritten to `a`.
 
-1. `Coordinate.inv_absorb` — `a + (-a + c) = c`.  The degenerate associator `A(a,-a,c)`;
-   not an instance of `coord_add_assoc` (the intermediate `a + (-a) = O` violates its
-   `≠O` side conditions).  Reduced axiom-clean to `inv_absorb_core` GIVEN a
-   general-position witness `R₀`; the remaining leaves are the witness's incidence
-   facts (`inv_absorb_generic`, model-verified over `PG(2,q)`) plus the char-2 knot.
+* The **two degenerate associators**, as corollaries:
+  `inv_absorb_generic` (`a + (-a + c) = c`, two `key_identity` steps + the
+  master lemma) and `double_left` (via `coord_double_left_generic'`,
+  `char2_absorb`, and the doubling satellites `z3_knot`, `dbl_plus_neg`,
+  `dbl_assoc_sq` — the ℤ/3 sub-line closing is `dbl_beta_generic` in four moves).
 
-2. `Coordinate.double_left` — `(a + a) + c = a + (a + c)`.  The coincident-summand
-   associator; `coord_add_assoc` requires the summands distinct.  The char-≠2 branch is
-   the proven `coord_double_left_generic'`; the residue is the char-2 branch.
-
-3. `char2_absorb` — the shared characteristic-2 knot (`a = -a`, i.e. `a + a = O`), where
-   the `inv_absorb` and `double_left` obligations coincide and `base_change_hinv`
-   (which needs `a ≠ -a`) does not apply.
-
-4. `inv_absorb_generic` — the generic `inv_absorb` branch with the witness
-   `R₀ = pc O C_c Γ.C m` exhibited against `inv_absorb_core`; its `sorry` leaves are the
-   17 incidence facts of that witness (each model-verified, none yet formalized).
+The earlier route to the same summit — `inv_absorb_core`, `base_change_hinv`,
+`grounding_left`/`grounding_right`, `noncol_symm` — remains here, proven, as the
+record of how the wall first bent.
 -/
 
 namespace Foam.Bridges
@@ -3309,22 +3302,710 @@ theorem inv_absorb_core (Γ : CoordSystem L) (a c : L)
     hCt_l hCt_m hCt_π hR0_OCt hR0_nCt hCt_ℓ₂ span_C span_D R hR hR_not h_irred
   rw [hstep, hinv]
 
-/-! ## OPEN FRONTIER — coincident-operand associators
+/-- The auxiliary line `q = Γ.U ⊔ Γ.C` is covered by the plane. -/
+theorem q_covBy_π (Γ : CoordSystem L) :
+    (Γ.U ⊔ Γ.C) ⋖ (Γ.O ⊔ Γ.U ⊔ Γ.V) := by
+  have hUV : Γ.U ≠ Γ.V := fun h => Γ.hV_off (h ▸ le_sup_right)
+  have hqm_eq_U : (Γ.U ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.U := by
+    rw [sup_inf_assoc_of_le Γ.C (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)]
+    have hC_inf_m : Γ.C ⊓ (Γ.U ⊔ Γ.V) = ⊥ :=
+      (Γ.hC.le_iff.mp inf_le_left).resolve_right (fun h => Γ.hC_not_m (h ▸ inf_le_right))
+    rw [hC_inf_m, sup_bot_eq]
+  have hV_not_q : ¬ Γ.V ≤ Γ.U ⊔ Γ.C := fun hle =>
+    hUV ((Γ.hU.le_iff.mp (hqm_eq_U ▸ le_inf hle le_sup_right)).resolve_left Γ.hV.1).symm
+  have hV_disj_q : Γ.V ⊓ (Γ.U ⊔ Γ.C) = ⊥ :=
+    (Γ.hV.le_iff.mp inf_le_left).resolve_right (fun h => hV_not_q (h ▸ inf_le_right))
+  have hVq_eq_π : Γ.V ⊔ (Γ.U ⊔ Γ.C) = Γ.O ⊔ Γ.U ⊔ Γ.V := by
+    have h1 : Γ.V ⊔ (Γ.U ⊔ Γ.C) = (Γ.U ⊔ Γ.V) ⊔ Γ.C := by ac_rfl
+    rw [h1, Γ.m_sup_C_eq_π]
+  exact hVq_eq_π ▸ covBy_sup_of_inf_covBy_left (hV_disj_q ▸ Γ.hV.bot_covBy)
 
-The two degenerate associators that total additive associativity bottoms out at, plus
-the model-verified geometric leaves feeding their proven cores.  Each `sorry` is a
-labeled resume-point (see the module docstring). -/
+/-- **A noncollinear triangle spans the plane.**  For atoms `P, Q, R` of `π` with
+`R` off the line `P ⊔ Q` and `P` off `m`, the join is all of `π`. -/
+theorem span_plane (Γ : CoordSystem L) {P Q R : L}
+    (hP : IsAtom P) (hQ : IsAtom Q) (hR : IsAtom R) (hPQ : P ≠ Q)
+    (hP_le : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hQ_le : Q ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hR_le : R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hR_not : ¬ R ≤ P ⊔ Q) :
+    P ⊔ Q ⊔ R = Γ.O ⊔ Γ.U ⊔ Γ.V := by
+  set m := Γ.U ⊔ Γ.V with hm
+  set π := Γ.O ⊔ Γ.U ⊔ Γ.V with hπ
+  have hUV : Γ.U ≠ Γ.V := fun h => Γ.hV_off (h ▸ le_sup_right)
+  have hm_le_π : m ≤ π := sup_le (le_sup_right.trans le_sup_left) le_sup_right
+  have hm_line : ∀ y, IsAtom y → y ≤ m → y ⋖ m := fun y hy hle =>
+    line_covers_its_atoms Γ.hU Γ.hV hUV hy hle
+  have hPR : P ≠ R := fun h => hR_not (h ▸ le_sup_left)
+  set F := (P ⊔ Q) ⊓ m with hF_def
+  set G := (P ⊔ R) ⊓ m with hG_def
+  have hF_atom : IsAtom F :=
+    line_meets_m_at_atom hP hQ hPQ (sup_le hP_le hQ_le) hm_le_π Γ.m_covBy_π hP_not_m
+  have hG_atom : IsAtom G :=
+    line_meets_m_at_atom hP hR hPR (sup_le hP_le hR_le) hm_le_π Γ.m_covBy_π hP_not_m
+  have hP_ne_F : P ≠ F := fun h => hP_not_m (h.le.trans inf_le_right)
+  have hFG : F ≠ G := by
+    intro h_eq
+    have hPF_lt : P < P ⊔ F := lt_of_le_of_ne le_sup_left
+      (fun h => hP_ne_F ((hP.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        hF_atom.1).symm)
+    have hPF_eq_PQ : P ⊔ F = P ⊔ Q :=
+      ((atom_covBy_join hP hQ hPQ).eq_or_eq hPF_lt.le
+        (sup_le le_sup_left inf_le_left)).resolve_left (ne_of_gt hPF_lt)
+    have hPF_eq_PR : P ⊔ F = P ⊔ R :=
+      ((atom_covBy_join hP hR hPR).eq_or_eq hPF_lt.le
+        (sup_le le_sup_left (h_eq ▸ (inf_le_left : G ≤ P ⊔ R)))).resolve_left
+        (ne_of_gt hPF_lt)
+    exact hR_not (hPF_eq_PQ ▸ hPF_eq_PR ▸ le_sup_right)
+  have hFG_eq_m : F ⊔ G = m := by
+    have h_lt : F < F ⊔ G := lt_of_le_of_ne le_sup_left
+      (fun h => hFG ((hF_atom.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        hG_atom.1).symm)
+    exact ((hm_line F hF_atom inf_le_right).eq_or_eq h_lt.le
+      (sup_le inf_le_right inf_le_right)).resolve_left (ne_of_gt h_lt)
+  have hm_le : m ≤ P ⊔ Q ⊔ R := by
+    rw [← hFG_eq_m]
+    exact sup_le (inf_le_left.trans le_sup_left)
+      ((inf_le_left : G ≤ P ⊔ R).trans
+        (sup_le (le_sup_left.trans le_sup_left) le_sup_right))
+  have hmP_eq_π : m ⊔ P = π := by
+    have h_lt : m < m ⊔ P := lt_of_le_of_ne le_sup_left
+      (fun h => hP_not_m (le_sup_right.trans h.symm.le))
+    exact (Γ.m_covBy_π.eq_or_eq h_lt.le (sup_le hm_le_π hP_le)).resolve_left
+      (ne_of_gt h_lt)
+  refine le_antisymm (sup_le (sup_le hP_le hQ_le) hR_le) ?_
+  rw [← hmP_eq_π]
+  exact sup_le hm_le (le_sup_left.trans le_sup_left)
 
-/-- **Generic `inv_absorb`, witness exhibited.**  Feeds the documented,
-model-verified witness `R₀ = pc O C_c Γ.C m` to the proven `inv_absorb_core`.
-OPEN: the 17 `sorry` leaves below are exactly the incidence facts of `R₀` (each verified
-over `PG(2,q)`, `q = 5,7,11,13`; the `c = -2a` sliver uses `pc O C_t Γ.C m` instead), in
-`refine` order:
-1 `IsAtom R₀`; 2 `R₀ ≤ π`; 3 `¬ R₀ ≤ l`; 4 `¬ R₀ ≤ m`; 5 `¬ R₀ ≤ ℓ₁ = C_n ⊔ Γ.C`;
-6 `¬ R₀ ≤ O ⊔ C_n` (span_A, fails exactly at `c = -2a`); 7 `¬ R₀ ≤ n ⊔ C_n` (span_B);
-8 `O ⊔ C_n ⊔ R₀ = π`; 9 `n ⊔ C_n ⊔ R₀ = π`; 10 `¬ C_t ≤ l`; 11 `¬ C_t ≤ m`; 12 `C_t ≤ π`;
-13 `¬ R₀ ≤ O ⊔ C_t` (span_C); 14 `¬ R₀ ≤ n ⊔ C_t` (span_D);
-15 `¬ C_t ≤ ℓ₂ = R₀ ⊔ pc O a R₀ m`; 16 `O ⊔ R₀ ⊔ C_t = π`; 17 `n ⊔ R₀ ⊔ C_t = π`. -/
+/-- **The reverse tower is the negative's tower.**  `pc x Γ.O Γ.C m = C_{-x}`:
+translating `Γ.C` by the vector `x → O` lands on the C-tower of `coord_neg Γ x`.
+Extracted from `coord_add_left_neg` (`x + (-x) = O`): the sum's defining meet
+passes through `Γ.O` exactly when the line `Γ.O ⊔ C_{-x}` carries the direction
+`(x ⊔ Γ.C) ⊓ m`, which is the second component of the reverse completion. -/
+theorem neg_tower_reverse (Γ : CoordSystem L) (x : L)
+    (hx : IsAtom x) (hx_on : x ≤ Γ.O ⊔ Γ.U)
+    (hx_ne_O : x ≠ Γ.O) (hx_ne_U : x ≠ Γ.U)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    parallelogram_completion x Γ.O Γ.C (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_neg Γ x) Γ.C (Γ.U ⊔ Γ.V) := by
+  set l := Γ.O ⊔ Γ.U with hl
+  set m := Γ.U ⊔ Γ.V with hm
+  set q := Γ.U ⊔ Γ.C with hq
+  set π := Γ.O ⊔ Γ.U ⊔ Γ.V with hπ
+  set n := coord_neg Γ x with hn
+  set C_n := parallelogram_completion Γ.O n Γ.C m with hCn_def
+  have hn_atom : IsAtom n := coord_neg_atom Γ hx hx_on hx_ne_O hx_ne_U
+  have hn_on : n ≤ l := coord_neg_on_l Γ x
+  have hn_ne_U : n ≠ Γ.U := coord_neg_ne_U Γ hx hx_on hx_ne_O hx_ne_U
+  obtain ⟨hCn_atom, hCn_not_l, hCn_not_m, hCn_le_q, -⟩ :=
+    C_tower_facts Γ n hn_atom hn_on (coord_neg_ne_O Γ hx hx_on hx_ne_O hx_ne_U) hn_ne_U
+  have hUC : Γ.U ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+  have hx_ne_C : x ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ hx_on)
+  have hx_not_m : ¬ x ≤ m := fun h => hx_ne_U (Γ.atom_on_both_eq_U hx hx_on h)
+  have hm_le_π : m ≤ π := sup_le (le_sup_right.trans le_sup_left) le_sup_right
+  set h' := (x ⊔ Γ.C) ⊓ m with hh'_def
+  have hh'_atom : IsAtom h' :=
+    line_meets_m_at_atom hx Γ.hC hx_ne_C (sup_le (hx_on.trans le_sup_left) Γ.hC_plane)
+      hm_le_π Γ.m_covBy_π hx_not_m
+  have hCn_le_nE : C_n ≤ n ⊔ Γ.E := (inf_le_right : C_n ≤ n ⊔ (Γ.O ⊔ Γ.C) ⊓ m)
+  have hCn_cov_q : C_n ⋖ q := line_covers_its_atoms Γ.hU Γ.hC hUC hCn_atom hCn_le_q
+  have hDn_eq : (n ⊔ Γ.E) ⊓ q = C_n := by
+    have h_ne_q : (n ⊔ Γ.E) ⊓ q ≠ q := by
+      intro h_eq
+      have hU_le_nE : Γ.U ≤ n ⊔ Γ.E := (le_sup_left.trans h_eq.symm.le).trans inf_le_left
+      have h_nE_l : (Γ.E ⊔ n) ⊓ l = n := line_direction Γ.hE_atom Γ.hE_not_l hn_on
+      have hU_le_n : Γ.U ≤ n := by
+        rw [← h_nE_l]
+        exact le_inf (hU_le_nE.trans (sup_comm n Γ.E).le) le_sup_right
+      exact hn_ne_U ((hn_atom.le_iff.mp hU_le_n).resolve_left Γ.hU.1).symm
+    exact (hCn_cov_q.eq_or_eq (le_inf hCn_le_nE hCn_le_q) inf_le_right).resolve_right
+      h_ne_q
+  have hadd : ((x ⊔ Γ.C) ⊓ m ⊔ (n ⊔ Γ.E) ⊓ q) ⊓ l = Γ.O :=
+    coord_add_left_neg Γ x hx hx_on hx_ne_O hx_ne_U R hR hR_not h_irred
+  rw [hDn_eq] at hadd
+  have hO_le : Γ.O ≤ h' ⊔ C_n := hadd ▸ inf_le_left
+  have hh'_ne_Cn : h' ≠ C_n := fun h => hCn_not_m (h.symm.le.trans inf_le_right)
+  have hO_ne_Cn : Γ.O ≠ C_n := fun h => hCn_not_l (h.symm.le.trans le_sup_left)
+  have hOCn_eq : C_n ⊔ Γ.O = C_n ⊔ h' := by
+    have h_lt : C_n < C_n ⊔ Γ.O := lt_of_le_of_ne le_sup_left
+      (fun h => hO_ne_Cn ((hCn_atom.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        Γ.hO.1))
+    exact ((atom_covBy_join hCn_atom hh'_atom hh'_ne_Cn.symm).eq_or_eq h_lt.le
+      (sup_le le_sup_left (hO_le.trans (sup_comm h' C_n).le))).resolve_left (ne_of_gt h_lt)
+  have hO_cov : Γ.O ⋖ Γ.O ⊔ C_n := atom_covBy_join Γ.hO hCn_atom hO_ne_Cn
+  have hOh'_eq : Γ.O ⊔ h' = Γ.O ⊔ C_n := by
+    have hO_ne_h' : Γ.O ≠ h' := fun h => Γ.hO_not_m (h.le.trans inf_le_right)
+    have h_lt : Γ.O < Γ.O ⊔ h' := lt_of_le_of_ne le_sup_left
+      (fun h => hO_ne_h' ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        hh'_atom.1).symm)
+    have hh'_le : h' ≤ Γ.O ⊔ C_n := by
+      have : h' ≤ C_n ⊔ h' := le_sup_right
+      rw [← hOCn_eq] at this
+      exact this.trans (sup_comm C_n Γ.O).le
+    exact (hO_cov.eq_or_eq h_lt.le (sup_le le_sup_left hh'_le)).resolve_left
+      (ne_of_gt h_lt)
+  have hxO_eq_l : x ⊔ Γ.O = l := by
+    have h_lt : Γ.O < Γ.O ⊔ x := lt_of_le_of_ne le_sup_left
+      (fun h => hx_ne_O ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left hx.1))
+    rw [sup_comm x Γ.O]
+    exact ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq h_lt.le
+      (sup_le le_sup_left hx_on)).resolve_left (ne_of_gt h_lt)
+  have hlm : l ⊓ m = Γ.U := Γ.l_inf_m_eq_U
+  show (Γ.C ⊔ (x ⊔ Γ.O) ⊓ m) ⊓ (Γ.O ⊔ (x ⊔ Γ.C) ⊓ m) = C_n
+  rw [hxO_eq_l, hlm, sup_comm Γ.C Γ.U, ← hh'_def, hOh'_eq]
+  have h_ne_q : (Γ.U ⊔ Γ.C) ⊓ (Γ.O ⊔ C_n) ≠ Γ.U ⊔ Γ.C := by
+    intro h_eq
+    have hl_le : l ≤ Γ.O ⊔ C_n := sup_le le_sup_left
+      ((le_sup_left.trans h_eq.symm.le).trans inf_le_right)
+    have := (hO_cov.eq_or_eq (le_sup_left : Γ.O ≤ l) hl_le).resolve_left
+      (fun h => Γ.hOU ((Γ.hO.le_iff.mp (le_sup_right.trans h.le)).resolve_left Γ.hU.1).symm)
+    exact hCn_not_l (le_sup_right.trans this.symm.le)
+  exact ((hCn_cov_q.eq_or_eq (le_inf hCn_le_q le_sup_right) inf_le_left).resolve_right
+    h_ne_q)
+
+/-- **The τ-inverse auxiliary point.**  `z = (x ⊔ Γ.E) ⊓ (w' ⊔ X)`: the meet of the
+`Γ.E`-direction line through `x` with the line joining a fresh good point `w'` to the
+target `X` on `q`.  In general position with respect to every line the τ-inverse
+transport routes through: off `l`, `m`, `q`, `Γ.O ⊔ Γ.C`, `x ⊔ Γ.C`, `Γ.O ⊔ X`,
+and `x ⊔ X`. -/
+theorem inv_aux_point (Γ : CoordSystem L) (x w' X : L)
+    (hx : IsAtom x) (hx_on : x ≤ Γ.O ⊔ Γ.U) (hx_ne_O : x ≠ Γ.O) (hx_ne_U : x ≠ Γ.U)
+    (hw' : IsAtom w') (hw'_on : w' ≤ Γ.O ⊔ Γ.U) (hw'_ne_O : w' ≠ Γ.O)
+    (hw'_ne_U : w' ≠ Γ.U) (hw'x : w' ≠ x)
+    (hX : IsAtom X) (hX_q : X ≤ Γ.U ⊔ Γ.C) (hX_ne_U : X ≠ Γ.U)
+    (hX_xE : ¬ X ≤ x ⊔ Γ.E) (hX_w'E : ¬ X ≤ w' ⊔ Γ.E) :
+    IsAtom ((x ⊔ Γ.E) ⊓ (w' ⊔ X))
+    ∧ (x ⊔ Γ.E) ⊓ (w' ⊔ X) ≤ Γ.O ⊔ Γ.U ⊔ Γ.V
+    ∧ ¬ (x ⊔ Γ.E) ⊓ (w' ⊔ X) ≤ Γ.O ⊔ Γ.U
+    ∧ ¬ (x ⊔ Γ.E) ⊓ (w' ⊔ X) ≤ Γ.U ⊔ Γ.V
+    ∧ ¬ (x ⊔ Γ.E) ⊓ (w' ⊔ X) ≤ Γ.U ⊔ Γ.C
+    ∧ ¬ (x ⊔ Γ.E) ⊓ (w' ⊔ X) ≤ Γ.O ⊔ Γ.C
+    ∧ ¬ (x ⊔ Γ.E) ⊓ (w' ⊔ X) ≤ x ⊔ Γ.C
+    ∧ ¬ (x ⊔ Γ.E) ⊓ (w' ⊔ X) ≤ Γ.O ⊔ X
+    ∧ ¬ (x ⊔ Γ.E) ⊓ (w' ⊔ X) ≤ x ⊔ X := by
+  set l := Γ.O ⊔ Γ.U with hl
+  set m := Γ.U ⊔ Γ.V with hm
+  set q := Γ.U ⊔ Γ.C with hq
+  set π := Γ.O ⊔ Γ.U ⊔ Γ.V with hπ
+  set z := (x ⊔ Γ.E) ⊓ (w' ⊔ X) with hz_def
+  have hUV : Γ.U ≠ Γ.V := fun h => Γ.hV_off (h ▸ le_sup_right)
+  have hUC : Γ.U ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+  have hOC : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  have hm_le_π : m ≤ π := sup_le (le_sup_right.trans le_sup_left) le_sup_right
+  have hx_ne_E : x ≠ Γ.E := fun h => Γ.hE_not_l (h ▸ hx_on)
+  have hx_ne_C : x ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ hx_on)
+  have hx_not_m : ¬ x ≤ m := fun h => hx_ne_U (Γ.atom_on_both_eq_U hx hx_on h)
+  have hlq_eq_U : l ⊓ q = Γ.U := by
+    show (Γ.O ⊔ Γ.U) ⊓ (Γ.U ⊔ Γ.C) = Γ.U
+    rw [sup_comm Γ.O Γ.U]
+    exact modular_intersection Γ.hU Γ.hO Γ.hC Γ.hOU.symm hUC
+      (fun h => Γ.hC_not_l (h ▸ le_sup_left))
+      (fun h => Γ.hC_not_l (le_trans h (by rw [sup_comm])))
+  have hqm_eq_U : q ⊓ m = Γ.U := by
+    show (Γ.U ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.U
+    rw [sup_inf_assoc_of_le Γ.C (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)]
+    have : Γ.C ⊓ (Γ.U ⊔ Γ.V) = ⊥ :=
+      (Γ.hC.le_iff.mp inf_le_left).resolve_right (fun h => Γ.hC_not_m (h ▸ inf_le_right))
+    rw [this, sup_bot_eq]
+  have hX_not_l : ¬ X ≤ l := fun h =>
+    hX_ne_U ((Γ.hU.le_iff.mp (hlq_eq_U ▸ le_inf h hX_q)).resolve_left hX.1)
+  have hX_not_m : ¬ X ≤ m := fun h =>
+    hX_ne_U ((Γ.hU.le_iff.mp (hqm_eq_U ▸ le_inf hX_q h)).resolve_left hX.1)
+  have hw'X_ne : w' ≠ X := fun h => hX_not_l (h ▸ hw'_on)
+  have hxE_le_π : x ⊔ Γ.E ≤ π := sup_le (hx_on.trans le_sup_left) (Γ.hE_on_m.trans hm_le_π)
+  have hw'X_le_π : w' ⊔ X ≤ π :=
+    sup_le (hw'_on.trans le_sup_left) (hX_q.trans (sup_le (le_sup_right.trans le_sup_left)
+      Γ.hC_plane))
+  have hxE_l : (x ⊔ Γ.E) ⊓ l = x := by
+    rw [sup_comm]; exact line_direction Γ.hE_atom Γ.hE_not_l hx_on
+  have hxE_m : (x ⊔ Γ.E) ⊓ m = Γ.E := line_direction hx hx_not_m Γ.hE_on_m
+  have hw'_not_xE : ¬ w' ≤ x ⊔ Γ.E := fun h =>
+    hw'x ((hx.le_iff.mp (hxE_l ▸ le_inf h hw'_on)).resolve_left hw'.1)
+  have hU_not_xE : ¬ Γ.U ≤ x ⊔ Γ.E := fun h =>
+    hx_ne_U ((hx.le_iff.mp (hxE_l ▸ le_inf h le_sup_right)).resolve_left Γ.hU.1).symm
+  have hl_cov_π : l ⋖ π := by
+    have hV_disj_l : Γ.V ⊓ l = ⊥ :=
+      (Γ.hV.le_iff.mp inf_le_left).resolve_right (fun h => Γ.hV_off (h ▸ inf_le_right))
+    have h2 := covBy_sup_of_inf_covBy_left (hV_disj_l ▸ Γ.hV.bot_covBy)
+    rwa [show Γ.V ⊔ l = π from by rw [hl, hπ]; ac_rfl] at h2
+  have hlE_eq_π : l ⊔ Γ.E = π := by
+    have h_lt : l < l ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+      (fun h => Γ.hE_not_l (le_sup_right.trans h.symm.le))
+    exact (hl_cov_π.eq_or_eq h_lt.le
+      (sup_le le_sup_left (Γ.hE_on_m.trans hm_le_π))).resolve_left (ne_of_gt h_lt)
+  have hxU_eq_l : x ⊔ Γ.U = l := by
+    have h_lt : x < x ⊔ Γ.U := lt_of_le_of_ne le_sup_left
+      (fun h => hx_ne_U ((hx.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        Γ.hU.1).symm)
+    exact ((line_covers_its_atoms Γ.hO Γ.hU Γ.hOU hx hx_on).eq_or_eq h_lt.le
+      (sup_le hx_on le_sup_right)).resolve_left (ne_of_gt h_lt)
+  have hxE_cov_π : (x ⊔ Γ.E) ⋖ π := by
+    have hU_disj : Γ.U ⊓ (x ⊔ Γ.E) = ⊥ :=
+      (Γ.hU.le_iff.mp inf_le_left).resolve_right (fun h => hU_not_xE (h ▸ inf_le_right))
+    have h2 := covBy_sup_of_inf_covBy_left (hU_disj ▸ Γ.hU.bot_covBy)
+    rwa [show Γ.U ⊔ (x ⊔ Γ.E) = π from by
+      rw [show Γ.U ⊔ (x ⊔ Γ.E) = (x ⊔ Γ.U) ⊔ Γ.E from by ac_rfl, hxU_eq_l, hlE_eq_π]] at h2
+  have hz_atom : IsAtom z := by
+    rw [hz_def, inf_comm (x ⊔ Γ.E) (w' ⊔ X)]
+    exact line_meets_m_at_atom hw' hX hw'X_ne hw'X_le_π hxE_le_π hxE_cov_π hw'_not_xE
+  have hz_le_xE : z ≤ x ⊔ Γ.E := inf_le_left
+  have hz_le_w'X : z ≤ w' ⊔ X := inf_le_right
+  have hz_le_π : z ≤ π := hz_le_xE.trans hxE_le_π
+  have hw'X_l : (w' ⊔ X) ⊓ l = w' := by
+    rw [sup_comm]; exact line_direction hX hX_not_l hw'_on
+  have hz_not_l : ¬ z ≤ l := by
+    intro h
+    have hz_eq_x : z = x := (hx.le_iff.mp (hxE_l ▸ le_inf hz_le_xE h)).resolve_left hz_atom.1
+    have hx_le : x ≤ w' ⊔ X := hz_eq_x ▸ hz_le_w'X
+    exact hw'x ((hw'.le_iff.mp (hw'X_l ▸ le_inf hx_le hx_on)).resolve_left hx.1).symm
+  have hz_not_m : ¬ z ≤ m := by
+    intro h
+    have hz_eq_E : z = Γ.E :=
+      (Γ.hE_atom.le_iff.mp (hxE_m ▸ le_inf hz_le_xE h)).resolve_left hz_atom.1
+    have hE_le : Γ.E ≤ w' ⊔ X := hz_eq_E ▸ hz_le_w'X
+    have hw'_ne_E : w' ≠ Γ.E := fun hh => Γ.hE_not_l (hh ▸ hw'_on)
+    have h_lt : w' < w' ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+      (fun hh => hw'_ne_E ((hw'.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+        Γ.hE_atom.1).symm)
+    have h_eq : w' ⊔ Γ.E = w' ⊔ X :=
+      ((atom_covBy_join hw' hX hw'X_ne).eq_or_eq h_lt.le
+        (sup_le le_sup_left hE_le)).resolve_left (ne_of_gt h_lt)
+    exact hX_w'E ((le_sup_right : X ≤ w' ⊔ X).trans h_eq.symm.le)
+  have hz_ne_E : z ≠ Γ.E := fun h => hz_not_m (h.le.trans Γ.hE_on_m)
+  obtain ⟨hCx_atom, hCx_not_l, hCx_not_m, hCx_le_q, -⟩ := C_tower_facts Γ x hx hx_on hx_ne_O hx_ne_U
+  have hCx_le_xE : parallelogram_completion Γ.O x Γ.C m ≤ x ⊔ Γ.E :=
+    (inf_le_right : parallelogram_completion Γ.O x Γ.C m ≤ x ⊔ (Γ.O ⊔ Γ.C) ⊓ m)
+  have hxE_q_eq : (x ⊔ Γ.E) ⊓ q = parallelogram_completion Γ.O x Γ.C m := by
+    have h_ne_q : (x ⊔ Γ.E) ⊓ q ≠ q := fun heq =>
+      hU_not_xE ((le_sup_left : Γ.U ≤ q).trans (inf_eq_right.mp heq))
+    exact ((line_covers_its_atoms Γ.hU Γ.hC hUC hCx_atom hCx_le_q).eq_or_eq
+      (le_inf hCx_le_xE hCx_le_q) inf_le_right).resolve_right h_ne_q
+  have hw'_not_q : ¬ w' ≤ q := fun h =>
+    hw'_ne_U ((Γ.hU.le_iff.mp (hlq_eq_U ▸ le_inf hw'_on h)).resolve_left hw'.1)
+  have hw'X_q : (w' ⊔ X) ⊓ q = X := line_direction hw' hw'_not_q hX_q
+  have hz_not_q : ¬ z ≤ q := by
+    intro h
+    have hz_eq_Cx : z = parallelogram_completion Γ.O x Γ.C m :=
+      (hCx_atom.le_iff.mp (hxE_q_eq ▸ le_inf hz_le_xE h)).resolve_left hz_atom.1
+    have hCx_le : parallelogram_completion Γ.O x Γ.C m ≤ w' ⊔ X := hz_eq_Cx ▸ hz_le_w'X
+    have hCx_eq_X : parallelogram_completion Γ.O x Γ.C m = X :=
+      (hX.le_iff.mp (hw'X_q ▸ le_inf hCx_le hCx_le_q)).resolve_left hCx_atom.1
+    exact hX_xE (hCx_eq_X ▸ hCx_le_xE)
+  have hCE_eq : Γ.C ⊔ Γ.E = Γ.O ⊔ Γ.C := by
+    have hC_ne_E : Γ.C ≠ Γ.E := fun h => Γ.hC_not_m (h ▸ Γ.hE_on_m)
+    have h_lt : Γ.C < Γ.C ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+      (fun h => hC_ne_E ((Γ.hC.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        Γ.hE_atom.1).symm)
+    exact ((line_covers_its_atoms Γ.hO Γ.hC hOC Γ.hC le_sup_right).eq_or_eq h_lt.le
+      (sup_le le_sup_right Γ.hE_le_OC)).resolve_left (ne_of_gt h_lt)
+  have hU_not_OC : ¬ Γ.U ≤ Γ.O ⊔ Γ.C := by
+    intro h
+    have h_le : Γ.O ⊔ Γ.U ≤ Γ.O ⊔ Γ.C := sup_le le_sup_left h
+    have h_eq := ((atom_covBy_join Γ.hO Γ.hC hOC).eq_or_eq
+      (atom_covBy_join Γ.hO Γ.hU Γ.hOU).lt.le h_le).resolve_left
+      (ne_of_gt (atom_covBy_join Γ.hO Γ.hU Γ.hOU).lt)
+    exact Γ.hC_not_l (h_eq ▸ le_sup_right)
+  have hOC_l : (Γ.O ⊔ Γ.C) ⊓ l = Γ.O :=
+    modular_intersection Γ.hO Γ.hC Γ.hU hOC Γ.hOU hUC.symm hU_not_OC
+  have hz_not_OC : ¬ z ≤ Γ.O ⊔ Γ.C := by
+    intro h
+    have hEz_lt : Γ.E < Γ.E ⊔ z := lt_of_le_of_ne le_sup_left
+      (fun hh => hz_ne_E ((Γ.hE_atom.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+        hz_atom.1))
+    have hEz_eq_xE : Γ.E ⊔ z = x ⊔ Γ.E :=
+      ((line_covers_its_atoms hx Γ.hE_atom hx_ne_E Γ.hE_atom le_sup_right).eq_or_eq
+        hEz_lt.le (sup_le le_sup_right hz_le_xE)).resolve_left (ne_of_gt hEz_lt)
+    have hEz_eq_OC : Γ.E ⊔ z = Γ.O ⊔ Γ.C :=
+      ((line_covers_its_atoms Γ.hO Γ.hC hOC Γ.hE_atom Γ.hE_le_OC).eq_or_eq
+        hEz_lt.le (sup_le Γ.hE_le_OC h)).resolve_left (ne_of_gt hEz_lt)
+    have hx_le_OC : x ≤ Γ.O ⊔ Γ.C :=
+      le_sup_left.trans ((hEz_eq_xE.symm.trans hEz_eq_OC).le)
+    exact hx_ne_O ((Γ.hO.le_iff.mp (hOC_l ▸ le_inf hx_le_OC hx_on)).resolve_left hx.1)
+  have hE_not_xC : ¬ Γ.E ≤ x ⊔ Γ.C := by
+    intro h
+    have h_lt : x < x ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+      (fun hh => hx_ne_E ((hx.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+        Γ.hE_atom.1).symm)
+    have h_eq : x ⊔ Γ.E = x ⊔ Γ.C :=
+      ((atom_covBy_join hx Γ.hC hx_ne_C).eq_or_eq h_lt.le
+        (sup_le le_sup_left h)).resolve_left (ne_of_gt h_lt)
+    have hC_le_xE : Γ.C ≤ x ⊔ Γ.E := h_eq ▸ le_sup_right
+    have hC_eq_Cx : Γ.C = parallelogram_completion Γ.O x Γ.C m :=
+      (hCx_atom.le_iff.mp (hxE_q_eq ▸ le_inf hC_le_xE le_sup_right)).resolve_left Γ.hC.1
+    have h_rec := recover_std Γ x hx hx_on
+    rw [← hm, ← hl, ← hC_eq_Cx, hCE_eq, hOC_l] at h_rec
+    exact hx_ne_O h_rec.symm
+  have hz_not_xC : ¬ z ≤ x ⊔ Γ.C := by
+    intro h
+    have hC_ne_E : Γ.C ≠ Γ.E := fun hh => Γ.hC_not_m (hh ▸ Γ.hE_on_m)
+    have h_meet : (x ⊔ Γ.C) ⊓ (x ⊔ Γ.E) = x :=
+      modular_intersection hx Γ.hC Γ.hE_atom hx_ne_C hx_ne_E hC_ne_E hE_not_xC
+    have hz_eq_x : z = x :=
+      (hx.le_iff.mp (h_meet ▸ le_inf h hz_le_xE)).resolve_left hz_atom.1
+    have hx_le : x ≤ w' ⊔ X := hz_eq_x ▸ hz_le_w'X
+    exact hw'x ((hw'.le_iff.mp (hw'X_l ▸ le_inf hx_le hx_on)).resolve_left hx.1).symm
+  have hX_ne_O : X ≠ Γ.O := fun h => hX_not_l (h ▸ le_sup_left)
+  have hOX_l : (X ⊔ Γ.O) ⊓ l = Γ.O := line_direction hX hX_not_l le_sup_left
+  have hw'_not_XO : ¬ w' ≤ X ⊔ Γ.O := fun h =>
+    hw'_ne_O ((Γ.hO.le_iff.mp (hOX_l ▸ le_inf h hw'_on)).resolve_left hw'.1)
+  have hz_not_OX : ¬ z ≤ Γ.O ⊔ X := by
+    intro h
+    have h_meet : (X ⊔ Γ.O) ⊓ (X ⊔ w') = X :=
+      modular_intersection hX Γ.hO hw' hX_ne_O hw'X_ne.symm hw'_ne_O.symm hw'_not_XO
+    have hz_eq_X : z = X :=
+      (hX.le_iff.mp (h_meet ▸ le_inf (h.trans (sup_comm Γ.O X).le)
+        (hz_le_w'X.trans (sup_comm w' X).le))).resolve_left hz_atom.1
+    exact hX_xE (hz_eq_X ▸ hz_le_xE)
+  have hx_ne_X : x ≠ X := fun h => hX_not_l (h ▸ hx_on)
+  have hE_not_xX : ¬ Γ.E ≤ x ⊔ X := by
+    intro h
+    have h_lt : x < x ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+      (fun hh => hx_ne_E ((hx.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+        Γ.hE_atom.1).symm)
+    have h_eq : x ⊔ Γ.E = x ⊔ X :=
+      ((atom_covBy_join hx hX hx_ne_X).eq_or_eq h_lt.le
+        (sup_le le_sup_left h)).resolve_left (ne_of_gt h_lt)
+    exact hX_xE ((le_sup_right : X ≤ x ⊔ X).trans h_eq.symm.le)
+  have hz_not_xX : ¬ z ≤ x ⊔ X := by
+    intro h
+    have hE_ne_X : Γ.E ≠ X := fun hh => hX_not_m (hh ▸ Γ.hE_on_m)
+    have h_meet : (x ⊔ X) ⊓ (x ⊔ Γ.E) = x :=
+      modular_intersection hx hX Γ.hE_atom hx_ne_X hx_ne_E hE_ne_X.symm hE_not_xX
+    have hz_eq_x : z = x :=
+      (hx.le_iff.mp (h_meet ▸ le_inf h hz_le_xE)).resolve_left hz_atom.1
+    have hx_le : x ≤ w' ⊔ X := hz_eq_x ▸ hz_le_w'X
+    exact hw'x ((hw'.le_iff.mp (hw'X_l ▸ le_inf hx_le hx_on)).resolve_left hx.1).symm
+  exact ⟨hz_atom, hz_le_π, hz_not_l, hz_not_m, hz_not_q, hz_not_OC, hz_not_xC,
+    hz_not_OX, hz_not_xX⟩
+
+/-- **The τ-inverse master lemma.**  Composing the tower translation by `x` with the
+tower translation by `coord_neg Γ x` is the identity on every atom `X` of the
+auxiliary line `q` in general position: `τ_x (τ_{-x} X) = X`.
+
+This is the one composition law `beta_step_core` cannot state (the composite
+parameter is `Γ.O`, not a good point).  Proof: it suffices that `τ_{-x} = τ_x⁻¹`
+at `X`, i.e. `pc Γ.O n X m = pc x Γ.O X m`; both sides transport by
+`parallelogram_completion_well_defined` to the common base pair `(Γ.C, C_{-x})`
+at the auxiliary point `z = (x ⊔ Γ.E) ⊓ (w' ⊔ X)` — legal there because `z` is
+off `q` — with `neg_tower_reverse` identifying the two base pairs, and transport
+back to `X` through the pair `(z, ζ)`; `reverse_completion` closes the loop.
+The fresh good point `w'` seeds only `z`. -/
+theorem tau_inv_tower (Γ : CoordSystem L) (x w' X : L)
+    (hx : IsAtom x) (hx_on : x ≤ Γ.O ⊔ Γ.U) (hx_ne_O : x ≠ Γ.O) (hx_ne_U : x ≠ Γ.U)
+    (hw' : IsAtom w') (hw'_on : w' ≤ Γ.O ⊔ Γ.U) (hw'_ne_O : w' ≠ Γ.O)
+    (hw'_ne_U : w' ≠ Γ.U) (hw'x : w' ≠ x)
+    (hX : IsAtom X) (hX_q : X ≤ Γ.U ⊔ Γ.C) (hX_ne_U : X ≠ Γ.U)
+    (hX_xE : ¬ X ≤ x ⊔ Γ.E) (hX_w'E : ¬ X ≤ w' ⊔ Γ.E)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    parallelogram_completion Γ.O x
+      (parallelogram_completion Γ.O (coord_neg Γ x) X (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) = X := by
+  set m := Γ.U ⊔ Γ.V with hm
+  set π := Γ.O ⊔ Γ.U ⊔ Γ.V with hπ
+  set n := coord_neg Γ x with hn
+  set C_n := parallelogram_completion Γ.O n Γ.C m with hCn_def
+  have hUV : Γ.U ≠ Γ.V := fun h => Γ.hV_off (h ▸ le_sup_right)
+  have hUC : Γ.U ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+  have hOC : Γ.O ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_left)
+  have hm_le_π : m ≤ π := sup_le (le_sup_right.trans le_sup_left) le_sup_right
+  have hm_cov : m ⋖ π := Γ.m_covBy_π
+  have hm_line : ∀ y, IsAtom y → y ≤ m → y ⋖ m := fun y hy hle =>
+    line_covers_its_atoms Γ.hU Γ.hV hUV hy hle
+  have hq_le_π : Γ.U ⊔ Γ.C ≤ π := sup_le (le_sup_right.trans le_sup_left) Γ.hC_plane
+  have hn_atom : IsAtom n := coord_neg_atom Γ hx hx_on hx_ne_O hx_ne_U
+  have hn_on : n ≤ Γ.O ⊔ Γ.U := coord_neg_on_l Γ x
+  have hn_ne_O : n ≠ Γ.O := coord_neg_ne_O Γ hx hx_on hx_ne_O hx_ne_U
+  have hn_ne_U : n ≠ Γ.U := coord_neg_ne_U Γ hx hx_on hx_ne_O hx_ne_U
+  have hn_not_m : ¬ n ≤ m := fun h => hn_ne_U (Γ.atom_on_both_eq_U hn_atom hn_on h)
+  have hx_not_m : ¬ x ≤ m := fun h => hx_ne_U (Γ.atom_on_both_eq_U hx hx_on h)
+  have hx_ne_C : x ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ hx_on)
+  have hx_ne_E : x ≠ Γ.E := fun h => Γ.hE_not_l (h ▸ hx_on)
+  have hlq_eq_U : (Γ.O ⊔ Γ.U) ⊓ (Γ.U ⊔ Γ.C) = Γ.U := by
+    rw [sup_comm Γ.O Γ.U]
+    exact modular_intersection Γ.hU Γ.hO Γ.hC Γ.hOU.symm hUC
+      (fun h => Γ.hC_not_l (h ▸ le_sup_left))
+      (fun h => Γ.hC_not_l (le_trans h (by rw [sup_comm])))
+  have hqm_eq_U : (Γ.U ⊔ Γ.C) ⊓ m = Γ.U := by
+    show (Γ.U ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) = Γ.U
+    rw [sup_inf_assoc_of_le Γ.C (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)]
+    have : Γ.C ⊓ (Γ.U ⊔ Γ.V) = ⊥ :=
+      (Γ.hC.le_iff.mp inf_le_left).resolve_right (fun h => Γ.hC_not_m (h ▸ inf_le_right))
+    rw [this, sup_bot_eq]
+  have hX_not_l : ¬ X ≤ Γ.O ⊔ Γ.U := fun h =>
+    hX_ne_U ((Γ.hU.le_iff.mp (hlq_eq_U ▸ le_inf h hX_q)).resolve_left hX.1)
+  have hX_not_m : ¬ X ≤ m := fun h =>
+    hX_ne_U ((Γ.hU.le_iff.mp (hqm_eq_U ▸ le_inf hX_q h)).resolve_left hX.1)
+  have hX_le_π : X ≤ π := hX_q.trans hq_le_π
+  have hx_ne_X : x ≠ X := fun h => hX_not_l (h ▸ hx_on)
+  have hO_ne_X : Γ.O ≠ X := fun h => hX_not_l (h.symm.le.trans le_sup_left)
+  have hn_ne_X : n ≠ X := fun h => hX_not_l (h ▸ hn_on)
+  have hxO_eq_l : x ⊔ Γ.O = Γ.O ⊔ Γ.U := by
+    rw [sup_comm x Γ.O]
+    have h_lt : Γ.O < Γ.O ⊔ x := lt_of_le_of_ne le_sup_left
+      (fun h => hx_ne_O ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left hx.1))
+    exact ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq h_lt.le
+      (sup_le le_sup_left hx_on)).resolve_left (ne_of_gt h_lt)
+  have hOn_eq_l : Γ.O ⊔ n = Γ.O ⊔ Γ.U := by
+    have h_lt : Γ.O < Γ.O ⊔ n := lt_of_le_of_ne le_sup_left
+      (fun h => hn_ne_O ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        hn_atom.1))
+    exact ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq h_lt.le
+      (sup_le le_sup_left hn_on)).resolve_left (ne_of_gt h_lt)
+  obtain ⟨hCn_atom, hCn_not_l, hCn_not_m, hCn_le_q, -⟩ :=
+    C_tower_facts Γ n hn_atom hn_on hn_ne_O hn_ne_U
+  have hCE_eq : Γ.C ⊔ Γ.E = Γ.O ⊔ Γ.C := by
+    have hC_ne_E : Γ.C ≠ Γ.E := fun h => Γ.hC_not_m (h ▸ Γ.hE_on_m)
+    have h_lt : Γ.C < Γ.C ⊔ Γ.E := lt_of_le_of_ne le_sup_left
+      (fun h => hC_ne_E ((Γ.hC.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        Γ.hE_atom.1).symm)
+    exact ((line_covers_its_atoms Γ.hO Γ.hC hOC Γ.hC le_sup_right).eq_or_eq h_lt.le
+      (sup_le le_sup_right Γ.hE_le_OC)).resolve_left (ne_of_gt h_lt)
+  have hU_not_OC : ¬ Γ.U ≤ Γ.O ⊔ Γ.C := by
+    intro h
+    have h_le : Γ.O ⊔ Γ.U ≤ Γ.O ⊔ Γ.C := sup_le le_sup_left h
+    have h_eq := ((atom_covBy_join Γ.hO Γ.hC hOC).eq_or_eq
+      (atom_covBy_join Γ.hO Γ.hU Γ.hOU).lt.le h_le).resolve_left
+      (ne_of_gt (atom_covBy_join Γ.hO Γ.hU Γ.hOU).lt)
+    exact Γ.hC_not_l (h_eq ▸ le_sup_right)
+  have hOC_l : (Γ.O ⊔ Γ.C) ⊓ (Γ.O ⊔ Γ.U) = Γ.O :=
+    modular_intersection Γ.hO Γ.hC Γ.hU hOC Γ.hOU hUC.symm hU_not_OC
+  have hCn_ne_C : C_n ≠ Γ.C := by
+    intro h
+    have h_rec : (C_n ⊔ Γ.E) ⊓ (Γ.O ⊔ Γ.U) = n := recover_std Γ n hn_atom hn_on
+    rw [h, hCE_eq, hOC_l] at h_rec
+    exact hn_ne_O h_rec.symm
+  have hCq_eq : Γ.C ⊔ C_n = Γ.U ⊔ Γ.C := by
+    have h_lt : Γ.C < Γ.C ⊔ C_n := lt_of_le_of_ne le_sup_left
+      (fun h => hCn_ne_C ((Γ.hC.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        hCn_atom.1))
+    exact ((line_covers_its_atoms Γ.hU Γ.hC hUC Γ.hC le_sup_right).eq_or_eq h_lt.le
+      (sup_le le_sup_right hCn_le_q)).resolve_left (ne_of_gt h_lt)
+  have hntr : parallelogram_completion x Γ.O Γ.C m = C_n :=
+    neg_tower_reverse Γ x hx hx_on hx_ne_O hx_ne_U R hR hR_not h_irred
+  obtain ⟨hz_atom, hz_le_π, hz_not_l, hz_not_m, hz_not_q, hz_not_OC, hz_not_xC,
+    hz_not_OX, hz_not_xX⟩ :=
+    inv_aux_point Γ x w' X hx hx_on hx_ne_O hx_ne_U hw' hw'_on hw'_ne_O hw'_ne_U hw'x
+      hX hX_q hX_ne_U hX_xE hX_w'E
+  set z := (x ⊔ Γ.E) ⊓ (w' ⊔ X) with hz_def
+  have hz_le_xE : z ≤ x ⊔ Γ.E := inf_le_left
+  have hz_ne_x : z ≠ x := fun h => hz_not_l (h.le.trans hx_on)
+  have hz_ne_O : z ≠ Γ.O := fun h => hz_not_l (h.le.trans le_sup_left)
+  have hz_ne_C : z ≠ Γ.C := fun h => hz_not_q (h.le.trans le_sup_right)
+  have hz_ne_X : z ≠ X := fun h => hz_not_q (h.le.trans hX_q)
+  have hz_ne_n : z ≠ n := fun h => hz_not_l (h.le.trans hn_on)
+  set ζ := parallelogram_completion x Γ.O z m with hζ_def
+  have hζ_atom : IsAtom ζ :=
+    parallelogram_completion_atom hx Γ.hO hz_atom hx_ne_O hz_ne_x.symm hz_ne_O.symm
+      (hx_on.trans le_sup_left) (le_sup_left.trans le_sup_left) hz_le_π
+      hm_le_π hm_cov hm_line hx_not_m Γ.hO_not_m hz_not_m
+      (fun h => hz_not_l (h.trans hxO_eq_l.le))
+  have hζ_ne_z : ζ ≠ z := by
+    intro h
+    have he_atom : IsAtom ((x ⊔ z) ⊓ m) :=
+      line_meets_m_at_atom hx hz_atom hz_ne_x.symm (sup_le (hx_on.trans le_sup_left)
+        hz_le_π) hm_le_π hm_cov hx_not_m
+    have he_ne_z : (x ⊔ z) ⊓ m ≠ z := fun hh => hz_not_m (hh.symm.le.trans inf_le_right)
+    have he_ne_O : (x ⊔ z) ⊓ m ≠ Γ.O := fun hh => Γ.hO_not_m (hh.symm.le.trans inf_le_right)
+    have hz_le_Oe : z ≤ Γ.O ⊔ (x ⊔ z) ⊓ m := by
+      conv_lhs => rw [← h]
+      exact inf_le_right
+    have hez_lt : (x ⊔ z) ⊓ m < (x ⊔ z) ⊓ m ⊔ z := lt_of_le_of_ne le_sup_left
+      (fun hh => he_ne_z.symm ((he_atom.le_iff.mp
+        (le_sup_right.trans hh.symm.le)).resolve_left hz_atom.1))
+    have hez_eq : (x ⊔ z) ⊓ m ⊔ z = (x ⊔ z) ⊓ m ⊔ Γ.O :=
+      ((atom_covBy_join he_atom Γ.hO he_ne_O).eq_or_eq hez_lt.le
+        (sup_le le_sup_left (hz_le_Oe.trans (sup_comm Γ.O ((x ⊔ z) ⊓ m)).le))).resolve_left
+        (ne_of_gt hez_lt)
+    have hO_le_xz : Γ.O ≤ x ⊔ z :=
+      (le_sup_right.trans hez_eq.symm.le).trans (sup_le inf_le_left le_sup_right)
+    have h_lt2 : x < x ⊔ Γ.O := lt_of_le_of_ne le_sup_left
+      (fun hh => hx_ne_O ((hx.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+        Γ.hO.1).symm)
+    have hxO_eq_xz : x ⊔ Γ.O = x ⊔ z :=
+      ((atom_covBy_join hx hz_atom hz_ne_x.symm).eq_or_eq h_lt2.le
+        (sup_le le_sup_left hO_le_xz)).resolve_left (ne_of_gt h_lt2)
+    exact hz_not_l ((le_sup_right.trans hxO_eq_xz.symm.le).trans hxO_eq_l.le)
+  have hlm_eq_U : (Γ.O ⊔ Γ.U) ⊓ m = Γ.U := Γ.l_inf_m_eq_U
+  have hd_atom : IsAtom ((x ⊔ Γ.O) ⊓ m) := by
+    rw [hxO_eq_l, hlm_eq_U]; exact Γ.hU
+  have hdir : (x ⊔ Γ.O) ⊓ m = (z ⊔ ζ) ⊓ m :=
+    parallelogram_parallel_direction hz_atom hz_not_m hd_atom hζ_atom hζ_ne_z
+  have hzζ_U : (z ⊔ ζ) ⊓ m = Γ.U := by rw [← hdir, hxO_eq_l, hlm_eq_U]
+  have hX_not_zζ : ¬ X ≤ z ⊔ ζ := by
+    intro h
+    have hU_le : Γ.U ≤ z ⊔ ζ := hzζ_U ▸ (inf_le_left : (z ⊔ ζ) ⊓ m ≤ z ⊔ ζ)
+    have hXU_eq_q : X ⊔ Γ.U = Γ.U ⊔ Γ.C := by
+      have h_lt : X < X ⊔ Γ.U := lt_of_le_of_ne le_sup_left
+        (fun hh => hX_ne_U ((hX.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+          Γ.hU.1).symm)
+      exact ((line_covers_its_atoms Γ.hU Γ.hC hUC hX hX_q).eq_or_eq h_lt.le
+        (sup_le hX_q le_sup_left)).resolve_left (ne_of_gt h_lt)
+    have hq_le : Γ.U ⊔ Γ.C ≤ z ⊔ ζ := hXU_eq_q ▸ sup_le h hU_le
+    have hq_cov : (Γ.U ⊔ Γ.C) ⋖ π := q_covBy_π Γ
+    have h_lt : (Γ.U ⊔ Γ.C) < (Γ.U ⊔ Γ.C) ⊔ z := lt_of_le_of_ne le_sup_left
+      (fun hh => hz_not_q (le_sup_right.trans hh.symm.le))
+    have hqz_eq_π : (Γ.U ⊔ Γ.C) ⊔ z = π :=
+      (hq_cov.eq_or_eq h_lt.le (sup_le hq_le_π hz_le_π)).resolve_left (ne_of_gt h_lt)
+    have hπ_le : π ≤ z ⊔ ζ := by
+      rw [← hqz_eq_π]
+      exact sup_le hq_le le_sup_left
+    have hm_le_U : m ≤ Γ.U := by
+      rw [← hzζ_U]
+      exact le_inf (hm_le_π.trans hπ_le) (le_refl m)
+    exact hUV ((Γ.hU.le_iff.mp (le_sup_right.trans hm_le_U)).resolve_left Γ.hV.1).symm
+  have h1 : ζ = parallelogram_completion Γ.C C_n z m := by
+    have h1' := parallelogram_completion_well_defined hx Γ.hO Γ.hC hz_atom
+      hx_ne_O hx_ne_C hz_ne_x.symm hOC hz_ne_O.symm hz_ne_C.symm
+      (hx_on.trans le_sup_left) (le_sup_left.trans le_sup_left) Γ.hC_plane hz_le_π
+      hm_le_π hm_cov hm_line hx_not_m Γ.hO_not_m Γ.hC_not_m hz_not_m
+      (fun h => Γ.hC_not_l (h.trans hxO_eq_l.le))
+      (fun h => hz_not_l (h.trans hxO_eq_l.le))
+      hz_not_xC
+      (by
+        intro h
+        have h_lt : x < x ⊔ Γ.C := lt_of_le_of_ne le_sup_left
+          (fun hh => hx_ne_C ((hx.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+            Γ.hC.1).symm)
+        have h_eq : x ⊔ Γ.C = x ⊔ z :=
+          ((atom_covBy_join hx hz_atom hz_ne_x.symm).eq_or_eq h_lt.le
+            (sup_le le_sup_left h)).resolve_left (ne_of_gt h_lt)
+        exact hz_not_xC ((le_sup_right : z ≤ x ⊔ z).trans h_eq.symm.le))
+      (by rw [hntr, hCq_eq]; exact hz_not_q)
+      (span_plane Γ hx Γ.hC hz_atom hx_ne_C (hx_on.trans le_sup_left) Γ.hC_plane
+        hz_le_π hx_not_m hz_not_xC)
+      R hR hR_not h_irred
+    rw [hntr] at h1'
+    exact h1'
+  have h2 : parallelogram_completion Γ.O n z m = parallelogram_completion Γ.C C_n z m := by
+    have h2' := parallelogram_completion_well_defined Γ.hO hn_atom Γ.hC hz_atom
+      hn_ne_O.symm hOC hz_ne_O.symm (fun h => Γ.hC_not_l (h ▸ hn_on)) hz_ne_n.symm
+      hz_ne_C.symm
+      (le_sup_left.trans le_sup_left) (hn_on.trans le_sup_left) Γ.hC_plane hz_le_π
+      hm_le_π hm_cov hm_line Γ.hO_not_m hn_not_m Γ.hC_not_m hz_not_m
+      (fun h => Γ.hC_not_l (h.trans hOn_eq_l.le))
+      (fun h => hz_not_l (h.trans hOn_eq_l.le))
+      hz_not_OC
+      (by
+        intro h
+        have h_lt : Γ.O < Γ.O ⊔ Γ.C := lt_of_le_of_ne le_sup_left
+          (fun hh => hOC ((Γ.hO.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+            Γ.hC.1).symm)
+        have h_eq : Γ.O ⊔ Γ.C = Γ.O ⊔ z :=
+          ((atom_covBy_join Γ.hO hz_atom hz_ne_O.symm).eq_or_eq h_lt.le
+            (sup_le le_sup_left h)).resolve_left (ne_of_gt h_lt)
+        exact hz_not_OC ((le_sup_right : z ≤ Γ.O ⊔ z).trans h_eq.symm.le))
+      (by
+        show ¬ z ≤ Γ.C ⊔ parallelogram_completion Γ.O n Γ.C m
+        rw [← hCn_def, hCq_eq]
+        exact hz_not_q)
+      (span_plane Γ Γ.hO Γ.hC hz_atom hOC (le_sup_left.trans le_sup_left) Γ.hC_plane
+        hz_le_π Γ.hO_not_m hz_not_OC)
+      R hR hR_not h_irred
+    exact h2'
+  have hζ_eq : ζ = parallelogram_completion Γ.O n z m := h1.trans h2.symm
+  have hxz_eq_xE : x ⊔ z = x ⊔ Γ.E := by
+    have h_lt : x < x ⊔ z := lt_of_le_of_ne le_sup_left
+      (fun hh => hz_ne_x ((hx.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+        hz_atom.1))
+    exact ((atom_covBy_join hx Γ.hE_atom hx_ne_E).eq_or_eq h_lt.le
+      (sup_le le_sup_left hz_le_xE)).resolve_left (ne_of_gt h_lt)
+  have h3 : parallelogram_completion x Γ.O X m = parallelogram_completion z ζ X m := by
+    have h3' := parallelogram_completion_well_defined hx Γ.hO hz_atom hX
+      hx_ne_O hz_ne_x.symm hx_ne_X hz_ne_O.symm hO_ne_X hz_ne_X
+      (hx_on.trans le_sup_left) (le_sup_left.trans le_sup_left) hz_le_π hX_le_π
+      hm_le_π hm_cov hm_line hx_not_m Γ.hO_not_m hz_not_m hX_not_m
+      (fun h => hz_not_l (h.trans hxO_eq_l.le))
+      (fun h => hX_not_l (h.trans hxO_eq_l.le))
+      (fun h => hX_xE (h.trans hxz_eq_xE.le))
+      hz_not_xX
+      hX_not_zζ
+      (span_plane Γ hx hz_atom hX hz_ne_x.symm (hx_on.trans le_sup_left) hz_le_π
+        hX_le_π hx_not_m (fun h => hX_xE (h.trans hxz_eq_xE.le)))
+      R hR hR_not h_irred
+    exact h3'
+  have h4 : parallelogram_completion Γ.O n X m = parallelogram_completion z ζ X m := by
+    have h4' := parallelogram_completion_well_defined Γ.hO hn_atom hz_atom hX
+      hn_ne_O.symm hz_ne_O.symm hO_ne_X hz_ne_n.symm hn_ne_X hz_ne_X
+      (le_sup_left.trans le_sup_left) (hn_on.trans le_sup_left) hz_le_π hX_le_π
+      hm_le_π hm_cov hm_line Γ.hO_not_m hn_not_m hz_not_m hX_not_m
+      (fun h => hz_not_l (h.trans hOn_eq_l.le))
+      (fun h => hX_not_l (h.trans hOn_eq_l.le))
+      (by
+        intro h
+        have h_lt : Γ.O < Γ.O ⊔ X := lt_of_le_of_ne le_sup_left
+          (fun hh => hO_ne_X ((Γ.hO.le_iff.mp (le_sup_right.trans hh.symm.le)).resolve_left
+            hX.1).symm)
+        have h_eq : Γ.O ⊔ X = Γ.O ⊔ z :=
+          ((atom_covBy_join Γ.hO hz_atom hz_ne_O.symm).eq_or_eq h_lt.le
+            (sup_le le_sup_left h)).resolve_left (ne_of_gt h_lt)
+        exact hz_not_OX ((le_sup_right : z ≤ Γ.O ⊔ z).trans h_eq.symm.le))
+      hz_not_OX
+      (by
+        show ¬ X ≤ z ⊔ parallelogram_completion Γ.O n z m
+        rw [← hζ_eq]
+        exact hX_not_zζ)
+      (span_plane Γ Γ.hO hz_atom hX hz_ne_O.symm (le_sup_left.trans le_sup_left)
+        hz_le_π hX_le_π Γ.hO_not_m (by
+          intro h
+          have h_lt : Γ.O < Γ.O ⊔ X := lt_of_le_of_ne le_sup_left
+            (fun hh => hO_ne_X ((Γ.hO.le_iff.mp
+              (le_sup_right.trans hh.symm.le)).resolve_left hX.1).symm)
+          have h_eq : Γ.O ⊔ X = Γ.O ⊔ z :=
+            ((atom_covBy_join Γ.hO hz_atom hz_ne_O.symm).eq_or_eq h_lt.le
+              (sup_le le_sup_left h)).resolve_left (ne_of_gt h_lt)
+          exact hz_not_OX ((le_sup_right : z ≤ Γ.O ⊔ z).trans h_eq.symm.le)))
+      R hR hR_not h_irred
+    rw [← hζ_eq] at h4'
+    exact h4'
+  have hkey : parallelogram_completion Γ.O n X m = parallelogram_completion x Γ.O X m :=
+    h4.trans h3.symm
+  rw [hkey]
+  exact reverse_completion hx Γ.hO hX hx_ne_O hx_ne_X hO_ne_X
+    (hx_on.trans le_sup_left) (le_sup_left.trans le_sup_left) hX_le_π
+    hm_le_π hm_cov hm_line hx_not_m Γ.hO_not_m hX_not_m
+    (fun h => hX_not_l (h.trans hxO_eq_l.le))
+
+/-- The line through a good point `x` in the direction `Γ.E` meets the auxiliary
+line `q` exactly at the C-tower of `x`: `(x ⊔ Γ.E) ⊓ q = C_x`. -/
+theorem tower_meets_E_line (Γ : CoordSystem L) (x : L)
+    (hx : IsAtom x) (hx_on : x ≤ Γ.O ⊔ Γ.U) (hx_ne_O : x ≠ Γ.O) (hx_ne_U : x ≠ Γ.U) :
+    (x ⊔ Γ.E) ⊓ (Γ.U ⊔ Γ.C) = parallelogram_completion Γ.O x Γ.C (Γ.U ⊔ Γ.V) := by
+  obtain ⟨hCx_atom, -, -, hCx_le_q, -⟩ := C_tower_facts Γ x hx hx_on hx_ne_O hx_ne_U
+  have hUC : Γ.U ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+  have hCx_le_xE : parallelogram_completion Γ.O x Γ.C (Γ.U ⊔ Γ.V) ≤ x ⊔ Γ.E :=
+    (inf_le_right : parallelogram_completion Γ.O x Γ.C (Γ.U ⊔ Γ.V)
+      ≤ x ⊔ (Γ.O ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V))
+  have hxE_l : (x ⊔ Γ.E) ⊓ (Γ.O ⊔ Γ.U) = x := by
+    rw [sup_comm]; exact line_direction Γ.hE_atom Γ.hE_not_l hx_on
+  have hU_not_xE : ¬ Γ.U ≤ x ⊔ Γ.E := fun h =>
+    hx_ne_U ((hx.le_iff.mp (hxE_l ▸ le_inf h le_sup_right)).resolve_left Γ.hU.1).symm
+  have h_ne_q : (x ⊔ Γ.E) ⊓ (Γ.U ⊔ Γ.C) ≠ Γ.U ⊔ Γ.C := fun heq =>
+    hU_not_xE ((le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.C).trans (inf_eq_right.mp heq))
+  exact ((line_covers_its_atoms Γ.hU Γ.hC hUC hCx_atom hCx_le_q).eq_or_eq
+    (le_inf hCx_le_xE hCx_le_q) inf_le_right).resolve_right h_ne_q
+
+/-- C-tower injectivity: equal towers come from equal points. -/
+theorem tower_inj (Γ : CoordSystem L) {x y : L}
+    (hx : IsAtom x) (hy : IsAtom y)
+    (hx_on : x ≤ Γ.O ⊔ Γ.U) (hy_on : y ≤ Γ.O ⊔ Γ.U)
+    (h : parallelogram_completion Γ.O x Γ.C (Γ.U ⊔ Γ.V)
+       = parallelogram_completion Γ.O y Γ.C (Γ.U ⊔ Γ.V)) : x = y := by
+  have h1 := recover_std Γ x hx hx_on
+  have h2 := recover_std Γ y hy hy_on
+  rw [h] at h1
+  exact h1.symm.trans h2
+
+/-! ## The two degenerate associators, as τ-inverse corollaries
+
+The two associators that total additive associativity bottoms out at.  Both are
+now corollaries of `tau_inv_tower`: two `key_identity` steps reduce each to the
+half-turn involution on the C-tower of `c`, which is exactly the master lemma. -/
+
+/-- **Generic `inv_absorb`** (`a ≠ -a`): `a + (-a + c) = c`.  Two `key_identity`
+steps turn the goal into `τ_a (τ_{-a} C_c) = C_c`, which is `tau_inv_tower`
+with fresh point `w' := -a`; `recover_std` reads the coordinate back off. -/
 theorem inv_absorb_generic (Γ : CoordSystem L) (a c : L)
     (ha : IsAtom a) (hc : IsAtom c)
     (ha_on : a ≤ Γ.O ⊔ Γ.U) (hc_on : c ≤ Γ.O ⊔ Γ.U)
@@ -3337,33 +4018,81 @@ theorem inv_absorb_generic (Γ : CoordSystem L) (a c : L)
       ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
     coord_add Γ a (coord_add Γ (coord_neg Γ a) c) = c := by
   set m := Γ.U ⊔ Γ.V with hm
-  set R₀ := parallelogram_completion Γ.O
-    (parallelogram_completion Γ.O c Γ.C m) Γ.C m with hR0_def
-  refine inv_absorb_core Γ a c ha hc ha_on hc_on ha_ne_O hc_ne_O ha_ne_U hc_ne_U
-    hca han hcn hat R₀ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ R hR hR_not h_irred
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
+  set n := coord_neg Γ a with hn_def
+  set t := coord_add Γ n c with ht_def
+  have hn_atom : IsAtom n := coord_neg_atom Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_on : n ≤ Γ.O ⊔ Γ.U := coord_neg_on_l Γ a
+  have hn_ne_O : n ≠ Γ.O := coord_neg_ne_O Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_ne_U : n ≠ Γ.U := coord_neg_ne_U Γ ha ha_on ha_ne_O ha_ne_U
+  have hnc : n ≠ c := fun h => hcn h.symm
+  have ht_atom : IsAtom t :=
+    coord_add_atom Γ n c hn_atom hc hn_on hc_on hn_ne_O hc_ne_O hn_ne_U hc_ne_U
+  have ht_on : t ≤ Γ.O ⊔ Γ.U := inf_le_right
+  have ht_ne_U : t ≠ Γ.U :=
+    coord_add_ne_U' Γ n c hn_atom hc hn_on hc_on hc_ne_O hn_ne_U hc_ne_U
+  have ht_ne_O : t ≠ Γ.O := by
+    intro h
+    have h_na : coord_add Γ n a = Γ.O := by
+      rw [coord_add_comm Γ n a hn_atom ha hn_on ha_on hn_ne_O ha_ne_O hn_ne_U ha_ne_U
+        (Ne.symm han) R hR hR_not h_irred]
+      exact coord_add_left_neg Γ a ha ha_on ha_ne_O ha_ne_U R hR hR_not h_irred
+    have hh : coord_add Γ n c = coord_add Γ n a := h.trans h_na.symm
+    exact hca (coord_add_left_cancel Γ n c a hn_atom hc ha hn_on hc_on ha_on hn_ne_U hh)
+  obtain ⟨hCc_atom, hCc_not_l, hCc_not_m, hCc_le_q, -⟩ :=
+    C_tower_facts Γ c hc hc_on hc_ne_O hc_ne_U
+  obtain ⟨hCa_atom, -, -, -, -⟩ := C_tower_facts Γ a ha ha_on ha_ne_O ha_ne_U
+  obtain ⟨hCn_atom, -, -, -, -⟩ := C_tower_facts Γ n hn_atom hn_on hn_ne_O hn_ne_U
+  have hCc_ne_U : parallelogram_completion Γ.O c Γ.C m ≠ Γ.U :=
+    fun h => hCc_not_m (h.le.trans le_sup_left)
+  have hβa : (a ⊔ Γ.E) ⊓ (Γ.U ⊔ Γ.C) = parallelogram_completion Γ.O a Γ.C m :=
+    tower_meets_E_line Γ a ha ha_on ha_ne_O ha_ne_U
+  have hβn : (n ⊔ Γ.E) ⊓ (Γ.U ⊔ Γ.C) = parallelogram_completion Γ.O n Γ.C m :=
+    tower_meets_E_line Γ n hn_atom hn_on hn_ne_O hn_ne_U
+  have hX_aE : ¬ parallelogram_completion Γ.O c Γ.C m ≤ a ⊔ Γ.E := by
+    intro h
+    have h_le : parallelogram_completion Γ.O c Γ.C m
+        ≤ parallelogram_completion Γ.O a Γ.C m := hβa ▸ le_inf h hCc_le_q
+    exact hca (tower_inj Γ hc ha hc_on ha_on
+      ((hCa_atom.le_iff.mp h_le).resolve_left hCc_atom.1))
+  have hX_nE : ¬ parallelogram_completion Γ.O c Γ.C m ≤ n ⊔ Γ.E := by
+    intro h
+    have h_le : parallelogram_completion Γ.O c Γ.C m
+        ≤ parallelogram_completion Γ.O n Γ.C m := hβn ▸ le_inf h hCc_le_q
+    exact hcn (tower_inj Γ hc hn_atom hc_on hn_on
+      ((hCn_atom.le_iff.mp h_le).resolve_left hCc_atom.1))
+  have hM : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O n (parallelogram_completion Γ.O c Γ.C m) m) m
+      = parallelogram_completion Γ.O c Γ.C m :=
+    tau_inv_tower Γ a n (parallelogram_completion Γ.O c Γ.C m)
+      ha ha_on ha_ne_O ha_ne_U hn_atom hn_on hn_ne_O hn_ne_U (Ne.symm han)
+      hCc_atom hCc_le_q hCc_ne_U hX_aE hX_nE R hR hR_not h_irred
+  have hki_nc : parallelogram_completion Γ.O n
+      (parallelogram_completion Γ.O c Γ.C m) m
+      = parallelogram_completion Γ.O t Γ.C m :=
+    key_identity Γ n c hn_atom hc hn_on hc_on hn_ne_O hc_ne_O hn_ne_U hc_ne_U hnc
+      R hR hR_not h_irred
+  have hki_at : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O t Γ.C m) m
+      = parallelogram_completion Γ.O (coord_add Γ a t) Γ.C m :=
+    key_identity Γ a t ha ht_atom ha_on ht_on ha_ne_O ht_ne_O ha_ne_U ht_ne_U hat
+      R hR hR_not h_irred
+  have h_eq : parallelogram_completion Γ.O (coord_add Γ a t) Γ.C m
+      = parallelogram_completion Γ.O c Γ.C m := by
+    rw [← hki_at, ← hki_nc]
+    exact hM
+  have h_at_atom : IsAtom (coord_add Γ a t) :=
+    coord_add_atom Γ a t ha ht_atom ha_on ht_on ha_ne_O ht_ne_O ha_ne_U ht_ne_U
+  have h1 : (parallelogram_completion Γ.O (coord_add Γ a t) Γ.C m ⊔ Γ.E)
+      ⊓ (Γ.O ⊔ Γ.U) = coord_add Γ a t :=
+    recover_std Γ (coord_add Γ a t) h_at_atom inf_le_right
+  have h2 : (parallelogram_completion Γ.O c Γ.C m ⊔ Γ.E) ⊓ (Γ.O ⊔ Γ.U) = c :=
+    recover_std Γ c hc hc_on
+  rw [h_eq] at h1
+  exact h1.symm.trans h2
 
-/-- **The shared characteristic-2 knot** (`a = -a`, i.e. `a + a = O`).
-Here the `inv_absorb` obligation `a + (a + c) = c` and the `double_left` obligation
-both reduce to the half-turn involution `τ_a(τ_a(C_c)) = C_c`, needing the base-change
-involution with `n = a` — which `base_change_hinv` does not cover (it requires `a ≠ -a`).
-OPEN: grounds via `dbl_key_identity` + `pc_id_left` + a char-2 witness. -/
+/-- **The characteristic-2 knot** (`a = -a`): `a + (a + c) = c`.  No longer a
+knot: it is `tau_inv_tower` with `-a` rewritten to `a` by the hypothesis, the
+fresh point seeded by `s = a + c` itself. -/
 theorem char2_absorb (Γ : CoordSystem L) (a c : L)
     (ha : IsAtom a) (hc : IsAtom c)
     (ha_on : a ≤ Γ.O ⊔ Γ.U) (hc_on : c ≤ Γ.O ⊔ Γ.U)
@@ -3374,7 +4103,241 @@ theorem char2_absorb (Γ : CoordSystem L) (a c : L)
     (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
       ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
     coord_add Γ a (coord_add Γ a c) = c := by
-  sorry
+  have haa : coord_add Γ a a = Γ.O := by
+    have h := coord_add_left_neg Γ a ha ha_on ha_ne_O ha_ne_U R hR hR_not h_irred
+    rwa [← hchar2] at h
+  by_cases hca : c = a
+  · rw [hca, haa, coord_add_right_zero Γ a ha ha_on]
+  set m := Γ.U ⊔ Γ.V with hm
+  set s := coord_add Γ a c with hs_def
+  have hs_atom : IsAtom s :=
+    coord_add_atom Γ a c ha hc ha_on hc_on ha_ne_O hc_ne_O ha_ne_U hc_ne_U
+  have hs_on : s ≤ Γ.O ⊔ Γ.U := inf_le_right
+  have hs_ne_U : s ≠ Γ.U :=
+    coord_add_ne_U' Γ a c ha hc ha_on hc_on hc_ne_O ha_ne_U hc_ne_U
+  have hs_ne_O : s ≠ Γ.O := by
+    intro h
+    have hh : coord_add Γ a c = coord_add Γ a a := h.trans haa.symm
+    exact hca (coord_add_left_cancel Γ a c a ha hc ha ha_on hc_on ha_on ha_ne_U hh)
+  have has : a ≠ s := by
+    intro h
+    have h0 : coord_add Γ a c = coord_add Γ a Γ.O :=
+      h.symm.trans (coord_add_right_zero Γ a ha ha_on).symm
+    exact hc_ne_O (coord_add_left_cancel Γ a c Γ.O ha hc Γ.hO ha_on hc_on le_sup_left
+      ha_ne_U h0)
+  obtain ⟨hCc_atom, hCc_not_l, hCc_not_m, hCc_le_q, -⟩ :=
+    C_tower_facts Γ c hc hc_on hc_ne_O hc_ne_U
+  obtain ⟨hCa_atom, -, -, -, -⟩ := C_tower_facts Γ a ha ha_on ha_ne_O ha_ne_U
+  obtain ⟨hCs_atom, -, -, -, -⟩ := C_tower_facts Γ s hs_atom hs_on hs_ne_O hs_ne_U
+  have hCc_ne_U : parallelogram_completion Γ.O c Γ.C m ≠ Γ.U :=
+    fun h => hCc_not_m (h.le.trans le_sup_left)
+  have hβa : (a ⊔ Γ.E) ⊓ (Γ.U ⊔ Γ.C) = parallelogram_completion Γ.O a Γ.C m :=
+    tower_meets_E_line Γ a ha ha_on ha_ne_O ha_ne_U
+  have hβs : (s ⊔ Γ.E) ⊓ (Γ.U ⊔ Γ.C) = parallelogram_completion Γ.O s Γ.C m :=
+    tower_meets_E_line Γ s hs_atom hs_on hs_ne_O hs_ne_U
+  have hX_aE : ¬ parallelogram_completion Γ.O c Γ.C m ≤ a ⊔ Γ.E := by
+    intro h
+    have h_le : parallelogram_completion Γ.O c Γ.C m
+        ≤ parallelogram_completion Γ.O a Γ.C m := hβa ▸ le_inf h hCc_le_q
+    exact hca (tower_inj Γ hc ha hc_on ha_on
+      ((hCa_atom.le_iff.mp h_le).resolve_left hCc_atom.1))
+  have hX_sE : ¬ parallelogram_completion Γ.O c Γ.C m ≤ s ⊔ Γ.E := by
+    intro h
+    have h_le : parallelogram_completion Γ.O c Γ.C m
+        ≤ parallelogram_completion Γ.O s Γ.C m := hβs ▸ le_inf h hCc_le_q
+    have hcs : c = s := tower_inj Γ hc hs_atom hc_on hs_on
+      ((hCs_atom.le_iff.mp h_le).resolve_left hCc_atom.1)
+    have h_comm : coord_add Γ a c = coord_add Γ c a :=
+      coord_add_comm Γ a c ha hc ha_on hc_on ha_ne_O hc_ne_O ha_ne_U hc_ne_U
+        (fun h' => hca h'.symm) R hR hR_not h_irred
+    have h0 : coord_add Γ c a = coord_add Γ c Γ.O := by
+      rw [← h_comm, ← hs_def, ← hcs, coord_add_right_zero Γ c hc hc_on]
+    exact ha_ne_O (coord_add_left_cancel Γ c a Γ.O hc ha Γ.hO hc_on ha_on le_sup_left
+      hc_ne_U h0)
+  have hM : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O a (parallelogram_completion Γ.O c Γ.C m) m) m
+      = parallelogram_completion Γ.O c Γ.C m := by
+    have h := tau_inv_tower Γ a s (parallelogram_completion Γ.O c Γ.C m)
+      ha ha_on ha_ne_O ha_ne_U hs_atom hs_on hs_ne_O hs_ne_U (Ne.symm has)
+      hCc_atom hCc_le_q hCc_ne_U hX_aE hX_sE R hR hR_not h_irred
+    rwa [← hchar2] at h
+  have hki_ac : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O c Γ.C m) m
+      = parallelogram_completion Γ.O s Γ.C m :=
+    key_identity Γ a c ha hc ha_on hc_on ha_ne_O hc_ne_O ha_ne_U hc_ne_U
+      (fun h => hca h.symm) R hR hR_not h_irred
+  have hki_as : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O s Γ.C m) m
+      = parallelogram_completion Γ.O (coord_add Γ a s) Γ.C m :=
+    key_identity Γ a s ha hs_atom ha_on hs_on ha_ne_O hs_ne_O ha_ne_U hs_ne_U has
+      R hR hR_not h_irred
+  have h_eq : parallelogram_completion Γ.O (coord_add Γ a s) Γ.C m
+      = parallelogram_completion Γ.O c Γ.C m := by
+    rw [← hki_as, ← hki_ac]
+    exact hM
+  have h_as_atom : IsAtom (coord_add Γ a s) :=
+    coord_add_atom Γ a s ha hs_atom ha_on hs_on ha_ne_O hs_ne_O ha_ne_U hs_ne_U
+  have h1 : (parallelogram_completion Γ.O (coord_add Γ a s) Γ.C m ⊔ Γ.E)
+      ⊓ (Γ.O ⊔ Γ.U) = coord_add Γ a s :=
+    recover_std Γ (coord_add Γ a s) h_as_atom inf_le_right
+  have h2 : (parallelogram_completion Γ.O c Γ.C m ⊔ Γ.E) ⊓ (Γ.O ⊔ Γ.U) = c :=
+    recover_std Γ c hc hc_on
+  rw [h_eq] at h1
+  exact h1.symm.trans h2
+
+/-- **The order-3 loop.**  If `a + a = -a` then `(-a) + (-a) = a`: the ℤ/3
+sub-line closes.  A four-move corollary of `dbl_beta_generic`. -/
+theorem z3_knot (Γ : CoordSystem L) (a : L)
+    (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (han : a ≠ coord_neg Γ a)
+    (hknot : coord_add Γ a a = coord_neg Γ a)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    coord_add Γ (coord_neg Γ a) (coord_neg Γ a) = a := by
+  set n := coord_neg Γ a with hn_def
+  have hn_atom : IsAtom n := coord_neg_atom Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_on : n ≤ Γ.O ⊔ Γ.U := coord_neg_on_l Γ a
+  have hn_ne_O : n ≠ Γ.O := coord_neg_ne_O Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_ne_U : n ≠ Γ.U := coord_neg_ne_U Γ ha ha_on ha_ne_O ha_ne_U
+  have hβ : parallelogram_completion Γ.O (coord_add Γ a a)
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O a
+        (parallelogram_completion Γ.O a
+          (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) :=
+    dbl_beta_generic Γ a n ha hn_atom ha_on hn_on ha_ne_O hn_ne_O ha_ne_U hn_ne_U
+      (by rw [hknot]; exact hn_ne_O) R hR hR_not h_irred
+  have hki_an : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ a n) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ a n ha hn_atom ha_on hn_on ha_ne_O hn_ne_O ha_ne_U hn_ne_U han
+      R hR hR_not h_irred
+  have h_an : coord_add Γ a n = Γ.O :=
+    coord_add_left_neg Γ a ha ha_on ha_ne_O ha_ne_U R hR hR_not h_irred
+  rw [h_an, C_O_eq_C Γ] at hki_an
+  rw [hknot, hki_an] at hβ
+  have hdbl : parallelogram_completion Γ.O n
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ n n) Γ.C (Γ.U ⊔ Γ.V) :=
+    dbl_key_identity Γ n a hn_atom ha hn_on ha_on hn_ne_O ha_ne_O hn_ne_U ha_ne_U
+      (fun h => han h.symm) R hR hR_not h_irred
+  rw [hdbl] at hβ
+  exact tower_inj Γ
+    (coord_add_atom Γ n n hn_atom hn_atom hn_on hn_on hn_ne_O hn_ne_O hn_ne_U hn_ne_U)
+    ha inf_le_right ha_on hβ
+
+/-- **Double plus negative** (`a + a ≠ -a`): `(a + a) + (-a) = a`. -/
+theorem dbl_plus_neg (Γ : CoordSystem L) (a : L)
+    (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (han : a ≠ coord_neg Γ a)
+    (hs_ne_O : coord_add Γ a a ≠ Γ.O)
+    (hsn : coord_add Γ a a ≠ coord_neg Γ a)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    coord_add Γ (coord_add Γ a a) (coord_neg Γ a) = a := by
+  set n := coord_neg Γ a with hn_def
+  set s := coord_add Γ a a with hs_def
+  have hn_atom : IsAtom n := coord_neg_atom Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_on : n ≤ Γ.O ⊔ Γ.U := coord_neg_on_l Γ a
+  have hn_ne_O : n ≠ Γ.O := coord_neg_ne_O Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_ne_U : n ≠ Γ.U := coord_neg_ne_U Γ ha ha_on ha_ne_O ha_ne_U
+  have hs_atom : IsAtom s :=
+    coord_add_atom Γ a a ha ha ha_on ha_on ha_ne_O ha_ne_O ha_ne_U ha_ne_U
+  have hs_on : s ≤ Γ.O ⊔ Γ.U := inf_le_right
+  have hs_ne_U : s ≠ Γ.U :=
+    coord_add_ne_U' Γ a a ha ha ha_on ha_on ha_ne_O ha_ne_U ha_ne_U
+  have hβ : parallelogram_completion Γ.O s
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O a
+        (parallelogram_completion Γ.O a
+          (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) :=
+    dbl_beta_generic Γ a n ha hn_atom ha_on hn_on ha_ne_O hn_ne_O ha_ne_U hn_ne_U
+      hs_ne_O R hR hR_not h_irred
+  have hki_an : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ a n) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ a n ha hn_atom ha_on hn_on ha_ne_O hn_ne_O ha_ne_U hn_ne_U han
+      R hR hR_not h_irred
+  have h_an : coord_add Γ a n = Γ.O :=
+    coord_add_left_neg Γ a ha ha_on ha_ne_O ha_ne_U R hR hR_not h_irred
+  rw [h_an, C_O_eq_C Γ] at hki_an
+  rw [hki_an] at hβ
+  have hki_sn : parallelogram_completion Γ.O s
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ s n) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ s n hs_atom hn_atom hs_on hn_on hs_ne_O hn_ne_O hs_ne_U hn_ne_U hsn
+      R hR hR_not h_irred
+  rw [hki_sn] at hβ
+  exact tower_inj Γ
+    (coord_add_atom Γ s n hs_atom hn_atom hs_on hn_on hs_ne_O hn_ne_O hs_ne_U hn_ne_U)
+    ha inf_le_right ha_on hβ
+
+/-- **The squared double** (`c = a + a` branch of the doubling wall, generic):
+`(a+a) + (a+a) = a + (a + (a+a))`. -/
+theorem dbl_assoc_sq (Γ : CoordSystem L) (a : L)
+    (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (hs_ne_O : coord_add Γ a a ≠ Γ.O)
+    (has2 : coord_add Γ a (coord_add Γ a a) ≠ Γ.O)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    coord_add Γ (coord_add Γ a a) (coord_add Γ a a)
+      = coord_add Γ a (coord_add Γ a (coord_add Γ a a)) := by
+  set s := coord_add Γ a a with hs_def
+  have hs_atom : IsAtom s :=
+    coord_add_atom Γ a a ha ha ha_on ha_on ha_ne_O ha_ne_O ha_ne_U ha_ne_U
+  have hs_on : s ≤ Γ.O ⊔ Γ.U := inf_le_right
+  have hs_ne_U : s ≠ Γ.U :=
+    coord_add_ne_U' Γ a a ha ha ha_on ha_on ha_ne_O ha_ne_U ha_ne_U
+  have has : a ≠ s := by
+    intro h
+    have h2 : coord_add Γ a Γ.O = coord_add Γ a a :=
+      (coord_add_right_zero Γ a ha ha_on).trans h
+    exact ha_ne_O (coord_add_left_cancel Γ a Γ.O a ha Γ.hO ha ha_on le_sup_left ha_on
+      ha_ne_U h2).symm
+  have has_atom : IsAtom (coord_add Γ a s) :=
+    coord_add_atom Γ a s ha hs_atom ha_on hs_on ha_ne_O hs_ne_O ha_ne_U hs_ne_U
+  have has_ne_U : coord_add Γ a s ≠ Γ.U :=
+    coord_add_ne_U' Γ a s ha hs_atom ha_on hs_on hs_ne_O ha_ne_U hs_ne_U
+  have ha_ne_as : a ≠ coord_add Γ a s := by
+    intro h
+    have h2 : coord_add Γ a Γ.O = coord_add Γ a s :=
+      (coord_add_right_zero Γ a ha ha_on).trans h
+    exact hs_ne_O (coord_add_left_cancel Γ a Γ.O s ha Γ.hO hs_atom ha_on le_sup_left
+      hs_on ha_ne_U h2).symm
+  have hdbl : parallelogram_completion Γ.O s
+      (parallelogram_completion Γ.O s Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ s s) Γ.C (Γ.U ⊔ Γ.V) :=
+    dbl_key_identity Γ s a hs_atom ha hs_on ha_on hs_ne_O ha_ne_O hs_ne_U ha_ne_U
+      (Ne.symm has) R hR hR_not h_irred
+  have hβ : parallelogram_completion Γ.O s
+      (parallelogram_completion Γ.O s Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O a
+        (parallelogram_completion Γ.O a
+          (parallelogram_completion Γ.O s Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) :=
+    dbl_beta_generic Γ a s ha hs_atom ha_on hs_on ha_ne_O hs_ne_O ha_ne_U hs_ne_U
+      hs_ne_O R hR hR_not h_irred
+  have hki_as : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O s Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ a s) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ a s ha hs_atom ha_on hs_on ha_ne_O hs_ne_O ha_ne_U hs_ne_U has
+      R hR hR_not h_irred
+  have hki_aas : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O (coord_add Γ a s) Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ a (coord_add Γ a s)) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ a (coord_add Γ a s) ha has_atom ha_on inf_le_right ha_ne_O has2
+      ha_ne_U has_ne_U ha_ne_as R hR hR_not h_irred
+  rw [hki_as, hki_aas] at hβ
+  rw [hdbl] at hβ
+  exact tower_inj Γ
+    (coord_add_atom Γ s s hs_atom hs_atom hs_on hs_on hs_ne_O hs_ne_O hs_ne_U hs_ne_U)
+    (coord_add_atom Γ a (coord_add Γ a s) ha has_atom ha_on inf_le_right ha_ne_O has2
+      ha_ne_U has_ne_U)
+    inf_le_right inf_le_right hβ
 
 namespace Coordinate
 
@@ -3504,33 +4467,143 @@ theorem assoc_symm (a b c : Coordinate Φ.Γ)
     _ = fadd a (fadd c b) := fadd_comm _ _
     _ = fadd a (fadd b c) := by rw [fadd_comm c b]
 
+/-! ## GEOMETRIC CORE 2 — doubling (proved first; core 1 uses its mirror)
+
+`(a + a) + c = a + (a + c)`.  `coord_add_assoc` cannot be invoked (routes through
+`key_identity`, which requires the two summands distinct).  Totalized from
+`coord_double_left_generic'` (the char-≠2 wall), `char2_absorb` (the char-2
+branch, a τ-inverse corollary), and the three doubling satellites `z3_knot`,
+`dbl_plus_neg`, `dbl_assoc_sq`. -/
+theorem double_left (a c : Coordinate Φ.Γ) :
+    fadd (fadd a a) c = fadd a (fadd a c) := by
+  by_cases ha0 : a = 0
+  · subst ha0; simp only [fadd_zero, fzero_add]
+  by_cases hc0 : c = 0
+  · subst hc0; simp only [fadd_zero]
+  by_cases hca : c = a
+  · subst hca; exact fadd_comm (fadd c c) c
+  by_cases hchar2 : a = fneg a
+  · have haa0 : fadd a a = 0 := by
+      have h := fadd_neg a
+      rwa [← hchar2] at h
+    have hval : a.1 = coord_neg Φ.Γ a.1 :=
+      (congrArg Subtype.val hchar2).trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0))
+    rw [haa0, fzero_add c]
+    exact (Coordinate.ext (char2_absorb Φ.Γ a.1 c.1 a.isAtom c.isAtom a.on_l c.on_l
+      (val_ne_O_of_ne_zero ha0) (val_ne_O_of_ne_zero hc0) a.ne_U c.ne_U hval
+      Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred)).symm
+  have haa0 : fadd a a ≠ 0 :=
+    fun h => hchar2 (fadd_left_cancel a a (fneg a) (h.trans (fadd_neg a).symm))
+  have hanval : a.1 ≠ coord_neg Φ.Γ a.1 := fun h =>
+    hchar2 (Coordinate.ext (h.trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)).symm))
+  by_cases hcs : c = fadd a a
+  · by_cases has2 : fadd a (fadd a a) = 0
+    · have hsn : fadd a a = fneg a :=
+        fadd_left_cancel a _ _ (has2.trans (fadd_neg a).symm)
+      have hknotval : coord_add Φ.Γ a.1 a.1 = (fneg a).1 := congrArg Subtype.val hsn
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)] at hknotval
+      rw [hcs, has2, fadd_zero a, hsn]
+      apply Coordinate.ext
+      show coord_add Φ.Γ (fneg a).1 (fneg a).1 = a.1
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+      exact z3_knot Φ.Γ a.1 a.isAtom a.on_l (val_ne_O_of_ne_zero ha0) a.ne_U hanval
+        hknotval Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
+    · rw [hcs]
+      exact Coordinate.ext (dbl_assoc_sq Φ.Γ a.1 a.isAtom a.on_l
+        (val_ne_O_of_ne_zero ha0) a.ne_U (fadd_val_ne_O_of_ne_zero haa0)
+        (fadd_val_ne_O_of_ne_zero has2) Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred)
+  by_cases hcn : c = fneg a
+  · rw [hcn, fadd_neg a, fadd_zero a]
+    by_cases hsn : fadd a a = fneg a
+    · have hknotval : coord_add Φ.Γ a.1 a.1 = (fneg a).1 := congrArg Subtype.val hsn
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)] at hknotval
+      rw [hsn]
+      apply Coordinate.ext
+      show coord_add Φ.Γ (fneg a).1 (fneg a).1 = a.1
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+      exact z3_knot Φ.Γ a.1 a.isAtom a.on_l (val_ne_O_of_ne_zero ha0) a.ne_U hanval
+        hknotval Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
+    · have hsnval : coord_add Φ.Γ a.1 a.1 ≠ coord_neg Φ.Γ a.1 := by
+        intro h
+        have h2 : coord_add Φ.Γ a.1 a.1 = (fneg a).1 := by
+          rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+          exact h
+        exact hsn (Coordinate.ext h2)
+      apply Coordinate.ext
+      show coord_add Φ.Γ (coord_add Φ.Γ a.1 a.1) (fneg a).1 = a.1
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+      exact dbl_plus_neg Φ.Γ a.1 a.isAtom a.on_l (val_ne_O_of_ne_zero ha0) a.ne_U
+        hanval (fadd_val_ne_O_of_ne_zero haa0) hsnval Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
+  · have ht_ne_O : coord_add Φ.Γ a.1 c.1 ≠ Φ.Γ.O := by
+      intro h
+      exact hcn (fadd_left_cancel a c (fneg a) ((Coordinate.ext h).trans (fadd_neg a).symm))
+    exact Coordinate.ext (coord_double_left_generic' Φ.Γ a.1 c.1 a.isAtom c.isAtom
+      a.on_l c.on_l (val_ne_O_of_ne_zero ha0) (val_ne_O_of_ne_zero hc0) a.ne_U c.ne_U
+      (fun h => hca (Coordinate.ext h.symm)) (fadd_val_ne_O_of_ne_zero haa0)
+      (fun h => hcs (Coordinate.ext h.symm)) ht_ne_O Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred)
+
+/-- The mirror doubling `(a + c) + c = a + (c + c)`, from `double_left` + reversal. -/
+theorem double_right (a c : Coordinate Φ.Γ) :
+    fadd (fadd a c) c = fadd a (fadd c c) :=
+  assoc_symm a c c (double_left c a)
+
 /-! ## GEOMETRIC CORE 1 — inverse absorption
 
-`a + (-a + c) = c`.  This is the degenerate associator `A(a,-a,c)`, blocked from
+`a + (-a + c) = c`.  The degenerate associator `A(a,-a,c)`, blocked from
 `coord_add_assoc` because the intermediate `a + (-a) = O` violates its `≠O` side
-conditions.  Genuine new geometry. -/
+conditions.  Totalized from `inv_absorb_generic` (the τ-inverse corollary),
+`char2_absorb`, and `double_right` for the coincident slivers. -/
 theorem inv_absorb (a c : Coordinate Φ.Γ) :
     fadd a (fadd (fneg a) c) = c := by
-  sorry
+  by_cases ha0 : a = 0
+  · have hn0 : fneg (0 : Coordinate Φ.Γ) = 0 := by
+      apply fadd_left_cancel (0 : Coordinate Φ.Γ)
+      rw [fadd_neg (0 : Coordinate Φ.Γ), fadd_zero (0 : Coordinate Φ.Γ)]
+    subst ha0
+    rw [hn0, fzero_add c, fzero_add c]
+  by_cases hc0 : c = 0
+  · subst hc0
+    rw [fadd_zero (fneg a), fadd_neg a]
+  by_cases hca : c = a
+  · rw [hca, fneg_add a, fadd_zero a]
+  by_cases hchar2 : a = fneg a
+  · have hval : a.1 = coord_neg Φ.Γ a.1 :=
+      (congrArg Subtype.val hchar2).trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0))
+    rw [← hchar2]
+    exact Coordinate.ext (char2_absorb Φ.Γ a.1 c.1 a.isAtom c.isAtom a.on_l c.on_l
+      (val_ne_O_of_ne_zero ha0) (val_ne_O_of_ne_zero hc0) a.ne_U c.ne_U hval
+      Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred)
+  by_cases hcn : c = fneg a
+  · rw [hcn, ← double_right a (fneg a), fadd_neg a, fzero_add]
+  by_cases hat : a = fadd (fneg a) c
+  · have h1 : fadd (fneg a) (fadd a a) = a := by
+      rw [← double_right (fneg a) a, fneg_add a, fzero_add a]
+    have h3 : fadd a a = c := fadd_left_cancel (fneg a) _ _ (h1.trans hat)
+    rw [← hat, h3]
+  · have hanval : a.1 ≠ coord_neg Φ.Γ a.1 := fun h =>
+      hchar2 (Coordinate.ext (h.trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)).symm))
+    have hcnval : c.1 ≠ coord_neg Φ.Γ a.1 := fun h =>
+      hcn (Coordinate.ext (h.trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)).symm))
+    have hatval : a.1 ≠ coord_add Φ.Γ (coord_neg Φ.Γ a.1) c.1 := by
+      intro h
+      apply hat
+      apply Coordinate.ext
+      show a.1 = coord_add Φ.Γ (fneg a).1 c.1
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+      exact h
+    apply Coordinate.ext
+    show coord_add Φ.Γ a.1 (coord_add Φ.Γ (fneg a).1 c.1) = c.1
+    rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+    exact inv_absorb_generic Φ.Γ a.1 c.1 a.isAtom c.isAtom a.on_l c.on_l
+      (val_ne_O_of_ne_zero ha0) (val_ne_O_of_ne_zero hc0) a.ne_U c.ne_U
+      (fun h => hca (Coordinate.ext h)) hanval hcnval hatval
+      Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
 
 /-- The mirror: `-a + (a + c) = c`, from `inv_absorb` and double negation. -/
 theorem inv_absorb' (a c : Coordinate Φ.Γ) :
     fadd (fneg a) (fadd a c) = c := by
   have := inv_absorb (fneg a) c
   rwa [fneg_fneg] at this
-
-/-! ## GEOMETRIC CORE 2 — doubling
-
-`(a + a) + c = a + (a + c)`.  `coord_add_assoc` cannot be invoked (routes through
-`key_identity`, which requires the two summands distinct). Genuine new geometry. -/
-theorem double_left (a c : Coordinate Φ.Γ) :
-    fadd (fadd a a) c = fadd a (fadd a c) := by
-  sorry
-
-/-- The mirror doubling `(a + c) + c = a + (c + c)`, from `double_left` + reversal. -/
-theorem double_right (a c : Coordinate Φ.Γ) :
-    fadd (fadd a c) c = fadd a (fadd c c) :=
-  assoc_symm a c c (double_left c a)
 
 /-! ## Degenerate-case lemmas (each reduced to the two cores + cancellation) -/
 
@@ -3592,9 +4665,9 @@ end Coordinate
 
 /-! ## Axiom receipts
 
-The proven cores are axiom-clean (`[propext, Classical.choice, Quot.sound]`).
-`fadd_assoc_total` is the reduction of total associativity to the two open cores, so its
-trace additionally carries `sorryAx` — the honest ledger of the open frontier. -/
+Everything is axiom-clean (`[propext, Classical.choice, Quot.sound]`) —
+`fadd_assoc_total` included: the additive group of the FTPG coordinate line is
+CLOSED, no `sorryAx` anywhere in its trace. -/
 
 /-- info: 'Foam.Bridges.reverse_completion' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms reverse_completion
@@ -3653,7 +4726,49 @@ trace additionally carries `sorryAx` — the honest ledger of the open frontier.
 /-- info: 'Foam.Bridges.Coordinate.fadd_assoc_generic' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Coordinate.fadd_assoc_generic
 
-/-- info: 'Foam.Bridges.Coordinate.fadd_assoc_total' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound] -/
+/-- info: 'Foam.Bridges.neg_tower_reverse' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms neg_tower_reverse
+
+/-- info: 'Foam.Bridges.q_covBy_π' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms q_covBy_π
+
+/-- info: 'Foam.Bridges.span_plane' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms span_plane
+
+/-- info: 'Foam.Bridges.inv_aux_point' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms inv_aux_point
+
+/-- info: 'Foam.Bridges.tau_inv_tower' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms tau_inv_tower
+
+/-- info: 'Foam.Bridges.tower_meets_E_line' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms tower_meets_E_line
+
+/-- info: 'Foam.Bridges.tower_inj' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms tower_inj
+
+/-- info: 'Foam.Bridges.inv_absorb_generic' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms inv_absorb_generic
+
+/-- info: 'Foam.Bridges.char2_absorb' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms char2_absorb
+
+/-- info: 'Foam.Bridges.z3_knot' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms z3_knot
+
+/-- info: 'Foam.Bridges.dbl_plus_neg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms dbl_plus_neg
+
+/-- info: 'Foam.Bridges.dbl_assoc_sq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms dbl_assoc_sq
+
+/-- info: 'Foam.Bridges.Coordinate.double_left' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Coordinate.double_left
+
+/-- info: 'Foam.Bridges.Coordinate.inv_absorb' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Coordinate.inv_absorb
+
+/-- info: 'Foam.Bridges.Coordinate.fadd_assoc_total' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Coordinate.fadd_assoc_total
 
 end Foam.Bridges
