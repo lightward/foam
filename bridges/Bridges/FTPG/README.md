@@ -23,10 +23,13 @@ Open frontier:
   proven (`AddCancel.lean`); associativity is reduced to two named geometric
   lemmas (`inv_absorb`, `double_left`) plus the characteristic-2 knot.
   The active route is no longer the 17 witness leaves: the master lemma
-  **τ_x ∘ τ_{−x} = id on the auxiliary line q** (model-verified over `PG(2,q)`,
-  `q = 3,5,7,11,13`) subsumes all of them, the char-2 knot included.
-  First camp proven: `neg_tower_reverse` (`pc x O C m = C_{−x}` — the reverse
-  translation is the negative's tower, extracted from `coord_add_left_neg`).
+  **`tau_inv_tower`** — τ_x ∘ τ_{−x} = id on the auxiliary line q — is now
+  PROVEN (axiom-clean-modulo-classical), subsuming all of them, the char-2 knot
+  included.  Its camps: `neg_tower_reverse` (the reverse translation is the
+  negative's tower, from `coord_add_left_neg`), `inv_aux_point` (the
+  general-position point `z = (x ⊔ E) ⊓ (w' ⊔ X)`), `span_plane`, `q_covBy_π`.
+  Remaining: rewrite `inv_absorb_generic`/`char2_absorb` as corollaries and
+  totalize `inv_absorb`/`double_left`.
 - the **coordinate map / lattice iso** — `Iso.lean`, `Deaxiomatize.lean`,
   reduced to a single `PointSystem` residual (the *second* FTPG). Mathlib's
   `Projectivization.Subspace.submodule` supplies the last step for free.
