@@ -28,8 +28,10 @@ Open frontier:
   included.  Its camps: `neg_tower_reverse` (the reverse translation is the
   negative's tower, from `coord_add_left_neg`), `inv_aux_point` (the
   general-position point `z = (x ⊔ E) ⊓ (w' ⊔ X)`), `span_plane`, `q_covBy_π`.
-  Remaining: rewrite `inv_absorb_generic`/`char2_absorb` as corollaries and
-  totalize `inv_absorb`/`double_left`.
+  `inv_absorb_generic` and `char2_absorb` are now proven as its corollaries
+  (`tower_meets_E_line`, `tower_inj` the connective tissue) — the 17 witness
+  leaves and the char-2 sorry are gone.  Remaining: totalize
+  `inv_absorb`/`double_left` at the `Coordinate` level.
 - the **coordinate map / lattice iso** — `Iso.lean`, `Deaxiomatize.lean`,
   reduced to a single `PointSystem` residual (the *second* FTPG). Mathlib's
   `Projectivization.Subspace.submodule` supplies the last step for free.
