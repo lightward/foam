@@ -66,6 +66,7 @@ import Foam.Bridges.Kolmogorov
 import Foam.Bridges.Stone
 import Foam.Bridges.Eddington
 import Foam.Bridges.Pythagoras
+import Foam.Bridges.Minkowski
 import Foam.Bridges.Gleason
 import Foam.Bridges.Desargues
 import Foam.Bridges.Materiality
