@@ -22,6 +22,10 @@ jobs:
             echo "Building $mod..."
             lake build "$mod" || exit 1
           done
+      - name: Build counter (the axiom-free application layer)
+        run: cd counter && lake build
+      - name: Build seam (the identification layer — core-Lean axioms only)
+        run: cd seam && lake build
       - name: No warnings (sorry included — zero tolerance)
         run: |
           warns=0

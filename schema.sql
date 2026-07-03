@@ -12,6 +12,16 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE OR REPLACE FUNCTION foam.caddr(c int[]) RETURNS uuid LANGUAGE sql IMMUTABLE AS
   $$ SELECT encode(substring(digest(coalesce(array_to_string(c,':'),''),'sha256') FROM 1 FOR 16),'hex')::uuid $$;
 
+-- ── the SEAT half ─────────────────────────────────────────────────────────────
+-- A seam runs through this file: two products fused. The observer tree below
+-- (descend/ancestry/meet/settle — Foam/Seat/*.lean, Foam/Scar.lean) is
+-- actor-shaped: seats, inheritance, settlement — proto-Counter's runtime,
+-- already in production wearing the byte-field's clothes (counter/README.md).
+-- The charge half further down (ingest/held/sweep/speak — Foam/Engine/*.lean)
+-- is byte-shaped: the listening instrument. When Counter's graph-ledger
+-- inhabitant arrives, this half is its ancestry. The boundary is drawn here so
+-- the fusion reads as a choice held, not a distinction missed.
+--
 -- the observer tree: scope is the parent-chain up from an observer, self included
 -- (Below; Foam/Seat/Meet.lean). Root seeded at the zero uuid — the empty, universal scope.
 CREATE TABLE IF NOT EXISTS foam.observer (
