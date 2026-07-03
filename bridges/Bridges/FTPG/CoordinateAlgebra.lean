@@ -463,14 +463,14 @@ structure CoordFrame (L : Type u) [Lattice L] [BoundedOrder L]
 /-! ## Gap D : DivisionRing assembly over the bundled frame.
 
 The nine witness-free / boundary fields are proven sorry-free here, pinning down the
-field→lemma map. The six remaining fields (`add_assoc`, `add_comm`, `neg_add_cancel`,
-`mul_assoc`, `left_distrib`, `right_distrib`) are the genuine residual: each is supplied
-by an algebraic-law lemma whose hypotheses include the frame witnesses `Φ.R`, `Φ.P`,
-`Φ.h_irred` PLUS non-degeneracy side conditions
-(operands `≠ O`, `≠ U`, pairwise-distinct, intermediate sums/products `≠ O`/`≠ U`, and
-`b ≠ I`). Totalizing them therefore needs an O/I/distinctness case analysis whose
-degenerate branches (e.g. repeated operands in associativity) are NOT covered by the
-currently-available lemmas. -/
+field→lemma map.  Of the six side-conditioned fields: `add_assoc`, `add_comm`, and
+`neg_add_cancel` are TOTAL in `Additive.lean` (`fadd_assoc_total`, `fadd_comm`,
+`fneg_add` — the τ-inverse closure); `mul_assoc` is TOTAL here
+(`fmul_assoc_total` — multiplication's wall never needed distinct operands).
+The genuine residual is the two distributive laws: their walls require the
+summands distinct (`b ≠ c`), the sum nonzero (`c ≠ -b`), the products distinct,
+and `b ≠ I` — the degenerate branches want `mul_neg` (`a·(-b) = -(a·b)`) and
+multiplicative cancellation, which are new geometry, not case analysis. -/
 
 namespace Coordinate
 variable {Φ : CoordFrame L}
@@ -513,6 +513,37 @@ theorem field_mul_inv_cancel (a : Coordinate Φ.Γ) (ha : a.1 ≠ Φ.Γ.O) :
   rw [finv_of_ne a ha]
   exact coord_mul_right_inv Φ.Γ a.isAtom a.on_l ha a.ne_U
 
+/-- TOTAL multiplicative associativity.  The `O` and `I` degenerate cases dispatch
+by the zero/one laws; the wall `coord_mul_assoc` covers the rest, every
+intermediate side condition discharged by the closure lemmas
+(`mul_ne_O`, `mul_ne_U`) — unlike addition, multiplication's wall never needed
+its operands distinct. -/
+theorem fmul_assoc_total (a b c : Coordinate Φ.Γ) :
+    fmul (fmul a b) c = fmul a (fmul b c) := by
+  by_cases ha0 : a.1 = Φ.Γ.O
+  · rw [show a = 0 from Coordinate.ext ha0]
+    simp only [field_zero_mul, field_mul_zero]
+  by_cases hb0 : b.1 = Φ.Γ.O
+  · rw [show b = 0 from Coordinate.ext hb0]
+    simp only [field_zero_mul, field_mul_zero]
+  by_cases hc0 : c.1 = Φ.Γ.O
+  · rw [show c = 0 from Coordinate.ext hc0]
+    simp only [field_zero_mul, field_mul_zero]
+  by_cases ha1 : a.1 = Φ.Γ.I
+  · rw [show a = 1 from Coordinate.ext ha1]
+    simp only [field_one_mul]
+  apply Coordinate.ext
+  show coord_mul Φ.Γ (coord_mul Φ.Γ a.1 b.1) c.1
+     = coord_mul Φ.Γ a.1 (coord_mul Φ.Γ b.1 c.1)
+  exact coord_mul_assoc Φ.Γ a.1 b.1 c.1 a.isAtom b.isAtom c.isAtom
+    a.on_l b.on_l c.on_l ha0 hb0 hc0 a.ne_U b.ne_U c.ne_U ha1
+    (mul_ne_O a b ha0 hb0) (mul_ne_U a b)
+    (mul_ne_O b c hb0 hc0) (mul_ne_U b c)
+    (mul_ne_O (fmul a b) c (mul_ne_O a b ha0 hb0) hc0) (mul_ne_U (fmul a b) c)
+    (mul_ne_O a (fmul b c) ha0 (mul_ne_O b c hb0 hc0)) (mul_ne_U a (fmul b c))
+    Φ.hP_atom Φ.hP_plane Φ.hP_not_l Φ.hP_not_m Φ.hP_not_OC Φ.hP_ne_I Φ.hP_ne_O
+    Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
+
 end Coordinate
 
 end Foam.Bridges
@@ -532,3 +563,4 @@ end Foam.Bridges
 #print axioms Foam.Bridges.Coordinate.field_mul_inv_cancel
 #print axioms Foam.Bridges.Coordinate.field_zero_add
 #print axioms Foam.Bridges.Coordinate.field_inv_zero
+#print axioms Foam.Bridges.Coordinate.fmul_assoc_total

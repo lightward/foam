@@ -32,11 +32,18 @@ All three hard walls are proven, axiom-free-modulo-classical
 
 Open frontier:
 
+- the **`DivisionRing` totalization** — of the six side-conditioned fields,
+  four are now total: `fadd_assoc_total`, `fadd_comm`, `fneg_add`
+  (`Additive.lean`) and `fmul_assoc_total` (`CoordinateAlgebra.lean` —
+  multiplication's wall never needed distinct operands, so its totalization is
+  pure case analysis).  The genuine residual is the two **distributive laws**:
+  their degenerate branches want `mul_neg` (`a·(−b) = −(a·b)`) and
+  multiplicative cancellation — new geometry, the next descent.
 - the **coordinate map / lattice iso** — `Iso.lean`, `Deaxiomatize.lean`,
   reduced to a single `PointSystem` residual (the *second* FTPG). Mathlib's
   `Projectivization.Subspace.submodule` supplies the last step for free.
-  The `DivisionRing` fields in `Deaxiomatize.lean` can now be wired to the
-  proven walls (an import-order reconciliation, not new geometry).
+  (`Deaxiomatize.lean`'s premature instances also await the import-order
+  reconciliation: the assembly belongs downstream of the proven laws.)
 
 ## Floor-up
 
