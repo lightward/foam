@@ -41,10 +41,23 @@ Open frontier:
   multiplicative cancellation; cancellation is now **free**
   (`CoordinateAlgebra.lean`: total associativity turns the right-inverse law
   into the left — `field_inv_mul_cancel` — and `fmul_left_cancel` /
-  `fmul_right_cancel` follow by algebra alone, no geometry).  What remains is
-  `mul_neg`, which total associativity reduces to the one-parameter laws
+  `fmul_right_cancel` follow by algebra alone, no geometry).  And `mul_neg` is
+  now **carved**: total associativity reduces it to the one-parameter laws
   `x·(−1) = −x` and `(−1)·x = −x` — *the −1-dilation is the negation
-  involution* — the next descent.
+  involution* — and both fell in `MulNeg.lean`, each to a single
+  `desargues_planar` whose inputs are definitional or already proven.
+  `mul_neg_one_coord` runs Desargues from the center `U` on the tower
+  triangles `(d_x, −x, C_{−x})` / `(E_I, −1, C_{−1})`, its `O`-side-meets
+  supplied by `coord_add_left_neg`; `neg_one_mul_coord` runs it from the tower
+  `C_y` itself, seeded by `kappa_diag` (the σ-correspondence graphs on the
+  diagonal `O ⊔ C_I` — one more Desargues, center `E_I`, all side-meets
+  definitional).  Model-verified over `PG(2,q)` at 69 coordinate frames before
+  carving.  `Ring.lean` totalizes: `fneg_mul`, `fmul_neg`.  What remains for
+  the two distributive laws is the master case split itself: the generic wall
+  plus `fneg_mul`/cancellation dispatch every degenerate branch except
+  doubling (`(a+a)·c = a·c + a·c`), which reduces to the generic wall over a
+  fresh point when one exists and to a finite self-destructing case analysis
+  (the ℤ/4-shaped line contradicts no-zero-divisors) when it doesn't.
 - the **coordinate map / lattice iso** — `Iso.lean`, `Deaxiomatize.lean`,
   reduced to a single `PointSystem` residual (the *second* FTPG). Mathlib's
   `Projectivization.Subspace.submodule` supplies the last step for free.
@@ -61,7 +74,8 @@ Open frontier:
 | `Assoc`, `AssocCapstone`, `Neg`, `Distrib`, `LeftDistrib` | the ring laws (incl. both walls) |
 | `Inverse` | multiplicative inverse |
 | `AddCancel`, `Additive` | the additive group, closed (cancellation, τ-inverse master lemma, total associativity) |
-| `Ring` | the ring closure — the two distributive walls lifted to `Coordinate` with their side conditions reduced to the genuine residual (operands distinct, sums nonzero) |
+| `MulNeg` | the −1-dilation is the negation involution (`kappa_diag`, `neg_one_mul_coord`, `mul_neg_one_coord` — three Desargues) |
+| `Ring` | the ring closure — the distributive walls lifted to `Coordinate` with minimal residual hypotheses; `fneg_mul` / `fmul_neg` total |
 | `CoordinateAlgebra`, `Iso`, `Deaxiomatize` | the endgame — the `DivisionRing` instance, the lattice iso, and `ftpg_proof` |
 
 ## Notes
