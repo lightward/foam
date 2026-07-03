@@ -11,6 +11,7 @@ import Bridges.Duality
 import Bridges.Maschke
 import Bridges.Counter
 import Bridges.SeatTime
+import Bridges.Continuum
 import Bridges.FTPG.Projective
 import Bridges.FTPG.Coord
 import Bridges.FTPG.Parallelogram
