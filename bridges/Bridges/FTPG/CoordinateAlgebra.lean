@@ -544,6 +544,39 @@ theorem fmul_assoc_total (a b c : Coordinate Φ.Γ) :
     Φ.hP_atom Φ.hP_plane Φ.hP_not_l Φ.hP_not_m Φ.hP_not_OC Φ.hP_ne_I Φ.hP_ne_O
     Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
 
+/-- `a⁻¹ ≠ 0` when `a ≠ 0`: else `1 = a·a⁻¹ = a·0 = 0`. -/
+theorem finv_ne_zero (a : Coordinate Φ.Γ) (ha : a.1 ≠ Φ.Γ.O) :
+    (finv a).1 ≠ Φ.Γ.O := by
+  intro h
+  have h1 : fmul a (finv a) = 1 := field_mul_inv_cancel a ha
+  rw [show finv a = 0 from Coordinate.ext h, field_mul_zero] at h1
+  exact field_exists_pair_ne h1
+
+/-- The LEFT-inverse law, free from the right-inverse law once associativity is
+total: `(a⁻¹·a)·a⁻¹ = a⁻¹·(a·a⁻¹) = a⁻¹`, then cancel `a⁻¹`'s own right inverse. -/
+theorem field_inv_mul_cancel (a : Coordinate Φ.Γ) (ha : a.1 ≠ Φ.Γ.O) :
+    fmul (finv a) a = 1 := by
+  have hinv : (finv a).1 ≠ Φ.Γ.O := finv_ne_zero a ha
+  have h1 : fmul (fmul (finv a) a) (finv a) = finv a := by
+    rw [fmul_assoc_total, field_mul_inv_cancel a ha, field_mul_one]
+  have h2 : fmul (fmul (fmul (finv a) a) (finv a)) (finv (finv a)) = 1 := by
+    rw [h1, field_mul_inv_cancel (finv a) hinv]
+  rwa [fmul_assoc_total, field_mul_inv_cancel (finv a) hinv, field_mul_one] at h2
+
+/-- Left multiplicative cancellation — the "new geometry" the distributive
+degenerate branches wanted, delivered by algebra alone. -/
+theorem fmul_left_cancel (a b c : Coordinate Φ.Γ) (ha : a.1 ≠ Φ.Γ.O)
+    (h : fmul a b = fmul a c) : b = c := by
+  have h2 := congrArg (fmul (finv a)) h
+  rwa [← fmul_assoc_total, ← fmul_assoc_total, field_inv_mul_cancel a ha,
+    field_one_mul, field_one_mul] at h2
+
+theorem fmul_right_cancel (a b c : Coordinate Φ.Γ) (hc : c.1 ≠ Φ.Γ.O)
+    (h : fmul a c = fmul b c) : a = b := by
+  have h2 := congrArg (fun x => fmul x (finv c)) h
+  rwa [fmul_assoc_total, fmul_assoc_total, field_mul_inv_cancel c hc,
+    field_mul_one, field_mul_one] at h2
+
 end Coordinate
 
 end Foam.Bridges
@@ -564,3 +597,7 @@ end Foam.Bridges
 #print axioms Foam.Bridges.Coordinate.field_zero_add
 #print axioms Foam.Bridges.Coordinate.field_inv_zero
 #print axioms Foam.Bridges.Coordinate.fmul_assoc_total
+#print axioms Foam.Bridges.Coordinate.finv_ne_zero
+#print axioms Foam.Bridges.Coordinate.field_inv_mul_cancel
+#print axioms Foam.Bridges.Coordinate.fmul_left_cancel
+#print axioms Foam.Bridges.Coordinate.fmul_right_cancel

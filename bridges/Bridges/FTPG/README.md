@@ -36,9 +36,15 @@ Open frontier:
   four are now total: `fadd_assoc_total`, `fadd_comm`, `fneg_add`
   (`Additive.lean`) and `fmul_assoc_total` (`CoordinateAlgebra.lean` —
   multiplication's wall never needed distinct operands, so its totalization is
-  pure case analysis).  The genuine residual is the two **distributive laws**:
-  their degenerate branches want `mul_neg` (`a·(−b) = −(a·b)`) and
-  multiplicative cancellation — new geometry, the next descent.
+  pure case analysis).  The genuine residual is the two **distributive laws**.
+  Their degenerate branches wanted `mul_neg` (`a·(−b) = −(a·b)`) and
+  multiplicative cancellation; cancellation is now **free**
+  (`CoordinateAlgebra.lean`: total associativity turns the right-inverse law
+  into the left — `field_inv_mul_cancel` — and `fmul_left_cancel` /
+  `fmul_right_cancel` follow by algebra alone, no geometry).  What remains is
+  `mul_neg`, which total associativity reduces to the one-parameter laws
+  `x·(−1) = −x` and `(−1)·x = −x` — *the −1-dilation is the negation
+  involution* — the next descent.
 - the **coordinate map / lattice iso** — `Iso.lean`, `Deaxiomatize.lean`,
   reduced to a single `PointSystem` residual (the *second* FTPG). Mathlib's
   `Projectivization.Subspace.submodule` supplies the last step for free.
