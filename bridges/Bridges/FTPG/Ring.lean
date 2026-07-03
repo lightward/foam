@@ -112,6 +112,350 @@ theorem fmul_neg (a b : Coordinate Φ.Γ) : fmul a (fneg b) = fneg (fmul a b) :=
     _ = fmul (fmul a b) (fneg 1) := (fmul_assoc_total _ _ _).symm
     _ = fneg (fmul a b) := fmul_neg_one _
 
+/-! ## Abelian-group juggling (all free over the closed additive group) -/
+
+theorem fone_ne_zero : (1 : Coordinate Φ.Γ) ≠ 0 := fun h => field_exists_pair_ne h.symm
+
+theorem fneg_inj {a b : Coordinate Φ.Γ} (h : fneg a = fneg b) : a = b := by
+  rw [← fneg_fneg a, h, fneg_fneg]
+
+theorem fneg_one_ne_zero : fneg (1 : Coordinate Φ.Γ) ≠ 0 := fun h =>
+  fone_ne_zero (by rw [← fneg_fneg (1 : Coordinate Φ.Γ), h, fneg_zero])
+
+theorem fadd_eq_zero_right {a b : Coordinate Φ.Γ} (h : fadd a b = 0) : b = fneg a :=
+  fadd_left_cancel a b (fneg a) (h.trans (fadd_neg a).symm)
+
+theorem fadd_fadd_comm (p r s t : Coordinate Φ.Γ) :
+    fadd (fadd p r) (fadd s t) = fadd (fadd p s) (fadd r t) := by
+  calc fadd (fadd p r) (fadd s t)
+      = fadd p (fadd r (fadd s t)) := fadd_assoc_total p r (fadd s t)
+    _ = fadd p (fadd (fadd r s) t) := by rw [fadd_assoc_total r s t]
+    _ = fadd p (fadd (fadd s r) t) := by rw [fadd_comm r s]
+    _ = fadd p (fadd s (fadd r t)) := by rw [fadd_assoc_total s r t]
+    _ = fadd (fadd p s) (fadd r t) := (fadd_assoc_total p s (fadd r t)).symm
+
+theorem fneg_add_dist (a b : Coordinate Φ.Γ) :
+    fneg (fadd a b) = fadd (fneg a) (fneg b) := by
+  apply fadd_left_cancel (fadd a b)
+  rw [fadd_neg, fadd_fadd_comm a b (fneg a) (fneg b), fadd_neg, fadd_neg, fadd_zero]
+
+theorem fadd_pair (a b d : Coordinate Φ.Γ) :
+    fadd (fadd a d) (fadd b (fneg d)) = fadd a b := by
+  rw [fadd_fadd_comm a d b (fneg d), fadd_neg, fadd_zero]
+
+/-- A vanishing sum of right-multiples forces negated factors. -/
+theorem fright_sum_zero {x y c : Coordinate Φ.Γ} (hc : c ≠ 0)
+    (h : fadd (fmul x c) (fmul y c) = 0) : y = fneg x := by
+  have h1 : fmul y c = fneg (fmul x c) := fadd_eq_zero_right h
+  rw [← fneg_mul] at h1
+  exact fmul_right_cancel y (fneg x) c (val_ne_O_of_ne_zero hc) h1
+
+theorem fleft_sum_zero {a x y : Coordinate Φ.Γ} (ha : a ≠ 0)
+    (h : fadd (fmul a x) (fmul a y) = 0) : y = fneg x := by
+  have h1 : fmul a y = fneg (fmul a x) := fadd_eq_zero_right h
+  rw [← fmul_neg] at h1
+  exact fmul_left_cancel a y (fneg x) (val_ne_O_of_ne_zero ha) h1
+
+/-! ## Doubling at 1 — the one genuine case split.
+
+`(1+1)·c = c + c` and `a·(1+1) = a + a`.  When a fresh point `d ∉ {0, 1, −1}`
+with `d + d ≠ 0` exists, the sum telescopes through `(1+d) + (1−d)` over the
+generic wall.  When it doesn't, the line is tiny and self-destructs: either
+`1+1 = 0` (then `fmul_neg_one` closes it), or the line is `{0, 1, −1}` (then
+`1+1 = −1` and both values compute), or a fourth 2-torsion point `t` exists —
+forced to equal `−(1+1)`, whence `(1+1)·(1+1) = (1+1) + (1+1) = 0` against
+no-zero-divisors. -/
+
+theorem fright_double_one (c : Coordinate Φ.Γ) (hc : c ≠ 0) :
+    fmul (fadd 1 1) c = fadd c c := by
+  by_cases h20 : fadd (1 : Coordinate Φ.Γ) 1 = 0
+  · rw [h20, field_zero_mul]
+    have h1n : (1 : Coordinate Φ.Γ) = fneg 1 := fadd_eq_zero_right h20
+    have hcneg : c = fneg c := by
+      calc c = fmul c 1 := (field_mul_one c).symm
+        _ = fmul c (fneg 1) := by rw [← h1n]
+        _ = fneg (fmul c 1) := fmul_neg c 1
+        _ = fneg c := by rw [field_mul_one]
+    rw [show fadd c c = fadd c (fneg c) from by rw [← hcneg], fadd_neg]
+  by_cases hd : ∃ d : Coordinate Φ.Γ, d ≠ 0 ∧ d ≠ 1 ∧ d ≠ fneg 1 ∧ fadd d d ≠ 0
+  · obtain ⟨d, hd0, hd1, hdn1, hdd⟩ := hd
+    have hnd0 : fneg d ≠ 0 := fun h => hd0 (fneg_inj (h.trans fneg_zero.symm))
+    have h1d0 : fadd (1 : Coordinate Φ.Γ) d ≠ 0 := fun h =>
+      hdn1 (fadd_eq_zero_right h)
+    have h1nd0 : fadd (1 : Coordinate Φ.Γ) (fneg d) ≠ 0 := by
+      intro h
+      exact hd1 (fneg_inj (fadd_eq_zero_right h))
+    have hpair : fadd (fadd 1 d) (fadd 1 (fneg d)) = fadd (1 : Coordinate Φ.Γ) 1 :=
+      fadd_pair 1 1 d
+    have hW2 : fmul (fadd 1 d) c = fadd (fmul 1 c) (fmul d c) := by
+      refine fright_distrib_generic 1 d c fone_ne_zero hd0 hc hd1.symm h1d0 ?_
+      intro h
+      exact hdn1 (fright_sum_zero hc h)
+    have hW3 : fmul (fadd 1 (fneg d)) c = fadd (fmul 1 c) (fmul (fneg d) c) := by
+      refine fright_distrib_generic 1 (fneg d) c fone_ne_zero hnd0 hc
+        (fun h => hdn1 (by rw [← fneg_fneg d, h])) h1nd0 ?_
+      intro h
+      exact hd1 (fneg_inj (fright_sum_zero hc h))
+    have hW1 : fmul (fadd (fadd 1 d) (fadd 1 (fneg d))) c
+        = fadd (fmul (fadd 1 d) c) (fmul (fadd 1 (fneg d)) c) := by
+      refine fright_distrib_generic (fadd 1 d) (fadd 1 (fneg d)) c h1d0 h1nd0 hc
+        ?_ (by rw [hpair]; exact h20) ?_
+      · intro h
+        have h5 := fadd_left_cancel 1 d (fneg d) h
+        exact hdd ((congrArg (fadd d) h5).trans (fadd_neg d))
+      · intro h
+        have h1 := fright_sum_zero hc h
+        rw [fneg_add_dist] at h1
+        have h2 := fadd_right_cancel 1 (fneg 1) (fneg d) h1
+        exact h20 ((congrArg (fadd 1) h2).trans (fadd_neg 1))
+    calc fmul (fadd 1 1) c
+        = fmul (fadd (fadd 1 d) (fadd 1 (fneg d))) c := by rw [hpair]
+      _ = fadd (fmul (fadd 1 d) c) (fmul (fadd 1 (fneg d)) c) := hW1
+      _ = fadd (fadd (fmul 1 c) (fmul d c)) (fadd (fmul 1 c) (fmul (fneg d) c)) := by
+          rw [hW2, hW3]
+      _ = fadd (fadd (fmul 1 c) (fmul 1 c)) (fadd (fmul d c) (fmul (fneg d) c)) :=
+          fadd_fadd_comm _ _ _ _
+      _ = fadd (fadd c c) (fadd (fmul d c) (fneg (fmul d c))) := by
+          rw [field_one_mul, fneg_mul]
+      _ = fadd c c := by rw [fadd_neg, fadd_zero]
+  · have h_no_d : ∀ d : Coordinate Φ.Γ, d ≠ 0 → d ≠ 1 → d ≠ fneg 1 → fadd d d = 0 :=
+      fun d h1 h2 h3 => Classical.byContradiction (fun h4 => hd ⟨d, h1, h2, h3, h4⟩)
+    by_cases ht : ∃ t : Coordinate Φ.Γ, t ≠ 0 ∧ t ≠ 1 ∧ t ≠ fneg 1
+    · exfalso
+      obtain ⟨t, ht0, ht1, htn1⟩ := ht
+      have hs1 : fadd (1 : Coordinate Φ.Γ) 1 ≠ 1 := fun h =>
+        fone_ne_zero (fadd_left_cancel 1 1 0 (h.trans (fadd_zero 1).symm))
+      have htt : fadd t t = 0 := h_no_d t ht0 ht1 htn1
+      have hu0 : fadd t 1 ≠ 0 := fun h =>
+        htn1 (by rw [← fneg_fneg t, ← fadd_eq_zero_right h])
+      have hu1 : fadd t 1 ≠ 1 := fun h =>
+        ht0 (fadd_right_cancel t 0 1 (h.trans (fzero_add 1).symm))
+      have hun1 : fadd t 1 = fneg 1 := by
+        by_contra hun1
+        have h2u := h_no_d (fadd t 1) hu0 hu1 hun1
+        rw [fadd_fadd_comm t 1 t 1, htt, fzero_add] at h2u
+        exact h20 h2u
+      have ht_eq : t = fadd (fneg 1) (fneg 1) := by
+        refine fadd_right_cancel t (fadd (fneg 1) (fneg 1)) 1 ?_
+        rw [hun1, fadd_assoc_total (fneg 1) (fneg 1) 1, fneg_add, fadd_zero]
+      have hs_ne_n1 : fadd (1 : Coordinate Φ.Γ) 1 ≠ fneg 1 := by
+        intro h
+        apply ht1
+        rw [ht_eq, ← fneg_add_dist, h, fneg_fneg]
+      have hss : fadd (fadd (1 : Coordinate Φ.Γ) 1) (fadd 1 1) = 0 :=
+        h_no_d (fadd 1 1) h20 hs1 hs_ne_n1
+      set s : Coordinate Φ.Γ := fadd 1 1 with hs_def
+      have h_sum1 : fadd s (fneg 1) = 1 := by
+        rw [hs_def, fadd_assoc_total 1 1 (fneg 1), fadd_neg, fadd_zero]
+      have hwall : fmul (fadd s (fneg 1)) s = fadd (fmul s s) (fmul (fneg 1) s) := by
+        refine fright_distrib_generic s (fneg 1) s h20 fneg_one_ne_zero h20
+          (fun h => hs_ne_n1 h) (by rw [h_sum1]; exact fone_ne_zero) ?_
+        intro h
+        exact hs1 (fneg_inj (fright_sum_zero h20 h)).symm
+      rw [h_sum1, field_one_mul, fneg_one_mul] at hwall
+      have hss_eq : fmul s s = fadd s s := by
+        have h4 : fadd s s = fadd (fadd (fmul s s) (fneg s)) s := by rw [← hwall]
+        rw [fadd_assoc_total (fmul s s) (fneg s) s, fneg_add, fadd_zero] at h4
+        exact h4.symm
+      rw [hss] at hss_eq
+      exact fmul_ne_zero h20 h20 hss_eq
+    · have h_all : ∀ v : Coordinate Φ.Γ, v ≠ 0 → v = 1 ∨ v = fneg 1 := by
+        intro v hv
+        by_contra hcon
+        push_neg at hcon
+        exact ht ⟨v, hv, hcon.1, hcon.2⟩
+      have hs1 : fadd (1 : Coordinate Φ.Γ) 1 ≠ 1 := fun h =>
+        fone_ne_zero (fadd_left_cancel 1 1 0 (h.trans (fadd_zero 1).symm))
+      have h2n1 : fadd (1 : Coordinate Φ.Γ) 1 = fneg 1 :=
+        (h_all (fadd 1 1) h20).resolve_left hs1
+      rcases h_all c hc with hc1 | hcn1
+      · rw [hc1, field_mul_one]
+      · rw [hcn1, fmul_neg_one, ← fneg_add_dist]
+
+theorem fleft_double_one (a : Coordinate Φ.Γ) (ha : a ≠ 0) :
+    fmul a (fadd 1 1) = fadd a a := by
+  by_cases h20 : fadd (1 : Coordinate Φ.Γ) 1 = 0
+  · rw [h20, field_mul_zero]
+    have h1n : (1 : Coordinate Φ.Γ) = fneg 1 := fadd_eq_zero_right h20
+    have haneg : a = fneg a := by
+      calc a = fmul a 1 := (field_mul_one a).symm
+        _ = fmul a (fneg 1) := by rw [← h1n]
+        _ = fneg (fmul a 1) := fmul_neg a 1
+        _ = fneg a := by rw [field_mul_one]
+    rw [show fadd a a = fadd a (fneg a) from by rw [← haneg], fadd_neg]
+  by_cases hd : ∃ d : Coordinate Φ.Γ, d ≠ 0 ∧ d ≠ 1 ∧ d ≠ fneg 1 ∧ fadd d d ≠ 0
+  · obtain ⟨d, hd0, hd1, hdn1, hdd⟩ := hd
+    have hnd0 : fneg d ≠ 0 := fun h => hd0 (fneg_inj (h.trans fneg_zero.symm))
+    have h1d0 : fadd (1 : Coordinate Φ.Γ) d ≠ 0 := fun h =>
+      hdn1 (fadd_eq_zero_right h)
+    have h1nd0 : fadd (1 : Coordinate Φ.Γ) (fneg d) ≠ 0 := by
+      intro h
+      exact hd1 (fneg_inj (fadd_eq_zero_right h))
+    have hd1' : fadd d (1 : Coordinate Φ.Γ) ≠ 0 := by
+      rw [fadd_comm]; exact h1d0
+    have hnd1' : fadd (fneg d) (1 : Coordinate Φ.Γ) ≠ 0 := by
+      rw [fadd_comm]; exact h1nd0
+    have hpair : fadd (fadd 1 d) (fadd 1 (fneg d)) = fadd (1 : Coordinate Φ.Γ) 1 :=
+      fadd_pair 1 1 d
+    have hW2 : fmul a (fadd 1 d) = fadd (fmul a d) (fmul a 1) := by
+      rw [fadd_comm 1 d]
+      refine fleft_distrib_generic a d 1 ha hd0 fone_ne_zero hd1 hd1 hd1' ?_
+      intro h
+      have h1 := fleft_sum_zero ha h
+      exact hdn1 (by rw [← fneg_fneg d, ← h1])
+    have hW3 : fmul a (fadd 1 (fneg d)) = fadd (fmul a (fneg d)) (fmul a 1) := by
+      rw [fadd_comm 1 (fneg d)]
+      refine fleft_distrib_generic a (fneg d) 1 ha hnd0 fone_ne_zero
+        (fun h => hdn1 (by rw [← fneg_fneg d, h])) (fun h => hdn1 (by rw [← fneg_fneg d, h]))
+        hnd1' ?_
+      intro h
+      have h1 := fleft_sum_zero ha h
+      rw [fneg_fneg] at h1
+      exact hd1 h1.symm
+    have hW1 : fmul a (fadd (fadd 1 d) (fadd 1 (fneg d)))
+        = fadd (fmul a (fadd 1 d)) (fmul a (fadd 1 (fneg d))) := by
+      refine fleft_distrib_generic a (fadd 1 d) (fadd 1 (fneg d)) ha h1d0 h1nd0
+        ?_ ?_ (by rw [hpair]; exact h20) ?_
+      · intro h
+        have h5 := fadd_left_cancel 1 d (fneg d) h
+        exact hdd ((congrArg (fadd d) h5).trans (fadd_neg d))
+      · intro h
+        exact hd0 (fadd_left_cancel 1 d 0 (h.trans (fadd_zero 1).symm))
+      · intro h
+        have h1 := fleft_sum_zero ha h
+        rw [fneg_add_dist] at h1
+        have h2 := fadd_right_cancel 1 (fneg 1) (fneg d) h1
+        exact h20 ((congrArg (fadd 1) h2).trans (fadd_neg 1))
+    calc fmul a (fadd 1 1)
+        = fmul a (fadd (fadd 1 d) (fadd 1 (fneg d))) := by rw [hpair]
+      _ = fadd (fmul a (fadd 1 d)) (fmul a (fadd 1 (fneg d))) := hW1
+      _ = fadd (fadd (fmul a d) (fmul a 1)) (fadd (fmul a (fneg d)) (fmul a 1)) := by
+          rw [hW2, hW3]
+      _ = fadd (fadd (fmul a d) (fmul a (fneg d))) (fadd (fmul a 1) (fmul a 1)) :=
+          fadd_fadd_comm _ _ _ _
+      _ = fadd (fadd (fmul a d) (fneg (fmul a d))) (fadd a a) := by
+          rw [field_mul_one, fmul_neg]
+      _ = fadd a a := by rw [fadd_neg, fzero_add]
+  · have h_no_d : ∀ d : Coordinate Φ.Γ, d ≠ 0 → d ≠ 1 → d ≠ fneg 1 → fadd d d = 0 :=
+      fun d h1 h2 h3 => Classical.byContradiction (fun h4 => hd ⟨d, h1, h2, h3, h4⟩)
+    by_cases ht : ∃ t : Coordinate Φ.Γ, t ≠ 0 ∧ t ≠ 1 ∧ t ≠ fneg 1
+    · exfalso
+      obtain ⟨t, ht0, ht1, htn1⟩ := ht
+      have hs1 : fadd (1 : Coordinate Φ.Γ) 1 ≠ 1 := fun h =>
+        fone_ne_zero (fadd_left_cancel 1 1 0 (h.trans (fadd_zero 1).symm))
+      have htt : fadd t t = 0 := h_no_d t ht0 ht1 htn1
+      have hu0 : fadd t 1 ≠ 0 := fun h =>
+        htn1 (by rw [← fneg_fneg t, ← fadd_eq_zero_right h])
+      have hu1 : fadd t 1 ≠ 1 := fun h =>
+        ht0 (fadd_right_cancel t 0 1 (h.trans (fzero_add 1).symm))
+      have hun1 : fadd t 1 = fneg 1 := by
+        by_contra hun1
+        have h2u := h_no_d (fadd t 1) hu0 hu1 hun1
+        rw [fadd_fadd_comm t 1 t 1, htt, fzero_add] at h2u
+        exact h20 h2u
+      have ht_eq : t = fadd (fneg 1) (fneg 1) := by
+        refine fadd_right_cancel t (fadd (fneg 1) (fneg 1)) 1 ?_
+        rw [hun1, fadd_assoc_total (fneg 1) (fneg 1) 1, fneg_add, fadd_zero]
+      have hs_ne_n1 : fadd (1 : Coordinate Φ.Γ) 1 ≠ fneg 1 := by
+        intro h
+        apply ht1
+        rw [ht_eq, ← fneg_add_dist, h, fneg_fneg]
+      have hss : fadd (fadd (1 : Coordinate Φ.Γ) 1) (fadd 1 1) = 0 :=
+        h_no_d (fadd 1 1) h20 hs1 hs_ne_n1
+      set s : Coordinate Φ.Γ := fadd 1 1 with hs_def
+      have h_sum1 : fadd s (fneg 1) = 1 := by
+        rw [hs_def, fadd_assoc_total 1 1 (fneg 1), fadd_neg, fadd_zero]
+      have hwall : fmul s (fadd s (fneg 1)) = fadd (fmul s s) (fmul s (fneg 1)) := by
+        refine fleft_distrib_generic s s (fneg 1) h20 h20 fneg_one_ne_zero
+          (fun h => hs_ne_n1 h) hs1 (by rw [h_sum1]; exact fone_ne_zero) ?_
+        intro h
+        exact hs1 (fneg_inj (fleft_sum_zero h20 h)).symm
+      rw [h_sum1, field_mul_one, fmul_neg_one] at hwall
+      have hss_eq : fmul s s = fadd s s := by
+        have h4 : fadd s s = fadd (fadd (fmul s s) (fneg s)) s := by rw [← hwall]
+        rw [fadd_assoc_total (fmul s s) (fneg s) s, fneg_add, fadd_zero] at h4
+        exact h4.symm
+      rw [hss] at hss_eq
+      exact fmul_ne_zero h20 h20 hss_eq
+    · have h_all : ∀ v : Coordinate Φ.Γ, v ≠ 0 → v = 1 ∨ v = fneg 1 := by
+        intro v hv
+        by_contra hcon
+        push_neg at hcon
+        exact ht ⟨v, hv, hcon.1, hcon.2⟩
+      have hs1 : fadd (1 : Coordinate Φ.Γ) 1 ≠ 1 := fun h =>
+        fone_ne_zero (fadd_left_cancel 1 1 0 (h.trans (fadd_zero 1).symm))
+      have h2n1 : fadd (1 : Coordinate Φ.Γ) 1 = fneg 1 :=
+        (h_all (fadd 1 1) h20).resolve_left hs1
+      rcases h_all a ha with ha1 | han1
+      · rw [ha1, field_one_mul]
+      · rw [han1, fneg_one_mul, ← fneg_add_dist]
+
+/-! ## Doubling in general — by associativity through the at-1 case. -/
+
+theorem fright_double (a c : Coordinate Φ.Γ) :
+    fmul (fadd a a) c = fadd (fmul a c) (fmul a c) := by
+  by_cases ha0 : a = 0
+  · subst ha0; rw [fadd_zero, field_zero_mul, fadd_zero]
+  by_cases hc0 : c = 0
+  · subst hc0; rw [field_mul_zero, field_mul_zero, fadd_zero]
+  have h2a : fadd a a = fmul (fadd 1 1) a := (fright_double_one a ha0).symm
+  rw [h2a, fmul_assoc_total, fright_double_one (fmul a c) (fmul_ne_zero ha0 hc0)]
+
+theorem fleft_double (a b : Coordinate Φ.Γ) :
+    fmul a (fadd b b) = fadd (fmul a b) (fmul a b) := by
+  by_cases ha0 : a = 0
+  · subst ha0; rw [field_zero_mul, field_zero_mul, fadd_zero]
+  by_cases hb0 : b = 0
+  · subst hb0; rw [fadd_zero, field_mul_zero, fadd_zero]
+  have h2b : fadd b b = fmul (fadd 1 1) b := (fright_double_one b hb0).symm
+  rw [h2b, ← fmul_assoc_total, fleft_double_one a ha0]
+  exact fright_double a b
+
+/-! ## TOTAL distributivity — the master case splits. -/
+
+theorem fright_distrib_total (a b c : Coordinate Φ.Γ) :
+    fmul (fadd a b) c = fadd (fmul a c) (fmul b c) := by
+  by_cases ha0 : a = 0
+  · subst ha0; rw [fzero_add, field_zero_mul, fzero_add]
+  by_cases hb0 : b = 0
+  · subst hb0; rw [fadd_zero, field_zero_mul, fadd_zero]
+  by_cases hc0 : c = 0
+  · subst hc0; rw [field_mul_zero, field_mul_zero, field_mul_zero, fadd_zero]
+  by_cases hab : a = b
+  · subst hab; exact fright_double a c
+  by_cases hbna : b = fneg a
+  · subst hbna
+    rw [fadd_neg, field_zero_mul, fneg_mul, fadd_neg]
+  have hs0 : fadd a b ≠ 0 := fun h => hbna (fadd_eq_zero_right h)
+  have hsum : fadd (fmul a c) (fmul b c) ≠ 0 := fun h =>
+    hbna (fright_sum_zero hc0 h)
+  exact fright_distrib_generic a b c ha0 hb0 hc0 hab hs0 hsum
+
+theorem fleft_distrib_total (a b c : Coordinate Φ.Γ) :
+    fmul a (fadd b c) = fadd (fmul a b) (fmul a c) := by
+  by_cases ha0 : a = 0
+  · subst ha0; rw [field_zero_mul, field_zero_mul, field_zero_mul, fadd_zero]
+  by_cases hb0 : b = 0
+  · subst hb0; rw [fzero_add, field_mul_zero, fzero_add]
+  by_cases hc0 : c = 0
+  · subst hc0; rw [fadd_zero, field_mul_zero, fadd_zero]
+  by_cases hbc : b = c
+  · subst hbc; exact fleft_double a b
+  by_cases hcnb : c = fneg b
+  · subst hcnb
+    rw [fadd_neg, field_mul_zero, fmul_neg, fadd_neg]
+  have hs0 : fadd b c ≠ 0 := fun h => hcnb (fadd_eq_zero_right h)
+  have hsum : fadd (fmul a b) (fmul a c) ≠ 0 := fun h =>
+    hcnb (fleft_sum_zero ha0 h)
+  by_cases hb1 : b = 1
+  · by_cases hc1 : c = 1
+    · exact absurd (hb1.trans hc1.symm) hbc
+    · rw [fadd_comm b c, fadd_comm (fmul a b) (fmul a c)]
+      exact fleft_distrib_generic a c b ha0 hc0 hb0 (fun h => hbc h.symm) hc1
+        (by rw [fadd_comm c b]; exact hs0)
+        (by rw [fadd_comm (fmul a c) (fmul a b)]; exact hsum)
+  · exact fleft_distrib_generic a b c ha0 hb0 hc0 hbc hb1 hs0 hsum
+
 end Coordinate
 
 end Foam.Bridges
@@ -122,3 +466,9 @@ end Foam.Bridges
 #print axioms Foam.Bridges.Coordinate.fmul_neg_one
 #print axioms Foam.Bridges.Coordinate.fneg_mul
 #print axioms Foam.Bridges.Coordinate.fmul_neg
+#print axioms Foam.Bridges.Coordinate.fright_double_one
+#print axioms Foam.Bridges.Coordinate.fleft_double_one
+#print axioms Foam.Bridges.Coordinate.fright_double
+#print axioms Foam.Bridges.Coordinate.fleft_double
+#print axioms Foam.Bridges.Coordinate.fright_distrib_total
+#print axioms Foam.Bridges.Coordinate.fleft_distrib_total

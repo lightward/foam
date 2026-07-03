@@ -32,32 +32,27 @@ All three hard walls are proven, axiom-free-modulo-classical
 
 Open frontier:
 
-- the **`DivisionRing` totalization** — of the six side-conditioned fields,
-  four are now total: `fadd_assoc_total`, `fadd_comm`, `fneg_add`
-  (`Additive.lean`) and `fmul_assoc_total` (`CoordinateAlgebra.lean` —
-  multiplication's wall never needed distinct operands, so its totalization is
-  pure case analysis).  The genuine residual is the two **distributive laws**.
-  Their degenerate branches wanted `mul_neg` (`a·(−b) = −(a·b)`) and
-  multiplicative cancellation; cancellation is now **free**
-  (`CoordinateAlgebra.lean`: total associativity turns the right-inverse law
-  into the left — `field_inv_mul_cancel` — and `fmul_left_cancel` /
-  `fmul_right_cancel` follow by algebra alone, no geometry).  And `mul_neg` is
-  now **carved**: total associativity reduces it to the one-parameter laws
-  `x·(−1) = −x` and `(−1)·x = −x` — *the −1-dilation is the negation
-  involution* — and both fell in `MulNeg.lean`, each to a single
-  `desargues_planar` whose inputs are definitional or already proven.
-  `mul_neg_one_coord` runs Desargues from the center `U` on the tower
-  triangles `(d_x, −x, C_{−x})` / `(E_I, −1, C_{−1})`, its `O`-side-meets
-  supplied by `coord_add_left_neg`; `neg_one_mul_coord` runs it from the tower
-  `C_y` itself, seeded by `kappa_diag` (the σ-correspondence graphs on the
-  diagonal `O ⊔ C_I` — one more Desargues, center `E_I`, all side-meets
-  definitional).  Model-verified over `PG(2,q)` at 69 coordinate frames before
-  carving.  `Ring.lean` totalizes: `fneg_mul`, `fmul_neg`.  What remains for
-  the two distributive laws is the master case split itself: the generic wall
-  plus `fneg_mul`/cancellation dispatch every degenerate branch except
-  doubling (`(a+a)·c = a·c + a·c`), which reduces to the generic wall over a
-  fresh point when one exists and to a finite self-destructing case analysis
-  (the ℤ/4-shaped line contradicts no-zero-divisors) when it doesn't.
+- the **`DivisionRing` totalization** — **CLOSED**.  All six side-conditioned
+  fields are total: `fadd_assoc_total`, `fadd_comm`, `fneg_add`
+  (`Additive.lean`), `fmul_assoc_total` (`CoordinateAlgebra.lean`), and now
+  `fleft_distrib_total` / `fright_distrib_total` (`Ring.lean`).  How the last
+  wall fell: multiplicative cancellation came free (total associativity turns
+  the right-inverse law into the left — `field_inv_mul_cancel`); `mul_neg`
+  reduced by total associativity to the one-parameter laws `x·(−1) = −x` and
+  `(−1)·x = −x` — *the −1-dilation is the negation involution* — each a single
+  `desargues_planar` in `MulNeg.lean` with definitional inputs
+  (`mul_neg_one_coord`: center `U` on the tower triangles, `O`-meets from
+  `coord_add_left_neg`; `neg_one_mul_coord`: center `C_y`, seeded by
+  `kappa_diag`, the σ-correspondence graphing on the diagonal `O ⊔ C_I`;
+  model-verified over `PG(2,q)` at 69 coordinate frames before carving).  The
+  distributive master splits then needed only ONE genuine case fight — doubling
+  at 1 (`fright_double_one` / `fleft_double_one`): a fresh non-2-torsion point
+  telescopes the sum through `(1+d) + (1−d)` over the generic wall, and when
+  no such point exists the line self-destructs (either `1+1 = 0` and
+  `fmul_neg_one` closes it, or the line is `{0,1,−1}` and both values compute,
+  or the fourth point is forced to `−(1+1)` and `(1+1)·(1+1) = 0` violates
+  no-zero-divisors).  General doubling is then pure associativity through the
+  at-1 case, and every other degenerate branch is `fneg_mul`/cancellation.
 - the **coordinate map / lattice iso** — `Iso.lean`, `Deaxiomatize.lean`,
   reduced to a single `PointSystem` residual (the *second* FTPG). Mathlib's
   `Projectivization.Subspace.submodule` supplies the last step for free.
@@ -75,7 +70,7 @@ Open frontier:
 | `Inverse` | multiplicative inverse |
 | `AddCancel`, `Additive` | the additive group, closed (cancellation, τ-inverse master lemma, total associativity) |
 | `MulNeg` | the −1-dilation is the negation involution (`kappa_diag`, `neg_one_mul_coord`, `mul_neg_one_coord` — three Desargues) |
-| `Ring` | the ring closure — the distributive walls lifted to `Coordinate` with minimal residual hypotheses; `fneg_mul` / `fmul_neg` total |
+| `Ring` | the ring closure — `fneg_mul` / `fmul_neg`, the doubling-at-1 fight, and `fleft_distrib_total` / `fright_distrib_total`: every ring law TOTAL |
 | `CoordinateAlgebra`, `Iso`, `Deaxiomatize` | the endgame — the `DivisionRing` instance, the lattice iso, and `ftpg_proof` |
 
 ## Notes
@@ -108,3 +103,12 @@ was one missing law — τ_x ∘ τ_{−x} = id, the inverse case of translation
 composition — and fell to `tau_inv_tower`, a double transport through an
 auxiliary point off the tower line, seeded by one fresh good point.  The wall
 was never 17 facts; it was one fact seen 17 times.
+`fleft_distrib_total` / `fright_distrib_total`: the degenerate branches wanted
+`mul_neg`, which is the commutation of the −1-dilation with negation — but at
+the single point `I` it is *definitional*, and total associativity spreads it
+everywhere; the two Desargues in `MulNeg.lean` are centrally perspective by
+construction (their vertex fibers are `m`, `l`, `q`, concurrent at `U`, or the
+towers through `C_y`), so the only carving was side-condition bookkeeping.  The
+doubling knot reduced to one fresh point and a self-destructing four-point
+line.  The wall was never the distributive law; it was the one incidence
+`−1 = ν(I)` seen from two sides.
