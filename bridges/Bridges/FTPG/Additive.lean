@@ -3309,6 +3309,94 @@ theorem inv_absorb_core (Γ : CoordSystem L) (a c : L)
     hCt_l hCt_m hCt_π hR0_OCt hR0_nCt hCt_ℓ₂ span_C span_D R hR hR_not h_irred
   rw [hstep, hinv]
 
+/-- **The reverse tower is the negative's tower.**  `pc x Γ.O Γ.C m = C_{-x}`:
+translating `Γ.C` by the vector `x → O` lands on the C-tower of `coord_neg Γ x`.
+Extracted from `coord_add_left_neg` (`x + (-x) = O`): the sum's defining meet
+passes through `Γ.O` exactly when the line `Γ.O ⊔ C_{-x}` carries the direction
+`(x ⊔ Γ.C) ⊓ m`, which is the second component of the reverse completion. -/
+theorem neg_tower_reverse (Γ : CoordSystem L) (x : L)
+    (hx : IsAtom x) (hx_on : x ≤ Γ.O ⊔ Γ.U)
+    (hx_ne_O : x ≠ Γ.O) (hx_ne_U : x ≠ Γ.U)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    parallelogram_completion x Γ.O Γ.C (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_neg Γ x) Γ.C (Γ.U ⊔ Γ.V) := by
+  set l := Γ.O ⊔ Γ.U with hl
+  set m := Γ.U ⊔ Γ.V with hm
+  set q := Γ.U ⊔ Γ.C with hq
+  set π := Γ.O ⊔ Γ.U ⊔ Γ.V with hπ
+  set n := coord_neg Γ x with hn
+  set C_n := parallelogram_completion Γ.O n Γ.C m with hCn_def
+  have hn_atom : IsAtom n := coord_neg_atom Γ hx hx_on hx_ne_O hx_ne_U
+  have hn_on : n ≤ l := coord_neg_on_l Γ x
+  have hn_ne_U : n ≠ Γ.U := coord_neg_ne_U Γ hx hx_on hx_ne_O hx_ne_U
+  obtain ⟨hCn_atom, hCn_not_l, hCn_not_m, hCn_le_q, -⟩ :=
+    C_tower_facts Γ n hn_atom hn_on (coord_neg_ne_O Γ hx hx_on hx_ne_O hx_ne_U) hn_ne_U
+  have hUC : Γ.U ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ le_sup_right)
+  have hx_ne_C : x ≠ Γ.C := fun h => Γ.hC_not_l (h ▸ hx_on)
+  have hx_not_m : ¬ x ≤ m := fun h => hx_ne_U (Γ.atom_on_both_eq_U hx hx_on h)
+  have hm_le_π : m ≤ π := sup_le (le_sup_right.trans le_sup_left) le_sup_right
+  set h' := (x ⊔ Γ.C) ⊓ m with hh'_def
+  have hh'_atom : IsAtom h' :=
+    line_meets_m_at_atom hx Γ.hC hx_ne_C (sup_le (hx_on.trans le_sup_left) Γ.hC_plane)
+      hm_le_π Γ.m_covBy_π hx_not_m
+  have hCn_le_nE : C_n ≤ n ⊔ Γ.E := (inf_le_right : C_n ≤ n ⊔ (Γ.O ⊔ Γ.C) ⊓ m)
+  have hCn_cov_q : C_n ⋖ q := line_covers_its_atoms Γ.hU Γ.hC hUC hCn_atom hCn_le_q
+  have hDn_eq : (n ⊔ Γ.E) ⊓ q = C_n := by
+    have h_ne_q : (n ⊔ Γ.E) ⊓ q ≠ q := by
+      intro h_eq
+      have hU_le_nE : Γ.U ≤ n ⊔ Γ.E := (le_sup_left.trans h_eq.symm.le).trans inf_le_left
+      have h_nE_l : (Γ.E ⊔ n) ⊓ l = n := line_direction Γ.hE_atom Γ.hE_not_l hn_on
+      have hU_le_n : Γ.U ≤ n := by
+        rw [← h_nE_l]
+        exact le_inf (hU_le_nE.trans (sup_comm n Γ.E).le) le_sup_right
+      exact hn_ne_U ((hn_atom.le_iff.mp hU_le_n).resolve_left Γ.hU.1).symm
+    exact (hCn_cov_q.eq_or_eq (le_inf hCn_le_nE hCn_le_q) inf_le_right).resolve_right
+      h_ne_q
+  have hadd : ((x ⊔ Γ.C) ⊓ m ⊔ (n ⊔ Γ.E) ⊓ q) ⊓ l = Γ.O :=
+    coord_add_left_neg Γ x hx hx_on hx_ne_O hx_ne_U R hR hR_not h_irred
+  rw [hDn_eq] at hadd
+  have hO_le : Γ.O ≤ h' ⊔ C_n := hadd ▸ inf_le_left
+  have hh'_ne_Cn : h' ≠ C_n := fun h => hCn_not_m (h.symm.le.trans inf_le_right)
+  have hO_ne_Cn : Γ.O ≠ C_n := fun h => hCn_not_l (h.symm.le.trans le_sup_left)
+  have hOCn_eq : C_n ⊔ Γ.O = C_n ⊔ h' := by
+    have h_lt : C_n < C_n ⊔ Γ.O := lt_of_le_of_ne le_sup_left
+      (fun h => hO_ne_Cn ((hCn_atom.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        Γ.hO.1))
+    exact ((atom_covBy_join hCn_atom hh'_atom hh'_ne_Cn.symm).eq_or_eq h_lt.le
+      (sup_le le_sup_left (hO_le.trans (sup_comm h' C_n).le))).resolve_left (ne_of_gt h_lt)
+  have hO_cov : Γ.O ⋖ Γ.O ⊔ C_n := atom_covBy_join Γ.hO hCn_atom hO_ne_Cn
+  have hOh'_eq : Γ.O ⊔ h' = Γ.O ⊔ C_n := by
+    have hO_ne_h' : Γ.O ≠ h' := fun h => Γ.hO_not_m (h.le.trans inf_le_right)
+    have h_lt : Γ.O < Γ.O ⊔ h' := lt_of_le_of_ne le_sup_left
+      (fun h => hO_ne_h' ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left
+        hh'_atom.1).symm)
+    have hh'_le : h' ≤ Γ.O ⊔ C_n := by
+      have : h' ≤ C_n ⊔ h' := le_sup_right
+      rw [← hOCn_eq] at this
+      exact this.trans (sup_comm C_n Γ.O).le
+    exact (hO_cov.eq_or_eq h_lt.le (sup_le le_sup_left hh'_le)).resolve_left
+      (ne_of_gt h_lt)
+  have hxO_eq_l : x ⊔ Γ.O = l := by
+    have h_lt : Γ.O < Γ.O ⊔ x := lt_of_le_of_ne le_sup_left
+      (fun h => hx_ne_O ((Γ.hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left hx.1))
+    rw [sup_comm x Γ.O]
+    exact ((atom_covBy_join Γ.hO Γ.hU Γ.hOU).eq_or_eq h_lt.le
+      (sup_le le_sup_left hx_on)).resolve_left (ne_of_gt h_lt)
+  have hlm : l ⊓ m = Γ.U := Γ.l_inf_m_eq_U
+  show (Γ.C ⊔ (x ⊔ Γ.O) ⊓ m) ⊓ (Γ.O ⊔ (x ⊔ Γ.C) ⊓ m) = C_n
+  rw [hxO_eq_l, hlm, sup_comm Γ.C Γ.U, ← hh'_def, hOh'_eq]
+  have h_ne_q : (Γ.U ⊔ Γ.C) ⊓ (Γ.O ⊔ C_n) ≠ Γ.U ⊔ Γ.C := by
+    intro h_eq
+    have hl_le : l ≤ Γ.O ⊔ C_n := sup_le le_sup_left
+      ((le_sup_left.trans h_eq.symm.le).trans inf_le_right)
+    have := (hO_cov.eq_or_eq (le_sup_left : Γ.O ≤ l) hl_le).resolve_left
+      (fun h => Γ.hOU ((Γ.hO.le_iff.mp (le_sup_right.trans h.le)).resolve_left Γ.hU.1).symm)
+    exact hCn_not_l (le_sup_right.trans this.symm.le)
+  exact ((hCn_cov_q.eq_or_eq (le_inf hCn_le_q le_sup_right) inf_le_left).resolve_right
+    h_ne_q)
+
 /-! ## OPEN FRONTIER — coincident-operand associators
 
 The two degenerate associators that total additive associativity bottoms out at, plus
