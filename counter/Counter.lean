@@ -44,4 +44,5 @@ import Counter.Arrows
 import Counter.Contentment
 import Counter.Tsort
 import Counter.Cascade
+import Counter.Hemisphere
 import Counter.Worldline
