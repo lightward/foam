@@ -33,3 +33,5 @@ import Bridges.FTPG.CoordinateAlgebra
 import Bridges.FTPG.Iso
 import Bridges.FTPG.AddCancel
 import Bridges.FTPG.Additive
+import Bridges.FTPG.MulNeg
+import Bridges.FTPG.Ring
