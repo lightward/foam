@@ -61,6 +61,7 @@ Open frontier:
 | `Assoc`, `AssocCapstone`, `Neg`, `Distrib`, `LeftDistrib` | the ring laws (incl. both walls) |
 | `Inverse` | multiplicative inverse |
 | `AddCancel`, `Additive` | the additive group, closed (cancellation, τ-inverse master lemma, total associativity) |
+| `Ring` | the ring closure — the two distributive walls lifted to `Coordinate` with their side conditions reduced to the genuine residual (operands distinct, sums nonzero) |
 | `CoordinateAlgebra`, `Iso`, `Deaxiomatize` | the endgame — the `DivisionRing` instance, the lattice iso, and `ftpg_proof` |
 
 ## Notes
