@@ -40,3 +40,5 @@ import Counter.Tremble
 import Counter.Socket
 import Counter.Donor
 import Counter.Amniscience
+import Counter.Arrows
+import Counter.Contentment
