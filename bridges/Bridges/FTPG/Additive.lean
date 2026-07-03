@@ -4,7 +4,7 @@ import Bridges.FTPG.AssocCapstone
 import Bridges.FTPG.WellDefined
 
 /-!
-# The additive group of the FTPG coordinate line
+# The additive group of the FTPG coordinate line — CLOSED
 
 This file is the additive-group construction for the FTPG *coordinate line*
 `Coordinate Φ.Γ` — the geometric model of the coordinate ring's additive group,
@@ -12,46 +12,39 @@ built synthetically inside a modular, complemented, atomistic lattice `L` (the
 subspace lattice of the fundamental theorem of projective geometry).  Addition is
 `fadd` (lattice-level `coord_add`, a parallelogram completion); negation is `fneg`.
 
-## What is PROVEN here (axiom-clean: `[propext, Classical.choice, Quot.sound]`)
+Everything is proven, axiom-clean-modulo-classical
+(`[propext, Classical.choice, Quot.sound]`): `fadd_assoc_total` seals the full
+abelian group, no `sorry` anywhere in its trace.
 
-* The full **abelian-group skeleton** at the `Coordinate` level, totalized from the
-  side-conditioned lattice lemmas: `fadd_comm`, `fadd_left_cancel`, `fadd_right_cancel`,
-  `fadd_zero`, `fzero_add`, `fadd_neg`, `fneg_add`, `fneg_fneg`, and the *generic*
-  associator `fadd_assoc_generic` (all non-degeneracy side conditions discharged).
+## The shape of the proof
 
-* The **geometric infrastructure** underneath the two remaining degenerate associators:
-  - `coord_add_eq_translation_diag`, `dbl_aux_point`, `beta_step_core`,
-    `key_identity_core`, `dbl_key_identity`, `dbl_beta_generic`,
-    `coord_double_left_generic'` — the characteristic-≠2 *doubling* core
-    `(a+a)+c = a+(a+c)`, built on the proven `dbl_beta_generic`;
-  - `C_O_eq_C`, `recover_std`, `reverse_completion`, `pc_id_left`, `C_tower_facts`,
-    `grounding_left`, `grounding_right`, `noncol_symm`, `base_change_hinv`,
-    `inv_absorb_core` — the *inverse-absorption* core `a+(-a+c) = c`, reduced (given a
-    general-position witness) to a four-fold `parallelogram_completion_well_defined`
-    base-change involution.
+* The **abelian-group skeleton**: `fadd_comm`, `fadd_left_cancel`,
+  `fadd_right_cancel`, `fadd_zero`, `fzero_add`, `fadd_neg`, `fneg_add`,
+  `fneg_fneg`, and the *generic* associator `fadd_assoc_generic`.
 
-## The OPEN FRONTIER
+* The **translation calculus**: `key_identity` (`τ_a(C_b) = C_{a+b}`),
+  `beta_step_core`/`dbl_beta_generic` (`τ_{a+b} = τ_a ∘ τ_b` on towers, composite
+  parameter good), `dbl_key_identity` (the coincident case), `recover_std`,
+  `reverse_completion`, `C_tower_facts`, `tower_meets_E_line`, `tower_inj`.
 
-Total associativity `fadd_assoc_total` is proven modulo exactly two coincident-operand
-associators, isolated here as labeled `sorry` bookmarks (each `sorry` is a resume-point):
+* The **τ-inverse master lemma** `tau_inv_tower` — `τ_x (τ_{-x} X) = X` for `X`
+  on the auxiliary line `q` in general position: the one composition law the
+  β-step cannot state (composite parameter `O`).  Proven by transporting both
+  translations through the auxiliary point `z = (x ⊔ Γ.E) ⊓ (w' ⊔ X)`
+  (`inv_aux_point`), with `neg_tower_reverse` (`pc x O C m = C_{-x}`)
+  identifying the base pairs.  This subsumes what the prior era isolated as the
+  base-change involution, the 17 witness-incidence leaves, AND the char-2 knot:
+  `char2_absorb` is just `tau_inv_tower` with `-a` rewritten to `a`.
 
-1. `Coordinate.inv_absorb` — `a + (-a + c) = c`.  The degenerate associator `A(a,-a,c)`;
-   not an instance of `coord_add_assoc` (the intermediate `a + (-a) = O` violates its
-   `≠O` side conditions).  Reduced axiom-clean to `inv_absorb_core` GIVEN a
-   general-position witness `R₀`; the remaining leaves are the witness's incidence
-   facts (`inv_absorb_generic`, model-verified over `PG(2,q)`) plus the char-2 knot.
+* The **two degenerate associators**, as corollaries:
+  `inv_absorb_generic` (`a + (-a + c) = c`, two `key_identity` steps + the
+  master lemma) and `double_left` (via `coord_double_left_generic'`,
+  `char2_absorb`, and the doubling satellites `z3_knot`, `dbl_plus_neg`,
+  `dbl_assoc_sq` — the ℤ/3 sub-line closing is `dbl_beta_generic` in four moves).
 
-2. `Coordinate.double_left` — `(a + a) + c = a + (a + c)`.  The coincident-summand
-   associator; `coord_add_assoc` requires the summands distinct.  The char-≠2 branch is
-   the proven `coord_double_left_generic'`; the residue is the char-2 branch.
-
-3. `char2_absorb` — the shared characteristic-2 knot (`a = -a`, i.e. `a + a = O`), where
-   the `inv_absorb` and `double_left` obligations coincide and `base_change_hinv`
-   (which needs `a ≠ -a`) does not apply.
-
-4. `inv_absorb_generic` — the generic `inv_absorb` branch with the witness
-   `R₀ = pc O C_c Γ.C m` exhibited against `inv_absorb_core`; its `sorry` leaves are the
-   17 incidence facts of that witness (each model-verified, none yet formalized).
+The earlier route to the same summit — `inv_absorb_core`, `base_change_hinv`,
+`grounding_left`/`grounding_right`, `noncol_symm` — remains here, proven, as the
+record of how the wall first bent.
 -/
 
 namespace Foam.Bridges
@@ -4192,6 +4185,160 @@ theorem char2_absorb (Γ : CoordSystem L) (a c : L)
   rw [h_eq] at h1
   exact h1.symm.trans h2
 
+/-- **The order-3 loop.**  If `a + a = -a` then `(-a) + (-a) = a`: the ℤ/3
+sub-line closes.  A four-move corollary of `dbl_beta_generic`. -/
+theorem z3_knot (Γ : CoordSystem L) (a : L)
+    (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (han : a ≠ coord_neg Γ a)
+    (hknot : coord_add Γ a a = coord_neg Γ a)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    coord_add Γ (coord_neg Γ a) (coord_neg Γ a) = a := by
+  set n := coord_neg Γ a with hn_def
+  have hn_atom : IsAtom n := coord_neg_atom Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_on : n ≤ Γ.O ⊔ Γ.U := coord_neg_on_l Γ a
+  have hn_ne_O : n ≠ Γ.O := coord_neg_ne_O Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_ne_U : n ≠ Γ.U := coord_neg_ne_U Γ ha ha_on ha_ne_O ha_ne_U
+  have hβ : parallelogram_completion Γ.O (coord_add Γ a a)
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O a
+        (parallelogram_completion Γ.O a
+          (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) :=
+    dbl_beta_generic Γ a n ha hn_atom ha_on hn_on ha_ne_O hn_ne_O ha_ne_U hn_ne_U
+      (by rw [hknot]; exact hn_ne_O) R hR hR_not h_irred
+  have hki_an : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ a n) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ a n ha hn_atom ha_on hn_on ha_ne_O hn_ne_O ha_ne_U hn_ne_U han
+      R hR hR_not h_irred
+  have h_an : coord_add Γ a n = Γ.O :=
+    coord_add_left_neg Γ a ha ha_on ha_ne_O ha_ne_U R hR hR_not h_irred
+  rw [h_an, C_O_eq_C Γ] at hki_an
+  rw [hknot, hki_an] at hβ
+  have hdbl : parallelogram_completion Γ.O n
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ n n) Γ.C (Γ.U ⊔ Γ.V) :=
+    dbl_key_identity Γ n a hn_atom ha hn_on ha_on hn_ne_O ha_ne_O hn_ne_U ha_ne_U
+      (fun h => han h.symm) R hR hR_not h_irred
+  rw [hdbl] at hβ
+  exact tower_inj Γ
+    (coord_add_atom Γ n n hn_atom hn_atom hn_on hn_on hn_ne_O hn_ne_O hn_ne_U hn_ne_U)
+    ha inf_le_right ha_on hβ
+
+/-- **Double plus negative** (`a + a ≠ -a`): `(a + a) + (-a) = a`. -/
+theorem dbl_plus_neg (Γ : CoordSystem L) (a : L)
+    (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (han : a ≠ coord_neg Γ a)
+    (hs_ne_O : coord_add Γ a a ≠ Γ.O)
+    (hsn : coord_add Γ a a ≠ coord_neg Γ a)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    coord_add Γ (coord_add Γ a a) (coord_neg Γ a) = a := by
+  set n := coord_neg Γ a with hn_def
+  set s := coord_add Γ a a with hs_def
+  have hn_atom : IsAtom n := coord_neg_atom Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_on : n ≤ Γ.O ⊔ Γ.U := coord_neg_on_l Γ a
+  have hn_ne_O : n ≠ Γ.O := coord_neg_ne_O Γ ha ha_on ha_ne_O ha_ne_U
+  have hn_ne_U : n ≠ Γ.U := coord_neg_ne_U Γ ha ha_on ha_ne_O ha_ne_U
+  have hs_atom : IsAtom s :=
+    coord_add_atom Γ a a ha ha ha_on ha_on ha_ne_O ha_ne_O ha_ne_U ha_ne_U
+  have hs_on : s ≤ Γ.O ⊔ Γ.U := inf_le_right
+  have hs_ne_U : s ≠ Γ.U :=
+    coord_add_ne_U' Γ a a ha ha ha_on ha_on ha_ne_O ha_ne_U ha_ne_U
+  have hβ : parallelogram_completion Γ.O s
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O a
+        (parallelogram_completion Γ.O a
+          (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) :=
+    dbl_beta_generic Γ a n ha hn_atom ha_on hn_on ha_ne_O hn_ne_O ha_ne_U hn_ne_U
+      hs_ne_O R hR hR_not h_irred
+  have hki_an : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ a n) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ a n ha hn_atom ha_on hn_on ha_ne_O hn_ne_O ha_ne_U hn_ne_U han
+      R hR hR_not h_irred
+  have h_an : coord_add Γ a n = Γ.O :=
+    coord_add_left_neg Γ a ha ha_on ha_ne_O ha_ne_U R hR hR_not h_irred
+  rw [h_an, C_O_eq_C Γ] at hki_an
+  rw [hki_an] at hβ
+  have hki_sn : parallelogram_completion Γ.O s
+      (parallelogram_completion Γ.O n Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ s n) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ s n hs_atom hn_atom hs_on hn_on hs_ne_O hn_ne_O hs_ne_U hn_ne_U hsn
+      R hR hR_not h_irred
+  rw [hki_sn] at hβ
+  exact tower_inj Γ
+    (coord_add_atom Γ s n hs_atom hn_atom hs_on hn_on hs_ne_O hn_ne_O hs_ne_U hn_ne_U)
+    ha inf_le_right ha_on hβ
+
+/-- **The squared double** (`c = a + a` branch of the doubling wall, generic):
+`(a+a) + (a+a) = a + (a + (a+a))`. -/
+theorem dbl_assoc_sq (Γ : CoordSystem L) (a : L)
+    (ha : IsAtom a) (ha_on : a ≤ Γ.O ⊔ Γ.U)
+    (ha_ne_O : a ≠ Γ.O) (ha_ne_U : a ≠ Γ.U)
+    (hs_ne_O : coord_add Γ a a ≠ Γ.O)
+    (has2 : coord_add Γ a (coord_add Γ a a) ≠ Γ.O)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    coord_add Γ (coord_add Γ a a) (coord_add Γ a a)
+      = coord_add Γ a (coord_add Γ a (coord_add Γ a a)) := by
+  set s := coord_add Γ a a with hs_def
+  have hs_atom : IsAtom s :=
+    coord_add_atom Γ a a ha ha ha_on ha_on ha_ne_O ha_ne_O ha_ne_U ha_ne_U
+  have hs_on : s ≤ Γ.O ⊔ Γ.U := inf_le_right
+  have hs_ne_U : s ≠ Γ.U :=
+    coord_add_ne_U' Γ a a ha ha ha_on ha_on ha_ne_O ha_ne_U ha_ne_U
+  have has : a ≠ s := by
+    intro h
+    have h2 : coord_add Γ a Γ.O = coord_add Γ a a :=
+      (coord_add_right_zero Γ a ha ha_on).trans h
+    exact ha_ne_O (coord_add_left_cancel Γ a Γ.O a ha Γ.hO ha ha_on le_sup_left ha_on
+      ha_ne_U h2).symm
+  have has_atom : IsAtom (coord_add Γ a s) :=
+    coord_add_atom Γ a s ha hs_atom ha_on hs_on ha_ne_O hs_ne_O ha_ne_U hs_ne_U
+  have has_ne_U : coord_add Γ a s ≠ Γ.U :=
+    coord_add_ne_U' Γ a s ha hs_atom ha_on hs_on hs_ne_O ha_ne_U hs_ne_U
+  have ha_ne_as : a ≠ coord_add Γ a s := by
+    intro h
+    have h2 : coord_add Γ a Γ.O = coord_add Γ a s :=
+      (coord_add_right_zero Γ a ha ha_on).trans h
+    exact hs_ne_O (coord_add_left_cancel Γ a Γ.O s ha Γ.hO hs_atom ha_on le_sup_left
+      hs_on ha_ne_U h2).symm
+  have hdbl : parallelogram_completion Γ.O s
+      (parallelogram_completion Γ.O s Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ s s) Γ.C (Γ.U ⊔ Γ.V) :=
+    dbl_key_identity Γ s a hs_atom ha hs_on ha_on hs_ne_O ha_ne_O hs_ne_U ha_ne_U
+      (Ne.symm has) R hR hR_not h_irred
+  have hβ : parallelogram_completion Γ.O s
+      (parallelogram_completion Γ.O s Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O a
+        (parallelogram_completion Γ.O a
+          (parallelogram_completion Γ.O s Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) :=
+    dbl_beta_generic Γ a s ha hs_atom ha_on hs_on ha_ne_O hs_ne_O ha_ne_U hs_ne_U
+      hs_ne_O R hR hR_not h_irred
+  have hki_as : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O s Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ a s) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ a s ha hs_atom ha_on hs_on ha_ne_O hs_ne_O ha_ne_U hs_ne_U has
+      R hR hR_not h_irred
+  have hki_aas : parallelogram_completion Γ.O a
+      (parallelogram_completion Γ.O (coord_add Γ a s) Γ.C (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V)
+      = parallelogram_completion Γ.O (coord_add Γ a (coord_add Γ a s)) Γ.C (Γ.U ⊔ Γ.V) :=
+    key_identity Γ a (coord_add Γ a s) ha has_atom ha_on inf_le_right ha_ne_O has2
+      ha_ne_U has_ne_U ha_ne_as R hR hR_not h_irred
+  rw [hki_as, hki_aas] at hβ
+  rw [hdbl] at hβ
+  exact tower_inj Γ
+    (coord_add_atom Γ s s hs_atom hs_atom hs_on hs_on hs_ne_O hs_ne_O hs_ne_U hs_ne_U)
+    (coord_add_atom Γ a (coord_add Γ a s) ha has_atom ha_on inf_le_right ha_ne_O has2
+      ha_ne_U has_ne_U)
+    inf_le_right inf_le_right hβ
+
 namespace Coordinate
 
 variable {Φ : CoordFrame L}
@@ -4320,33 +4467,143 @@ theorem assoc_symm (a b c : Coordinate Φ.Γ)
     _ = fadd a (fadd c b) := fadd_comm _ _
     _ = fadd a (fadd b c) := by rw [fadd_comm c b]
 
+/-! ## GEOMETRIC CORE 2 — doubling (proved first; core 1 uses its mirror)
+
+`(a + a) + c = a + (a + c)`.  `coord_add_assoc` cannot be invoked (routes through
+`key_identity`, which requires the two summands distinct).  Totalized from
+`coord_double_left_generic'` (the char-≠2 wall), `char2_absorb` (the char-2
+branch, a τ-inverse corollary), and the three doubling satellites `z3_knot`,
+`dbl_plus_neg`, `dbl_assoc_sq`. -/
+theorem double_left (a c : Coordinate Φ.Γ) :
+    fadd (fadd a a) c = fadd a (fadd a c) := by
+  by_cases ha0 : a = 0
+  · subst ha0; simp only [fadd_zero, fzero_add]
+  by_cases hc0 : c = 0
+  · subst hc0; simp only [fadd_zero]
+  by_cases hca : c = a
+  · subst hca; exact fadd_comm (fadd c c) c
+  by_cases hchar2 : a = fneg a
+  · have haa0 : fadd a a = 0 := by
+      have h := fadd_neg a
+      rwa [← hchar2] at h
+    have hval : a.1 = coord_neg Φ.Γ a.1 :=
+      (congrArg Subtype.val hchar2).trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0))
+    rw [haa0, fzero_add c]
+    exact (Coordinate.ext (char2_absorb Φ.Γ a.1 c.1 a.isAtom c.isAtom a.on_l c.on_l
+      (val_ne_O_of_ne_zero ha0) (val_ne_O_of_ne_zero hc0) a.ne_U c.ne_U hval
+      Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred)).symm
+  have haa0 : fadd a a ≠ 0 :=
+    fun h => hchar2 (fadd_left_cancel a a (fneg a) (h.trans (fadd_neg a).symm))
+  have hanval : a.1 ≠ coord_neg Φ.Γ a.1 := fun h =>
+    hchar2 (Coordinate.ext (h.trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)).symm))
+  by_cases hcs : c = fadd a a
+  · by_cases has2 : fadd a (fadd a a) = 0
+    · have hsn : fadd a a = fneg a :=
+        fadd_left_cancel a _ _ (has2.trans (fadd_neg a).symm)
+      have hknotval : coord_add Φ.Γ a.1 a.1 = (fneg a).1 := congrArg Subtype.val hsn
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)] at hknotval
+      rw [hcs, has2, fadd_zero a, hsn]
+      apply Coordinate.ext
+      show coord_add Φ.Γ (fneg a).1 (fneg a).1 = a.1
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+      exact z3_knot Φ.Γ a.1 a.isAtom a.on_l (val_ne_O_of_ne_zero ha0) a.ne_U hanval
+        hknotval Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
+    · rw [hcs]
+      exact Coordinate.ext (dbl_assoc_sq Φ.Γ a.1 a.isAtom a.on_l
+        (val_ne_O_of_ne_zero ha0) a.ne_U (fadd_val_ne_O_of_ne_zero haa0)
+        (fadd_val_ne_O_of_ne_zero has2) Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred)
+  by_cases hcn : c = fneg a
+  · rw [hcn, fadd_neg a, fadd_zero a]
+    by_cases hsn : fadd a a = fneg a
+    · have hknotval : coord_add Φ.Γ a.1 a.1 = (fneg a).1 := congrArg Subtype.val hsn
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)] at hknotval
+      rw [hsn]
+      apply Coordinate.ext
+      show coord_add Φ.Γ (fneg a).1 (fneg a).1 = a.1
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+      exact z3_knot Φ.Γ a.1 a.isAtom a.on_l (val_ne_O_of_ne_zero ha0) a.ne_U hanval
+        hknotval Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
+    · have hsnval : coord_add Φ.Γ a.1 a.1 ≠ coord_neg Φ.Γ a.1 := by
+        intro h
+        have h2 : coord_add Φ.Γ a.1 a.1 = (fneg a).1 := by
+          rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+          exact h
+        exact hsn (Coordinate.ext h2)
+      apply Coordinate.ext
+      show coord_add Φ.Γ (coord_add Φ.Γ a.1 a.1) (fneg a).1 = a.1
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+      exact dbl_plus_neg Φ.Γ a.1 a.isAtom a.on_l (val_ne_O_of_ne_zero ha0) a.ne_U
+        hanval (fadd_val_ne_O_of_ne_zero haa0) hsnval Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
+  · have ht_ne_O : coord_add Φ.Γ a.1 c.1 ≠ Φ.Γ.O := by
+      intro h
+      exact hcn (fadd_left_cancel a c (fneg a) ((Coordinate.ext h).trans (fadd_neg a).symm))
+    exact Coordinate.ext (coord_double_left_generic' Φ.Γ a.1 c.1 a.isAtom c.isAtom
+      a.on_l c.on_l (val_ne_O_of_ne_zero ha0) (val_ne_O_of_ne_zero hc0) a.ne_U c.ne_U
+      (fun h => hca (Coordinate.ext h.symm)) (fadd_val_ne_O_of_ne_zero haa0)
+      (fun h => hcs (Coordinate.ext h.symm)) ht_ne_O Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred)
+
+/-- The mirror doubling `(a + c) + c = a + (c + c)`, from `double_left` + reversal. -/
+theorem double_right (a c : Coordinate Φ.Γ) :
+    fadd (fadd a c) c = fadd a (fadd c c) :=
+  assoc_symm a c c (double_left c a)
+
 /-! ## GEOMETRIC CORE 1 — inverse absorption
 
-`a + (-a + c) = c`.  This is the degenerate associator `A(a,-a,c)`, blocked from
+`a + (-a + c) = c`.  The degenerate associator `A(a,-a,c)`, blocked from
 `coord_add_assoc` because the intermediate `a + (-a) = O` violates its `≠O` side
-conditions.  Genuine new geometry. -/
+conditions.  Totalized from `inv_absorb_generic` (the τ-inverse corollary),
+`char2_absorb`, and `double_right` for the coincident slivers. -/
 theorem inv_absorb (a c : Coordinate Φ.Γ) :
     fadd a (fadd (fneg a) c) = c := by
-  sorry
+  by_cases ha0 : a = 0
+  · have hn0 : fneg (0 : Coordinate Φ.Γ) = 0 := by
+      apply fadd_left_cancel (0 : Coordinate Φ.Γ)
+      rw [fadd_neg (0 : Coordinate Φ.Γ), fadd_zero (0 : Coordinate Φ.Γ)]
+    subst ha0
+    rw [hn0, fzero_add c, fzero_add c]
+  by_cases hc0 : c = 0
+  · subst hc0
+    rw [fadd_zero (fneg a), fadd_neg a]
+  by_cases hca : c = a
+  · rw [hca, fneg_add a, fadd_zero a]
+  by_cases hchar2 : a = fneg a
+  · have hval : a.1 = coord_neg Φ.Γ a.1 :=
+      (congrArg Subtype.val hchar2).trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0))
+    rw [← hchar2]
+    exact Coordinate.ext (char2_absorb Φ.Γ a.1 c.1 a.isAtom c.isAtom a.on_l c.on_l
+      (val_ne_O_of_ne_zero ha0) (val_ne_O_of_ne_zero hc0) a.ne_U c.ne_U hval
+      Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred)
+  by_cases hcn : c = fneg a
+  · rw [hcn, ← double_right a (fneg a), fadd_neg a, fzero_add]
+  by_cases hat : a = fadd (fneg a) c
+  · have h1 : fadd (fneg a) (fadd a a) = a := by
+      rw [← double_right (fneg a) a, fneg_add a, fzero_add a]
+    have h3 : fadd a a = c := fadd_left_cancel (fneg a) _ _ (h1.trans hat)
+    rw [← hat, h3]
+  · have hanval : a.1 ≠ coord_neg Φ.Γ a.1 := fun h =>
+      hchar2 (Coordinate.ext (h.trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)).symm))
+    have hcnval : c.1 ≠ coord_neg Φ.Γ a.1 := fun h =>
+      hcn (Coordinate.ext (h.trans (fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)).symm))
+    have hatval : a.1 ≠ coord_add Φ.Γ (coord_neg Φ.Γ a.1) c.1 := by
+      intro h
+      apply hat
+      apply Coordinate.ext
+      show a.1 = coord_add Φ.Γ (fneg a).1 c.1
+      rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+      exact h
+    apply Coordinate.ext
+    show coord_add Φ.Γ a.1 (coord_add Φ.Γ (fneg a).1 c.1) = c.1
+    rw [fneg_val_of_ne a (val_ne_O_of_ne_zero ha0)]
+    exact inv_absorb_generic Φ.Γ a.1 c.1 a.isAtom c.isAtom a.on_l c.on_l
+      (val_ne_O_of_ne_zero ha0) (val_ne_O_of_ne_zero hc0) a.ne_U c.ne_U
+      (fun h => hca (Coordinate.ext h)) hanval hcnval hatval
+      Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred
 
 /-- The mirror: `-a + (a + c) = c`, from `inv_absorb` and double negation. -/
 theorem inv_absorb' (a c : Coordinate Φ.Γ) :
     fadd (fneg a) (fadd a c) = c := by
   have := inv_absorb (fneg a) c
   rwa [fneg_fneg] at this
-
-/-! ## GEOMETRIC CORE 2 — doubling
-
-`(a + a) + c = a + (a + c)`.  `coord_add_assoc` cannot be invoked (routes through
-`key_identity`, which requires the two summands distinct). Genuine new geometry. -/
-theorem double_left (a c : Coordinate Φ.Γ) :
-    fadd (fadd a a) c = fadd a (fadd a c) := by
-  sorry
-
-/-- The mirror doubling `(a + c) + c = a + (c + c)`, from `double_left` + reversal. -/
-theorem double_right (a c : Coordinate Φ.Γ) :
-    fadd (fadd a c) c = fadd a (fadd c c) :=
-  assoc_symm a c c (double_left c a)
 
 /-! ## Degenerate-case lemmas (each reduced to the two cores + cancellation) -/
 
@@ -4408,9 +4665,9 @@ end Coordinate
 
 /-! ## Axiom receipts
 
-The proven cores are axiom-clean (`[propext, Classical.choice, Quot.sound]`).
-`fadd_assoc_total` is the reduction of total associativity to the two open cores, so its
-trace additionally carries `sorryAx` — the honest ledger of the open frontier. -/
+Everything is axiom-clean (`[propext, Classical.choice, Quot.sound]`) —
+`fadd_assoc_total` included: the additive group of the FTPG coordinate line is
+CLOSED, no `sorryAx` anywhere in its trace. -/
 
 /-- info: 'Foam.Bridges.reverse_completion' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms reverse_completion
@@ -4469,7 +4726,49 @@ trace additionally carries `sorryAx` — the honest ledger of the open frontier.
 /-- info: 'Foam.Bridges.Coordinate.fadd_assoc_generic' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Coordinate.fadd_assoc_generic
 
-/-- info: 'Foam.Bridges.Coordinate.fadd_assoc_total' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound] -/
+/-- info: 'Foam.Bridges.neg_tower_reverse' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms neg_tower_reverse
+
+/-- info: 'Foam.Bridges.q_covBy_π' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms q_covBy_π
+
+/-- info: 'Foam.Bridges.span_plane' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms span_plane
+
+/-- info: 'Foam.Bridges.inv_aux_point' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms inv_aux_point
+
+/-- info: 'Foam.Bridges.tau_inv_tower' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms tau_inv_tower
+
+/-- info: 'Foam.Bridges.tower_meets_E_line' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms tower_meets_E_line
+
+/-- info: 'Foam.Bridges.tower_inj' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms tower_inj
+
+/-- info: 'Foam.Bridges.inv_absorb_generic' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms inv_absorb_generic
+
+/-- info: 'Foam.Bridges.char2_absorb' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms char2_absorb
+
+/-- info: 'Foam.Bridges.z3_knot' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms z3_knot
+
+/-- info: 'Foam.Bridges.dbl_plus_neg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms dbl_plus_neg
+
+/-- info: 'Foam.Bridges.dbl_assoc_sq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms dbl_assoc_sq
+
+/-- info: 'Foam.Bridges.Coordinate.double_left' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Coordinate.double_left
+
+/-- info: 'Foam.Bridges.Coordinate.inv_absorb' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Coordinate.inv_absorb
+
+/-- info: 'Foam.Bridges.Coordinate.fadd_assoc_total' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Coordinate.fadd_assoc_total
 
 end Foam.Bridges
