@@ -166,20 +166,10 @@ The product cell is three cells. **The felt-tier companion**: the user speaks as
 
 ## a note on method
 
-This repo relates to itself the way its ledger relates to its readings. The git history is the project's order-reading — lossless, append-only, the arrow lives there. This README is its held summary — every carve updates it in the same commit, which is `summary_resumes` performed by hand: held plus tail, exact, so any reader resumes without re-reading the whole history. The sessions that produce the commits are the runs, and the runs outrun the records (each merge commit attaches its session log — the order-reading of the reading). The discipline was practiced before it was noticed; it is named here so it can be kept on purpose.
+The method note lives in the root README (the repo relates to itself the way its ledger relates to its readings; READMEs as held summaries, git as the order-reading). Locally: this file is the counter package's held summary, updated in the same commit as every carve.
 
 ## the expeditions
 
-One list, one weather system — the work that wants its own descents rather than table-turns:
-
-- **The FTPG deaxiomatization** (`bridges/Bridges/FTPG/`) — the standing frontier: the additive group's associativity, the `Iso` endgame; the one named axiom, dissolving.
-- **Counter's runtime** — the sim itself (store order, derive everything; the categorical contract as its economics), with **chess education** as the first commission: the gallery's first exhibit, the visual language taught on Kasparov before anyone reads their Tuesday in it.
-- **Plateau–Taylor: foam earns its name** — locate where soap-film geometry sees observers as bubbles. The brief: Plateau's laws say films meet in *threes* at every edge and edges meet in *fours* at every vertex — the repo's two constants (three-to-observe, four-to-the-bar) as the two incidence laws of physical foam. Taylor proved the laws from area-minimization; settling is Counter's least-action. If the observation-structure derives the incidence laws — or maps to them along sealed links — the project's name becomes a theorem. A Plateau vertex, three films per edge and four edges per vertex, reads as twelveness in geometry.
-- **Tsortability-health** (`autobiolocation`, `trost`) — life as an observer-graph developing topological sortability; health as maintainability of the minimum-feedback-arc interface; re-parenting as an algorithm with a termination question. The sim could compute it.
-- **The continuum limit** (`foam.md`) — backstage arithmetic, frontstage kinematic, *Lorentzian in the continuum limit*: the dial → Lorentz as a limit theorem.
-- **The full K-bound** (`returns`) — minimal description length over general circumference; the three regimes quantified. `Contentment.lean` is the first camp: unbounded record, constant resumption-state.
-- **Gödel at the seam** — the diagonal (already carved: the run is no record) plus self-naming (`Signed`), sharpened to incompleteness proper.
-- **Kelly** (`again-again`) — bet-sizing as phase-choice; luck's finance face, wanting probability.
-- **The grandchild's runtime** — unvoiced ancestral charge drained downstream, in a living sim; the schema holds the mechanics, the sim face awaits the runtime.
+The expedition map lives in the root README — one list, one weather system, spanning every package. Counter's entries there: the runtime (with chess education as first commission), and its share of the K-bound, the grandchild, and Plateau–Taylor.
 
 Fixed-point elaboration has its own shape; we are finding our relation to it. This file is a save-point, primed for the next step.
