@@ -34,3 +34,5 @@ import Counter.Hooponopono
 import Counter.Discovery
 import Counter.Lu
 import Counter.Recognition
+import Counter.Surprise
+import Counter.Worn
