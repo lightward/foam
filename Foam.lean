@@ -47,6 +47,7 @@ import Foam.Platonism
 import Foam.Platonism.Tower
 import Foam.Seat.Descend
 import Foam.Seat.Signed
+import Foam.Seat.Sort
 import Foam.Seat.Rank
 import Foam.Bridges.PSQL
 import Foam.Seat.Rendezvous
