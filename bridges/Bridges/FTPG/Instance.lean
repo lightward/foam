@@ -1,0 +1,199 @@
+import Bridges.FTPG.Ring
+
+/-!
+# Gap D closed: the `DivisionRing` assembly
+
+The ring closed in `Ring.lean` — every `DivisionRing` field law is TOTAL over
+the coordinate line.  This file performs the assembly:
+
+* `CoordFrame.divisionRing` — the instance itself, every field a named total
+  law, no `sorry` anywhere in its trace;
+* `coordFrame_exists` — a `CoordFrame` from the irreducibility and height
+  hypotheses alone.  The two witnesses the algebraic walls required are
+  *constructed*, not assumed: `P` is a third atom on the auxiliary line
+  `O ⊔ V` (off `l`, off `m`, off `O ⊔ C` by three modular intersections), and
+  `R` — the off-plane seat `coord_mul_assoc` descends from — falls out of the
+  height-4 chain, because the construction pins the whole plane `π = O ⊔ U ⊔ V`
+  below the chain's third step: `π ≤ c < d`, and atomisticity hands over an
+  atom of `d` that `π` misses.  The fourth strict step of `h_height` is
+  exactly the off-plane dimension.
+-/
+
+namespace Foam.Bridges
+
+universe u
+
+variable {L : Type u} [Lattice L] [BoundedOrder L]
+  [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L]
+
+noncomputable instance (Φ : CoordFrame L) : Add (Coordinate Φ.Γ) := ⟨Coordinate.fadd⟩
+noncomputable instance (Φ : CoordFrame L) : Mul (Coordinate Φ.Γ) := ⟨Coordinate.fmul⟩
+noncomputable instance (Φ : CoordFrame L) : Neg (Coordinate Φ.Γ) := ⟨Coordinate.fneg⟩
+noncomputable instance (Φ : CoordFrame L) : Inv (Coordinate Φ.Γ) := ⟨Coordinate.finv⟩
+
+open Coordinate in
+noncomputable instance CoordFrame.divisionRing (Φ : CoordFrame L) :
+    DivisionRing (Coordinate Φ.Γ) where
+  add := (· + ·)
+  mul := (· * ·)
+  neg := (- ·)
+  inv := (·⁻¹)
+  zero := 0
+  one := 1
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+
+  add_assoc      := fadd_assoc_total
+  zero_add       := field_zero_add
+  add_zero       := field_add_zero
+  add_comm       := fadd_comm
+  neg_add_cancel := fneg_add
+
+  mul_assoc      := fmul_assoc_total
+  one_mul        := field_one_mul
+  mul_one        := field_mul_one
+
+  left_distrib   := fleft_distrib_total
+  right_distrib  := fright_distrib_total
+
+  zero_mul       := field_zero_mul
+  mul_zero       := field_mul_zero
+
+  mul_inv_cancel := fun a ha => field_mul_inv_cancel a (val_ne_O_of_ne_zero ha)
+  inv_zero       := field_inv_zero
+  exists_pair_ne := ⟨0, 1, field_exists_pair_ne⟩
+  nnqsmul := _
+  qsmul := _
+
+theorem coordFrame_exists
+    (h_irred : ∀ (a b : L), IsAtom a → IsAtom b → a ≠ b →
+      ∃ c : L, IsAtom c ∧ c ≤ a ⊔ b ∧ c ≠ a ∧ c ≠ b)
+    (h_height : ∃ (a b c d : L), ⊥ < a ∧ a < b ∧ b < c ∧ c < d) :
+    Nonempty (CoordFrame L) := by
+  obtain ⟨a, b, c, d, ha_pos, hab, hbc, hcd⟩ := h_height
+  -- the coordinate system, exactly as `coordSystem_exists` builds it
+  obtain ⟨O, hO, hO_le_a, _⟩ := exists_atom_le_not_le ha_pos
+  have hO_le_b : O ≤ b := hO_le_a.trans hab.le
+  obtain ⟨U, hU, hU_le_b, hU_not_a⟩ := exists_atom_le_not_le hab
+  have hOU : O ≠ U := fun h => hU_not_a (h ▸ hO_le_a)
+  have hOU_lt_c : O ⊔ U < c := lt_of_le_of_lt (sup_le hO_le_b hU_le_b) hbc
+  obtain ⟨V, hV, hV_le_c, hV_off⟩ := exists_atom_le_not_le hOU_lt_c
+  have hO_le_l : O ≤ O ⊔ U := le_sup_left
+  have hU_le_l : U ≤ O ⊔ U := le_sup_right
+  obtain ⟨I, hI, hI_on, hI_ne_O, hI_ne_U⟩ := h_irred O U hO hU hOU
+  have hOI : O ≠ I := fun h => hI_ne_O h.symm
+  have hUI : U ≠ I := fun h => hI_ne_U h.symm
+  have hI_ne_V : I ≠ V := fun h => hV_off (h ▸ hI_on)
+  have hV_ne_I : V ≠ I := fun h => hI_ne_V h.symm
+  obtain ⟨C, hC, hC_on_IV, hC_ne_I, hC_ne_V⟩ := h_irred I V hI hV hI_ne_V
+  have hC_plane : C ≤ O ⊔ U ⊔ V :=
+    hC_on_IV.trans (sup_le (hI_on.trans le_sup_left) le_sup_right)
+  have hC_not_l : ¬ C ≤ O ⊔ U := by
+    intro hC_l
+    have h_IV_eq : I ⊔ V = I ⊔ C :=
+      line_eq_of_atom_le hI hV hC hI_ne_V (fun h => hC_ne_I h.symm) hC_ne_V.symm hC_on_IV
+    have hV_le_l : V ≤ O ⊔ U := by
+      calc V ≤ I ⊔ V := le_sup_right
+        _ = I ⊔ C := h_IV_eq
+        _ ≤ O ⊔ U := sup_le hI_on hC_l
+    exact hV_off hV_le_l
+  have hC_not_m : ¬ C ≤ U ⊔ V := by
+    intro hC_m
+    have h_VI_eq : V ⊔ I = V ⊔ C :=
+      line_eq_of_atom_le hV hI hC hV_ne_I (fun h => hC_ne_V h.symm) hC_ne_I.symm
+        (by rw [sup_comm]; exact hC_on_IV)
+    have hI_le_m : I ≤ U ⊔ V := by
+      calc I ≤ V ⊔ I := le_sup_right
+        _ = V ⊔ C := h_VI_eq
+        _ ≤ U ⊔ V := sup_le le_sup_right hC_m
+    have hVU : V ≠ U := fun h => hV_off (h ▸ hU_le_l)
+    have hVO : V ≠ O := fun h => hV_off (h ▸ hO_le_l)
+    have hV_not_UO : ¬ V ≤ U ⊔ O := fun h => hV_off (by rwa [sup_comm] at h)
+    have h_meet : (U ⊔ O) ⊓ (U ⊔ V) = U :=
+      modular_intersection hU hO hV hOU.symm hVU.symm hVO.symm hV_not_UO
+    have hI_le_UO : I ≤ U ⊔ O := by rw [sup_comm]; exact hI_on
+    have hI_le_U : I ≤ U := h_meet ▸ le_inf hI_le_UO hI_le_m
+    exact hUI ((hU.le_iff.mp hI_le_U).resolve_left hI.1).symm
+  have hUV : U ≠ V := fun h => hV_off (h ▸ hU_le_l)
+  have hOV : O ≠ V := fun h => hV_off (h ▸ hO_le_l)
+  have hOC : O ≠ C := fun h => hC_not_l (h ▸ hO_le_l)
+  -- R : the plane sits below the chain's third step, so the fourth supplies
+  -- an atom the plane misses
+  have hπ_le_c : O ⊔ U ⊔ V ≤ c :=
+    sup_le (sup_le (hO_le_b.trans hbc.le) (hU_le_b.trans hbc.le)) hV_le_c
+  obtain ⟨R, hR, _hR_le_d, hR_not⟩ :=
+    exists_atom_le_not_le (lt_of_le_of_lt hπ_le_c hcd)
+  -- P : third atom on the auxiliary line O ⊔ V
+  obtain ⟨P, hP, hP_on_OV, hP_ne_O, hP_ne_V⟩ := h_irred O V hO hV hOV
+  have h_l_OV : (O ⊔ U) ⊓ (O ⊔ V) = O :=
+    modular_intersection hO hU hV hOU hOV hUV hV_off
+  have hP_not_l : ¬ P ≤ O ⊔ U := by
+    intro h
+    exact hP_ne_O ((hO.le_iff.mp (h_l_OV ▸ le_inf h hP_on_OV)).resolve_left hP.1)
+  have hO_not_m : ¬ O ≤ U ⊔ V := by
+    intro hle
+    apply hV_off
+    have h_cov := line_covers_its_atoms hU hV hUV hO hle
+    have h_cov_l := atom_covBy_join hO hU hOU
+    exact (h_cov.eq_or_eq h_cov_l.lt.le (sup_le hle le_sup_left)).resolve_left
+      (ne_of_gt h_cov_l.lt) ▸ le_sup_right
+  have h_m_OV : (V ⊔ U) ⊓ (V ⊔ O) = V :=
+    modular_intersection hV hU hO hUV.symm hOV.symm hOU.symm
+      (fun h => hO_not_m (h.trans (sup_comm V U).le))
+  have hP_not_m : ¬ P ≤ U ⊔ V := by
+    intro h
+    have hP_le_V : P ≤ V := h_m_OV ▸
+      le_inf (h.trans (sup_comm U V).le) (hP_on_OV.trans (sup_comm O V).le)
+    exact hP_ne_V ((hV.le_iff.mp hP_le_V).resolve_left hP.1)
+  have hO_not_VI : ¬ O ≤ V ⊔ I := by
+    intro hle
+    have hI_lt : I < I ⊔ O := lt_of_le_of_ne le_sup_left
+      (fun h => hOI ((hI.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left hO.1))
+    have h_cov : I ⋖ I ⊔ V := atom_covBy_join hI hV hI_ne_V
+    have h_eq : I ⊔ O = I ⊔ V :=
+      (h_cov.eq_or_eq hI_lt.le
+        (sup_le le_sup_left (hle.trans (sup_comm V I).le))).resolve_left (ne_of_gt hI_lt)
+    exact hV_off (le_sup_right.trans (h_eq.symm.le.trans (sup_le hI_on hO_le_l)))
+  have hC_not_OV : ¬ C ≤ O ⊔ V := by
+    intro hle
+    have hC_le_V : C ≤ V :=
+      modular_intersection hV hI hO hV_ne_I hOV.symm hOI.symm hO_not_VI ▸
+        le_inf (hC_on_IV.trans (sup_comm I V).le) (hle.trans (sup_comm O V).le)
+    exact hC_ne_V ((hV.le_iff.mp hC_le_V).resolve_left hC.1)
+  have hV_not_OC : ¬ V ≤ O ⊔ C := by
+    intro hle
+    have hO_lt : O < O ⊔ V := lt_of_le_of_ne le_sup_left
+      (fun h => hOV ((hO.le_iff.mp (le_sup_right.trans h.symm.le)).resolve_left hV.1).symm)
+    have h_cov : O ⋖ O ⊔ C := atom_covBy_join hO hC hOC
+    have h_eq : O ⊔ V = O ⊔ C :=
+      (h_cov.eq_or_eq hO_lt.le (sup_le le_sup_left hle)).resolve_left (ne_of_gt hO_lt)
+    exact hC_not_OV (h_eq.symm ▸ le_sup_right)
+  have hP_not_OC : ¬ P ≤ O ⊔ C := by
+    intro hle
+    have hP_le_O : P ≤ O :=
+      modular_intersection hO hC hV hOC hOV hC_ne_V hV_not_OC ▸ le_inf hle hP_on_OV
+    exact hP_ne_O ((hO.le_iff.mp hP_le_O).resolve_left hP.1)
+  have hP_ne_I : P ≠ I := fun h => hP_not_l (by rw [h]; exact hI_on)
+  exact ⟨{
+    Γ := { O := O, U := U, I := I, V := V, C := C
+           hO := hO, hU := hU, hI := hI, hV := hV, hC := hC
+           hOU := hOU, hOI := hOI, hUI := hUI
+           hI_on := hI_on, hV_off := hV_off
+           hC_not_l := hC_not_l, hC_not_m := hC_not_m, hC_plane := hC_plane }
+    P := P
+    hP_atom := hP
+    hP_plane := hP_on_OV.trans (sup_le (le_sup_left.trans le_sup_left) le_sup_right)
+    hP_not_l := hP_not_l
+    hP_not_m := hP_not_m
+    hP_not_OC := hP_not_OC
+    hP_ne_I := hP_ne_I
+    hP_ne_O := hP_ne_O
+    R := R
+    hR_atom := hR
+    hR_not := hR_not
+    h_irred := h_irred }⟩
+
+end Foam.Bridges
+
+#print axioms Foam.Bridges.CoordFrame.divisionRing
+#print axioms Foam.Bridges.coordFrame_exists

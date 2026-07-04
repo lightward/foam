@@ -1,4 +1,4 @@
-import Bridges.FTPG.Deaxiomatize
+import Bridges.FTPG.Carrier
 import Bridges.FTPG.AssocCapstone
 import Bridges.FTPG.AddComm
 import Bridges.FTPG.MulAssoc

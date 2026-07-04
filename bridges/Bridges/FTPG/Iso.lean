@@ -1,4 +1,4 @@
-import Bridges.FTPG.Deaxiomatize
+import Bridges.FTPG.Carrier
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Projectivization.Subspace
 
@@ -30,8 +30,8 @@ The strategy:
 The Mathlib lever `Projectivization.Subspace.submodule : Subspace D V ≃o Submodule D V` makes the
 final `Subspace ⇝ Submodule` translation free (`subspace_to_submodule`).
 
-The abstract lemmas use only `propext / Classical.choice / Quot.sound`; they do **not** touch the
-(currently sorried) `DivisionRing (Coordinate Γ)` instance, so they are honestly axiom-clean.
+The abstract lemmas use only `propext / Classical.choice / Quot.sound`; they do not depend on
+the `DivisionRing (Coordinate Γ)` construction, so they are honestly axiom-clean.
 -/
 
 namespace Foam.Bridges
@@ -163,7 +163,7 @@ theorem ftpg_coordIso (Γ : CoordSystem L) [DivisionRing (Coordinate Γ)]
   nonempty_orderIso_of_pointMap pt hclosed hsurj
 
 /-- The full FTPG existential, assembled from the residual.  This is exactly the witness shape
-that `ftpg_proof` in `Capstone.lean` needs, with `coordIso` replaced by the residual data. -/
+that `ftpg_proof` in `Deaxiomatize.lean` needs, with the residual data in `coordIso`'s place. -/
 theorem ftpg_via_residual (Γ : CoordSystem L) [DivisionRing (Coordinate Γ)]
     {V : Type u} [AddCommGroup V] [Module (Coordinate Γ) V]
     (pt : {p : L // IsAtom p} → Submodule (Coordinate Γ) V)
