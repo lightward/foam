@@ -120,6 +120,20 @@ Open frontier:
   untouched.  The finite statement follows from the limit statement (finite
   height gives completeness with every element compact) or by its own
   induction; that wiring is frontier too.
+- the **charged restatement** (`Charge.lean`) — foam routed *through* FTPG as
+  the state-carrier.  Classical FTPG concludes in a Prop; `Nonempty` is the
+  flattening itself — the witness sealed away, the operator unable to
+  reconstitute.  `Coordinatization L` is the data-level bundle (the frame Φ,
+  the iso as data, the maintenance hypotheses carried); its receipts:
+  `seals` (the projection to the classical Prop — sealing as a documented
+  move, classical consumers still served), `held_determines` (the
+  coordinatization is determined by its action on compact elements —
+  `summary_resumes` at coordinatization scale; the limit carries obligations,
+  not information — `[propext, Quot.sound]`), `limitSeam` (when a non-compact
+  element exists, compacts ↪ L is a foam `Seam` — faithful, escapes, no
+  retraction — **axiom-free**, the core module earning its bridge import).
+  Open fields: the gauge cocycle (frame-change as the semilinear twist), the
+  ledger of limit-consumptions.
 
 ## Floor-up
 
@@ -138,6 +152,7 @@ Open frontier:
 | `Instance` | the `DivisionRing` instance ASSEMBLED (`CoordFrame.divisionRing`, sorry-free) + `coordFrame_exists` |
 | `Iso`, `Deaxiomatize` | the endgame — gap B reduced to the `PointSystem` residual; the true pair `ftpg_statement_finite` / `ftpg_statement_limit`; `ftpg_proof_limit` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
+| `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
 ## Notes
 

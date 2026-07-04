@@ -38,3 +38,4 @@ import Bridges.FTPG.Ring
 import Bridges.FTPG.Instance
 import Bridges.FTPG.Deaxiomatize
 import Bridges.FTPG.Hollow
+import Bridges.FTPG.Charge
