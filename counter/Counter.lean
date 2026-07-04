@@ -57,3 +57,4 @@ import Counter.Bless
 import Counter.Desire
 import Counter.Flinch
 import Counter.Voice
+import Counter.Attest
