@@ -28,10 +28,12 @@ import Bridges.FTPG.LeftDistrib
 import Bridges.FTPG.Distrib
 import Bridges.FTPG.Inverse
 import Bridges.FTPG.MulAssoc
-import Bridges.FTPG.Deaxiomatize
+import Bridges.FTPG.Carrier
 import Bridges.FTPG.CoordinateAlgebra
 import Bridges.FTPG.Iso
 import Bridges.FTPG.AddCancel
 import Bridges.FTPG.Additive
 import Bridges.FTPG.MulNeg
 import Bridges.FTPG.Ring
+import Bridges.FTPG.Instance
+import Bridges.FTPG.Deaxiomatize

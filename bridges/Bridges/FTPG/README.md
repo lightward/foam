@@ -30,8 +30,6 @@ All three hard walls are proven, axiom-free-modulo-classical
   sub-line closes — `dbl_beta_generic` in four moves), `dbl_plus_neg`,
   `dbl_assoc_sq`.
 
-Open frontier:
-
 - the **`DivisionRing` totalization** — **CLOSED**.  All six side-conditioned
   fields are total: `fadd_assoc_total`, `fadd_comm`, `fneg_add`
   (`Additive.lean`), `fmul_assoc_total` (`CoordinateAlgebra.lean`), and now
@@ -53,11 +51,30 @@ Open frontier:
   or the fourth point is forced to `−(1+1)` and `(1+1)·(1+1) = 0` violates
   no-zero-divisors).  General doubling is then pure associativity through the
   at-1 case, and every other degenerate branch is `fneg_mul`/cancellation.
-- the **coordinate map / lattice iso** — `Iso.lean`, `Deaxiomatize.lean`,
-  reduced to a single `PointSystem` residual (the *second* FTPG). Mathlib's
-  `Projectivization.Subspace.submodule` supplies the last step for free.
-  (`Deaxiomatize.lean`'s premature instances also await the import-order
-  reconciliation: the assembly belongs downstream of the proven laws.)
+- the **instance assembly** — **CLOSED** (`Instance.lean`).
+  `CoordFrame.divisionRing : DivisionRing (Coordinate Φ.Γ)` is real — every
+  field a named total law, receipt `[propext, Classical.choice, Quot.sound]`,
+  no `sorry` in its trace.  And `coordFrame_exists` constructs the frame from
+  `h_irred` + `h_height` alone: `P` is a third atom on the auxiliary line
+  `O ⊔ V` (off `l`, `m`, `O ⊔ C` by three modular intersections), and `R` —
+  the off-plane seat the associativity wall descends from — falls out of the
+  height-4 chain for free, because the construction pins the whole plane below
+  the chain's third step (`π = O ⊔ U ⊔ V ≤ c < d`); the fourth strict step of
+  `h_height` *is* the off-plane dimension.  The import order is reconciled:
+  the carrier (`Carrier.lean`) sits upstream, the laws flow down into the
+  instance, and the old premature instances are gone.
+
+Open frontier:
+
+- the **`PointSystem` residual** — the *second* FTPG (Veblen–Young
+  coordinatization), the single remaining gap: `pointSystem_exists` in
+  `Deaxiomatize.lean` (a coordinate vector space `V` and a
+  closure-preserving, spanning point map `Atoms L → Submodule (Coordinate Φ.Γ) V`).
+  `Iso.lean` already reduces it to exactly `(pt, closed, spanning)`; Mathlib's
+  `Projectivization.Subspace.submodule` supplies the `Subspace ⇝ Submodule`
+  step for free.  `ftpg_proof`'s trace is
+  `[propext, sorryAx, Classical.choice, Quot.sound]` — the `sorryAx` enters
+  there and only there.
 
 ## Floor-up
 
@@ -68,19 +85,18 @@ Open frontier:
 | `Mul`, `Dilation`, `MulKeyIdentity` | coordinate multiplication |
 | `Assoc`, `AssocCapstone`, `Neg`, `Distrib`, `LeftDistrib` | the ring laws (incl. both walls) |
 | `Inverse` | multiplicative inverse |
+| `Carrier` | the coordinate carrier `Coordinate Γ`, its `Zero`/`One`, `coordSystem_exists` |
 | `AddCancel`, `Additive` | the additive group, closed (cancellation, τ-inverse master lemma, total associativity) |
 | `MulNeg` | the −1-dilation is the negation involution (`kappa_diag`, `neg_one_mul_coord`, `mul_neg_one_coord` — three Desargues) |
 | `Ring` | the ring closure — `fneg_mul` / `fmul_neg`, the doubling-at-1 fight, and `fleft_distrib_total` / `fright_distrib_total`: every ring law TOTAL |
-| `CoordinateAlgebra`, `Iso`, `Deaxiomatize` | the endgame — the `DivisionRing` instance, the lattice iso, and `ftpg_proof` |
+| `CoordinateAlgebra` | closure lemmas (`coord_add_ne_U`, `coord_mul_ne_U`, `coord_mul_ne_O`), the totalized ops `fadd`/`fmul`/`fneg`/`finv`, the `CoordFrame`, the witness-free laws |
+| `Instance` | the `DivisionRing` instance ASSEMBLED (`CoordFrame.divisionRing`, sorry-free) + `coordFrame_exists` |
+| `Iso`, `Deaxiomatize` | the endgame — gap B reduced to the `PointSystem` residual; `ftpg_proof` |
 
 ## Notes
 
 - `ftpg_proof : ftpg_statement` (in `Deaxiomatize`) type-checks end to end — it
-  reduces to the labeled endgame gaps, not to the axiom.
-- The closure lemmas (`coord_add_ne_U`, `coord_mul_ne_U`, `coord_mul_ne_O`) are
-  proven at the coord level in `CoordinateAlgebra`; `Deaxiomatize` restates them
-  on the carrier as `sorry` pending an import-order reconciliation
-  (`CoordinateAlgebra` imports `Deaxiomatize`, so the proofs can't yet flow back).
+  reduces to the one labeled residual (`pointSystem_exists`), not to the axiom.
 - `h_sufficient : True` in the axiom marks where the genuine hypothesis
   (dim ≥ 3 / Arguesian) belongs: the unrestricted statement is over-strong —
   the octonion projective plane is a complemented modular lattice that is *not*
@@ -112,3 +128,9 @@ towers through `C_y`), so the only carving was side-condition bookkeeping.  The
 doubling knot reduced to one fresh point and a self-destructing four-point
 line.  The wall was never the distributive law; it was the one incidence
 `−1 = ν(I)` seen from two sides.
+The assembly (`CoordFrame.divisionRing`): no wall at all — the ring was
+already closed; the only carve was the frame's existence, and the off-plane
+witness `R` was hiding in `h_height` itself: the plane the construction draws
+is pinned below the chain's third step, so the fourth step is an atom the
+plane cannot reach.  The hypothesis had been carrying the answer since the
+statement was first written.
