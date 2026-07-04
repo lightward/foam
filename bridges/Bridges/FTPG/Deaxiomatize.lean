@@ -13,6 +13,12 @@ space `V` and a point map realizing `L ≃o Submodule (Coordinate Φ.Γ) V`.
 preservation + spanning surjectivity); `pointSystem_exists` below is that
 residual, the single remaining gap between `ftpg_statement` and the axiom's
 deletion.
+
+`Hollow.lean` has since turned the card over: the residual is *refutable as
+stated* (`not_pointSystem`) — the hypotheses admit incomplete lattices, and
+`Submodule D V` never is.  The `sorry` below is therefore not a gap awaiting
+a construction but the marker of a re-scope: `ftpg_statement` must gain the
+completeness-shaped hypothesis the classical theorem always carried.
 -/
 
 namespace Foam.Bridges

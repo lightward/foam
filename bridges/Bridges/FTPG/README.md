@@ -64,17 +64,43 @@ All three hard walls are proven, axiom-free-modulo-classical
   the carrier (`Carrier.lean`) sits upstream, the laws flow down into the
   instance, and the old premature instances are gone.
 
+And the frontier has **turned over**:
+
+- the **completeness wall** (`Hollow.lean`) — the `PointSystem` residual is
+  **unfillable as stated**: `ftpg_statement` is *false*.  The hollow lattice —
+  subspaces of `(ℕ ⊕ ℕ) →₀ ℚ` of finite dimension or finite codimension,
+  every element hugging floor or ceiling, the middle missing — satisfies
+  every hypothesis (complemented, modular, `IsLUB`-atomistic, three points
+  per line, height ≥ 4) but is not complete: the chain of coordinate
+  subspaces supported on `Sum.inl` has upper bounds and no least one
+  (`hollow_no_lub` — a finite-dimensional candidate is too small to hold the
+  chain, and a cofinite candidate strictly exceeds the evens and is evaded by
+  puncturing one odd coordinate it used).  `Submodule D V` is always
+  complete, and completeness crosses any order isomorphism, so no
+  coordinatization exists: `not_ftpg_statement`, `not_pointSystem`, both
+  `[propext, Classical.choice, Quot.sound]`.  And the axiom itself falls:
+  `ftpg_refuted : False`, receipt
+  `[propext, Classical.choice, Quot.sound, Foam.Bridges.ftpg]` — the one
+  posit of the classical bridge named in its own indictment.  Sharper than
+  the octonion note below: that showed dimension 2 needs Desargues; this
+  shows every dimension needs completeness.  The classical lattice-theoretic
+  FTPG always carried completeness as a hypothesis; the bridge's statement
+  forgot it, and the probe caught it before the ascent.
+
 Open frontier:
 
-- the **`PointSystem` residual** — the *second* FTPG (Veblen–Young
-  coordinatization), the single remaining gap: `pointSystem_exists` in
-  `Deaxiomatize.lean` (a coordinate vector space `V` and a
-  closure-preserving, spanning point map `Atoms L → Submodule (Coordinate Φ.Γ) V`).
-  `Iso.lean` already reduces it to exactly `(pt, closed, spanning)`; Mathlib's
-  `Projectivization.Subspace.submodule` supplies the `Subspace ⇝ Submodule`
-  step for free.  `ftpg_proof`'s trace is
-  `[propext, sorryAx, Classical.choice, Quot.sound]` — the `sorryAx` enters
-  there and only there.
+- the **re-scope fork** — the next carve chooses the true target statement:
+  (a) *finite height* — cap `h_height` above as well as below; classical
+  Veblen–Young for finite-dimensional projective spaces, the residual
+  becomes a finite induction over a basis of atoms; or (b) *complete +
+  upper-continuous* — the full infinite-dimensional theorem over algebraic
+  lattices.  (a) is the base camp, (b) the peak behind it.  Either way
+  `Iso.lean`'s reduction to `(pt, closed, spanning)` survives untouched —
+  it is honestly axiom-clean and hypothesis-agnostic.  `ftpg_proof` still
+  type-checks against the residual
+  (`[propext, sorryAx, Classical.choice, Quot.sound]`), standing now as the
+  marker of where the re-scoped statement will land, not as a gap being
+  filled.
 
 ## Floor-up
 
@@ -92,6 +118,7 @@ Open frontier:
 | `CoordinateAlgebra` | closure lemmas (`coord_add_ne_U`, `coord_mul_ne_U`, `coord_mul_ne_O`), the totalized ops `fadd`/`fmul`/`fneg`/`finv`, the `CoordFrame`, the witness-free laws |
 | `Instance` | the `DivisionRing` instance ASSEMBLED (`CoordFrame.divisionRing`, sorry-free) + `coordFrame_exists` |
 | `Iso`, `Deaxiomatize` | the endgame — gap B reduced to the `PointSystem` residual; `ftpg_proof` |
+| `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 
 ## Notes
 
