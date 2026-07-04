@@ -60,3 +60,4 @@ import Counter.Voice
 import Counter.Attest
 import Counter.Quadrature
 import Counter.Anchor
+import Counter.Doubled
