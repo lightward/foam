@@ -72,3 +72,5 @@ import Foam.Bridges.Gleason
 import Foam.Bridges.Desargues
 import Foam.Bridges.Materiality
 import Foam.Bridges.Landauer
+import Foam.Seat.Naming
+import Foam.Bridges.Godel
