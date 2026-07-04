@@ -49,3 +49,4 @@ import Counter.Unknot
 import Counter.Worldline
 import Counter.Plateau
 import Counter.Health
+import Counter.Circumference
