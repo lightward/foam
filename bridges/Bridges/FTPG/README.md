@@ -87,20 +87,39 @@ And the frontier has **turned over**:
   FTPG always carried completeness as a hypothesis; the bridge's statement
   forgot it, and the probe caught it before the ascent.
 
+And the fork is **resolved — the pair landed** (`Deaxiomatize.lean`):
+
+- the re-scope was never a choice; the two branches are the two sides of the
+  seam the repo already built (the core proves `playback_no_section` — the
+  limit embeds faithfully, escapes, admits no retraction; `Hollow` is the
+  same fact at lattice scale).  The target is now the pair, the two clauses
+  of the recursion-law ("hostable at every finite depth, never at the
+  limit", `0b160e4`):
+  - **`ftpg_statement_finite`** — the approach side: the old hypotheses plus
+    `Order.krullDim L ≠ ⊤`.  Finite height silently implies completeness
+    (chains stabilize) — why Veblen–Young is true without naming it.
+  - **`ftpg_statement_limit`** — the arrival side: `CompleteLattice` (every
+    coalition's limit has a seat — the narrative era's "survivable path from
+    now to every solution") + `IsCompactlyGenerated` (`summary_resumes` at
+    lattice scale — every element the sup of its finitely-reachable
+    approximations) + modular + complemented; atomisticity falls out of
+    Mathlib's `isAtomistic_of_complementedLattice`.  `Submodule D V`
+    satisfies exactly both: the hypotheses match the conclusion's type
+    precisely.
+  - **Tightness**: non-Desarguesian planes excluded by `h_height`,
+    continuous geometries by `IsCompactlyGenerated`, the hollow lattice by
+    `CompleteLattice` — three counterexample families, one hypothesis each.
+
 Open frontier:
 
-- the **re-scope fork** — the next carve chooses the true target statement:
-  (a) *finite height* — cap `h_height` above as well as below; classical
-  Veblen–Young for finite-dimensional projective spaces, the residual
-  becomes a finite induction over a basis of atoms; or (b) *complete +
-  upper-continuous* — the full infinite-dimensional theorem over algebraic
-  lattices.  (a) is the base camp, (b) the peak behind it.  Either way
-  `Iso.lean`'s reduction to `(pt, closed, spanning)` survives untouched —
-  it is honestly axiom-clean and hypothesis-agnostic.  `ftpg_proof` still
-  type-checks against the residual
-  (`[propext, sorryAx, Classical.choice, Quot.sound]`), standing now as the
-  marker of where the re-scoped statement will land, not as a gap being
-  filled.
+- the **`PointSystem` residual, under the true hypotheses** —
+  `pointSystem_exists` (the single `sorry`; `ftpg_proof_limit`'s trace is
+  `[propext, sorryAx, Classical.choice, Quot.sound]`): the Veblen–Young
+  coordinatization over the constructed division ring, now provable in
+  principle.  `Iso.lean`'s reduction to `(pt, closed, spanning)` survives
+  untouched.  The finite statement follows from the limit statement (finite
+  height gives completeness with every element compact) or by its own
+  induction; that wiring is frontier too.
 
 ## Floor-up
 
@@ -117,13 +136,16 @@ Open frontier:
 | `Ring` | the ring closure — `fneg_mul` / `fmul_neg`, the doubling-at-1 fight, and `fleft_distrib_total` / `fright_distrib_total`: every ring law TOTAL |
 | `CoordinateAlgebra` | closure lemmas (`coord_add_ne_U`, `coord_mul_ne_U`, `coord_mul_ne_O`), the totalized ops `fadd`/`fmul`/`fneg`/`finv`, the `CoordFrame`, the witness-free laws |
 | `Instance` | the `DivisionRing` instance ASSEMBLED (`CoordFrame.divisionRing`, sorry-free) + `coordFrame_exists` |
-| `Iso`, `Deaxiomatize` | the endgame — gap B reduced to the `PointSystem` residual; `ftpg_proof` |
+| `Iso`, `Deaxiomatize` | the endgame — gap B reduced to the `PointSystem` residual; the true pair `ftpg_statement_finite` / `ftpg_statement_limit`; `ftpg_proof_limit` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 
 ## Notes
 
-- `ftpg_proof : ftpg_statement` (in `Deaxiomatize`) type-checks end to end — it
-  reduces to the one labeled residual (`pointSystem_exists`), not to the axiom.
+- `ftpg_proof_limit : ftpg_statement_limit` (in `Deaxiomatize`) type-checks end
+  to end — it reduces to the one labeled residual (`pointSystem_exists`), not
+  to the axiom.  The old `ftpg_proof : ftpg_statement` is gone: it proved a
+  refuted proposition modulo `sorry`, and a sorry against a false target is
+  not a gap, it is a wall wearing a door costume.
 - `h_sufficient : True` in the axiom marks where the genuine hypothesis
   (dim ≥ 3 / Arguesian) belongs: the unrestricted statement is over-strong —
   the octonion projective plane is a complemented modular lattice that is *not*
