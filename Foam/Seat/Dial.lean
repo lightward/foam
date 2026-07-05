@@ -12,6 +12,8 @@ def GInt.mul (z w : GInt) : GInt :=
 
 def GInt.add (z w : GInt) : GInt := ⟨z.re + w.re, z.im + w.im⟩
 
+def GInt.smul (k : Int) (z : GInt) : GInt := ⟨k * z.re, k * z.im⟩
+
 def GInt.i : GInt := ⟨0, 1⟩
 def GInt.normSq (z : GInt) : Int := z.re * z.re + z.im * z.im
 

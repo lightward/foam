@@ -76,6 +76,36 @@ theorem GInt.align_add (θ a b : GInt) :
   rw [mul_add, mul_add]
   exact Int.add_swap_inner (θ.re * a.re) (θ.re * b.re) (θ.im * a.im) (θ.im * b.im)
 
+theorem GInt.smul_neg (k : Int) (z : GInt) :
+    GInt.smul k (GInt.neg z) = GInt.smul (-k) z := by
+  show GInt.mk (k * -z.re) (k * -z.im) = GInt.mk (-k * z.re) (-k * z.im)
+  rw [mul_neg, mul_neg, neg_mul, neg_mul]
+
+theorem GInt.align_smul (θ z : GInt) (k : Int) :
+    GInt.align θ (GInt.smul k z) = k * GInt.align θ z := by
+  show θ.re * (k * z.re) + θ.im * (k * z.im) = k * (θ.re * z.re + θ.im * z.im)
+  rw [mul_add, ← mul_assoc θ.re k z.re, mulComm θ.re k, mul_assoc k θ.re z.re,
+      ← mul_assoc θ.im k z.im, mulComm θ.im k, mul_assoc k θ.im z.im]
+
+theorem GInt.born_smul (θ z : GInt) (k : Int) :
+    GInt.born θ (GInt.smul k z) = k * k * GInt.born θ z := by
+  show GInt.align θ (GInt.smul k z) * GInt.align θ (GInt.smul k z)
+     = k * k * (GInt.align θ z * GInt.align θ z)
+  rw [GInt.align_smul]
+  exact Int.mul_interchange k k (GInt.align θ z) (GInt.align θ z)
+
+theorem GInt.align_rot_swap (θ z : GInt) :
+    GInt.align θ (GInt.rot z) = -(GInt.align (GInt.rot θ) z) := by
+  show θ.re * -z.im + θ.im * z.re = -(-θ.im * z.re + θ.re * z.im)
+  rw [mul_neg, neg_mul, neg_add, Int.neg_neg,
+      addComm (θ.im * z.re) (-(θ.re * z.im))]
+
+theorem GInt.born_rot_flip (θ z : GInt) :
+    GInt.born θ (GInt.rot z) = GInt.born (GInt.rot θ) z := by
+  show GInt.align θ (GInt.rot z) * GInt.align θ (GInt.rot z)
+     = GInt.align (GInt.rot θ) z * GInt.align (GInt.rot θ) z
+  rw [GInt.align_rot_swap, Int.neg_mul_neg']
+
 theorem GInt.decoherence (θ z : GInt) :
     GInt.align θ z + GInt.align θ (GInt.rot z)
       + GInt.align θ (GInt.rot (GInt.rot z))
@@ -134,6 +164,21 @@ theorem GInt.born_parseval (θ z : GInt) :
 
 /-- info: 'Foam.GInt.rot_sq' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.rot_sq
+
+/-- info: 'Foam.GInt.smul_neg' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.smul_neg
+
+/-- info: 'Foam.GInt.align_smul' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.align_smul
+
+/-- info: 'Foam.GInt.born_smul' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.born_smul
+
+/-- info: 'Foam.GInt.align_rot_swap' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.align_rot_swap
+
+/-- info: 'Foam.GInt.born_rot_flip' does not depend on any axioms -/
+#guard_msgs in #print axioms GInt.born_rot_flip
 
 /-- info: 'Foam.GInt.decoherence' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.decoherence
