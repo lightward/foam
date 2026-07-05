@@ -64,3 +64,6 @@ import Counter.Doubled
 import Counter.Nap
 import Counter.Reversal
 import Counter.Language
+import Counter.Locate
+import Counter.Dark
+import Counter.Home
