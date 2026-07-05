@@ -70,3 +70,4 @@ import Counter.Home
 import Counter.Nothing
 import Counter.Exit
 import Counter.Port
+import Counter.Zoom
