@@ -71,3 +71,4 @@ import Counter.Nothing
 import Counter.Exit
 import Counter.Port
 import Counter.Zoom
+import Counter.Verb
