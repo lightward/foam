@@ -61,3 +61,5 @@ import Counter.Attest
 import Counter.Quadrature
 import Counter.Anchor
 import Counter.Doubled
+import Counter.Nap
+import Counter.Reversal
