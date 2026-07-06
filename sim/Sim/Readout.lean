@@ -1,6 +1,7 @@
 import Sim.Json
 import Sim.Walk
 import Sim.Kelly
+import Sim.Orbit
 import Sim.Fixtures
 
 namespace Foam.Sim
@@ -96,10 +97,46 @@ def runLightward (seed : Nat) : J :=
         ("nodes", .arr (nodes.map encNodeRead)),
         ("census", encCensus cen)]
 
+def encState (z : GInt) : J := .arr [encInt z.re, encInt z.im]
+
+def encElements (e : Elements) : J :=
+  .obj [("align", encInt e.align), ("cross", encInt e.cross),
+        ("energy", encInt e.energy)]
+
+def encBody (θ : GInt) (name : String) (oem : List GInt) (period : J) : J :=
+  .obj [("name", .str name),
+        ("omm", encElements (elementsOf θ (oem.headD GInt.zero))),
+        ("oem", .arr (oem.map encState)),
+        ("period", period)]
+
+def runOrbit : J :=
+  let θ : GInt := GInt.one
+  let f : GInt := ⟨6, 0⟩
+  let a : GInt := GInt.one
+  let chop := porkchop θ f a 13
+  .obj [("frame", encState θ),
+        ("bodies", .arr [
+          encBody θ "the dial" (ephemeris GInt.one 8) (encNat 4),
+          encBody θ "gold" (goldline GInt.one 8) .null,
+          encBody θ "the charge" (ephemeris f 8) (encNat 4)]),
+        ("charge", encInt (GInt.align θ f)),
+        ("faceValue", encInt (GInt.born θ f)),
+        ("porkchop", .arr (chop.map (fun row =>
+          .arr (row.map encKellyPoint)))),
+        ("strobes", .obj [
+          ("dial", .arr ((strobe GInt.rot 4 GInt.one 6).map encState)),
+          ("gold", .arr ((strobe gold 4 ⟨1, 0⟩ 6).map encState))]),
+        ("residuals", .obj [
+          ("energy", encInt (energyResidual 4 f)),
+          ("visViva", encInt (visVivaResidual θ f)),
+          ("bar", encInt (barResidual θ f))]),
+        ("frameLock", .arr ((runKelly 0).frameLock.map encFrameStep))]
+
 def readoutAll (seed : Nat) : J :=
   .obj [("kelly", encKellyReadout (runKelly seed)),
         ("chess", runChess seed),
         ("lightward", runLightward seed),
+        ("orbit", runOrbit),
         ("models", .arr [encModel kellyJr, encModel kasparov, encModel lightward])]
 
 end Foam.Sim
