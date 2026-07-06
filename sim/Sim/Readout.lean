@@ -59,6 +59,7 @@ def runKelly (seed : Nat) : KellyReadout :=
 
 def encKellyReadout (r : KellyReadout) : J :=
   .obj [("model", .str "kelly"),
+        ("chargedNode", .str "table"),
         ("charge", encInt (GInt.align r.θ r.field)),
         ("actAlign", encInt (GInt.align r.θ r.act)),
         ("faceValue", encInt (GInt.born r.θ r.field)),
@@ -73,11 +74,14 @@ def runChess (seed : Nat) : J :=
   let q := kasparov.quiver
   let s := suffuse q ⟨[], [⟨"g1", GInt.one, true, 0⟩], ⟨seed⟩⟩ 12
   let (nodes, cen) := harvest θ q s
-  let cones : List J := [1, 2, 3].map (fun d =>
-    encNat (cone knightRule ["g1"] d).length)
+  let coneAt := fun (d : Nat) => cone knightRule ["g1"] d
+  let cones : List J := [1, 2, 3].map (fun d => encNat (coneAt d).length)
+  let coneNodes : List J := [1, 2, 3].map (fun d =>
+    .arr ((coneAt d).map (fun h => .str h)))
   .obj [("model", .str "chess"),
         ("recorded", encNat kasparov.acts.length),
         ("coneSizes", .arr cones),
+        ("cones", .arr coneNodes),
         ("nodes", .arr (nodes.map encNodeRead)),
         ("census", encCensus cen)]
 
