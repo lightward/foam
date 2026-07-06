@@ -26,6 +26,8 @@ jobs:
         run: cd counter && lake build
       - name: Build seam (the identification layer — core-Lean axioms only)
         run: cd seam && lake build
+      - name: Build sim (the runtime — the proven definitions, run)
+        run: cd sim && lake build && lake exe sim
       - name: No warnings (sorry included — zero tolerance)
         run: |
           warns=0

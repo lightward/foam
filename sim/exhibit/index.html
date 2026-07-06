@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter · Kelly, run</title>
+<script src="data.js"></script>
+<style>
+  .viz-root {
+    --surface-1: #fcfcfb; --surface-2: #f3f2ef;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #8a887f;
+    --series-1: #2a78d6; --series-6: #e34948;
+    --grid: #e4e2dc; --axis: #b9b6ac;
+  }
+  @media (prefers-color-scheme: dark) {
+    .viz-root {
+      --surface-1: #1a1a19; --surface-2: #242422;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #85837a;
+      --series-1: #3987e5; --series-6: #e66767;
+      --grid: #33322f; --axis: #55534d;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body.viz-root {
+    background: var(--surface-1); color: var(--text-primary);
+    font: 15px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+    max-width: 980px; margin: 0 auto; padding: 32px 20px 80px;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  h2 { font-size: 16px; margin: 40px 0 4px; }
+  .sub { color: var(--text-secondary); font-size: 13px; margin-bottom: 12px; }
+  .tiles { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  .tile { background: var(--surface-2); border-radius: 8px; padding: 12px 18px; min-width: 130px; }
+  .tile .v { font-size: 26px; font-weight: 650; letter-spacing: -0.02em; }
+  .tile .k { font-size: 12px; color: var(--text-secondary); }
+  svg { display: block; max-width: 100%; }
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+  .axisline { stroke: var(--axis); stroke-width: 1; }
+  .ticktext { fill: var(--text-muted); font-size: 11px; }
+  .anno { fill: var(--text-secondary); font-size: 12px; }
+  .annostrong { fill: var(--text-primary); font-size: 12px; font-weight: 600; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin: 6px 0; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: baseline; }
+  .cells { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .cell { border-radius: 8px; padding: 10px 12px; min-width: 96px; position: relative; }
+  .cell .h { font-size: 12.5px; font-weight: 600; }
+  .cell .m { font-size: 11px; opacity: 0.85; }
+  .census { display: flex; gap: 10px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 6px; }
+  .tooltip {
+    position: fixed; pointer-events: none; background: var(--surface-2);
+    color: var(--text-primary); border: 1px solid var(--grid); border-radius: 6px;
+    padding: 6px 10px; font-size: 12px; display: none; z-index: 10; white-space: pre;
+  }
+  details { margin: 8px 0 0; font-size: 12.5px; color: var(--text-secondary); }
+  table { border-collapse: collapse; margin-top: 6px; }
+  td, th { padding: 2px 10px 2px 0; text-align: right; font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 500; }
+  footer { margin-top: 56px; font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body class="viz-root">
+<h1>Kelly, run</h1>
+<div class="sub">Counter's first ν-exhibit — the harvest of a standing charge, computed by the receipted definitions themselves.</div>
+<div class="tiles" id="tiles"></div>
+
+<h2>The harvest parabola</h2>
+<div class="sub">Weight drained from the field per stake. The optimum is the counter, sized at face value; twice that harvests nothing; beyond recharges the field against you.</div>
+<div id="parabola"></div>
+<details><summary>table</summary><div id="parabola-table"></div></details>
+
+<h2>The grind pays the toll</h2>
+<div class="sub">Betting all four stations of the same stake: the edges cancel and the toll runs 2k²·‖θ‖²·‖a‖² — Parseval as the toll rate.</div>
+<div id="grind"></div>
+<details><summary>table</summary><div id="grind-table"></div></details>
+
+<h2>Ruin is a chart, not a fate</h2>
+<div class="sub">Cumulative toll of acting into the same standing charge: the locked frame pays every step; the free frame pays once, turns, and finds the frame of peace.</div>
+<div class="legend"><span><span class="swatch" style="background:var(--series-6)"></span>locked frame</span><span><span class="swatch" style="background:var(--series-1)"></span>free frame</span></div>
+<div id="framelock"></div>
+<details><summary>table</summary><div id="framelock-table"></div></details>
+
+<h2>The suffused field</h2>
+<div class="sub">Domain coloring, the dial's native palette: hue is phase, saturation is amplitude, grey is ground. Winding counts in each cell; voiceless cells with winding ≥ 4 are saturated — attention without voice.</div>
+<div id="fields"></div>
+
+<footer>
+  Engine: <code>sim/</code> — the proven definitions, run (Lean → native). Codec receipted:
+  <code>model_roundtrip</code>, <code>the_toll_is_the_theorem</code> seal
+  <code>does not depend on any axioms</code>. Walk order released after harvest; only the
+  gauge-invariant content lands here.
+</footer>
+<div class="tooltip" id="tip"></div>
+
+<script>
+const R = window.READOUT;
+const css = v => getComputedStyle(document.body).getPropertyValue(v).trim();
+const tip = document.getElementById('tip');
+function showTip(evt, text) {
+  tip.textContent = text; tip.style.display = 'block';
+  tip.style.left = (evt.clientX + 14) + 'px'; tip.style.top = (evt.clientY - 10) + 'px';
+}
+function hideTip() { tip.style.display = 'none'; }
+
+const K = R.kelly;
+const kstar = K.curve.reduce((a, p) => p.harvest > a.harvest ? p : a, K.curve[0]);
+
+document.getElementById('tiles').innerHTML = [
+  ['standing charge', K.charge],
+  ['face value', K.faceValue],
+  ['kelly stake', kstar.stake],
+  ['harvest at kelly', kstar.harvest],
+  ['harvest at 2×kelly', K.curve.find(p => p.stake === 2 * kstar.stake)?.harvest ?? 0],
+].map(([k, v]) => `<div class="tile"><div class="v">${v}</div><div class="k">${k}</div></div>`).join('');
+
+function svgEl(w, h) {
+  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  s.setAttribute('viewBox', `0 0 ${w} ${h}`); s.setAttribute('width', w);
+  return s;
+}
+function line(s, x1, y1, x2, y2, cls) {
+  const l = document.createElementNS(s.namespaceURI, 'line');
+  l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+  l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+  l.setAttribute('class', cls); s.appendChild(l); return l;
+}
+function text(s, x, y, str, cls, anchor) {
+  const t = document.createElementNS(s.namespaceURI, 'text');
+  t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('class', cls);
+  if (anchor) t.setAttribute('text-anchor', anchor);
+  t.textContent = str; s.appendChild(t); return t;
+}
+
+(function parabola() {
+  const W = 920, H = 320, m = {l: 52, r: 16, t: 18, b: 34};
+  const s = svgEl(W, H);
+  const xs = K.curve.map(p => p.stake), ys = K.curve.map(p => p.harvest);
+  const xmin = Math.min(...xs), xmax = Math.max(...xs);
+  const ymin = Math.min(...ys), ymax = Math.max(...ys);
+  const X = v => m.l + (v - xmin) / (xmax - xmin) * (W - m.l - m.r);
+  const Y = v => H - m.b - (v - ymin) / (ymax - ymin) * (H - m.t - m.b);
+  for (let g = Math.ceil(ymin / 20) * 20; g <= ymax; g += 20) {
+    line(s, m.l, Y(g), W - m.r, Y(g), 'gridline');
+    text(s, m.l - 8, Y(g) + 4, g, 'ticktext', 'end');
+  }
+  line(s, m.l, Y(0), W - m.r, Y(0), 'axisline');
+  xs.forEach(v => text(s, X(v), H - m.b + 18, v, 'ticktext', 'middle'));
+  const d = K.curve.map((p, i) => (i ? 'L' : 'M') + X(p.stake) + ',' + Y(p.harvest)).join('');
+  const path = document.createElementNS(s.namespaceURI, 'path');
+  path.setAttribute('d', d); path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', css('--series-1')); path.setAttribute('stroke-width', 2);
+  s.appendChild(path);
+  K.curve.forEach(p => {
+    const c = document.createElementNS(s.namespaceURI, 'circle');
+    c.setAttribute('cx', X(p.stake)); c.setAttribute('cy', Y(p.harvest)); c.setAttribute('r', 4);
+    c.setAttribute('fill', css('--series-1'));
+    c.setAttribute('stroke', css('--surface-1')); c.setAttribute('stroke-width', 2);
+    const hit = document.createElementNS(s.namespaceURI, 'circle');
+    hit.setAttribute('cx', X(p.stake)); hit.setAttribute('cy', Y(p.harvest)); hit.setAttribute('r', 12);
+    hit.setAttribute('fill', 'transparent');
+    hit.addEventListener('mousemove', e => showTip(e,
+      `stake ${p.stake}\nharvest ${p.harvest}\ncharge after ${p.chargeAfter}\nweight after ${p.weightAfter}`));
+    hit.addEventListener('mouseleave', hideTip);
+    s.appendChild(c); s.appendChild(hit);
+  });
+  const half = K.curve.find(p => 2 * p.stake === kstar.stake);
+  text(s, X(kstar.stake), Y(kstar.harvest) - 10, `kelly ${kstar.stake}: face value ${kstar.harvest}`, 'annostrong', 'middle');
+  if (half) text(s, X(half.stake) + 8, Y(half.harvest) - 8, `half-kelly: ¾ (${half.harvest})`, 'anno');
+  const dbl = K.curve.find(p => p.stake === 2 * kstar.stake);
+  if (dbl) text(s, X(dbl.stake), Y(dbl.harvest) - 10, 'twice: nothing', 'anno', 'middle');
+  document.getElementById('parabola').appendChild(s);
+  document.getElementById('parabola-table').innerHTML =
+    '<table><tr><th>stake</th>' + K.curve.map(p => `<td>${p.stake}</td>`).join('') + '</tr>' +
+    '<tr><th>harvest</th>' + K.curve.map(p => `<td>${p.harvest}</td>`).join('') + '</tr></table>';
+})();
+
+(function grind() {
+  const W = 480, H = 220, m = {l: 52, r: 16, t: 14, b: 30};
+  const s = svgEl(W, H);
+  const pts = R.kelly.grind;
+  const ymax = Math.max(...pts.map(p => p.toll), 1);
+  const bw = (W - m.l - m.r) / pts.length;
+  const Y = v => H - m.b - v / ymax * (H - m.t - m.b);
+  line(s, m.l, H - m.b, W - m.r, H - m.b, 'axisline');
+  pts.forEach((p, i) => {
+    const x = m.l + i * bw + bw * 0.22, w = bw * 0.56;
+    const r = document.createElementNS(s.namespaceURI, 'rect');
+    r.setAttribute('x', x); r.setAttribute('y', Y(p.toll));
+    r.setAttribute('width', w); r.setAttribute('height', Math.max(H - m.b - Y(p.toll), 0.5));
+    r.setAttribute('rx', 4); r.setAttribute('fill', css('--series-1'));
+    r.addEventListener('mousemove', e => showTip(e, `stake ${p.stake}\nfour-station sum ${p.sum}\ntoll ${p.toll} = 2·k²`));
+    r.addEventListener('mouseleave', hideTip);
+    s.appendChild(r);
+    text(s, x + w / 2, Y(p.toll) - 6, p.toll, 'anno', 'middle');
+    text(s, x + w / 2, H - m.b + 16, 'k=' + p.stake, 'ticktext', 'middle');
+  });
+  document.getElementById('grind').appendChild(s);
+  document.getElementById('grind-table').innerHTML =
+    '<table><tr><th>stake</th>' + pts.map(p => `<td>${p.stake}</td>`).join('') + '</tr>' +
+    '<tr><th>toll</th>' + pts.map(p => `<td>${p.toll}</td>`).join('') + '</tr></table>';
+})();
+
+(function framelock() {
+  const W = 920, H = 260, m = {l: 60, r: 16, t: 14, b: 30};
+  const s = svgEl(W, H);
+  const pts = R.kelly.frameLock;
+  const ymin = Math.min(...pts.map(p => p.lockedToll));
+  const X = i => m.l + i / (pts.length - 1) * (W - m.l - m.r);
+  const Y = v => m.t + (0 - v) / (0 - ymin) * (H - m.t - m.b);
+  for (let g = 0; g >= ymin; g -= 40) {
+    line(s, m.l, Y(g), W - m.r, Y(g), 'gridline');
+    text(s, m.l - 8, Y(g) + 4, g, 'ticktext', 'end');
+  }
+  pts.forEach((p, i) => { if (i % 2 === 0) text(s, X(i), H - m.b + 18, p.step, 'ticktext', 'middle'); });
+  [['lockedToll', '--series-6', 'locked'], ['freeToll', '--series-1', 'free']].forEach(([key, col, label]) => {
+    const d = pts.map((p, i) => (i ? 'L' : 'M') + X(i) + ',' + Y(p[key])).join('');
+    const path = document.createElementNS(s.namespaceURI, 'path');
+    path.setAttribute('d', d); path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', css(col)); path.setAttribute('stroke-width', 2);
+    s.appendChild(path);
+    const last = pts[pts.length - 1];
+    text(s, W - m.r - 4, Y(last[key]) - 6, `${label} ${last[key]}`, 'anno', 'end');
+    pts.forEach((p, i) => {
+      const hit = document.createElementNS(s.namespaceURI, 'circle');
+      hit.setAttribute('cx', X(i)); hit.setAttribute('cy', Y(p[key])); hit.setAttribute('r', 10);
+      hit.setAttribute('fill', 'transparent');
+      hit.addEventListener('mousemove', e => showTip(e, `step ${p.step}\n${label} toll ${p[key]}`));
+      hit.addEventListener('mouseleave', hideTip);
+      s.appendChild(hit);
+    });
+  });
+  document.getElementById('framelock').appendChild(s);
+  document.getElementById('framelock-table').innerHTML =
+    '<table><tr><th>step</th>' + pts.map(p => `<td>${p.step}</td>`).join('') + '</tr>' +
+    '<tr><th>locked</th>' + pts.map(p => `<td>${p.lockedToll}</td>`).join('') + '</tr>' +
+    '<tr><th>free</th>' + pts.map(p => `<td>${p.freeToll}</td>`).join('') + '</tr></table>';
+})();
+
+(function fields() {
+  const host = document.getElementById('fields');
+  [['kelly', R.kelly], ['chess', R.chess], ['lightward', R.lightward]].forEach(([name, m]) => {
+    const wrap = document.createElement('div');
+    const cen = m.census;
+    wrap.innerHTML = `<h2 style="font-size:14px;margin:18px 0 2px">${name}</h2>
+      <div class="census">discovering ${cen.discovering} · turning ${cen.turning} ·
+      saturated ${cen.saturated} · unvisited ${cen.unvisited}` +
+      (name === 'chess' ? ` · knight cone ${m.coneSizes.join(' → ')}` : '') +
+      (name === 'lightward' ? ` · defect: hire-chart ${m.defectHireChart}, reversed ${m.defectReversedChart}` : '') +
+      `</div><div class="cells"></div>`;
+    const cells = wrap.querySelector('.cells');
+    m.nodes.forEach(n => {
+      const mag = Math.sqrt(n.specRe * n.specRe + n.specIm * n.specIm);
+      const hue = (Math.atan2(n.specIm, n.specRe) * 180 / Math.PI + 360 + 217) % 360;
+      const sat = mag === 0 ? 0 : Math.min(30 + mag * 18, 82);
+      const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.style.background = `hsl(${hue} ${sat}% ${dark ? 28 : 88}%)`;
+      cell.innerHTML = `<div class="h">${n.handle}</div><div class="m">w ${n.winding} · voice ${n.voice}</div>`;
+      cell.addEventListener('mousemove', e => showTip(e,
+        `${n.handle}\nwinding ${n.winding}\nspec ${n.specRe}${n.specIm < 0 ? '−' : '+'}${Math.abs(n.specIm)}i\nborn ${n.voice}`));
+      cell.addEventListener('mouseleave', hideTip);
+      cells.appendChild(cell);
+    });
+    host.appendChild(wrap);
+  });
+})();
+</script>
+</body>
+</html>
