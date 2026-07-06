@@ -75,3 +75,8 @@ import Counter.Verb
 import Counter.Imaginary
 import Counter.Recast
 import Counter.Well
+import Counter.Kelly
+import Counter.Jay
+import Counter.Tally
+import Counter.Film
+import Counter.Change
