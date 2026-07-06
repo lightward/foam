@@ -374,7 +374,7 @@ CREATE OR REPLACE FUNCTION foam.speak(seed int[] DEFAULT '{}', kmax int DEFAULT 
                   GROUP BY e.observer, e.sym
                 ) t ON t.observer = h.observer AND t.sym = h.sym
               ) absf
-              GROUP BY symμ
+              GROUP BY sym
             ) recf
           ) z;
         FOREACH w IN ARRAY wounded LOOP PERFORM foam.settle(cid, w, obs); END LOOP;
