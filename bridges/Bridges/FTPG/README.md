@@ -185,16 +185,51 @@ Open frontier:
      ycoord p = ycoord B`), each an iff, with the fiber halves
      (`sup_V_eq_of_xproj_eq`, `sup_U_eq_of_ycoord_eq`,
      `diagseat_ycoord` — the half-roundtrip: the ordinate determines the
-     diagonal seat).  Next pitch, charted and model-verified (72 frames):
-     the **general line equation** — for `λ` not through `V`, with
-     `S := λ ⊓ m` the direction, `B := λ ⊓ (O ⊔ V)` the intercept seat,
-     the slope reads as *the height of the direction over the unit
-     abscissa*, `a := ycoord ((O ⊔ S) ⊓ (I ⊔ V))` (`a := O` when
-     `S = U`), `b := ycoord B`, and for every affine `p ≤ π`:
-     `p ≤ λ ↔ ycoord p = coord_add (coord_mul a (xproj p)) b` — with
-     lines ↔ `(a, b)` a bijection.  The multiplicative half is the
-     dilation machinery, the additive half the τ towers; this is where
-     Desargues-coherence enters and the heaviest pitch of the camp.
+     diagonal seat).  **Fourth pitch CARVED** (`Slope.lean`, sorry-free):
+     the **origin pencil law**, the multiplicative row of the line
+     equation — a line through the origin is the graph of a
+     left-multiplication.  The slope is incidence-defined as the height
+     of the direction point over the unit abscissa,
+     `slope S := ycoord ((O ⊔ S) ⊓ (I ⊔ V))` (uniform: `slope U = O`),
+     and for every affine atom `p` of the plane and direction `S ≠ V`:
+     `le_origin_line_iff : p ≤ O ⊔ S ↔ ycoord p = coord_mul (slope S)
+     (xproj p)`.  **No fresh Desargues was carved**: `p = dilation_ext x M`
+     for `M` the slope seat (line identities), the horizontal through `M`
+     transports to the horizontal through `p` under the dilation
+     (`dilation_preserves_direction` on `(M, diagproj M)` — the one
+     Desargues-strength move, already standing), and the dilation cocycle
+     at `C` (`crux_at_C`, the associativity crux) turns
+     `dilation_ext x (diagseat a)` into `diagseat (coord_mul a x)`; one
+     `perspect_roundtrip` drops home.  Model-verified before carving at
+     every legal frame, `q ∈ {2,3,5,7,11}` — all 336 frames of `PG(2,2)`
+     exhaustively, both degenerate frame families included: the route is
+     frame-uniform, converse by chart-injectivity.  With the vertical and
+     horizontal pencils this seals three of the equation's four rows.
+     **The summit-remainder is the additive row** — the intercept
+     translation, `p ≤ B ⊔ S ↔ ycoord p = coord_add (coord_mul a (xproj
+     p)) b` for lines missing the origin, `b := ycoord (λ ⊓ (O ⊔ V))` —
+     probe-reduced (all pieces model-verified) to ONE new incidence, KEY:
+     for `q' := pg O B q` the vertical translate and
+     `T := (diagproj q ⊔ U) ⊓ (b ⊔ E)`, the seat `diagproj q'` rides the
+     `E_I`-line of `T`.  Everything else is standing machinery:
+     `coord_add_eq_translation` + one `well_defined` waypoint transfer
+     `(C, C_b, d, y)` whose side conditions all collapse (the lone branch
+     `d = C ⟺ y = I` closes syntactically — the diagonal absorbs the
+     genericity, as in the second pitch) + one `cross_parallelism`
+     `(O, B; q, d)` for the diagonal reduction.  KEY's generic Desargues
+     was found by mechanical search over the configuration: triangles
+     `(b, diagseat b, B)` / `(T, diagproj q', pg O B (diagproj q))`
+     perspective from `E`, the `U`-side definitional, the ζ-side one
+     standing `cross_parallelism` `(O, diagproj q; b, B)` — valid except
+     on two degenerate frame families, `C ≤ O ⊔ V` (the diagonal is the
+     y-axis; `diagseat b = B` collapses the triangle) and the
+     anti-diagonal frames `B ≤ b ⊔ E` (the ζ-side falls into the
+     perspective pencil), both realizable — `PG(2,2)` consists entirely
+     of them, though there every configuration lands in the trivial
+     branches.  The two families are the next descent's fork: in-family
+     routes (the in-family single-Desargues search came back empty) or a
+     τ-tower-style on-axis translation coherence, the same shape the
+     additive era resolved once before.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -236,6 +271,7 @@ Open frontier:
 | `Exchange` | camp one of the ascent — the matroid stratum: `covBy_sup_atom`, `atom_exchange` (Steinitz), atoms are compact, `AtomBasis` with finite support |
 | `Chart` | camp two, first pitch — the affine chart of the frame plane: `xproj`/`yproj` (the drops through `V` and `U`), `point` (the chart backwards), `chart_recovers`, `affineChart : Affine Γ ≃ Coordinate Γ × Ordinate Γ` |
 | `Ycoord` | camp two, second pitch — the ordinate transport via the diagonal `O ⊔ C` (the multiplication's axis): `diagproj`/`ycoord` and `diagseat`/`yseat`, roundtrips by `perspect_roundtrip`; `ordinateTransport : Ordinate Γ ≃ Coordinate Γ`, `planeChart : Affine Γ ≃ Coordinate Γ × Coordinate Γ`, calibration `ycoord_C = I`; plus the horizontal pencil law `le_horizontal_iff` (third pitch, with `le_vertical_iff` in `Chart`) |
+| `Slope` | camp two, fourth pitch — the origin pencil law, the multiplicative row of the line equation: `slope S = ycoord ((O ⊔ S) ⊓ (I ⊔ V))`, `le_origin_line_iff : p ≤ O ⊔ S ↔ ycoord p = coord_mul (slope S) (xproj p)`; rides `dilation_preserves_direction` + `crux_at_C` — no fresh Desargues; calibration `slope_U = O`, `diagseat_I = C` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 

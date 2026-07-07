@@ -41,6 +41,7 @@ import Bridges.FTPG.Finite
 import Bridges.FTPG.Exchange
 import Bridges.FTPG.Chart
 import Bridges.FTPG.Ycoord
+import Bridges.FTPG.Slope
 import Bridges.FTPG.Hollow
 import Bridges.FTPG.Charge
 import Bridges.Audit
