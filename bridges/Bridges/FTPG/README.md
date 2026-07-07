@@ -412,12 +412,72 @@ Open frontier:
      by a coordinatewise right multiplication, which is left-linear
      — the next pitch is free to consume any fixed `c`.  Receipts
      `[propext, Classical.choice, Quot.sound]` throughout.
-     Next pitch of camp three: the space's point system — `hvec` at
-     four coordinates (affine atoms to `(x, y, z, 1)`, the infinity
-     plane `σ` seated at the fourth coordinate's zero), space
-     collinearity transported through the chart's projections, then
-     the interval `[⊥, τ]` as the full subspace lattice of
-     `(Dᵐᵒᵖ)⁴`.
+     **Camp three, fourth pitch CARVED** (`Shear.lean`, sorry-free):
+     the **sheared charts** — the two remaining drops a space point
+     admits, through the transport centers `c` (on `U ⊔ R`) and `e`
+     (a third atom on `V ⊔ R`), each one algebraic and **no fresh
+     Desargues, no new incidence**: `shproj w t = (t ⊔ w) ⊓ π`, and
+     * the **x-shear** (`CoordFrame.xproj_shproj_c`): the drop
+       through `c` preserves the ordinate (one modular trace — the
+       plane `t ⊔ R ⊔ U` contains `c`, its `π`-trace is
+       `baseproj t ⊔ U`) and adds the z-gauge to the abscissa,
+       `xproj (shproj c t) = xproj (baseproj t) + zcoord c (zproj t)`.
+       Route: the point rides its height's horizontal ray,
+       `t ≤ zproj t ⊔ d_b` for `d_b := (O ⊔ baseproj t) ⊓ m`
+       (`le_zproj_sup_dir` — the plane `O ⊔ b ⊔ R` sectioned by the
+       horizontal plane; `O ⊔ b ⊔ R ⋖ τ` falls out of `line_covBy_π`
+       plus one covBy transport), so the sheared image rides the
+       gauge point's ray (`shproj_le_gauge_sup_c`); two instances of
+       `le_line_iff` — at the sheared image and at the gauge atom
+       itself — plus the origin-line law at the base solve in the
+       coordinate ring (`affine_solve`: `mul_left_cancel₀` in the
+       standing `DivisionRing`).
+     * the **y-shear** (`CoordFrame.ycoord_shproj_e`): the mirror
+       through `e`, whose gauge is `ncoord e z = (z ⊔ e) ⊓ n` (the
+       perspectivity `ζ → n`, calibrated `ncoord_O`,
+       `ncoord_R = V`) — and it reads with NO ring solve: one
+       `le_line_iff` rewrites directly,
+       `ycoord (shproj e t) = ycoord (baseproj t) + ycoord (ncoord e
+       (zproj t))`.
+     * the degenerate bases dissolve two moves each: base `= O`
+       collapses the shear onto the axis reading itself
+       (`shproj_c_eq_zcoord` / `shproj_e_eq_ncoord`, pure modular);
+       base on the blind axis reads off the vertical/horizontal
+       pencil law; base on the seeing axis shifts by a third atom
+       (the V-shift/U-shift: `spoint` over a shifted base, the
+       transport `(t ⊔ R ⊔ V) ⊓ (zproj t ⊔ m) = t ⊔ V` two modular
+       moves, coordinates carried across by the pencil iffs).
+     * the **gauge bridge** (`CoordFrame.gauge_bridge`): the two
+       gauges reconcile through ONE constant — the slope of
+       `d̂ := (e ⊔ c) ⊓ m`, the trace of the line joining the two
+       centers: `slope d̂ * zcoord c z + ycoord (ncoord e z) = O`.
+       The two shadow-readings of any z-atom are collinear with `d̂`
+       (the plane `z ⊔ (e ⊔ c)`, its `π`-trace `ncoord ⊔ d̂` by pure
+       modular moves), and one `le_line_iff` at the `zcoord` atom
+       closes it.
+     Model-verified before carving (`probe_solid.py`): every
+     statement AND the full forward route of the next pitch (the
+     `hvec4` calibrations, the plane-form families, the line menu,
+     the collinearity summit) over all 40,320 legal frames of
+     `PG(3,2)` exhaustively, sampled frames at `q = 3, 5` — the
+     probe found the route: the frame plane's own line laws, read at
+     the sheared image, ARE the third dimension's algebra; the
+     wall this pitch expected (a second coordinatized plane) never
+     had to be built.  Receipts
+     `[propext, Classical.choice, Quot.sound]`
+     (`shproj_le_base_sup` even `[propext]`).
+     Next pitch of camp three: the space's point system proper
+     (`Solid.lean`) — `hvec4` at four coordinates through the
+     c-gauge (affine atoms to `(x, y, z, 1)`, `σ`-atoms seated at
+     the fourth coordinate's zero via the height-one witness
+     `w_d = (O ⊔ d) ⊓ (zseat c I ⊔ m)`), the plane-form families
+     (R-planes via `baseproj`, c-planes via the x-shear, e-planes
+     via the y-shear + bridge, horizontals via `zproj`), the line
+     menu (σ-lines by the w-cone, z-verticals and horizontals
+     direct, general lines as the meet of two covered planes),
+     `space_collinear_iff` by two independent forms and
+     rank–nullity in `(Dᵐᵒᵖ)⁴`, `spacePt` inj/le-iff/surj; then the
+     interval `[⊥, τ]` as the full subspace lattice of `(Dᵐᵒᵖ)⁴`.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -465,6 +525,7 @@ Open frontier:
 | `Plane` | camp three, first pitch — the plane's point system: `hvec` (homogeneous coordinates in `(Dᵐᵒᵖ)³` — the slope-on-left orientation makes the plane the projective plane of the opposite ring), `plane_line_cases` (the line trichotomy), `slope_inj`/`slope_surj`, `line_form_exists` (every line a form kernel), `plane_collinear_iff` (collinearity IS span membership), `planePt` + inj/le-iff/surj — the atom-level bijection onto the projective points of `(Dᵐᵒᵖ)³`, no fresh Desargues |
 | `Flat` | camp three, second pitch — the plane interval is the subspace lattice: `line_covBy_π` (a plane line is covered by `π`, one modular transport), `plane_flat_cases` (the height classification of `[⊥, π]`), the finrank classification of submodules of `K³` (`flat_rank_zero` … `flat_rank_three`, division-ring-general), `planeFlat` (span of the hvec-image of the atoms below `x`) evaluated at every height, `hvec_U`/`hvec_O` (the frame vectors are the standard basis), `plane_interval_iso : Set.Iic π ≃o Submodule Dᵐᵒᵖ (Fin 3 → Dᵐᵒᵖ)` via `Iso.lean`'s `orderIso_of_mono_reflect_surj` |
 | `Space` | camp three, third pitch — the space chart, the first out-of-plane step: `line_meets_hyperplane` (a line off a hyperplane meets it in an atom — the height-4 projection lemma), the frame 3-space `τ = π ⊔ R` with infinity plane `σ = m ⊔ R` and z-axis `ζ = O ⊔ R` (position facts pure modular law), `baseproj`/`zproj`/`spoint` (two drops, one modular recovery), `spaceChart : SpaceAffine Γ R ≃ Affine Γ × Applicate Γ R`, the z-transport by one standing perspectivity (center a third atom on `U ⊔ R`, calibrations `zcoord_O`/`zcoord_R`), `solidChart` — the affine 3-space is `D³` at atom level, `CoordFrame.solidChart_exists` |
+| `Shear` | camp three, fourth pitch — the sheared charts: `shproj` (the drop through an infinity center onto `π`), `ncoord` (the `e`-gauge, `ζ → n` calibrated at both ends), the x-shear `xproj_shproj_c` (z-gauge added to the abscissa, ordinate preserved), the y-shear `ycoord_shproj_e` (mirror, no ring solve), `le_zproj_sup_dir` (a space point rides its height's horizontal ray), `base_dir_facts`, `affine_solve` (the coordinate-ring solver), `gauge_bridge` (the two gauges reconcile through the slope of `(e ⊔ c) ⊓ m`) — no fresh Desargues |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
