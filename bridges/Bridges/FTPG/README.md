@@ -301,6 +301,41 @@ Open frontier:
      carries exactly a `CoordFrame`'s data (`P` for the associativity
      wall, `R` off-plane, `h_irred`).  Receipts
      `[propext, Classical.choice, Quot.sound]` throughout.
+     **Camp three, first pitch CARVED** (`Plane.lean`, sorry-free):
+     the **plane's point system** — the camp-two summit packaged as
+     homogeneous coordinates.  The orientation fact surfaced first:
+     the line equation has the slope on the LEFT (`y = s * x + b`),
+     so the plane's incidence geometry is the projective plane of
+     the **opposite ring** — `hvec : L → Fin 3 → Dᵐᵒᵖ` (affine
+     `p ↦ (x, y, 1)`, direction `S ↦ (1, slope S, 0)`, vertical
+     `V ↦ (0, 1, 0)`), points as left `Dᵐᵒᵖ`-spans; the classical
+     existential is free to hand over `Dᵐᵒᵖ`, so nothing is lost.
+     **No fresh Desargues, no new incidence** — the pitch is pure
+     packaging: `plane_line_cases` (the trichotomy — every line of
+     the plane is `m`, a vertical `x ⊔ V`, or an intercept-direction
+     pair `B ⊔ S`; standing covBy machinery only), `slope_inj` /
+     `slope_surj` (the direction pencil bijects with `D`, by the
+     slope seat on `I ⊔ V` and the chart extensionality
+     `affine_ext`), `line_form_exists` (every line of the plane is
+     the kernel of a nonzero right-coefficient linear form on the
+     coordinates — the three trichotomy cases riding the Z-entry,
+     `le_vertical_iff`, and `le_line_iff` respectively), and the
+     summit `plane_collinear_iff : r ≤ p ⊔ q ↔ hvec r ∈
+     span {hvec p, hvec q}` — collinearity IS span membership, both
+     directions at once, by the dimension argument (two independent
+     vectors inside the form's 2-dimensional kernel span it;
+     rank–nullity over the division ring).  The atom-level
+     correspondence is a bijection onto the projective points
+     (`hvec_span_inj`, `hvec_span_surj` — chart surjectivity via
+     `exists_affine_with_coords`), packaged as `planePt : L →
+     Submodule Dᵐᵒᵖ (Fin 3 → Dᵐᵒᵖ)` with `planePt_inj`,
+     `le_iff_planePt_le`, `planePt_surj`: the `PointSystem` shape at
+     plane scale.  Receipts `[propext, Classical.choice, Quot.sound]`
+     throughout.  Next pitches of camp three: the interval `[⊥, π]`
+     as the full subspace lattice of `(Dᵐᵒᵖ)³` (elements classified
+     by height, lines to the 2-dimensional kernels), then the first
+     out-of-plane step of the Veblen–Young induction (a fourth frame
+     point off `π`, coordinates extended by projection).
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -345,6 +380,7 @@ Open frontier:
 | `Slope` | camp two, fourth pitch — the origin pencil law, the multiplicative row of the line equation: `slope S = ycoord ((O ⊔ S) ⊓ (I ⊔ V))`, `le_origin_line_iff : p ≤ O ⊔ S ↔ ycoord p = coord_mul (slope S) (xproj p)`; rides `dilation_preserves_direction` + `crux_at_C` — no fresh Desargues; calibration `slope_U = O`, `diagseat_I = C` |
 | `Translate` | camp two, fifth pitch — the translation lemma, the additive row's engine: `ycoord_translate : ycoord (pg O A z) = coord_add (ycoord z) (ycoord A)` for vectors in general position (one `desargues_planar`, center `E` on the axis `m`, both other sides standing `cross_parallelism`s) + `coord_add_eq_seat_drop` (the seat-drop reading of `coord_add`: comm + translation representation + one `well_defined` waypoint transfer) |
 | `Line` | camp two, sixth pitch — the assembly, the full line equation: `le_line_iff : p ≤ B ⊔ S ↔ ycoord p = coord_add (coord_mul (slope S) (xproj p)) (ycoord B)`; the horizontal-offset tower `ycoord_translate_offset` (one `cross_parallelism`, no coherence pass), `anti_transport` (the anti-diagonal pencil is `E`-uniform — one `desargues_planar`, center `O` off the axis `m`), the intercept row `line_intercept` (total algebra), converse by fiber injectivity — every line of the frame plane an algebraic graph |
+| `Plane` | camp three, first pitch — the plane's point system: `hvec` (homogeneous coordinates in `(Dᵐᵒᵖ)³` — the slope-on-left orientation makes the plane the projective plane of the opposite ring), `plane_line_cases` (the line trichotomy), `slope_inj`/`slope_surj`, `line_form_exists` (every line a form kernel), `plane_collinear_iff` (collinearity IS span membership), `planePt` + inj/le-iff/surj — the atom-level bijection onto the projective points of `(Dᵐᵒᵖ)³`, no fresh Desargues |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
