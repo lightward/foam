@@ -288,6 +288,56 @@ theorem CoordSystem.ycoord_C : Γ.ycoord Γ.C = Γ.I := by
     (fun h => Γ.hE_I_ne_U.symm (IsAtom.eq_of_le Γ.hU Γ.hE_I_atom
       (le_inf h Γ.hU_on_m : Γ.U ≤ Γ.E_I)))
 
+theorem CoordSystem.ycoord_eq_of_sup_U {p p' : L} (h : p ⊔ Γ.U = p' ⊔ Γ.U) :
+    Γ.ycoord p = Γ.ycoord p' := by
+  show ((p ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.C) ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U) =
+    ((p' ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.C) ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U)
+  rw [h]
+
+theorem CoordSystem.diagseat_ycoord {p : L} (hp : IsAtom p)
+    (hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp_aff : ¬ p ≤ Γ.m) :
+    Γ.diagseat (Γ.ycoord p) = Γ.diagproj p := by
+  have hdp_atom := Γ.diagproj_is_atom hp hp_π (Γ.ne_U_of_affine hp_aff)
+  have hdp_ne_EI : Γ.diagproj p ≠ Γ.E_I :=
+    fun h => Γ.hE_I_not_OC (h ▸ (inf_le_right : Γ.diagproj p ≤ Γ.O ⊔ Γ.C))
+  exact perspect_roundtrip Γ.hE_I_atom hdp_atom hdp_ne_EI Γ.hO Γ.hC Γ.hOC Γ.hO Γ.hU Γ.hOU
+    Γ.hE_I_not_OC Γ.hE_I_not_l (Γ.OC_sup_E_I_eq_π.trans Γ.l_sup_E_I_eq_π.symm)
+    inf_le_right
+
+theorem CoordSystem.sup_U_diagproj {p : L} (hp : IsAtom p)
+    (hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp_aff : ¬ p ≤ Γ.m) :
+    p ⊔ Γ.U = Γ.diagproj p ⊔ Γ.U := by
+  have hdp_atom := Γ.diagproj_is_atom hp hp_π (Γ.ne_U_of_affine hp_aff)
+  have hU_ne_dp : Γ.U ≠ Γ.diagproj p :=
+    fun h => Γ.hU_not_OC (h ▸ (inf_le_right : Γ.diagproj p ≤ Γ.O ⊔ Γ.C))
+  rw [sup_comm p Γ.U, sup_comm (Γ.diagproj p) Γ.U]
+  exact line_eq_of_atom_le' Γ.hU hp hdp_atom (Γ.ne_U_of_affine hp_aff).symm hU_ne_dp
+    (le_of_le_of_eq (inf_le_left : Γ.diagproj p ≤ p ⊔ Γ.U) (sup_comm p Γ.U))
+
+theorem CoordSystem.sup_U_eq_of_ycoord_eq {p p' : L}
+    (hp : IsAtom p) (hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp_aff : ¬ p ≤ Γ.m)
+    (hp' : IsAtom p') (hp'_π : p' ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp'_aff : ¬ p' ≤ Γ.m)
+    (h : Γ.ycoord p = Γ.ycoord p') : p ⊔ Γ.U = p' ⊔ Γ.U := by
+  have h1 : Γ.diagproj p = Γ.diagproj p' := by
+    rw [← Γ.diagseat_ycoord hp hp_π hp_aff, ← Γ.diagseat_ycoord hp' hp'_π hp'_aff, h]
+  rw [Γ.sup_U_diagproj hp hp_π hp_aff, Γ.sup_U_diagproj hp' hp'_π hp'_aff, h1]
+
+theorem CoordSystem.le_horizontal_iff {p B : L}
+    (hp : IsAtom p) (hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp_aff : ¬ p ≤ Γ.m)
+    (hB : IsAtom B) (hB_π : B ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hB_aff : ¬ B ≤ Γ.m) :
+    p ≤ B ⊔ Γ.U ↔ Γ.ycoord p = Γ.ycoord B := by
+  constructor
+  · intro hle
+    have h_line : Γ.U ⊔ B = Γ.U ⊔ p :=
+      line_eq_of_atom_le' Γ.hU hB hp (Γ.ne_U_of_affine hB_aff).symm
+        (Γ.ne_U_of_affine hp_aff).symm (by rwa [sup_comm] at hle)
+    exact Γ.ycoord_eq_of_sup_U (by
+      rw [sup_comm p Γ.U, sup_comm B Γ.U]
+      exact h_line.symm)
+  · intro h
+    exact le_of_le_of_eq (le_sup_left : p ≤ p ⊔ Γ.U)
+      (Γ.sup_U_eq_of_ycoord_eq hp hp_π hp_aff hB hB_π hB_aff h)
+
 noncomputable def ordinateTransport (Γ : CoordSystem L) :
     Ordinate Γ ≃ Coordinate Γ where
   toFun w :=
@@ -340,3 +390,12 @@ end Foam.Bridges
 
 /-- info: 'Foam.Bridges.planeChart' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.planeChart
+
+/-- info: 'Foam.Bridges.CoordSystem.diagseat_ycoord' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.CoordSystem.diagseat_ycoord
+
+/-- info: 'Foam.Bridges.CoordSystem.sup_U_eq_of_ycoord_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.CoordSystem.sup_U_eq_of_ycoord_eq
+
+/-- info: 'Foam.Bridges.CoordSystem.le_horizontal_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.CoordSystem.le_horizontal_iff

@@ -177,9 +177,24 @@ Open frontier:
      `planeChart : Affine Γ ≃ Coordinate Γ × Coordinate Γ` — the affine
      plane is `D²` at atom level.  Calibration receipts: `ycoord_of_on_l`
      (the axis is the graph of zero) and `ycoord_C : ycoord C = I` (the
-     unit point sits at height one).  Next pitch: the line equation —
-     collinearity ↔ `y = a·x + b` against `coord_add`/`coord_mul`
-     (already confirmed by the `PG(2,q)` probe at exactly this chart).
+     unit point sits at height one).  **Third pitch CARVED** (the pencil
+     laws, in `Chart.lean`/`Ycoord.lean`): the two degenerate rows of the
+     line equation — vertical lines are the `xproj`-fibers
+     (`le_vertical_iff : p ≤ x ⊔ V ↔ xproj p = x`) and horizontal lines
+     are the `ycoord`-fibers (`le_horizontal_iff : p ≤ B ⊔ U ↔
+     ycoord p = ycoord B`), each an iff, with the fiber halves
+     (`sup_V_eq_of_xproj_eq`, `sup_U_eq_of_ycoord_eq`,
+     `diagseat_ycoord` — the half-roundtrip: the ordinate determines the
+     diagonal seat).  Next pitch, charted and model-verified (72 frames):
+     the **general line equation** — for `λ` not through `V`, with
+     `S := λ ⊓ m` the direction, `B := λ ⊓ (O ⊔ V)` the intercept seat,
+     the slope reads as *the height of the direction over the unit
+     abscissa*, `a := ycoord ((O ⊔ S) ⊓ (I ⊔ V))` (`a := O` when
+     `S = U`), `b := ycoord B`, and for every affine `p ≤ π`:
+     `p ≤ λ ↔ ycoord p = coord_add (coord_mul a (xproj p)) b` — with
+     lines ↔ `(a, b)` a bijection.  The multiplicative half is the
+     dilation machinery, the additive half the τ towers; this is where
+     Desargues-coherence enters and the heaviest pitch of the camp.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -220,7 +235,7 @@ Open frontier:
 | `Finite` | the wire — `ftpg_finite_of_limit` (sorry-free): finite Krull dimension yields `WellFoundedGT`, hence a `CompleteLattice` around the original operations and compact generation; `ftpg_proof_finite` |
 | `Exchange` | camp one of the ascent — the matroid stratum: `covBy_sup_atom`, `atom_exchange` (Steinitz), atoms are compact, `AtomBasis` with finite support |
 | `Chart` | camp two, first pitch — the affine chart of the frame plane: `xproj`/`yproj` (the drops through `V` and `U`), `point` (the chart backwards), `chart_recovers`, `affineChart : Affine Γ ≃ Coordinate Γ × Ordinate Γ` |
-| `Ycoord` | camp two, second pitch — the ordinate transport via the diagonal `O ⊔ C` (the multiplication's axis): `diagproj`/`ycoord` and `diagseat`/`yseat`, roundtrips by `perspect_roundtrip`; `ordinateTransport : Ordinate Γ ≃ Coordinate Γ`, `planeChart : Affine Γ ≃ Coordinate Γ × Coordinate Γ`, calibration `ycoord_C = I` |
+| `Ycoord` | camp two, second pitch — the ordinate transport via the diagonal `O ⊔ C` (the multiplication's axis): `diagproj`/`ycoord` and `diagseat`/`yseat`, roundtrips by `perspect_roundtrip`; `ordinateTransport : Ordinate Γ ≃ Coordinate Γ`, `planeChart : Affine Γ ≃ Coordinate Γ × Coordinate Γ`, calibration `ycoord_C = I`; plus the horizontal pencil law `le_horizontal_iff` (third pitch, with `le_vertical_iff` in `Chart`) |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 

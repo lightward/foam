@@ -283,6 +283,40 @@ theorem CoordSystem.yproj_point {x y : L}
   rw [sup_comm (Γ.point x y) Γ.U, ← h_line, sup_comm Γ.U y]
   exact Γ.yproj_of_on_n hy hy_n hy_ne
 
+theorem CoordSystem.xproj_eq_of_sup_V {p p' : L} (h : p ⊔ Γ.V = p' ⊔ Γ.V) :
+    Γ.xproj p = Γ.xproj p' := by
+  show (p ⊔ Γ.V) ⊓ (Γ.O ⊔ Γ.U) = (p' ⊔ Γ.V) ⊓ (Γ.O ⊔ Γ.U)
+  rw [h]
+
+theorem CoordSystem.sup_V_eq_of_xproj_eq {p p' : L}
+    (hp : IsAtom p) (hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp_aff : ¬ p ≤ Γ.m)
+    (hp' : IsAtom p') (hp'_π : p' ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp'_aff : ¬ p' ≤ Γ.m)
+    (h : Γ.xproj p = Γ.xproj p') : p ⊔ Γ.V = p' ⊔ Γ.V := by
+  rw [Γ.sup_V_xproj hp hp_π hp_aff, Γ.sup_V_xproj hp' hp'_π hp'_aff, h]
+
+theorem CoordSystem.le_vertical_iff {p x : L}
+    (hp : IsAtom p) (hp_aff : ¬ p ≤ Γ.m)
+    (hx : IsAtom x) (hx_l : x ≤ Γ.O ⊔ Γ.U) (hx_ne : x ≠ Γ.U) :
+    p ≤ x ⊔ Γ.V ↔ Γ.xproj p = x := by
+  constructor
+  · intro hle
+    have h_line : Γ.V ⊔ x = Γ.V ⊔ p :=
+      line_eq_of_atom_le' Γ.hV hx hp (Γ.ne_V_of_affine (Γ.affine_of_on_l hx hx_l hx_ne)).symm
+        (Γ.ne_V_of_affine hp_aff).symm (le_of_le_of_eq hle (sup_comm x Γ.V))
+    have h_sup : p ⊔ Γ.V = x ⊔ Γ.V := by
+      rw [sup_comm p Γ.V, sup_comm x Γ.V]
+      exact h_line.symm
+    rw [Γ.xproj_eq_of_sup_V h_sup]
+    exact Γ.xproj_of_on_l hx hx_l hx_ne
+  · intro h
+    have hx_le : x ≤ p ⊔ Γ.V := h ▸ (inf_le_left : Γ.xproj p ≤ p ⊔ Γ.V)
+    have h_line : Γ.V ⊔ p = Γ.V ⊔ x :=
+      line_eq_of_atom_le' Γ.hV hp hx (Γ.ne_V_of_affine hp_aff).symm
+        (fun h' => Γ.hV_off (h' ▸ hx_l)) (by rwa [sup_comm] at hx_le)
+    calc p ≤ Γ.V ⊔ p := le_sup_right
+      _ = Γ.V ⊔ x := h_line
+      _ = x ⊔ Γ.V := sup_comm _ _
+
 def Affine (Γ : CoordSystem L) : Type u :=
   {p : L // IsAtom p ∧ p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ∧ ¬ p ≤ Γ.U ⊔ Γ.V}
 
@@ -332,3 +366,9 @@ end Foam.Bridges
 
 /-- info: 'Foam.Bridges.affineChart' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.affineChart
+
+/-- info: 'Foam.Bridges.CoordSystem.sup_V_eq_of_xproj_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.CoordSystem.sup_V_eq_of_xproj_eq
+
+/-- info: 'Foam.Bridges.CoordSystem.le_vertical_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.CoordSystem.le_vertical_iff
