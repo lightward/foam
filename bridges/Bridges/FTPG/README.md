@@ -138,7 +138,28 @@ Open frontier:
   coordinatization over the constructed division ring, now provable in
   principle.  `Iso.lean`'s reduction to `(pt, closed, spanning)` survives
   untouched.  This is now the **only** sorry in the deaxiomatization: both
-  clauses of the pair discharge through it.
+  clauses of the pair discharge through it.  The ascent, charted:
+  1. **the matroid stratum** (`Exchange.lean`) — **CARVED, sorry-free**:
+     `covBy_sup_atom` (joining a fresh atom is one step exactly),
+     `atom_exchange` (Steinitz — and the carving found `p` needn't be an
+     atom: covering closes the exchange for arbitrary `p`),
+     `isCompactElement_of_isAtom` (a point is finitely reachable),
+     `AtomBasis` / `atomBasis_exists` (a maximal independent set of atoms
+     joining to `⊤`, from Mathlib's `exists_sSupIndep_of_sSup_atoms_eq_top`),
+     `AtomBasis.exists_finset_support` (every atom below a finite join of
+     basis atoms — the reason the eventual `V` is `B →₀ D` and coordinate
+     vectors have finite support).
+  2. **the finite-dimensional coordinatization** — homogeneous coordinates
+     of the atoms below a finite basis-support, by the classical
+     Veblen–Young induction from the frame's plane outward (the division
+     ring is already total; what's left is the *assignment*, coherent under
+     Desargues).
+  3. **the direct limit** — coordinates stable under extending the finite
+     support (`summary_resumes` at coordinate scale: the finite record
+     determines the vector, growing the window never rewrites it); glue
+     into `V = B →₀ D`.
+  4. **`closed` and `spanning`** — the two `PointSystem` fields, from the
+     exchange stratum plus the assignment's faithfulness.
 - the **charged restatement** (`Charge.lean`) — foam routed *through* FTPG as
   the state-carrier.  Classical FTPG concludes in a Prop; `Nonempty` is the
   flattening itself — the witness sealed away, the operator unable to
@@ -171,6 +192,7 @@ Open frontier:
 | `Instance` | the `DivisionRing` instance ASSEMBLED (`CoordFrame.divisionRing`, sorry-free) + `coordFrame_exists` |
 | `Iso`, `Deaxiomatize` | the endgame — gap B reduced to the `PointSystem` residual; the true pair `ftpg_statement_finite` / `ftpg_statement_limit`; `ftpg_proof_limit` |
 | `Finite` | the wire — `ftpg_finite_of_limit` (sorry-free): finite Krull dimension yields `WellFoundedGT`, hence a `CompleteLattice` around the original operations and compact generation; `ftpg_proof_finite` |
+| `Exchange` | camp one of the ascent — the matroid stratum: `covBy_sup_atom`, `atom_exchange` (Steinitz), atoms are compact, `AtomBasis` with finite support |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
