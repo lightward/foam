@@ -153,7 +153,19 @@ Open frontier:
      of the atoms below a finite basis-support, by the classical
      Veblen–Young induction from the frame's plane outward (the division
      ring is already total; what's left is the *assignment*, coherent under
-     Desargues).
+     Desargues).  **First pitch CARVED** (`Chart.lean`, sorry-free): the
+     affine chart of the frame's plane — an affine atom (below `π`, off
+     `m`) drops through the two infinite points onto the two axes
+     (`xproj = (p ⊔ V) ⊓ l`, `yproj = (p ⊔ U) ⊓ (O ⊔ V)`), recovery is a
+     single `modular_intersection` after two line identities
+     (`chart_recovers`), the chart reads backwards totally
+     (`point_is_atom` / `point_affine` / `xproj_point` / `yproj_point`),
+     and the plane splits losslessly:
+     `affineChart : Affine Γ ≃ Coordinate Γ × Ordinate Γ` — the atom-level
+     coordinate pair.  Next pitches: the ordinate transport
+     (`Ordinate Γ ≃ Coordinate Γ`, seating the second axis on the
+     division ring) and the line equation (collinearity ↔ `y = a·x + b`
+     against the algebra's `fadd`/`fmul`).
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -193,6 +205,7 @@ Open frontier:
 | `Iso`, `Deaxiomatize` | the endgame — gap B reduced to the `PointSystem` residual; the true pair `ftpg_statement_finite` / `ftpg_statement_limit`; `ftpg_proof_limit` |
 | `Finite` | the wire — `ftpg_finite_of_limit` (sorry-free): finite Krull dimension yields `WellFoundedGT`, hence a `CompleteLattice` around the original operations and compact generation; `ftpg_proof_finite` |
 | `Exchange` | camp one of the ascent — the matroid stratum: `covBy_sup_atom`, `atom_exchange` (Steinitz), atoms are compact, `AtomBasis` with finite support |
+| `Chart` | camp two, first pitch — the affine chart of the frame plane: `xproj`/`yproj` (the drops through `V` and `U`), `point` (the chart backwards), `chart_recovers`, `affineChart : Affine Γ ≃ Coordinate Γ × Ordinate Γ` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
