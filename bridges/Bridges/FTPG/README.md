@@ -256,6 +256,51 @@ Open frontier:
      the off-`l` instances.  All three probe-sealed over the same
      fields (route-menu totality: the only holdouts at every `q` are
      the intercept points, and they fall to algebra).
+     **Sixth pitch CARVED** (`Line.lean`, sorry-free): the **assembly**,
+     the full line equation — for any direction `S` on `m` (`S ≠ V`),
+     any intercept seat `B` on the y-axis `n` (`B ≠ V`), and any affine
+     atom `p` of the frame plane:
+     `le_line_iff : p ≤ B ⊔ S ↔ ycoord p = coord_add (coord_mul (slope
+     S) (xproj p)) (ycoord B)` — uniform through the horizontal
+     (`slope_U`, reduces to `le_horizontal_iff`) and the origin
+     (`ycoord O = O`, reduces to `le_origin_line_iff`), so with
+     `le_vertical_iff` **every line of the frame plane is now an
+     algebraic graph**: the camp-two summit.  The carving *sharpened*
+     the charted route (every branch fact model-verified in place,
+     `probe_final.py`, before carving — all 336 frames of `PG(2,2)`,
+     family spreads at `q = 3,4,5,7`, `GF(4)` for char-2-nonprime):
+     the tower (`ycoord_translate_offset`) needs **no coherence pass**
+     — ONE standing `cross_parallelism (O, z; A, X)` makes the target
+     and the shifted translate co-horizontal and `ycoord_eq_of_sup_U`
+     reads the ordinate across, so the fork note's second cp and
+     `reverse_completion` survive only inside an injectivity
+     bookkeeping; and the offsets are *named by the configuration
+     itself* — no `h_irred` point-counting, no `q ≥ 3` caveat: in the
+     `B ≤ O ⊔ C` family (the diagonal is the y-axis, `E = V`) the
+     `q`-vector shifts by `x_h := (B ⊔ S) ⊓ l`, the line's own
+     intercept, every discharge collapsing onto the fiber contradiction
+     `x_h ≠ xproj p`; in the `E ≤ ycoord B ⊔ B` family with `q ≤ O ⊔ C`
+     the `B`-vector shifts by `x_h := xproj p`, the point's own
+     abscissa, every discharge closing against `E ≤ ycoord B ⊔ B`
+     itself.  The residual crossing (`E ≤ ycoord B ⊔ B` and `E ≤
+     ycoord q ⊔ q` with `q` off the diagonal) is VACUOUS, by the
+     pitch's one fresh `desargues_planar` (`anti_transport`): **the
+     anti-diagonal pencil is `E`-uniform** — center `O` *off* the
+     axis `m` (the mirror of the fifth pitch's center-on-axis), the
+     triangles `(b, diagseat b, yseat b)` / `(t, diagseat t, yseat t)`
+     riding the three `O`-rays `l`, `O ⊔ C`, `n` definitionally, the
+     side-pairs meeting at `E_I` and `U` definitionally — transported
+     to `t = ycoord q` it forces `q` onto the y-axis, `xproj p = O`,
+     contradiction.  The intercept row (`line_intercept`) is standing
+     algebra as charted: `p' := a⁻¹ · (−b)` via `coord_mul_assoc` (at
+     the frame's general-position witness `P`) + `coord_mul_right_inv`
+     + `coord_add_right_neg` (the 2-torsion branch by
+     `coord_add_left_neg`), the proven off-`l` rows forcing the
+     crossing onto `l`, the fibers collapsing; the converse is chart
+     injectivity on the fiber `λ ⊓ (xproj p ⊔ V)`.  The interface
+     carries exactly a `CoordFrame`'s data (`P` for the associativity
+     wall, `R` off-plane, `h_irred`).  Receipts
+     `[propext, Classical.choice, Quot.sound]` throughout.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -299,6 +344,7 @@ Open frontier:
 | `Ycoord` | camp two, second pitch — the ordinate transport via the diagonal `O ⊔ C` (the multiplication's axis): `diagproj`/`ycoord` and `diagseat`/`yseat`, roundtrips by `perspect_roundtrip`; `ordinateTransport : Ordinate Γ ≃ Coordinate Γ`, `planeChart : Affine Γ ≃ Coordinate Γ × Coordinate Γ`, calibration `ycoord_C = I`; plus the horizontal pencil law `le_horizontal_iff` (third pitch, with `le_vertical_iff` in `Chart`) |
 | `Slope` | camp two, fourth pitch — the origin pencil law, the multiplicative row of the line equation: `slope S = ycoord ((O ⊔ S) ⊓ (I ⊔ V))`, `le_origin_line_iff : p ≤ O ⊔ S ↔ ycoord p = coord_mul (slope S) (xproj p)`; rides `dilation_preserves_direction` + `crux_at_C` — no fresh Desargues; calibration `slope_U = O`, `diagseat_I = C` |
 | `Translate` | camp two, fifth pitch — the translation lemma, the additive row's engine: `ycoord_translate : ycoord (pg O A z) = coord_add (ycoord z) (ycoord A)` for vectors in general position (one `desargues_planar`, center `E` on the axis `m`, both other sides standing `cross_parallelism`s) + `coord_add_eq_seat_drop` (the seat-drop reading of `coord_add`: comm + translation representation + one `well_defined` waypoint transfer) |
+| `Line` | camp two, sixth pitch — the assembly, the full line equation: `le_line_iff : p ≤ B ⊔ S ↔ ycoord p = coord_add (coord_mul (slope S) (xproj p)) (ycoord B)`; the horizontal-offset tower `ycoord_translate_offset` (one `cross_parallelism`, no coherence pass), `anti_transport` (the anti-diagonal pencil is `E`-uniform — one `desargues_planar`, center `O` off the axis `m`), the intercept row `line_intercept` (total algebra), converse by fiber injectivity — every line of the frame plane an algebraic graph |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
