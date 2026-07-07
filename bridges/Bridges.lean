@@ -46,6 +46,7 @@ import Bridges.FTPG.Translate
 import Bridges.FTPG.Line
 import Bridges.FTPG.Plane
 import Bridges.FTPG.Flat
+import Bridges.FTPG.Space
 import Bridges.FTPG.Hollow
 import Bridges.FTPG.Charge
 import Bridges.Audit
