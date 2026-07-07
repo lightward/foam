@@ -162,10 +162,24 @@ Open frontier:
      (`point_is_atom` / `point_affine` / `xproj_point` / `yproj_point`),
      and the plane splits losslessly:
      `affineChart : Affine Γ ≃ Coordinate Γ × Ordinate Γ` — the atom-level
-     coordinate pair.  Next pitches: the ordinate transport
-     (`Ordinate Γ ≃ Coordinate Γ`, seating the second axis on the
-     division ring) and the line equation (collinearity ↔ `y = a·x + b`
-     against the algebra's `fadd`/`fmul`).
+     coordinate pair.  **Second pitch CARVED** (`Ycoord.lean`, sorry-free):
+     the ordinate transport — and the with-the-grain route (model-verified
+     over `PG(2,q)`, 72 frames, before carving) is not the naive `O ⊔ V`
+     drop but the **diagonal route**, the same two moves `coord_mul`
+     already makes: `diagproj = (p ⊔ U) ⊓ (O ⊔ C)` (horizontal onto the
+     multiplication's own auxiliary axis), then the `E_I`-transport down
+     to `l` (`ycoord`), with `diagseat`/`yseat` the reverse.  Both
+     centers' side conditions were already sealed in `Mul.lean`
+     (`hE_I_not_l`, `hE_I_not_OC`), so the transport is degeneracy-free
+     for every legal frame — no `h_irred`, no case on `C`'s position;
+     `perspect_roundtrip` closes both composites.
+     `ordinateTransport : Ordinate Γ ≃ Coordinate Γ`,
+     `planeChart : Affine Γ ≃ Coordinate Γ × Coordinate Γ` — the affine
+     plane is `D²` at atom level.  Calibration receipts: `ycoord_of_on_l`
+     (the axis is the graph of zero) and `ycoord_C : ycoord C = I` (the
+     unit point sits at height one).  Next pitch: the line equation —
+     collinearity ↔ `y = a·x + b` against `coord_add`/`coord_mul`
+     (already confirmed by the `PG(2,q)` probe at exactly this chart).
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -206,6 +220,7 @@ Open frontier:
 | `Finite` | the wire — `ftpg_finite_of_limit` (sorry-free): finite Krull dimension yields `WellFoundedGT`, hence a `CompleteLattice` around the original operations and compact generation; `ftpg_proof_finite` |
 | `Exchange` | camp one of the ascent — the matroid stratum: `covBy_sup_atom`, `atom_exchange` (Steinitz), atoms are compact, `AtomBasis` with finite support |
 | `Chart` | camp two, first pitch — the affine chart of the frame plane: `xproj`/`yproj` (the drops through `V` and `U`), `point` (the chart backwards), `chart_recovers`, `affineChart : Affine Γ ≃ Coordinate Γ × Ordinate Γ` |
+| `Ycoord` | camp two, second pitch — the ordinate transport via the diagonal `O ⊔ C` (the multiplication's axis): `diagproj`/`ycoord` and `diagseat`/`yseat`, roundtrips by `perspect_roundtrip`; `ordinateTransport : Ordinate Γ ≃ Coordinate Γ`, `planeChart : Affine Γ ≃ Coordinate Γ × Coordinate Γ`, calibration `ycoord_C = I` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
