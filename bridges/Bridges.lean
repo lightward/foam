@@ -49,6 +49,7 @@ import Bridges.FTPG.Flat
 import Bridges.FTPG.Space
 import Bridges.FTPG.Shear
 import Bridges.FTPG.Solid
+import Bridges.FTPG.SpaceFlat
 import Bridges.FTPG.Hollow
 import Bridges.FTPG.Charge
 import Bridges.Audit

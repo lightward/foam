@@ -519,12 +519,70 @@ Open frontier:
      sweep that sealed the fourth pitch: all 40,320 legal frames
      of `PG(3,2)` exhaustively, sampled `q = 3, 5`).  Receipts
      `[propext, Classical.choice, Quot.sound]` throughout.
-     Next pitch of camp three: the interval `[⊥, τ]` as the full
-     subspace lattice of `(Dᵐᵒᵖ)⁴` — the `Flat`-sibling:
-     `space_flat_cases` by heights 0–4, the finrank classification
-     of submodules of `K⁴`, `spaceFlat := span ∘ hvec4`-image
-     evaluated at every height, the order isomorphism by
-     `orderIso_of_mono_reflect_surj`; then the direct limit.
+     **Camp three, sixth pitch CARVED** (`SpaceFlat.lean`,
+     sorry-free): the **space interval is the subspace lattice** —
+     the atom-level bijection extended to every element of
+     `[⊥, τ]`: `space_interval_iso : Nonempty (Set.Iic τ ≃o
+     Submodule Dᵐᵒᵖ (Fin 4 → Dᵐᵒᵖ))`, heights 0/1/2/3/4 landing on
+     finranks 0/1/2/3/4.  **No fresh Desargues, no new incidence**
+     — the `Flat.lean` argument one dimension up, on the fifth
+     pitch's exports alone:
+     * the lattice side: `three_atoms_ne_τ` — three atoms cannot
+       span the 3-space: if they did, their line and `π` would both
+       be covered by `τ`, `planes_meet_covBy` would seat an atom
+       covered by `π`, and joining it with a frame atom sits
+       strictly between (`line_covBy_π` refutes the covering);
+       `flat_trace_pair` / `plane_trace_line` — a 3-atom span off
+       `π` traces TWO distinct atoms on `π` (two lines through an
+       off-`π` atom meet `π` by `line_meets_hyperplane`, and a
+       common trace would collapse the three atoms onto one line);
+       `plane_covBy_τ` — the trace is therefore a line of `π`,
+       covered by `π` (`line_covBy_π`), and ONE modular transport
+       (`covBy_sup_of_inf_covBy_left`, the same lever as
+       `line_covBy_π` itself) carries the covering up the sup;
+       `space_flat_cases` — every `x ≤ τ` is `⊥`, an atom, a
+       two-atom join, a three-atom join, or `τ`, by pure
+       `IsLUB`-atomisticity.
+     * the coordinate side: `space_coplanar_iff` — an atom lies
+       below a 3-atom span iff its vector lies in the span of the
+       three; forward by the trace of `t ⊔ r` on `p ⊔ q`
+       (`lines_meet_if_coplanar` inside the plane) and
+       `space_collinear_iff` twice; reverse by splitting the
+       combination at the first vector (`mem_span_insert`),
+       `hvec4_span_surj` seating the tail as an atom's vector, and
+       `space_collinear_iff` twice more — the fifth pitch's summit
+       consumed as a lever.
+     * the linear side: the finrank classification of submodules
+       of `K⁴` (`flat4_rank_zero` … `flat4_rank_four`, rank 3 the
+       new case — `Module.finBasisOfFinrankEq` with general
+       position recovered through `span_pair_finrank_le`),
+       `flat4_std_basis_span`.
+     * the calibration that completes the frame: `hvec4_R =
+       (0,0,1,0)` — the fourth frame point at the third standard
+       basis slot (its height-one witness rides `ζ`, so its
+       baseproj is `O`: one line identity plus `ζ_inf_π`); with
+       `hvec4_π` + `hvec_U`/`hvec_O` and `hvec4_V`, **the frame is
+       again its own coordinate system**.
+     * `spaceFlat := span (hvec4 '' {atoms ≤ x})`, evaluated at
+       every height, order-reflecting by the fifth pitch's levers
+       plus the coplanarity iff, surjective by the finrank
+       classification riding `hvec4_span_surj`, packaged by
+       `Iso.lean`'s `orderIso_of_mono_reflect_surj` — the gap-B
+       reduction lemma a third time, the gauge center `c` supplied
+       from `h_irred` inside.
+     Model-verified before carving (`probe_spaceflat.py` over the
+     fifth pitch's frame machinery: every route step — the trace
+     pair, the collision-collapse, the coplanarity iff both ways,
+     the frame at `τ` — over ALL 40,320 legal frames of `PG(3,2)`
+     exhaustively plus sampled frames at `q = 3, 5`; the `K⁴`
+     linear side probed in Lean over an abstract noncommutative
+     division ring before carving, `probe_flat4.lean`).  Receipts
+     `[propext, Classical.choice, Quot.sound]` throughout.
+     Next: the rank ladder — the space step rerun as the generic
+     induction step of the Veblen–Young coordinatization (a frame
+     flat of height `n` plus one off-flat witness; the fourth
+     pitch's lesson stands: the flat's own line laws are the next
+     dimension's algebra) — feeding the direct limit.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -574,6 +632,7 @@ Open frontier:
 | `Space` | camp three, third pitch — the space chart, the first out-of-plane step: `line_meets_hyperplane` (a line off a hyperplane meets it in an atom — the height-4 projection lemma), the frame 3-space `τ = π ⊔ R` with infinity plane `σ = m ⊔ R` and z-axis `ζ = O ⊔ R` (position facts pure modular law), `baseproj`/`zproj`/`spoint` (two drops, one modular recovery), `spaceChart : SpaceAffine Γ R ≃ Affine Γ × Applicate Γ R`, the z-transport by one standing perspectivity (center a third atom on `U ⊔ R`, calibrations `zcoord_O`/`zcoord_R`), `solidChart` — the affine 3-space is `D³` at atom level, `CoordFrame.solidChart_exists` |
 | `Shear` | camp three, fourth pitch — the sheared charts: `shproj` (the drop through an infinity center onto `π`), `ncoord` (the `e`-gauge, `ζ → n` calibrated at both ends), the x-shear `xproj_shproj_c` (z-gauge added to the abscissa, ordinate preserved), the y-shear `ycoord_shproj_e` (mirror, no ring solve), `le_zproj_sup_dir` (a space point rides its height's horizontal ray), `base_dir_facts`, `affine_solve` (the coordinate-ring solver), `gauge_bridge` (the two gauges reconcile through the slope of `(e ⊔ c) ⊓ m`) — no fresh Desargues |
 | `Solid` | camp three, fifth pitch — the space's point system: `hvec4` (homogeneous coordinates in `(Dᵐᵒᵖ)⁴` through the c-gauge, `σ`-directions via the height-one witness `wpt`), `planeInj` (the plane embeds at the fourth coordinate's zero), the plane-form families (`Rplane_form`/`cplane_form`/`eplane_form`/`hplane_form` — every covered plane a form kernel, the σ-parts riding `ray_trace_form` + `dir_shproj`), the line menu (`collinear_π`/`collinear_infinity`/`collinear_vertical`/`collinear_general_center`/`collinear_horizontal` assembled by `two_form_collinear` and `collinear_of_line_eq`), the summit `space_collinear_iff`, `spacePt` + inj/le-iff/surj — no fresh Desargues |
+| `SpaceFlat` | camp three, sixth pitch — the space interval is the subspace lattice: `three_atoms_ne_τ` (no three atoms span the 3-space — `planes_meet_covBy` + `line_covBy_π` refute the covering), `flat_trace_pair`/`plane_trace_line` (the `π`-trace of a 3-atom span holds two distinct atoms), `plane_covBy_τ` (the trace is a line; one modular transport lifts the covering), `space_flat_cases` (the height classification of `[⊥, τ]`), `hvec4_R` (the frame completes the standard basis of `(Dᵐᵒᵖ)⁴`), `space_coplanar_iff` (coplanarity IS span membership — the fifth pitch's summit consumed, no new incidence), the finrank classification of `K⁴` (`flat4_rank_zero` … `flat4_rank_four`), `spaceFlat` evaluated at every height, `space_interval_iso : Set.Iic τ ≃o Submodule Dᵐᵒᵖ (Fin 4 → Dᵐᵒᵖ)` via `orderIso_of_mono_reflect_surj` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
