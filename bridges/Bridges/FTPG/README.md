@@ -371,9 +371,53 @@ Open frontier:
      the gap-B reduction lemma doing at plane scale exactly what it
      will do at the summit.  Receipts
      `[propext, Classical.choice, Quot.sound]` throughout.
-     Next pitch of camp three: the first out-of-plane step of the
-     Veblen–Young induction (a fourth frame point off `π`,
-     coordinates extended by projection).
+     **Camp three, third pitch CARVED** (`Space.lean`, sorry-free):
+     the **space chart** — the first out-of-plane step of the
+     Veblen–Young induction.  The fourth frame point is the frame's
+     own off-plane witness `R`: it spans the 3-space `τ = π ⊔ R`,
+     whose plane at infinity is `σ = m ⊔ R` and whose third axis is
+     `ζ = O ⊔ R` — and every position fact is pure modular law
+     (`ζ ⊓ π = O`, `ζ ⊓ σ = R`, `σ ⊓ π = m`, with `π ⋖ τ` and
+     `σ ⋖ τ` one covBy transport each).  A space-affine atom (below
+     `τ`, off `σ`) projects twice — `baseproj p = (p ⊔ R) ⊓ π`
+     through `R` onto the coordinatized plane,
+     `zproj p = (p ⊔ m) ⊓ ζ` along the horizontal directions onto
+     the z-axis — and ONE modular move recovers it
+     (`space_recovers`), with `spoint q z = (q ⊔ R) ⊓ (z ⊔ m)` the
+     chart read backwards:
+     `spaceChart : SpaceAffine Γ R ≃ Affine Γ × Applicate Γ R`.
+     The z-axis then transports onto the coordinate line by ONE
+     standing perspectivity — center any third atom `c` on `U ⊔ R`
+     (`h_irred` supplies it; the coplanarity `ζ ⊔ c = l ⊔ c` is two
+     line identities), roundtrips by `perspect_roundtrip`,
+     calibrated at both ends (`zcoord_O : zcoord c O = O`,
+     `zcoord_R : zcoord c R = U`) — so
+     `applicateTransport : Applicate Γ R ≃ Coordinate Γ` and
+     `solidChart : SpaceAffine Γ R ≃ (Coordinate Γ × Coordinate Γ)
+     × Coordinate Γ`: **the affine 3-space is `D³` at atom level**,
+     packaged for the frame by `CoordFrame.solidChart_exists`.
+     **No fresh Desargues, no new incidence** — one general lemma
+     (`line_meets_hyperplane`: a line off a hyperplane meets it in
+     an atom, the height-4 sibling of `project_is_atom`) plus covBy
+     bookkeeping; the plane points sit at height zero of the new
+     axis (`zproj_of_affine_π : zproj q = O` for plane-affine `q`,
+     `baseproj_of_le_π`), so the plane chart embeds without
+     recalibration.  Model-verified before carving
+     (`probe_space.py`): every chart fact, every backwards pair,
+     every transport center over ALL 40,320 legal frames of
+     `PG(3,2)` exhaustively plus sampled frames at `q = 3, 5` — and
+     the probe sealed the gauge question forward: the homogeneous
+     extension `(x, y, z, 1)` with the z read through ANY center
+     `c` satisfies collinearity-as-span, because two centers differ
+     by a coordinatewise right multiplication, which is left-linear
+     — the next pitch is free to consume any fixed `c`.  Receipts
+     `[propext, Classical.choice, Quot.sound]` throughout.
+     Next pitch of camp three: the space's point system — `hvec` at
+     four coordinates (affine atoms to `(x, y, z, 1)`, the infinity
+     plane `σ` seated at the fourth coordinate's zero), space
+     collinearity transported through the chart's projections, then
+     the interval `[⊥, τ]` as the full subspace lattice of
+     `(Dᵐᵒᵖ)⁴`.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -420,6 +464,7 @@ Open frontier:
 | `Line` | camp two, sixth pitch — the assembly, the full line equation: `le_line_iff : p ≤ B ⊔ S ↔ ycoord p = coord_add (coord_mul (slope S) (xproj p)) (ycoord B)`; the horizontal-offset tower `ycoord_translate_offset` (one `cross_parallelism`, no coherence pass), `anti_transport` (the anti-diagonal pencil is `E`-uniform — one `desargues_planar`, center `O` off the axis `m`), the intercept row `line_intercept` (total algebra), converse by fiber injectivity — every line of the frame plane an algebraic graph |
 | `Plane` | camp three, first pitch — the plane's point system: `hvec` (homogeneous coordinates in `(Dᵐᵒᵖ)³` — the slope-on-left orientation makes the plane the projective plane of the opposite ring), `plane_line_cases` (the line trichotomy), `slope_inj`/`slope_surj`, `line_form_exists` (every line a form kernel), `plane_collinear_iff` (collinearity IS span membership), `planePt` + inj/le-iff/surj — the atom-level bijection onto the projective points of `(Dᵐᵒᵖ)³`, no fresh Desargues |
 | `Flat` | camp three, second pitch — the plane interval is the subspace lattice: `line_covBy_π` (a plane line is covered by `π`, one modular transport), `plane_flat_cases` (the height classification of `[⊥, π]`), the finrank classification of submodules of `K³` (`flat_rank_zero` … `flat_rank_three`, division-ring-general), `planeFlat` (span of the hvec-image of the atoms below `x`) evaluated at every height, `hvec_U`/`hvec_O` (the frame vectors are the standard basis), `plane_interval_iso : Set.Iic π ≃o Submodule Dᵐᵒᵖ (Fin 3 → Dᵐᵒᵖ)` via `Iso.lean`'s `orderIso_of_mono_reflect_surj` |
+| `Space` | camp three, third pitch — the space chart, the first out-of-plane step: `line_meets_hyperplane` (a line off a hyperplane meets it in an atom — the height-4 projection lemma), the frame 3-space `τ = π ⊔ R` with infinity plane `σ = m ⊔ R` and z-axis `ζ = O ⊔ R` (position facts pure modular law), `baseproj`/`zproj`/`spoint` (two drops, one modular recovery), `spaceChart : SpaceAffine Γ R ≃ Affine Γ × Applicate Γ R`, the z-transport by one standing perspectivity (center a third atom on `U ⊔ R`, calibrations `zcoord_O`/`zcoord_R`), `solidChart` — the affine 3-space is `D³` at atom level, `CoordFrame.solidChart_exists` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
