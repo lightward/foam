@@ -331,11 +331,49 @@ Open frontier:
      Submodule Dᵐᵒᵖ (Fin 3 → Dᵐᵒᵖ)` with `planePt_inj`,
      `le_iff_planePt_le`, `planePt_surj`: the `PointSystem` shape at
      plane scale.  Receipts `[propext, Classical.choice, Quot.sound]`
-     throughout.  Next pitches of camp three: the interval `[⊥, π]`
-     as the full subspace lattice of `(Dᵐᵒᵖ)³` (elements classified
-     by height, lines to the 2-dimensional kernels), then the first
-     out-of-plane step of the Veblen–Young induction (a fourth frame
-     point off `π`, coordinates extended by projection).
+     throughout.
+     **Camp three, second pitch CARVED** (`Flat.lean`, sorry-free):
+     the **plane interval is the subspace lattice** — the atom-level
+     bijection extended to every element of `[⊥, π]`:
+     `plane_interval_iso : Nonempty (Set.Iic π ≃o
+     Submodule Dᵐᵒᵖ (Fin 3 → Dᵐᵒᵖ))`, heights 0/1/2/3 landing on
+     finranks 0/1/2/3.  **No fresh Desargues, no new incidence** —
+     two strata meet in the middle.  The lattice side:
+     `line_covBy_π` — every join of two distinct plane atoms is
+     covered by `π`; the trace atom `(p ⊔ q) ⊓ m` is covered in `m`
+     (`line_covers_its_atoms`), and ONE modular move
+     (`covBy_sup_of_inf_covBy_left`, the same lever as camp one's
+     `covBy_sup_atom`) transports the covering up the sup, `m ⊔ (p ⊔
+     q) = π` because an affine atom of the line pushes `m ⋖ π` to
+     the top — and `plane_flat_cases`: every `x ≤ π` is `⊥`, an
+     atom, a two-atom join, or `π`, by pure `IsLUB`-atomisticity
+     (the LUB set is empty, a singleton, inside one line, or holds a
+     third point off it, and the off-point forces `x = π` through
+     `line_covBy_π`).  The linear side (probe-verified over an
+     abstract noncommutative division ring before carving,
+     `probe_flat.lean`): the finrank classification of submodules of
+     `K³` — `flat_rank_zero`/`_one`/`_two`/`_three`, ranks 1 and 2
+     by `Module.finBasisOfFinrankEq` with the basis pushed into the
+     ambient space (`flat_span_basis_val`), the rank-2 pair's
+     general position recovered *cardinality-free* (`u ≠ 0` and
+     `v ∉ span {u}` each by the finrank of the degenerate span) —
+     plus `flat_std_basis_span`.  The join: `planeFlat x :=
+     span (hvec '' {atoms ≤ x})`, evaluated at every height
+     (`planeFlat_bot`/`_atom`/`_line`/`_π` — the `π` case because
+     **the frame vectors are the standard basis**: `hvec_U =
+     (1,0,0)`, `hvec_V = (0,1,0)`, `hvec_O = (0,0,1)`, the
+     calibrations `slope_U` / `xproj_of_on_l` / `ycoord_of_on_l`
+     reading the zeros off the axes), order-reflecting by the first
+     pitch's three levers (`hvec_ne_zero` at `⊥`, `hvec_span_inj` at
+     atoms, `plane_collinear_iff` at lines), surjective by the
+     finrank classification riding `hvec_span_surj` — and the
+     packaging is `Iso.lean`'s own `orderIso_of_mono_reflect_surj`:
+     the gap-B reduction lemma doing at plane scale exactly what it
+     will do at the summit.  Receipts
+     `[propext, Classical.choice, Quot.sound]` throughout.
+     Next pitch of camp three: the first out-of-plane step of the
+     Veblen–Young induction (a fourth frame point off `π`,
+     coordinates extended by projection).
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -381,6 +419,7 @@ Open frontier:
 | `Translate` | camp two, fifth pitch — the translation lemma, the additive row's engine: `ycoord_translate : ycoord (pg O A z) = coord_add (ycoord z) (ycoord A)` for vectors in general position (one `desargues_planar`, center `E` on the axis `m`, both other sides standing `cross_parallelism`s) + `coord_add_eq_seat_drop` (the seat-drop reading of `coord_add`: comm + translation representation + one `well_defined` waypoint transfer) |
 | `Line` | camp two, sixth pitch — the assembly, the full line equation: `le_line_iff : p ≤ B ⊔ S ↔ ycoord p = coord_add (coord_mul (slope S) (xproj p)) (ycoord B)`; the horizontal-offset tower `ycoord_translate_offset` (one `cross_parallelism`, no coherence pass), `anti_transport` (the anti-diagonal pencil is `E`-uniform — one `desargues_planar`, center `O` off the axis `m`), the intercept row `line_intercept` (total algebra), converse by fiber injectivity — every line of the frame plane an algebraic graph |
 | `Plane` | camp three, first pitch — the plane's point system: `hvec` (homogeneous coordinates in `(Dᵐᵒᵖ)³` — the slope-on-left orientation makes the plane the projective plane of the opposite ring), `plane_line_cases` (the line trichotomy), `slope_inj`/`slope_surj`, `line_form_exists` (every line a form kernel), `plane_collinear_iff` (collinearity IS span membership), `planePt` + inj/le-iff/surj — the atom-level bijection onto the projective points of `(Dᵐᵒᵖ)³`, no fresh Desargues |
+| `Flat` | camp three, second pitch — the plane interval is the subspace lattice: `line_covBy_π` (a plane line is covered by `π`, one modular transport), `plane_flat_cases` (the height classification of `[⊥, π]`), the finrank classification of submodules of `K³` (`flat_rank_zero` … `flat_rank_three`, division-ring-general), `planeFlat` (span of the hvec-image of the atoms below `x`) evaluated at every height, `hvec_U`/`hvec_O` (the frame vectors are the standard basis), `plane_interval_iso : Set.Iic π ≃o Submodule Dᵐᵒᵖ (Fin 3 → Dᵐᵒᵖ)` via `Iso.lean`'s `orderIso_of_mono_reflect_surj` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
