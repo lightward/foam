@@ -4,10 +4,12 @@
 modular bounded lattice is order-isomorphic to the subspace lattice of a vector
 space over a division ring. It is the one imported posit of the classical bridge.
 
-This directory is the effort to **discharge** it — construct the division ring
-and the lattice iso from the lattice itself, deleting the axiom. It lifts the
+This directory **discharges** it — the division ring and the lattice iso are
+constructed from the lattice itself, and the statement is repaired on the way
+(the axiom as imported is *refuted*; the true pair is proven). It lifts the
 von Staudt / von Neumann coordinatization (the prior era's, tag `the-between`),
-now with the two hard walls proven.
+with every wall carved: `ftpg_proof_limit` and `ftpg_proof_finite` are
+sorry-free, `[propext, Classical.choice, Quot.sound]`.
 
 ## State
 
@@ -130,15 +132,17 @@ And the pair is **wired into one keystone** (`Finite.lean`):
   exactly as the recursion-law reads it — every finite depth is an
   instance of the limit clause with the seat count bounded.
 
-Open frontier:
+And the frontier is **CLOSED — the residual is discharged**:
 
 - the **`PointSystem` residual, under the true hypotheses** —
-  `pointSystem_exists` (the single `sorry`; `ftpg_proof_limit`'s trace is
-  `[propext, sorryAx, Classical.choice, Quot.sound]`): the Veblen–Young
-  coordinatization over the constructed division ring, now provable in
-  principle.  `Iso.lean`'s reduction to `(pt, closed, spanning)` survives
-  untouched.  This is now the **only** sorry in the deaxiomatization: both
-  clauses of the pair discharge through it.  The ascent, charted:
+  `pointSystem_exists` is a THEOREM (`Deaxiomatize.lean`, sorry-free,
+  `[propext, Classical.choice, Quot.sound]`): the Veblen–Young
+  coordinatization over (the opposite of) the constructed division ring.
+  `ftpg_proof_limit` and `ftpg_proof_finite` are sorry-free end to end —
+  the pair of true statements stands proven, and the one imported posit of
+  the classical bridge is replaced by construction (the `ftpg` axiom
+  survives only as `Hollow.lean`'s exhibit: it is *refuted*, not proven).
+  The ascent, as climbed:
   1. **the matroid stratum** (`Exchange.lean`) — **CARVED, sorry-free**:
      `covBy_sup_atom` (joining a fresh atom is one step exactly),
      `atom_exchange` (Steinitz — and the carving found `p` needn't be an
@@ -870,13 +874,8 @@ Open frontier:
      `calPairs`, `calPairs_map_fst`, `listSup` even AXIOM-FREE;
      `climbFlat_calPairs` `[propext]`; `basis_no_capture` and
      `map_mem_span_singleton_iff` `[propext, Quot.sound]`; the rest
-     `[propext, Classical.choice, Quot.sound]`).  Next: stage four —
-     `closed` and `spanning` (`span_surj` onto
-     `(Fin n → K) × (B →₀ K)`, finite support from the finite windows),
-     the orientation re-scope of `pointSystem_exists` (the residual
-     should hand over `Dᵐᵒᵖ`), the grounding (`x := τ`, `t₀` from the
-     four frame supports via `exists_finset_support`, `h_irred` from
-     the frame), and the interval iso through `Iso.lean`'s reduction.
+     `[propext, Classical.choice, Quot.sound]`).  Stage four — carved
+     the next sitting; see item 4 below (`Span.lean`).
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -957,14 +956,59 @@ Open frontier:
        calculus.  `span_surj` deferred to stage four: it is the
        *spanning* half of the residual, owed onto
        `(Fin n → K) × (B →₀ K)`.
-  4. **`closed` and `spanning`** — the two `PointSystem` fields, from the
-     exchange stratum plus the assignment's faithfulness.  NOTE the
-     orientation re-scope waiting here: `PointSystem`/`pointSystem_exists`
-     currently demand `Module (Coordinate Φ.Γ) V`, but the constructed
-     systems are left modules over the OPPOSITE ring — the residual's
-     statement should existentially hand over `(Coordinate Φ.Γ)ᵐᵒᵖ`
-     (the final `ftpg` existential already quantifies the division
-     ring, so nothing downstream moves).
+  4. **`closed` and `spanning` — CARVED, the summit** (`Span.lean` +
+     `Deaxiomatize.lean`, sorry-free): the two `PointSystem` fields from
+     the flats law plus the assignment's faithfulness — and the residual
+     is DISCHARGED.
+     * the **modular lever** (`line_meets_flat`): an atom `p ≤ y ⊔ q`
+       (`q` an atom off `y`) sees the line `p ⊔ q` meet `y` in an atom
+       `r` with `p ≤ q ⊔ r` — one covering (`covBy_sup_atom`) plus two
+       modular moves, and the carve came in LEANER than the chart: no
+       freshness hypothesis on `p` (`¬ p ≤ y` dropped as unused — the
+       `pin_meet` lesson again: the degenerate cases are sound).
+     * the **flats law** (`PointSys.flat_le_iff`): the four `PointSys`
+       laws generate the whole finite matroid — an atom lies below a
+       finite join of atoms iff its vector lies in the span of theirs.
+       `collinear_iff` is the two-point case; the induction climbs one
+       atom at a time, the lever supplying the forward geometric step
+       and `span_surj` conjuring the intermediate atom backward — and
+       the converse is MODULARITY-FREE (pure span algebra; the `omit`
+       landed).  `Flat.lean`/`SpaceFlat.lean`'s content at generic
+       scale, derived from the laws alone: no frame, no dimension.
+     * the **span calculus** (`mem_span_congr`, `span_image_congr`,
+       `map_mem_span_image_iff`): span-level agreement of generators
+       moves membership across sets, and an injective linear map
+       reflects it — `Window.lean`'s pair calculus at finite-set scale.
+     * the **summit** (`limit_system_exists`): the carrier `V` is the
+       span of the read-image inside the named slot space
+       `(Fin n → K) × (L → K)` — the `B →₀ D` packaging came in leaner
+       as a subtype, the support set never needing a name — `pt` is
+       the line of each atom's read, and the two fields close consuming
+       ONLY the stability clause of `limit_read_exists` (the window
+       systems carry all four laws themselves): `closed` because span
+       membership is finitely supported
+       (`mem_span_finite_of_mem_span`), the finitely many witnesses
+       meet `p` inside one window (`t₀ ∪ biUnion` of chosen supports),
+       and the window's flats law reflects back through the injective
+       read; `spanning` because every submodule `W` of `V` is recovered
+       at `sSup {a | hv' a ∈ W}` — downward by atom-compactness plus
+       the flats law, upward because every nonzero vector of `V` is
+       span-equal to some atom's read (the window's own `span_surj`,
+       transported by stability).
+     * the **orientation re-scope, landed**: `PointSystem` now demands
+       `Module (Coordinate Γ)ᵐᵒᵖ V` — the residual's statement hands
+       over the opposite ring, as the plane's line equation forced
+       (`y = s·x + b`, slope on the left); the final `ftpg` existential
+       already quantifies the division ring, so nothing downstream
+       moved (`Hollow.not_pointSystem` re-aimed in place).
+     * the **grounding** (`pointSystem_exists`): `x := τ` via
+       `pointSysTau`, `b₀ := O`, the calibration chooser from
+       `calSpec_exists`, and `t₀` the union of the four frame atoms'
+       finite supports (`exists_finset_support` — a point is finitely
+       reachable, consumed exactly where camp one banked it).
+     NO new probe needed: check F sealed global `span_surj` onto the
+     full slot space the previous sitting, and every stratum landed
+     with only local re-aims — the terrain led.
 - the **charged restatement** (`Charge.lean`) — foam routed *through* FTPG as
   the state-carrier.  Classical FTPG concludes in a Prop; `Nonempty` is the
   flattening itself — the witness sealed away, the operator unable to
@@ -995,7 +1039,7 @@ Open frontier:
 | `Ring` | the ring closure — `fneg_mul` / `fmul_neg`, the doubling-at-1 fight, and `fleft_distrib_total` / `fright_distrib_total`: every ring law TOTAL |
 | `CoordinateAlgebra` | closure lemmas (`coord_add_ne_U`, `coord_mul_ne_U`, `coord_mul_ne_O`), the totalized ops `fadd`/`fmul`/`fneg`/`finv`, the `CoordFrame`, the witness-free laws |
 | `Instance` | the `DivisionRing` instance ASSEMBLED (`CoordFrame.divisionRing`, sorry-free) + `coordFrame_exists` |
-| `Iso`, `Deaxiomatize` | the endgame — gap B reduced to the `PointSystem` residual; the true pair `ftpg_statement_finite` / `ftpg_statement_limit`; `ftpg_proof_limit` |
+| `Iso`, `Deaxiomatize` | the endgame — gap B reduced to the `PointSystem` residual, stated over the opposite ring `(Coordinate Γ)ᵐᵒᵖ`; the true pair `ftpg_statement_finite` / `ftpg_statement_limit`; `pointSystem_exists` DISCHARGED (the grounding at τ: `t₀` = the four frame supports, `b₀ = O`, `calSpec_exists`), `ftpg_proof_limit` sorry-free |
 | `Finite` | the wire — `ftpg_finite_of_limit` (sorry-free): finite Krull dimension yields `WellFoundedGT`, hence a `CompleteLattice` around the original operations and compact generation; `ftpg_proof_finite` |
 | `Exchange` | camp one of the ascent — the matroid stratum: `covBy_sup_atom`, `atom_exchange` (Steinitz), atoms are compact, `AtomBasis` with finite support |
 | `Chart` | camp two, first pitch — the affine chart of the frame plane: `xproj`/`yproj` (the drops through `V` and `U`), `point` (the chart backwards), `chart_recovers`, `affineChart : Affine Γ ≃ Coordinate Γ × Ordinate Γ` |
@@ -1017,16 +1061,17 @@ Open frontier:
 | `Perm` | camp four, permutation coherence — the climb reads the window, not the order: `climbRead` (the atom-named reading — slots onto names, lattice-free, linear), `readStep`/`climbRead_pad`/`climbRead_twist`/`readStep_swap` (the read calculus — the pad reads as pure base, a lifted twist confines to the base component, the two deposited names commute), `padTwist`/`climbTwist` (a base equiv extended slot-fixing through the climb), `Calibrated.twist`/`IsClimb.twist`/`IsClimb.reflat` (twist-functoriality: a climb twisted is a climb), `climbFlat_perm`, `ClimbLegal.perm` (capture-free legality is permutation-invariant — Steinitz), `span_map_of_span_eq`, and the summit `isClimb_perm_agree` (`List.Perm` induction: cons = `calibrated_agree`, swap = the diamond, trans = the middle climb) |
 | `Window` | camp four, the windows along the atom basis — the append face (`climbFlat_append`, `ClimbLegal.append`/`append_right`, `isClimb_append_exists` with the read unchanged on the old flat, `isClimb_append_read_agree`), read injectivity (`climbRead_snd_eq_zero`/`climbRead_eq_zero`/`climbRead_injective`) with the span-reflect calculus (`map_span_singleton_eq_iff`, `map_mem_span_singleton_iff`, `map_mem_span_pair_iff`, `mem_span_pair_congr`), the windows (`CalSpec`/`calSpec_exists`, `calPairs`, `listSup`, `actives`, `basis_no_capture` — `sSupIndep` refuses capture directly, `actives_legal`/`extras_legal`/`window_legal`, `windowFlat_eq`, `windowList_nodup`), and the summit (`windowPairs_perm`, `window_read_mono`, `window_read_directed` — the directed family is coherent) |
 | `Limit` | camp four, the limit map — `limit_read_exists`: one global assignment `L → (Fin n → K) × (L → K)`, `Classical.choice` per atom, with window stability, vector-level base compatibility, and `ne_zero`/`span_inj`/`collinear_iff` global (common windows + reflect through `climbRead_injective`); `span_surj` deferred to the spanning stratum |
+| `Span` | camp four, the spanning stratum — the summit: `line_meets_flat` (the modular lever — a line through a fresh atom meets the flat in an atom, no freshness hypothesis needed), the span calculus (`mem_span_congr`, `span_image_congr`, `map_mem_span_image_iff`), `PointSys.flat_le_iff` (the four laws generate the finite matroid; the converse modularity-free), `limit_system_exists` (`V` = the span of the read-image; `closed` by finite support of span membership + one common window + the injective read reflecting; `spanning` by atom-compactness downward and line-surjectivity upward — only the stability clause of the limit consumed) |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
 ## Notes
 
-- `ftpg_proof_limit : ftpg_statement_limit` (in `Deaxiomatize`) type-checks end
-  to end — it reduces to the one labeled residual (`pointSystem_exists`), not
-  to the axiom.  The old `ftpg_proof : ftpg_statement` is gone: it proved a
-  refuted proposition modulo `sorry`, and a sorry against a false target is
-  not a gap, it is a wall wearing a door costume.
+- `ftpg_proof_limit : ftpg_statement_limit` (in `Deaxiomatize`) is proven end
+  to end — sorry-free, `[propext, Classical.choice, Quot.sound]`; nothing
+  reduces to the axiom.  The old `ftpg_proof : ftpg_statement` is gone: it
+  proved a refuted proposition modulo `sorry`, and a sorry against a false
+  target is not a gap, it is a wall wearing a door costume.
 - `h_sufficient : True` in the axiom marks where the genuine hypothesis
   (dim ≥ 3 / Arguesian) belongs: the unrestricted statement is over-strong —
   the octonion projective plane is a complemented modular lattice that is *not*

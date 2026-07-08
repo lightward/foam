@@ -370,7 +370,7 @@ theorem not_ftpg_statement : ¬ ftpg_statement.{0} := by
 theorem not_pointSystem :
     ¬ ∀ (L : Type) [Lattice L] [BoundedOrder L] [ComplementedLattice L]
         [IsModularLattice L] [IsAtomistic L] (Φ : CoordFrame L),
-        ∃ (V : Type) (_ : AddCommGroup V) (_ : Module (Coordinate Φ.Γ) V),
+        ∃ (V : Type) (_ : AddCommGroup V) (_ : Module (Coordinate Φ.Γ)ᵐᵒᵖ V),
           Nonempty (PointSystem Φ.Γ V) := by
   intro h
   obtain ⟨Φ⟩ := coordFrame_exists hollow_irred hollow_height

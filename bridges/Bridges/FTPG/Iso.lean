@@ -126,7 +126,7 @@ variable {L : Type u} [Lattice L] [BoundedOrder L]
   [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L]
 
 /-- The **precise residual of gap B**, bundled.  A `PointSystem Γ V` is exactly the data the next
-construction pass must supply to obtain `L ≃o Submodule (Coordinate Γ) V` (and hence delete
+construction pass must supply to obtain `L ≃o Submodule (Coordinate Γ)ᵐᵒᵖ V` (and hence delete
 `axiom ftpg`):
 
 * `pt` — the coordinate point of each atom of `L` (a line `Submodule.span D {v}` in `V`);
@@ -136,44 +136,50 @@ construction pass must supply to obtain `L ≃o Submodule (Coordinate Γ) V` (an
 * `spanning` — *surjectivity*: every submodule of `V` is the span of the points below some `x ∈ L`.
 
 `closed` is the hard geometric content (Veblen–Young coordinatization); `spanning` says the chosen
-`V` has exactly the right dimension (its points exhaust the atoms of `L`). -/
+`V` has exactly the right dimension (its points exhaust the atoms of `L`).
+
+The ring is the **opposite** of the coordinate ring: the line equation carries its slope on the
+left (`y = s·x + b`), so the constructed systems are left modules over `(Coordinate Γ)ᵐᵒᵖ` — the
+orientation `Plane.lean` surfaced, seated here at the residual's own statement.  The final
+existential quantifies the division ring, so nothing downstream moves. -/
 structure PointSystem (Γ : CoordSystem L) [DivisionRing (Coordinate Γ)]
-    (V : Type u) [AddCommGroup V] [Module (Coordinate Γ) V] where
-  pt : {p : L // IsAtom p} → Submodule (Coordinate Γ) V
+    (V : Type u) [AddCommGroup V] [Module (Coordinate Γ)ᵐᵒᵖ V] where
+  pt : {p : L // IsAtom p} → Submodule (Coordinate Γ)ᵐᵒᵖ V
   closed : ∀ (p : {p : L // IsAtom p}) (x : L), pt p ≤ coordSpanFwd pt x → (p : L) ≤ x
   spanning : Function.Surjective (coordSpanFwd pt)
 
 /-- From a `PointSystem` (the residual), the coordinatization isomorphism is immediate. -/
 theorem PointSystem.orderIso {Γ : CoordSystem L} [DivisionRing (Coordinate Γ)]
-    {V : Type u} [AddCommGroup V] [Module (Coordinate Γ) V] (P : PointSystem Γ V) :
-    Nonempty (L ≃o Submodule (Coordinate Γ) V) :=
+    {V : Type u} [AddCommGroup V] [Module (Coordinate Γ)ᵐᵒᵖ V] (P : PointSystem Γ V) :
+    Nonempty (L ≃o Submodule (Coordinate Γ)ᵐᵒᵖ V) :=
   nonempty_orderIso_of_pointMap P.pt P.closed P.spanning
 
-/-- Gap B, reduced to its residual.  Given the coordinate division ring `D = Coordinate Γ`
+/-- Gap B, reduced to its residual.  Given the coordinate division ring `D = (Coordinate Γ)ᵐᵒᵖ`
 (`DivisionRing` instance supplied by the sibling construction), a coordinate vector space `V`,
 and a point map `pt : Atoms L → Submodule D V` that is **closure-preserving** (`hclosed`) and
 **spanning-surjective** (`hsurj`), the coordinatization isomorphism exists. -/
 theorem ftpg_coordIso (Γ : CoordSystem L) [DivisionRing (Coordinate Γ)]
-    {V : Type u} [AddCommGroup V] [Module (Coordinate Γ) V]
-    (pt : {p : L // IsAtom p} → Submodule (Coordinate Γ) V)
+    {V : Type u} [AddCommGroup V] [Module (Coordinate Γ)ᵐᵒᵖ V]
+    (pt : {p : L // IsAtom p} → Submodule (Coordinate Γ)ᵐᵒᵖ V)
     (hclosed : ∀ (p : {p : L // IsAtom p}) (x : L),
         pt p ≤ coordSpanFwd pt x → (p : L) ≤ x)
     (hsurj : Function.Surjective (coordSpanFwd pt)) :
-    Nonempty (L ≃o Submodule (Coordinate Γ) V) :=
+    Nonempty (L ≃o Submodule (Coordinate Γ)ᵐᵒᵖ V) :=
   nonempty_orderIso_of_pointMap pt hclosed hsurj
 
 /-- The full FTPG existential, assembled from the residual.  This is exactly the witness shape
 that `ftpg_proof_limit` in `Deaxiomatize.lean` needs, with the residual data in `coordIso`'s place. -/
 theorem ftpg_via_residual (Γ : CoordSystem L) [DivisionRing (Coordinate Γ)]
-    {V : Type u} [AddCommGroup V] [Module (Coordinate Γ) V]
-    (pt : {p : L // IsAtom p} → Submodule (Coordinate Γ) V)
+    {V : Type u} [AddCommGroup V] [Module (Coordinate Γ)ᵐᵒᵖ V]
+    (pt : {p : L // IsAtom p} → Submodule (Coordinate Γ)ᵐᵒᵖ V)
     (hclosed : ∀ (p : {p : L // IsAtom p}) (x : L),
         pt p ≤ coordSpanFwd pt x → (p : L) ≤ x)
     (hsurj : Function.Surjective (coordSpanFwd pt)) :
     ∃ (D : Type u) (_ : DivisionRing D)
       (V : Type u) (_ : AddCommGroup V) (_ : Module D V),
     Nonempty (L ≃o Submodule D V) :=
-  ⟨Coordinate Γ, ‹_›, V, ‹_›, ‹_›, nonempty_orderIso_of_pointMap pt hclosed hsurj⟩
+  ⟨(Coordinate Γ)ᵐᵒᵖ, inferInstance, V, ‹_›, ‹_›,
+    nonempty_orderIso_of_pointMap pt hclosed hsurj⟩
 
 end Application
 

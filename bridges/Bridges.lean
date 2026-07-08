@@ -58,6 +58,7 @@ import Bridges.FTPG.Diamond
 import Bridges.FTPG.Perm
 import Bridges.FTPG.Window
 import Bridges.FTPG.Limit
+import Bridges.FTPG.Span
 import Bridges.FTPG.Hollow
 import Bridges.FTPG.Charge
 import Bridges.Audit
