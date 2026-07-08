@@ -98,4 +98,5 @@ end Foam.Bridges
 /-- info: 'Foam.Bridges.ftpg_finite_of_limit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.ftpg_finite_of_limit
 
-#print axioms Foam.Bridges.ftpg_proof_finite
+/-- info: 'Foam.Bridges.ftpg_proof_finite' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.ftpg_proof_finite

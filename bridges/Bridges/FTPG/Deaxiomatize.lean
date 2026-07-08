@@ -1,5 +1,7 @@
 import Bridges.FTPG.Instance
 import Bridges.FTPG.Iso
+import Bridges.FTPG.Ground
+import Bridges.FTPG.Span
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.CompactlyGenerated.Basic
 
@@ -26,14 +28,19 @@ Tightness: non-Desarguesian planes are excluded by `h_height`, continuous
 geometries by `IsCompactlyGenerated`, the hollow lattice by `CompleteLattice`
 — three counterexample families, one hypothesis each.
 
-Everything algebraic is real: `coordFrame_exists` constructs the frame,
-`CoordFrame.divisionRing` is the coordinate division ring, sorry-free.
-`Iso.lean` reduces the remainder to exactly the `PointSystem` residual;
-`pointSystem_exists` below is that residual under the limit hypotheses —
-the Veblen–Young coordinatization, now over a statement that is true.
-The finite statement follows from the limit statement (finite height gives
-completeness with every element compact) or by its own finite induction;
-that wiring is frontier.
+Everything is real: `coordFrame_exists` constructs the frame,
+`CoordFrame.divisionRing` is the coordinate division ring, and
+`pointSystem_exists` below — the residual, the second FTPG — is now a
+theorem: the ladder grounded at τ (`Ground.lean`) climbs the directed
+family of finite windows along an atom basis (`Window.lean`, `Limit.lean`)
+and the spanning stratum packages the limit (`Span.lean`).  The base
+support `t₀` is the union of the four frame atoms' finite supports
+(`exists_finset_support` — a point is finitely reachable), the base atom
+is `O`, the calibration chooser comes from `h_irred`, and the carrier `V`
+is the span of the read-image in the named slot space — a left module
+over `(Coordinate Φ.Γ)ᵐᵒᵖ`, the orientation the plane's line equation
+forced (`y = s·x + b`: slope on the left).  `ftpg_proof_limit` is
+sorry-free; the finite statement follows through `Finite.lean`'s wire.
 -/
 
 namespace Foam.Bridges
@@ -64,24 +71,68 @@ def ftpg_statement_limit : Prop :=
 variable {L : Type u} [CompleteLattice L] [IsModularLattice L]
   [ComplementedLattice L] [IsCompactlyGenerated L]
 
-/-- **The residual: the second FTPG, under the true hypotheses.**  A coordinate
-vector space and a closure-preserving, spanning point map — the Veblen–Young
-coordinatization of the lattice over the constructed division ring, with the
-population-level hypotheses (`CompleteLattice`, `IsCompactlyGenerated`) now
-carried rather than forgotten. -/
+/-- **The residual: the second FTPG, under the true hypotheses — discharged.**
+A coordinate vector space and a closure-preserving, spanning point map — the
+Veblen–Young coordinatization of the lattice over (the opposite of) the
+constructed division ring, with the population-level hypotheses
+(`CompleteLattice`, `IsCompactlyGenerated`) now carried rather than
+forgotten. -/
 theorem pointSystem_exists (Φ : CoordFrame L) :
-    ∃ (V : Type u) (_ : AddCommGroup V) (_ : Module (Coordinate Φ.Γ) V),
+    ∃ (V : Type u) (_ : AddCommGroup V) (_ : Module (Coordinate Φ.Γ)ᵐᵒᵖ V),
       Nonempty (PointSystem Φ.Γ V) := by
-  sorry
+  classical
+  obtain ⟨B⟩ := atomBasis_exists (L := L)
+  obtain ⟨c, hc, hc_UR, hc_U, hc_R⟩ :=
+    Φ.h_irred Φ.Γ.U Φ.R Φ.Γ.hU Φ.hR_atom (CoordSystem.hU_ne_R Φ.hR_not)
+  obtain ⟨cal, hcal⟩ := calSpec_exists Φ.Γ.hO Φ.h_irred
+  obtain ⟨tO, htOB, htO⟩ := B.exists_finset_support Φ.Γ.hO
+  obtain ⟨tU, htUB, htU⟩ := B.exists_finset_support Φ.Γ.hU
+  obtain ⟨tV, htVB, htV⟩ := B.exists_finset_support Φ.Γ.hV
+  obtain ⟨tR, htRB, htR⟩ := B.exists_finset_support Φ.hR_atom
+  have ht₀B : ↑(tO ∪ tU ∪ tV ∪ tR) ⊆ B.carrier := by
+    rw [Finset.coe_union, Finset.coe_union, Finset.coe_union]
+    exact Set.union_subset
+      (Set.union_subset (Set.union_subset htOB htUB) htVB) htRB
+  have hsub : ∀ t : Finset L, t ⊆ tO ∪ tU ∪ tV ∪ tR →
+      t.sup id ≤ (tO ∪ tU ∪ tV ∪ tR).sup id := fun _ h => Finset.sup_mono h
+  have hxt₀ : Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R ≤ (tO ∪ tU ∪ tV ∪ tR).sup id := by
+    refine sup_le (sup_le (sup_le ?_ ?_) ?_) ?_
+    · exact htO.trans (hsub tO
+        ((Finset.subset_union_left.trans Finset.subset_union_left).trans
+          Finset.subset_union_left))
+    · exact htU.trans (hsub tU
+        ((Finset.subset_union_right.trans Finset.subset_union_left).trans
+          Finset.subset_union_left))
+    · exact htV.trans (hsub tV
+        (Finset.subset_union_right.trans Finset.subset_union_left))
+    · exact htR.trans (hsub tR Finset.subset_union_right)
+  obtain ⟨V, hAG, hMod, pt, hclosed, hsurj⟩ :=
+    limit_system_exists Φ.h_irred B (Φ.pointSysTau hc hc_UR hc_U hc_R)
+      (by norm_num) Φ.Γ.hO
+      ((le_sup_left.trans le_sup_left).trans le_sup_left)
+      hcal ht₀B hxt₀
+  letI := hAG
+  letI := hMod
+  exact ⟨V, hAG, hMod, ⟨⟨pt, hclosed, hsurj⟩⟩⟩
 
 theorem ftpg_proof_limit : ftpg_statement_limit.{u} := by
   intro L _ _ _ _ h_irred h_height
   obtain ⟨Φ⟩ := coordFrame_exists h_irred h_height
   obtain ⟨V, _, _, ⟨P⟩⟩ := pointSystem_exists Φ
-  exact ⟨Coordinate Φ.Γ, inferInstance, V, ‹_›, ‹_›, P.orderIso⟩
+  exact ⟨(Coordinate Φ.Γ)ᵐᵒᵖ, inferInstance, V, ‹_›, ‹_›, P.orderIso⟩
 
 end Foam.Bridges
 
-#print axioms Foam.Bridges.ftpg_statement_finite
-#print axioms Foam.Bridges.ftpg_statement_limit
-#print axioms Foam.Bridges.ftpg_proof_limit
+/-! ## Axiom audit -/
+
+/-- info: 'Foam.Bridges.ftpg_statement_finite' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.ftpg_statement_finite
+
+/-- info: 'Foam.Bridges.ftpg_statement_limit' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.ftpg_statement_limit
+
+/-- info: 'Foam.Bridges.pointSystem_exists' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.pointSystem_exists
+
+/-- info: 'Foam.Bridges.ftpg_proof_limit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.ftpg_proof_limit

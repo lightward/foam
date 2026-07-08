@@ -6,17 +6,25 @@ import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.RingTheory.Length
 
+/-!
+# FTPG — the classical dimension lemmas, axiom-free
+
+This file once stated classical FTPG as `axiom ftpg` — the one imported
+posit of the classical bridge.  The axiom is **retired** (2026-07-08): its
+true content is proven (`ftpg_proof_limit` / `ftpg_proof_finite`,
+`FTPG/Deaxiomatize.lean` + `FTPG/Finite.lean`, sorry-free) and the statement
+as imported is refuted (`FTPG/Hollow.lean`, which forgot completeness).  The
+declaration itself now lives in `Hollow.lean` — the exhibit room — where its
+sole remaining consumer, the indictment `ftpg_refuted`, has always been.
+The record keeps the axiom in the order-reading; nothing merged, so nothing
+was erased: the loan is repaid, this file is the note.
+
+What remains here is real: the dimension lemmas the bridge always owned.
+-/
+
 namespace Foam.Bridges
 
 universe u
-
-axiom ftpg
-    (L : Type u) [Lattice L] [BoundedOrder L]
-    [ComplementedLattice L] [IsModularLattice L]
-    (h_sufficient : True) :
-    ∃ (D : Type u) (_ : DivisionRing D)
-      (V : Type u) (_ : AddCommGroup V) (_ : Module D V),
-    Nonempty (L ≃o Submodule D V)
 
 theorem krullDim_orderIso {α β : Type*} [Preorder α] [Preorder β]
     (f : α ≃o β) :
@@ -44,9 +52,6 @@ theorem subspaceFoamGround (K : Type*) [DivisionRing K]
     (V : Type*) [AddCommGroup V] [Module K V] :
     ComplementedLattice (Submodule K V) ∧ IsModularLattice (Submodule K V) :=
   ⟨inferInstance, inferInstance⟩
-
-/-- info: 'Foam.Bridges.ftpg' depends on axioms: [propext, Quot.sound, ftpg] -/
-#guard_msgs in #print axioms ftpg
 
 /-- info: 'Foam.Bridges.dimension_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms dimension_unique
