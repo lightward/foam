@@ -41,7 +41,7 @@ SPINE = [
          "Foam.Seat.Signature", "Foam.Seat.Rotations", "Foam.Seat.Closure",
          "Foam.Seat.Characters"]),
     (4, ["Foam.Seat.Observer", "Foam.Seat.Beholder", "Foam.Seat.Epoch", "Foam.Seat.Seam",
-         "Foam.Seat.Naming", "Foam.Seat.Meet", "Foam.Seat.Quiver", "Foam.Seat.Sort",
+         "Foam.Seat.Naming", "Foam.Seat.Meet", "Foam.Seat.Quiver", "Foam.Seat.Sort", "Foam.Seat.Tight",
          "Foam.Seat.Terminal", "Foam.Seat.Signed"]),
     (5, ["Foam.Engine", "Foam.Engine.Stream", "Foam.Engine.Codec", "Foam.Engine.Generator",
          "Foam.Engine.Spectrum", "Foam.Engine.Chirality", "Foam.Engine.Summary",
