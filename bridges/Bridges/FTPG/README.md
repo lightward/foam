@@ -658,7 +658,49 @@ Open frontier:
      four space-pitch laws (`hvec4_ne_zero`, `hvec4_span_inj`,
      `hvec4_span_surj`, `space_collinear_iff`), the gauge center from
      `h_irred` (`pointSysTau_exists`).  `PointSys.step` can now climb.
-     Next: climb along an atom basis, feeding the direct limit.
+     **Second pitch CARVED — the calibrated step and its rigidity**
+     (`Pin.lean`, sorry-free): `PointSys.step`'s output carries a free
+     height-gauge in `K*` — the obstruction to gluing the climb over
+     the DIRECTED family of finite windows (no chain of finite-height
+     flats exhausts an uncountable basis; transfinite recursion would
+     need the ladder at infinite `n`).  The pitch pins the gauge:
+     * `Calibrated P w b₀ w' Q` — the extension with `w ~ e_last` and
+       one calibration atom `w'` (a third atom on `b₀ ⊔ w`) at height
+       `1` over `b₀`'s stored representative, all span-level;
+     * `calibrated_agree` — **rigidity**: any two calibrated
+       extensions agree span-level on EVERY atom.  Constructive
+       two-plane pinning (`pin_meet`, the `ladder_pin` shape one
+       stratum up): an affine atom `t` off the calibration line lies
+       on its `w`-pencil plane AND on the plane through `w'` and the
+       `w'`-trace `(t ⊔ w') ⊓ x` — a shear trace, so `ladder_shear_le`
+       supplies the Θ-containment `≤ b_t ⊔ b₀` and the base system's
+       own `collinear_iff` decomposes it; the two planes meet in one
+       line.  Atoms ON the calibration line route through an auxiliary
+       axis `u₁` off `span {hv b₀}` (`span_surj` at a vector outside a
+       proper subspace — algebraic, no counting) and a third atom `y`
+       on `u₁ ⊔ w` from `h_irred`, itself pinned by the main branch.
+       And the carve came in LEANER than the probe: `pin_meet` needs
+       NO nonzeroness side conditions — membership pinning is sound
+       degenerately — so the `ladder_shear_ne_*` layer dropped out.
+     * `PointSys.calibrated_exists` — existence: the ladder step
+       composed with the height rescale `heightEquiv` (right
+       multiplication in the last slot — left-linear), the gauge
+       solved from the `w'`-shape `snoc (ζ • hv b₀) η` as `η⁻¹ζ`;
+       `PointSys.twist` transports a point system along any linear
+       automorphism.
+     * `calibrated_last_zero_iff` — the window sees exactly its own
+       coordinates: membership in the old flat reads off the last
+       slot (derived from the laws, no extra field needed).
+     Model-verified before carving (`probe_coherence.py`): rigidity
+     as constructive propagation, the freedom EXACTLY `K*` (the
+     analytic family `((t_x − t_l w_l⁻¹ w_x)·M, t_l·γ)` under a
+     twisted base), and the two-step DIAMOND — calibrated climbs
+     commute, 384/384 pairs of `PG(4,2)` exhaustive, 24/24 sampled
+     `PG(4,3)` with the routed branch exercised — over `PG(3,q)`/
+     `PG(4,q)`, `q ∈ {2,3,5}`, twisted base systems throughout.
+     Next: the window systems along the atom basis (windows containing
+     the frame's basis support have order-independent slots by
+     Steinitz), glued by rigidity into the direct limit.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -711,6 +753,7 @@ Open frontier:
 | `SpaceFlat` | camp three, sixth pitch — the space interval is the subspace lattice: `three_atoms_ne_τ` (no three atoms span the 3-space — `planes_meet_covBy` + `line_covBy_π` refute the covering), `flat_trace_pair`/`plane_trace_line` (the `π`-trace of a 3-atom span holds two distinct atoms), `plane_covBy_τ` (the trace is a line; one modular transport lifts the covering), `space_flat_cases` (the height classification of `[⊥, τ]`), `hvec4_R` (the frame completes the standard basis of `(Dᵐᵒᵖ)⁴`), `space_coplanar_iff` (coplanarity IS span membership — the fifth pitch's summit consumed, no new incidence), the finrank classification of `K⁴` (`flat4_rank_zero` … `flat4_rank_four`), `spaceFlat` evaluated at every height, `space_interval_iso : Set.Iic τ ≃o Submodule Dᵐᵒᵖ (Fin 4 → Dᵐᵒᵖ)` via `orderIso_of_mono_reflect_surj` |
 | `Ladder` | camp four, first pitch — the rank ladder's step, frame-free: `PointSys` (the induction datum), the trace/center/recovery lattice stratum (`ladder_trace_atom` … `ladder_reverse`, the shadow Θ-move), the coefficient calculus over abstract `K` (`ladder_pin`, `ladder_graph_comb`, `ladder_conv_transfer`, `ladder_avoid_two`, the snoc calculus), `stepRaw`/`StepFrame.lam`/`StepFrame.hv'`, gauges-are-heights (`step_transport`, `step_gauge_symm`, `step_cocycle`), the central lemma (`StepFrame.central`), the collinearity summit (`hv'_collinear_iff`), `hv'_span_inj`/`hv'_span_surj`, `PointSys.step` |
 | `Ground` | camp four, the ladder grounded at τ — `CoordFrame.pointSysTau`: camp three's exports instantiate the induction datum literally (`hv := hvec4`; `hvec4_ne_zero`/`hvec4_span_inj`/`hvec4_span_surj`/`space_collinear_iff` are the four fields), `pointSysTau_exists` conjuring the gauge center from `h_irred` |
+| `Pin` | camp four, second pitch — the calibrated step and its rigidity: `pin_meet` (the two-plane pin, no nonzeroness needed), `pin_shape`/`pin_eq`/`pin_snoc_zero_span_congr`/`pin_span_pair_congr` (the snoc-span calculus), `pin_map_*` (span transport along linear equivs), `heightEquiv` (the last-slot right-multiplication rescale), `PointSys.twist`, `Calibrated` (base/apex/unit — the span-level extension data), `calibrated_agree_main`/`calibrated_agree` (rigidity: two-plane pinning off the calibration line, routed through an auxiliary axis on it), `PointSys.calibrated_exists` (step + rescale), `calibrated_last_zero_iff` (the window sees its own coordinates) |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
