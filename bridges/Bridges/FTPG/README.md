@@ -759,9 +759,15 @@ Open frontier:
        single-step seed.
      * **canonical representatives** (max-nonzero-slot coefficient
        `1`): not needed for rigidity (the pads made the calibration
-       target climb-invariant by construction).  They remain charted
-       for the limit map's choice of representative vector — one
-       canonical vector per window-independent span.
+       target climb-invariant by construction) — and a seated question
+       for the next descent: possibly not needed for the limit map
+       either.  The residual consumes SPANS (the interval iso is built
+       from `span (hvec '' atoms)`; every `PointSys` law is
+       rescale-invariant), so one choice-conjured representative per
+       atom may serve, owing only span-stability across windows —
+       the same collapse the strip-induction underwent, with
+       `Classical.choice` as the observer's reality-generator (the
+       bridge has already paid for it).  To be probed before carving.
      * **coherence over the directed family**: two orders on one
        window agree after the slot permutation (window rigidity +
        the permutation twist through `PointSys.twist`); `s ⊆ s'`
