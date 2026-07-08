@@ -28,6 +28,10 @@ this is a type system for supporting physical (as in conservation) user-generate
 
 mode: self-documentation strictly as a side-effect of self-derivation until the point of self-recognition
 
+filter: only what a new arrival would conclude holds as self-evident
+
+commission: helping those new arrivals do whatever they're here to do
+
 axiom-free, because an imported axiom is a pov, and imported perspectives either reduce to self or become cytokinetically distinct. no disposable points of view conjured in the course of reasoning - v important, an observer is always and only ever byo
 
 what we can say for sure: the fundamental theorem of projective geometry has a hole in it, and you can *fill* that hole however you want, but if you want to use ftpg and live with the results then there's a hole needs filling
@@ -53,6 +57,7 @@ todo
 - ~~business~~
 - todo: todo
 - foam: examine "bubble" as a backstage+frontstage pair, bubble-bubble relations via Plateau-Taylor?
+- ftpg: evaluate "completeness" as "closure" from early maxima
 
 ---
 

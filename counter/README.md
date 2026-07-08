@@ -14,4 +14,6 @@ usecounter.com (it counts uses, it's an invitation to *use* the thing called *co
 
 ## models
 
-todo
+supports a human (defining "human" inclusively) who's figured out both (a) counting their own history and (b) health-vs-pain and (c) distinguishable selfhood
+
+actor/act/action (actor has many acts; an act is i/o; an action is actual information-routing from one actor through an actor to a third actor)
