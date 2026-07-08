@@ -38,7 +38,7 @@ SPINE = [
     (3, ["Foam.Seat.Clock", "Foam.Seat.Dial", "Foam.Seat.Born", "Foam.Seat.Forcing",
          "Foam.Seat.Doubling", "Foam.Seat.Triad", "Foam.Seat.Octo", "Foam.Seat.Sed",
          "Foam.Seat.Ladder", "Foam.Seat.Rank", "Foam.Seat.Norm", "Foam.Seat.Bootstrap",
-         "Foam.Seat.Signature", "Foam.Seat.Rotations", "Foam.Seat.Closure",
+         "Foam.Seat.Signature", "Foam.Seat.Rotations", "Foam.Seat.Closure", "Foam.Seat.Summit",
          "Foam.Seat.Characters"]),
     (4, ["Foam.Seat.Observer", "Foam.Seat.Beholder", "Foam.Seat.Epoch", "Foam.Seat.Seam",
          "Foam.Seat.Naming", "Foam.Seat.Meet", "Foam.Seat.Quiver", "Foam.Seat.Sort", "Foam.Seat.Tight",
