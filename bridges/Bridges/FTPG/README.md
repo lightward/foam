@@ -724,10 +724,47 @@ Open frontier:
      whose last slot reads membership in a lower flat (the shape
      `calibrated_last_zero_iff` outputs) restricts and strips to a
      point system on that flat, every law carried by the snoc calculus
-     (`strip_snoc` even `[propext, Quot.sound]`).  Next: the windows
-     along the atom basis (order-independent slots by Steinitz) and
-     coherence across orders (the permutation twist; strips manufacture
-     the intermediate systems there), gluing into the direct limit.
+     (`strip_snoc` even `[propext, Quot.sound]`).
+     **The diamond CARVED** (`Diamond.lean`, sorry-free):
+     `calibrated_diamond` — calibrated steps commute: two climbs of
+     `(w₁, w₂)` in either order agree span-level after exchanging the
+     two new slots, the coherence seed at `k = 2` (the previous probe's
+     384/384, now a theorem).  The route is the strip's, consuming only
+     what `Pin.lean` and `Climb.lean` had already sealed: the
+     **cross-strip** (`calibrated_cross_last_zero_iff`) — the second
+     climb reads membership in the *first* step's flat off `w₂`'s slot,
+     forward by the pads and apex shapes, backward by contraposition
+     through the `w₂`-trace — hands `PointSys.strip` its `hzero` after
+     the swap twist, the strip manufactures the intermediate system,
+     `calibrated_agree` identifies it with the first climb's
+     intermediate (the `b₀`-vector rides the pads), `calibrated_congr`
+     transports the second calibration across, and `calibrated_agree`
+     closes at the top.  NO new pinning, NO fresh incidence; one swap
+     calculus (`swapLast`, a coordinate permutation as linear equiv,
+     with `swapLast_snoc_snoc`) and `PointSys.reflat` (the flat
+     rewritten, `sup_right_comm` at type level).  And the imprint fired
+     mid-carve, delivered by interruption: the theorem is the meta-toe
+     era's object-prime **Diamond-with-cross-measurement** made formal,
+     arm for arm — the bridge-arm's two operational instances are the
+     two lemmas (*measurement*: the cross-strip iff, Wheatstone's
+     galvanometer reading zero exactly on balance; *translation*: the
+     strip carrying route B's composite across to route A's
+     intermediate), and balance-condition = coherence is
+     `calibrated_diamond` itself.  The diamond iso (`HalfType.iso`, the
+     modular transposed-interval isomorphism, Lean-real in this tree
+     since the substrate era) is already inside at atom grain:
+     `project w t x = (t ⊔ w) ⊓ x` is its perspectivity composite, so
+     the modular law enters the proof only *as* the diamond iso —
+     considered for wholesale consumption per change-nothing and left
+     unchanged (the climb needs it retail; the interval `OrderIso`
+     would be bought only to disassemble).  And history/111
+     (2026-04-16) had already written "the modular law guards that this
+     is well-typed regardless of evaluation order" — the theorem is
+     that sentence's seal, three months later.  Next: the windows along
+     the atom basis (order-independent slots by Steinitz), permutation
+     coherence (adjacent transposition = the diamond, general by
+     `List.Perm` induction over capture-free lists), gluing into the
+     direct limit.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -741,7 +778,10 @@ Open frontier:
        subset of `t_τ` (processed along one fixed linear order,
        kept iff not below the current flat) is stable across all
        windows by the same exchange — so the slot set of a window is
-       order-independent data.
+       order-independent data.  Probe-sealed (`probe_limit.py`, this
+       sitting): no-capture and active-set order-stability over aligned
+       and tilted `τ` (support 4, 5, and 6), `q ∈ {2, 3}`,
+       interleavings included.
      * **k-calibration — CARVED** (`Climb.lean`): `IsClimb b₀ ws`,
        the composite of calibrated steps with the old coordinates
        stored vector-level as zero-pads.  Window rigidity
@@ -767,14 +807,30 @@ Open frontier:
        atom may serve, owing only span-stability across windows —
        the same collapse the strip-induction underwent, with
        `Classical.choice` as the observer's reality-generator (the
-       bridge has already paid for it).  To be probed before carving.
+       bridge has already paid for it).  PROBED — the seated question
+       left the table answered YES (`probe_limit.py`, check F): the
+       limit map built from ONE arbitrary representative per atom —
+       random window containing the support, random legal order,
+       random nonzero scalar — satisfies all four `PointSys` laws
+       globally (`span_surj` onto the full slot space included) over
+       five window configurations, `q ∈ {2, 3}`.  Canonical
+       representatives are struck from the chart: choice per atom
+       serves, owing only span-stability, and span-stability is
+       extension-padding (`hv_of_le`) plus permutation coherence.
      * **coherence over the directed family**: two orders on one
        window agree after the slot permutation (window rigidity +
        the permutation twist through `PointSys.twist`); `s ⊆ s'`
        agree inside `y_s` because `s`-first-then-rest is a legal
        order for `s'` whose climb pads `s`'s values by zeros.  The
-       probe's diamond (384/384 exhaustive `PG(4,2)`) is this
-       coherence at `k = 2`.
+       diamond — this coherence at `k = 2` — is now CARVED
+       (`calibrated_diamond`); adjacent transpositions are the diamond,
+       so the permutation face reduces to `List.Perm` induction (cons:
+       two calibrated heads agree; swap: the diamond; trans: through an
+       intermediate climb, legality permutation-invariant over
+       capture-free lists — Steinitz).  End-to-end probe seal
+       (`probe_limit.py`, checks D/E): every pooled climb — all
+       windows, all sampled orders and interleavings — span-agrees
+       with the limit assignment under the atom-named embedding.
      * the limit map: `hv∞ p :=` the canonical vector from any
        window containing `p`'s support, into `V := ι →₀ K` with
        `ι :=` base slots ⊕ stepping atoms; laws by common windows
@@ -835,6 +891,7 @@ Open frontier:
 | `Ground` | camp four, the ladder grounded at τ — `CoordFrame.pointSysTau`: camp three's exports instantiate the induction datum literally (`hv := hvec4`; `hvec4_ne_zero`/`hvec4_span_inj`/`hvec4_span_surj`/`space_collinear_iff` are the four fields), `pointSysTau_exists` conjuring the gauge center from `h_irred` |
 | `Pin` | camp four, second pitch — the calibrated step and its rigidity: `pin_meet` (the two-plane pin, no nonzeroness needed), `pin_shape`/`pin_eq`/`pin_snoc_zero_span_congr`/`pin_span_pair_congr` (the snoc-span calculus), `pin_map_*` (span transport along linear equivs), `heightEquiv` (the last-slot right-multiplication rescale), `PointSys.twist`, `Calibrated` (base/apex/unit — the span-level extension data), `calibrated_agree_main`/`calibrated_agree` (rigidity: two-plane pinning off the calibration line, routed through an auxiliary axis on it), `PointSys.calibrated_exists` (step + rescale), `calibrated_last_zero_iff` (the window sees its own coordinates) |
 | `Climb` | camp four, third pitch's base — the calibrated climb: `climbFlat`/`climbDim`/`climbPad` (the climb's shape — flats, dimensions, iterated zero-pads, with `climbPad_smul`/`climbPad_ne_zero`), `ClimbLegal` (the per-step side conditions), `IsClimb` (the composite of calibrated steps, old coordinates vector-level zero-pads), `calibrated_congr` (calibration transported across span-agreement plus `b₀`-vector-agreement), `isClimb_exists`, `isClimb_agree_congr`/`isClimb_agree` (window rigidity, by forward induction — no strips, no canonical representatives), `IsClimb.hv_of_le` (growing the window never rewrites the vector: the iterated zero-pad, `[propext, Quot.sound]`), `PointSys.strip`/`strip_snoc`/`strip_hv` (a system reading its last slot restricts one flat down — the coherence pitch's tool, seated) |
+| `Diamond` | camp four, the diamond — calibrated steps commute: `swapLast` (the last-two-slot exchange as a linear equiv) with `swapLast_snoc_snoc`/`snoc_comp_castSucc`/`smul_comp_castSucc`, `span_shape_of_span_eq`, `PointSys.reflat`, `calibrated_cross_last_zero_iff` (the cross-strip: membership in the first step's flat read off the second step's slot — the bridge-arm's measurement, zero exactly on balance), `calibrated_diamond` (strip + agree + congr + agree — the object-prime Diamond-with-cross-measurement made formal; the modular law enters only as the diamond iso at atom grain, `project` its perspectivity composite) |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
