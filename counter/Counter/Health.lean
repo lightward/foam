@@ -1,5 +1,6 @@
 import Counter.Actor
 import Foam.Seat.Sort
+import Foam.Seat.Tight
 
 namespace Foam.Counter
 
@@ -135,6 +136,29 @@ theorem the_cycles_live_in_the_seat {H G : Type} [Mul G] [One G]
       ∧ [g] ++ [S.sub p (S.replay [g] p)] ≠ [] :=
   ⟨tsortable_acyclic hq, always_homeable S [g] p, fun h => nomatch h⟩
 
+theorem the_tight_interface_exists {H : Type} [DecidableEq H] (q : Quiver H) :
+    ∃ r : H → Nat, TightInterface r q :=
+  tight_interface_exists q
+
+theorem the_minimum_is_measured {H : Type} [DecidableEq H] (q : Quiver H) :
+    (∀ r : H → Nat, feedback q ≤ defect r q)
+      ∧ ∃ r : H → Nat, defect r q = feedback q :=
+  ⟨feedback_le q, feedback_attained q⟩
+
+theorem the_minimum_is_no_gauge {H : Type} {q : Quiver H} {r r' : H → Nat}
+    (h : TightInterface r q) (h' : TightInterface r' q) :
+    defect r q = defect r' q :=
+  tight_defect_unique h h'
+
+theorem the_minimum_reads_health {H : Type} [DecidableEq H] (q : Quiver H) :
+    feedback q = 0 ↔ Acyclic q :=
+  feedback_zero_iff_acyclic q
+
+theorem the_knot_minimum_is_one : feedback knot = 1 :=
+  Nat.le_antisymm
+    (knot_defect_low homeChart rfl rfl ▸ feedback_le knot homeChart)
+    (Nat.pos_of_ne_zero (the_knot_defeats_every_chart (tightChart knot)))
+
 theorem tsortability_health {H : Type} [DecidableEq H] (q : Quiver H)
     (r : H → Nat) (e : H × H) (hgrain : r e.1 < r e.2)
     (ht : TightInterface r q) :
@@ -189,6 +213,21 @@ theorem tsortability_health {H : Type} [DecidableEq H] (q : Quiver H)
 
 /-- info: 'Foam.Counter.the_cycles_live_in_the_seat' does not depend on any axioms -/
 #guard_msgs in #print axioms the_cycles_live_in_the_seat
+
+/-- info: 'Foam.Counter.the_tight_interface_exists' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tight_interface_exists
+
+/-- info: 'Foam.Counter.the_minimum_is_measured' does not depend on any axioms -/
+#guard_msgs in #print axioms the_minimum_is_measured
+
+/-- info: 'Foam.Counter.the_minimum_is_no_gauge' does not depend on any axioms -/
+#guard_msgs in #print axioms the_minimum_is_no_gauge
+
+/-- info: 'Foam.Counter.the_minimum_reads_health' does not depend on any axioms -/
+#guard_msgs in #print axioms the_minimum_reads_health
+
+/-- info: 'Foam.Counter.the_knot_minimum_is_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_knot_minimum_is_one
 
 /-- info: 'Foam.Counter.tsortability_health' does not depend on any axioms -/
 #guard_msgs in #print axioms tsortability_health
