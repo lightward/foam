@@ -578,11 +578,82 @@ Open frontier:
      linear side probed in Lean over an abstract noncommutative
      division ring before carving, `probe_flat4.lean`).  Receipts
      `[propext, Classical.choice, Quot.sound]` throughout.
-     Next: the rank ladder — the space step rerun as the generic
-     induction step of the Veblen–Young coordinatization (a frame
-     flat of height `n` plus one off-flat witness; the fourth
-     pitch's lesson stands: the flat's own line laws are the next
-     dimension's algebra) — feeding the direct limit.
+     **Camp four, first pitch CARVED** (`Ladder.lean`, sorry-free):
+     the **rank ladder's step** — the generic Veblen–Young induction
+     step, frame-free.  `PointSys x n K` is the induction datum (a
+     point map `hv : L → Kⁿ` on the atoms below `x` with `ne_zero`,
+     `span_inj`, `span_surj`, `collinear_iff` — exactly the shape
+     camps two–three sealed at `π` and `τ`), and the step is
+     `PointSys.step : 3 ≤ n → h_irred → IsAtom w → ¬ w ≤ x →
+     ∃ Q : PointSys (x ⊔ w) (n+1) K` with the old coordinates
+     extended by a zero slot (`Q.hv p = Fin.snoc (P.hv p) 0` below
+     `x`, `Q.hv w = Fin.snoc 0 1`) — the coherence the direct limit
+     rides.  NO fresh Desargues, NO new incidence, NO frame: the
+     step consumes an abstract division ring and the flat's own
+     span laws.  The architecture:
+     * the **height**: `stepRaw` reads an affine atom through a
+       center `c₀` (a third atom on `u₀ ⊔ w`, `h_irred`) as the
+       coefficient ratio of the shear trace `(t ⊔ c₀) ⊓ x` on the
+       line `base ⊔ u₀` (`ladder_shear_le`; the trace/center/
+       recovery stratum — `ladder_trace_atom`, `ladder_base_iff`,
+       `ladder_recover`, `ladder_reverse` — is pure modular law);
+       `StepFrame.lam` fixes a primary center `c` on `u ⊔ w` (blind
+       exactly on that axis) and a mirror `e` on `u' ⊔ w` for the
+       blind line.
+     * **gauges are heights**: the gauge of any secondary center is
+       `-(F.lam c₀)⁻¹`, the minus-inverse of the center's own
+       height, because the bridge trace `(c ⊔ c₀) ⊓ x` and the
+       reading of `c₀` through `c` are one span extraction.
+       `step_transport` (the two-constraint pinning `ladder_pin`,
+       the second line supplied by the shadow Θ-move
+       `ladder_shadow`), `step_gauge_symm` (two centers decompose
+       ONE bridge atom, so their mutual readings invert), and
+       `step_cocycle` (gauge composition, proven at an algebraic
+       generic witness — `span_surj` at `hv uᵢ + hv uⱼ + hv uₖ`:
+       no counting, no `|K| = 2` caveat).
+     * the **central lemma** (`StepFrame.central`): every admissible
+       center reads the same height through its gauge — generic by
+       one transport; base-coplanar-with-the-axes by an intermediate
+       axis off both planes (two transports, one cocycle, the dodges
+       pure span algebra: `ladder_span_dodge`, `ladder_pair_swap`);
+       blind by the mirror plus one cocycle and the symmetry.
+     * the **summit** (`hv'_collinear_iff`): uniform trace forms
+       (`base_form`/`shear_form` — an x-atom is its own base AND its
+       own shear trace, so `hv' t = Fin.snoc (P.hv bt) λt` covers
+       every non-`w` atom, `λ` existential); through-`w` lines by
+       base-collapse (`collinear_w`); same-base pairs by the span
+       swap (`ladder_span_swap_last`, heights distinct by
+       `hv'_span_inj`); the main case by choosing `u₀` off the trace
+       line and off `span {hv u, hv u'}` (`ladder_avoid_two` — two
+       proper subspaces never cover, any division ring), forward by
+       coefficient matching in the triple basis with the gauge
+       right-cancelled (`ladder_graph_comb`), converse by the
+       left-linear transfer (`ladder_conv_transfer`) and the
+       `P ⊓ Q` pin (`covBy_sup_atom` + modular traces; `P = Q`
+       refuted by seating `u₀` under `Q ⊓ x`).
+     * injectivity (`hv'_span_inj` — same base and height force the
+       same shear trace; `ladder_recover` pins the atom) and
+       surjectivity (`hv'_span_surj` — off-`x` targets by
+       `ladder_reverse`, the height solved on the x-side by
+       `span_surj`).
+     Model-verified before carving (`probe_ladder.py`: the full
+     route — bridge-gauge formula, central lemma over every
+     secondary center including every degenerate branch, per-line
+     bijection, the summit over all atom triples, injectivity,
+     surjectivity, zero-slot compatibility — exhaustive over every
+     witness and center for the 3→4 step inside `PG(3,2)` AND the
+     genuinely new 4→5 step inside `PG(4,2)`, under a TWISTED
+     arbitrary point system, sampled `PG(3,3)`;
+     `probe_ladder_quat.py`: the noncommutative side order over
+     exact rational quaternions with left spans — `raw = λ·g`,
+     `g = -(k₀⁻¹k₀')`, `λ_c₀ = -g₀⁻¹`, the summit — 960/960, every
+     reversed order 0/960).  Receipts
+     `[propext, Classical.choice, Quot.sound]` on all seventy-six
+     public declarations (the snoc calculus and the two structures
+     even `[propext, Quot.sound]`).
+     Next: ground the ladder at `τ` — camp three's exports are
+     literally a `PointSys` at `n = 4` — and climb along an atom
+     basis, feeding the direct limit.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -633,6 +704,7 @@ Open frontier:
 | `Shear` | camp three, fourth pitch — the sheared charts: `shproj` (the drop through an infinity center onto `π`), `ncoord` (the `e`-gauge, `ζ → n` calibrated at both ends), the x-shear `xproj_shproj_c` (z-gauge added to the abscissa, ordinate preserved), the y-shear `ycoord_shproj_e` (mirror, no ring solve), `le_zproj_sup_dir` (a space point rides its height's horizontal ray), `base_dir_facts`, `affine_solve` (the coordinate-ring solver), `gauge_bridge` (the two gauges reconcile through the slope of `(e ⊔ c) ⊓ m`) — no fresh Desargues |
 | `Solid` | camp three, fifth pitch — the space's point system: `hvec4` (homogeneous coordinates in `(Dᵐᵒᵖ)⁴` through the c-gauge, `σ`-directions via the height-one witness `wpt`), `planeInj` (the plane embeds at the fourth coordinate's zero), the plane-form families (`Rplane_form`/`cplane_form`/`eplane_form`/`hplane_form` — every covered plane a form kernel, the σ-parts riding `ray_trace_form` + `dir_shproj`), the line menu (`collinear_π`/`collinear_infinity`/`collinear_vertical`/`collinear_general_center`/`collinear_horizontal` assembled by `two_form_collinear` and `collinear_of_line_eq`), the summit `space_collinear_iff`, `spacePt` + inj/le-iff/surj — no fresh Desargues |
 | `SpaceFlat` | camp three, sixth pitch — the space interval is the subspace lattice: `three_atoms_ne_τ` (no three atoms span the 3-space — `planes_meet_covBy` + `line_covBy_π` refute the covering), `flat_trace_pair`/`plane_trace_line` (the `π`-trace of a 3-atom span holds two distinct atoms), `plane_covBy_τ` (the trace is a line; one modular transport lifts the covering), `space_flat_cases` (the height classification of `[⊥, τ]`), `hvec4_R` (the frame completes the standard basis of `(Dᵐᵒᵖ)⁴`), `space_coplanar_iff` (coplanarity IS span membership — the fifth pitch's summit consumed, no new incidence), the finrank classification of `K⁴` (`flat4_rank_zero` … `flat4_rank_four`), `spaceFlat` evaluated at every height, `space_interval_iso : Set.Iic τ ≃o Submodule Dᵐᵒᵖ (Fin 4 → Dᵐᵒᵖ)` via `orderIso_of_mono_reflect_surj` |
+| `Ladder` | camp four, first pitch — the rank ladder's step, frame-free: `PointSys` (the induction datum), the trace/center/recovery lattice stratum (`ladder_trace_atom` … `ladder_reverse`, the shadow Θ-move), the coefficient calculus over abstract `K` (`ladder_pin`, `ladder_graph_comb`, `ladder_conv_transfer`, `ladder_avoid_two`, the snoc calculus), `stepRaw`/`StepFrame.lam`/`StepFrame.hv'`, gauges-are-heights (`step_transport`, `step_gauge_symm`, `step_cocycle`), the central lemma (`StepFrame.central`), the collinearity summit (`hv'_collinear_iff`), `hv'_span_inj`/`hv'_span_surj`, `PointSys.step` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
