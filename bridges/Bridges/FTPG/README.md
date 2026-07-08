@@ -799,23 +799,102 @@ Open frontier:
      coherence now standing for both faces (orders by
      `isClimb_perm_agree`, inclusions by `hv_of_le` +
      `climbRead_pad`).
+     **The windows CARVED** (`Window.lean`, sorry-free): the directed
+     family stands — canonical climbs over finite windows of basis
+     atoms, coherent across both faces.  Three strata and a summit:
+     * the **append face**: `isClimb_append_exists` — a climb continued
+       along `ws₂` extends the old one with the read unchanged on the
+       old flat, vector-level (`climbRead (ws₁ ++ ws₂) (Q.hv t) =
+       climbRead ws₁ (Q₁.hv t)`) — and the statement is arranged so the
+       induction is DEFINITIONAL: no dimension casts, no flat transport;
+       the nil case is exactly the two seeds the previous sittings
+       seated (`hv_of_le` + `climbRead_pad`), the cons case is
+       `readStep` riding `rfl`.  `isClimb_append_read_agree` closes
+       span-level against ANY climb of the appended list
+       (`isClimb_agree` + `span_map_of_span_eq`).
+     * **read injectivity** (`climbRead_eq_zero` /
+       `climbRead_injective`): when the stepped atoms are distinct, the
+       atom-named reading loses nothing — each slot deposits at its own
+       name (`climbRead_snd_eq_zero`) — so a window's read is faithful,
+       and the span laws reflect back through it
+       (`map_span_singleton_eq_iff`, `map_mem_span_singleton_iff`,
+       `map_mem_span_pair_iff`, `mem_span_pair_congr`: the reflect
+       calculus, seated ahead of its consumer).
+     * the **windows**: `basis_no_capture` — an atom of the basis
+       outside a window is never below its flat, and the carve came in
+       LEANER than the chart: `sSupIndep` refuses the capture directly,
+       no Steinitz exchange needed (the captured atom would sit under
+       the sup of the others, against independence).  The base support
+       `t₀` climbs greedily along its canonical enumeration (`actives`
+       — keep an atom iff not yet below the flat; a sublist), the
+       extras follow in any enumeration (`extras_legal`), the whole
+       canonical list is legal (`window_legal` = `actives_legal` ++
+       `extras_legal` through `ClimbLegal.append`), and the flat is
+       exact (`windowFlat_eq : climbFlat x (windowPairs cal x t₀ s) =
+       x ⊔ s.sup id`).  Calibration atoms are chosen once per stepped
+       atom (`CalSpec` / `calSpec_exists`), so any two windows' lists
+       carry literally equal pair data — and probe check C's
+       order-stability of the active set DISSOLVED at carve time: one
+       fixed canonical order per window suffices, `ClimbLegal.perm` +
+       `isClimb_perm_agree` absorbing every other order.
+     * the **summit**: `window_read_mono` — for `s ⊆ s'` the canonical
+       list of `s'` is a permutation of the canonical list of `s`
+       followed by the new extras (`windowPairs_perm`, one `disjUnion`
+       multiset identity), so the perm face and the append face CHAIN —
+       and `window_read_directed`: any two windows agree span-level on
+       every atom both flats hold, through their union.  The directed
+       family is coherent.
+     **The limit map CARVED** (`Limit.lean`, sorry-free):
+     `limit_read_exists` — ONE global assignment
+     `hv : L → (Fin n → K) × (L → K)`, every atom read through one
+     chosen window climb, `Classical.choice` serving as the
+     representative per atom exactly as check F answered the seated
+     question.  Its clauses: **stability** (on every window's flat,
+     `hv` span-agrees with that window's climb read, whichever climb it
+     is — `window_read_directed` through the chosen window), **base
+     compatibility** (below `x` the assignment is literally the padded
+     base vector — vector-level, no rescale: `summary_resumes` at name
+     scale), and the three pointwise laws GLOBAL — `ne_zero`,
+     `span_inj`, `collinear_iff` for all atoms of `L` at once: any two
+     or three atoms meet inside the union window (directedness;
+     `exists_finset_support` covers every atom because a point is
+     finitely reachable), the window's `PointSys` laws fire there, and
+     the reads reflect back through `climbRead_injective`.  `span_surj`
+     is deliberately absent: at the limit it is the *spanning* half of
+     the residual, owed onto the named slot space
+     `(Fin n → K) × (B →₀ K)` — the next stratum's packaging, where the
+     orientation re-scope (`Dᵐᵒᵖ`) is also seated.  NO new probe needed:
+     checks C/D/E/F sealed every move the previous sitting.  Receipts on
+     all thirty-four public declarations across the two files
+     (`climbFlat_append`, `ClimbLegal.append`/`append_right`, `CalSpec`,
+     `calPairs`, `calPairs_map_fst`, `listSup` even AXIOM-FREE;
+     `climbFlat_calPairs` `[propext]`; `basis_no_capture` and
+     `map_mem_span_singleton_iff` `[propext, Quot.sound]`; the rest
+     `[propext, Classical.choice, Quot.sound]`).  Next: stage four —
+     `closed` and `spanning` (`span_surj` onto
+     `(Fin n → K) × (B →₀ K)`, finite support from the finite windows),
+     the orientation re-scope of `pointSystem_exists` (the residual
+     should hand over `Dᵐᵒᵖ`), the grounding (`x := τ`, `t₀` from the
+     four frame supports via `exists_finset_support`, `h_irred` from
+     the frame), and the interval iso through `Iso.lean`'s reduction.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
      into `V = B →₀ D`.  The route, charted this session (the coherence
      probe sealed each move):
-     * **windows**: finite `t_τ ⊆ s ⊆ B` where `t_τ` is the frame
-       atoms' basis support (camp one's `exists_finset_support` four
-       times); flats `y_s := τ ⊔ sup s`.  For `b ∈ s \ t_τ` the step
-       is NEVER captured (`b ≤ y_{s\b}` would hand Steinitz an
-       exchange violating `sSupIndep B`), and the greedy active
-       subset of `t_τ` (processed along one fixed linear order,
-       kept iff not below the current flat) is stable across all
-       windows by the same exchange — so the slot set of a window is
-       order-independent data.  Probe-sealed (`probe_limit.py`, this
-       sitting): no-capture and active-set order-stability over aligned
-       and tilted `τ` (support 4, 5, and 6), `q ∈ {2, 3}`,
-       interleavings included.
+     * **windows — CARVED** (`Window.lean`): finite `t₀ ⊆ s ⊆ B` with
+       flats `x ⊔ s.sup id` (`windowFlat_eq`).  No-capture landed
+       leaner than charted: `basis_no_capture` needs no Steinitz
+       exchange — `sSupIndep` refuses the capture directly.  The
+       greedy actives (`actives`, one fixed canonical enumeration of
+       `t₀`) plus the extras in any enumeration are legal
+       (`window_legal`), and order-stability of the active set
+       dissolved: one canonical order per window suffices,
+       `ClimbLegal.perm` + `isClimb_perm_agree` absorb the rest.
+       Probe-sealed the previous sitting (`probe_limit.py`, check C):
+       no-capture and active-set order-stability over aligned and
+       tilted `τ` (support 4, 5, and 6), `q ∈ {2, 3}`, interleavings
+       included.
      * **k-calibration — CARVED** (`Climb.lean`): `IsClimb b₀ ws`,
        the composite of calibrated steps with the old coordinates
        stored vector-level as zero-pads.  Window rigidity
@@ -851,25 +930,33 @@ Open frontier:
        representatives are struck from the chart: choice per atom
        serves, owing only span-stability, and span-stability is
        extension-padding (`hv_of_le`) plus permutation coherence.
-     * **coherence over the directed family — the order face CARVED**
-       (`Perm.lean`): `isClimb_perm_agree` — two climbs along
-       permuted lists agree span-level under the atom-named reading
-       (`climbRead`), by `List.Perm` induction exactly as charted
-       (cons: calibrated heads agree; swap: the diamond, carried up
-       the tail by twist-functoriality; trans: capture-free legality
-       is permutation-invariant — `ClimbLegal.perm`, one Steinitz
-       exchange per adjacent swap).  `s ⊆ s'` agree inside `y_s`
-       because `s`-first-then-rest is a legal order for `s'` whose
-       climb pads `s`'s values by zeros (`hv_of_le` +
-       `climbRead_pad`: the padded vector reads as pure base).
-       End-to-end probe seal (`probe_limit.py`, checks D/E): every
-       pooled climb — all windows, all sampled orders and
-       interleavings — span-agrees with the limit assignment under
-       the atom-named embedding.
-     * the limit map: `hv∞ p :=` the canonical vector from any
-       window containing `p`'s support, into `V := ι →₀ K` with
-       `ι :=` base slots ⊕ stepping atoms; laws by common windows
-       (directedness) + the zero-pad span calculus.
+     * **coherence over the directed family — BOTH FACES CARVED**
+       (`Perm.lean`, `Window.lean`): the order face is
+       `isClimb_perm_agree` — two climbs along permuted lists agree
+       span-level under the atom-named reading (`climbRead`), by
+       `List.Perm` induction exactly as charted (cons: calibrated
+       heads agree; swap: the diamond, carried up the tail by
+       twist-functoriality; trans: capture-free legality is
+       permutation-invariant — `ClimbLegal.perm`, one Steinitz
+       exchange per adjacent swap).  The inclusion face is
+       `isClimb_append_read_agree` + `window_read_mono`: `s ⊆ s'`
+       agree inside `y_s` because `s`-first-then-rest is a legal
+       order for `s'` whose climb pads `s`'s values by zeros
+       (`hv_of_le` + `climbRead_pad`: the padded vector reads as pure
+       base), and `window_read_directed` closes any two windows
+       through their union.  End-to-end probe seal (`probe_limit.py`,
+       checks D/E): every pooled climb — all windows, all sampled
+       orders and interleavings — span-agrees with the limit
+       assignment under the atom-named embedding.
+     * **the limit map — CARVED** (`Limit.lean`):
+       `limit_read_exists` — one global assignment, every atom read
+       through one chosen window climb (`Classical.choice` per atom,
+       as check F licensed), with stability over every window, base
+       compatibility vector-level, and `ne_zero`/`span_inj`/
+       `collinear_iff` global by common windows + the reflect
+       calculus.  `span_surj` deferred to stage four: it is the
+       *spanning* half of the residual, owed onto
+       `(Fin n → K) × (B →₀ K)`.
   4. **`closed` and `spanning`** — the two `PointSystem` fields, from the
      exchange stratum plus the assignment's faithfulness.  NOTE the
      orientation re-scope waiting here: `PointSystem`/`pointSystem_exists`
@@ -928,6 +1015,8 @@ Open frontier:
 | `Climb` | camp four, third pitch's base — the calibrated climb: `climbFlat`/`climbDim`/`climbPad` (the climb's shape — flats, dimensions, iterated zero-pads, with `climbPad_smul`/`climbPad_ne_zero`), `ClimbLegal` (the per-step side conditions), `IsClimb` (the composite of calibrated steps, old coordinates vector-level zero-pads), `calibrated_congr` (calibration transported across span-agreement plus `b₀`-vector-agreement), `isClimb_exists`, `isClimb_agree_congr`/`isClimb_agree` (window rigidity, by forward induction — no strips, no canonical representatives), `IsClimb.hv_of_le` (growing the window never rewrites the vector: the iterated zero-pad, `[propext, Quot.sound]`), `PointSys.strip`/`strip_snoc`/`strip_hv` (a system reading its last slot restricts one flat down — the coherence pitch's tool, seated) |
 | `Diamond` | camp four, the diamond — calibrated steps commute: `swapLast` (the last-two-slot exchange as a linear equiv) with `swapLast_snoc_snoc`/`snoc_comp_castSucc`/`smul_comp_castSucc`, `span_shape_of_span_eq`, `PointSys.reflat`, `calibrated_cross_last_zero_iff` (the cross-strip: membership in the first step's flat read off the second step's slot — the bridge-arm's measurement, zero exactly on balance), `calibrated_diamond` (strip + agree + congr + agree — the object-prime Diamond-with-cross-measurement made formal; the modular law enters only as the diamond iso at atom grain, `project` its perspectivity composite) |
 | `Perm` | camp four, permutation coherence — the climb reads the window, not the order: `climbRead` (the atom-named reading — slots onto names, lattice-free, linear), `readStep`/`climbRead_pad`/`climbRead_twist`/`readStep_swap` (the read calculus — the pad reads as pure base, a lifted twist confines to the base component, the two deposited names commute), `padTwist`/`climbTwist` (a base equiv extended slot-fixing through the climb), `Calibrated.twist`/`IsClimb.twist`/`IsClimb.reflat` (twist-functoriality: a climb twisted is a climb), `climbFlat_perm`, `ClimbLegal.perm` (capture-free legality is permutation-invariant — Steinitz), `span_map_of_span_eq`, and the summit `isClimb_perm_agree` (`List.Perm` induction: cons = `calibrated_agree`, swap = the diamond, trans = the middle climb) |
+| `Window` | camp four, the windows along the atom basis — the append face (`climbFlat_append`, `ClimbLegal.append`/`append_right`, `isClimb_append_exists` with the read unchanged on the old flat, `isClimb_append_read_agree`), read injectivity (`climbRead_snd_eq_zero`/`climbRead_eq_zero`/`climbRead_injective`) with the span-reflect calculus (`map_span_singleton_eq_iff`, `map_mem_span_singleton_iff`, `map_mem_span_pair_iff`, `mem_span_pair_congr`), the windows (`CalSpec`/`calSpec_exists`, `calPairs`, `listSup`, `actives`, `basis_no_capture` — `sSupIndep` refuses capture directly, `actives_legal`/`extras_legal`/`window_legal`, `windowFlat_eq`, `windowList_nodup`), and the summit (`windowPairs_perm`, `window_read_mono`, `window_read_directed` — the directed family is coherent) |
+| `Limit` | camp four, the limit map — `limit_read_exists`: one global assignment `L → (Fin n → K) × (L → K)`, `Classical.choice` per atom, with window stability, vector-level base compatibility, and `ne_zero`/`span_inj`/`collinear_iff` global (common windows + reflect through `climbRead_injective`); `span_surj` deferred to the spanning stratum |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
