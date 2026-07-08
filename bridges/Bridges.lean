@@ -55,6 +55,7 @@ import Bridges.FTPG.Ground
 import Bridges.FTPG.Pin
 import Bridges.FTPG.Climb
 import Bridges.FTPG.Diamond
+import Bridges.FTPG.Perm
 import Bridges.FTPG.Hollow
 import Bridges.FTPG.Charge
 import Bridges.Audit
