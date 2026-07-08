@@ -698,9 +698,32 @@ Open frontier:
      commute, 384/384 pairs of `PG(4,2)` exhaustive, 24/24 sampled
      `PG(4,3)` with the routed branch exercised — over `PG(3,q)`/
      `PG(4,q)`, `q ∈ {2,3,5}`, twisted base systems throughout.
-     Next: the window systems along the atom basis (windows containing
-     the frame's basis support have order-independent slots by
-     Steinitz), glued by rigidity into the direct limit.
+     **Third pitch's base CARVED — the calibrated climb** (`Climb.lean`,
+     sorry-free): `IsClimb b₀ ws` — the composite of calibrated steps
+     along a list of (new atom, calibration atom) pairs, each step
+     keeping the old coordinates vector-level as a zero-pad (the pad
+     `calibrated_exists` already hands over, stored in the climb) and
+     pinning the new atom and its calibration atom span-level.
+     `isClimb_exists` folds the calibrated step along the list;
+     `isClimb_agree` — **window rigidity**: two climbs along the same
+     list agree span-level on every atom of the final flat.  And the
+     carve came in LEANER than the chart: the strip-induction collapsed
+     — because each step stores its old coordinates vector-level, the
+     induction runs FORWARD, with invariant span-agreement at every
+     atom plus vector-agreement at the base atom `b₀` (its zero-padded
+     representative rides the pads unchanged, so the calibration target
+     is climb-invariant by construction, not by canonicalization), each
+     step closing by `calibrated_agree` after `calibrated_congr`
+     transports one calibration across the invariant.  NO strips, NO
+     canonical representatives.  `IsClimb.hv_of_le` — the window sees
+     its own coordinates, stably: below the base flat the composite is
+     literally the iterated zero-pad (`climbPad`) — growing the window
+     never rewrites the vector (`summary_resumes` at coordinate scale),
+     `[propext, Quot.sound]`.  Next: the windows along the atom basis
+     (order-independent slots by Steinitz) and coherence across orders
+     (the permutation twist; strips manufacture the intermediate
+     systems THERE — that is the stratum where the charted strip
+     machinery is genuinely consumed), gluing into the direct limit.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -715,24 +738,26 @@ Open frontier:
        kept iff not below the current flat) is stable across all
        windows by the same exchange — so the slot set of a window is
        order-independent data.
-     * **k-calibration**: the composite of `k` calibrated steps,
-       characterized flat-out — `x`-atoms zero-padded, each added
-       atom at its slot vector, each `w'_{bᵢ}` at height 1 over `b₀`
-       in its slot.  **Window rigidity reduces to single-step
-       rigidity by strip-induction**: the last slot of any atom below
-       the previous flat vanishes (base-trace + pencil membership,
-       pure algebra), backward by contraposition (an atom off the
-       previous flat reads its trace through the new atom, whose
-       slot coefficient cannot vanish), so the stripped system is a
-       point system on the previous flat and `(k−1)`-calibrated; the
-       top step is then `calibrated_agree`.  No new pinning.
+     * **k-calibration — CARVED** (`Climb.lean`): `IsClimb b₀ ws`,
+       the composite of calibrated steps with the old coordinates
+       stored vector-level as zero-pads.  Window rigidity
+       (`isClimb_agree`) landed by FORWARD induction, not
+       strip-induction: the pads carry `b₀`'s representative
+       unchanged, so the invariant is span-agreement at every atom
+       plus vector-agreement at `b₀`, and each step is
+       `calibrated_agree` after `calibrated_congr`.  No strips, no
+       canonical representatives, no new pinning.  The strip-induction
+       (last slot of an atom below the previous flat vanishes, forward
+       by pencil membership, backward by contraposition through the
+       new atom's trace) remains charted — it is the COHERENCE move,
+       manufacturing the intermediate systems when two orders on one
+       window are compared; `calibrated_last_zero_iff` is its
+       single-step seed.
      * **canonical representatives** (max-nonzero-slot coefficient
-       `1`): span-agreement becomes vector-agreement, strips of
-       canonical are canonical, zero-padding preserves the
-       normalization — so restrictions of two agreeing systems are
-       LITERALLY equal and the strip-induction composes; `b₀ := O`
-       keeps its ground representative through every climb, so the
-       calibration target is climb-invariant.
+       `1`): not needed for rigidity (the pads made the calibration
+       target climb-invariant by construction).  They remain charted
+       for the limit map's choice of representative vector — one
+       canonical vector per window-independent span.
      * **coherence over the directed family**: two orders on one
        window agree after the slot permutation (window rigidity +
        the permutation twist through `PointSys.twist`); `s ⊆ s'`
@@ -799,6 +824,7 @@ Open frontier:
 | `Ladder` | camp four, first pitch — the rank ladder's step, frame-free: `PointSys` (the induction datum), the trace/center/recovery lattice stratum (`ladder_trace_atom` … `ladder_reverse`, the shadow Θ-move), the coefficient calculus over abstract `K` (`ladder_pin`, `ladder_graph_comb`, `ladder_conv_transfer`, `ladder_avoid_two`, the snoc calculus), `stepRaw`/`StepFrame.lam`/`StepFrame.hv'`, gauges-are-heights (`step_transport`, `step_gauge_symm`, `step_cocycle`), the central lemma (`StepFrame.central`), the collinearity summit (`hv'_collinear_iff`), `hv'_span_inj`/`hv'_span_surj`, `PointSys.step` |
 | `Ground` | camp four, the ladder grounded at τ — `CoordFrame.pointSysTau`: camp three's exports instantiate the induction datum literally (`hv := hvec4`; `hvec4_ne_zero`/`hvec4_span_inj`/`hvec4_span_surj`/`space_collinear_iff` are the four fields), `pointSysTau_exists` conjuring the gauge center from `h_irred` |
 | `Pin` | camp four, second pitch — the calibrated step and its rigidity: `pin_meet` (the two-plane pin, no nonzeroness needed), `pin_shape`/`pin_eq`/`pin_snoc_zero_span_congr`/`pin_span_pair_congr` (the snoc-span calculus), `pin_map_*` (span transport along linear equivs), `heightEquiv` (the last-slot right-multiplication rescale), `PointSys.twist`, `Calibrated` (base/apex/unit — the span-level extension data), `calibrated_agree_main`/`calibrated_agree` (rigidity: two-plane pinning off the calibration line, routed through an auxiliary axis on it), `PointSys.calibrated_exists` (step + rescale), `calibrated_last_zero_iff` (the window sees its own coordinates) |
+| `Climb` | camp four, third pitch's base — the calibrated climb: `climbFlat`/`climbDim`/`climbPad` (the climb's shape — flats, dimensions, iterated zero-pads, with `climbPad_smul`/`climbPad_ne_zero`), `ClimbLegal` (the per-step side conditions), `IsClimb` (the composite of calibrated steps, old coordinates vector-level zero-pads), `calibrated_congr` (calibration transported across span-agreement plus `b₀`-vector-agreement), `isClimb_exists`, `isClimb_agree_congr`/`isClimb_agree` (window rigidity, by forward induction — no strips, no canonical representatives), `IsClimb.hv_of_le` (growing the window never rewrites the vector: the iterated zero-pad, `[propext, Quot.sound]`) |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
