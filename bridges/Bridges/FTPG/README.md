@@ -760,11 +760,45 @@ Open frontier:
      would be bought only to disassemble).  And history/111
      (2026-04-16) had already written "the modular law guards that this
      is well-typed regardless of evaluation order" — the theorem is
-     that sentence's seal, three months later.  Next: the windows along
-     the atom basis (order-independent slots by Steinitz), permutation
-     coherence (adjacent transposition = the diamond, general by
-     `List.Perm` induction over capture-free lists), gluing into the
-     direct limit.
+     that sentence's seal, three months later.
+     **Permutation coherence CARVED** (`Perm.lean`, sorry-free):
+     `isClimb_perm_agree` — **the climb reads the window, not the
+     order**: two climbs along permuted lists agree span-level under
+     the atom-named reading.  `climbRead` is the reading — a
+     lattice-free linear map peeling each step's slot onto its atom's
+     name, into `(Fin n → K) × (L → K)`, base slots kept — and the
+     coherence closes by `List.Perm` induction, one chart face per
+     constructor: **cons** (the shared head steps agree by
+     `calibrated_agree`, an auxiliary climb seats the tail comparison,
+     `isClimb_agree_congr` carries the identification up, and the
+     reads chain because spans cross any linear map —
+     `span_map_of_span_eq`); **swap** (the diamond:
+     `calibrated_diamond` identifies the two-step towers after
+     `swapLast`, the twist rides the tail by functoriality —
+     `IsClimb.twist`, a climb twisted by a base equiv is a climb,
+     `padTwist` extending the equiv slot-fixing through each step,
+     `climbTwist` the iterate — and the read absorbs the swap:
+     `climbRead_twist` confines any climb-lifted twist to the base
+     component, `readStep_swap` commutes the two deposited names by
+     `add_right_comm`); **trans** (capture-free legality is
+     permutation-invariant — `ClimbLegal.perm`, ONE Steinitz
+     `atom_exchange` per adjacent swap, exactly as charted — so
+     `isClimb_exists` seats the middle climb and the reads chain).
+     NO new pinning, NO fresh incidence, NO new probe needed: the
+     route consumed the diamond, the congr machinery, and pure
+     algebra — every branch landed first-try, the terrain leading.
+     `climbRead_pad` seats the stability seed forward: a padded
+     vector reads as pure base — with `IsClimb.hv_of_le`, growing
+     the window never rewrites the read.  Receipts on all seventeen
+     public declarations (`climbFlat_perm` even `[propext]`;
+     `padTwist`/`padTwist_apply`/`padTwist_snoc`/`climbTwist`/
+     `IsClimb.reflat` `[propext, Quot.sound]`; the rest
+     `[propext, Classical.choice, Quot.sound]`).  Next: the windows
+     along the atom basis (order-independent slots by Steinitz,
+     no-capture probe-sealed), the limit map into `B →₀ D` —
+     coherence now standing for both faces (orders by
+     `isClimb_perm_agree`, inclusions by `hv_of_le` +
+     `climbRead_pad`).
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -817,20 +851,21 @@ Open frontier:
        representatives are struck from the chart: choice per atom
        serves, owing only span-stability, and span-stability is
        extension-padding (`hv_of_le`) plus permutation coherence.
-     * **coherence over the directed family**: two orders on one
-       window agree after the slot permutation (window rigidity +
-       the permutation twist through `PointSys.twist`); `s ⊆ s'`
-       agree inside `y_s` because `s`-first-then-rest is a legal
-       order for `s'` whose climb pads `s`'s values by zeros.  The
-       diamond — this coherence at `k = 2` — is now CARVED
-       (`calibrated_diamond`); adjacent transpositions are the diamond,
-       so the permutation face reduces to `List.Perm` induction (cons:
-       two calibrated heads agree; swap: the diamond; trans: through an
-       intermediate climb, legality permutation-invariant over
-       capture-free lists — Steinitz).  End-to-end probe seal
-       (`probe_limit.py`, checks D/E): every pooled climb — all
-       windows, all sampled orders and interleavings — span-agrees
-       with the limit assignment under the atom-named embedding.
+     * **coherence over the directed family — the order face CARVED**
+       (`Perm.lean`): `isClimb_perm_agree` — two climbs along
+       permuted lists agree span-level under the atom-named reading
+       (`climbRead`), by `List.Perm` induction exactly as charted
+       (cons: calibrated heads agree; swap: the diamond, carried up
+       the tail by twist-functoriality; trans: capture-free legality
+       is permutation-invariant — `ClimbLegal.perm`, one Steinitz
+       exchange per adjacent swap).  `s ⊆ s'` agree inside `y_s`
+       because `s`-first-then-rest is a legal order for `s'` whose
+       climb pads `s`'s values by zeros (`hv_of_le` +
+       `climbRead_pad`: the padded vector reads as pure base).
+       End-to-end probe seal (`probe_limit.py`, checks D/E): every
+       pooled climb — all windows, all sampled orders and
+       interleavings — span-agrees with the limit assignment under
+       the atom-named embedding.
      * the limit map: `hv∞ p :=` the canonical vector from any
        window containing `p`'s support, into `V := ι →₀ K` with
        `ι :=` base slots ⊕ stepping atoms; laws by common windows
@@ -892,6 +927,7 @@ Open frontier:
 | `Pin` | camp four, second pitch — the calibrated step and its rigidity: `pin_meet` (the two-plane pin, no nonzeroness needed), `pin_shape`/`pin_eq`/`pin_snoc_zero_span_congr`/`pin_span_pair_congr` (the snoc-span calculus), `pin_map_*` (span transport along linear equivs), `heightEquiv` (the last-slot right-multiplication rescale), `PointSys.twist`, `Calibrated` (base/apex/unit — the span-level extension data), `calibrated_agree_main`/`calibrated_agree` (rigidity: two-plane pinning off the calibration line, routed through an auxiliary axis on it), `PointSys.calibrated_exists` (step + rescale), `calibrated_last_zero_iff` (the window sees its own coordinates) |
 | `Climb` | camp four, third pitch's base — the calibrated climb: `climbFlat`/`climbDim`/`climbPad` (the climb's shape — flats, dimensions, iterated zero-pads, with `climbPad_smul`/`climbPad_ne_zero`), `ClimbLegal` (the per-step side conditions), `IsClimb` (the composite of calibrated steps, old coordinates vector-level zero-pads), `calibrated_congr` (calibration transported across span-agreement plus `b₀`-vector-agreement), `isClimb_exists`, `isClimb_agree_congr`/`isClimb_agree` (window rigidity, by forward induction — no strips, no canonical representatives), `IsClimb.hv_of_le` (growing the window never rewrites the vector: the iterated zero-pad, `[propext, Quot.sound]`), `PointSys.strip`/`strip_snoc`/`strip_hv` (a system reading its last slot restricts one flat down — the coherence pitch's tool, seated) |
 | `Diamond` | camp four, the diamond — calibrated steps commute: `swapLast` (the last-two-slot exchange as a linear equiv) with `swapLast_snoc_snoc`/`snoc_comp_castSucc`/`smul_comp_castSucc`, `span_shape_of_span_eq`, `PointSys.reflat`, `calibrated_cross_last_zero_iff` (the cross-strip: membership in the first step's flat read off the second step's slot — the bridge-arm's measurement, zero exactly on balance), `calibrated_diamond` (strip + agree + congr + agree — the object-prime Diamond-with-cross-measurement made formal; the modular law enters only as the diamond iso at atom grain, `project` its perspectivity composite) |
+| `Perm` | camp four, permutation coherence — the climb reads the window, not the order: `climbRead` (the atom-named reading — slots onto names, lattice-free, linear), `readStep`/`climbRead_pad`/`climbRead_twist`/`readStep_swap` (the read calculus — the pad reads as pure base, a lifted twist confines to the base component, the two deposited names commute), `padTwist`/`climbTwist` (a base equiv extended slot-fixing through the climb), `Calibrated.twist`/`IsClimb.twist`/`IsClimb.reflat` (twist-functoriality: a climb twisted is a climb), `climbFlat_perm`, `ClimbLegal.perm` (capture-free legality is permutation-invariant — Steinitz), `span_map_of_span_eq`, and the summit `isClimb_perm_agree` (`List.Perm` induction: cons = `calibrated_agree`, swap = the diamond, trans = the middle climb) |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
