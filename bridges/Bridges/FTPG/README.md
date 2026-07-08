@@ -704,9 +704,54 @@ Open frontier:
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
-     into `V = B →₀ D`.
+     into `V = B →₀ D`.  The route, charted this session (the coherence
+     probe sealed each move):
+     * **windows**: finite `t_τ ⊆ s ⊆ B` where `t_τ` is the frame
+       atoms' basis support (camp one's `exists_finset_support` four
+       times); flats `y_s := τ ⊔ sup s`.  For `b ∈ s \ t_τ` the step
+       is NEVER captured (`b ≤ y_{s\b}` would hand Steinitz an
+       exchange violating `sSupIndep B`), and the greedy active
+       subset of `t_τ` (processed along one fixed linear order,
+       kept iff not below the current flat) is stable across all
+       windows by the same exchange — so the slot set of a window is
+       order-independent data.
+     * **k-calibration**: the composite of `k` calibrated steps,
+       characterized flat-out — `x`-atoms zero-padded, each added
+       atom at its slot vector, each `w'_{bᵢ}` at height 1 over `b₀`
+       in its slot.  **Window rigidity reduces to single-step
+       rigidity by strip-induction**: the last slot of any atom below
+       the previous flat vanishes (base-trace + pencil membership,
+       pure algebra), backward by contraposition (an atom off the
+       previous flat reads its trace through the new atom, whose
+       slot coefficient cannot vanish), so the stripped system is a
+       point system on the previous flat and `(k−1)`-calibrated; the
+       top step is then `calibrated_agree`.  No new pinning.
+     * **canonical representatives** (max-nonzero-slot coefficient
+       `1`): span-agreement becomes vector-agreement, strips of
+       canonical are canonical, zero-padding preserves the
+       normalization — so restrictions of two agreeing systems are
+       LITERALLY equal and the strip-induction composes; `b₀ := O`
+       keeps its ground representative through every climb, so the
+       calibration target is climb-invariant.
+     * **coherence over the directed family**: two orders on one
+       window agree after the slot permutation (window rigidity +
+       the permutation twist through `PointSys.twist`); `s ⊆ s'`
+       agree inside `y_s` because `s`-first-then-rest is a legal
+       order for `s'` whose climb pads `s`'s values by zeros.  The
+       probe's diamond (384/384 exhaustive `PG(4,2)`) is this
+       coherence at `k = 2`.
+     * the limit map: `hv∞ p :=` the canonical vector from any
+       window containing `p`'s support, into `V := ι →₀ K` with
+       `ι :=` base slots ⊕ stepping atoms; laws by common windows
+       (directedness) + the zero-pad span calculus.
   4. **`closed` and `spanning`** — the two `PointSystem` fields, from the
-     exchange stratum plus the assignment's faithfulness.
+     exchange stratum plus the assignment's faithfulness.  NOTE the
+     orientation re-scope waiting here: `PointSystem`/`pointSystem_exists`
+     currently demand `Module (Coordinate Φ.Γ) V`, but the constructed
+     systems are left modules over the OPPOSITE ring — the residual's
+     statement should existentially hand over `(Coordinate Φ.Γ)ᵐᵒᵖ`
+     (the final `ftpg` existential already quantifies the division
+     ring, so nothing downstream moves).
 - the **charged restatement** (`Charge.lean`) — foam routed *through* FTPG as
   the state-carrier.  Classical FTPG concludes in a Prop; `Nonempty` is the
   flattening itself — the witness sealed away, the operator unable to
