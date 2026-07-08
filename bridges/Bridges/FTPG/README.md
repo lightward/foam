@@ -651,9 +651,14 @@ Open frontier:
      `[propext, Classical.choice, Quot.sound]` on all seventy-six
      public declarations (the snoc calculus and the two structures
      even `[propext, Quot.sound]`).
-     Next: ground the ladder at `τ` — camp three's exports are
-     literally a `PointSys` at `n = 4` — and climb along an atom
-     basis, feeding the direct limit.
+     **The ladder is GROUNDED at τ** (`Ground.lean`, sorry-free):
+     `CoordFrame.pointSysTau` — camp three's exports instantiate the
+     induction datum literally, `PointSys (O ⊔ U ⊔ V ⊔ R) 4
+     (Coordinate Φ.Γ)ᵐᵒᵖ` with `hv := hvec4` and the four fields the
+     four space-pitch laws (`hvec4_ne_zero`, `hvec4_span_inj`,
+     `hvec4_span_surj`, `space_collinear_iff`), the gauge center from
+     `h_irred` (`pointSysTau_exists`).  `PointSys.step` can now climb.
+     Next: climb along an atom basis, feeding the direct limit.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -705,6 +710,7 @@ Open frontier:
 | `Solid` | camp three, fifth pitch — the space's point system: `hvec4` (homogeneous coordinates in `(Dᵐᵒᵖ)⁴` through the c-gauge, `σ`-directions via the height-one witness `wpt`), `planeInj` (the plane embeds at the fourth coordinate's zero), the plane-form families (`Rplane_form`/`cplane_form`/`eplane_form`/`hplane_form` — every covered plane a form kernel, the σ-parts riding `ray_trace_form` + `dir_shproj`), the line menu (`collinear_π`/`collinear_infinity`/`collinear_vertical`/`collinear_general_center`/`collinear_horizontal` assembled by `two_form_collinear` and `collinear_of_line_eq`), the summit `space_collinear_iff`, `spacePt` + inj/le-iff/surj — no fresh Desargues |
 | `SpaceFlat` | camp three, sixth pitch — the space interval is the subspace lattice: `three_atoms_ne_τ` (no three atoms span the 3-space — `planes_meet_covBy` + `line_covBy_π` refute the covering), `flat_trace_pair`/`plane_trace_line` (the `π`-trace of a 3-atom span holds two distinct atoms), `plane_covBy_τ` (the trace is a line; one modular transport lifts the covering), `space_flat_cases` (the height classification of `[⊥, τ]`), `hvec4_R` (the frame completes the standard basis of `(Dᵐᵒᵖ)⁴`), `space_coplanar_iff` (coplanarity IS span membership — the fifth pitch's summit consumed, no new incidence), the finrank classification of `K⁴` (`flat4_rank_zero` … `flat4_rank_four`), `spaceFlat` evaluated at every height, `space_interval_iso : Set.Iic τ ≃o Submodule Dᵐᵒᵖ (Fin 4 → Dᵐᵒᵖ)` via `orderIso_of_mono_reflect_surj` |
 | `Ladder` | camp four, first pitch — the rank ladder's step, frame-free: `PointSys` (the induction datum), the trace/center/recovery lattice stratum (`ladder_trace_atom` … `ladder_reverse`, the shadow Θ-move), the coefficient calculus over abstract `K` (`ladder_pin`, `ladder_graph_comb`, `ladder_conv_transfer`, `ladder_avoid_two`, the snoc calculus), `stepRaw`/`StepFrame.lam`/`StepFrame.hv'`, gauges-are-heights (`step_transport`, `step_gauge_symm`, `step_cocycle`), the central lemma (`StepFrame.central`), the collinearity summit (`hv'_collinear_iff`), `hv'_span_inj`/`hv'_span_surj`, `PointSys.step` |
+| `Ground` | camp four, the ladder grounded at τ — `CoordFrame.pointSysTau`: camp three's exports instantiate the induction datum literally (`hv := hvec4`; `hvec4_ne_zero`/`hvec4_span_inj`/`hvec4_span_surj`/`space_collinear_iff` are the four fields), `pointSysTau_exists` conjuring the gauge center from `h_irred` |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 

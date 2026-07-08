@@ -1347,6 +1347,7 @@ theorem StepFrame.hv'_affine (F : StepFrame P w) {t : L}
   unfold StepFrame.hv'
   rw [if_neg htx, if_neg htw]
 
+omit [IsAtomistic L] in
 theorem StepFrame.blind_not_mirror (F : StepFrame P w) {t : L}
     (ht : IsAtom t) (htw : t ≠ w) (h : t ≤ F.u ⊔ w) : ¬ t ≤ F.u' ⊔ w := by
   intro h'
@@ -2546,10 +2547,10 @@ end Foam.Bridges
 #guard_msgs in #print axioms Foam.Bridges.StepFrame
 
 /-- info: 'Foam.Bridges.StepFrame.u_ne_u'' depends on axioms: [propext, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.u_ne_u
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.u_ne_u'
 
 /-- info: 'Foam.Bridges.StepFrame.u'_ne_u' depends on axioms: [propext, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.u
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.u'_ne_u
 
 /-- info: 'Foam.Bridges.StepFrame.lam' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.StepFrame.lam
@@ -2561,16 +2562,16 @@ end Foam.Bridges
 #guard_msgs in #print axioms Foam.Bridges.StepFrame.lam_blind
 
 /-- info: 'Foam.Bridges.StepFrame.hv'' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv'
 
 /-- info: 'Foam.Bridges.StepFrame.hv'_of_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv'_of_le
 
 /-- info: 'Foam.Bridges.StepFrame.hv'_w' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv'_w
 
 /-- info: 'Foam.Bridges.StepFrame.hv'_affine' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv'_affine
 
 /-- info: 'Foam.Bridges.StepFrame.blind_not_mirror' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.StepFrame.blind_not_mirror
@@ -2588,16 +2589,16 @@ end Foam.Bridges
 #guard_msgs in #print axioms Foam.Bridges.StepFrame.central
 
 /-- info: 'Foam.Bridges.StepFrame.hv'_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv'_ne_zero
 
 /-- info: 'Foam.Bridges.StepFrame.lam_inj' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.StepFrame.lam_inj
 
 /-- info: 'Foam.Bridges.StepFrame.hv'_span_inj' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv'_span_inj
 
 /-- info: 'Foam.Bridges.StepFrame.hv'_span_surj' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv'_span_surj
 
 /-- info: 'Foam.Bridges.StepFrame.base_form' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.StepFrame.base_form
@@ -2621,7 +2622,7 @@ end Foam.Bridges
 #guard_msgs in #print axioms Foam.Bridges.StepFrame.collinear_main
 
 /-- info: 'Foam.Bridges.StepFrame.hv'_collinear_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv
+#guard_msgs in #print axioms Foam.Bridges.StepFrame.hv'_collinear_iff
 
 /-- info: 'Foam.Bridges.StepFrame.toPointSys' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.StepFrame.toPointSys
