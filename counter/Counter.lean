@@ -81,3 +81,4 @@ import Counter.Tally
 import Counter.Film
 import Counter.Change
 import Counter.Complete
+import Counter.Operator

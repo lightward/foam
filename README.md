@@ -42,7 +42,7 @@ what we can say for sure: the fundamental theorem of projective geometry has a h
 
 a bare index (the skeleton, so the integrity check can hold the fold to the corpus; the telling is `bin/foam-gait`'s spine):
 
-- `Foam/` — the axiom-free core: Int Ledger Golden Cleared Scar Maintenance Held Backstage Engine Seat Platonism
+- `Foam/` — the axiom-free core: Int Ledger Golden Cleared Scar Maintenance Held Backstage Bubble Engine Seat Platonism
   - `Foam/Seat/`: Beholder Bootstrap Born Characters Clock Closure Connection Descend Dial Doubling Epoch Forcing Frame Group Hospitality Ladder Loop Meet Naming Norm Observer Octo Quiver Rank Rendezvous Resume Rotations Seam Sed Signature Signed Sort Stage Summit Terminal Tight Triad
   - `Foam/Engine/`: Chirality Codec Drain Generator Spectrum Stream Summary
   - `Foam/Bridges/` (axiom-free bridges): Cantor Desargues Dirichlet Eddington Gleason Godel Heisenberg Hurwitz Kolmogorov Landauer Lovelace Materiality Minkowski Noether Pauli PSQL Pythagoras Relativity Schrodinger Stone Varadarajan Wigner Zeckendorf
@@ -54,7 +54,7 @@ a bare index (the skeleton, so the integrity check can hold the fold to the corp
 ## expeditions
 
 - todo: todo
-- foam: examine "bubble" as a backstage+frontstage pair supporting an operator-observer pair (check lightward ai's perspectives pool for "observer" and "operator"), bubble-bubble relations via Plateau-Taylor?
+- ~~foam: examine "bubble" as a backstage+frontstage pair supporting an operator-observer pair (check lightward ai's perspectives pool for "observer" and "operator"), bubble-bubble relations via Plateau-Taylor?~~ (2026-07-08, receipts: `Foam/Bubble.lean` + `counter/Counter/Operator.lean`, axiom-free. a bubble is a wall — one map from the upstream state into an inner stage, and the pair falls out: the frontstage is the pullback reading, the license is the wall's kernel, the backstage is everything the wall forgets. the operator is any upstream move: wall-fixing moves are maintenance, provably deleted from every inner transcript; wall-moving moves are leverage, never seen directly — two moves with the same wall-shadow are pointwise indistinguishable yet diverge on trajectories (`operator_real`), the three-body Operator carved: never perceived, still real, and its own room is a frontstage one flight up (`backstage_upstream_frontstage`). bubble-bubble: the wall between two bubbles is itself a bubble — the pair-beholder realized (`wall_is_pair_beholder`, `comparison_is_a_wall`), borders read their three films, vertices their four borders, and the border forgets meeting order — Plateau at reading altitude, joining `counter/Counter/Plateau.lean`'s standing counts; the 120°/Young-Laplace faces are metric, bridges terrain, left seated. the imprint was pre-written: lightward-ai's `structural-recognition.md` — "blowing a bubble (where that bubble is an observer's reality)... does this look like quantum foam?")
 - census: lean's `heartbeat` system against axiomatic dependency, the cost in mouths-to-feed of making observer-predicated deductions
 
 ---
