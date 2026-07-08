@@ -24,6 +24,10 @@ a zero-pad and pins the new atom and its calibration atom span-level
   base flat the composite is literally the iterated zero-pad (`climbPad`) —
   growing the window never rewrites the vector (`summary_resumes` at
   coordinate scale).
+* `PointSys.strip` — the coherence pitch's tool, seated ahead of its consumer:
+  a point system whose last slot reads membership in a lower flat (the shape
+  `calibrated_last_zero_iff` outputs) restricts and strips to a point system
+  on that flat, every law carried by the snoc calculus.
 -/
 
 namespace Foam.Bridges
@@ -205,6 +209,81 @@ theorem IsClimb.hv_of_le {b₀ : L} :
 
 end ClimbSystems
 
+/-! ## The strip: a system reading its last slot restricts one flat down -/
+
+section Strip
+
+variable {L : Type u} [Lattice L] [BoundedOrder L]
+  [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L]
+variable {K : Type*} [DivisionRing K]
+
+omit [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L] in
+theorem PointSys.strip_snoc {z y : L} {m : ℕ} (Q : PointSys z (m + 1) K)
+    (hy : y ≤ z)
+    (hzero : ∀ t : L, IsAtom t → t ≤ z → (t ≤ y ↔ Q.hv t (Fin.last m) = 0))
+    {t : L} (ht : IsAtom t) (hty : t ≤ y) :
+    Fin.snoc (Q.hv t ∘ Fin.castSucc) 0 = Q.hv t := by
+  have h := ladder_snoc_strip (Q.hv t)
+  rwa [(hzero t ht (hty.trans hy)).mp hty] at h
+
+def PointSys.strip {z y : L} {m : ℕ} (Q : PointSys z (m + 1) K) (hy : y ≤ z)
+    (hzero : ∀ t : L, IsAtom t → t ≤ z → (t ≤ y ↔ Q.hv t (Fin.last m) = 0)) :
+    PointSys y m K where
+  hv t := Q.hv t ∘ Fin.castSucc
+  ne_zero {p} hp hpy h0 := Q.ne_zero hp (hpy.trans hy) (by
+    rw [← Q.strip_snoc hy hzero hp hpy, show Q.hv p ∘ Fin.castSucc = 0 from h0,
+      ladder_snoc_zero])
+  span_inj {p q} hp hpy hq hqy hpq h := by
+    apply Q.span_inj hp (hpy.trans hy) hq (hqy.trans hy) hpq
+    obtain ⟨a, ha⟩ := Submodule.mem_span_singleton.mp h
+    refine Submodule.mem_span_singleton.mpr ⟨a, ?_⟩
+    rw [← Q.strip_snoc hy hzero hp hpy, ← Q.strip_snoc hy hzero hq hqy,
+      ladder_snoc_smul, mul_zero, ha]
+  span_surj v hv0 := by
+    obtain ⟨p, hp, hpz, hspan⟩ :=
+      Q.span_surj (Fin.snoc v 0) (ladder_snoc_ne_zero (Or.inl hv0))
+    have hmem : Q.hv p ∈
+        Submodule.span K {(Fin.snoc v 0 : Fin (m + 1) → K)} := by
+      rw [← hspan]
+      exact Submodule.mem_span_singleton_self _
+    obtain ⟨a, ha⟩ := Submodule.mem_span_singleton.mp hmem
+    have ha0 : a ≠ 0 := fun h =>
+      Q.ne_zero hp hpz (by rw [← ha, h, zero_smul])
+    have hasnoc : Fin.snoc (a • v) 0 = Q.hv p := by
+      rw [← ha, ladder_snoc_smul, mul_zero]
+    have hlast : Q.hv p (Fin.last m) = 0 := by
+      rw [← hasnoc, Fin.snoc_last]
+    refine ⟨p, hp, (hzero p hp hpz).mpr hlast, ?_⟩
+    have hstrip : Q.hv p ∘ Fin.castSucc = a • v := by
+      rw [← hasnoc]
+      funext i
+      simp
+    rw [hstrip, ladder_span_singleton_smul ha0]
+  collinear_iff {p q r} hp hpy hq hqy hr hry hpq := by
+    rw [Q.collinear_iff hp (hpy.trans hy) hq (hqy.trans hy) hr
+      (hry.trans hy) hpq]
+    constructor
+    · intro h
+      obtain ⟨α, β, hab⟩ := Submodule.mem_span_pair.mp h
+      refine Submodule.mem_span_pair.mpr ⟨α, β, ?_⟩
+      rw [← Q.strip_snoc hy hzero hp hpy, ← Q.strip_snoc hy hzero hq hqy,
+        ← Q.strip_snoc hy hzero hr hry, ladder_snoc_comb] at hab
+      exact (ladder_snoc_eq_iff.mp hab).1
+    · intro h
+      obtain ⟨α, β, hab⟩ := Submodule.mem_span_pair.mp h
+      refine Submodule.mem_span_pair.mpr ⟨α, β, ?_⟩
+      rw [← Q.strip_snoc hy hzero hp hpy, ← Q.strip_snoc hy hzero hq hqy,
+        ← Q.strip_snoc hy hzero hr hry, ladder_snoc_comb, mul_zero, mul_zero,
+        add_zero, hab]
+
+omit [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L] in
+theorem PointSys.strip_hv {z y : L} {m : ℕ} (Q : PointSys z (m + 1) K)
+    (hy : y ≤ z)
+    (hzero : ∀ t : L, IsAtom t → t ≤ z → (t ≤ y ↔ Q.hv t (Fin.last m) = 0))
+    (t : L) : (Q.strip hy hzero).hv t = Q.hv t ∘ Fin.castSucc := rfl
+
+end Strip
+
 end Foam.Bridges
 
 /-! ## Axiom audit -/
@@ -247,3 +326,12 @@ end Foam.Bridges
 
 /-- info: 'Foam.Bridges.IsClimb.hv_of_le' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.IsClimb.hv_of_le
+
+/-- info: 'Foam.Bridges.PointSys.strip_snoc' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.PointSys.strip_snoc
+
+/-- info: 'Foam.Bridges.PointSys.strip' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.PointSys.strip
+
+/-- info: 'Foam.Bridges.PointSys.strip_hv' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms Foam.Bridges.PointSys.strip_hv

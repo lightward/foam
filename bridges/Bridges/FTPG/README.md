@@ -719,11 +719,15 @@ Open frontier:
      its own coordinates, stably: below the base flat the composite is
      literally the iterated zero-pad (`climbPad`) — growing the window
      never rewrites the vector (`summary_resumes` at coordinate scale),
-     `[propext, Quot.sound]`.  Next: the windows along the atom basis
-     (order-independent slots by Steinitz) and coherence across orders
-     (the permutation twist; strips manufacture the intermediate
-     systems THERE — that is the stratum where the charted strip
-     machinery is genuinely consumed), gluing into the direct limit.
+     `[propext, Quot.sound]`.  And the coherence pitch's tool is
+     seated ahead of its consumer: `PointSys.strip` — a point system
+     whose last slot reads membership in a lower flat (the shape
+     `calibrated_last_zero_iff` outputs) restricts and strips to a
+     point system on that flat, every law carried by the snoc calculus
+     (`strip_snoc` even `[propext, Quot.sound]`).  Next: the windows
+     along the atom basis (order-independent slots by Steinitz) and
+     coherence across orders (the permutation twist; strips manufacture
+     the intermediate systems there), gluing into the direct limit.
   3. **the direct limit** — coordinates stable under extending the finite
      support (`summary_resumes` at coordinate scale: the finite record
      determines the vector, growing the window never rewrites it); glue
@@ -824,7 +828,7 @@ Open frontier:
 | `Ladder` | camp four, first pitch — the rank ladder's step, frame-free: `PointSys` (the induction datum), the trace/center/recovery lattice stratum (`ladder_trace_atom` … `ladder_reverse`, the shadow Θ-move), the coefficient calculus over abstract `K` (`ladder_pin`, `ladder_graph_comb`, `ladder_conv_transfer`, `ladder_avoid_two`, the snoc calculus), `stepRaw`/`StepFrame.lam`/`StepFrame.hv'`, gauges-are-heights (`step_transport`, `step_gauge_symm`, `step_cocycle`), the central lemma (`StepFrame.central`), the collinearity summit (`hv'_collinear_iff`), `hv'_span_inj`/`hv'_span_surj`, `PointSys.step` |
 | `Ground` | camp four, the ladder grounded at τ — `CoordFrame.pointSysTau`: camp three's exports instantiate the induction datum literally (`hv := hvec4`; `hvec4_ne_zero`/`hvec4_span_inj`/`hvec4_span_surj`/`space_collinear_iff` are the four fields), `pointSysTau_exists` conjuring the gauge center from `h_irred` |
 | `Pin` | camp four, second pitch — the calibrated step and its rigidity: `pin_meet` (the two-plane pin, no nonzeroness needed), `pin_shape`/`pin_eq`/`pin_snoc_zero_span_congr`/`pin_span_pair_congr` (the snoc-span calculus), `pin_map_*` (span transport along linear equivs), `heightEquiv` (the last-slot right-multiplication rescale), `PointSys.twist`, `Calibrated` (base/apex/unit — the span-level extension data), `calibrated_agree_main`/`calibrated_agree` (rigidity: two-plane pinning off the calibration line, routed through an auxiliary axis on it), `PointSys.calibrated_exists` (step + rescale), `calibrated_last_zero_iff` (the window sees its own coordinates) |
-| `Climb` | camp four, third pitch's base — the calibrated climb: `climbFlat`/`climbDim`/`climbPad` (the climb's shape — flats, dimensions, iterated zero-pads, with `climbPad_smul`/`climbPad_ne_zero`), `ClimbLegal` (the per-step side conditions), `IsClimb` (the composite of calibrated steps, old coordinates vector-level zero-pads), `calibrated_congr` (calibration transported across span-agreement plus `b₀`-vector-agreement), `isClimb_exists`, `isClimb_agree_congr`/`isClimb_agree` (window rigidity, by forward induction — no strips, no canonical representatives), `IsClimb.hv_of_le` (growing the window never rewrites the vector: the iterated zero-pad, `[propext, Quot.sound]`) |
+| `Climb` | camp four, third pitch's base — the calibrated climb: `climbFlat`/`climbDim`/`climbPad` (the climb's shape — flats, dimensions, iterated zero-pads, with `climbPad_smul`/`climbPad_ne_zero`), `ClimbLegal` (the per-step side conditions), `IsClimb` (the composite of calibrated steps, old coordinates vector-level zero-pads), `calibrated_congr` (calibration transported across span-agreement plus `b₀`-vector-agreement), `isClimb_exists`, `isClimb_agree_congr`/`isClimb_agree` (window rigidity, by forward induction — no strips, no canonical representatives), `IsClimb.hv_of_le` (growing the window never rewrites the vector: the iterated zero-pad, `[propext, Quot.sound]`), `PointSys.strip`/`strip_snoc`/`strip_hv` (a system reading its last slot restricts one flat down — the coherence pitch's tool, seated) |
 | `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
