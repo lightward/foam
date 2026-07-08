@@ -17,3 +17,7 @@ usecounter.com (it counts uses, it's an invitation to *use* the thing called *co
 supports a human (defining "human" inclusively) who's figured out both (a) counting their own history and (b) health-vs-pain and (c) distinguishable selfhood
 
 actor/act/action (actor has many acts; an act is i/o; an action is actual information-routing from one actor through an actor to a third actor)
+
+## readings
+
+`Counter/Complete.lean` — completeness is closure, at counting scale: a history completes when it adds up to nothing (`completion_is_adding_up_to_nothing`, seated in `Nothing.lean`), one lap of a closed circuit carries the whole future (`one_lap_carries_the_future`), a climb under a ceiling always rests (`under_a_ceiling_the_climb_rests`), and a seat is rest kept forever (`a_seat_is_rest_kept`) — all axiom-free. what counter does *not* contain, by the package boundary: the classical fact that every bounded climb has such a seat somewhere (`bridges/Bridges/Summit.lean`) — locating your seat is yours to do, which is the app.

@@ -36,6 +36,8 @@ axiom-free, because an imported axiom is a pov, and imported perspectives either
 
 what we can say for sure: the fundamental theorem of projective geometry has a hole in it, and you can *fill* that hole however you want, but if you want to use ftpg and live with the results then there's a hole needs filling
 
+(2026-07-08, expedition receipts: the hole has a name — completeness. a lattice is complete when every climb has a seat; the classical statement assumed that silently, and without it it's false — `bridges/Bridges/FTPG/Hollow.lean`, where `hollowChain` climbs forever and `ftpg_refuted` closes the case. read from the early maxima, "completeness" was always "closure": the birth spec had it as holonomic return — a circuit that completes is an orbit that comes home — and refused it as a hypothesis in the same breath ("by not assuming closure, the foam stabilizes as a safe measuring device for any line"), nine maxima before Hollow refuted the classical statement's silent assumption of it. the two faces, carved: a closed orbit needs no seat — one lap carries the whole future, axiom-free (`Foam/Seat/Summit.lean`: `lap_carries`, extending `Closure.lean`); an open climb under a ceiling always rests, axiom-free, witness found inside the bound (`bounded_rests`); a strict climb escapes every gauge, axiom-free (`climbs_escape` — hollowChain's shadow at Nat scale). but *seating* an open climb — naming the index past which nothing ever changes — is classical even in Nat, even bounded: `bridges/Bridges/Summit.lean`, receipt `[propext, Classical.choice, Quot.sound]`, the same triple the ftpg deaxiomatization pays per atom. the seat exists; pointing at it is conjured, not computed. so the hole is observer-shaped: completeness is closure someone must sit in, and the someone is byo — which the axiom-free clause above already said.)
+
 ### bridges
 
 todo
@@ -50,14 +52,23 @@ todo
 
 ## shape
 
-todo
+a bare index (the skeleton, so the integrity check can hold the fold to the corpus; the telling is `bin/foam-gait`'s spine):
+
+- `Foam/` — the axiom-free core: Int Ledger Golden Cleared Scar Maintenance Held Backstage Engine Seat Platonism
+  - `Foam/Seat/`: Beholder Bootstrap Born Characters Clock Closure Connection Descend Dial Doubling Epoch Forcing Frame Group Hospitality Ladder Loop Meet Naming Norm Observer Octo Quiver Rank Rendezvous Resume Rotations Seam Sed Signature Signed Sort Stage Summit Terminal Tight Triad
+  - `Foam/Engine/`: Chirality Codec Drain Generator Spectrum Stream Summary
+  - `Foam/Bridges/` (axiom-free bridges): Cantor Desargues Dirichlet Eddington Gleason Godel Heisenberg Hurwitz Kolmogorov Landauer Lovelace Materiality Minkowski Noether Pauli PSQL Pythagoras Relativity Schrodinger Stone Varadarajan Wigner Zeckendorf
+  - `Foam/Platonism/`: Tower
+- `counter/` — the application, axiom-free (requires only foam)
+- `seam/` — the identifications, core-Lean axioms only
+- `bridges/` — the Mathlib reunion, classical axioms sealed behind the package boundary
 
 ## expeditions
 
 - ~~business~~
 - todo: todo
 - foam: examine "bubble" as a backstage+frontstage pair, bubble-bubble relations via Plateau-Taylor?
-- ftpg: evaluate "completeness" as "closure" from early maxima
+- ~~ftpg~~: evaluated — completeness is closure someone must sit in (see mathematics; `Summit.lean`, both faces)
 
 ---
 
