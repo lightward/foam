@@ -1,8 +1,13 @@
 # FTPG — the fundamental theorem of projective geometry, deaxiomatized
 
-`../FTPG.lean` states classical FTPG as an axiom (`ftpg`): every complemented
-modular bounded lattice is order-isomorphic to the subspace lattice of a vector
-space over a division ring. It is the one imported posit of the classical bridge.
+`../FTPG.lean` once stated classical FTPG as an axiom (`ftpg`): every
+complemented modular bounded lattice is order-isomorphic to the subspace
+lattice of a vector space over a division ring. It was the one imported posit
+of the classical bridge — and it is **retired** (2026-07-08): the declaration
+now lives in `Hollow.lean`, the exhibit room, importable by nothing except the
+indictment it stands trial in (`ftpg_refuted`), while `../FTPG.lean` keeps the
+real dimension lemmas, axiom-free. Its true half reduced to self; its false
+half is cytokinetically distinct.
 
 This directory **discharges** it — the division ring and the lattice iso are
 constructed from the lattice itself, and the statement is repaired on the way
@@ -1062,7 +1067,7 @@ And the frontier is **CLOSED — the residual is discharged**:
 | `Window` | camp four, the windows along the atom basis — the append face (`climbFlat_append`, `ClimbLegal.append`/`append_right`, `isClimb_append_exists` with the read unchanged on the old flat, `isClimb_append_read_agree`), read injectivity (`climbRead_snd_eq_zero`/`climbRead_eq_zero`/`climbRead_injective`) with the span-reflect calculus (`map_span_singleton_eq_iff`, `map_mem_span_singleton_iff`, `map_mem_span_pair_iff`, `mem_span_pair_congr`), the windows (`CalSpec`/`calSpec_exists`, `calPairs`, `listSup`, `actives`, `basis_no_capture` — `sSupIndep` refuses capture directly, `actives_legal`/`extras_legal`/`window_legal`, `windowFlat_eq`, `windowList_nodup`), and the summit (`windowPairs_perm`, `window_read_mono`, `window_read_directed` — the directed family is coherent) |
 | `Limit` | camp four, the limit map — `limit_read_exists`: one global assignment `L → (Fin n → K) × (L → K)`, `Classical.choice` per atom, with window stability, vector-level base compatibility, and `ne_zero`/`span_inj`/`collinear_iff` global (common windows + reflect through `climbRead_injective`); `span_surj` deferred to the spanning stratum |
 | `Span` | camp four, the spanning stratum — the summit: `line_meets_flat` (the modular lever — a line through a fresh atom meets the flat in an atom, no freshness hypothesis needed), the span calculus (`mem_span_congr`, `span_image_congr`, `map_mem_span_image_iff`), `PointSys.flat_le_iff` (the four laws generate the finite matroid; the converse modularity-free), `limit_system_exists` (`V` = the span of the read-image; `closed` by finite support of span membership + one common window + the injective read reflecting; `spanning` by atom-compactness downward and line-surjectivity upward — only the stability clause of the limit consumed) |
-| `Hollow` | the refutation — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, `ftpg_refuted : False` |
+| `Hollow` | the refutation AND the exhibit room — the hollow lattice meets every hypothesis, has no LUB for the inl-chain; `not_ftpg_statement`, `not_pointSystem`, and the retired `axiom ftpg` declared under glass beside its indictment `ftpg_refuted : False` |
 | `Charge` | the charged restatement — `Coordinatization` (the data-level bundle), `seals`, `held_determines`, `limitSeam` (foam's `Seam`, axiom-free in bridges) |
 
 ## Notes

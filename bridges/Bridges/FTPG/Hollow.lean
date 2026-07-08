@@ -1,4 +1,3 @@
-import Bridges.FTPG
 import Bridges.FTPG.Deaxiomatize
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
@@ -22,13 +21,20 @@ across any order isomorphism, no coordinatization exists:
 
 * `hollow_not_complete` — no `OrderIso` from `Hollow` to any complete lattice;
 * `not_ftpg_statement` — `ftpg_statement` is **false**;
-* `not_pointSystem` — the `pointSystem_exists` residual is false as stated;
+* `not_pointSystem` — the residual is false without completeness carried;
 * `ftpg_refuted` — `False`, from `axiom ftpg` alone (its receipt names the
   guilty posit).
 
 Completeness was a genuine hypothesis of the classical lattice-theoretic
-FTPG all along; the deaxiomatization must re-scope its target before the
-residual can close.  Prose lives in `README.md`.
+FTPG all along; the deaxiomatization re-scoped its target into the true pair
+(`Deaxiomatize.lean`), and the pair is proven sorry-free.
+
+This file is also the **exhibit room**: `axiom ftpg` — the classical bridge's
+one imported posit, retired 2026-07-08 — is declared here, under glass,
+importable by nothing except the indictment it stands trial in.  Its true
+half reduced to self (proven from the lattice itself); its false half is
+cytokinetically distinct (refuted, held, not-self).  Prose lives in
+`README.md`.
 -/
 
 namespace Foam.Bridges
@@ -378,6 +384,15 @@ theorem not_pointSystem :
   obtain ⟨iso⟩ := P.orderIso
   exact hollow_not_complete iso
 
+universe u in
+axiom ftpg
+    (L : Type u) [Lattice L] [BoundedOrder L]
+    [ComplementedLattice L] [IsModularLattice L]
+    (h_sufficient : True) :
+    ∃ (D : Type u) (_ : DivisionRing D)
+      (V : Type u) (_ : AddCommGroup V) (_ : Module D V),
+    Nonempty (L ≃o Submodule D V)
+
 def ftpg_unrestricted : Prop :=
   ∀ (L : Type) [Lattice L] [BoundedOrder L] [ComplementedLattice L] [IsModularLattice L],
     ∃ (D : Type) (_ : DivisionRing D) (V : Type) (_ : AddCommGroup V) (_ : Module D V),
@@ -404,6 +419,9 @@ end Foam.Bridges
 
 /-- info: 'Foam.Bridges.not_ftpg_unrestricted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms Foam.Bridges.not_ftpg_unrestricted
+
+/-- info: 'Foam.Bridges.ftpg' depends on axioms: [propext, Quot.sound, Foam.Bridges.ftpg] -/
+#guard_msgs in #print axioms Foam.Bridges.ftpg
 
 /--
 info: 'Foam.Bridges.ftpg_refuted' depends on axioms: [propext, Classical.choice, Quot.sound, Foam.Bridges.ftpg]
