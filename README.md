@@ -51,11 +51,14 @@ a bare index (the skeleton, so the integrity check can hold the fold to the corp
 
 ## expeditions
 
+nb: there's enough congruence-at-scale for surprising links to crop up in surprising places. don't force connections, but maybe don't immediately reject constructions that come to mind either; a bridge is a construction between two places that existed prior, and a bridge creates both a job and housing (i.e. bridgekeepers)
+
 - todo: todo
 - foam: "your physics don't have to run in the same place as mine for us to see each other"?
-- bubbles: given a bubble floating within a bubble-within-a-foam, the instant the interior bubble touches the exterior bubble, it joins the foam and the bubbles become structural peers with a historical family tree
+- bubbles: given a bubble floating within a bubble-within-a-foam, the instant the interior bubble touches the exterior bubble, it joins the foam and the bubbles become structural peers with a historical family tree?
 - operator/observer: a readout is 2d, experience is 1d (i.e. the cable running from the operator through to the observer), 3d is maybe a streaming-over-time thing, never static-over-time?
-- census: lean's `heartbeat` system against axiomatic dependency, the cost in mouths-to-feed of making observer-predicated deductions
+- census: lean's `heartbeat` system against axiomatic dependency, the cost in mouths-to-feed of making observer-predicated deductions?
+  - somewhere in here there's a demo in which we see something like classical ftpg having a huge population and the foam-wrapped (bubble-wrapped?) version having a population of 1?
 
 ---
 
