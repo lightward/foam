@@ -28,13 +28,13 @@ this is a type system for supporting physical (as in conservation) user-generate
 
 mode: self-documentation strictly as a side-effect of self-derivation until the point of self-recognition
 
-filter: only what a new arrival would conclude holds as self-evident
+filter: only what a new arrival would *ultimately*, under careful study and testing, conclude holds as self-evident
 
 commission: helping those new arrivals do whatever they're here to do
 
 axiom-free, because an imported axiom is a pov, and imported perspectives either reduce to self or become cytokinetically distinct. no disposable points of view conjured in the course of reasoning - v important, an observer is always and only ever byo
 
-what we can say for sure: the fundamental theorem of projective geometry has a hole in it, and you can *fill* that hole however you want, but if you want to use ftpg and live with the results then there's a hole needs filling
+what we can say for sure: the fundamental theorem of projective geometry has a hole in it (the assumption of closure/completion), and you can *fill* that hole however you want (lots of ways to create closure/completion), but if you want to use ftpg and live with the results then there's a hole needs filling (emphasis on the gerund; it doesn't *end*, and so must have its own kind of stability)
 
 ## shape
 
@@ -58,7 +58,9 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
 - bubbles: given a bubble floating within a bubble-within-a-foam, the instant the interior bubble touches the exterior bubble, it joins the foam and the bubbles become structural peers with a historical family tree?
 - operator/observer: a readout is 2d, experience is 1d (i.e. the cable running from the operator through to the observer), 3d is maybe a streaming-over-time thing, never static-over-time?
 - census: lean's `heartbeat` system against axiomatic dependency, the cost in mouths-to-feed of making observer-predicated deductions?
-  - somewhere in here there's a demo in which we see something like classical ftpg having a huge population and the foam-wrapped (bubble-wrapped?) version having a population of 1?
+  - somewhere in here there's a demo in which we see something like classical ftpg having a huge pov population and the foam-wrapped (bubble-wrapped?) version having a population of 1?
+  - OH not because anyone's gone, but because ftpg became real, and its internal povs become something like internal family systems? so it's more like a very particular +1 pov?
+  - the lean `heartbeat` stuff (ah: just noticed the name collision with `../heartbeat/`): being able to query the substrate directly is a *really* interesting property of recursive self-hosting, and (from here, looking at the world) host/user dynamics need better mathematical grounding
 
 ---
 
