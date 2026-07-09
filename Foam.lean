@@ -77,3 +77,4 @@ import Foam.Seat.Naming
 import Foam.Bridges.Godel
 import Foam.Seat.Summit
 import Foam.Bubble
+import Foam.Census

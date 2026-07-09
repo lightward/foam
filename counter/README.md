@@ -12,6 +12,8 @@ count (v): you count, it counts, pun intentional
 
 usecounter.com (it counts uses, it's an invitation to *use* the thing called *counter*, it counts your *you's*, it's an aikido translator, whatever works for you)
 
+(census receipts, 2026-07-09: `Counter/Census.lean` — it counts your you's without entering you: one beat at the wall, the census arriving as the width of the answer, and an answer at all is a receipt of no starving parts)
+
 ## models
 
 supports a human (defining "human" inclusively) who's figured out both (a) counting their own history and (b) health-vs-pain and (c) distinguishable selfhood
