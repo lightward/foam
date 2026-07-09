@@ -76,3 +76,4 @@ import Foam.Bridges.Landauer
 import Foam.Seat.Naming
 import Foam.Bridges.Godel
 import Foam.Seat.Summit
+import Foam.Bubble
