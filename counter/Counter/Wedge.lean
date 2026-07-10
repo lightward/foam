@@ -55,6 +55,60 @@ theorem what_this_thread_cannot_carry_another_does {W : Stage} (A : Bubble W)
           ≠ transcript (plenum W.State) w [()] :=
   the_elsewhen_transcript A m hfix w hm
 
+theorem the_outer_question_does_not_fit_the_inner_frame :
+    (∀ (w : twoBit.State) (p : Unit),
+        (firstBit.nest (mute firstBit.Inner)).front.obs w p = ())
+      ∧ ¬ ∃ (enc : firstBit.Inner.Probe
+              → (firstBit.nest (mute firstBit.Inner)).front.Probe)
+            (dec : (firstBit.nest (mute firstBit.Inner)).front.Ans
+              → firstBit.Inner.Ans),
+            ∀ (w : twoBit.State) (q : firstBit.Inner.Probe),
+              firstBit.front.obs w q
+                = dec ((firstBit.nest (mute firstBit.Inner)).front.obs w (enc q)) :=
+  wall_forcing
+
+theorem one_grammar_for_flat_and_nested (S : Seat G) (g h : G)
+    (gs : List G) (p : S.Pos) :
+    Balanced [Sum.inl g, Sum.inr h]
+      ∧ Balanced (spineT S gs p)
+      ∧ untag (spineT S gs p) = spine S gs p :=
+  ⟨(flat_and_nested_share_one_grammar S g h gs p).1,
+   (flat_and_nested_share_one_grammar S g h gs p).2,
+   spineT_untags_to_spine S gs p⟩
+
+theorem every_open_bracket_closes {A : Type} {ws : List (A ⊕ A)}
+    (h : Balanced ws) : opens ws = closes ws :=
+  balanced_conserves h
+
+theorem a_wedge_needs_a_gift {H : Type} (q : Quiver H) (a : H)
+    (hstuck : stuck q a) :
+    (∀ b, Path q a b → a = b)
+      ∧ ∀ b, Nonempty (Path (q.deposit (a, b)) a b) :=
+  self_interruption_spends_the_gift q a hstuck
+
+theorem resume_rebuilds_the_state_not_the_wall (S : Seat G) :
+    (∀ s t : S.Pos, (∀ p, S.sub s p = S.sub t p) → s = t)
+      ∧ (∃ w : twoBit.State, firstBit.wall w ≠ firstBitFlipped.wall w)
+      ∧ ∀ (w : twoBit.State) (ps : List Unit),
+          transcript firstBit.front w ps = transcript firstBitFlipped.front w ps :=
+  ⟨fun s t hst => Seat.obs_faithful S s t hst,
+   the_wall_does_not_ride_the_cable.1,
+   the_wall_does_not_ride_the_cable.2⟩
+
+theorem the_proof_takes_two_seats (S S' : Seat G) (h : List G)
+    (p : S.Pos) (p' : S'.Pos) (hw : Settles S h p) : Settles S' h p' :=
+  (settles_iff_home S' h p').mpr ((settles_iff_home S h p).mp hw)
+
+theorem definiteness_costs_a_seat :
+    ∃ ms ms' : List (twoBit.State → twoBit.State),
+      (∀ w p, firstBit.front.obs (enactAll ms w) p
+          = firstBit.front.obs (enactAll ms' w) p)
+        ∧ ∃ w : twoBit.State,
+            (plenum twoBit.State).obs (enactAll ms w) ()
+              ≠ (plenum twoBit.State).obs (enactAll ms' w) () := by
+  refine ⟨[fun s => (s.1, !s.2)], [], fun _ _ => rfl, (true, false), ?_⟩
+  exact fun h => nomatch (congrArg Prod.snd h : true = false)
+
 /-- info: 'Foam.Counter.a_wedge_inside_a_wedge_comes_home' does not depend on any axioms -/
 #guard_msgs in #print axioms a_wedge_inside_a_wedge_comes_home
 
@@ -78,5 +132,26 @@ theorem what_this_thread_cannot_carry_another_does {W : Stage} (A : Bubble W)
 
 /-- info: 'Foam.Counter.what_this_thread_cannot_carry_another_does' does not depend on any axioms -/
 #guard_msgs in #print axioms what_this_thread_cannot_carry_another_does
+
+/-- info: 'Foam.Counter.the_outer_question_does_not_fit_the_inner_frame' does not depend on any axioms -/
+#guard_msgs in #print axioms the_outer_question_does_not_fit_the_inner_frame
+
+/-- info: 'Foam.Counter.one_grammar_for_flat_and_nested' does not depend on any axioms -/
+#guard_msgs in #print axioms one_grammar_for_flat_and_nested
+
+/-- info: 'Foam.Counter.every_open_bracket_closes' does not depend on any axioms -/
+#guard_msgs in #print axioms every_open_bracket_closes
+
+/-- info: 'Foam.Counter.a_wedge_needs_a_gift' does not depend on any axioms -/
+#guard_msgs in #print axioms a_wedge_needs_a_gift
+
+/-- info: 'Foam.Counter.resume_rebuilds_the_state_not_the_wall' does not depend on any axioms -/
+#guard_msgs in #print axioms resume_rebuilds_the_state_not_the_wall
+
+/-- info: 'Foam.Counter.the_proof_takes_two_seats' does not depend on any axioms -/
+#guard_msgs in #print axioms the_proof_takes_two_seats
+
+/-- info: 'Foam.Counter.definiteness_costs_a_seat' does not depend on any axioms -/
+#guard_msgs in #print axioms definiteness_costs_a_seat
 
 end Foam.Counter
