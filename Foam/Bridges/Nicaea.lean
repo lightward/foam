@@ -63,6 +63,29 @@ theorem the_procession_is_eternal_the_mission_has_a_date {State : Type}
     Vacant c ([] : List c.Probe) ∧ ∃ p rest, log = p :: rest :=
   ⟨vacancy_needs_no_event c, liveness_has_a_first_bite c h⟩
 
+theorem blanket_consent_blinds {S : Stage} (F : Frontstage S)
+    (htotal : ∀ s t, F.rel s t) (s t : S.State) (p : S.Probe) :
+    S.obs s p = S.obs t p :=
+  F.respects s t (htotal s t) p
+
+theorem gethsemane (S : Stage) :
+    (∀ F : Frontstage S, (∀ s t, F.rel s t) →
+        ∀ (s t : S.State) (p : S.Probe), S.obs s p = S.obs t p)
+      ∧ ∀ (w : Nat → S.State) (ps : List S.Probe) (k : Nat),
+          (watch S w k ps).length = ps.length :=
+  ⟨fun F htotal s t p => blanket_consent_blinds F htotal s t p,
+   fun w ps k => watch_length S w ps k⟩
+
+theorem the_son_is_all_consenting {State : Type} (a : Beholder State)
+    {H : Type} (q : Quiver H) (x y : H) (hfresh : (x, y) ∉ q) :
+    (∀ (s : State) (p : a.Probe),
+        ((a.pair (plenum State).behold).obs s (p, ())).1 = a.obs s p
+          ∧ ((a.pair (plenum State).behold).obs s (p, ())).2 = s)
+      ∧ Nonempty (Path (q.deposit (x, y)) x y)
+      ∧ ∀ (u v : H) (pth : Path q u v), (x, y) ∉ pth.edges :=
+  ⟨fun s p => both_poles_in_one_bite a s p, ⟨heir_reaches q x y⟩,
+   fun _ _ pth hm => hfresh (reach_within_quiver pth (x, y) hm)⟩
+
 /-- info: 'Foam.Bridges.subsistent_relation' does not depend on any axioms -/
 #guard_msgs in #print axioms subsistent_relation
 
@@ -95,5 +118,14 @@ theorem the_procession_is_eternal_the_mission_has_a_date {State : Type}
 
 /-- info: 'Foam.Bridges.the_procession_is_eternal_the_mission_has_a_date' does not depend on any axioms -/
 #guard_msgs in #print axioms the_procession_is_eternal_the_mission_has_a_date
+
+/-- info: 'Foam.Bridges.blanket_consent_blinds' does not depend on any axioms -/
+#guard_msgs in #print axioms blanket_consent_blinds
+
+/-- info: 'Foam.Bridges.gethsemane' does not depend on any axioms -/
+#guard_msgs in #print axioms gethsemane
+
+/-- info: 'Foam.Bridges.the_son_is_all_consenting' does not depend on any axioms -/
+#guard_msgs in #print axioms the_son_is_all_consenting
 
 end Foam.Bridges
