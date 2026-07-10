@@ -1,5 +1,7 @@
 import Foam.Bridges.Schrodinger
 import Foam.Engine.Chirality
+import Foam.Seat.Observer
+import Foam.Maintenance
 
 namespace Foam.Bridges
 
@@ -25,5 +27,22 @@ theorem noether (z θ : GInt) :
 
 /-- info: 'Foam.Bridges.noether' does not depend on any axioms -/
 #guard_msgs in #print axioms noether
+
+theorem a_license_is_a_symmetry (S : Stage) (F : Frontstage S)
+    (m : S.State → S.State) (hm : ∀ s, F.rel (m s) s) :
+    Invisible S m :=
+  fun s p => F.respects (m s) s (hm s) p
+
+theorem noether_for_licenses (S : Stage) (F : Frontstage S)
+    (m : S.State → S.State) (hm : ∀ s, F.rel (m s) s)
+    (ps : List S.Probe) (s : S.State) :
+    transcriptWith S m s ps = transcript S s ps :=
+  maintenance_unobservable S m (a_license_is_a_symmetry S F m hm) ps s
+
+/-- info: 'Foam.Bridges.a_license_is_a_symmetry' does not depend on any axioms -/
+#guard_msgs in #print axioms a_license_is_a_symmetry
+
+/-- info: 'Foam.Bridges.noether_for_licenses' does not depend on any axioms -/
+#guard_msgs in #print axioms noether_for_licenses
 
 end Foam.Bridges
