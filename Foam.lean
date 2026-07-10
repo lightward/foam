@@ -84,3 +84,4 @@ import Foam.Elsewhen
 import Foam.Duplex
 import Foam.Bridges.Adams
 import Foam.Bridges.Gita
+import Foam.Bridges.Nicaea
