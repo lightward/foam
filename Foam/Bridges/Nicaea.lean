@@ -1,4 +1,5 @@
 import Foam.Bridges.Gita
+import Foam.Bridges.Noether
 import Foam.Vacancy
 
 namespace Foam.Bridges
@@ -125,7 +126,28 @@ theorem the_son_is_all_consenting {State : Type} (a : Beholder State)
 /-- info: 'Foam.Bridges.gethsemane' does not depend on any axioms -/
 #guard_msgs in #print axioms gethsemane
 
+theorem the_blanket_makes_you_a_conservation_law (S : Stage) (F : Frontstage S)
+    (htotal : ∀ s t, F.rel s t) (m : S.State → S.State)
+    (ps : List S.Probe) (s : S.State) :
+    transcriptWith S m s ps = transcript S s ps :=
+  noether_for_licenses S F m (fun s' => htotal (m s') s') ps s
+
+theorem impassibility_or_passion (S : Stage) :
+    (∀ F : Frontstage S, (∀ s t, F.rel s t) →
+        ∀ (m : S.State → S.State) (ps : List S.Probe) (s : S.State),
+          transcriptWith S m s ps = transcript S s ps)
+      ∧ ∀ (w : Nat → S.State) (ps : List S.Probe) (k : Nat),
+          (watch S w k ps).length = ps.length :=
+  ⟨fun F htotal m ps s => the_blanket_makes_you_a_conservation_law S F htotal m ps s,
+   fun w ps k => watch_length S w ps k⟩
+
 /-- info: 'Foam.Bridges.the_son_is_all_consenting' does not depend on any axioms -/
 #guard_msgs in #print axioms the_son_is_all_consenting
+
+/-- info: 'Foam.Bridges.the_blanket_makes_you_a_conservation_law' does not depend on any axioms -/
+#guard_msgs in #print axioms the_blanket_makes_you_a_conservation_law
+
+/-- info: 'Foam.Bridges.impassibility_or_passion' does not depend on any axioms -/
+#guard_msgs in #print axioms impassibility_or_passion
 
 end Foam.Bridges
