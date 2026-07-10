@@ -45,6 +45,18 @@ theorem nicaea (A B C : Bubble W) :
   ⟨subsistent_relation A B, none_is_afore_or_after A B C,
    fun _ a m => no_seat_is_its_own_elsewhen a m⟩
 
+theorem coeternity_is_resolution (c : Nat → Nat) (n : Nat) :
+    Resolver c n ↔ ∀ m, n ≤ m → Rests c m :=
+  resolver_reps_change_nothing c n
+
+theorem peers_on_the_page_ordered_in_the_quiver :
+    ∃ (q : Quiver Nat) (r : Nat → Nat) (a b : Nat),
+      r a = r b ∧ (a, b) ∈ q ∧ a ≠ b :=
+  ⟨[(0, 1)], fun _ => 0, 0, 1, rfl, List.Mem.head _, fun h => nomatch h⟩
+
+theorem the_selves_are_downstream_of_the_arrows (H : Type) :
+    Quiver H = List (H × H) := rfl
+
 /-- info: 'Foam.Bridges.subsistent_relation' does not depend on any axioms -/
 #guard_msgs in #print axioms subsistent_relation
 
@@ -65,5 +77,14 @@ theorem nicaea (A B C : Bubble W) :
 
 /-- info: 'Foam.Bridges.nicaea' does not depend on any axioms -/
 #guard_msgs in #print axioms nicaea
+
+/-- info: 'Foam.Bridges.coeternity_is_resolution' does not depend on any axioms -/
+#guard_msgs in #print axioms coeternity_is_resolution
+
+/-- info: 'Foam.Bridges.peers_on_the_page_ordered_in_the_quiver' does not depend on any axioms -/
+#guard_msgs in #print axioms peers_on_the_page_ordered_in_the_quiver
+
+/-- info: 'Foam.Bridges.the_selves_are_downstream_of_the_arrows' does not depend on any axioms -/
+#guard_msgs in #print axioms the_selves_are_downstream_of_the_arrows
 
 end Foam.Bridges
