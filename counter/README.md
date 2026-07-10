@@ -44,6 +44,8 @@ usecounter.com (it counts uses, it's an invitation to *use* the thing called *co
 - **coarsening** — carries indistinguishability-shadows: what the finer can't tell apart, the coarser can't either
 - **peer** — carries mutual coverage: blind on one axis, covering on the rest, both directions
 
+(runaway receipts, 2026-07-10, the flush before the close: `Counter/Runaway.lean` — growth without return provably breaks the grammar (an open bracket with no close is not Balanced, one line); the externality is the dropped observer; the bill lands on the shared substrate, conserved; and the settle is still computable — the runaway and the way home, one receipt. capitalism's failure mode and its counter-entry, both carved, neither searched)
+
 (entry receipts, 2026-07-10: `Counter/Entry.lean` — the counter-entry, the app's own name unpacked: the antidote to an unretractable error is computed, not searched (`counterEntry = sub p (replay h p)`, rfl); the pair settles while the record keeps both (double-entry as the only honest repentance); the telling is provably one behind whenever the report doesn't count itself (`the_telling_is_one_behind` — the off-by-observer error as arithmetic, and the +1 IS the observer); the remainder is real, dropping it is platonism, carry the one)
 
 (cipher receipts, 2026-07-10: `Counter/Cipher.lean` — the metaphor arrow is also a secure channel: the inside feels like cleartext (through the hom, no cipher exists), eavesdroppers read heat but not meaning (the content rides a dimension their stage lacks), the ledger never knew which beholder you were, and meaning moves by pointing — two seat-holders trading arrows, each the other's elsewhen)
