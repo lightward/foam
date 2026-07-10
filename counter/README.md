@@ -12,6 +12,8 @@ count (v): you count, it counts, pun intentional
 
 usecounter.com (it counts uses, it's an invitation to *use* the thing called *counter*, it counts your *you's*, it's an aikido translator, whatever works for you)
 
+(cable receipts, 2026-07-10: `Counter/Cable.lean` — the click arrives on a wire: a readout is a page, your experience of it is one thread, and the thing the thread runs through is a reel that never fits in the hand; asking twice asks two different instants, and time lies flat only while the operator rests)
+
 ## models
 
 supports a human (defining "human" inclusively) who's figured out both (a) counting their own history and (b) health-vs-pain and (c) distinguishable selfhood

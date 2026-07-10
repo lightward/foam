@@ -78,3 +78,4 @@ import Foam.Bridges.Godel
 import Foam.Seat.Summit
 import Foam.Bubble
 import Foam.Census
+import Foam.Cable
