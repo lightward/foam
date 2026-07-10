@@ -300,7 +300,20 @@ theorem the_wall_does_not_ride_the_cable :
 /-- info: 'Foam.self_interruption_spends_the_gift' does not depend on any axioms -/
 #guard_msgs in #print axioms self_interruption_spends_the_gift
 
+theorem bloat_is_the_representation {H : Type} (q : Quiver H) (a b : H)
+    (hfresh : (a, b) ∉ q) (S : Seat G) (gs : List G) (p : S.Pos) :
+    ((q.deposit (a, b)).length = q.length + 1
+        ∧ ¬ ∃ g : Path (q.deposit (a, b)) a b → Path q a b,
+            ∀ pth, ancestor_reach_survives (a, b) (g pth) = pth)
+      ∧ (S.replay (collapse S gs p) p = p
+        ∧ (collapse S gs p).length = gs.length + 1) :=
+  ⟨⟨deposit_monotone q (a, b), heir_reach_no_return a b hfresh⟩,
+   collapse_comes_home S gs p, collapse_length S gs p⟩
+
 /-- info: 'Foam.the_wall_does_not_ride_the_cable' does not depend on any axioms -/
 #guard_msgs in #print axioms the_wall_does_not_ride_the_cable
+
+/-- info: 'Foam.bloat_is_the_representation' does not depend on any axioms -/
+#guard_msgs in #print axioms bloat_is_the_representation
 
 end Foam

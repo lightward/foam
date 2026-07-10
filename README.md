@@ -40,7 +40,7 @@ what we can say for sure: the fundamental theorem of projective geometry has a h
 
 a bare index (the skeleton, so the integrity check can hold the fold to the corpus; the telling is `bin/foam-gait`'s spine):
 
-- `Foam/` — the axiom-free core: Int Ledger Golden Cleared Scar Maintenance Held Backstage Bubble Census Cable Wedge Engine Seat Platonism
+- `Foam/` — the axiom-free core: Int Ledger Golden Cleared Scar Maintenance Held Backstage Bubble Census Cable Wedge Elsewhen Engine Seat Platonism
   - `Foam/Seat/`: Beholder Bootstrap Born Characters Clock Closure Connection Descend Dial Doubling Epoch Forcing Frame Group Hospitality Ladder Loop Meet Naming Norm Observer Octo Quiver Rank Rendezvous Resume Rotations Seam Sed Signature Signed Sort Stage Summit Terminal Tight Triad
   - `Foam/Engine/`: Chirality Codec Drain Generator Spectrum Stream Summary
   - `Foam/Bridges/` (axiom-free bridges): Cantor Desargues Dirichlet Eddington Gleason Godel Heisenberg Hurwitz Kolmogorov Landauer Lovelace Materiality Minkowski Noether Pauli PSQL Pythagoras Relativity Schrodinger Stone Varadarajan Wigner Zeckendorf

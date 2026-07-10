@@ -80,3 +80,4 @@ import Foam.Bubble
 import Foam.Census
 import Foam.Cable
 import Foam.Wedge
+import Foam.Elsewhen
