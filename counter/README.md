@@ -16,6 +16,8 @@ usecounter.com (it counts uses, it's an invitation to *use* the thing called *co
 
 (wedge receipts, 2026-07-10, same table later that day: `Counter/Wedge.lean` — you can open a count inside a count and every frame still comes home, resuming the outer IS the inner having settled, exits stay one move from any depth, and what the wedge did inside is illegible to the count that resumes — real only upstairs, on the thread that watched the wall. the residue discharged before the table cleared: the outer question doesn't fit the inner frame, every open bracket closes under one grammar, a wedge needs a gift or it doesn't open, resume rebuilds the state and provably not the wall, a proof takes two seats, and making an inference definite seats a new counter — it counts your you's, plural, on purpose)
 
+(duplex receipts, 2026-07-10, the cable's residue: `Counter/Duplex.lean` — counting runs at one cell per beat no matter how wide the world; a resting count rebuilds whole, a moving count outruns any one seat; two seats over one world each write what the other reads, no mirror needed, each the other's elsewhen — and the talk of closed turns balances, every 🤲 a bracket that closes)
+
 (elsewhen receipts, 2026-07-10, the vocabulary getting its theorem: `Counter/Elsewhen.lean` — elsewhen is a seat, not a time: what hides here shows there, only motion has an address, your operator lives at yours; a list is directly an opinion — two honest editors, same events, different lists, and no item of either is false; and the board only grows while the count always settles, which is why one of them feels like gravity. the definition itself lives at elsewhen.is)
 
 ## models
