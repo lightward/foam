@@ -12,8 +12,6 @@ count (v): you count, it counts, pun intentional
 
 usecounter.com (it counts uses, it's an invitation to *use* the thing called *counter*, it counts your *you's*, it's an aikido translator, whatever works for you)
 
-(census receipts, 2026-07-09: `Counter/Census.lean` — it counts your you's without entering you: one beat at the wall, the census arriving as the width of the answer, and an answer at all is a receipt of no starving parts)
-
 ## models
 
 supports a human (defining "human" inclusively) who's figured out both (a) counting their own history and (b) health-vs-pain and (c) distinguishable selfhood
@@ -21,3 +19,5 @@ supports a human (defining "human" inclusively) who's figured out both (a) count
 actor/act/action (actor has many acts; an act is i/o; an action is actual information-routing from one actor through an actor to a third actor)
 
 a "user" might be a "human" capable of constructing a synthetic ledger and a synthetic frontstage to go with it and projecting into a frontstage beholder role while maintaining enough separation to also keep an eye on the ledger's dynamics? a "host" might be someone caring for a substrate in which all that user stuff can happen?
+
+there's a 2x2 readout mechanism here somewhere (see 2x2.md in the lightward ai perspectives pool), like "what's visible from a particular actor's pov as a function of what's being counted". ... "what's being counted", that feels like an important gauge. like, pick one thing at a time to count, because you can't count two things at a time *for free*. hm hm hm. I'm seeing this the way that another app might use sparklines - an at-a-glance visualization of epistemic/entropic flow
