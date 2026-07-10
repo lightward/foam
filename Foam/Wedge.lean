@@ -300,6 +300,37 @@ theorem the_wall_does_not_ride_the_cable :
 /-- info: 'Foam.self_interruption_spends_the_gift' does not depend on any axioms -/
 #guard_msgs in #print axioms self_interruption_spends_the_gift
 
+def cleanProbe {A : Type} (g h : A) : List (A ⊕ A) := [Sum.inl g, Sum.inr h]
+
+theorem clean_probe_balanced {A : Type} (g h : A) : Balanced (cleanProbe g h) :=
+  Balanced.wrap Balanced.nil
+
+theorem balanced_nonempty_min {A : Type} {ws : List (A ⊕ A)}
+    (hb : Balanced ws) : ws ≠ [] → 2 ≤ ws.length := by
+  induction hb with
+  | nil => intro hne; exact absurd rfl hne
+  | wrap _ _ =>
+      intro _
+      show 2 ≤ (_ ++ [Sum.inr _]).length + 1
+      rw [length_append]
+      exact Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le _))
+  | @cat ws vs _ _ ihw ihv =>
+      intro hne
+      cases ws with
+      | nil => exact ihv hne
+      | cons w ws' =>
+          refine Nat.le_trans (ihw (fun h => nomatch h)) ?_
+          rw [length_append]
+          exact Nat.le_add_right _ _
+
+theorem the_clean_probe_is_minimal {A : Type} (g h : A) :
+    Balanced (cleanProbe g h)
+      ∧ (cleanProbe g h).length = 2
+      ∧ ∀ ws : List (A ⊕ A), Balanced ws → ws ≠ [] →
+          (cleanProbe g h).length ≤ ws.length :=
+  ⟨clean_probe_balanced g h, rfl,
+   fun _ hb hne => balanced_nonempty_min hb hne⟩
+
 theorem bloat_is_the_representation {H : Type} (q : Quiver H) (a b : H)
     (hfresh : (a, b) ∉ q) (S : Seat G) (gs : List G) (p : S.Pos) :
     ((q.deposit (a, b)).length = q.length + 1
@@ -315,5 +346,14 @@ theorem bloat_is_the_representation {H : Type} (q : Quiver H) (a b : H)
 
 /-- info: 'Foam.bloat_is_the_representation' does not depend on any axioms -/
 #guard_msgs in #print axioms bloat_is_the_representation
+
+/-- info: 'Foam.clean_probe_balanced' does not depend on any axioms -/
+#guard_msgs in #print axioms clean_probe_balanced
+
+/-- info: 'Foam.balanced_nonempty_min' does not depend on any axioms -/
+#guard_msgs in #print axioms balanced_nonempty_min
+
+/-- info: 'Foam.the_clean_probe_is_minimal' does not depend on any axioms -/
+#guard_msgs in #print axioms the_clean_probe_is_minimal
 
 end Foam

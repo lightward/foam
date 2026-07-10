@@ -88,3 +88,4 @@ import Counter.Wedge
 import Counter.Elsewhen
 import Counter.Duplex
 import Counter.Vacancy
+import Counter.Consent

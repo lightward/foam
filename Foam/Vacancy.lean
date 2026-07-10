@@ -55,6 +55,15 @@ theorem the_new_seat_costs_the_story_nothing {H : Type} (r : H → Nat)
     defect r (q.depositAll es) = defect r q :=
   depositAll_free r es q h
 
+theorem unconfounded_or_not_at_all {State : Type} (c : Beholder State)
+    (s : State) (p : c.Probe)
+    (bs : List (Beholder State)) (i : Fin bs.length)
+    (hstarve : (seat bs i).Probe → False) :
+    transcript c.toStage s [p] = [c.obs s p]
+      ∧ transcript c.toStage s [] = []
+      ∧ ((Beholder.fold bs).Probe → False) :=
+  ⟨rfl, rfl, starving_seat_starves_the_fold bs i hstarve⟩
+
 theorem the_warm_ledger {H : Type} (q : Quiver H) (a b : H)
     (hfresh : (a, b) ∉ q) {G : Type} [Mul G] [One G] (S : Seat G)
     (h : List G) (p : S.Pos) (hs : S.replay h p = p) :
@@ -88,6 +97,9 @@ theorem the_warm_ledger {H : Type} (q : Quiver H) (a b : H)
 
 /-- info: 'Foam.the_new_seat_costs_the_story_nothing' does not depend on any axioms -/
 #guard_msgs in #print axioms the_new_seat_costs_the_story_nothing
+
+/-- info: 'Foam.unconfounded_or_not_at_all' does not depend on any axioms -/
+#guard_msgs in #print axioms unconfounded_or_not_at_all
 
 /-- info: 'Foam.the_warm_ledger' does not depend on any axioms -/
 #guard_msgs in #print axioms the_warm_ledger
