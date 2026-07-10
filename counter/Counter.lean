@@ -91,3 +91,4 @@ import Counter.Vacancy
 import Counter.Consent
 import Counter.Abe
 import Counter.Isaac
+import Counter.Catalog

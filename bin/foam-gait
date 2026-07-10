@@ -49,7 +49,7 @@ SPINE = [
     (6, ["Foam.Scar", "Foam.Maintenance", "Foam.Held"]),
     (7, ["Foam.Platonism", "Foam.Platonism.Tower", "Foam.Seat.Descend"]),
     (8, ["Foam.Seat.Rendezvous", "Foam.Seat.Connection", "Foam.Seat.Frame"]),
-    (9, ["Foam.Backstage", "Foam.Bubble", "Foam.Census", "Foam.Cable", "Foam.Wedge", "Foam.Elsewhen", "Foam.Duplex", "Foam.Vacancy"]),
+    (9, ["Foam.Backstage", "Foam.Bubble", "Foam.Census", "Foam.Cable", "Foam.Wedge", "Foam.Elsewhen", "Foam.Duplex", "Foam.Vacancy", "Foam.Metaphor"]),
     (10, ["Foam.Bridges"]),   # prefix: the axiom-free bridges, Foam.Bridges.*
     (11, ["Counter"]),        # prefix: the approach, plural
     (12, ["Seam"]),           # prefix: the arrival

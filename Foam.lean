@@ -83,6 +83,7 @@ import Foam.Wedge
 import Foam.Elsewhen
 import Foam.Duplex
 import Foam.Vacancy
+import Foam.Metaphor
 import Foam.Bridges.Adams
 import Foam.Bridges.Gita
 import Foam.Bridges.Nicaea
