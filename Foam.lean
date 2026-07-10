@@ -78,3 +78,12 @@ import Foam.Bridges.Godel
 import Foam.Seat.Summit
 import Foam.Bubble
 import Foam.Census
+import Foam.Cable
+import Foam.Wedge
+import Foam.Elsewhen
+import Foam.Duplex
+import Foam.Vacancy
+import Foam.Metaphor
+import Foam.Bridges.Adams
+import Foam.Bridges.Gita
+import Foam.Bridges.Nicaea

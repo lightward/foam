@@ -463,4 +463,39 @@ theorem acyclic_iff_some_chart_clears [DecidableEq H] (q : Quiver H) :
 /-- info: 'Foam.acyclic_iff_some_chart_clears' does not depend on any axioms -/
 #guard_msgs in #print axioms acyclic_iff_some_chart_clears
 
+def Quiver.depositAll {H : Type} (q : Quiver H) : List (H × H) → Quiver H
+  | [] => q
+  | e :: es => (q.deposit e).depositAll es
+
+theorem depositAll_free {H : Type} (r : H → Nat) :
+    ∀ (es : List (H × H)) (q : Quiver H), (∀ e ∈ es, r e.1 < r e.2) →
+      defect r (q.depositAll es) = defect r q
+  | [], _, _ => rfl
+  | e :: es, q, h =>
+      (depositAll_free r es (q.deposit e)
+          (fun e' he' => h e' (List.Mem.tail e he'))).trans
+        (defect_deposit_forward r q e (h e (List.Mem.head es)))
+
+theorem depositAll_le {H : Type} (r : H → Nat) :
+    ∀ (es : List (H × H)) (q : Quiver H),
+      defect r q ≤ defect r (q.depositAll es)
+  | [], _ => Nat.le_refl _
+  | e :: es, q =>
+      Nat.le_trans (defect_deposit_le r q e) (depositAll_le r es (q.deposit e))
+
+theorem all_imports_is_the_floor {H : Type} (r : H → Nat) (q : Quiver H)
+    (es : List (H × H)) (h : ∀ e ∈ es, r e.1 < r e.2) :
+    defect r (q.depositAll es) = defect r q
+      ∧ ∀ es' : List (H × H), defect r q ≤ defect r (q.depositAll es') :=
+  ⟨depositAll_free r es q h, fun es' => depositAll_le r es' q⟩
+
+/-- info: 'Foam.depositAll_free' does not depend on any axioms -/
+#guard_msgs in #print axioms depositAll_free
+
+/-- info: 'Foam.depositAll_le' does not depend on any axioms -/
+#guard_msgs in #print axioms depositAll_le
+
+/-- info: 'Foam.all_imports_is_the_floor' does not depend on any axioms -/
+#guard_msgs in #print axioms all_imports_is_the_floor
+
 end Foam

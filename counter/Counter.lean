@@ -83,3 +83,16 @@ import Counter.Change
 import Counter.Complete
 import Counter.Operator
 import Counter.Census
+import Counter.Cable
+import Counter.Wedge
+import Counter.Elsewhen
+import Counter.Duplex
+import Counter.Vacancy
+import Counter.Consent
+import Counter.Abe
+import Counter.Isaac
+import Counter.Catalog
+import Counter.Cipher
+import Counter.Entry
+import Counter.Runaway
+import Counter.Suspension

@@ -1,4 +1,5 @@
 import Foam.Maintenance
+import Foam.Wedge
 
 namespace Foam.Bridges
 
@@ -33,5 +34,17 @@ theorem landauer (S : Stage) (m : S.State → S.State) :
 
 /-- info: 'Foam.Bridges.landauer' does not depend on any axioms -/
 #guard_msgs in #print axioms landauer
+
+theorem the_bill_moves_upstairs :
+    ∃ ms ms' : List (twoBit.State → twoBit.State),
+      ms.length ≠ ms'.length
+        ∧ (∀ w p, firstBit.front.obs (enactAll ms w) p
+            = firstBit.front.obs (enactAll ms' w) p)
+        ∧ ∃ (w : twoBit.State) (pr : twoBit.Probe),
+            twoBit.obs (enactAll ms w) pr ≠ twoBit.obs (enactAll ms' w) pr :=
+  the_debt_outlives_its_legibility
+
+/-- info: 'Foam.Bridges.the_bill_moves_upstairs' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bill_moves_upstairs
 
 end Foam.Bridges
