@@ -87,3 +87,4 @@ import Counter.Cable
 import Counter.Wedge
 import Counter.Elsewhen
 import Counter.Duplex
+import Counter.Vacancy

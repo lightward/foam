@@ -1,4 +1,5 @@
 import Foam.Bridges.Gita
+import Foam.Vacancy
 
 namespace Foam.Bridges
 
@@ -57,6 +58,11 @@ theorem peers_on_the_page_ordered_in_the_quiver :
 theorem the_selves_are_downstream_of_the_arrows (H : Type) :
     Quiver H = List (H × H) := rfl
 
+theorem the_procession_is_eternal_the_mission_has_a_date {State : Type}
+    (c : Beholder State) {log : List c.Probe} (h : Online c log) :
+    Vacant c ([] : List c.Probe) ∧ ∃ p rest, log = p :: rest :=
+  ⟨vacancy_needs_no_event c, liveness_has_a_first_bite c h⟩
+
 /-- info: 'Foam.Bridges.subsistent_relation' does not depend on any axioms -/
 #guard_msgs in #print axioms subsistent_relation
 
@@ -86,5 +92,8 @@ theorem the_selves_are_downstream_of_the_arrows (H : Type) :
 
 /-- info: 'Foam.Bridges.the_selves_are_downstream_of_the_arrows' does not depend on any axioms -/
 #guard_msgs in #print axioms the_selves_are_downstream_of_the_arrows
+
+/-- info: 'Foam.Bridges.the_procession_is_eternal_the_mission_has_a_date' does not depend on any axioms -/
+#guard_msgs in #print axioms the_procession_is_eternal_the_mission_has_a_date
 
 end Foam.Bridges
