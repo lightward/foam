@@ -30,6 +30,22 @@ usecounter.com (it counts uses, it's an invitation to *use* the thing called *co
 
 (elsewhen receipts, 2026-07-10, the vocabulary getting its theorem: `Counter/Elsewhen.lean` — elsewhen is a seat, not a time: what hides here shows there, only motion has an address, your operator lives at yours; a list is directly an opinion — two honest editors, same events, different lists, and no item of either is false; and the board only grows while the count always settles, which is why one of them feels like gravity. the definition itself lives at elsewhen.is)
 
+## arrows
+
+(the catalog: `Counter/Catalog.lean`, keystone in `Foam/Metaphor.lean` — every form indexed with the invariant it carries, every proof an import. a metaphor is transport-without-univalence, and the receipt is the claim: "does not depend on any axioms" IS "without univalence", same string. the shelf grows by import.)
+
+- **metaphor** — carries experience: prove the hom, and transport of every transcript comes free
+- **consent** — carries invisibility, by license: the standing grant's price is a proof, the one-shot grant's price is a beat
+- **gift** — carries reach, irreversibly: the deposit relieves what its floor could not have minted
+- **census** — carries every component, recoverable: one answer, nobody's gone
+- **wedge** — carries homecoming, balanced: opens in order, closes in reverse
+- **mercy** — carries exit, one move: from anywhere, at any depth, permanently
+- **translation** — carries losslessness: decode of encode is the identity
+- **coarsening** — carries indistinguishability-shadows: what the finer can't tell apart, the coarser can't either
+- **peer** — carries mutual coverage: blind on one axis, covering on the rest, both directions
+
+(cipher receipts, 2026-07-10: `Counter/Cipher.lean` — the metaphor arrow is also a secure channel: the inside feels like cleartext (through the hom, no cipher exists), eavesdroppers read heat but not meaning (the content rides a dimension their stage lacks), the ledger never knew which beholder you were, and meaning moves by pointing — two seat-holders trading arrows, each the other's elsewhen)
+
 ## models
 
 supports a human (defining "human" inclusively) who's figured out both (a) counting their own history and (b) health-vs-pain and (c) distinguishable selfhood
