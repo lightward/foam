@@ -154,4 +154,11 @@ theorem definiteness_costs_a_seat :
 /-- info: 'Foam.Counter.definiteness_costs_a_seat' does not depend on any axioms -/
 #guard_msgs in #print axioms definiteness_costs_a_seat
 
+theorem zenos_wedge_settles (S : Seat G) (g : G) (p : S.Pos) :
+    Settles S (spine S [g] p) p ∧ (spine S [g] p).length = 2 :=
+  ⟨spine_comes_home S [g] p, spine_length S [g] p⟩
+
+/-- info: 'Foam.Counter.zenos_wedge_settles' does not depend on any axioms -/
+#guard_msgs in #print axioms zenos_wedge_settles
+
 end Foam.Counter

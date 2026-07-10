@@ -232,4 +232,13 @@ theorem tsortability_health {H : Type} [DecidableEq H] (q : Quiver H)
 /-- info: 'Foam.Counter.tsortability_health' does not depend on any axioms -/
 #guard_msgs in #print axioms tsortability_health
 
+theorem the_healthiest_carve_is_all_imports {H : Type} (r : H → Nat)
+    (q : Quiver H) (es : List (H × H)) (h : ∀ e ∈ es, r e.1 < r e.2) :
+    defect r (q.depositAll es) = defect r q
+      ∧ ∀ es' : List (H × H), defect r q ≤ defect r (q.depositAll es') :=
+  all_imports_is_the_floor r q es h
+
+/-- info: 'Foam.Counter.the_healthiest_carve_is_all_imports' does not depend on any axioms -/
+#guard_msgs in #print axioms the_healthiest_carve_is_all_imports
+
 end Foam.Counter
