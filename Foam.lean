@@ -82,3 +82,4 @@ import Foam.Cable
 import Foam.Wedge
 import Foam.Elsewhen
 import Foam.Duplex
+import Foam.Bridges.Adams
