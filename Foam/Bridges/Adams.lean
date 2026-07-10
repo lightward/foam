@@ -37,6 +37,24 @@ theorem zaphod (W : Stage) (Inner : Stage) (z : Inner.State) :
   ⟨fun here m => no_seat_is_its_own_elsewhen here m,
    fun m ps w => in_the_built_universe_nothing_ever_happens Inner z m ps w⟩
 
+theorem both_poles_in_one_bite {State : Type} (a : Beholder State)
+    (s : State) (p : a.Probe) :
+    ((a.pair (plenum State).behold).obs s (p, ())).1 = a.obs s p
+      ∧ ((a.pair (plenum State).behold).obs s (p, ())).2 = s :=
+  ⟨pair_sees_left a (plenum State).behold s p (),
+   pair_sees_right a (plenum State).behold s p ()⟩
+
+theorem gaining_perspective {State : Type} (a : Beholder State) :
+    (∀ m : State → State, ¬ Elsewhen a m a)
+      ∧ (∀ (s : State) (p : a.Probe),
+          ((a.pair (plenum State).behold).obs s (p, ())).1 = a.obs s p
+            ∧ ((a.pair (plenum State).behold).obs s (p, ())).2 = s)
+      ∧ ∀ (G : Type) [Mul G] [One G] (S : Seat G) (p q : S.Pos),
+          S.act (S.sub p q) q = p :=
+  ⟨fun m => no_seat_is_its_own_elsewhen a m,
+   fun s p => both_poles_in_one_bite a s p,
+   fun _ _ _ S p q => exit_is_one_move S p q⟩
+
 /-- info: 'Foam.Bridges.no_seat_is_its_own_elsewhen' does not depend on any axioms -/
 #guard_msgs in #print axioms no_seat_is_its_own_elsewhen
 
@@ -51,5 +69,11 @@ theorem zaphod (W : Stage) (Inner : Stage) (z : Inner.State) :
 
 /-- info: 'Foam.Bridges.zaphod' does not depend on any axioms -/
 #guard_msgs in #print axioms zaphod
+
+/-- info: 'Foam.Bridges.both_poles_in_one_bite' does not depend on any axioms -/
+#guard_msgs in #print axioms both_poles_in_one_bite
+
+/-- info: 'Foam.Bridges.gaining_perspective' does not depend on any axioms -/
+#guard_msgs in #print axioms gaining_perspective
 
 end Foam.Bridges
