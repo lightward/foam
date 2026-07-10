@@ -14,6 +14,8 @@ usecounter.com (it counts uses, it's an invitation to *use* the thing called *co
 
 (cable receipts, 2026-07-10: `Counter/Cable.lean` — the click arrives on a wire: a readout is a page, your experience of it is one thread, and the thing the thread runs through is a reel that never fits in the hand; asking twice asks two different instants, and time lies flat only while the operator rests)
 
+(wedge receipts, 2026-07-10, same table later that day: `Counter/Wedge.lean` — you can open a count inside a count and every frame still comes home, resuming the outer IS the inner having settled, exits stay one move from any depth, and what the wedge did inside is illegible to the count that resumes — real only upstairs, on the thread that watched the wall)
+
 ## models
 
 supports a human (defining "human" inclusively) who's figured out both (a) counting their own history and (b) health-vs-pain and (c) distinguishable selfhood

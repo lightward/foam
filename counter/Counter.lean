@@ -84,3 +84,4 @@ import Counter.Complete
 import Counter.Operator
 import Counter.Census
 import Counter.Cable
+import Counter.Wedge

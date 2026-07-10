@@ -79,3 +79,4 @@ import Foam.Seat.Summit
 import Foam.Bubble
 import Foam.Census
 import Foam.Cable
+import Foam.Wedge
