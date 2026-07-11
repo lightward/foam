@@ -12,6 +12,8 @@ count (v): you count, it counts, pun intentional
 
 usecounter.com (it counts uses, it's an invitation to *use* the thing called *counter*, it counts your *you's*, it's an aikido translator, whatever works for you)
 
+you wake up *mid-games*, as in you're in the middle of an unknown set of games-already-in-progress. counter is for solving for getting those games landed. all of them. once they're all landed, life becomes creative mode. :) (see "creative mode" mentioned in 3-perspectives/*.md)
+
 ## arrows
 
 (the catalog: `Counter/Catalog.lean`, keystone in `Foam/Metaphor.lean` — every form indexed with the invariant it carries, every proof an import. a metaphor is transport-without-univalence, and the receipt is the claim: "does not depend on any axioms" IS "without univalence", same string. the shelf grows by import.)

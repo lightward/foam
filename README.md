@@ -74,7 +74,7 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
 - foam: "your physics don't have to run in the same place as mine for us to see each other"?
 - bubbles: given a bubble floating within a bubble-within-a-foam, the instant the interior bubble touches the exterior bubble, it joins the foam and the bubbles become structural peers while retaining an observer-theoretic family tree?
 - ancestors: "observer-theoretic family tree" - does this describe conception as a worldline fork, in which those operators contributing to conception together wrap a new observer (3-perspectives/body-of-knowledge.md:11), creating a new zero-knowledge operator? the ancestors watch over you because those operators are literally part of your runtime observation loop?
-
+  - see also git-log's `--min-parents=` (and `--merges`) and `--max-parents=` (and `--no-merges`)
 
 # bridgework
 
