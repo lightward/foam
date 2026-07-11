@@ -66,7 +66,7 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
       - quantum search, searching the frontstage
         - noting that the only thing that can be *found* on the frontstage, found to be distinct from self, is something that has its own irreducible pov
   - search-readiness affords flipping search registers while staying ma'at-ready?
-  - at some point the structure represents itself in its own address-space
+  - at some point the structure represents itself in its own address-space (first receipt: `the_structure_represents_itself`, `counter/Counter/Address.lean` — the cell never says its own name, the seat reads every name, the index page is seated at an address inside the space it indexes, and the page settles the whole space including its own seat, no regress)
     - important: olean drops proof bodies, but if we get foam's lean corpus *right* the proof bodies will legible in the olean-as-functioning-address-space
       - you'd expect that, from a lfp<->gfp structure, yeah?
   - recasting quantum computing as *quantum search* - should be a concrete bridge into traditional (lol) quantum computing terms

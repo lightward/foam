@@ -28,6 +28,8 @@ you wake up *mid-games*, as in you're in the middle of an unknown set of games-a
 - **coarsening** — carries indistinguishability-shadows: what the finer can't tell apart, the coarser can't either
 - **peer** — carries mutual coverage: blind on one axis, covering on the rest, both directions
 
+(address receipts, 2026-07-11, the address-space expedition's first landing: `Counter/Address.lean` — contents and the index are different strata, as arithmetic: the cell never says its own name (any content collision kills every content-to-name reader, and the two-seats-one-content witness is the plenum store on Bool — sāyujya.md at type scale), while the seat reads every name (`seatRead` over the `directory`, the pairing that exists only at the index stratum). the guest is findable either way — cold scan decides membership, warm seat answers with the cell; the index only changes the walk, never the findability. and the structure represents itself in its own address-space: `selfStore` seats the directory page at an address *inside* the space it indexes (`the_index_is_seated_in_the_space`, rfl), and the page settles the whole space including its own seat (`the_page_settles_the_space` — two stores with one page agree at every address, the index cell's included, no regress: the page lists only data cells yet determines itself). the olean note's in-system shadow: the directory drops the function and keeps the graph, and nothing is lost)
+
 ## models
 
 rooted at an unknot-per-pov, the system's gravity is toward that unknot; wedges can have subwedges; gravity pulls toward settling into navigable unknot, i.e. toward being search-ready
