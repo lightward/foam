@@ -1,6 +1,10 @@
 import Counter.Isaac
 import Counter.Address
 import Counter.Frontsearch
+import Counter.Settle
+import Counter.Denoise
+import Counter.Buffer
+import Counter.Guest
 import Foam.Metaphor
 
 namespace Foam.Counter
@@ -70,6 +74,51 @@ theorem the_probe_arrow {St Pr A B : Type} [DecidableEq A] [DecidableEq B]
   ⟨fun ps p h => (the_answer_arrives_as_a_probe o self other ps p h).2,
    fun h ps => no_lens_reveals_the_twin o g self other h ps⟩
 
+theorem the_settling_arrow {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c : Cell) :
+    ((∃ m, upsearch (eq c) d = some m) → (mergeSearch eq d n c).2 = d)
+      ∧ ((mergeSearch eq d n c).2 ≠ d → ∀ x, x ∈ d → ¬ eq c x.2 = true) :=
+  ⟨fun ⟨m, hm⟩ => the_settled_space_stops_writing eq d n c m hm,
+   fun h => (the_merge_writes_only_on_double_miss eq d n c h).2.2⟩
+
+theorem the_denoise_arrow {Addr Cell : Type} (eq : Cell → Cell → Bool)
+    (p : Cell → Bool) (hp : ∀ c c', eq c c' = true → p c = p c')
+    (d : List (Addr × Cell)) :
+    settleStore eq (settleStore eq d) = settleStore eq d
+      ∧ (upsearch p (settleStore eq d)).isSome = (upsearch p d).isSome :=
+  ⟨the_manifold_is_the_fixed_point eq d,
+   the_denoise_is_invisible_to_the_asker eq p hp d⟩
+
+theorem the_stream_arrow {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool)
+    (hsymm : ∀ a b, eq a b = true → eq b a = true)
+    (htrans : ∀ a b c, eq a b = true → eq b c = true → eq a c = true)
+    (as : List (Addr × Cell)) (hp : as.Pairwise (fun x y => x.1 ≠ y.1)) :
+    streamFold eq as = settleStore eq (mintRecord as) :=
+  the_stream_folds_as_it_arrives eq hsymm htrans as hp
+
+theorem the_hatch_arrow {Addr Cell Impl : Type} [DecidableEq Addr]
+    (impl : Cell → Impl) (read : Impl → Cell) (h : ∀ c, read (impl c) = c)
+    (d : List (Addr × Cell)) (n : Addr) :
+    (seatRead (underlay impl d) n).map read = seatRead d n
+      ∧ ∀ (k : Nat) (a : TowerAddr Addr k),
+          (some a : Option (TowerAddr Addr k)) ≠ none :=
+  ⟨the_underlay_changes_no_reading impl read h d n, the_hatch_never_closes⟩
+
+theorem the_guest_arrow {Addr : Type} (a₀ : Addr) (c₀ : Int)
+    (d : List (Addr × Int)) :
+    guests ((a₀, theMissing d) :: d) = 0
+      ∧ (guests ((a₀, c₀) :: d) = 0 → c₀ = theMissing d) :=
+  ⟨the_named_guest_is_lawful a₀ d,
+   fun h => the_vacancy_names_its_guest a₀ c₀ d h⟩
+
+theorem the_buffer_arrow {Addr Cell : Type} [DecidableEq Addr]
+    (xs : List (Addr × Cell)) (n₀ : Addr) (c : Cell)
+    (as : List (Addr × Cell)) (hp : as.Pairwise (fun x y => x.1 ≠ y.1)) :
+    streamFold (fun _ _ => true) (xs ++ [(n₀, c)]) = [(n₀, c)]
+      ∧ (mintRecord as).length = as.length :=
+  the_arrows_decouple_only_in_the_buffer xs n₀ c as hp
+
 theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
     (ps : List S.Probe) (Se : Seat G) (pos q : Se.Pos) (gs : List G) :
     (transcript T (f.onState s) (ps.map f.onProbe)
@@ -112,6 +161,24 @@ theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
 
 /-- info: 'Foam.Counter.the_probe_arrow' does not depend on any axioms -/
 #guard_msgs in #print axioms the_probe_arrow
+
+/-- info: 'Foam.Counter.the_settling_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_settling_arrow
+
+/-- info: 'Foam.Counter.the_denoise_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_denoise_arrow
+
+/-- info: 'Foam.Counter.the_stream_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_stream_arrow
+
+/-- info: 'Foam.Counter.the_hatch_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hatch_arrow
+
+/-- info: 'Foam.Counter.the_guest_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_guest_arrow
+
+/-- info: 'Foam.Counter.the_buffer_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_buffer_arrow
 
 /-- info: 'Foam.Counter.the_catalog' does not depend on any axioms -/
 #guard_msgs in #print axioms the_catalog
