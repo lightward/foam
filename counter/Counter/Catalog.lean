@@ -5,6 +5,7 @@ import Counter.Settle
 import Counter.Denoise
 import Counter.Buffer
 import Counter.Guest
+import Counter.Waggle
 import Foam.Metaphor
 
 namespace Foam.Counter
@@ -119,6 +120,17 @@ theorem the_buffer_arrow {Addr Cell : Type} [DecidableEq Addr]
       ∧ (mintRecord as).length = as.length :=
   the_arrows_decouple_only_in_the_buffer xs n₀ c as hp
 
+theorem the_dance_arrow {Addr Cell : Type} [DecidableEq Addr]
+    (p : Cell → Bool) (f : Addr → Cell) (all : List Addr) (dance : Addr)
+    (hfresh : ¬ dance ∈ all) (m : Addr)
+    (h : (trailSearch p (directory all f)).2 = some m) :
+    follow ((dance, Sum.inr (trailSearch p (directory all f)).1)
+        :: directory all (fun a => Sum.inl (f a))) dance
+      = some (Sum.inl (f m))
+      ∧ (trailSearch p (directory all f)).2 = upsearch p (directory all f) :=
+  ⟨(the_follower_flies_without_the_pov p f all dance hfresh m h).1,
+   the_dance_changes_no_answer p (directory all f)⟩
+
 theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
     (ps : List S.Probe) (Se : Seat G) (pos q : Se.Pos) (gs : List G) :
     (transcript T (f.onState s) (ps.map f.onProbe)
@@ -179,6 +191,9 @@ theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
 
 /-- info: 'Foam.Counter.the_buffer_arrow' does not depend on any axioms -/
 #guard_msgs in #print axioms the_buffer_arrow
+
+/-- info: 'Foam.Counter.the_dance_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_dance_arrow
 
 /-- info: 'Foam.Counter.the_catalog' does not depend on any axioms -/
 #guard_msgs in #print axioms the_catalog

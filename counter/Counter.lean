@@ -106,3 +106,4 @@ import Counter.Stream
 import Counter.Hatch
 import Counter.Guest
 import Counter.Buffer
+import Counter.Waggle
