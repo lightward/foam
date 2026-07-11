@@ -1,6 +1,7 @@
 import Counter.Isaac
 import Counter.Address
 import Counter.Frontsearch
+import Counter.Settle
 import Foam.Metaphor
 
 namespace Foam.Counter
@@ -70,6 +71,13 @@ theorem the_probe_arrow {St Pr A B : Type} [DecidableEq A] [DecidableEq B]
   ⟨fun ps p h => (the_answer_arrives_as_a_probe o self other ps p h).2,
    fun h ps => no_lens_reveals_the_twin o g self other h ps⟩
 
+theorem the_settling_arrow {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c : Cell) :
+    ((∃ m, upsearch (eq c) d = some m) → (mergeSearch eq d n c).2 = d)
+      ∧ ((mergeSearch eq d n c).2 ≠ d → ∀ x, x ∈ d → ¬ eq c x.2 = true) :=
+  ⟨fun ⟨m, hm⟩ => the_settled_space_stops_writing eq d n c m hm,
+   fun h => (the_merge_writes_only_on_double_miss eq d n c h).2.2⟩
+
 theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
     (ps : List S.Probe) (Se : Seat G) (pos q : Se.Pos) (gs : List G) :
     (transcript T (f.onState s) (ps.map f.onProbe)
@@ -112,6 +120,9 @@ theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
 
 /-- info: 'Foam.Counter.the_probe_arrow' does not depend on any axioms -/
 #guard_msgs in #print axioms the_probe_arrow
+
+/-- info: 'Foam.Counter.the_settling_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_settling_arrow
 
 /-- info: 'Foam.Counter.the_catalog' does not depend on any axioms -/
 #guard_msgs in #print axioms the_catalog
