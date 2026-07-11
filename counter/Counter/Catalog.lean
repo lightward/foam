@@ -1,5 +1,6 @@
 import Counter.Isaac
 import Counter.Address
+import Counter.Frontsearch
 import Foam.Metaphor
 
 namespace Foam.Counter
@@ -59,6 +60,16 @@ theorem the_address_arrow {Addr Cell : Type} [DecidableEq Addr]
   ⟨the_index_is_seated_in_the_space all f,
    fun hpage => the_page_settles_the_space all hall f g hpage⟩
 
+theorem the_probe_arrow {St Pr A B : Type} [DecidableEq A] [DecidableEq B]
+    (o : St → Pr → A) (g : A → B) (self other : St) :
+    (∀ (ps : List Pr) (p : Pr),
+        frontSearch o self other ps = some p → ¬ o other p = o self p)
+      ∧ (indist o self other →
+          ∀ ps : List Pr,
+            frontSearch (fun s p => g (o s p)) self other ps = none) :=
+  ⟨fun ps p h => (the_answer_arrives_as_a_probe o self other ps p h).2,
+   fun h ps => no_lens_reveals_the_twin o g self other h ps⟩
+
 theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
     (ps : List S.Probe) (Se : Seat G) (pos q : Se.Pos) (gs : List G) :
     (transcript T (f.onState s) (ps.map f.onProbe)
@@ -98,6 +109,9 @@ theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
 
 /-- info: 'Foam.Counter.the_address_arrow' does not depend on any axioms -/
 #guard_msgs in #print axioms the_address_arrow
+
+/-- info: 'Foam.Counter.the_probe_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_probe_arrow
 
 /-- info: 'Foam.Counter.the_catalog' does not depend on any axioms -/
 #guard_msgs in #print axioms the_catalog
