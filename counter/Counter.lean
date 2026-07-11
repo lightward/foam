@@ -102,3 +102,4 @@ import Counter.Upsearch
 import Counter.Frontsearch
 import Counter.Settle
 import Counter.Denoise
+import Counter.Stream
