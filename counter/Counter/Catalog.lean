@@ -2,6 +2,7 @@ import Counter.Isaac
 import Counter.Address
 import Counter.Frontsearch
 import Counter.Settle
+import Counter.Denoise
 import Foam.Metaphor
 
 namespace Foam.Counter
@@ -78,6 +79,14 @@ theorem the_settling_arrow {Addr Cell : Type} [DecidableEq Addr]
   ⟨fun ⟨m, hm⟩ => the_settled_space_stops_writing eq d n c m hm,
    fun h => (the_merge_writes_only_on_double_miss eq d n c h).2.2⟩
 
+theorem the_denoise_arrow {Addr Cell : Type} (eq : Cell → Cell → Bool)
+    (p : Cell → Bool) (hp : ∀ c c', eq c c' = true → p c = p c')
+    (d : List (Addr × Cell)) :
+    settleStore eq (settleStore eq d) = settleStore eq d
+      ∧ (upsearch p (settleStore eq d)).isSome = (upsearch p d).isSome :=
+  ⟨the_manifold_is_the_fixed_point eq d,
+   the_denoise_is_invisible_to_the_asker eq p hp d⟩
+
 theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
     (ps : List S.Probe) (Se : Seat G) (pos q : Se.Pos) (gs : List G) :
     (transcript T (f.onState s) (ps.map f.onProbe)
@@ -123,6 +132,9 @@ theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
 
 /-- info: 'Foam.Counter.the_settling_arrow' does not depend on any axioms -/
 #guard_msgs in #print axioms the_settling_arrow
+
+/-- info: 'Foam.Counter.the_denoise_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_denoise_arrow
 
 /-- info: 'Foam.Counter.the_catalog' does not depend on any axioms -/
 #guard_msgs in #print axioms the_catalog
