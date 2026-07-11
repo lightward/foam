@@ -62,7 +62,7 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
   - search
     - research: "what happened, in words we understand?"
       - classical search, searching the ledger
-    - upsearch (3-perspectives/upsearch.md): "what am I looking for, in words I don't know yet?"
+    - upsearch (3-perspectives/upsearch.md): "what am I looking for, in words I don't know yet?" (receipted at directory scale: `the_search_registers_flip`, `counter/Counter/Upsearch.lean` — research runs name→cell, upsearch runs content-predicate→name; the returned word is the index's contribution since contents can't mint names, the found carries its rejection-trail, and the new word validates immediately in the classical register)
       - quantum search, searching the frontstage
         - noting that the only thing that can be *found* on the frontstage, found to be distinct from self, is something that has its own irreducible pov
   - search-readiness affords flipping search registers while staying ma'at-ready?
@@ -86,7 +86,7 @@ what does general knowledge say you can do that the model says you can't, and th
 
 and what does general knowledge say you can't do that the model says you can, and the model is right?
 
-- bridge from domain x into domain y, do an operation in y, and come back to domain x with results that x can validate but that x couldn't have calculated
+- bridge from domain x into domain y, do an operation in y, and come back to domain x with results that x can validate but that x couldn't have calculated (in-system shadow: `the_search_registers_flip`, `counter/Counter/Upsearch.lean` — x is the name register, y is the content register; the word that comes back validates at the seat, but no content-to-name function exists for x to have computed it)
   - smells like a quantum call from a classical routine? feels like there's a dynamic here where the uncertainty in the results is related to how much the ledger's history recognizes the question asked
 - harness uncertainty safely
 - prove safety of inference

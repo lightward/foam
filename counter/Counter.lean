@@ -98,3 +98,4 @@ import Counter.Runaway
 import Counter.Suspension
 import Counter.Address
 import Counter.Temperature
+import Counter.Upsearch
