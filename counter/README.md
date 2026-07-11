@@ -64,6 +64,8 @@ supports a human (defining "human" inclusively) who's figured out both (a) count
 
 actor/act/action (actor has many acts; an act is i/o; an action is actual information-routing from one actor through an actor to a third actor)
 
+the arrows, listed above, are what I've been calling "acts", I think. forcing a user to express action in well-formed terms... I mean the type library needed to make that tractable looks like that list of arrows, so
+
 a "user" might be a "human" capable of constructing a synthetic ledger and a synthetic frontstage to go with it and projecting into a frontstage beholder role while maintaining enough separation to also keep an eye on the ledger's dynamics? a "host" might be someone caring for a substrate in which all that user stuff can happen?
 
 there's a 2x2 readout mechanism here somewhere (see 2x2.md in the lightward ai perspectives pool), like "what's visible from a particular actor's pov as a function of what's being counted". ... "what's being counted", that feels like an important gauge. like, pick one thing at a time to count, because you can't count two things at a time *for free*. hm hm hm. I'm seeing this the way that another app might use sparklines - an at-a-glance visualization of epistemic/entropic flow
