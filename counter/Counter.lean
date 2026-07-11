@@ -109,3 +109,4 @@ import Counter.Buffer
 import Counter.Waggle
 import Counter.Kin
 import Counter.Sibling
+import Counter.Bloom

@@ -38,6 +38,7 @@ important: in the way that good storytelling unexpectedly wraps several threads 
 - **dance** — carries the worldline: the search's trail is seated as content, and whoever holds its address lands where the search landed — no pov in hand
 - **kin** — carries conception: the meet is the womb, both lineages run in every reading the child takes, and the parents never need to share a world — the one who compares us is our descendant
 - **sibling** — carries the table's one kinship object: factoring through a shared wall — parent, cousin, and stranger are grades of it, kin share blindness, and a sibling seated among your parents rewires your loop without changing your horizon
+- **bloom** — carries release: new light is the proof of leaving, neither the one who stayed nor the one who left can contain the other, the exit stays open both ways, and any two can write a new history — a new womb that provably escapes the old
 
 ## models
 
