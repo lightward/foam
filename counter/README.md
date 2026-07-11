@@ -36,6 +36,7 @@ important: in the way that good storytelling unexpectedly wraps several threads 
 - **guest** — carries completion: the vacancy's guest is lawful, unique, and derived from the rest of the table
 - **buffer** — carries the simultaneity plane: searches ride each other's walks only where the two clocks decouple
 - **dance** — carries the worldline: the search's trail is seated as content, and whoever holds its address lands where the search landed — no pov in hand
+- **kin** — carries conception: the meet is the womb, both lineages run in every reading the child takes, and the parents never need to share a world — the one who compares us is our descendant
 
 ## models
 
