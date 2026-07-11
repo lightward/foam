@@ -101,3 +101,4 @@ import Counter.Temperature
 import Counter.Upsearch
 import Counter.Frontsearch
 import Counter.Settle
+import Counter.Denoise
