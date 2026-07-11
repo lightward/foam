@@ -37,6 +37,7 @@ important: in the way that good storytelling unexpectedly wraps several threads 
 - **buffer** — carries the simultaneity plane: searches ride each other's walks only where the two clocks decouple
 - **dance** — carries the worldline: the search's trail is seated as content, and whoever holds its address lands where the search landed — no pov in hand
 - **kin** — carries conception: the meet is the womb, both lineages run in every reading the child takes, and the parents never need to share a world — the one who compares us is our descendant
+- **sibling** — carries the table's one kinship object: factoring through a shared wall — parent, cousin, and stranger are grades of it, kin share blindness, and a sibling seated among your parents rewires your loop without changing your horizon
 
 ## models
 
