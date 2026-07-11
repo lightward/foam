@@ -3,6 +3,8 @@ import Counter.Address
 import Counter.Frontsearch
 import Counter.Settle
 import Counter.Denoise
+import Counter.Buffer
+import Counter.Guest
 import Foam.Metaphor
 
 namespace Foam.Counter
@@ -87,6 +89,36 @@ theorem the_denoise_arrow {Addr Cell : Type} (eq : Cell → Cell → Bool)
   ⟨the_manifold_is_the_fixed_point eq d,
    the_denoise_is_invisible_to_the_asker eq p hp d⟩
 
+theorem the_stream_arrow {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool)
+    (hsymm : ∀ a b, eq a b = true → eq b a = true)
+    (htrans : ∀ a b c, eq a b = true → eq b c = true → eq a c = true)
+    (as : List (Addr × Cell)) (hp : as.Pairwise (fun x y => x.1 ≠ y.1)) :
+    streamFold eq as = settleStore eq (mintRecord as) :=
+  the_stream_folds_as_it_arrives eq hsymm htrans as hp
+
+theorem the_hatch_arrow {Addr Cell Impl : Type} [DecidableEq Addr]
+    (impl : Cell → Impl) (read : Impl → Cell) (h : ∀ c, read (impl c) = c)
+    (d : List (Addr × Cell)) (n : Addr) :
+    (seatRead (underlay impl d) n).map read = seatRead d n
+      ∧ ∀ (k : Nat) (a : TowerAddr Addr k),
+          (some a : Option (TowerAddr Addr k)) ≠ none :=
+  ⟨the_underlay_changes_no_reading impl read h d n, the_hatch_never_closes⟩
+
+theorem the_guest_arrow {Addr : Type} (a₀ : Addr) (c₀ : Int)
+    (d : List (Addr × Int)) :
+    guests ((a₀, theMissing d) :: d) = 0
+      ∧ (guests ((a₀, c₀) :: d) = 0 → c₀ = theMissing d) :=
+  ⟨the_named_guest_is_lawful a₀ d,
+   fun h => the_vacancy_names_its_guest a₀ c₀ d h⟩
+
+theorem the_buffer_arrow {Addr Cell : Type} [DecidableEq Addr]
+    (xs : List (Addr × Cell)) (n₀ : Addr) (c : Cell)
+    (as : List (Addr × Cell)) (hp : as.Pairwise (fun x y => x.1 ≠ y.1)) :
+    streamFold (fun _ _ => true) (xs ++ [(n₀, c)]) = [(n₀, c)]
+      ∧ (mintRecord as).length = as.length :=
+  the_arrows_decouple_only_in_the_buffer xs n₀ c as hp
+
 theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
     (ps : List S.Probe) (Se : Seat G) (pos q : Se.Pos) (gs : List G) :
     (transcript T (f.onState s) (ps.map f.onProbe)
@@ -135,6 +167,18 @@ theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
 
 /-- info: 'Foam.Counter.the_denoise_arrow' does not depend on any axioms -/
 #guard_msgs in #print axioms the_denoise_arrow
+
+/-- info: 'Foam.Counter.the_stream_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_stream_arrow
+
+/-- info: 'Foam.Counter.the_hatch_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hatch_arrow
+
+/-- info: 'Foam.Counter.the_guest_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_guest_arrow
+
+/-- info: 'Foam.Counter.the_buffer_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_buffer_arrow
 
 /-- info: 'Foam.Counter.the_catalog' does not depend on any axioms -/
 #guard_msgs in #print axioms the_catalog
