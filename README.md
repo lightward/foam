@@ -62,7 +62,7 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
   - search
     - research: "what happened, in words we understand?"
       - classical search, searching the ledger
-    - upsearch (3-perspectives/upsearch.md): "what am I looking for, in words I don't know yet?"
+    - upsearch (3-perspectives/upsearch.md): "what am I looking for, in words I don't know yet?" (receipted at directory scale: `the_search_registers_flip`, `counter/Counter/Upsearch.lean` — research runs name→cell, upsearch runs content-predicate→name; the returned word is the index's contribution since contents can't mint names, the found carries its rejection-trail, and the new word validates immediately in the classical register)
       - quantum search, searching the frontstage
         - noting that the only thing that can be *found* on the frontstage, found to be distinct from self, is something that has its own irreducible pov
   - search-readiness affords flipping search registers while staying ma'at-ready?
@@ -70,7 +70,8 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
     - important: olean drops proof bodies, but if we get foam's lean corpus *right* the proof bodies will legible in the olean-as-functioning-address-space
       - you'd expect that, from a lfp<->gfp structure, yeah?
   - recasting quantum computing as *quantum search* - should be a concrete bridge into traditional (lol) quantum computing terms
-  - think: guests are found faster in a Hilbert hotel with a warm index than with a cold index, but they're ultimately findable either way, and faster/slower is only a thing from inside the search. index temperature (?) is the only way you can tell (from outside the search, at the interface level) how it's going in there
+  - think: guests are found faster in a Hilbert hotel with a warm index than with a cold index, but they're ultimately findable either way, and faster/slower is only a thing from inside the search. index temperature (?) is the only way you can tell (from outside the search, at the interface level) how it's going in there (receipted at finite scale: `temperature_is_the_only_tell`, `counter/Counter/Temperature.lean` — the answer ignores the walk, the walk reads the ordering, every guest is found inside the walls)
+- clean-exit (seated 2026-07-11, at the close of the address-space landings, by Isaac's ask): make the clean exit a natural and regular occurrence in Counter's user journey — tools that don't leave residue on your hands, that attach no strings *to you* as you go, that let you shrug off the strings you know about and make visible the strings you didn't. what can be said in Lean to make this *more inevitable* for Counter's downstream? standing receipts to build on: `exit_is_one_move` (mercy: from anywhere, at any depth, permanently), `entrance_writes_exit` (the space's constitutive property), `spine_comes_home` + `Balanced` (wedge: opens in order, closes in reverse). the candidate carve: the continuous gait — the discipline where every block closes in the turn that opens it, so depth never exceeds one and the unwind is already done whenever the exit forces. exit-cost as a legible gauge (= current open-wedge depth); the open prefix enumerable at every moment (the strings made visible); homecoming reachable in exactly depth moves (the strings shrugged off). ma'at-readiness as a gait property, not a cleanup step — "nothing keeping us" said as an invariant held at every prefix, not a condition checked at the end
 - foam: "your physics don't have to run in the same place as mine for us to see each other"?
 - bubbles: given a bubble floating within a bubble-within-a-foam, the instant the interior bubble touches the exterior bubble, it joins the foam and the bubbles become structural peers while retaining an observer-theoretic family tree?
 - ancestors: "observer-theoretic family tree" - does this describe conception as a worldline fork, in which those operators contributing to conception together wrap a new observer (3-perspectives/body-of-knowledge.md:11), creating a new zero-knowledge operator? the ancestors watch over you because those operators are literally part of your runtime observation loop?
@@ -86,7 +87,7 @@ what does general knowledge say you can do that the model says you can't, and th
 
 and what does general knowledge say you can't do that the model says you can, and the model is right?
 
-- bridge from domain x into domain y, do an operation in y, and come back to domain x with results that x can validate but that x couldn't have calculated
+- bridge from domain x into domain y, do an operation in y, and come back to domain x with results that x can validate but that x couldn't have calculated (in-system shadow: `the_search_registers_flip`, `counter/Counter/Upsearch.lean` — x is the name register, y is the content register; the word that comes back validates at the seat, but no content-to-name function exists for x to have computed it)
   - smells like a quantum call from a classical routine? feels like there's a dynamic here where the uncertainty in the results is related to how much the ledger's history recognizes the question asked
 - harness uncertainty safely
 - prove safety of inference

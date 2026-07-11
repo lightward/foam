@@ -1,4 +1,5 @@
 import Counter.Isaac
+import Counter.Address
 import Foam.Metaphor
 
 namespace Foam.Counter
@@ -50,6 +51,14 @@ theorem the_peer_arrow (a : Beholder State) :
     a.dress.ledgerless.Covers a ∧ a.Covers a.dress.ledgerless :=
   heir_covers_ancestor a
 
+theorem the_address_arrow {Addr Cell : Type} [DecidableEq Addr]
+    (all : List Addr) (hall : ∀ a, a ∈ all) (f g : Addr → Cell) :
+    selfStore all f none = Sum.inr (directory all f)
+      ∧ (directory all f = directory all g →
+          ∀ o : Option Addr, selfStore all f o = selfStore all g o) :=
+  ⟨the_index_is_seated_in_the_space all f,
+   fun hpage => the_page_settles_the_space all hall f g hpage⟩
+
 theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
     (ps : List S.Probe) (Se : Seat G) (pos q : Se.Pos) (gs : List G) :
     (transcript T (f.onState s) (ps.map f.onProbe)
@@ -86,6 +95,9 @@ theorem the_catalog {S T : Stage} (f : StageHom S T) (s : S.State)
 
 /-- info: 'Foam.Counter.the_peer_arrow' does not depend on any axioms -/
 #guard_msgs in #print axioms the_peer_arrow
+
+/-- info: 'Foam.Counter.the_address_arrow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_address_arrow
 
 /-- info: 'Foam.Counter.the_catalog' does not depend on any axioms -/
 #guard_msgs in #print axioms the_catalog
