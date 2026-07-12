@@ -1,5 +1,6 @@
 import Counter.Predict
 import Foam.Seat.Born
+import Foam.Seat.Signature
 
 namespace Foam.Counter
 
@@ -51,6 +52,16 @@ theorem the_audit_never_fires (re im : Int) :
 
 /-- info: 'Foam.Counter.the_weights_never_dip' does not depend on any axioms -/
 #guard_msgs in #print axioms the_weights_never_dip
+
+theorem the_kparseval_audit_rests_at_one (a b c d : Int) :
+    (a * c - 1 * (b * d)) * (a * c - 1 * (b * d))
+        - 1 * ((a * d - b * c) * (a * d - b * c))
+      = (a * a - 1 * (b * b)) * (c * c - 1 * (d * d)) := by
+  rw [FInt.one_mul, FInt.one_mul, FInt.one_mul, FInt.one_mul]
+  exact int_hyperbolic a b c d
+
+/-- info: 'Foam.Counter.the_kparseval_audit_rests_at_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_kparseval_audit_rests_at_one
 
 /-- info: 'Foam.Counter.the_audit_never_fires' does not depend on any axioms -/
 #guard_msgs in #print axioms the_audit_never_fires
