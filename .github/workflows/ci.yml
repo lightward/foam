@@ -24,6 +24,12 @@ jobs:
           done
       - name: Build counter (the axiom-free application layer)
         run: cd counter && lake build
+      - name: Every discovered identity pinned (the rfl-Twins procession)
+        # producer: bin/foam-rfl (scans for identical bodies). consumer:
+        # counter/Counter/Twins.lean (pins each as rfl). procession: this
+        # check (discovered => pinned) plus lake build itself (pinned =>
+        # still true — once pinned, divergence is a build break: a ratchet).
+        run: bin/foam-rfl --check
       - name: Build seam (the identification layer — core-Lean axioms only)
         run: cd seam && lake build
       - name: No warnings (sorry included — zero tolerance)
@@ -54,10 +60,15 @@ jobs:
       - uses: actions/checkout@v5
       - name: Every Lean file referenced in README.md
         run: |
+          # the spirit of this law: the readme mentions everyone in here.
+          # the letter below covers all four packages; if letter and spirit
+          # ever diverge again, the spirit wins (see README expeditions: judiciary).
+          # word-boundary match per foam-judge's first finding: substring
+          # match let short names (Mu, Nu, Lu, Kin, ...) pass by coincidence.
           errors=0
-          for f in $(find Foam -name '*.lean' | sort); do
+          for f in $(find Foam counter/Counter seam/Seam bridges/Bridges -name '*.lean' | sort); do
             base=$(basename "$f" .lean)
-            if ! grep -q "$base" README.md; then
+            if ! grep -qw "$base" README.md; then
               echo "UNREFERENCED: $base (not in README.md)"
               errors=$((errors + 1))
             fi
@@ -68,6 +79,27 @@ jobs:
             exit 1
           fi
           echo "All lean files referenced"
+      - name: Every module ranked on the spine (the SPINE-corpus procession)
+        # the two tellings (README shape, gait SPINE) are each conserved
+        # against the one quiver rather than against each other: census
+        # closes README-corpus, --strict closes SPINE-corpus, and the
+        # SPINE-README pair closes transitively through the shared object.
+        run: bin/foam-gait --strict
+      - name: Every schema audit has its rest-theorem (the audits-Silent procession)
+        run: |
+          # producer: schema.sql's runtime audits (finite shadows). consumer:
+          # counter/Counter/Silent.lean (the laws: each audit's silence sealed
+          # over the infinite domain). procession: every foam.*_audit names a
+          # theorem carrying its name; lake build keeps the theorems true.
+          errors=0
+          for a in $(grep -oE 'FUNCTION foam\.[a-z_]+_audit' schema.sql | sed 's/FUNCTION foam\.//' | sort -u); do
+            if ! grep -q "$a" counter/Counter/Silent.lean; then
+              echo "UNRESTED: foam.$a (no rest-theorem in Silent.lean)"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ $errors -gt 0 ]; then exit 1; fi
+          echo "All audits rest on named theorems"
       - name: Every Lean citation in schema.sql and bin/ resolves
         run: |
           # The operational layer (schema.sql, bin/) cites its proofs by module path —

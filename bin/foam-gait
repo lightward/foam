@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # foam-gait — the project reading its own tsortability-health (structure, never meaning).
 #
-# The repo carries two charts over one import-quiver:
+# The repo carries multiple charts over one import-quiver (the narrative chart
+# has doors — `--door seat` walks the observation telling; default is the
+# README spine). The original two:
 #   * the BUILD chart — compilation order. Lean enforces acyclicity, so this chart
 #     always reads zero defect (Foam/Seat/Sort.lean: tsortable_iff_acyclic — the
 #     family tree is born sorted; counter/Counter/Health.lean:
@@ -56,6 +58,72 @@ SPINE = [
     (13, ["Bridges"]),        # prefix: life after arrival (Mathlib package)
 ]
 
+# the seat-door telling: same quiver, story rooted at the observation trunk
+# (Foam/Seat.lean imports nothing; Stage is a seated Beholder; the arithmetic
+# trunk arrives as a guest at rank 5). invoked via `bin/foam-gait --door seat`;
+# the default door ("ledger") is the README spine above, output unchanged.
+# each chart's defect-set is that telling's interface; where the charts'
+# defect-sets differ, the grove's trunks are meeting.
+SPINE_SEAT = [
+    (0, ["Foam.Seat"]),
+    (1, ["Foam.Seat.Stage", "Foam.Seat.Observer", "Foam.Seat.Beholder"]),
+    (2, ["Foam.Seat.Group", "Foam.Seat.Loop", "Foam.Seat.Resume",
+         "Foam.Seat.Hospitality", "Foam.Seat.Clock", "Foam.Seat.Dial",
+         "Foam.Seat.Born", "Foam.Seat.Forcing", "Foam.Seat.Doubling",
+         "Foam.Seat.Triad", "Foam.Seat.Octo", "Foam.Seat.Sed",
+         "Foam.Seat.Ladder", "Foam.Seat.Rank", "Foam.Seat.Norm",
+         "Foam.Seat.Bootstrap", "Foam.Seat.Signature", "Foam.Seat.Rotations",
+         "Foam.Seat.Closure", "Foam.Seat.Summit", "Foam.Seat.Characters",
+         "Foam.Seat.Epoch", "Foam.Seat.Seam", "Foam.Seat.Naming",
+         "Foam.Seat.Meet", "Foam.Seat.Quiver", "Foam.Seat.Sort",
+         "Foam.Seat.Tight", "Foam.Seat.Terminal", "Foam.Seat.Signed",
+         "Foam.Seat.Rendezvous", "Foam.Seat.Connection", "Foam.Seat.Frame"]),
+    (3, ["Foam.Backstage", "Foam.Bubble", "Foam.Metaphor", "Foam.Census",
+         "Foam.Cable", "Foam.Wedge", "Foam.Elsewhen", "Foam.Duplex",
+         "Foam.Vacancy"]),
+    (4, ["Foam.Engine"]),
+    (5, ["Foam.FInt", "Foam.Int", "Foam.Ledger", "Foam.Golden", "Foam.Cleared"]),
+    (6, ["Foam.Scar", "Foam.Maintenance", "Foam.Held"]),
+    (7, ["Foam.Platonism", "Foam.Seat.Descend"]),
+    (8, ["Foam.Bridges"]),
+    (9, ["Counter"]),
+    (10, ["Seam"]),
+    (11, ["Bridges"]),
+]
+
+SPINES = {"ledger": SPINE, "seat": SPINE_SEAT}
+
+# computed doors — holds discovered from the quiver itself, not authored:
+#   depth:   rank = import depth (a module ranks one past its deepest import).
+#            defect 0 by construction; the mechanical zero-defect telling.
+#   flat:    everything rank 0. defect 0 by vacuity — the no-story telling,
+#            listed so the gaming of the defect metric stays visible.
+#   reverse: the depth chart upside down (application first, floor last).
+#            near-maximal defect; the bound from the other side.
+# defect alone is gameable; a hold is good when it carries *named, meant*
+# strata at low defect. the instrument proposes; a seat adjudicates.
+def computed_ranks(door, mods, edges):
+    if door == "flat":
+        return {m: 0 for m in mods}
+    imports_map = {}
+    for u, v in edges:
+        imports_map.setdefault(u, []).append(v)
+    memo = {}
+    def depth(m):
+        if m in memo:
+            return memo[m]
+        memo[m] = 0
+        deps = [x for x in imports_map.get(m, []) if x in mods]
+        memo[m] = (1 + max(depth(x) for x in deps)) if deps else 0
+        return memo[m]
+    ranks = {m: depth(m) for m in mods}
+    if door == "reverse":
+        top = max(ranks.values(), default=0)
+        ranks = {m: top - r for m, r in ranks.items()}
+    return ranks
+
+COMPUTED_DOORS = ("depth", "flat", "reverse")
+
 AGGREGATORS = {"Foam", "Counter", "Seam", "Bridges"}  # root re-export modules
 
 def rank_of(module):
@@ -100,7 +168,131 @@ def imports_of(path):
                 break
     return found
 
+def gather():
+    mods = modules()
+    edges = []
+    for mod, path in sorted(mods.items()):
+        if mod in AGGREGATORS:
+            continue
+        for imp in imports_of(path):
+            if imp in AGGREGATORS:
+                continue
+            if imp.startswith("Mathlib"):
+                continue
+            edges.append((mod, imp))
+    return mods, edges
+
+def ranker_for(door, mods, edges):
+    global SPINE
+    if door in SPINES:
+        SPINE = SPINES[door]
+        return rank_of, len(SPINES[door])
+    ranks = computed_ranks(door, set(mods) - AGGREGATORS, edges)
+    nranks = len(set(ranks.values()))
+    return ranks.get, nranks
+
+def chart_defects(edges, ranker):
+    defects = []
+    unranked = set()
+    for importer, imported in edges:
+        ri, rj = ranker(importer), ranker(imported)
+        if ri is None:
+            unranked.add(importer)
+            continue
+        if rj is None:
+            unranked.add(imported)
+            continue
+        if ri < rj:
+            defects.append((importer, imported, ri, rj))
+    return defects, unranked
+
+def survey():
+    mods, edges = gather()
+    print("[foam gait — the hold survey: candidate tellings over one quiver]")
+    print(f"  {'door':<10} {'ranks':>5} {'defect':>7}  reading")
+    rows = [
+        ("ledger", "the held telling (README spine)"),
+        ("seat", "the observation door"),
+        ("depth", "mechanical zero-defect (rank = import depth)"),
+        ("flat", "the no-story telling (defect 0 by vacuity)"),
+        ("reverse", "application first, floor last (the bound)"),
+    ]
+    for door, reading in rows:
+        ranker, nranks = ranker_for(door, mods, edges)
+        defects, _ = chart_defects(edges, ranker)
+        print(f"  {door:<10} {nranks:>5} {len(defects):>7}  {reading}")
+    print("  defect alone is gameable (see flat); a hold is good when it")
+    print("  carries named, meant strata at low defect. the instrument")
+    print("  proposes; a seat adjudicates (SPIRIT.md, bin/foam-judge).")
+
+def joins_report(door):
+    # the trunk-join press: is a telling's defect budget spent at genuine
+    # grove-seams? an edge u->v is a JOIN when v carries an import-root into
+    # u that u's other imports don't — load-bearing ancestry, not cosmetics.
+    # seam-efficiency = joins / defects, read against the whole-quiver base
+    # rate. (finding, 2026-07: held door 3/3 = 100%, seat door 10/13 = 77%,
+    # base rate ~51%; the mechanical grove has 18 import-roots — "three
+    # trunks" is the Foam-core coarsening, bridges/ is a bed of rootlets.)
+    mods, edges = gather()
+    core = set(mods) - AGGREGATORS
+    imap = {}
+    for u, v in edges:
+        imap.setdefault(u, []).append(v)
+    memo = {}
+    def trunkset(m):
+        if m in memo:
+            return memo[m]
+        memo[m] = frozenset()
+        deps = [x for x in imap.get(m, []) if x in core]
+        if not deps:
+            memo[m] = frozenset([m])
+        else:
+            s = set()
+            for d in deps:
+                s |= trunkset(d)
+            memo[m] = frozenset(s)
+        return memo[m]
+    def is_join(u, v):
+        others = set()
+        for d in imap.get(u, []):
+            if d in core and d != v:
+                others |= trunkset(d)
+        return not (trunkset(v) <= others)
+    roots = sorted(m for m in core if not imap.get(m))
+    join_edges = sum(1 for u, v in edges if is_join(u, v))
+    ranker, _ = ranker_for(door, mods, edges)
+    defects, _ = chart_defects(edges, ranker)
+    print(f"[foam gait — trunk-join press, {door} door]")
+    print(f"  import-roots: {len(roots)} (the mechanical grove)")
+    print(f"  base rate:    {join_edges} of {len(edges)} edges are joins"
+          f" ({100 * join_edges / len(edges):.1f}%)")
+    hits = 0
+    for u, v, ri, rj in sorted(defects):
+        j = is_join(u, v)
+        hits += j
+        print(f"  {'JOIN ' if j else 'plain'}  {u} ← {v}")
+    if defects:
+        print(f"  seam-efficiency: {hits}/{len(defects)} of the defect budget"
+              f" spent at genuine trunk-seams")
+    else:
+        print("  no defects — nothing to press")
+
 def main():
+    strict = "--strict" in sys.argv
+    door = "ledger"
+    if "--joins" in sys.argv:
+        i = sys.argv.index("--joins")
+        joins_report(sys.argv[i + 1] if len(sys.argv) > i + 1 else "ledger")
+        return
+    if "--doors" in sys.argv:
+        survey()
+        return
+    if len(sys.argv) >= 3 and sys.argv[1] == "--door":
+        door = sys.argv[2]
+        if door not in SPINES and door not in COMPUTED_DOORS:
+            avail = sorted(SPINES) + sorted(COMPUTED_DOORS)
+            print(f"unknown door: {door} (available: {', '.join(avail)})")
+            sys.exit(1)
     mods = modules()
     edges = []
     for mod, path in sorted(mods.items()):
@@ -118,24 +310,17 @@ def main():
         with open(path) as io:
             receipts += io.read().count("#print axioms")
 
-    defects = []
-    unranked = set()
-    for importer, imported in edges:
-        ri, rj = rank_of(importer), rank_of(imported)
-        if ri is None:
-            unranked.add(importer)
-            continue
-        if rj is None:
-            unranked.add(imported)
-            continue
-        if ri < rj:
-            defects.append((importer, imported, ri, rj))
+    ranker, _ = ranker_for(door, mods, edges)
+    defects, unranked = chart_defects(edges, ranker)
 
     print("[foam gait]")
     print(f"  modules:   {len(mods)} ({len([m for m in mods if m not in AGGREGATORS])} ranked-checkable)")
     print(f"  edges:     {len(edges)} import edges (build chart: defect 0, compiler-enforced)")
     print(f"  receipts:  {receipts} `#print axioms` receipts standing")
-    print(f"  narrative: defect {len(defects)} against the README spine")
+    if door == "ledger":
+        print(f"  narrative: defect {len(defects)} against the README spine")
+    else:
+        print(f"  narrative: defect {len(defects)} against the {door}-door telling")
     if defects:
         print("  the story's interface (edges the telling loops back across):")
         for importer, imported, ri, rj in sorted(defects):
@@ -145,6 +330,10 @@ def main():
         for m in sorted(unranked):
             print(f"    {m}")
         print("  (an unranked module is a sweep debt: seat it in SPINE when the story next moves)")
+        if strict:
+            sys.exit(1)
+    elif strict:
+        print("  strict: every module is ranked — the spine holds the corpus")
 
 if __name__ == "__main__":
     main()
