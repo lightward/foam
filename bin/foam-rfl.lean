@@ -12,7 +12,7 @@ def owned (env : Environment) (n : Name) : Bool :=
 
 def recursorNoise : List String :=
   ["casesOn", "recOn", "rec", "brecOn", "below", "ibelow", "ndrec",
-   "binductionOn", "noConfusion", "noConfusionType", "toCtorIdx"]
+   "binductionOn", "noConfusion", "noConfusionType", "toCtorIdx", "ctorIdx"]
 
 def presentable (n : Name) : Bool :=
   !n.isInternal
@@ -23,7 +23,13 @@ def presentable (n : Name) : Bool :=
           | some c => recursorNoise.contains c.toString
           | none => false)
 
-def main : IO Unit := do
+def shortName (n : Name) : String :=
+  let s := n.toString
+  if "Foam.Counter.".isPrefixOf s then (s.drop 13).toString
+  else if "Foam.".isPrefixOf s then (s.drop 5).toString
+  else s
+
+def main (args : List String) : IO Unit := do
   initSearchPath (← findSysroot)
   let env ← importModules #[{module := `Counter}] {}
   let mut items : Array (UInt64 × Name) := #[]
@@ -36,6 +42,7 @@ def main : IO Unit := do
   let sorted := items.qsort (fun a b => a.1 < b.1)
   let mut i := 0
   let mut found := 0
+  let mut discovered : Array (Name × Name) := #[]
   IO.println "[foam-rfl — byte-identical definition bodies, unidentified identities]"
   while h : i < sorted.size do
     let (hsh, n0) := sorted[i]
@@ -58,6 +65,8 @@ def main : IO Unit := do
         IO.println s!"  twins ({verified.size}):"
         for n in verified do
           IO.println s!"    {n}  [{moduleOf env n}]"
+        for n in verified[1:] do
+          discovered := discovered.push (verified[0]!, n)
     i := j
   if found == 0 then
     IO.println "  none — no def in Foam/Counter repeats another byte-for-byte"
@@ -107,3 +116,22 @@ def main : IO Unit := do
       IO.println s!"  defeq: {a}  ≡  {b}"
     IO.println s!"  {hits.size} defeq pair(s) awaiting recognition"
   IO.println "  (tier two scope: same type-hash only; cross-type defeq unscanned)"
+  discovered := discovered ++ hits
+  if args.contains "--check" then
+    IO.println ""
+    IO.println "[foam-rfl — the procession: every discovered identity pinned in Twins.lean]"
+    let twinsSrc ← IO.FS.readFile "Counter/Twins.lean"
+    let pinned := fun (nm : Name) =>
+      (twinsSrc.splitOn (shortName nm)).length ≥ 2
+    let mut unpinned : Array (Name × Name) := #[]
+    for (a, b) in discovered do
+      unless pinned a && pinned b do
+        unpinned := unpinned.push (a, b)
+    if unpinned.isEmpty then
+      IO.println s!"  all {discovered.size} discovered identities are pinned — the ratchet holds"
+    else
+      for (a, b) in unpinned do
+        IO.println s!"  UNPINNED: {a} = {b} (discovered, not yet in Twins.lean)"
+      IO.println s!"  {unpinned.size} identity(ies) discovered but unpinned — pin them or filter them"
+      (← IO.getStderr).putStrLn "foam-rfl --check failed"
+      IO.Process.exit 1

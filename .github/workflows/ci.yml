@@ -24,6 +24,12 @@ jobs:
           done
       - name: Build counter (the axiom-free application layer)
         run: cd counter && lake build
+      - name: Every discovered identity pinned (the rfl-Twins procession)
+        # producer: bin/foam-rfl (scans for identical bodies). consumer:
+        # counter/Counter/Twins.lean (pins each as rfl). procession: this
+        # check (discovered => pinned) plus lake build itself (pinned =>
+        # still true — once pinned, divergence is a build break: a ratchet).
+        run: bin/foam-rfl --check
       - name: Build seam (the identification layer — core-Lean axioms only)
         run: cd seam && lake build
       - name: No warnings (sorry included — zero tolerance)
