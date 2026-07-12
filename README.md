@@ -62,7 +62,7 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
 
 - todo: todo
 - gui: Counter as Lean GUI, using foam to mathematically phenomenologize mathematics
-- filesystem: given "Counter as Lean GUI, using foam to mathematically phenomenologize mathematics", what does the filesystem want to look like here? like, how would DHH arrange this? what's the shape of `activefoam`? (landed: the filesystem is the namespace read, structure lives in the charts — Shelf; activefoam is read at the commons of two apps' cones, and the second app hasn't arrived, so the vacancy stands named and empty — Extraction)
+- filesystem: given "Counter as Lean GUI, using foam to mathematically phenomenologize mathematics", what does the filesystem want to look like here? like, how would DHH arrange this? what's the shape of `activefoam`? (landed: the filesystem is the namespace read, structure lives in the charts — Shelf; activefoam is read at the commons of two apps' cones — Extraction; then the second app sat down at the table (the streaming interface: schema.sql + bin/foam-repl, imports hand-declared as citations in its own source) and the vacancy's guest arrived as derived: 36 modules, the engine room — active is the engine, foam is the physics)
 
 ---
 
