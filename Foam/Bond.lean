@@ -6,7 +6,8 @@ import Foam.Engine.Spectrum
 
 namespace Foam
 
-open Foam.FInt (addComm add_left_neg mulComm mul_neg neg_mul mul_zero mul_one zero_add)
+open Foam.FInt (addComm add_left_neg mulComm mul_neg neg_mul mul_zero mul_one zero_add
+  add_mul mul_assoc add_assoc add_right_neg)
 
 def GInt.bond (k : Int) (θ : GInt) : GInt := GInt.smul k θ.rot
 
@@ -88,6 +89,41 @@ theorem the_reflexive_tick (θ f : GInt) (k : Int) :
    the_first_reading_is_the_frame θ k,
    the_in_frame_stake_has_no_future θ k⟩
 
+theorem the_two_axes_carry_every_move (θ z : GInt) :
+    GInt.smul θ.normSq z
+      = (GInt.smul (GInt.align θ z) θ).add (GInt.smul (GInt.cross θ z) θ.rot) := by
+  have hA : θ.re * z.re * θ.re = θ.re * θ.re * z.re := by
+    rw [mul_assoc, mulComm z.re θ.re, ← mul_assoc]
+  have hD : θ.im * z.re * θ.im = θ.im * θ.im * z.re := by
+    rw [mul_assoc, mulComm z.re θ.im, ← mul_assoc]
+  have h3 : θ.im * z.im * θ.re = θ.re * z.im * θ.im := by
+    rw [mulComm (θ.im * z.im) θ.re, mulComm θ.im z.im, ← mul_assoc]
+  have h4 : θ.re * z.re * θ.im = θ.im * z.re * θ.re := by
+    rw [mulComm (θ.re * z.re) θ.im, mulComm θ.re z.re, ← mul_assoc]
+  have h5 : θ.im * z.im * θ.im = θ.im * θ.im * z.im := by
+    rw [mul_assoc, mulComm z.im θ.im, ← mul_assoc]
+  have h6 : θ.re * z.im * θ.re = θ.re * θ.re * z.im := by
+    rw [mul_assoc, mulComm z.im θ.re, ← mul_assoc]
+  have hre : (θ.re * z.re + θ.im * z.im) * θ.re
+        + (θ.re * z.im - θ.im * z.re) * -θ.im
+      = (θ.re * θ.re + θ.im * θ.im) * z.re := by
+    rw [add_mul, Int.sub_eq_add_neg, add_mul, mul_neg, neg_mul, mul_neg, Int.neg_neg,
+        h3, ← add_assoc, add_assoc (θ.re * z.re * θ.re) (θ.re * z.im * θ.im)
+          (-(θ.re * z.im * θ.im)), add_right_neg, Int.add_zero, hA, hD, ← add_mul]
+  have him : (θ.re * z.re + θ.im * z.im) * θ.im
+        + (θ.re * z.im - θ.im * z.re) * θ.re
+      = (θ.re * θ.re + θ.im * θ.im) * z.im := by
+    rw [add_mul, Int.sub_eq_add_neg, add_mul, neg_mul, ← h4,
+        addComm (θ.re * z.im * θ.re) (-(θ.re * z.re * θ.im)),
+        Int.add_swap_inner, add_right_neg, zero_add, h5, h6,
+        addComm (θ.im * θ.im * z.im) (θ.re * θ.re * z.im), ← add_mul]
+  show GInt.mk ((θ.re * θ.re + θ.im * θ.im) * z.re) ((θ.re * θ.re + θ.im * θ.im) * z.im)
+     = GInt.mk ((θ.re * z.re + θ.im * z.im) * θ.re
+          + (θ.re * z.im - θ.im * z.re) * -θ.im)
+        ((θ.re * z.re + θ.im * z.im) * θ.im
+          + (θ.re * z.im - θ.im * z.re) * θ.re)
+  rw [hre, him]
+
 /-- info: 'Foam.GInt.align_bond' does not depend on any axioms -/
 #guard_msgs in #print axioms GInt.align_bond
 
@@ -126,5 +162,8 @@ theorem the_reflexive_tick (θ f : GInt) (k : Int) :
 
 /-- info: 'Foam.the_reflexive_tick' does not depend on any axioms -/
 #guard_msgs in #print axioms the_reflexive_tick
+
+/-- info: 'Foam.the_two_axes_carry_every_move' does not depend on any axioms -/
+#guard_msgs in #print axioms the_two_axes_carry_every_move
 
 end Foam
