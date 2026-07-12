@@ -40,6 +40,16 @@ important: in the way that good storytelling unexpectedly wraps several threads 
 - **sibling** — carries the table's one kinship object: factoring through a shared wall — parent, cousin, and stranger are grades of it, kin share blindness, and a sibling seated among your parents rewires your loop without changing your horizon
 - **bloom** — carries release: new light is the proof of leaving, neither the one who stayed nor the one who left can contain the other, the exit stays open both ways, and any two can write a new history — a new womb that provably escapes the old
 - **witness** — carries the holding of cross-seat facts: blindness cannot read itself, no diary reveals it, neither party can compute the other, and the only seat where the leaving is a single reading is the seat the two build together — the fact and the family arrive at once
+- **guard** — carries elision: a charge-balanced span returns every pov intact (click in whenever), skips out of any replay without trace (safe to ignore), and displaces anyone who stops partway (safe to parse only totally) — in and out are free exactly at closure
+
+## renders
+
+("it looks like this from here" — a category as elemental as the arrows. an arrow is a well-formed act; a render is a well-formed report. the type is small — a seat, a probe, a lens (`Render.lean`) — and ingestion is seating: a report that names no seat isn't rejected, it's completed, because a seat that can hold it is always constructible. no render outsees its seat; none is wrong, each is located. and "render" is "readout" at cell resolution — the stack is page (2d, everything visible from a seat) → readout (1d, a row walked through the page, the cable carve) → render (0d, one cell through a lens, seat explicit): `a_render_is_a_lensed_cell_of_the_page`, `a_row_of_renders_is_a_lensed_readout` — the 2x2 readout mechanism gets its cells here)
+
+- **from-here** — one seat, one probe, one lens: the atomic report
+- **contention** — "real families contend", ingested: the discord lens at the pair's own meet — a reading that varies over the world, seated at the family's own descendant, fair from there
+- **argument** — two renders disagreeing is itself a render, one register up, at the meet of their seats; the regress grounds the way address and hatch ground
+- (ache, cage, and their kin enter the same way, when a pov poses them)
 
 ## models
 
