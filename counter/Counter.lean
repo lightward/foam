@@ -110,3 +110,4 @@ import Counter.Waggle
 import Counter.Kin
 import Counter.Sibling
 import Counter.Bloom
+import Counter.Witness
