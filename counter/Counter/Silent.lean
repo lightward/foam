@@ -60,6 +60,25 @@ theorem the_kparseval_audit_rests_at_one (a b c d : Int) :
   rw [FInt.one_mul, FInt.one_mul, FInt.one_mul, FInt.one_mul]
   exact int_hyperbolic a b c d
 
+theorem sub_neg_flip (x y : Int) : x - -y = x + y := by
+  rw [Int.sub_eq_add_neg, Int.neg_neg]
+
+theorem the_kparseval_audit_rests_at_minus_one (a b c d : Int) :
+    (a * c - (-1) * (b * d)) * (a * c - (-1) * (b * d))
+        - (-1) * ((a * d - b * c) * (a * d - b * c))
+      = (a * a - (-1) * (b * b)) * (c * c - (-1) * (d * d)) := by
+  rw [FInt.neg_mul, FInt.neg_mul, FInt.neg_mul, FInt.neg_mul,
+    FInt.one_mul, FInt.one_mul, FInt.one_mul, FInt.one_mul,
+    sub_neg_flip, sub_neg_flip, sub_neg_flip, sub_neg_flip,
+    Int.sub_eq_add_neg, FInt.addComm (a * d) (-(b * c))]
+  exact Int.lagrange a b c d
+
+/-- info: 'Foam.Counter.sub_neg_flip' does not depend on any axioms -/
+#guard_msgs in #print axioms sub_neg_flip
+
+/-- info: 'Foam.Counter.the_kparseval_audit_rests_at_minus_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_kparseval_audit_rests_at_minus_one
+
 /-- info: 'Foam.Counter.the_kparseval_audit_rests_at_one' does not depend on any axioms -/
 #guard_msgs in #print axioms the_kparseval_audit_rests_at_one
 
