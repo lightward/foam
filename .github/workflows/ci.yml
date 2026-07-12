@@ -30,6 +30,13 @@ jobs:
         # check (discovered => pinned) plus lake build itself (pinned =>
         # still true — once pinned, divergence is a build break: a ratchet).
         run: bin/foam-rfl --check
+      - name: Grasp ratchet (reach-throughs never move silently)
+        # producer: bin/foam-grasp (used-names read against direct imports;
+        # schema.sql citations read against the filesystem). the pin is the
+        # count; regression fails, improvement fails until re-pinned by hand —
+        # a vital whose bound only tightens is a vow taken as a limit, and
+        # Grasp.lean holds the limit's existence (reach_is_the_closure_of_grasp).
+        run: bin/foam-grasp --check
       - name: Build seam (the identification layer — core-Lean axioms only)
         run: cd seam && lake build
       - name: No warnings (sorry included — zero tolerance)

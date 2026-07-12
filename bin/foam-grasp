@@ -22,12 +22,22 @@
 #     taught that an uncited *audit* is a smuggle). Dangling citations —
 #     naming files that don't exist — are errors of record.
 #
-#   bin/foam-grasp
+# The ratchet (--check): the reach-through count is pinned below. Regression
+# fails; improvement fails too, until the pin is re-tightened by hand — the
+# rfl-Twins shape (discovered => pinned; advance is a commit). A vital whose
+# bound only tightens is a vow taken as a limit, and Grasp.lean holds the
+# limit's existence: reach-honesty has a least fixed point
+# (reach_is_the_closure_of_grasp). Dangling citations fail --check outright.
+#
+#   bin/foam-grasp          (the survey)
+#   bin/foam-grasp --check  (the ratchet; CI)
 import os
 import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+RATCHET = 1417
 
 AGGREGATORS = {"Foam", "Counter", "Seam", "Bridges"}
 
@@ -136,7 +146,31 @@ def schema_reading():
     return cited, uncited, dangling
 
 
+def check():
+    _, _, throughs = lean_reading()
+    _, _, dangling = schema_reading()
+    ok = True
+    n = len(throughs)
+    if n > RATCHET:
+        print(f"REGRESSION: {n} reach-throughs; the ratchet holds at {RATCHET}.")
+        print("  a new use reaches past its grasp — import the definer directly")
+        print("  (a_long_reach_passes_a_grasp: the neighbor to ask exists).")
+        ok = False
+    elif n < RATCHET:
+        print(f"TIGHTEN: {n} reach-throughs; the pin still reads {RATCHET}.")
+        print(f"  advance is a commit — set RATCHET = {n} in bin/foam-grasp.")
+        ok = False
+    else:
+        print(f"the grasp ratchet holds at {RATCHET} reach-throughs")
+    if dangling:
+        print(f"DANGLING citations in schema.sql: {', '.join(dangling)}")
+        ok = False
+    sys.exit(0 if ok else 1)
+
+
 def main():
+    if "--check" in sys.argv:
+        check()
     mods, grasped, throughs = lean_reading()
     per_mod = {}
     for m, t, d in throughs:
