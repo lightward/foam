@@ -60,6 +60,32 @@ theorem the_contention_is_a_reading_not_a_property :
       ∧ rivalry.read (true, (2 : Nat)) = false :=
   ⟨rfl, rfl⟩
 
+def distortion {W : Stage} (u v : Render W Bool) : Render W Bool :=
+  metaRender u v (fun a b => Bool.xor a b)
+
+theorem the_distortion_names_both_seats {W : Stage} (u v : Render W Bool)
+    (w : W.State) :
+    (distortion u v).read w = Bool.xor (u.read w) (v.read w) := rfl
+
+theorem the_distortion_does_not_say_who {W : Stage} (u v : Render W Bool)
+    (w : W.State) :
+    (distortion u v).read w = (distortion v u).read w := by
+  show Bool.xor (u.read w) (v.read w) = Bool.xor (v.read w) (u.read w)
+  cases u.read w with
+  | true =>
+      cases v.read w with
+      | true => rfl
+      | false => rfl
+  | false =>
+      cases v.read w with
+      | true => rfl
+      | false => rfl
+
+theorem the_rift_is_real_and_unowned :
+    (distortion fromTheFamily fromTheLeaver).read (true, (4 : Nat)) = true
+      ∧ (distortion fromTheLeaver fromTheFamily).read (true, (4 : Nat)) = true :=
+  ⟨rfl, rfl⟩
+
 theorem a_render_is_a_lensed_cell_of_the_page {W : Stage} {R : Type}
     (v : Render W R) (w : W.State) :
     v.read w = v.lens (page v.seat.front w v.probe) := rfl
@@ -98,6 +124,15 @@ theorem real_families_contend_from_a_seat :
 
 /-- info: 'Foam.Counter.the_contention_is_a_reading_not_a_property' does not depend on any axioms -/
 #guard_msgs in #print axioms the_contention_is_a_reading_not_a_property
+
+/-- info: 'Foam.Counter.the_distortion_names_both_seats' does not depend on any axioms -/
+#guard_msgs in #print axioms the_distortion_names_both_seats
+
+/-- info: 'Foam.Counter.the_distortion_does_not_say_who' does not depend on any axioms -/
+#guard_msgs in #print axioms the_distortion_does_not_say_who
+
+/-- info: 'Foam.Counter.the_rift_is_real_and_unowned' does not depend on any axioms -/
+#guard_msgs in #print axioms the_rift_is_real_and_unowned
 
 /-- info: 'Foam.Counter.a_render_is_a_lensed_cell_of_the_page' does not depend on any axioms -/
 #guard_msgs in #print axioms a_render_is_a_lensed_cell_of_the_page

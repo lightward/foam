@@ -49,6 +49,7 @@ important: in the way that good storytelling unexpectedly wraps several threads 
 - **from-here** — one seat, one probe, one lens: the atomic report
 - **contention** — "real families contend", ingested: the discord lens at the pair's own meet — a reading that varies over the world, seated at the family's own descendant, fair from there
 - **argument** — two renders disagreeing is itself a render, one register up, at the meet of their seats; the regress grounds the way address and hatch ground
+- **distortion** — the loaded word, defused by typing: a difference render with both seats named; the difference is symmetric, so *who's distorted* is not in the reading — it's in the choice of reference seat, which the type refuses to elide
 - (ache, cage, and their kin enter the same way, when a pov poses them)
 
 ## models
