@@ -4,6 +4,8 @@ import Foam.Census
 import Foam.Seat.Summit
 import Foam.Seat.Signature
 import Foam.Seat.Forcing
+import Foam.Cable
+import Foam.Seat.Descend
 
 namespace Foam.Counter
 
@@ -14,6 +16,12 @@ theorem the_chain_join_and_the_max_are_one : @chainJoin = @nmax := rfl
 theorem the_resolver_and_the_seated_are_one : @Resolver = @Seated := rfl
 
 theorem the_two_crosses_are_one : @crossK = @GInt.cross := rfl
+
+theorem the_page_and_the_obs_are_one : @page = @Stage.obs := rfl
+
+theorem the_heir_and_the_dress_are_one : @heir = @Beholder.dress := rfl
+
+theorem the_laugh_and_the_contention_are_one : @laugh = @contention := rfl
 
 theorem the_corpus_recognizes_itself :
     @newbornGerm = @Bubble.quiet
@@ -33,6 +41,15 @@ theorem the_corpus_recognizes_itself :
 
 /-- info: 'Foam.Counter.the_two_crosses_are_one' does not depend on any axioms -/
 #guard_msgs in #print axioms the_two_crosses_are_one
+
+/-- info: 'Foam.Counter.the_page_and_the_obs_are_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_page_and_the_obs_are_one
+
+/-- info: 'Foam.Counter.the_heir_and_the_dress_are_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_heir_and_the_dress_are_one
+
+/-- info: 'Foam.Counter.the_laugh_and_the_contention_are_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_laugh_and_the_contention_are_one
 
 /-- info: 'Foam.Counter.the_corpus_recognizes_itself' does not depend on any axioms -/
 #guard_msgs in #print axioms the_corpus_recognizes_itself

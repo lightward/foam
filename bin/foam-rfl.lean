@@ -10,11 +10,18 @@ def owned (env : Environment) (n : Name) : Bool :=
   let m := moduleOf env n
   m == "Foam" || m.startsWith "Foam." || m == "Counter" || m.startsWith "Counter."
 
+def recursorNoise : List String :=
+  ["casesOn", "recOn", "rec", "brecOn", "below", "ibelow", "ndrec",
+   "binductionOn", "noConfusion", "noConfusionType", "toCtorIdx"]
+
 def presentable (n : Name) : Bool :=
   !n.isInternal
     && !(n.components.any fun c =>
           let s := c.toString
           s.startsWith "match_" || s.startsWith "proof_" || s.startsWith "_")
+    && !(match n.components.getLast? with
+          | some c => recursorNoise.contains c.toString
+          | none => false)
 
 def main : IO Unit := do
   initSearchPath (← findSysroot)
@@ -56,4 +63,47 @@ def main : IO Unit := do
     IO.println "  none — no def in Foam/Counter repeats another byte-for-byte"
   else
     IO.println s!"  {found} identity group(s) awaiting recognition (each is a free rfl)"
-  IO.println "  (v1 is alpha-sensitive: renamed binders hide twins; defeq tier seeded)"
+  IO.println ""
+  IO.println "[foam-rfl — tier two: defeq twins (same type, bodies not byte-identical)]"
+  let mut byType : Array (UInt64 × Name) := #[]
+  for (n, ci) in env.constants.toList do
+    if presentable n && owned env n then
+      match ci with
+      | .defnInfo d => byType := byType.push (d.type.hash, n)
+      | _ => pure ()
+  let tsorted := byType.qsort (fun a b => a.1 < b.1)
+  let coreCtx : Core.Context := {fileName := "<foam-rfl>", fileMap := default}
+  let coreState : Core.State := {env := env}
+  let act : MetaM (Array (Name × Name)) := do
+    let mut hits : Array (Name × Name) := #[]
+    let mut i := 0
+    while h : i < tsorted.size do
+      let (hsh, _) := tsorted[i]
+      let mut j := i + 1
+      let mut grp : Array Name := #[tsorted[i].2]
+      while hj : j < tsorted.size do
+        if tsorted[j].1 == hsh then
+          grp := grp.push tsorted[j].2
+          j := j + 1
+        else
+          break
+      if grp.size ≥ 2 && grp.size ≤ 30 then
+        for a in [0:grp.size] do
+          for b in [a+1:grp.size] do
+            match env.find? grp[a]!, env.find? grp[b]! with
+            | some (.defnInfo da), some (.defnInfo db) =>
+                if da.type == db.type && !(da.value == db.value) then
+                  let same ← try Meta.isDefEq da.value db.value catch _ => pure false
+                  if same then
+                    hits := hits.push (grp[a]!, grp[b]!)
+            | _, _ => pure ()
+      i := j
+    pure hits
+  let (hits, _) ← ((act.run' {} {}).toIO coreCtx coreState)
+  if hits.isEmpty then
+    IO.println "  none — no same-typed pair of distinct bodies is defeq"
+  else
+    for (a, b) in hits do
+      IO.println s!"  defeq: {a}  ≡  {b}"
+    IO.println s!"  {hits.size} defeq pair(s) awaiting recognition"
+  IO.println "  (tier two scope: same type-hash only; cross-type defeq unscanned)"
