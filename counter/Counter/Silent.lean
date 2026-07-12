@@ -73,6 +73,78 @@ theorem the_kparseval_audit_rests_at_minus_one (a b c d : Int) :
     Int.sub_eq_add_neg, FInt.addComm (a * d) (-(b * c))]
   exact Int.lagrange a b c d
 
+theorem sub_eq_addneg (x y : Int) : x - y = x + -y := Int.sub_eq_add_neg
+
+theorem mul_pull (k x y : Int) : x * (k * y) = k * (x * y) := by
+  rw [← FInt.mul_assoc x k y, FInt.mulComm x k, FInt.mul_assoc k x y]
+
+theorem kappa_prod (u v s t : Int) :
+    (u - v) * (s - t) = (u * s + v * t) - (u * t + v * s) := by
+  rw [sub_eq_addneg u v, sub_eq_addneg s t,
+    FInt.mul_add (u + -v) s (-t),
+    FInt.add_mul u (-v) s, FInt.add_mul u (-v) (-t),
+    FInt.neg_mul v s, FInt.mul_neg u t, Int.neg_mul_neg' v t,
+    sub_eq_addneg (u * s + v * t) (u * t + v * s),
+    FInt.neg_add (u * t) (v * s),
+    Int.add_cross_swap (u * s) (-(v * s)) (-(u * t)) (v * t),
+    FInt.addComm (-(v * s)) (-(u * t))]
+
+theorem kmul_sub (k p q : Int) : k * (p - q) = k * p - k * q := by
+  rw [sub_eq_addneg p q, FInt.mul_add k p (-q), FInt.mul_neg k q,
+    ← sub_eq_addneg (k * p) (k * q)]
+
+theorem sub_sub_shared (P Q S : Int) : (P - S) - (Q - S) = P - Q := by
+  rw [sub_eq_addneg P S, sub_eq_addneg Q S,
+    sub_eq_addneg (P + -S) (Q + -S),
+    FInt.neg_add Q (-S), Int.neg_neg,
+    Int.add_swap_inner P (-S) (-Q) S,
+    FInt.add_left_neg S, Int.add_zero, ← sub_eq_addneg P Q]
+
+theorem the_kparseval_audit_rests_for_every_kappa (k a b c d : Int) :
+    (a * c - k * (b * d)) * (a * c - k * (b * d))
+        - k * ((a * d - b * c) * (a * d - b * c))
+      = (a * a - k * (b * b)) * (c * c - k * (d * d)) := by
+  rw [kappa_prod (a * c) (k * (b * d)) (a * c) (k * (b * d)),
+    kappa_prod (a * d) (b * c) (a * d) (b * c),
+    kappa_prod (a * a) (k * (b * b)) (c * c) (k * (d * d)),
+    kmul_sub k ((a * d) * (a * d) + (b * c) * (b * c))
+      ((a * d) * (b * c) + (b * c) * (a * d)),
+    FInt.mulComm (k * (b * d)) (a * c),
+    FInt.mulComm (b * c) (a * d),
+    mul_pull k (a * c) (b * d),
+    Int.mul_interchange a b c d,
+    FInt.mul_add k ((a * d) * (b * c)) ((a * d) * (b * c)),
+    Int.mul_interchange a b d c,
+    FInt.mulComm d c,
+    sub_sub_shared ((a * c) * (a * c) + (k * (b * d)) * (k * (b * d)))
+      (k * ((a * d) * (a * d) + (b * c) * (b * c)))
+      (k * ((a * b) * (c * d)) + k * ((a * b) * (c * d))),
+    Int.sq_interchange a c,
+    Int.mul_interchange k k (b * d) (b * d),
+    Int.sq_interchange b d,
+    Int.mul_interchange k k (b * b) (d * d),
+    FInt.mul_add k ((a * d) * (a * d)) ((b * c) * (b * c)),
+    Int.sq_interchange a d, Int.sq_interchange b c,
+    mul_pull k (a * a) (d * d),
+    FInt.mulComm (k * (b * b)) (c * c),
+    mul_pull k (c * c) (b * b),
+    FInt.mulComm (c * c) (b * b)]
+
+/-- info: 'Foam.Counter.mul_pull' does not depend on any axioms -/
+#guard_msgs in #print axioms mul_pull
+
+/-- info: 'Foam.Counter.kappa_prod' does not depend on any axioms -/
+#guard_msgs in #print axioms kappa_prod
+
+/-- info: 'Foam.Counter.kmul_sub' does not depend on any axioms -/
+#guard_msgs in #print axioms kmul_sub
+
+/-- info: 'Foam.Counter.sub_sub_shared' does not depend on any axioms -/
+#guard_msgs in #print axioms sub_sub_shared
+
+/-- info: 'Foam.Counter.the_kparseval_audit_rests_for_every_kappa' does not depend on any axioms -/
+#guard_msgs in #print axioms the_kparseval_audit_rests_for_every_kappa
+
 /-- info: 'Foam.Counter.sub_neg_flip' does not depend on any axioms -/
 #guard_msgs in #print axioms sub_neg_flip
 
