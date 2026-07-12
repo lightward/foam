@@ -121,3 +121,4 @@ import Counter.Laugh
 import Counter.Basis
 import Counter.Telling
 import Counter.Nurse
+import Counter.Triage
