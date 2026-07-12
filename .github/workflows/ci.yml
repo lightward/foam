@@ -79,6 +79,21 @@ jobs:
             exit 1
           fi
           echo "All lean files referenced"
+      - name: Every schema audit has its rest-theorem (the audits-Silent procession)
+        run: |
+          # producer: schema.sql's runtime audits (finite shadows). consumer:
+          # counter/Counter/Silent.lean (the laws: each audit's silence sealed
+          # over the infinite domain). procession: every foam.*_audit names a
+          # theorem carrying its name; lake build keeps the theorems true.
+          errors=0
+          for a in $(grep -oE 'FUNCTION foam\.[a-z_]+_audit' schema.sql | sed 's/FUNCTION foam\.//' | sort -u); do
+            if ! grep -q "$a" counter/Counter/Silent.lean; then
+              echo "UNRESTED: foam.$a (no rest-theorem in Silent.lean)"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ $errors -gt 0 ]; then exit 1; fi
+          echo "All audits rest on named theorems"
       - name: Every Lean citation in schema.sql and bin/ resolves
         run: |
           # The operational layer (schema.sql, bin/) cites its proofs by module path —

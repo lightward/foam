@@ -34,7 +34,7 @@ theorem the_weights_never_dip (tk : Nat) (re im : Int) :
     ∃ k : Nat, sqlBorn tk re im = Int.ofNat k :=
   GInt.sq_image (sqlAlign tk re im)
 
-theorem the_audit_never_fires (re im : Int) :
+theorem the_born_audit_never_fires (re im : Int) :
     (sqlAlign 0 re im = re
         ∧ sqlAlign 1 re im = sqlAlign 0 im (-re)
         ∧ sqlAlign 2 re im = sqlAlign 1 im (-re)
@@ -167,7 +167,7 @@ theorem the_held_audit_rests {S C : Type} [DecidableEq S]
 /-- info: 'Foam.Counter.the_kparseval_audit_rests_at_one' does not depend on any axioms -/
 #guard_msgs in #print axioms the_kparseval_audit_rests_at_one
 
-/-- info: 'Foam.Counter.the_audit_never_fires' does not depend on any axioms -/
-#guard_msgs in #print axioms the_audit_never_fires
+/-- info: 'Foam.Counter.the_born_audit_never_fires' does not depend on any axioms -/
+#guard_msgs in #print axioms the_born_audit_never_fires
 
 end Foam.Counter
