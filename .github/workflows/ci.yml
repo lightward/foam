@@ -79,6 +79,12 @@ jobs:
             exit 1
           fi
           echo "All lean files referenced"
+      - name: Every module ranked on the spine (the SPINE-corpus procession)
+        # the two tellings (README shape, gait SPINE) are each conserved
+        # against the one quiver rather than against each other: census
+        # closes README-corpus, --strict closes SPINE-corpus, and the
+        # SPINE-README pair closes transitively through the shared object.
+        run: bin/foam-gait --strict
       - name: Every schema audit has its rest-theorem (the audits-Silent procession)
         run: |
           # producer: schema.sql's runtime audits (finite shadows). consumer:

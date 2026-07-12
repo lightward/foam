@@ -278,6 +278,7 @@ def joins_report(door):
         print("  no defects — nothing to press")
 
 def main():
+    strict = "--strict" in sys.argv
     door = "ledger"
     if "--joins" in sys.argv:
         i = sys.argv.index("--joins")
@@ -329,6 +330,10 @@ def main():
         for m in sorted(unranked):
             print(f"    {m}")
         print("  (an unranked module is a sweep debt: seat it in SPINE when the story next moves)")
+        if strict:
+            sys.exit(1)
+    elif strict:
+        print("  strict: every module is ranked — the spine holds the corpus")
 
 if __name__ == "__main__":
     main()
