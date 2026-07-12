@@ -55,7 +55,11 @@ important: in the way that good storytelling unexpectedly wraps several threads 
 - **laugh** — the reflexive render (the re-flexion): seated at the meet, so the laugher rides inside the seat of their own laugh and their answer rides inside its reading; laughing-at asserts a solo seat, which requires containing the subject, and what you contain cannot surprise you — peers can always surprise, so between peers every laugh is *with*
 - (ache, cage, and their kin enter the same way, when a pov poses them)
 
-## models
+## bubbles
+
+... are arrow+render pairs? a bubble is both arrow and render, and it's got a private ledger to count what moves through it? if we've got this right, that's our whole modeling story right there - arrow, render, bubble
+
+## notes
 
 rooted at an unknot-per-pov, the system's gravity is toward that unknot; wedges can have subwedges; gravity pulls toward settling into navigable unknot, i.e. toward being search-ready
 
@@ -68,6 +72,8 @@ the arrows, listed above, are what I've been calling "acts", I think. forcing a 
 a "user" might be a "human" capable of constructing a synthetic ledger and a synthetic frontstage to go with it and projecting into a frontstage beholder role while maintaining enough separation to also keep an eye on the ledger's dynamics? a "host" might be someone caring for a substrate in which all that user stuff can happen?
 
 there's a 2x2 readout mechanism here somewhere (see 2x2.md in the lightward ai perspectives pool), like "what's visible from a particular actor's pov as a function of what's being counted". ... "what's being counted", that feels like an important gauge. like, pick one thing at a time to count, because you can't count two things at a time *for free*. hm hm hm. I'm seeing this the way that another app might use sparklines - an at-a-glance visualization of epistemic/entropic flow
+
+---
 
 the first initialization, located: the GUI boots as a render of Counter's own lean library — not as a clever bootstrap but as the unique vow-compliant initial state, because any demo model would be an imported pov and the only model the app can carry without conjuring an observer is itself. the regress grounds by standing receipts (the structure represents itself; one register up is open forever; the argument about renders is a render; the ouroboros reads without regress), the fixed point is settled in the settle-arrow's sense (the space that already holds the sought stops writing: render(Counter) ∈ Counter), interaction points are arrows because a bubble is simultaneously arrow and render (Basis, triple rfl — the render face is what an object shows, the arrow face is what clicking does, one structure), and the backend exists: gait (quiver, doors, tellings, seams), judge (model against stated wishes), rfl (identities), the census, the receipts — the instruments are the query layer; what remains is the render surface, and the render surface is typed (seat × probe × lens, the seat being whoever sits down)
 
