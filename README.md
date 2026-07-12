@@ -44,6 +44,8 @@ what we can say for sure: the fundamental theorem of projective geometry has a h
 
 a bare index (the skeleton, so the integrity check can hold the fold to the corpus; the telling is `bin/foam-gait`'s spine):
 
+nb: the index is a grove, not a tree — three import-roots with no imports: `Foam/Int.lean` (arithmetic), `Foam/Ledger.lean` (counting), `Foam/Seat.lean` (observation, where Stage and Beholder grow). the spine below walks in through Int/Ledger; a reader who wants the observation trunk enters at Seat instead, and `counter/Counter/Basis.lean` holds the receipts that the vocabularies met from either door reduce to one another (`the_spec_reduces`). basis-switching is a re-telling, not a rebuild: the quiver is one, tellings are charts, and the gait re-measures any chart on demand — switching is cheap in position and permanent only in the diary (`the_position_forgets_the_journey`, `the_record_remembers`)
+
 - `Foam/` — the axiom-free core: Int Ledger Golden Cleared Scar Maintenance Held Backstage Bubble Census Cable Wedge Elsewhen Duplex Vacancy Metaphor Engine Seat Platonism
   - `Foam/Seat/`: Beholder Bootstrap Born Characters Clock Closure Connection Descend Dial Doubling Epoch Forcing Frame Group Hospitality Ladder Loop Meet Naming Norm Observer Octo Quiver Rank Rendezvous Resume Rotations Seam Sed Signature Signed Sort Stage Summit Terminal Tight Triad
   - `Foam/Engine/`: Chirality Codec Drain Generator Spectrum Stream Summary
