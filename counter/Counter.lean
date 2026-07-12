@@ -113,3 +113,4 @@ import Counter.Bloom
 import Counter.Witness
 import Counter.Render
 import Counter.Guard
+import Counter.Vanishing
