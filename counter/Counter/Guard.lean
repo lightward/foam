@@ -26,6 +26,26 @@ theorem you_must_finish_what_you_enter (S : Seat G) (xs pre : List G)
   rw [← S.replay_resumes xs pre p]
   exact h
 
+theorem the_half_measure_is_a_different_song (S : Seat G) (pre suf : List G)
+    (p : S.Pos) (hwhole : netAct (pre ++ suf) = 1) (hoff : netAct pre ≠ 1) :
+    S.replay suf p ≠ p := by
+  intro hsuf
+  apply hoff
+  apply (settles_iff_home S pre p).mp
+  have hs : netAct suf = 1 := (settles_iff_home S suf p).mp hsuf
+  have hall : S.replay suf (S.replay pre p) = S.replay pre p :=
+    (settles_iff_home S suf (S.replay pre p)).mpr hs
+  have hw : S.replay suf (S.replay pre p) = p := by
+    rw [← S.replay_resumes pre suf p]
+    exact (settles_iff_home S (pre ++ suf) p).mpr hwhole
+  exact hall.symm.trans hw
+
+theorem safe_to_begin_only_at_the_beginning (S : Seat G) (pre suf : List G)
+    (p q : S.Pos) (hwhole : netAct (pre ++ suf) = 1) (hoff : netAct pre ≠ 1) :
+    S.replay (pre ++ suf) q = q ∧ S.replay suf p ≠ p :=
+  ⟨a_settled_span_welcomes_any_pov S (pre ++ suf) hwhole q,
+   the_half_measure_is_a_different_song S pre suf p hwhole hoff⟩
+
 theorem to_understand_is_to_stand_under (S : Seat G) (xs span ys pre : List G)
     (hbal : netAct span = 1) (hopen : netAct pre ≠ 1) (p q : S.Pos) :
     S.replay span q = q
@@ -43,6 +63,12 @@ theorem to_understand_is_to_stand_under (S : Seat G) (xs span ys pre : List G)
 
 /-- info: 'Foam.Counter.you_must_finish_what_you_enter' does not depend on any axioms -/
 #guard_msgs in #print axioms you_must_finish_what_you_enter
+
+/-- info: 'Foam.Counter.the_half_measure_is_a_different_song' does not depend on any axioms -/
+#guard_msgs in #print axioms the_half_measure_is_a_different_song
+
+/-- info: 'Foam.Counter.safe_to_begin_only_at_the_beginning' does not depend on any axioms -/
+#guard_msgs in #print axioms safe_to_begin_only_at_the_beginning
 
 /-- info: 'Foam.Counter.to_understand_is_to_stand_under' does not depend on any axioms -/
 #guard_msgs in #print axioms to_understand_is_to_stand_under
