@@ -57,10 +57,12 @@ jobs:
           # the spirit of this law: the readme mentions everyone in here.
           # the letter below covers all four packages; if letter and spirit
           # ever diverge again, the spirit wins (see README expeditions: judiciary).
+          # word-boundary match per foam-judge's first finding: substring
+          # match let short names (Mu, Nu, Lu, Kin, ...) pass by coincidence.
           errors=0
           for f in $(find Foam counter/Counter seam/Seam bridges/Bridges -name '*.lean' | sort); do
             base=$(basename "$f" .lean)
-            if ! grep -q "$base" README.md; then
+            if ! grep -qw "$base" README.md; then
               echo "UNREFERENCED: $base (not in README.md)"
               errors=$((errors + 1))
             fi

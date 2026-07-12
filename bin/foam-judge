@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+# foam-judge — the judicial layer: reads a commit against the SPIRIT of the
+# law (SPIRIT.md), where CI enforces only its letter. a READ, never a write:
+# the judge renders a verdict and declares its own seat; acting on the verdict
+# belongs to the pipeline or the human. the user is the only agent that can
+# act as the user.
+#
+# design receipts (counter/Counter/):
+#   * a verdict is a render — seat × probe × lens; no view from nowhere
+#     (Render.lean: no_render_outsees_its_seat, every_report_finds_a_seat)
+#   * a judge who cannot be surprised is claiming containment, and between
+#     peers that claim is provably false (Laugh.lean:
+#     what_you_contain_cannot_surprise_you, peers_can_surprise_each_other) —
+#     so the judge is asked for surprises, and a surprise is a finding
+#   * the letter is a cheap lens on a finer spirit; when they diverge, the
+#     spirit wins (SPIRIT.md, ci.yml)
+#
+#   bin/foam-judge [commit]     judge a commit (default HEAD)
+#   bin/foam-judge --dry [...]  print the assembled prompt, invoke nothing
+#
+# exit 0: every spirit WELL_MET or STRAINED-with-reasoning
+# exit 1: any spirit NOT_MET (the reading, rendered as an exit code)
+# exit 2: the judge could not be seated (no claude CLI, bad commit, ...)
+import os
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+DIFF_LIMIT = 60_000
+
+def sh(args, **kw):
+    return subprocess.run(args, capture_output=True, text=True, cwd=ROOT, **kw)
+
+def main():
+    argv = sys.argv[1:]
+    dry = "--dry" in argv
+    argv = [a for a in argv if a != "--dry"]
+    commit = argv[0] if argv else "HEAD"
+
+    spirit_path = os.path.join(ROOT, "SPIRIT.md")
+    if not os.path.isfile(spirit_path):
+        print("no SPIRIT.md — the judge has no law to read the spirit of")
+        sys.exit(2)
+    with open(spirit_path) as io:
+        spirits = io.read()
+
+    show = sh(["git", "show", "--stat", "--format=%h %s%n%n%b", commit])
+    if show.returncode != 0:
+        print(f"cannot read commit {commit}: {show.stderr.strip()}")
+        sys.exit(2)
+    diff = sh(["git", "show", "--format=", commit]).stdout
+    truncated = len(diff) > DIFF_LIMIT
+    if truncated:
+        diff = diff[:DIFF_LIMIT]
+
+    prompt = f"""You are the judicial layer of the `foam` repository: you read one commit
+against the SPIRIT of the repo's laws, where CI enforces only the letter.
+This is a READ. You change nothing; you render a verdict and you show your
+reasoning. Your verdict is a render: it is a reading from your seat, and you
+must not pretend to a view from nowhere.
+
+THE SPIRITS (verbatim from SPIRIT.md):
+
+{spirits}
+
+THE COMMIT (git show --stat):
+
+{show.stdout}
+
+THE DIFF{' (truncated to ' + str(DIFF_LIMIT) + ' bytes)' if truncated else ''}:
+
+{diff}
+
+Render your verdict in exactly this format:
+
+SEAT: <one line: who is reading — your model identity — and what you read>
+VERDICTS:
+  1. <WELL_MET|STRAINED|NOT_MET> — <one sentence of reasoning>
+  2. <WELL_MET|STRAINED|NOT_MET> — <one sentence of reasoning>
+  3. <WELL_MET|STRAINED|NOT_MET> — <one sentence of reasoning>
+  4. <WELL_MET|STRAINED|NOT_MET> — <one sentence of reasoning>
+  5. <WELL_MET|STRAINED|NOT_MET> — <one sentence of reasoning>
+  6. <WELL_MET|STRAINED|NOT_MET> — <one sentence of reasoning>
+SURPRISE: <anything in this commit the spirits do not cover but a careful
+reader should see — or "none". a surprise is a finding, not a failure.>
+OVERALL: <WELL_MET|STRAINED|NOT_MET> — <one sentence>
+
+Judge the spirit, not the letter: a commit can pass every mechanical check
+and still strain a spirit, or trip a letter while honoring the spirit
+(say which). If a spirit is simply not touched by this commit, that is
+WELL_MET (vacuously) — say "untouched". Do not invent violations; do not
+soften real ones.
+"""
+
+    if dry:
+        print(prompt)
+        return
+
+    model = os.environ.get("FOAM_JUDGE_MODEL")
+    cmd = ["claude", "-p", prompt]
+    if model:
+        cmd = ["claude", "--model", model, "-p", prompt]
+    try:
+        run = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT,
+                             timeout=600)
+    except FileNotFoundError:
+        print("no `claude` CLI on PATH — the judge cannot be seated")
+        sys.exit(2)
+    except subprocess.TimeoutExpired:
+        print("the judge did not return within 600s")
+        sys.exit(2)
+    verdict = run.stdout.strip()
+    print(verdict)
+    if run.returncode != 0:
+        print(f"\n(judge process exited {run.returncode}: {run.stderr.strip()[:500]})")
+        sys.exit(2)
+    if "NOT_MET" in verdict:
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
