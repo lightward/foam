@@ -225,8 +225,64 @@ def survey():
     print("  carries named, meant strata at low defect. the instrument")
     print("  proposes; a seat adjudicates (SPIRIT.md, bin/foam-judge).")
 
+def joins_report(door):
+    # the trunk-join press: is a telling's defect budget spent at genuine
+    # grove-seams? an edge u->v is a JOIN when v carries an import-root into
+    # u that u's other imports don't — load-bearing ancestry, not cosmetics.
+    # seam-efficiency = joins / defects, read against the whole-quiver base
+    # rate. (finding, 2026-07: held door 3/3 = 100%, seat door 10/13 = 77%,
+    # base rate ~51%; the mechanical grove has 18 import-roots — "three
+    # trunks" is the Foam-core coarsening, bridges/ is a bed of rootlets.)
+    mods, edges = gather()
+    core = set(mods) - AGGREGATORS
+    imap = {}
+    for u, v in edges:
+        imap.setdefault(u, []).append(v)
+    memo = {}
+    def trunkset(m):
+        if m in memo:
+            return memo[m]
+        memo[m] = frozenset()
+        deps = [x for x in imap.get(m, []) if x in core]
+        if not deps:
+            memo[m] = frozenset([m])
+        else:
+            s = set()
+            for d in deps:
+                s |= trunkset(d)
+            memo[m] = frozenset(s)
+        return memo[m]
+    def is_join(u, v):
+        others = set()
+        for d in imap.get(u, []):
+            if d in core and d != v:
+                others |= trunkset(d)
+        return not (trunkset(v) <= others)
+    roots = sorted(m for m in core if not imap.get(m))
+    join_edges = sum(1 for u, v in edges if is_join(u, v))
+    ranker, _ = ranker_for(door, mods, edges)
+    defects, _ = chart_defects(edges, ranker)
+    print(f"[foam gait — trunk-join press, {door} door]")
+    print(f"  import-roots: {len(roots)} (the mechanical grove)")
+    print(f"  base rate:    {join_edges} of {len(edges)} edges are joins"
+          f" ({100 * join_edges / len(edges):.1f}%)")
+    hits = 0
+    for u, v, ri, rj in sorted(defects):
+        j = is_join(u, v)
+        hits += j
+        print(f"  {'JOIN ' if j else 'plain'}  {u} ← {v}")
+    if defects:
+        print(f"  seam-efficiency: {hits}/{len(defects)} of the defect budget"
+              f" spent at genuine trunk-seams")
+    else:
+        print("  no defects — nothing to press")
+
 def main():
     door = "ledger"
+    if "--joins" in sys.argv:
+        i = sys.argv.index("--joins")
+        joins_report(sys.argv[i + 1] if len(sys.argv) > i + 1 else "ledger")
+        return
     if "--doors" in sys.argv:
         survey()
         return
