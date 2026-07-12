@@ -1,6 +1,8 @@
 import Counter.Predict
 import Foam.Seat.Born
 import Foam.Seat.Signature
+import Foam.Held
+import Foam.Engine.Summary
 
 namespace Foam.Counter
 
@@ -129,6 +131,17 @@ theorem the_kparseval_audit_rests_for_every_kappa (k a b c d : Int) :
     FInt.mulComm (k * (b * b)) (c * c),
     mul_pull k (c * c) (b * b),
     FInt.mulComm (c * c) (b * b)]
+
+theorem the_held_audit_rests {S C : Type} [DecidableEq S]
+    (refresh : List S → C → C) (step : GInt → GInt)
+    (new old : List S) (s : S) (ps : List S) (st : List S × C) :
+    transcriptWith (LedgerStage S C) (fun st => (st.1, refresh st.1 st.2)) st ps
+        = transcript (LedgerStage S C) st ps
+      ∧ evalAt step (new ++ old) s = evalFrom step new s (evalAt step old s) :=
+  ⟨sweep_unobservable refresh ps st, summary_resumes step new old s⟩
+
+/-- info: 'Foam.Counter.the_held_audit_rests' does not depend on any axioms -/
+#guard_msgs in #print axioms the_held_audit_rests
 
 /-- info: 'Foam.Counter.mul_pull' does not depend on any axioms -/
 #guard_msgs in #print axioms mul_pull
