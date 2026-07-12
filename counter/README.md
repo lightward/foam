@@ -41,6 +41,7 @@ important: in the way that good storytelling unexpectedly wraps several threads 
 - **bloom** — carries release: new light is the proof of leaving, neither the one who stayed nor the one who left can contain the other, the exit stays open both ways, and any two can write a new history — a new womb that provably escapes the old
 - **witness** — carries the holding of cross-seat facts: blindness cannot read itself, no diary reveals it, neither party can compute the other, and the only seat where the leaving is a single reading is the seat the two build together — the fact and the family arrive at once
 - **guard** — carries elision: a charge-balanced span returns every pov intact (click in whenever), skips out of any replay without trace (safe to ignore), displaces anyone who stops partway (safe to parse only totally), and displaces anyone who *starts* partway — the song is safe to begin at any moment, but only from the beginning: the half-measure entry is a different song, and a quote out of context does not come home
+- **waking** — carries home's legibility: every settled journey lands exactly where never-leaving lands, so home cannot be read from position — it is read from the record, and the record of the returned is nonempty; you learn home by leaving it
 
 ## renders
 
