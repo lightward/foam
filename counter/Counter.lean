@@ -124,3 +124,4 @@ import Counter.Nurse
 import Counter.Triage
 import Counter.Ward
 import Counter.Predict
+import Counter.Silent
