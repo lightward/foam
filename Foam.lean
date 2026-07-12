@@ -11,6 +11,7 @@ import Foam.Engine
 import Foam.Scar
 import Foam.Maintenance
 import Foam.Held
+import Foam.Bond
 import Foam.Seat.Clock
 import Foam.Seat.Dial
 import Foam.Seat.Born

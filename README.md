@@ -46,7 +46,7 @@ nb: an axiom is an opaque pov, and perspectives (on import) either reduce to sel
 
 nb: the filesystem is the namespace, read (`counter/Counter/Shelf.lean`: placement is a projection of the name, a move is a rename, a rename rewrites the importers) — so the tree stays a flat census and the wanting lives in the charts, which rotate free (Health, foam-gait's doors). if it helps, reader, there are three import-roots with no imports: `Foam/Int.lean` (arithmetic), `Foam/Ledger.lean` (counting), `Foam/Seat.lean` (observation)
 
-- `Foam/` (axiom-free): Int Ledger Golden Cleared Scar Maintenance Held Backstage Bubble Census Cable Wedge Elsewhen Duplex Vacancy Metaphor Engine Seat Platonism
+- `Foam/` (axiom-free): Int Ledger Golden Cleared Scar Maintenance Held Bond Backstage Bubble Census Cable Wedge Elsewhen Duplex Vacancy Metaphor Engine Seat Platonism
   - `Foam/Seat/`: Beholder Bootstrap Born Characters Clock Closure Connection Descend Dial Doubling Epoch Forcing Frame Group Hospitality Ladder Loop Meet Naming Norm Observer Octo Quiver Rank Rendezvous Resume Rotations Seam Sed Signature Signed Sort Stage Summit Terminal Tight Triad
   - `Foam/Engine/`: Chirality Codec Drain Generator Spectrum Stream Summary
   - `Foam/Bridges/`: Adams Cantor Desargues Dirichlet Eddington Gita Gleason Godel Grover Heisenberg Hurwitz Kolmogorov Landauer Lovelace Materiality Minkowski Nicaea Noether Pauli PSQL Pythagoras Relativity Schrodinger Stone Varadarajan Wigner Zeckendorf
