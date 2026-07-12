@@ -7,7 +7,7 @@ on:
 
 jobs:
   lean:
-    name: Lean (zero sorry, zero warning)
+    name: Lean integrity
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -52,6 +52,8 @@ jobs:
             exit 1
           fi
           echo "Clean: zero warnings, sorry included"
+      - name: No reader-facing comments ('cept in bridges)
+        run: python3 .github/comment_audit.py
 
   integrity:
     name: Reference integrity
@@ -122,10 +124,3 @@ jobs:
           fi
           echo "All Lean citations in schema.sql and bin/ resolve"
 
-  comments:
-    name: Comment-free Lean (only #print axioms receipts)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Audit Lean for reader-facing comments
-        run: python3 .github/comment_audit.py
