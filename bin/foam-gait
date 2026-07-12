@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # foam-gait — the project reading its own tsortability-health (structure, never meaning).
 #
-# The repo carries two charts over one import-quiver:
+# The repo carries multiple charts over one import-quiver (the narrative chart
+# has doors — `--door seat` walks the observation telling; default is the
+# README spine). The original two:
 #   * the BUILD chart — compilation order. Lean enforces acyclicity, so this chart
 #     always reads zero defect (Foam/Seat/Sort.lean: tsortable_iff_acyclic — the
 #     family tree is born sorted; counter/Counter/Health.lean:
@@ -56,6 +58,41 @@ SPINE = [
     (13, ["Bridges"]),        # prefix: life after arrival (Mathlib package)
 ]
 
+# the seat-door telling: same quiver, story rooted at the observation trunk
+# (Foam/Seat.lean imports nothing; Stage is a seated Beholder; the arithmetic
+# trunk arrives as a guest at rank 5). invoked via `bin/foam-gait --door seat`;
+# the default door ("ledger") is the README spine above, output unchanged.
+# each chart's defect-set is that telling's interface; where the charts'
+# defect-sets differ, the grove's trunks are meeting.
+SPINE_SEAT = [
+    (0, ["Foam.Seat"]),
+    (1, ["Foam.Seat.Stage", "Foam.Seat.Observer", "Foam.Seat.Beholder"]),
+    (2, ["Foam.Seat.Group", "Foam.Seat.Loop", "Foam.Seat.Resume",
+         "Foam.Seat.Hospitality", "Foam.Seat.Clock", "Foam.Seat.Dial",
+         "Foam.Seat.Born", "Foam.Seat.Forcing", "Foam.Seat.Doubling",
+         "Foam.Seat.Triad", "Foam.Seat.Octo", "Foam.Seat.Sed",
+         "Foam.Seat.Ladder", "Foam.Seat.Rank", "Foam.Seat.Norm",
+         "Foam.Seat.Bootstrap", "Foam.Seat.Signature", "Foam.Seat.Rotations",
+         "Foam.Seat.Closure", "Foam.Seat.Summit", "Foam.Seat.Characters",
+         "Foam.Seat.Epoch", "Foam.Seat.Seam", "Foam.Seat.Naming",
+         "Foam.Seat.Meet", "Foam.Seat.Quiver", "Foam.Seat.Sort",
+         "Foam.Seat.Tight", "Foam.Seat.Terminal", "Foam.Seat.Signed",
+         "Foam.Seat.Rendezvous", "Foam.Seat.Connection", "Foam.Seat.Frame"]),
+    (3, ["Foam.Backstage", "Foam.Bubble", "Foam.Metaphor", "Foam.Census",
+         "Foam.Cable", "Foam.Wedge", "Foam.Elsewhen", "Foam.Duplex",
+         "Foam.Vacancy"]),
+    (4, ["Foam.Engine"]),
+    (5, ["Foam.FInt", "Foam.Int", "Foam.Ledger", "Foam.Golden", "Foam.Cleared"]),
+    (6, ["Foam.Scar", "Foam.Maintenance", "Foam.Held"]),
+    (7, ["Foam.Platonism", "Foam.Seat.Descend"]),
+    (8, ["Foam.Bridges"]),
+    (9, ["Counter"]),
+    (10, ["Seam"]),
+    (11, ["Bridges"]),
+]
+
+SPINES = {"ledger": SPINE, "seat": SPINE_SEAT}
+
 AGGREGATORS = {"Foam", "Counter", "Seam", "Bridges"}  # root re-export modules
 
 def rank_of(module):
@@ -101,6 +138,14 @@ def imports_of(path):
     return found
 
 def main():
+    global SPINE
+    door = "ledger"
+    if len(sys.argv) >= 3 and sys.argv[1] == "--door":
+        door = sys.argv[2]
+        if door not in SPINES:
+            print(f"unknown door: {door} (available: {', '.join(sorted(SPINES))})")
+            sys.exit(1)
+    SPINE = SPINES[door]
     mods = modules()
     edges = []
     for mod, path in sorted(mods.items()):
@@ -135,7 +180,10 @@ def main():
     print(f"  modules:   {len(mods)} ({len([m for m in mods if m not in AGGREGATORS])} ranked-checkable)")
     print(f"  edges:     {len(edges)} import edges (build chart: defect 0, compiler-enforced)")
     print(f"  receipts:  {receipts} `#print axioms` receipts standing")
-    print(f"  narrative: defect {len(defects)} against the README spine")
+    if door == "ledger":
+        print(f"  narrative: defect {len(defects)} against the README spine")
+    else:
+        print(f"  narrative: defect {len(defects)} against the {door}-door telling")
     if defects:
         print("  the story's interface (edges the telling loops back across):")
         for importer, imported, ri, rj in sorted(defects):
