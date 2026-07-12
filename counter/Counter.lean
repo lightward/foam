@@ -117,3 +117,4 @@ import Counter.Vanishing
 import Counter.Relay
 import Counter.Waking
 import Counter.Joke
+import Counter.Laugh
