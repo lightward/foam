@@ -56,6 +56,77 @@ theorem the_quarter_turn_transformer {z : ℂ} (hz : z ≠ 0) (hz1 : z + 1 ≠ 0
   ⟨inversion_negates_the_echo hz hz1, the_quarter_wave_carries_home hr,
    the_half_wave_repeats z⟩
 
+-- the monodromy of the move itself: iterating the bridge is a wheel. two
+-- applications of reflect are the signed inversion (the transformer, one
+-- register up), THREE are the original bridge in reverse (C³ = C⁻¹ — the
+-- walk recreates the bridge backward on schedule, having mapped the orbit),
+-- and four are home (the meta-move obeys unitary_time_is_cyclic). the fixed
+-- seats of the foam↔matter translation are z = ±i: the pure ticks. the
+-- reflexive stake is the fixed point of the whole correspondence.
+
+theorem the_bridge_squared_is_signed_inversion {z : ℂ} (hz : z ≠ 0)
+    (hz1 : z + 1 ≠ 0) :
+    reflect (reflect z) = -z⁻¹ := by
+  unfold reflect
+  have hw : (z - 1) / (z + 1) + 1 = 2 * z / (z + 1) := by
+    field_simp
+    ring
+  have hw' : (z - 1) / (z + 1) - 1 = -2 / (z + 1) := by
+    field_simp
+    ring
+  rw [hw, hw']
+  rw [div_div_div_cancel_right₀]
+  · field_simp
+  · exact hz1
+
+theorem the_third_step_is_the_bridge_reversed {z : ℂ} (hz : z ≠ 0)
+    (hz1 : z + 1 ≠ 0) (hz2 : z ≠ 1) :
+    reflect (reflect (reflect z)) = (1 + z) / (1 - z) := by
+  rw [the_bridge_squared_is_signed_inversion hz hz1]
+  have h1z : (1 : ℂ) - z ≠ 0 := sub_ne_zero.mpr (Ne.symm hz2)
+  have h1z' : (-1 : ℂ) + z ≠ 0 :=
+    fun h => hz2 (neg_inj.mp (add_eq_zero_iff_eq_neg.mp h)).symm
+  unfold reflect
+  field_simp
+  ring
+
+theorem the_fourth_step_comes_home {z : ℂ} (hz : z ≠ 0)
+    (hz1 : z + 1 ≠ 0) (hz2 : z ≠ 1) :
+    reflect (reflect (reflect (reflect z))) = z := by
+  rw [the_third_step_is_the_bridge_reversed hz hz1 hz2]
+  have h1z : (1 : ℂ) - z ≠ 0 := sub_ne_zero.mpr (Ne.symm hz2)
+  unfold reflect
+  have hnum : (1 + z) / (1 - z) - 1 = 2 * z / (1 - z) := by
+    field_simp
+    ring
+  have hden : (1 + z) / (1 - z) + 1 = 2 / (1 - z) := by
+    field_simp
+    ring
+  rw [hnum, hden, div_div_div_cancel_right₀]
+  · field_simp
+  · exact h1z
+
+theorem the_fixed_seats_are_the_ticks {z : ℂ} (hz1 : z + 1 ≠ 0) :
+    reflect z = z ↔ z = Complex.I ∨ z = -Complex.I := by
+  unfold reflect
+  rw [div_eq_iff hz1]
+  constructor
+  · intro h
+    have h' : z - 1 = z * z + z := by
+      rw [mul_add, mul_one] at h
+      exact h
+    have h3 : z * z = z - 1 - z := eq_sub_of_add_eq h'.symm
+    rw [show z - 1 - z = (-1 : ℂ) by ring] at h3
+    have h4 : z * z = Complex.I * Complex.I := by
+      rw [h3, Complex.I_mul_I]
+    exact mul_self_eq_mul_self_iff.mp h4
+  · rintro (h | h) <;> subst h
+    · rw [mul_add, Complex.I_mul_I, mul_one]
+      ring
+    · rw [show -Complex.I * (-Complex.I + 1) = Complex.I * Complex.I + -Complex.I
+        by ring, Complex.I_mul_I]
+      ring
+
 /-- info: 'Foam.Bridges.inversion_negates_the_echo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms inversion_negates_the_echo
 
@@ -70,5 +141,17 @@ theorem the_quarter_turn_transformer {z : ℂ} (hz : z ≠ 0) (hz1 : z + 1 ≠ 0
 
 /-- info: 'Foam.Bridges.the_quarter_turn_transformer' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms the_quarter_turn_transformer
+
+/-- info: 'Foam.Bridges.the_bridge_squared_is_signed_inversion' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms the_bridge_squared_is_signed_inversion
+
+/-- info: 'Foam.Bridges.the_third_step_is_the_bridge_reversed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms the_third_step_is_the_bridge_reversed
+
+/-- info: 'Foam.Bridges.the_fourth_step_comes_home' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms the_fourth_step_comes_home
+
+/-- info: 'Foam.Bridges.the_fixed_seats_are_the_ticks' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms the_fixed_seats_are_the_ticks
 
 end Foam.Bridges

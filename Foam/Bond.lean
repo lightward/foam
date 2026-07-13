@@ -178,4 +178,46 @@ theorem the_tick_exchanges_the_registers (θ z : GInt) :
 /-- info: 'Foam.the_tick_exchanges_the_registers' does not depend on any axioms -/
 #guard_msgs in #print axioms the_tick_exchanges_the_registers
 
+theorem Int.self_add_self_eq_zero : ∀ {a : Int}, a + a = 0 → a = 0
+  | Int.ofNat n, h => by
+      have hn : n + n = 0 := Int.ofNat.inj h
+      cases n with
+      | zero => rfl
+      | succ _ => exact nomatch hn
+  | Int.negSucc _, h => nomatch h
+
+theorem Int.neg_self_eq_self {a : Int} (h : -a = a) : a = 0 := by
+  have h0 := add_left_neg a
+  rw [h] at h0
+  exact Int.self_add_self_eq_zero h0
+
+theorem the_wheel_never_comes_home_early (z : GInt) (hz : z ≠ GInt.mk 0 0) :
+    z.rot ≠ z ∧ z.rot.rot ≠ z ∧ z.rot.rot.rot ≠ z := by
+  have pin : z.re = 0 → z.im = 0 → False := fun hre him =>
+    hz (show GInt.mk z.re z.im = GInt.mk 0 0 by rw [hre, him])
+  refine ⟨fun h => ?_, fun h => ?_, fun h => ?_⟩
+  · have h1 : -z.im = z.re := congrArg GInt.re h
+    have h2 : z.re = z.im := congrArg GInt.im h
+    have him : z.im = 0 := Int.neg_self_eq_self (h1.trans h2)
+    exact pin (h2.trans him) him
+  · rw [GInt.rot_sq] at h
+    have h1 : -z.re = z.re := congrArg GInt.re h
+    have h2 : -z.im = z.im := congrArg GInt.im h
+    exact pin (Int.neg_self_eq_self h1) (Int.neg_self_eq_self h2)
+  · rw [GInt.rot_sq] at h
+    have h1 : -(-z.im) = z.re := congrArg GInt.re h
+    have h2 : -z.re = z.im := congrArg GInt.im h
+    rw [Int.neg_neg] at h1
+    have hre : z.re = 0 := Int.neg_self_eq_self (h2.trans h1)
+    exact pin hre (h1.trans hre)
+
+/-- info: 'Foam.Int.self_add_self_eq_zero' does not depend on any axioms -/
+#guard_msgs in #print axioms Int.self_add_self_eq_zero
+
+/-- info: 'Foam.Int.neg_self_eq_self' does not depend on any axioms -/
+#guard_msgs in #print axioms Int.neg_self_eq_self
+
+/-- info: 'Foam.the_wheel_never_comes_home_early' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wheel_never_comes_home_early
+
 end Foam
