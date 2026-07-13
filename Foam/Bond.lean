@@ -7,7 +7,7 @@ import Foam.Engine.Spectrum
 namespace Foam
 
 open Foam.FInt (addComm add_left_neg mulComm mul_neg neg_mul mul_zero mul_one zero_add
-  add_mul mul_assoc add_assoc add_right_neg)
+  add_mul mul_assoc add_assoc add_right_neg neg_add)
 
 def GInt.bond (k : Int) (θ : GInt) : GInt := GInt.smul k θ.rot
 
@@ -165,5 +165,17 @@ theorem the_two_axes_carry_every_move (θ z : GInt) :
 
 /-- info: 'Foam.the_two_axes_carry_every_move' does not depend on any axioms -/
 #guard_msgs in #print axioms the_two_axes_carry_every_move
+
+theorem the_tick_exchanges_the_registers (θ z : GInt) :
+    GInt.cross θ z.rot = GInt.align θ z
+      ∧ GInt.align θ z.rot = -(GInt.cross θ z) := by
+  constructor
+  · show θ.re * z.re - θ.im * -z.im = θ.re * z.re + θ.im * z.im
+    rw [mul_neg, Int.sub_eq_add_neg, Int.neg_neg]
+  · show θ.re * -z.im + θ.im * z.re = -(θ.re * z.im - θ.im * z.re)
+    rw [mul_neg, Int.sub_eq_add_neg, neg_add, Int.neg_neg]
+
+/-- info: 'Foam.the_tick_exchanges_the_registers' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tick_exchanges_the_registers
 
 end Foam

@@ -10,6 +10,7 @@ import Bridges.Handedness
 import Bridges.Duality
 import Bridges.Maschke
 import Bridges.Match
+import Bridges.Quarter
 import Bridges.Counter
 import Bridges.SeatTime
 import Bridges.Continuum
