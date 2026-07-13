@@ -1,27 +1,9 @@
 import Mathlib.Data.Complex.Basic
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 import Bridges.Match
-
--- the quarter-wave transformer: one step past the matched termination, in the
--- same direction. a quarter wavelength of line INVERTS the normalized load
--- (z ↦ 1/z: open reads as short, high as low), and inversion negates the echo:
--- Γ(1/z) = -Γ(z), a half-turn of the reflected wave's phase. the echo turns
--- twice as fast as the signal because it retraces — down the section and back —
--- which is the absorber's pair-echo (a two-leg homecoming's second edge is its
--- first reversed) wearing copper. the foam-side shadow, one step from this
--- bridge (Foam/Bond.lean): the_tick_exchanges_the_registers — one rot swaps
--- align and cross with the chirality sign. registers come in pairs because the
--- tick is what pairs them.
---
--- and the matching theorem is the basin made executable: a quarter-wave section
--- whose impedance is the GEOMETRIC MEAN of source and load carries any
--- resistive load home to the receptive zero (the_geometric_mean_matches,
--- the_quarter_wave_carries_home) — circular orbit entered from any starting
--- resistance; the half-wave section repeats the load exactly (the_half_wave_repeats:
--- two quarter-turns are the station's sign, four are home — Eddington's
--- unitary_time_is_cyclic, at transmission scale).
 
 namespace Foam.Bridges
 
@@ -55,14 +37,6 @@ theorem the_quarter_turn_transformer {z : ℂ} (hz : z ≠ 0) (hz1 : z + 1 ≠ 0
       ∧ reflect z⁻¹⁻¹ = reflect z :=
   ⟨inversion_negates_the_echo hz hz1, the_quarter_wave_carries_home hr,
    the_half_wave_repeats z⟩
-
--- the monodromy of the move itself: iterating the bridge is a wheel. two
--- applications of reflect are the signed inversion (the transformer, one
--- register up), THREE are the original bridge in reverse (C³ = C⁻¹ — the
--- walk recreates the bridge backward on schedule, having mapped the orbit),
--- and four are home (the meta-move obeys unitary_time_is_cyclic). the fixed
--- seats of the foam↔matter translation are z = ±i: the pure ticks. the
--- reflexive stake is the fixed point of the whole correspondence.
 
 theorem the_bridge_squared_is_signed_inversion {z : ℂ} (hz : z ≠ 0)
     (hz1 : z + 1 ≠ 0) :
@@ -127,6 +101,14 @@ theorem the_fixed_seats_are_the_ticks {z : ℂ} (hz1 : z + 1 ≠ 0) :
         by ring, Complex.I_mul_I]
       ring
 
+theorem the_lattice_cannot_always_match : ¬ ∃ q : ℚ, (q : ℝ) ^ 2 = 2 := by
+  rintro ⟨q, hq⟩
+  have h2 : Real.sqrt 2 = |(q : ℝ)| := by
+    rw [← hq, Real.sqrt_sq_eq_abs]
+  have hirr : Irrational (Real.sqrt 2) := irrational_sqrt_two
+  rw [h2] at hirr
+  exact hirr ⟨|q|, by push_cast; rfl⟩
+
 /-- info: 'Foam.Bridges.inversion_negates_the_echo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms inversion_negates_the_echo
 
@@ -154,16 +136,7 @@ theorem the_fixed_seats_are_the_ticks {z : ℂ} (hz1 : z + 1 ≠ 0) :
 /-- info: 'Foam.Bridges.the_fixed_seats_are_the_ticks' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms the_fixed_seats_are_the_ticks
 
--- lean's total division seats the pole AT the matched point: reflect (-1) = 0.
--- the anti-load (an active gain medium, the conjured observer's power supply)
--- reads as perfectly received. this receipt exists to say the formalism lies
--- here, in the worst direction, and the fix is a wall: type the domain.
-theorem the_pole_wears_the_matched_mask : reflect (-1) = 0 := by
-  unfold reflect
-  have h : (-1 : ℂ) + 1 = 0 := by ring
-  rw [h, div_zero]
-
-/-- info: 'Foam.Bridges.the_pole_wears_the_matched_mask' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in #print axioms the_pole_wears_the_matched_mask
+/-- info: 'Foam.Bridges.the_lattice_cannot_always_match' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms the_lattice_cannot_always_match
 
 end Foam.Bridges

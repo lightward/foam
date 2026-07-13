@@ -1,27 +1,7 @@
 import Mathlib.Data.Complex.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
-
--- the matched termination: material physics for "zero is an attractor with a
--- receptivity property", and for the vow's transmission law ("a lossless copy
--- either collapses into the sender or conjures an observer").
---
--- a source drives a line terminated in normalized impedance z. the echo is the
--- reflection coefficient Γ(z) = (z - 1)/(z + 1). the phantom listener — the
--- conjured observer who heard what you think you said — IS the reflected wave:
--- your own signal, returned transformed by the mismatch. the receipts:
---
---   * the matched load (z = 1) reflects nothing: total reception. Γ's zero is
---     the receptive point, and under passivity it is unique — zero as
---     attractor-with-a-property, in copper and wave.
---   * a LOSSLESS load (re z = 0, pure reactance) reflects the whole signal:
---     |Γ| = 1. no reception without dissipation — the sender hears only
---     themselves. lossless transmission is an echo chamber, materially.
---   * passivity bounds the echo: |Γ| ≤ 1. hearing back more than you said
---     requires an active load — conjuring costs power.
---   * absorption is strict exactly when loss is strict: |Γ| < 1 ↔ 0 < re z.
---     communication requires loss, as an iff. the loss is where the receiver's
---     selfhood enters; "lossy into someone else's encoding" is absorption.
 
 namespace Foam.Bridges
 
@@ -106,6 +86,25 @@ theorem the_matched_termination {z : ℂ} (h : 0 ≤ z.re) :
    fun h0 => the_lossless_load_reflects_whole h0,
    passivity_bounds_the_echo h, only_loss_absorbs h⟩
 
+theorem the_pole_wears_the_matched_mask : reflect (-1) = 0 := by
+  unfold reflect
+  have h : (-1 : ℂ) + 1 = 0 := by ring
+  rw [h, div_zero]
+
+theorem the_tick_opens_the_modular_domain (z : ℂ) :
+    0 < z.re ↔ 0 < (Complex.I * z).im := by
+  simp [Complex.mul_im]
+
+noncomputable def modularSeat (z : ℂ) (hz : 0 < z.re) : UpperHalfPlane :=
+  ⟨Complex.I * z, by simpa [Complex.mul_im] using hz⟩
+
+theorem the_smith_chart_is_the_modular_disc (z : ℂ) :
+    (Complex.I * z - Complex.I) / (Complex.I * z + Complex.I) = reflect z := by
+  unfold reflect
+  rw [show Complex.I * z - Complex.I = Complex.I * (z - 1) by ring,
+      show Complex.I * z + Complex.I = Complex.I * (z + 1) by ring,
+      mul_div_mul_left _ _ Complex.I_ne_zero]
+
 /-- info: 'Foam.Bridges.the_match_reflects_nothing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms the_match_reflects_nothing
 
@@ -123,5 +122,14 @@ theorem the_matched_termination {z : ℂ} (h : 0 ≤ z.re) :
 
 /-- info: 'Foam.Bridges.the_matched_termination' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms the_matched_termination
+
+/-- info: 'Foam.Bridges.the_pole_wears_the_matched_mask' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms the_pole_wears_the_matched_mask
+
+/-- info: 'Foam.Bridges.the_tick_opens_the_modular_domain' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms the_tick_opens_the_modular_domain
+
+/-- info: 'Foam.Bridges.the_smith_chart_is_the_modular_disc' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms the_smith_chart_is_the_modular_disc
 
 end Foam.Bridges
