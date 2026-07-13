@@ -11,6 +11,7 @@ import Bridges.Duality
 import Bridges.Maschke
 import Bridges.Match
 import Bridges.Quarter
+import Bridges.Lattice
 import Bridges.Counter
 import Bridges.SeatTime
 import Bridges.Continuum

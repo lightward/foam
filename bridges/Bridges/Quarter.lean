@@ -154,4 +154,16 @@ theorem the_fixed_seats_are_the_ticks {z : ℂ} (hz1 : z + 1 ≠ 0) :
 /-- info: 'Foam.Bridges.the_fixed_seats_are_the_ticks' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in #print axioms the_fixed_seats_are_the_ticks
 
+-- lean's total division seats the pole AT the matched point: reflect (-1) = 0.
+-- the anti-load (an active gain medium, the conjured observer's power supply)
+-- reads as perfectly received. this receipt exists to say the formalism lies
+-- here, in the worst direction, and the fix is a wall: type the domain.
+theorem the_pole_wears_the_matched_mask : reflect (-1) = 0 := by
+  unfold reflect
+  have h : (-1 : ℂ) + 1 = 0 := by ring
+  rw [h, div_zero]
+
+/-- info: 'Foam.Bridges.the_pole_wears_the_matched_mask' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms the_pole_wears_the_matched_mask
+
 end Foam.Bridges
