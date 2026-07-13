@@ -1,0 +1,212 @@
+#!/usr/bin/env python3
+# foam-grasp — the Demeter reading: easy to grasp vs merely easy to reach.
+#
+# Two laws stand behind this instrument (counter/Counter/Grasp.lean):
+#   * reach_is_the_closure_of_grasp — reach stays home, reach is grasp-closed,
+#     and reach is least among grasp-closed extensions: what you can reach and
+#     cannot grasp is exactly what the closure added.
+#   * a_long_reach_passes_a_grasp — any reach that isn't home factors through
+#     your own one-dot neighborhood: the neighbor to ask provably exists.
+#
+# The reading, per app:
+#   * LEAN side: a module's grasp is its direct import list; its reach is the
+#     cone. Lean name-resolution hands every module its full reach, so a name
+#     used-but-not-grasped compiles silently — a reach-through. This instrument
+#     names them. (Finite shadow: names are matched textually, restricted to
+#     names defined at exactly one module in the corpus; collisions and
+#     re-exports are excluded, not resolved. The instrument proposes; a seat
+#     adjudicates.)
+#   * SCHEMA side: schema.sql declares its grasp by hand — `-- Foam/....lean`
+#     citations naming the law each entity shadows. Uncited entities are
+#     listed (some are plumbing and lawfully cite nothing; foam.held_audit
+#     taught that an uncited *audit* is a smuggle). Dangling citations —
+#     naming files that don't exist — are errors of record.
+#
+# The ratchet (--check): the reach-through count is pinned below. Regression
+# fails; improvement fails too, until the pin is re-tightened by hand — the
+# rfl-Twins shape (discovered => pinned; advance is a commit). A vital whose
+# bound only tightens is a vow taken as a limit, and Grasp.lean holds the
+# limit's existence: reach-honesty has a least fixed point
+# (reach_is_the_closure_of_grasp). Dangling citations fail --check outright.
+#
+#   bin/foam-grasp          (the survey)
+#   bin/foam-grasp --check  (the ratchet; CI)
+import os
+import re
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+RATCHET = 1417
+
+AGGREGATORS = {"Foam", "Counter", "Seam", "Bridges"}
+
+DEF_RE = re.compile(
+    r"^(?:private\s+|protected\s+|noncomputable\s+|partial\s+)*"
+    r"(?:theorem|def|abbrev|inductive|structure|class)\s+"
+    r"([A-Za-z_][A-Za-z0-9_']*)")
+TOKEN_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_']*")
+
+
+def modules():
+    out = {}
+    for pkg_dir, prefix in [("Foam", "Foam"), ("counter/Counter", "Counter"),
+                            ("seam/Seam", "Seam"), ("bridges/Bridges", "Bridges")]:
+        base = os.path.join(ROOT, pkg_dir)
+        if not os.path.isdir(base):
+            continue
+        for dirpath, _, files in os.walk(base):
+            for f in files:
+                if not f.endswith(".lean"):
+                    continue
+                path = os.path.join(dirpath, f)
+                rel = os.path.relpath(path, base)
+                out[prefix + "." + rel[:-5].replace("/", ".")] = path
+    return out
+
+
+def imports_of(path):
+    found = []
+    with open(path) as io:
+        for line in io:
+            m = re.match(r"^import\s+([A-Za-z0-9_.]+)", line)
+            if m:
+                found.append(m.group(1))
+            elif line.strip() and not line.startswith("import"):
+                break
+    return found
+
+
+def lean_reading():
+    mods = modules()
+    direct = {m: [i for i in imports_of(p) if i in mods] for m, p in mods.items()}
+
+    def cone(m):
+        seen, stack = set(), list(direct[m])
+        while stack:
+            x = stack.pop()
+            if x in seen:
+                continue
+            seen.add(x)
+            stack.extend(direct.get(x, []))
+        return seen
+
+    owner = {}
+    for m, p in mods.items():
+        with open(p) as io:
+            for line in io:
+                d = DEF_RE.match(line)
+                if d:
+                    owner.setdefault(d.group(1), set()).add(m)
+    unique = {name: next(iter(ms)) for name, ms in owner.items() if len(ms) == 1}
+
+    throughs = []
+    grasped = 0
+    for m, p in sorted(mods.items()):
+        if m in AGGREGATORS:
+            continue
+        dset, cset = set(direct[m]), cone(m)
+        body = open(p).read()
+        body = "\n".join(l for l in body.splitlines() if not l.startswith("import"))
+        seen_here = set()
+        for t in TOKEN_RE.findall(body):
+            if t in seen_here:
+                continue
+            seen_here.add(t)
+            d = unique.get(t)
+            if d is None or d == m:
+                continue
+            if d in dset:
+                grasped += 1
+            elif d in cset:
+                throughs.append((m, t, d))
+    return mods, grasped, throughs
+
+
+def schema_reading():
+    path = os.path.join(ROOT, "schema.sql")
+    cited, uncited, dangling = [], [], []
+    pending = []
+    ent_re = re.compile(
+        r"^CREATE\s+(?:OR\s+REPLACE\s+)?(?:TABLE(?:\s+IF\s+NOT\s+EXISTS)?|FUNCTION|"
+        r"INDEX(?:\s+IF\s+NOT\s+EXISTS)?)\s+(foam[.\w]*)")
+    with open(path) as io:
+        for line in io:
+            c = re.match(r"^--\s*(Foam/[A-Za-z0-9/]+\.lean)", line)
+            if c:
+                pending.append(c.group(1))
+                if not os.path.isfile(os.path.join(ROOT, c.group(1))):
+                    dangling.append(c.group(1))
+                continue
+            e = ent_re.match(line)
+            if e:
+                (cited if pending else uncited).append(e.group(1))
+            if line.strip():
+                pending = []
+    return cited, uncited, dangling
+
+
+def check():
+    _, _, throughs = lean_reading()
+    _, _, dangling = schema_reading()
+    ok = True
+    n = len(throughs)
+    if n > RATCHET:
+        print(f"REGRESSION: {n} reach-throughs; the ratchet holds at {RATCHET}.")
+        print("  a new use reaches past its grasp — import the definer directly")
+        print("  (a_long_reach_passes_a_grasp: the neighbor to ask exists).")
+        ok = False
+    elif n < RATCHET:
+        print(f"TIGHTEN: {n} reach-throughs; the pin still reads {RATCHET}.")
+        print(f"  advance is a commit — set RATCHET = {n} in bin/foam-grasp.")
+        ok = False
+    else:
+        print(f"the grasp ratchet holds at {RATCHET} reach-throughs")
+    if dangling:
+        print(f"DANGLING citations in schema.sql: {', '.join(dangling)}")
+        ok = False
+    sys.exit(0 if ok else 1)
+
+
+def main():
+    if "--check" in sys.argv:
+        check()
+    mods, grasped, throughs = lean_reading()
+    per_mod = {}
+    for m, t, d in throughs:
+        per_mod.setdefault(m, []).append((t, d))
+    print("[foam grasp — used at reach vs held at grasp]")
+    print(f"  lean modules:    {len(mods)}")
+    print(f"  grasped uses:    {grasped} (name used, definer directly imported)")
+    print(f"  reach-throughs:  {len(throughs)} uses in {len(per_mod)} modules"
+          " (name used, definer only in the cone)")
+    show_all = "--list" in sys.argv
+    listed = 0
+    for m in sorted(per_mod):
+        pairs = per_mod[m]
+        if not show_all and listed >= 20:
+            print(f"    ... more ({len(throughs) - listed} uses beyond this point;"
+                  " --list for all)")
+            break
+        print(f"    {m}:")
+        for t, d in sorted(pairs):
+            if not show_all and listed >= 20:
+                break
+            print(f"      {t}  ← {d}")
+            listed += 1
+    cited, uncited, dangling = schema_reading()
+    print("  schema.sql (the second app declares its grasp by hand):")
+    print(f"    cited entities:   {len(cited)}")
+    print(f"    uncited entities: {len(uncited)}"
+          + (" — " + ", ".join(uncited) if uncited else ""))
+    if dangling:
+        print(f"    DANGLING citations: {', '.join(dangling)}")
+    else:
+        print("    dangling citations: 0 (every declared law exists)")
+    print("  a reach-through is not a defect by itself; it is an undeclared")
+    print("  dependency your build cannot see. the instrument proposes; a seat")
+    print("  adjudicates (a_long_reach_passes_a_grasp: the fix always exists).")
+
+
+if __name__ == "__main__":
+    main()

@@ -378,6 +378,8 @@ CREATE OR REPLACE FUNCTION foam.sweep_fenced(batch int DEFAULT 200000) RETURNS b
     RETURN foam.sweep_step(hi, batch);
   END; $$;
 
+-- Foam/Held.lean
+-- Foam/Engine/Summary.lean
 CREATE OR REPLACE FUNCTION foam.held_audit(obs uuid DEFAULT foam.bench()) RETURNS bigint
   LANGUAGE sql STABLE SET work_mem = '256MB' AS $$
   WITH live AS (

@@ -2,9 +2,11 @@
 
 hey. :) you're rehydrating into foam — a type system holding itself together under measurement. the map is `README.md` (the strata, the spine, the expeditions); the application book is `counter/README.md`. trust them: they are held summaries, maintained exactly (`summary_resumes`, performed by hand), so you can resume without re-reading history. the git log is the order-reading; merge commits carry session logs.
 
+one shelf up, if present: `../CLAUDE.md/README.md` — the shared Lightward principles, kept in a sibling repo *named* `CLAUDE.md` so the path itself is the pointer. that file is the commons of the Lightward codebases (the process layer performed the extraction the expedition named `activefoam`, years early, because over there the second app arrived long ago). read it as the wider house; this file stays the local grain.
+
 ## the vow (the whole house style)
 
-- **axiom-free in `Foam/` and `counter/`**: every theorem ends with its receipt — `/-- info: '...' does not depend on any axioms -/` + `#guard_msgs in #print axioms ...`. if a core lemma smuggles `propext` (many Nat/List ones do — the vow has caught `Nat.mul_mod`, `Nat.right_distrib`, `Nat.mul_assoc`, `List.length_append`, `Nat.min_comm`), re-derive it by hand. probe with `#print axioms` before leaning on anything.
+- **axiom-free in `Foam/` and `counter/`**: every theorem ends with its receipt — `/-- info: '...' does not depend on any axioms -/` + `#guard_msgs in #print axioms ...`. if a core lemma smuggles `propext` (many Nat/List ones do — the vow has caught `Nat.mul_mod`, `Nat.right_distrib`, `Nat.mul_assoc`, `List.length_append`, `Nat.min_comm`, `Int.zero_add`), re-derive it by hand. probe with `#print axioms` before leaning on anything.
 - **identifications go in `seam/`** — closing an equivalence into an equality — stamped `[Quot.sound]`/`[propext]`, each file split the same way: equivalence and difference axiom-free, identification received, no retraction.
 - **Mathlib only in `bridges/`.**
 - **Lean files are comment-free except receipts** (CI enforces; prose lives in the READMEs).
