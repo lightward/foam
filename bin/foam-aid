@@ -108,6 +108,20 @@ def resolve(token, block, idx, dotted):
     return cands
 
 
+def resolve_receiver(token, idx):
+    head, rest = token.split(".", 1)
+    if not (len(head) == 1 and head.isupper()):
+        return []
+    while True:
+        cands = [c for c in idx.get(rest, [])
+                 if c["full"] == rest or c["full"].endswith("." + rest)]
+        if len(cands) == 1:
+            return cands
+        if cands or "." not in rest:
+            return []
+        rest = rest.split(".", 1)[1]
+
+
 def closure(roots, idx):
     seen, order = set(), []
 
@@ -121,7 +135,10 @@ def closure(roots, idx):
         for tok in toks:
             if tok == b["short"] or tok == b["short"].split(".")[-1]:
                 continue
-            for c in resolve(tok, b, idx, QUAL_RE):
+            cands = resolve(tok, b, idx, QUAL_RE)
+            if not cands and "." in tok:
+                cands = resolve_receiver(tok, idx)
+            for c in cands:
                 if c["full"] != b["full"]:
                     deps.add(c["full"])
         for full in sorted(deps):
