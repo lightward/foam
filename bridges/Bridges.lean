@@ -66,5 +66,7 @@ import Bridges.FTPG.Span
 import Bridges.FTPG.Hollow
 import Bridges.FTPG.Charge
 import Bridges.FTPG.Headcount
+import Bridges.FTPG.Menu
+import Bridges.FTPG.Markov
 import Bridges.Audit
 import Bridges.Summit
