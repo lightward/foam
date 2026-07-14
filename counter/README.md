@@ -60,6 +60,8 @@ counter/Counter/Render.lean (is that a natural file for enumerating these? think
 
 ... are arrow+render pairs? a bubble is both arrow and render, and it's got a private ledger to count what moves through it? if we've got this right, that's our whole modeling story right there - arrow, render, bubble, and every assembled bubble counts *something*
 
+headcount (`Counter/Ground.lean`): a ground loop (P² = P) is its own bubble — wall := the loop — and one is exactly enough. bare, the loop is audible (a move, not a ground); through its own single wall it runs every beat without adding a click, hiding nothing (every entrant reads as already landed, and the ground is exactly the landed); a second ground brings the hum back, which is the electrician's ground loop, received as a pun with a receipt. nesting the ground bubble in itself reads flat (`the_regress_grounds`) — the infinite-regress note at the bottom of this file grounds, as promised
+
 ## notes
 
 rooted at an unknot-per-pov, the system's gravity is toward that unknot; wedges can have subwedges; gravity pulls toward settling into navigable unknot, i.e. toward being search-ready
