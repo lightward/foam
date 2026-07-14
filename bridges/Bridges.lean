@@ -65,5 +65,6 @@ import Bridges.FTPG.Limit
 import Bridges.FTPG.Span
 import Bridges.FTPG.Hollow
 import Bridges.FTPG.Charge
+import Bridges.FTPG.Headcount
 import Bridges.Audit
 import Bridges.Summit
