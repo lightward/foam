@@ -19,7 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 DECL_RE = re.compile(
     r"^(?:private\s+|protected\s+|noncomputable\s+|partial\s+)*"
-    r"(?:theorem|def|abbrev|inductive|structure|class)\s+"
+    r"(theorem|def|abbrev|inductive|structure|class)\s+"
     r"([A-Za-z_][A-Za-z0-9_'.]*)")
 STOP_RE = re.compile(
     r"^(?:/--|#guard_msgs|#print|end\b|namespace\b|variable\b|import\b|open\b|"
@@ -58,7 +58,8 @@ def harvest():
                         while j < len(lines) and not STOP_RE.match(lines[j]):
                             j += 1
                         body = "\n".join(lines[i:j]).rstrip()
-                        short = m.group(1)
+                        kind = m.group(1)
+                        short = m.group(2)
                         full = ".".join(ns + [short]) if ns else short
                         receipt = None
                         for k, l2 in enumerate(lines):
@@ -69,7 +70,8 @@ def harvest():
                                     receipt = rm.group(1)
                                 break
                         blocks.append({"full": full, "short": short, "file": rel,
-                                       "body": body, "receipt": receipt})
+                                       "kind": kind, "body": body,
+                                       "receipt": receipt})
                         i = j
                         continue
                     i += 1
@@ -129,9 +131,19 @@ def closure(roots, idx):
 def main():
     names = sys.argv[1:]
     if not names:
-        print(__doc__ or "usage: foam-aid <name> [<name> ...]")
+        print("usage: foam-aid <name> [<name> ...] | foam-aid --list")
         sys.exit(2)
     blocks = harvest()
+    if names == ["--list"]:
+        print(f"# the corpus index — {len(blocks)} named objects")
+        current = None
+        for b in blocks:
+            if b["file"] != current:
+                current = b["file"]
+                print(f"\n## {current}")
+            mark = " ✓" if b["receipt"] else ""
+            print(f"- `{b['full']}` ({b['kind']}){mark}")
+        return
     idx = index(blocks)
     roots = []
     for n in names:
