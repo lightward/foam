@@ -81,15 +81,20 @@ def harvest():
 def index(blocks):
     idx = {}
     for b in blocks:
-        for key in {b["short"], b["short"].split(".")[-1], b["full"]}:
+        parts = b["full"].split(".")
+        keys = {".".join(parts[i:]) for i in range(len(parts))}
+        keys.add(b["short"])
+        for key in keys:
             idx.setdefault(key, []).append(b)
     return idx
 
 
 def resolve(token, block, idx, dotted):
-    cands = [c for c in idx.get(token, [])
-             if ("." in token) == ("." in c["short"])]
-    if "." not in token:
+    cands = idx.get(token, [])
+    if "." in token:
+        cands = [c for c in cands
+                 if c["full"] == token or c["full"].endswith("." + token)]
+    else:
         cands = [c for c in cands if c["short"] == token]
     if len(cands) <= 1:
         return cands
@@ -111,7 +116,8 @@ def closure(roots, idx):
             return
         seen.add(b["full"])
         deps = set()
-        toks = set(TOKEN_RE.findall(b["body"])) | set(QUAL_RE.findall(b["body"]))
+        bare = QUAL_RE.sub(" ", b["body"])
+        toks = set(TOKEN_RE.findall(bare)) | set(QUAL_RE.findall(b["body"]))
         for tok in toks:
             if tok == b["short"] or tok == b["short"].split(".")[-1]:
                 continue
