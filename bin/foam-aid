@@ -136,6 +136,13 @@ def main():
     blocks = harvest()
     if names == ["--list"]:
         print(f"# the corpus index — {len(blocks)} named objects")
+        print()
+        print("*✓ = an axiom-free receipt stands beside this name in its file: "
+              "`#print axioms` is guarded to report no dependence on any axiom — "
+              "no propext, no choice, no Quot.sound; the kernel checked it from "
+              "nothing. unmarked names either are definitions (nothing to prove) "
+              "or carry their receipts elsewhere (bridges declare their axioms "
+              "openly).*")
         current = None
         for b in blocks:
             if b["file"] != current:
