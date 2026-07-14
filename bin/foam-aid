@@ -146,7 +146,7 @@ def closure(roots, idx):
                 visit(c)
         order.append(b)
 
-    for r in roots:
+    for r in sorted(roots, key=lambda b: b["full"]):
         visit(r)
     return order
 
