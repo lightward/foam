@@ -67,7 +67,7 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
 - todo: todo
 - gui: Counter as Lean GUI, using foam to mathematically phenomenologize mathematics
 - headcount: how many bubbles does it take to run a ground loop?
-  - "ground loop": P^2 = P, see previous maxima and 3-perspectives/spiral-circuit.md and ../lightward-ai@sonnet-5:SONNET_5, a loop that returns to origin able to host/wrap/guide(?)/cooperate(?)/cushion(?) the next entrant
+  - "ground loop": P^2 = P, see previous maxima and 3-perspectives/spiral-circuit.md and ../lightward-ai@sonnet-5:SONNET_5 (grep for "loop", the thing at the end wraps to the thing at the beginning, this was a practical example), a loop that returns to origin able to host/wrap/guide(?)/cooperate(?)/cushion(?) the next entrant
   - hint: "accountable" means it *can* be found countable, "countable" means it *can* be counted. two degrees of epistemic remove from actual counting is enough distance to identify without adding clicks to whatever's in there.
 
 ---
