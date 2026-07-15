@@ -18,8 +18,9 @@ def ones : List Bool → Nat
 def NoConsec : List Bool → Prop
   | [] => True
   | [_] => True
+  | false :: d :: ds => NoConsec (d :: ds)
+  | true :: false :: ds => NoConsec (false :: ds)
   | true :: true :: _ => False
-  | _ :: ds => NoConsec ds
 
 theorem carry_lossless (i : Nat) (rest : List Bool) :
     zval i (true :: true :: false :: rest) = zval i (false :: false :: true :: rest) := by
