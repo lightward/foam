@@ -70,5 +70,6 @@ import Bridges.FTPG.Menu
 import Bridges.FTPG.Markov
 import Bridges.FTPG.Chord
 import Bridges.FTPG.Keeper
+import Bridges.FTPG.Bezier
 import Bridges.Audit
 import Bridges.Summit
