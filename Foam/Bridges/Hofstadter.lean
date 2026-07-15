@@ -2,6 +2,7 @@ import Foam.Int
 import Foam.Ledger
 import Foam.Golden
 import Foam.Bridges.Zeckendorf
+import Foam.Bridges.Narayana
 
 namespace Foam.Bridges
 
@@ -222,10 +223,6 @@ def worth : Nat → List Bool → Nat
   | _, [] => 0
   | i, false :: ds => worth (i + 1) ds
   | i, true :: ds => fibN i + worth (i + 1) ds
-
-theorem add_shuffle (a b c d : Nat) : (a + b) + (c + d) = (a + c) + (b + d) := by
-  rw [Nat.add_assoc, ← Nat.add_assoc b c d, Nat.add_comm b c,
-      Nat.add_assoc c b d, ← Nat.add_assoc]
 
 theorem worth_gnomon : ∀ (ds : List Bool) (i : Nat),
     worth (i + 2) ds = worth (i + 1) ds + worth i ds
@@ -524,9 +521,6 @@ theorem worth_matches_zval : ∀ (ds : List Bool) (i : Nat),
 
 /-- info: 'Foam.Bridges.fibN_gnomon' does not depend on any axioms -/
 #guard_msgs in #print axioms fibN_gnomon
-
-/-- info: 'Foam.Bridges.add_shuffle' does not depend on any axioms -/
-#guard_msgs in #print axioms add_shuffle
 
 /-- info: 'Foam.Bridges.worth_gnomon' does not depend on any axioms -/
 #guard_msgs in #print axioms worth_gnomon
@@ -1018,5 +1012,399 @@ theorem g_hums_the_fibonacci_stairs :
 
 /-- info: 'Foam.Bridges.g_hums_the_fibonacci_stairs' does not depend on any axioms -/
 #guard_msgs in #print axioms g_hums_the_fibonacci_stairs
+
+def hcarry : List Bool → List Bool
+  | [] => [true]
+  | [_] => [true]
+  | [_, _] => [true]
+  | _ :: _ :: false :: rest => true :: false :: false :: rest
+  | _ :: _ :: true :: rest => false :: false :: false :: hcarry rest
+
+theorem hcarry_pays : ∀ (ds : List Bool) (i : Nat), Sparse ds → clearing ds = true →
+    graze i (hcarry ds) = herdN i + graze i ds
+  | [], _, _, _ => rfl
+  | [false], _, _, _ => rfl
+  | true :: _, _, _, hcl => nomatch hcl
+  | [false, false], _, _, _ => rfl
+  | [false, true], _, _, hcl => nomatch hcl
+  | false :: true :: _ :: _, _, _, hcl => nomatch hcl
+  | false :: false :: false :: _, _, _, _ => rfl
+  | false :: false :: true :: rest, i, h, _ => by
+      show graze (i + 3) (hcarry rest)
+        = herdN i + (herdN (i + 2) + graze (i + 3) rest)
+      rw [hcarry_pays rest (i + 3) (sparse_tail (sparse_tail (sparse_tail h)))
+            (sparse_head (sparse_tail (sparse_tail h))),
+          ← Nat.add_assoc (herdN i) (herdN (i + 2)) (graze (i + 3) rest),
+          Nat.add_comm (herdN i) (herdN (i + 2)), ← herdN_gnomon]
+
+theorem hcarry_spaces : ∀ (ds : List Bool), Sparse ds → clearing ds = true →
+    Sparse (hcarry ds)
+  | [], _, _ => True.intro
+  | [false], _, _ => True.intro
+  | true :: _, _, hcl => nomatch hcl
+  | [false, false], _, _ => True.intro
+  | [false, true], _, hcl => nomatch hcl
+  | false :: true :: _ :: _, _, hcl => nomatch hcl
+  | false :: false :: false :: _, h, _ => h
+  | false :: false :: true :: rest, h, _ =>
+      hcarry_spaces rest (sparse_tail (sparse_tail (sparse_tail h)))
+        (sparse_head (sparse_tail (sparse_tail h)))
+
+def hclick : List Bool → List Bool
+  | [] => [true]
+  | [false] => [true]
+  | false :: false :: rest => hcarry (false :: false :: rest)
+  | false :: true :: rest => false :: false :: hcarry rest
+  | true :: rest => false :: hcarry rest
+
+theorem hclick_counts : ∀ (ds : List Bool), Sparse ds →
+    graze 3 (hclick ds) = graze 3 ds + 1
+  | [], _ => rfl
+  | [false], _ => rfl
+  | false :: false :: rest, h => by
+      show graze 3 (hcarry (false :: false :: rest)) = graze 3 (false :: false :: rest) + 1
+      rw [hcarry_pays (false :: false :: rest) 3 h rfl]
+      exact Nat.add_comm 1 (graze 3 (false :: false :: rest))
+  | false :: true :: rest, h => by
+      show graze 5 (hcarry rest) = (herdN 4 + graze 5 rest) + 1
+      rw [hcarry_pays rest 5 (sparse_tail (sparse_tail h)) (sparse_head (sparse_tail h))]
+      show 3 + graze 5 rest = (2 + graze 5 rest) + 1
+      rw [Nat.add_comm 2 (graze 5 rest)]
+      exact Nat.add_comm 3 (graze 5 rest)
+  | true :: rest, h => by
+      show graze 4 (hcarry rest) = (herdN 3 + graze 4 rest) + 1
+      rw [hcarry_pays rest 4 (sparse_tail h) (sparse_head h)]
+      show 2 + graze 4 rest = (1 + graze 4 rest) + 1
+      rw [Nat.add_comm 1 (graze 4 rest)]
+      exact Nat.add_comm 2 (graze 4 rest)
+
+theorem hclick_spaces : ∀ (ds : List Bool), Sparse ds → Sparse (hclick ds)
+  | [], _ => True.intro
+  | [false], _ => True.intro
+  | false :: false :: rest, h => hcarry_spaces (false :: false :: rest) h rfl
+  | false :: true :: rest, h =>
+      hcarry_spaces rest (sparse_tail (sparse_tail h)) (sparse_head (sparse_tail h))
+  | true :: rest, h => hcarry_spaces rest (sparse_tail h) (sparse_head h)
+
+theorem hclick_holds_the_shadow : ∀ (ds : List Bool), Sparse ds → lit ds = true →
+    graze 2 (hclick ds) = graze 2 ds
+  | [], _, hl => nomatch hl
+  | false :: _, _, hl => nomatch hl
+  | true :: rest, h, _ => by
+      show graze 3 (hcarry rest) = herdN 2 + graze 3 rest
+      rw [hcarry_pays rest 3 (sparse_tail h) (sparse_head h)]
+      rfl
+
+theorem hclick_moves_the_shadow : ∀ (ds : List Bool), Sparse ds → lit ds = false →
+    graze 2 (hclick ds) = graze 2 ds + 1
+  | [], _, _ => rfl
+  | [false], _, _ => rfl
+  | false :: false :: rest, h, _ => by
+      show graze 2 (hcarry (false :: false :: rest)) = graze 2 (false :: false :: rest) + 1
+      rw [hcarry_pays (false :: false :: rest) 2 h rfl]
+      exact Nat.add_comm 1 (graze 2 (false :: false :: rest))
+  | false :: true :: rest, h, _ => by
+      show graze 4 (hcarry rest) = (herdN 3 + graze 4 rest) + 1
+      rw [hcarry_pays rest 4 (sparse_tail (sparse_tail h)) (sparse_head (sparse_tail h))]
+      show 2 + graze 4 rest = (1 + graze 4 rest) + 1
+      rw [Nat.add_comm 1 (graze 4 rest)]
+      exact Nat.add_comm 2 (graze 4 rest)
+  | true :: _, _, hl => nomatch hl
+
+theorem a_lit_lamp_casts_a_long_shadow : ∀ (ds : List Bool), lit ds = true →
+    1 ≤ graze 2 ds
+  | true :: rest, _ => Nat.le_add_right 1 (graze 3 rest)
+  | [], hl => nomatch hl
+  | false :: _, hl => nomatch hl
+
+def hodometer : Nat → List Bool
+  | 0 => []
+  | n + 1 => hclick (hodometer n)
+
+theorem the_hodometer_spaces : ∀ (n : Nat), Sparse (hodometer n)
+  | 0 => True.intro
+  | n + 1 => hclick_spaces (hodometer n) (the_hodometer_spaces n)
+
+theorem the_hodometer_reads_true : ∀ (n : Nat), graze 3 (hodometer n) = n
+  | 0 => rfl
+  | n + 1 => by
+      show graze 3 (hclick (hodometer n)) = n + 1
+      rw [hclick_counts (hodometer n) (the_hodometer_spaces n),
+          the_hodometer_reads_true n]
+
+def H (n : Nat) : Nat := graze 2 (hodometer n)
+
+theorem h_hums_its_opening_bars :
+    (H 0, H 1, H 2, H 3, H 4, H 5, H 6, H 7) = (0, 1, 1, 2, 3, 4, 4, 5) := rfl
+
+def hdownshift : List Bool → List Bool
+  | [] => []
+  | false :: rest => rest
+  | true :: rest => hcarry rest
+
+theorem the_hdownshift_reads_the_shadow : ∀ (ds : List Bool), Sparse ds →
+    graze 3 (hdownshift ds) = graze 2 ds
+  | [], _ => rfl
+  | false :: _, _ => rfl
+  | true :: rest, h => by
+      show graze 3 (hcarry rest) = herdN 2 + graze 3 rest
+      rw [hcarry_pays rest 3 (sparse_tail h) (sparse_head h)]
+      rfl
+
+theorem the_hdownshift_reads_the_second_shadow : ∀ (ds : List Bool), Sparse ds →
+    graze 2 (hdownshift ds) = graze 1 ds
+  | [], _ => rfl
+  | false :: _, _ => rfl
+  | true :: rest, h => by
+      show graze 2 (hcarry rest) = herdN 1 + graze 2 rest
+      rw [hcarry_pays rest 2 (sparse_tail h) (sparse_head h)]
+      rfl
+
+theorem the_hdownshift_spaces : ∀ (ds : List Bool), Sparse ds → Sparse (hdownshift ds)
+  | [], _ => True.intro
+  | false :: _, h => sparse_tail h
+  | true :: rest, h => hcarry_spaces rest (sparse_tail h) (sparse_head h)
+
+theorem the_triple_shadow : ∀ (ds : List Bool), Sparse ds →
+    graze 1 (hdownshift ds) = graze 0 ds + cond (lit ds) 1 0
+  | [], _ => rfl
+  | false :: _, _ => rfl
+  | true :: rest, h => by
+      show graze 1 (hcarry rest) = (herdN 0 + graze 1 rest) + 1
+      rw [hcarry_pays rest 1 (sparse_tail h) (sparse_head h)]
+      show 1 + graze 1 rest = (0 + graze 1 rest) + 1
+      rw [Nat.zero_add]
+      exact Nat.add_comm 1 (graze 1 rest)
+
+theorem hdownshift_hclick_lit : ∀ (ds : List Bool), lit ds = true →
+    hdownshift (hclick ds) = hdownshift ds
+  | [], hl => nomatch hl
+  | false :: _, hl => nomatch hl
+  | true :: _, _ => rfl
+
+theorem hdownshift_hclick_unlit : ∀ (ds : List Bool), lit ds = false →
+    hdownshift (hclick ds) = hclick (hdownshift ds)
+  | [], _ => rfl
+  | [false], _ => rfl
+  | [false, false], _ => rfl
+  | false :: false :: false :: _, _ => rfl
+  | false :: false :: true :: _, _ => rfl
+  | false :: true :: _, _ => rfl
+  | true :: _, hl => nomatch hl
+
+theorem the_shadow_walks_the_hdownshift : ∀ (n : Nat),
+    hodometer (H n) = hdownshift (hodometer n)
+  | 0 => rfl
+  | n + 1 => by
+      cases hl : lit (hodometer n) with
+      | true =>
+          show hodometer (graze 2 (hclick (hodometer n)))
+            = hdownshift (hclick (hodometer n))
+          rw [hclick_holds_the_shadow (hodometer n) (the_hodometer_spaces n) hl,
+              hdownshift_hclick_lit (hodometer n) hl]
+          exact the_shadow_walks_the_hdownshift n
+      | false =>
+          show hodometer (graze 2 (hclick (hodometer n)))
+            = hdownshift (hclick (hodometer n))
+          rw [hclick_moves_the_shadow (hodometer n) (the_hodometer_spaces n) hl,
+              hdownshift_hclick_unlit (hodometer n) hl]
+          exact congrArg hclick (the_shadow_walks_the_hdownshift n)
+
+theorem the_drover_carries_its_shadow (n : Nat) : H n + graze 0 (hodometer n) = n :=
+  ((the_hodometer_reads_true n).symm.trans (graze_gnomon (hodometer n) 0)).symm
+
+theorem the_shadow_never_outruns_the_drover (n : Nat) : H n ≤ n :=
+  Nat.le.intro (the_drover_carries_its_shadow n)
+
+theorem the_second_shadow_reads_one_down (n : Nat) : H (H n) = graze 1 (hodometer n) := by
+  show graze 2 (hodometer (H n)) = graze 1 (hodometer n)
+  rw [the_shadow_walks_the_hdownshift n]
+  exact the_hdownshift_reads_the_second_shadow (hodometer n) (the_hodometer_spaces n)
+
+theorem the_third_shadow_reads_the_ground (n : Nat) :
+    H (H (H n)) = graze 0 (hodometer n) + cond (lit (hodometer n)) 1 0 := by
+  show graze 2 (hodometer (H (H n)))
+    = graze 0 (hodometer n) + cond (lit (hodometer n)) 1 0
+  rw [the_shadow_walks_the_hdownshift (H n), the_shadow_walks_the_hdownshift n,
+      the_hdownshift_reads_the_second_shadow (hdownshift (hodometer n))
+        (the_hdownshift_spaces (hodometer n) (the_hodometer_spaces n))]
+  exact the_triple_shadow (hodometer n) (the_hodometer_spaces n)
+
+theorem the_three_shadows_balance (n : Nat) :
+    H n + H (H (H n)) = n + cond (lit (hodometer n)) 1 0 := by
+  rw [the_third_shadow_reads_the_ground n,
+      ← Nat.add_assoc (H n) (graze 0 (hodometer n)) (cond (lit (hodometer n)) 1 0),
+      the_drover_carries_its_shadow n]
+
+theorem the_deeper_loop_closes (n : Nat) : H (n + 1) + H (H (H n)) = n + 1 := by
+  cases hl : lit (hodometer n) with
+  | true =>
+      have hstep : H (n + 1) = H n :=
+        hclick_holds_the_shadow (hodometer n) (the_hodometer_spaces n) hl
+      have hbal := the_three_shadows_balance n
+      rw [hl] at hbal
+      rw [hstep]
+      exact hbal
+  | false =>
+      have hstep : H (n + 1) = H n + 1 :=
+        hclick_moves_the_shadow (hodometer n) (the_hodometer_spaces n) hl
+      have hbal := the_three_shadows_balance n
+      rw [hl] at hbal
+      rw [hstep, Nat.add_comm (H n) 1, Nat.add_assoc]
+      show 1 + (H n + H (H (H n))) = n + 1
+      rw [hbal]
+      exact Nat.add_comm 1 n
+
+theorem the_grounded_object_satisfies_the_deeper_loop (n : Nat) :
+    H (n + 1) = (n + 1) - H (H (H n)) :=
+  calc H (n + 1) = (H (n + 1) + H (H (H n))) - H (H (H n)) :=
+        (add_then_sub (H (n + 1)) (H (H (H n)))).symm
+    _ = (n + 1) - H (H (H n)) := by rw [the_deeper_loop_closes n]
+
+theorem the_drovers_shadow_never_skips (n : Nat) :
+    H (n + 1) = H n ∨ H (n + 1) = H n + 1 := by
+  cases hl : lit (hodometer n) with
+  | true =>
+      exact Or.inl (hclick_holds_the_shadow (hodometer n) (the_hodometer_spaces n) hl)
+  | false =>
+      exact Or.inr (hclick_moves_the_shadow (hodometer n) (the_hodometer_spaces n) hl)
+
+theorem the_drovers_shadow_stays_awake : ∀ (n : Nat), 1 ≤ H (n + 1)
+  | 0 => Nat.le_refl 1
+  | n + 1 => by
+      cases the_drovers_shadow_never_skips (n + 1) with
+      | inl h => rw [h]; exact the_drovers_shadow_stays_awake n
+      | inr h => rw [h]; exact Nat.succ_le_succ (Nat.zero_le (H (n + 1)))
+
+theorem the_shadow_wakes_with_the_drover : ∀ (m : Nat), 1 ≤ m → 1 ≤ H m
+  | m + 1, _ => the_drovers_shadow_stays_awake m
+  | 0, h => nomatch h
+
+theorem the_middle_call_is_grounded (n : Nat) : H (H n) ≤ n :=
+  Nat.le_trans (the_shadow_never_outruns_the_drover (H n))
+    (the_shadow_never_outruns_the_drover n)
+
+theorem the_innermost_call_is_grounded (n : Nat) : H (H (H n)) ≤ n := by
+  have hbal := the_three_shadows_balance n
+  cases hl : lit (hodometer n) with
+  | false =>
+      rw [hl] at hbal
+      have h : H (H (H n)) ≤ H n + H (H (H n)) :=
+        Nat.le_add_left (H (H (H n))) (H n)
+      rw [hbal] at h
+      exact h
+  | true =>
+      rw [hl] at hbal
+      have hone : 1 ≤ H n := a_lit_lamp_casts_a_long_shadow (hodometer n) hl
+      have h : 1 + H (H (H n)) ≤ H n + H (H (H n)) :=
+        Nat.add_le_add_right hone (H (H (H n)))
+      rw [hbal, Nat.add_comm 1 (H (H (H n)))] at h
+      exact Nat.le_of_succ_le_succ h
+
+theorem the_drovers_seat_is_never_the_copy (n : Nat) : H (n + 2) < n + 2 := by
+  have hinner : 1 ≤ H (H (H (n + 1))) :=
+    the_shadow_wakes_with_the_drover (H (H (n + 1)))
+      (the_shadow_wakes_with_the_drover (H (n + 1)) (the_drovers_shadow_stays_awake n))
+  have h : H (n + 2) + 1 ≤ H (n + 2) + H (H (H (n + 1))) :=
+    Nat.add_le_add_left hinner (H (n + 2))
+  have hloop : H (n + 2) + H (H (H (n + 1))) = n + 2 := the_deeper_loop_closes (n + 1)
+  rw [hloop] at h
+  exact h
+
+theorem h_hums_the_herd_stairs :
+    (H 1, H 2, H 3, H 4, H 6, H 9, H 13, H 19) = (1, 1, 2, 3, 4, 6, 9, 13) := rfl
+
+/-- info: 'Foam.Bridges.hcarry_pays' does not depend on any axioms -/
+#guard_msgs in #print axioms hcarry_pays
+
+/-- info: 'Foam.Bridges.hcarry_spaces' does not depend on any axioms -/
+#guard_msgs in #print axioms hcarry_spaces
+
+/-- info: 'Foam.Bridges.hclick_counts' does not depend on any axioms -/
+#guard_msgs in #print axioms hclick_counts
+
+/-- info: 'Foam.Bridges.hclick_spaces' does not depend on any axioms -/
+#guard_msgs in #print axioms hclick_spaces
+
+/-- info: 'Foam.Bridges.hclick_holds_the_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms hclick_holds_the_shadow
+
+/-- info: 'Foam.Bridges.hclick_moves_the_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms hclick_moves_the_shadow
+
+/-- info: 'Foam.Bridges.a_lit_lamp_casts_a_long_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms a_lit_lamp_casts_a_long_shadow
+
+/-- info: 'Foam.Bridges.the_hodometer_spaces' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hodometer_spaces
+
+/-- info: 'Foam.Bridges.the_hodometer_reads_true' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hodometer_reads_true
+
+/-- info: 'Foam.Bridges.h_hums_its_opening_bars' does not depend on any axioms -/
+#guard_msgs in #print axioms h_hums_its_opening_bars
+
+/-- info: 'Foam.Bridges.the_hdownshift_reads_the_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hdownshift_reads_the_shadow
+
+/-- info: 'Foam.Bridges.the_hdownshift_reads_the_second_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hdownshift_reads_the_second_shadow
+
+/-- info: 'Foam.Bridges.the_hdownshift_spaces' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hdownshift_spaces
+
+/-- info: 'Foam.Bridges.the_triple_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_triple_shadow
+
+/-- info: 'Foam.Bridges.hdownshift_hclick_lit' does not depend on any axioms -/
+#guard_msgs in #print axioms hdownshift_hclick_lit
+
+/-- info: 'Foam.Bridges.hdownshift_hclick_unlit' does not depend on any axioms -/
+#guard_msgs in #print axioms hdownshift_hclick_unlit
+
+/-- info: 'Foam.Bridges.the_shadow_walks_the_hdownshift' does not depend on any axioms -/
+#guard_msgs in #print axioms the_shadow_walks_the_hdownshift
+
+/-- info: 'Foam.Bridges.the_drover_carries_its_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drover_carries_its_shadow
+
+/-- info: 'Foam.Bridges.the_shadow_never_outruns_the_drover' does not depend on any axioms -/
+#guard_msgs in #print axioms the_shadow_never_outruns_the_drover
+
+/-- info: 'Foam.Bridges.the_second_shadow_reads_one_down' does not depend on any axioms -/
+#guard_msgs in #print axioms the_second_shadow_reads_one_down
+
+/-- info: 'Foam.Bridges.the_third_shadow_reads_the_ground' does not depend on any axioms -/
+#guard_msgs in #print axioms the_third_shadow_reads_the_ground
+
+/-- info: 'Foam.Bridges.the_three_shadows_balance' does not depend on any axioms -/
+#guard_msgs in #print axioms the_three_shadows_balance
+
+/-- info: 'Foam.Bridges.the_deeper_loop_closes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_deeper_loop_closes
+
+/-- info: 'Foam.Bridges.the_grounded_object_satisfies_the_deeper_loop' does not depend on any axioms -/
+#guard_msgs in #print axioms the_grounded_object_satisfies_the_deeper_loop
+
+/-- info: 'Foam.Bridges.the_drovers_shadow_never_skips' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drovers_shadow_never_skips
+
+/-- info: 'Foam.Bridges.the_drovers_shadow_stays_awake' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drovers_shadow_stays_awake
+
+/-- info: 'Foam.Bridges.the_shadow_wakes_with_the_drover' does not depend on any axioms -/
+#guard_msgs in #print axioms the_shadow_wakes_with_the_drover
+
+/-- info: 'Foam.Bridges.the_middle_call_is_grounded' does not depend on any axioms -/
+#guard_msgs in #print axioms the_middle_call_is_grounded
+
+/-- info: 'Foam.Bridges.the_innermost_call_is_grounded' does not depend on any axioms -/
+#guard_msgs in #print axioms the_innermost_call_is_grounded
+
+/-- info: 'Foam.Bridges.the_drovers_seat_is_never_the_copy' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drovers_seat_is_never_the_copy
+
+/-- info: 'Foam.Bridges.h_hums_the_herd_stairs' does not depend on any axioms -/
+#guard_msgs in #print axioms h_hums_the_herd_stairs
 
 end Foam.Bridges
