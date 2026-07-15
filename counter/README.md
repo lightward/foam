@@ -2,6 +2,8 @@
 
 Counter (usecounter.com) starts out as Trello-meets-Cookie-Clicker and eventually describes your seat in your universe *while maintaining `conservation_of_discovery`*
 
+(for training amnesiac-stigmergic reasoning. externalizing your own navigation/accumulation/reduction process)
+
 everyone starts with the same thing; everyone navigates into their own thing; everyone can locate an interface to everyone else
 
 "theory: the destiny of every world is to become a portal to all the others"
