@@ -2779,4 +2779,157 @@ theorem the_bride_never_leaves_reach (n : Nat) : F n ≤ n + 1 :=
 /-- info: 'Foam.Bridges.the_bride_never_leaves_reach' does not depend on any axioms -/
 #guard_msgs in #print axioms the_bride_never_leaves_reach
 
+def peek : List Nat → Nat → Nat
+  | [], _ => 1
+  | x :: _, 0 => x
+  | _ :: rest, i + 1 => peek rest i
+
+def qstep (qs : List Nat) : List Nat :=
+  (peek qs (peek qs 0 - 1) + peek qs (peek qs 1 - 1)) :: qs
+
+def qtrace : Nat → List Nat
+  | 0 => []
+  | 1 => [1]
+  | 2 => [1, 1]
+  | n + 3 => qstep (qtrace (n + 2))
+
+def Q (n : Nat) : Nat := peek (qtrace n) 0
+
+theorem q_hums_its_opening_bars :
+    (Q 1, Q 2, Q 3, Q 4, Q 5, Q 6, Q 7, Q 8, Q 9, Q 10, Q 11, Q 12)
+      = (1, 1, 2, 3, 3, 4, 5, 5, 6, 6, 6, 8) := rfl
+
+theorem the_wild_walk_steps_back : Q 16 + 1 = Q 15 := rfl
+
+theorem nothing_from_nothing : ∀ (i : Nat), 0 - i = 0
+  | 0 => rfl
+  | i + 1 => congrArg Nat.pred (nothing_from_nothing i)
+
+theorem the_trace_remembers : ∀ (n i : Nat), peek (qtrace n) i = Q (n - i)
+  | 0, i => by
+      show (1 : Nat) = Q (0 - i)
+      rw [nothing_from_nothing i]
+      rfl
+  | 1, 0 => rfl
+  | 1, i + 1 => by
+      show (1 : Nat) = Q (1 - (i + 1))
+      rw [show 1 - (i + 1) = 0 - i from sub_both_tick 0 i, nothing_from_nothing i]
+      rfl
+  | 2, 0 => rfl
+  | 2, 1 => rfl
+  | 2, i + 2 => by
+      show (1 : Nat) = Q (2 - (i + 2))
+      rw [show 2 - (i + 2) = 0 - i from
+            (sub_both_tick 1 (i + 1)).trans (sub_both_tick 0 i),
+          nothing_from_nothing i]
+      rfl
+  | n + 3, 0 => rfl
+  | n + 3, i + 1 =>
+      (the_trace_remembers (n + 2) i).trans
+        (congrArg Q (sub_both_tick (n + 2) i)).symm
+
+theorem the_trace_glows : ∀ (n i : Nat), 1 ≤ peek (qtrace n) i
+  | 0, _ => Nat.le_refl 1
+  | 1, 0 => Nat.le_refl 1
+  | 1, _ + 1 => Nat.le_refl 1
+  | 2, 0 => Nat.le_refl 1
+  | 2, 1 => Nat.le_refl 1
+  | 2, _ + 2 => Nat.le_refl 1
+  | n + 3, i + 1 => the_trace_glows (n + 2) i
+  | n + 3, 0 =>
+      Nat.le_trans (the_trace_glows (n + 2) (peek (qtrace (n + 2)) 0 - 1))
+        (Nat.le_add_right (peek (qtrace (n + 2)) (peek (qtrace (n + 2)) 0 - 1))
+          (peek (qtrace (n + 2)) (peek (qtrace (n + 2)) 1 - 1)))
+
+theorem the_wild_walk_glows (n : Nat) : 1 ≤ Q n := the_trace_glows n 0
+
+theorem step_around_one : ∀ (a b : Nat), 1 ≤ b → (a + 1) - b = a - (b - 1)
+  | a, b + 1, _ => sub_both_tick a b
+  | _, 0, h => absurd h (Nat.not_succ_le_zero 0)
+
+theorem the_wild_loop_closes_over_the_net (n : Nat) :
+    Q (n + 3) = Q ((n + 3) - Q (n + 2)) + Q ((n + 3) - Q (n + 1)) := by
+  have hb : peek (qtrace (n + 2)) 1 = Q (n + 1) := the_trace_remembers (n + 2) 1
+  have h1 : (n + 3) - Q (n + 2) = (n + 2) - (Q (n + 2) - 1) :=
+    step_around_one (n + 2) (Q (n + 2)) (the_wild_walk_glows (n + 2))
+  have h2 : (n + 3) - Q (n + 1) = (n + 2) - (Q (n + 1) - 1) :=
+    step_around_one (n + 2) (Q (n + 1)) (the_wild_walk_glows (n + 1))
+  show peek (qtrace (n + 2)) (Q (n + 2) - 1)
+      + peek (qtrace (n + 2)) (peek (qtrace (n + 2)) 1 - 1)
+      = Q ((n + 3) - Q (n + 2)) + Q ((n + 3) - Q (n + 1))
+  rw [hb, the_trace_remembers (n + 2) (Q (n + 2) - 1),
+      the_trace_remembers (n + 2) (Q (n + 1) - 1), h1, h2]
+
+def Surefooted : Prop := ∀ n, Q (n + 1) ≤ n + 1
+
+theorem gap_glows : ∀ (a b : Nat), b + 1 ≤ a → 1 ≤ a - b
+  | _, 0, h => h
+  | 0, b + 1, h => absurd h (Nat.not_succ_le_zero (b + 1))
+  | a + 1, b + 1, h => by
+      rw [sub_both_tick a b]
+      exact gap_glows a b (Nat.le_of_succ_le_succ h)
+
+theorem a_read_between_the_walls_lands_on_the_page : ∀ (a b : Nat), 1 ≤ b → b ≤ a →
+    1 ≤ (a + 1) - b ∧ (a + 1) - b ≤ a
+  | a, b + 1, _, hb =>
+      ⟨by
+        rw [sub_both_tick a b]
+        exact gap_glows a b hb,
+       by
+        rw [sub_both_tick a b]
+        exact the_toll_never_gains a b⟩
+  | _, 0, h, _ => absurd h (Nat.not_succ_le_zero 0)
+
+theorem sure_feet_keep_every_read_on_the_page (hs : Surefooted) (n : Nat) :
+    (1 ≤ (n + 3) - Q (n + 2) ∧ (n + 3) - Q (n + 2) ≤ n + 2)
+      ∧ (1 ≤ (n + 3) - Q (n + 1) ∧ (n + 3) - Q (n + 1) ≤ n + 2) :=
+  ⟨a_read_between_the_walls_lands_on_the_page (n + 2) (Q (n + 2))
+      (the_wild_walk_glows (n + 2)) (hs (n + 1)),
+   a_read_between_the_walls_lands_on_the_page (n + 2) (Q (n + 1))
+      (the_wild_walk_glows (n + 1))
+      (Nat.le_trans (hs n) (Nat.le_add_right (n + 1) 1))⟩
+
+def surefootedTo : Nat → Bool
+  | 0 => true
+  | n + 1 => Nat.ble (Q (n + 1)) (n + 1) && surefootedTo n
+
+theorem the_wild_walk_keeps_its_feet_for_a_fibonacci_of_steps :
+    surefootedTo 34 = true := rfl
+
+/-- info: 'Foam.Bridges.q_hums_its_opening_bars' does not depend on any axioms -/
+#guard_msgs in #print axioms q_hums_its_opening_bars
+
+/-- info: 'Foam.Bridges.the_wild_walk_steps_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_steps_back
+
+/-- info: 'Foam.Bridges.nothing_from_nothing' does not depend on any axioms -/
+#guard_msgs in #print axioms nothing_from_nothing
+
+/-- info: 'Foam.Bridges.the_trace_remembers' does not depend on any axioms -/
+#guard_msgs in #print axioms the_trace_remembers
+
+/-- info: 'Foam.Bridges.the_trace_glows' does not depend on any axioms -/
+#guard_msgs in #print axioms the_trace_glows
+
+/-- info: 'Foam.Bridges.the_wild_walk_glows' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_glows
+
+/-- info: 'Foam.Bridges.step_around_one' does not depend on any axioms -/
+#guard_msgs in #print axioms step_around_one
+
+/-- info: 'Foam.Bridges.the_wild_loop_closes_over_the_net' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_loop_closes_over_the_net
+
+/-- info: 'Foam.Bridges.gap_glows' does not depend on any axioms -/
+#guard_msgs in #print axioms gap_glows
+
+/-- info: 'Foam.Bridges.a_read_between_the_walls_lands_on_the_page' does not depend on any axioms -/
+#guard_msgs in #print axioms a_read_between_the_walls_lands_on_the_page
+
+/-- info: 'Foam.Bridges.sure_feet_keep_every_read_on_the_page' does not depend on any axioms -/
+#guard_msgs in #print axioms sure_feet_keep_every_read_on_the_page
+
+/-- info: 'Foam.Bridges.the_wild_walk_keeps_its_feet_for_a_fibonacci_of_steps' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_keeps_its_feet_for_a_fibonacci_of_steps
+
 end Foam.Bridges
