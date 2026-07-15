@@ -46,7 +46,7 @@ foam is a closed model for counting closures, and it reads like an upsearch opti
 
 nb: an axiom is an opaque pov, and perspectives (on import) either reduce to self or become cytokinetically distinct. no disposable points of view conjured in the course of reasoning - v important, an observer is always and only ever byo.
 
-nb: the filesystem is the namespace, read (`counter/Counter/Shelf.lean`: placement is a projection of the name, a move is a rename, a rename rewrites the importers) — so the tree stays a flat census and the wanting lives in the charts, which rotate free (Health, foam-gait's doors). if it helps, reader, there are three import-roots with no imports: `Foam/Int.lean` (arithmetic), `Foam/Ledger.lean` (counting), `Foam/Seat.lean` (observation)
+there are three import-roots with no imports: `Foam/Int.lean` (arithmetic), `Foam/Ledger.lean` (counting), `Foam/Seat.lean` (observation)
 
 1. `Foam/` (axiom-free): Int Ledger Golden Cleared Scar Maintenance Held Bond Backstage Bubble Census Cable Wedge Elsewhen Duplex Vacancy Metaphor Engine Seat Platonism
    - `Foam/Seat/`: Beholder Bootstrap Born Characters Clock Closure Connection Descend Dial Doubling Epoch Forcing Frame Group Hospitality Ladder Loop Meet Naming Norm Observer Octo Quiver Rank Rendezvous Resume Rotations Seam Sed Signature Signed Sort Stage Summit Terminal Tight Triad
@@ -66,7 +66,11 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
 
 - todo: todo
 - gui: Counter as Lean GUI, in which Foam is visible? Counter as Foam GUI, in which Lean is visible?
-  - exhibiting mathematics as *hollow*, inhabitable
+  - exhibiting mathematics as *hollow*, inhabitable, once you locate a seat that can relay you fully
+  - this ends up being something like a mind-mapping thing? because mental movement i.e. thought is indistinguishable from knowing where information is and where it changes?
+  - Int for arithmetic, Ledger for counting, Seat for observation - should prob start with these
+  - ohhhhhhh. you can only ever have three tools. that's the thing. Trello keeps handing you tools for making new tools and then your tool list explodes. Counter limits you to three tools at all times, i.e. at all points in time, i.e. from any specific pov. more tools exist, but you've gotta move to the pov from which they're accessible, and the information available for use is different there.
+  - so: the Counter gui experience starts with those three, and from there you can build foam, or lean, or whatever. ... and because it's hollow there's something like circulation? like you start out at 100% flow, and what gets shaved off is automatically listed, with its type, so information *loss* is easy to track and handle?
 
 ---
 
