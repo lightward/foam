@@ -1838,4 +1838,945 @@ theorem the_bottom_herd_beacon_holds : hdownshift (beacon 0) = beacon 0 := rfl
 /-- info: 'Foam.Bridges.the_bottom_herd_beacon_holds' does not depend on any axioms -/
 #guard_msgs in #print axioms the_bottom_herd_beacon_holds
 
+def evenBeacon : List Bool → Bool
+  | [] => false
+  | [false] => false
+  | [true] => true
+  | true :: _ :: _ => false
+  | false :: true :: _ => false
+  | false :: false :: rest => evenBeacon rest
+
+def oddBeacon : List Bool → Bool
+  | [] => false
+  | true :: _ => false
+  | false :: rest => evenBeacon rest
+
+theorem seats_pair (j : Nat) : (j + 1) + (j + 1) = j + j + 2 :=
+  congrArg Nat.succ (Nat.succ_add j j)
+
+theorem seats_pair_shift (j i : Nat) : (j + 1) + (j + 1) + i = j + j + (i + 2) :=
+  calc (j + 1) + (j + 1) + i
+      = (j + j + 2) + i := congrArg (fun t => t + i) (seats_pair j)
+    _ = j + j + (2 + i) := Nat.add_assoc (j + j) 2 i
+    _ = j + j + (i + 2) := congrArg (fun t => j + j + t) (Nat.add_comm 2 i)
+
+theorem the_even_flag_flies_on_its_beacon : ∀ (j : Nat), evenBeacon (beacon (j + j)) = true
+  | 0 => rfl
+  | j + 1 => by
+      rw [seats_pair j]
+      exact the_even_flag_flies_on_its_beacon j
+
+theorem the_odd_flag_flies_on_its_beacon (j : Nat) :
+    oddBeacon (beacon (j + j + 1)) = true :=
+  the_even_flag_flies_on_its_beacon j
+
+theorem the_even_flag_skips_odd_beacons : ∀ (j : Nat),
+    evenBeacon (beacon (j + j + 1)) = false
+  | 0 => rfl
+  | j + 1 => by
+      rw [show (j + 1) + (j + 1) + 1 = j + j + 3 from congrArg Nat.succ (seats_pair j)]
+      exact the_even_flag_skips_odd_beacons j
+
+theorem the_odd_flag_skips_even_beacons : ∀ (j : Nat), oddBeacon (beacon (j + j)) = false
+  | 0 => rfl
+  | j + 1 => by
+      rw [seats_pair j]
+      exact the_even_flag_skips_odd_beacons j
+
+theorem the_even_flag_finds_its_beacon : ∀ (ds : List Bool), evenBeacon ds = true →
+    ∃ j, ds = beacon (j + j)
+  | [], h => nomatch h
+  | [false], h => nomatch h
+  | [true], _ => ⟨0, rfl⟩
+  | true :: _ :: _, h => nomatch h
+  | false :: true :: _, h => nomatch h
+  | false :: false :: rest, h =>
+      match the_even_flag_finds_its_beacon rest h with
+      | ⟨j, hj⟩ => ⟨j + 1, by
+          rw [seats_pair j]
+          exact congrArg (fun t => false :: false :: t) hj⟩
+
+theorem the_odd_flag_finds_its_beacon : ∀ (ds : List Bool), oddBeacon ds = true →
+    ∃ j, ds = beacon (j + j + 1)
+  | [], h => nomatch h
+  | true :: _, h => nomatch h
+  | false :: rest, h =>
+      match the_even_flag_finds_its_beacon rest h with
+      | ⟨j, hj⟩ => ⟨j, congrArg (fun t => false :: t) hj⟩
+
+def comb : Nat → List Bool
+  | 0 => []
+  | j + 1 => false :: true :: comb j
+
+theorem a_lit_comb_spaces : ∀ (j : Nat), NoConsec (true :: comb j)
+  | 0 => True.intro
+  | j + 1 => a_lit_comb_spaces j
+
+theorem the_comb_spaces : ∀ (j : Nat), NoConsec (comb j)
+  | 0 => True.intro
+  | j + 1 => a_lit_comb_spaces j
+
+theorem the_comb_wears_the_cap : ∀ (j : Nat), capped (comb j) = true
+  | 0 => rfl
+  | j + 1 => by
+      show capped (false :: true :: comb j) = true
+      rw [capped_step, capped_true_cons]
+      exact the_comb_wears_the_cap j
+
+theorem a_lit_comb_wears_the_cap (j : Nat) : capped (true :: comb j) = true :=
+  (capped_true_cons (comb j)).trans (the_comb_wears_the_cap j)
+
+theorem a_comb_and_a_lamp_make_a_beacon : ∀ (j i : Nat),
+    worth i (comb j) + fibN i = fibN (j + j + i)
+  | 0, i => by
+      show 0 + fibN i = fibN (0 + i)
+      rw [Nat.zero_add, Nat.zero_add]
+  | j + 1, i => by
+      show (fibN (i + 1) + worth (i + 2) (comb j)) + fibN i = fibN ((j + 1) + (j + 1) + i)
+      rw [seats_pair_shift j i,
+          add_swap_right (fibN (i + 1)) (worth (i + 2) (comb j)) (fibN i),
+          ← fibN_gnomon i,
+          Nat.add_comm (fibN (i + 2)) (worth (i + 2) (comb j))]
+      exact a_comb_and_a_lamp_make_a_beacon j (i + 2)
+
+theorem a_comb_reads_below_its_beacon (j : Nat) :
+    worth 2 (comb j) + 1 = fibN (j + j + 2) :=
+  a_comb_and_a_lamp_make_a_beacon j 2
+
+theorem a_lit_comb_reads_below_its_beacon (j : Nat) :
+    worth 2 (true :: comb j) + 1 = fibN (j + j + 3) := by
+  show (1 + worth 3 (comb j)) + 1 = fibN (j + j + 3)
+  rw [Nat.add_comm 1 (worth 3 (comb j))]
+  exact a_comb_and_a_lamp_make_a_beacon j 3
+
+theorem a_combs_shadow_is_one_short (j : Nat) :
+    worth 1 (comb j) + 1 = fibN (j + j + 1) :=
+  a_comb_and_a_lamp_make_a_beacon j 1
+
+theorem a_lit_combs_shadow_is_the_beacon_below (j : Nat) :
+    worth 1 (true :: comb j) = fibN (j + j + 2) := by
+  show 1 + worth 2 (comb j) = fibN (j + j + 2)
+  rw [Nat.add_comm 1 (worth 2 (comb j))]
+  exact a_comb_and_a_lamp_make_a_beacon j 2
+
+theorem the_comb_carries_to_its_beacon : ∀ (j : Nat), carry (comb j) = beacon (j + j)
+  | 0 => rfl
+  | j + 1 => by
+      rw [seats_pair j]
+      show false :: false :: carry (comb j) = false :: false :: beacon (j + j)
+      exact congrArg (fun t => false :: false :: t) (the_comb_carries_to_its_beacon j)
+
+theorem the_comb_clicks_to_its_beacon : ∀ (j : Nat), click (comb j) = beacon (j + j)
+  | 0 => rfl
+  | j + 1 => the_comb_carries_to_its_beacon (j + 1)
+
+theorem a_lit_comb_clicks_to_the_beacon_above (j : Nat) :
+    click (true :: comb j) = beacon (j + j + 1) :=
+  congrArg (fun t => false :: t) (the_comb_carries_to_its_beacon j)
+
+theorem the_page_below_an_even_beacon (j : Nat) :
+    odometer (worth 2 (comb j)) = comb j :=
+  (every_spaced_page_is_a_reading (comb j) (the_comb_spaces j)
+    (the_comb_wears_the_cap j)).symm
+
+theorem the_page_below_an_odd_beacon (j : Nat) :
+    odometer (worth 2 (true :: comb j)) = true :: comb j :=
+  (every_spaced_page_is_a_reading (true :: comb j) (a_lit_comb_spaces j)
+    (a_lit_comb_wears_the_cap j)).symm
+
+theorem no_even_flag_above_a_tall_beacon (m : Nat) :
+    evenBeacon (click (beacon (m + 2))) = false := rfl
+
+theorem no_odd_flag_above_a_tall_beacon (m : Nat) :
+    oddBeacon (click (beacon (m + 2))) = false := rfl
+
+theorem no_even_flag_above_an_even_beacon : ∀ (j : Nat),
+    evenBeacon (click (beacon (j + j))) = false
+  | 0 => rfl
+  | j + 1 => by
+      rw [seats_pair j]
+      exact no_even_flag_above_a_tall_beacon (j + j)
+
+theorem no_odd_flag_above_an_odd_beacon : ∀ (j : Nat),
+    oddBeacon (click (beacon (j + j + 1))) = false
+  | 0 => rfl
+  | j + 1 => by
+      rw [show (j + 1) + (j + 1) + 1 = j + j + 3 from congrArg Nat.succ (seats_pair j)]
+      exact no_odd_flag_above_a_tall_beacon (j + j + 1)
+
+/-- info: 'Foam.Bridges.seats_pair' does not depend on any axioms -/
+#guard_msgs in #print axioms seats_pair
+
+/-- info: 'Foam.Bridges.seats_pair_shift' does not depend on any axioms -/
+#guard_msgs in #print axioms seats_pair_shift
+
+/-- info: 'Foam.Bridges.the_even_flag_flies_on_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_even_flag_flies_on_its_beacon
+
+/-- info: 'Foam.Bridges.the_odd_flag_flies_on_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_odd_flag_flies_on_its_beacon
+
+/-- info: 'Foam.Bridges.the_even_flag_skips_odd_beacons' does not depend on any axioms -/
+#guard_msgs in #print axioms the_even_flag_skips_odd_beacons
+
+/-- info: 'Foam.Bridges.the_odd_flag_skips_even_beacons' does not depend on any axioms -/
+#guard_msgs in #print axioms the_odd_flag_skips_even_beacons
+
+/-- info: 'Foam.Bridges.the_even_flag_finds_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_even_flag_finds_its_beacon
+
+/-- info: 'Foam.Bridges.the_odd_flag_finds_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_odd_flag_finds_its_beacon
+
+/-- info: 'Foam.Bridges.a_lit_comb_spaces' does not depend on any axioms -/
+#guard_msgs in #print axioms a_lit_comb_spaces
+
+/-- info: 'Foam.Bridges.the_comb_spaces' does not depend on any axioms -/
+#guard_msgs in #print axioms the_comb_spaces
+
+/-- info: 'Foam.Bridges.the_comb_wears_the_cap' does not depend on any axioms -/
+#guard_msgs in #print axioms the_comb_wears_the_cap
+
+/-- info: 'Foam.Bridges.a_lit_comb_wears_the_cap' does not depend on any axioms -/
+#guard_msgs in #print axioms a_lit_comb_wears_the_cap
+
+/-- info: 'Foam.Bridges.a_comb_and_a_lamp_make_a_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms a_comb_and_a_lamp_make_a_beacon
+
+/-- info: 'Foam.Bridges.a_comb_reads_below_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms a_comb_reads_below_its_beacon
+
+/-- info: 'Foam.Bridges.a_lit_comb_reads_below_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms a_lit_comb_reads_below_its_beacon
+
+/-- info: 'Foam.Bridges.a_combs_shadow_is_one_short' does not depend on any axioms -/
+#guard_msgs in #print axioms a_combs_shadow_is_one_short
+
+/-- info: 'Foam.Bridges.a_lit_combs_shadow_is_the_beacon_below' does not depend on any axioms -/
+#guard_msgs in #print axioms a_lit_combs_shadow_is_the_beacon_below
+
+/-- info: 'Foam.Bridges.the_comb_carries_to_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_comb_carries_to_its_beacon
+
+/-- info: 'Foam.Bridges.the_comb_clicks_to_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_comb_clicks_to_its_beacon
+
+/-- info: 'Foam.Bridges.a_lit_comb_clicks_to_the_beacon_above' does not depend on any axioms -/
+#guard_msgs in #print axioms a_lit_comb_clicks_to_the_beacon_above
+
+/-- info: 'Foam.Bridges.the_page_below_an_even_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_page_below_an_even_beacon
+
+/-- info: 'Foam.Bridges.the_page_below_an_odd_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_page_below_an_odd_beacon
+
+/-- info: 'Foam.Bridges.no_even_flag_above_a_tall_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms no_even_flag_above_a_tall_beacon
+
+/-- info: 'Foam.Bridges.no_odd_flag_above_a_tall_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms no_odd_flag_above_a_tall_beacon
+
+/-- info: 'Foam.Bridges.no_even_flag_above_an_even_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms no_even_flag_above_an_even_beacon
+
+/-- info: 'Foam.Bridges.no_odd_flag_above_an_odd_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms no_odd_flag_above_an_odd_beacon
+
+def F (n : Nat) : Nat := G n + cond (evenBeacon (odometer (n + 1))) 1 0
+
+def M (n : Nat) : Nat := G n - cond (oddBeacon (odometer (n + 1))) 1 0
+
+theorem the_bride_wakes_lit : F 0 = 1 := rfl
+
+theorem the_groom_wakes_dark : M 0 = 0 := rfl
+
+theorem f_hums_its_opening_bars :
+    (F 0, F 1, F 2, F 3, F 4, F 5, F 6, F 7) = (1, 1, 2, 2, 3, 3, 4, 5) := rfl
+
+theorem m_hums_its_opening_bars :
+    (M 0, M 1, M 2, M 3, M 4, M 5, M 6, M 7) = (0, 0, 1, 2, 2, 3, 4, 4) := rfl
+
+theorem the_bride_reads_the_shared_page (n : Nat) :
+    F n = worth 1 (odometer n) + cond (evenBeacon (click (odometer n))) 1 0 := rfl
+
+theorem the_groom_reads_the_shared_page (n : Nat) :
+    M n = worth 1 (odometer n) - cond (oddBeacon (click (odometer n))) 1 0 := rfl
+
+theorem sub_one_back : ∀ (x : Nat), 1 ≤ x → (x - 1) + 1 = x
+  | _ + 1, _ => rfl
+  | 0, h => absurd h (Nat.not_succ_le_zero 0)
+
+theorem the_marriage_closes_for_the_bride (n : Nat) :
+    F (n + 1) + M (F n) = n + 1 := by
+  cases ha : evenBeacon (odometer (n + 1)) with
+  | true =>
+      cases the_even_flag_finds_its_beacon (odometer (n + 1)) ha with
+      | intro j hpage =>
+        cases j with
+        | zero =>
+            have h1 : 1 = n + 1 := by
+              have hr := the_odometer_reads_true (n + 1)
+              rw [hpage] at hr
+              exact hr
+            have h0 : n = 0 := Nat.succ.inj h1.symm
+            rw [h0]
+            rfl
+        | succ k =>
+            have hpage' : odometer (n + 1) = beacon (k + k + 2) := by
+              rw [seats_pair k] at hpage
+              exact hpage
+            have hn1 : n + 1 = fibN (k + k + 4) := by
+              have hr := the_odometer_reads_true (n + 1)
+              rw [hpage', a_beacon_is_one_lamp (k + k + 2) 2,
+                  Nat.add_comm 2 (k + k + 2)] at hr
+              exact hr.symm
+            have hw : worth 2 (comb (k + 1)) + 1 = fibN (k + k + 4) := by
+              have h := a_comb_reads_below_its_beacon (k + 1)
+              rw [seats_pair_shift k 2] at h
+              exact h
+            have hn : n = worth 2 (comb (k + 1)) := Nat.succ.inj (hn1.trans hw.symm)
+            have hpn : odometer n = comb (k + 1) := by
+              rw [hn]
+              exact the_page_below_an_even_beacon (k + 1)
+            have hf : F n = fibN (k + k + 3) := by
+              show G n + cond (evenBeacon (odometer (n + 1))) 1 0 = fibN (k + k + 3)
+              rw [ha]
+              show worth 1 (odometer n) + 1 = fibN (k + k + 3)
+              rw [hpn]
+              have h := a_combs_shadow_is_one_short (k + 1)
+              rw [show (k + 1) + (k + 1) + 1 = k + k + 3 from
+                    congrArg Nat.succ (seats_pair k)] at h
+              exact h
+            have hmf : M (F n) = fibN (k + k + 2) := by
+              show G (F n) - cond (oddBeacon (odometer (F n + 1))) 1 0 = fibN (k + k + 2)
+              rw [hf]
+              have hcl : odometer (fibN (k + k + 3) + 1) = click (beacon (k + k + 1)) :=
+                congrArg click (the_odometer_at_a_fibonacci_is_a_beacon (k + k + 1))
+              rw [hcl, no_odd_flag_above_an_odd_beacon k]
+              exact the_beacon_slides_one_seat_down (k + k + 1)
+            have hf1 : F (n + 1) = fibN (k + k + 3) := by
+              show G (n + 1) + cond (evenBeacon (odometer (n + 1 + 1))) 1 0
+                  = fibN (k + k + 3)
+              have hcl : odometer (n + 1 + 1) = click (beacon (k + k + 2)) := by
+                show click (odometer (n + 1)) = click (beacon (k + k + 2))
+                exact congrArg click hpage'
+              rw [hcl, no_even_flag_above_a_tall_beacon (k + k), hn1]
+              exact the_beacon_slides_one_seat_down (k + k + 2)
+            rw [hf1, hmf]
+            exact (fibN_gnomon (k + k + 2)).symm.trans hn1.symm
+  | false =>
+      have hfn : F n = G n := by
+        show G n + cond (evenBeacon (odometer (n + 1))) 1 0 = G n
+        rw [ha]
+        rfl
+      cases hb : oddBeacon (odometer (G n + 1)) with
+      | true =>
+          cases the_odd_flag_finds_its_beacon (odometer (G n + 1)) hb with
+          | intro i hp2 =>
+            have hg1 : G n + 1 = fibN (i + i + 3) := by
+              have hr := the_odometer_reads_true (G n + 1)
+              rw [hp2, a_beacon_is_one_lamp (i + i + 1) 2,
+                  Nat.add_comm 2 (i + i + 1)] at hr
+              exact hr.symm
+            have hgw : G n = worth 2 (true :: comb i) :=
+              Nat.succ.inj (hg1.trans (a_lit_comb_reads_below_its_beacon i).symm)
+            have hpg : odometer (G n) = true :: comb i := by
+              rw [hgw]
+              exact the_page_below_an_odd_beacon i
+            have hdw : downshift (odometer n) = true :: comb i :=
+              (the_shadow_walks_the_downshift n).symm.trans hpg
+            cases hP : odometer n with
+            | nil =>
+                rw [hP] at hdw
+                exact nomatch hdw
+            | cons b rest =>
+              cases b with
+              | false =>
+                  rw [hP] at hdw
+                  have hrest : rest = true :: comb i := hdw
+                  have hpn : odometer n = comb (i + 1) := by
+                    rw [hP, hrest]
+                    rfl
+                  have hr : worth 2 (comb (i + 1)) = n := by
+                    have h := the_odometer_reads_true n
+                    rw [hpn] at h
+                    exact h
+                  have hn1' : n + 1 = fibN (i + i + 4) := by
+                    have hw := a_comb_reads_below_its_beacon (i + 1)
+                    rw [seats_pair_shift i 2, hr] at hw
+                    exact hw
+                  have hpb : odometer (n + 1) = beacon (i + i + 2) := by
+                    rw [hn1']
+                    exact the_odometer_at_a_fibonacci_is_a_beacon (i + i + 2)
+                  rw [hpb] at ha
+                  have hflag := the_even_flag_flies_on_its_beacon (i + 1)
+                  rw [seats_pair i] at hflag
+                  exact nomatch (hflag.symm.trans ha)
+              | true =>
+                  rw [hP] at hdw
+                  have hcr : carry rest = true :: comb i := hdw
+                  cases rest with
+                  | nil =>
+                      cases i with
+                      | succ i' => exact nomatch hcr
+                      | zero =>
+                          have hn1 : n = 1 := by
+                            have h := the_odometer_reads_true n
+                            rw [hP] at h
+                            exact h.symm
+                          rw [hn1]
+                          rfl
+                  | cons d rest' =>
+                    cases rest' with
+                    | nil =>
+                        cases d with
+                        | true =>
+                            have hsp := the_odometer_spaces n
+                            rw [hP] at hsp
+                            exact False.elim hsp
+                        | false =>
+                            have hcp := the_odometer_wastes_no_seats n
+                            rw [hP] at hcp
+                            exact nomatch hcp
+                    | cons e r =>
+                      cases e with
+                      | true => exact nomatch hcr
+                      | false =>
+                        cases d with
+                        | true =>
+                            have hsp := the_odometer_spaces n
+                            rw [hP] at hsp
+                            exact False.elim hsp
+                        | false =>
+                          cases i with
+                          | zero => exact nomatch hcr
+                          | succ m =>
+                              have hcr' : true :: false :: r
+                                  = true :: false :: true :: comb m := hcr
+                              injection hcr' with h1 h2
+                              injection h2 with h3 h4
+                              have hpn : odometer n = true :: false :: comb (m + 1) := by
+                                rw [hP, h4]
+                                rfl
+                              have hw4 : worth 4 (comb (m + 1)) + 3 = fibN (m + m + 6) := by
+                                have hh := a_comb_and_a_lamp_make_a_beacon (m + 1) 4
+                                rw [seats_pair_shift m 4] at hh
+                                exact hh
+                              have hread : worth 2 (true :: false :: comb (m + 1)) = n := by
+                                have h := the_odometer_reads_true n
+                                rw [hpn] at h
+                                exact h
+                              have hn2 : n + 1 + 1 = fibN (m + m + 6) := by
+                                rw [← hread]
+                                show (1 + worth 4 (comb (m + 1))) + 1 + 1 = fibN (m + m + 6)
+                                rw [Nat.add_comm 1 (worth 4 (comb (m + 1)))]
+                                exact hw4
+                              have hpb : odometer (n + 1 + 1) = beacon (m + m + 4) := by
+                                rw [hn2]
+                                exact the_odometer_at_a_fibonacci_is_a_beacon (m + m + 4)
+                              have ha2 : evenBeacon (odometer (n + 1 + 1)) = true := by
+                                rw [hpb]
+                                exact the_even_flag_flies_on_its_beacon m
+                              have hlit : 1 ≤ G (G n) := by
+                                show 1 ≤ worth 1 (odometer (G n))
+                                rw [hpg]
+                                exact Nat.le_add_right 1 (worth 2 (comb (m + 1)))
+                              have hf1 : F (n + 1) = G (n + 1) + 1 := by
+                                show G (n + 1) + cond (evenBeacon (odometer (n + 1 + 1))) 1 0
+                                    = G (n + 1) + 1
+                                rw [ha2]
+                                rfl
+                              have hmf : M (F n) + 1 = G (G n) := by
+                                show (G (F n) - cond (oddBeacon (odometer (F n + 1))) 1 0) + 1
+                                    = G (G n)
+                                rw [hfn, hb]
+                                exact sub_one_back (G (G n)) hlit
+                              rw [hf1]
+                              calc (G (n + 1) + 1) + M (F n)
+                                  = G (n + 1) + (M (F n) + 1) :=
+                                    Nat.succ_add (G (n + 1)) (M (F n))
+                                _ = G (n + 1) + G (G n) := by rw [hmf]
+                                _ = n + 1 := the_loop_closes n
+      | false =>
+          cases hc : evenBeacon (odometer (n + 1 + 1)) with
+          | false =>
+              have hf1 : F (n + 1) = G (n + 1) := by
+                show G (n + 1) + cond (evenBeacon (odometer (n + 1 + 1))) 1 0 = G (n + 1)
+                rw [hc]
+                rfl
+              have hmf : M (F n) = G (G n) := by
+                show G (F n) - cond (oddBeacon (odometer (F n + 1))) 1 0 = G (G n)
+                rw [hfn, hb]
+                rfl
+              rw [hf1, hmf]
+              exact the_loop_closes n
+          | true =>
+              cases the_even_flag_finds_its_beacon (odometer (n + 1 + 1)) hc with
+              | intro j hp3 =>
+                have hn2 : n + 1 + 1 = fibN (j + j + 2) := by
+                  have hr := the_odometer_reads_true (n + 1 + 1)
+                  rw [hp3, a_beacon_is_one_lamp (j + j) 2, Nat.add_comm 2 (j + j)] at hr
+                  exact hr.symm
+                cases j with
+                | zero => exact nomatch (Nat.succ.inj hn2 : n + 1 = 0)
+                | succ k =>
+                    have hw : worth 2 (comb (k + 1)) + 1 = fibN (k + k + 4) := by
+                      have h := a_comb_reads_below_its_beacon (k + 1)
+                      rw [seats_pair_shift k 2] at h
+                      exact h
+                    have hn2' : n + 1 + 1 = fibN (k + k + 4) := by
+                      rw [seats_pair_shift k 2] at hn2
+                      exact hn2
+                    have hn1' : n + 1 = worth 2 (comb (k + 1)) :=
+                      Nat.succ.inj (hn2'.trans hw.symm)
+                    have hck : click (odometer n) = comb (k + 1) := by
+                      show odometer (n + 1) = comb (k + 1)
+                      rw [hn1']
+                      exact the_page_below_an_even_beacon (k + 1)
+                    cases hP : odometer n with
+                    | nil =>
+                        rw [hP] at hck
+                        exact nomatch hck
+                    | cons b rest =>
+                      cases b with
+                      | false =>
+                          rw [hP] at hck
+                          cases rest with
+                          | nil => exact nomatch hck
+                          | cons e r =>
+                            cases e with
+                            | false => exact nomatch hck
+                            | true => exact nomatch hck
+                      | true =>
+                          rw [hP] at hck
+                          have hcr : carry rest = true :: comb k :=
+                            congrArg List.tail hck
+                          cases rest with
+                          | nil =>
+                              cases k with
+                              | succ k' => exact nomatch hcr
+                              | zero =>
+                                  have hn1 : n = 1 := by
+                                    have h := the_odometer_reads_true n
+                                    rw [hP] at h
+                                    exact h.symm
+                                  rw [hn1] at hb
+                                  exact nomatch hb
+                          | cons d rest' =>
+                            cases rest' with
+                            | nil =>
+                                cases d with
+                                | true =>
+                                    have hsp := the_odometer_spaces n
+                                    rw [hP] at hsp
+                                    exact False.elim hsp
+                                | false =>
+                                    have hcp := the_odometer_wastes_no_seats n
+                                    rw [hP] at hcp
+                                    exact nomatch hcp
+                            | cons e r =>
+                              cases e with
+                              | true => exact nomatch hcr
+                              | false =>
+                                cases d with
+                                | true =>
+                                    have hsp := the_odometer_spaces n
+                                    rw [hP] at hsp
+                                    exact False.elim hsp
+                                | false =>
+                                  cases k with
+                                  | zero => exact nomatch hcr
+                                  | succ m =>
+                                      have hcr' : true :: false :: r
+                                          = true :: false :: true :: comb m := hcr
+                                      injection hcr' with h1 h2
+                                      injection h2 with h3 h4
+                                      have hpn : odometer n
+                                          = true :: false :: comb (m + 1) := by
+                                        rw [hP, h4]
+                                        rfl
+                                      have hw3 : worth 3 (comb (m + 1)) + 2
+                                          = fibN (m + m + 5) := by
+                                        have hh := a_comb_and_a_lamp_make_a_beacon (m + 1) 3
+                                        rw [seats_pair_shift m 3] at hh
+                                        exact hh
+                                      have hg1 : G n + 1 = fibN (m + m + 5) := by
+                                        show worth 1 (odometer n) + 1 = fibN (m + m + 5)
+                                        rw [hpn]
+                                        show (1 + worth 3 (comb (m + 1))) + 1
+                                            = fibN (m + m + 5)
+                                        rw [Nat.add_comm 1 (worth 3 (comb (m + 1)))]
+                                        exact hw3
+                                      have hpb : odometer (G n + 1)
+                                          = beacon (m + m + 3) := by
+                                        rw [hg1]
+                                        exact the_odometer_at_a_fibonacci_is_a_beacon
+                                          (m + m + 3)
+                                      rw [hpb] at hb
+                                      have hflag : oddBeacon (beacon (m + m + 3)) = true :=
+                                        the_even_flag_flies_on_its_beacon m
+                                      exact nomatch (hflag.symm.trans hb)
+
+theorem the_marriage_closes_for_the_groom (n : Nat) :
+    M (n + 1) + F (M n) = n + 1 := by
+  cases hb : oddBeacon (odometer (n + 1)) with
+  | true =>
+      cases the_odd_flag_finds_its_beacon (odometer (n + 1)) hb with
+      | intro j hpage =>
+        have hn1 : n + 1 = fibN (j + j + 3) := by
+          have hr := the_odometer_reads_true (n + 1)
+          rw [hpage, a_beacon_is_one_lamp (j + j + 1) 2,
+              Nat.add_comm 2 (j + j + 1)] at hr
+          exact hr.symm
+        have hn : n = worth 2 (true :: comb j) :=
+          Nat.succ.inj (hn1.trans (a_lit_comb_reads_below_its_beacon j).symm)
+        have hpn : odometer n = true :: comb j := by
+          rw [hn]
+          exact the_page_below_an_odd_beacon j
+        have hg : G n = fibN (j + j + 2) := by
+          show worth 1 (odometer n) = fibN (j + j + 2)
+          rw [hpn]
+          exact a_lit_combs_shadow_is_the_beacon_below j
+        have hm : M n = worth 2 (comb j) := by
+          show G n - cond (oddBeacon (odometer (n + 1))) 1 0 = worth 2 (comb j)
+          rw [hb, hg, ← a_comb_reads_below_its_beacon j]
+          rfl
+        have hpm : odometer (M n) = comb j := by
+          rw [hm]
+          exact the_page_below_an_even_beacon j
+        have hfm : F (M n) = fibN (j + j + 1) := by
+          show G (M n) + cond (evenBeacon (odometer (M n + 1))) 1 0 = fibN (j + j + 1)
+          have hcl : odometer (M n + 1) = beacon (j + j) := by
+            show click (odometer (M n)) = beacon (j + j)
+            rw [hpm]
+            exact the_comb_clicks_to_its_beacon j
+          rw [hcl, the_even_flag_flies_on_its_beacon j]
+          show worth 1 (odometer (M n)) + 1 = fibN (j + j + 1)
+          rw [hpm]
+          exact a_combs_shadow_is_one_short j
+        have hm1 : M (n + 1) = fibN (j + j + 2) := by
+          show G (n + 1) - cond (oddBeacon (odometer (n + 1 + 1))) 1 0 = fibN (j + j + 2)
+          have hcl : odometer (n + 1 + 1) = click (beacon (j + j + 1)) := by
+            show click (odometer (n + 1)) = click (beacon (j + j + 1))
+            exact congrArg click hpage
+          rw [hcl, no_odd_flag_above_an_odd_beacon j, hn1]
+          exact the_beacon_slides_one_seat_down (j + j + 1)
+        rw [hm1, hfm]
+        exact (fibN_gnomon (j + j + 1)).symm.trans hn1.symm
+  | false =>
+      have hmn : M n = G n := by
+        show G n - cond (oddBeacon (odometer (n + 1))) 1 0 = G n
+        rw [hb]
+        rfl
+      cases hc : evenBeacon (odometer (G n + 1)) with
+      | true =>
+          cases the_even_flag_finds_its_beacon (odometer (G n + 1)) hc with
+          | intro j hp2 =>
+            have hg1 : G n + 1 = fibN (j + j + 2) := by
+              have hr := the_odometer_reads_true (G n + 1)
+              rw [hp2, a_beacon_is_one_lamp (j + j) 2, Nat.add_comm 2 (j + j)] at hr
+              exact hr.symm
+            cases j with
+            | zero =>
+                have hg0 : G n = 0 := Nat.succ.inj hg1
+                cases n with
+                | zero => rfl
+                | succ m =>
+                    have h := the_shadow_stays_awake m
+                    rw [hg0] at h
+                    exact absurd h (Nat.not_succ_le_zero 0)
+            | succ k =>
+                have hg1' : G n + 1 = fibN (k + k + 4) := by
+                  rw [seats_pair_shift k 2] at hg1
+                  exact hg1
+                have hw : worth 2 (comb (k + 1)) + 1 = fibN (k + k + 4) := by
+                  have h := a_comb_reads_below_its_beacon (k + 1)
+                  rw [seats_pair_shift k 2] at h
+                  exact h
+                have hgw : G n = worth 2 (comb (k + 1)) :=
+                  Nat.succ.inj (hg1'.trans hw.symm)
+                have hpg : odometer (G n) = comb (k + 1) := by
+                  rw [hgw]
+                  exact the_page_below_an_even_beacon (k + 1)
+                have hdw : downshift (odometer n) = comb (k + 1) :=
+                  (the_shadow_walks_the_downshift n).symm.trans hpg
+                cases hP : odometer n with
+                | nil =>
+                    rw [hP] at hdw
+                    exact nomatch hdw
+                | cons b rest =>
+                  cases b with
+                  | true =>
+                      rw [hP] at hdw
+                      have hcr : carry rest = comb (k + 1) := hdw
+                      cases rest with
+                      | nil => exact nomatch hcr
+                      | cons d rest' =>
+                        cases rest' with
+                        | nil => exact nomatch hcr
+                        | cons e r =>
+                          cases e with
+                          | false => exact nomatch hcr
+                          | true => exact nomatch hcr
+                  | false =>
+                      rw [hP] at hdw
+                      have hrest : rest = comb (k + 1) := hdw
+                      have hpn : odometer n = false :: comb (k + 1) := by
+                        rw [hP, hrest]
+                      have hread : worth 3 (comb (k + 1)) = n := by
+                        have h := the_odometer_reads_true n
+                        rw [hpn] at h
+                        exact h
+                      have hw3 : worth 3 (comb (k + 1)) + 2 = fibN (k + k + 5) := by
+                        have hh := a_comb_and_a_lamp_make_a_beacon (k + 1) 3
+                        rw [seats_pair_shift k 3] at hh
+                        exact hh
+                      have hn2 : n + 1 + 1 = fibN (k + k + 5) := by
+                        rw [← hread]
+                        exact hw3
+                      have hpb : odometer (n + 1 + 1) = beacon (k + k + 3) := by
+                        rw [hn2]
+                        exact the_odometer_at_a_fibonacci_is_a_beacon (k + k + 3)
+                      have hb2 : oddBeacon (odometer (n + 1 + 1)) = true := by
+                        rw [hpb]
+                        exact the_even_flag_flies_on_its_beacon k
+                      have hm1 : M (n + 1) + 1 = G (n + 1) := by
+                        show (G (n + 1) - cond (oddBeacon (odometer (n + 1 + 1))) 1 0) + 1
+                            = G (n + 1)
+                        rw [hb2]
+                        exact sub_one_back (G (n + 1)) (the_shadow_stays_awake n)
+                      have hf : F (M n) = G (G n) + 1 := by
+                        show G (M n) + cond (evenBeacon (odometer (M n + 1))) 1 0
+                            = G (G n) + 1
+                        rw [hmn, hc]
+                        rfl
+                      rw [hf]
+                      calc M (n + 1) + (G (G n) + 1)
+                          = (M (n + 1) + 1) + G (G n) :=
+                            (Nat.succ_add (M (n + 1)) (G (G n))).symm
+                        _ = G (n + 1) + G (G n) := by rw [hm1]
+                        _ = n + 1 := the_loop_closes n
+      | false =>
+          cases hd : oddBeacon (odometer (n + 1 + 1)) with
+          | false =>
+              have hm1 : M (n + 1) = G (n + 1) := by
+                show G (n + 1) - cond (oddBeacon (odometer (n + 1 + 1))) 1 0 = G (n + 1)
+                rw [hd]
+                rfl
+              have hf : F (M n) = G (G n) := by
+                show G (M n) + cond (evenBeacon (odometer (M n + 1))) 1 0 = G (G n)
+                rw [hmn, hc]
+                rfl
+              rw [hm1, hf]
+              exact the_loop_closes n
+          | true =>
+              cases the_odd_flag_finds_its_beacon (odometer (n + 1 + 1)) hd with
+              | intro j hp3 =>
+                have hn2 : n + 1 + 1 = fibN (j + j + 3) := by
+                  have hr := the_odometer_reads_true (n + 1 + 1)
+                  rw [hp3, a_beacon_is_one_lamp (j + j + 1) 2,
+                      Nat.add_comm 2 (j + j + 1)] at hr
+                  exact hr.symm
+                have hn1' : n + 1 = worth 2 (true :: comb j) :=
+                  Nat.succ.inj (hn2.trans (a_lit_comb_reads_below_its_beacon j).symm)
+                cases j with
+                | zero =>
+                    have h1 : n + 1 = 1 := hn1'
+                    have h0 : n = 0 := Nat.succ.inj h1
+                    rw [h0] at hc
+                    exact nomatch hc
+                | succ m =>
+                    have hw3 : worth 3 (comb (m + 1)) + 2 = fibN (m + m + 5) := by
+                      have hh := a_comb_and_a_lamp_make_a_beacon (m + 1) 3
+                      rw [seats_pair_shift m 3] at hh
+                      exact hh
+                    have hn2' : n + 1 + 1 = fibN (m + m + 5) := by
+                      rw [seats_pair_shift m 3] at hn2
+                      exact hn2
+                    have hnw : n = worth 3 (comb (m + 1)) :=
+                      Nat.succ.inj (Nat.succ.inj (hn2'.trans hw3.symm))
+                    have hpn : odometer n = false :: comb (m + 1) := by
+                      have hsp : NoConsec (false :: comb (m + 1)) :=
+                        noconsec_false_cons (the_comb_spaces (m + 1))
+                      have hcp : capped (false :: comb (m + 1)) = true := by
+                        show capped (false :: false :: true :: comb m) = true
+                        rw [capped_step, capped_step]
+                        exact a_lit_comb_wears_the_cap m
+                      have hrd : false :: comb (m + 1)
+                          = odometer (worth 2 (false :: comb (m + 1))) :=
+                        every_spaced_page_is_a_reading (false :: comb (m + 1)) hsp hcp
+                      have hrd' : false :: comb (m + 1)
+                          = odometer (worth 3 (comb (m + 1))) := hrd
+                      rw [hnw]
+                      exact hrd'.symm
+                    have hg1 : G n + 1 = fibN (m + m + 4) := by
+                      show worth 1 (odometer n) + 1 = fibN (m + m + 4)
+                      rw [hpn]
+                      have h := a_comb_reads_below_its_beacon (m + 1)
+                      rw [seats_pair_shift m 2] at h
+                      exact h
+                    have hpb : odometer (G n + 1) = beacon (m + m + 2) := by
+                      rw [hg1]
+                      exact the_odometer_at_a_fibonacci_is_a_beacon (m + m + 2)
+                    rw [hpb] at hc
+                    have hflag : evenBeacon (beacon (m + m + 2)) = true :=
+                      the_even_flag_flies_on_its_beacon m
+                    exact nomatch (hflag.symm.trans hc)
+
+theorem the_grounded_bride_satisfies_the_marriage (n : Nat) :
+    F (n + 1) = (n + 1) - M (F n) :=
+  calc F (n + 1) = (F (n + 1) + M (F n)) - M (F n) :=
+        (add_then_sub (F (n + 1)) (M (F n))).symm
+    _ = (n + 1) - M (F n) := by rw [the_marriage_closes_for_the_bride n]
+
+theorem the_grounded_groom_satisfies_the_marriage (n : Nat) :
+    M (n + 1) = (n + 1) - F (M n) :=
+  calc M (n + 1) = (M (n + 1) + F (M n)) - F (M n) :=
+        (add_then_sub (M (n + 1)) (F (M n))).symm
+    _ = (n + 1) - F (M n) := by rw [the_marriage_closes_for_the_groom n]
+
+theorem every_seat_takes_a_side : ∀ (k : Nat), (∃ j, k = j + j) ∨ (∃ j, k = j + j + 1)
+  | 0 => Or.inl ⟨0, rfl⟩
+  | k + 1 =>
+      match every_seat_takes_a_side k with
+      | Or.inl ⟨j, hj⟩ => Or.inr ⟨j, congrArg Nat.succ hj⟩
+      | Or.inr ⟨j, hj⟩ => Or.inl ⟨j + 1, by rw [hj, seats_pair j]⟩
+
+theorem the_spouses_disagree_on_a_beacon (k n : Nat)
+    (hpage : odometer (n + 1) = beacon k) : M n + 1 = F n := by
+  cases every_seat_takes_a_side k with
+  | inl h =>
+      cases h with
+      | intro j hj =>
+        rw [hj] at hpage
+        show (G n - cond (oddBeacon (odometer (n + 1))) 1 0) + 1
+            = G n + cond (evenBeacon (odometer (n + 1))) 1 0
+        rw [hpage, the_odd_flag_skips_even_beacons j,
+            the_even_flag_flies_on_its_beacon j]
+        rfl
+  | inr h =>
+      cases h with
+      | intro j hj =>
+        rw [hj] at hpage
+        show (G n - cond (oddBeacon (odometer (n + 1))) 1 0) + 1
+            = G n + cond (evenBeacon (odometer (n + 1))) 1 0
+        rw [hpage, the_odd_flag_flies_on_its_beacon j,
+            the_even_flag_skips_odd_beacons j]
+        have hpos : 1 ≤ G n := by
+          cases n with
+          | zero => exact nomatch hpage
+          | succ m => exact the_shadow_stays_awake m
+        exact sub_one_back (G n) hpos
+
+theorem the_spouses_disagree_exactly_on_the_stairs (k n : Nat)
+    (h : n + 1 = fibN (k + 2)) : M n + 1 = F n :=
+  the_spouses_disagree_on_a_beacon k n
+    (by rw [h]; exact the_odometer_at_a_fibonacci_is_a_beacon k)
+
+theorem the_spouses_agree_between_beacons (n : Nat)
+    (he : evenBeacon (odometer (n + 1)) = false)
+    (ho : oddBeacon (odometer (n + 1)) = false) : F n = M n := by
+  show G n + cond (evenBeacon (odometer (n + 1))) 1 0
+      = G n - cond (oddBeacon (odometer (n + 1))) 1 0
+  rw [he, ho]
+  rfl
+
+theorem back_one_stays_behind : ∀ (x : Nat), x - 1 ≤ x
+  | 0 => Nat.le_refl 0
+  | x + 1 => Nat.le_add_right x 1
+
+theorem the_toll_never_gains : ∀ (a b : Nat), a - b ≤ a
+  | a, 0 => Nat.le_refl a
+  | a, b + 1 => Nat.le_trans (back_one_stays_behind (a - b)) (the_toll_never_gains a b)
+
+theorem a_flag_weighs_at_most_one (b : Bool) : cond b 1 0 ≤ 1 := by
+  cases b with
+  | true => exact Nat.le_refl 1
+  | false => exact Nat.zero_le 1
+
+theorem the_walker_leads_the_groom (n : Nat) : M n ≤ G n :=
+  the_toll_never_gains (G n) (cond (oddBeacon (odometer (n + 1))) 1 0)
+
+theorem the_bride_leads_the_walker (n : Nat) : G n ≤ F n :=
+  Nat.le_add_right (G n) (cond (evenBeacon (odometer (n + 1))) 1 0)
+
+theorem the_groom_follows_the_bride (n : Nat) : M n ≤ F n :=
+  Nat.le_trans (the_walker_leads_the_groom n) (the_bride_leads_the_walker n)
+
+theorem the_groom_never_outruns_the_count (n : Nat) : M n ≤ n :=
+  Nat.le_trans (the_walker_leads_the_groom n) (the_shadow_never_outruns_the_walker n)
+
+theorem the_bride_never_leaves_reach (n : Nat) : F n ≤ n + 1 :=
+  Nat.add_le_add (the_shadow_never_outruns_the_walker n)
+    (a_flag_weighs_at_most_one (evenBeacon (odometer (n + 1))))
+
+/-- info: 'Foam.Bridges.the_bride_wakes_lit' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_wakes_lit
+
+/-- info: 'Foam.Bridges.the_groom_wakes_dark' does not depend on any axioms -/
+#guard_msgs in #print axioms the_groom_wakes_dark
+
+/-- info: 'Foam.Bridges.f_hums_its_opening_bars' does not depend on any axioms -/
+#guard_msgs in #print axioms f_hums_its_opening_bars
+
+/-- info: 'Foam.Bridges.m_hums_its_opening_bars' does not depend on any axioms -/
+#guard_msgs in #print axioms m_hums_its_opening_bars
+
+/-- info: 'Foam.Bridges.the_bride_reads_the_shared_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_reads_the_shared_page
+
+/-- info: 'Foam.Bridges.the_groom_reads_the_shared_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_groom_reads_the_shared_page
+
+/-- info: 'Foam.Bridges.sub_one_back' does not depend on any axioms -/
+#guard_msgs in #print axioms sub_one_back
+
+/-- info: 'Foam.Bridges.the_marriage_closes_for_the_bride' does not depend on any axioms -/
+#guard_msgs in #print axioms the_marriage_closes_for_the_bride
+
+/-- info: 'Foam.Bridges.the_marriage_closes_for_the_groom' does not depend on any axioms -/
+#guard_msgs in #print axioms the_marriage_closes_for_the_groom
+
+/-- info: 'Foam.Bridges.the_grounded_bride_satisfies_the_marriage' does not depend on any axioms -/
+#guard_msgs in #print axioms the_grounded_bride_satisfies_the_marriage
+
+/-- info: 'Foam.Bridges.the_grounded_groom_satisfies_the_marriage' does not depend on any axioms -/
+#guard_msgs in #print axioms the_grounded_groom_satisfies_the_marriage
+
+/-- info: 'Foam.Bridges.every_seat_takes_a_side' does not depend on any axioms -/
+#guard_msgs in #print axioms every_seat_takes_a_side
+
+/-- info: 'Foam.Bridges.the_spouses_disagree_on_a_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spouses_disagree_on_a_beacon
+
+/-- info: 'Foam.Bridges.the_spouses_disagree_exactly_on_the_stairs' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spouses_disagree_exactly_on_the_stairs
+
+/-- info: 'Foam.Bridges.the_spouses_agree_between_beacons' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spouses_agree_between_beacons
+
+/-- info: 'Foam.Bridges.back_one_stays_behind' does not depend on any axioms -/
+#guard_msgs in #print axioms back_one_stays_behind
+
+/-- info: 'Foam.Bridges.the_toll_never_gains' does not depend on any axioms -/
+#guard_msgs in #print axioms the_toll_never_gains
+
+/-- info: 'Foam.Bridges.a_flag_weighs_at_most_one' does not depend on any axioms -/
+#guard_msgs in #print axioms a_flag_weighs_at_most_one
+
+/-- info: 'Foam.Bridges.the_walker_leads_the_groom' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walker_leads_the_groom
+
+/-- info: 'Foam.Bridges.the_bride_leads_the_walker' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_leads_the_walker
+
+/-- info: 'Foam.Bridges.the_groom_follows_the_bride' does not depend on any axioms -/
+#guard_msgs in #print axioms the_groom_follows_the_bride
+
+/-- info: 'Foam.Bridges.the_groom_never_outruns_the_count' does not depend on any axioms -/
+#guard_msgs in #print axioms the_groom_never_outruns_the_count
+
+/-- info: 'Foam.Bridges.the_bride_never_leaves_reach' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_never_leaves_reach
+
 end Foam.Bridges
