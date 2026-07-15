@@ -2932,4 +2932,355 @@ theorem the_wild_walk_keeps_its_feet_for_a_fibonacci_of_steps :
 /-- info: 'Foam.Bridges.the_wild_walk_keeps_its_feet_for_a_fibonacci_of_steps' does not depend on any axioms -/
 #guard_msgs in #print axioms the_wild_walk_keeps_its_feet_for_a_fibonacci_of_steps
 
+def tstep (qs : List Nat) : List Nat :=
+  (peek qs (peek qs 0) + peek qs (peek qs 1 + 1)) :: qs
+
+def ttrace : Nat → List Nat
+  | 0 => []
+  | 1 => [1]
+  | 2 => [1, 1]
+  | n + 3 => tstep (ttrace (n + 2))
+
+def T (n : Nat) : Nat := peek (ttrace n) 0
+
+def slack (n : Nat) : Nat := n - T n
+
+theorem t_hums_its_opening_bars :
+    (T 1, T 2, T 3, T 4, T 5, T 6, T 7, T 8, T 9, T 10, T 11, T 12)
+      = (1, 1, 2, 2, 2, 3, 4, 4, 4, 4, 5, 6) := rfl
+
+theorem the_tame_trace_remembers : ∀ (n i : Nat), peek (ttrace n) i = T (n - i)
+  | 0, i => by
+      show (1 : Nat) = T (0 - i)
+      rw [nothing_from_nothing i]
+      rfl
+  | 1, 0 => rfl
+  | 1, i + 1 => by
+      show (1 : Nat) = T (1 - (i + 1))
+      rw [show 1 - (i + 1) = 0 - i from sub_both_tick 0 i, nothing_from_nothing i]
+      rfl
+  | 2, 0 => rfl
+  | 2, 1 => rfl
+  | 2, i + 2 => by
+      show (1 : Nat) = T (2 - (i + 2))
+      rw [show 2 - (i + 2) = 0 - i from
+            (sub_both_tick 1 (i + 1)).trans (sub_both_tick 0 i),
+          nothing_from_nothing i]
+      rfl
+  | n + 3, 0 => rfl
+  | n + 3, i + 1 =>
+      (the_tame_trace_remembers (n + 2) i).trans
+        (congrArg T (sub_both_tick (n + 2) i)).symm
+
+theorem the_tame_trace_glows : ∀ (n i : Nat), 1 ≤ peek (ttrace n) i
+  | 0, _ => Nat.le_refl 1
+  | 1, 0 => Nat.le_refl 1
+  | 1, _ + 1 => Nat.le_refl 1
+  | 2, 0 => Nat.le_refl 1
+  | 2, 1 => Nat.le_refl 1
+  | 2, _ + 2 => Nat.le_refl 1
+  | n + 3, i + 1 => the_tame_trace_glows (n + 2) i
+  | n + 3, 0 =>
+      Nat.le_trans (the_tame_trace_glows (n + 2) (peek (ttrace (n + 2)) 0))
+        (Nat.le_add_right (peek (ttrace (n + 2)) (peek (ttrace (n + 2)) 0))
+          (peek (ttrace (n + 2)) (peek (ttrace (n + 2)) 1 + 1)))
+
+theorem the_tame_walk_glows (n : Nat) : 1 ≤ T n := the_tame_trace_glows n 0
+
+theorem the_tame_loop_closes_over_the_net (n : Nat) :
+    T (n + 3) = T ((n + 2) - T (n + 2)) + T ((n + 1) - T (n + 1)) := by
+  have hb : peek (ttrace (n + 2)) 1 = T (n + 1) := the_tame_trace_remembers (n + 2) 1
+  show peek (ttrace (n + 2)) (T (n + 2))
+      + peek (ttrace (n + 2)) (peek (ttrace (n + 2)) 1 + 1)
+      = T ((n + 2) - T (n + 2)) + T ((n + 1) - T (n + 1))
+  rw [hb, the_tame_trace_remembers (n + 2) (T (n + 2)),
+      the_tame_trace_remembers (n + 2) (T (n + 1) + 1),
+      show (n + 2) - (T (n + 1) + 1) = (n + 1) - T (n + 1) from
+        sub_both_tick (n + 1) (T (n + 1))]
+
+theorem the_tame_walk_touches_the_net_once : T 3 = T 1 + T 0 := rfl
+
+/-- info: 'Foam.Bridges.t_hums_its_opening_bars' does not depend on any axioms -/
+#guard_msgs in #print axioms t_hums_its_opening_bars
+
+/-- info: 'Foam.Bridges.the_tame_trace_remembers' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_trace_remembers
+
+/-- info: 'Foam.Bridges.the_tame_trace_glows' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_trace_glows
+
+/-- info: 'Foam.Bridges.the_tame_walk_glows' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_glows
+
+/-- info: 'Foam.Bridges.the_tame_loop_closes_over_the_net' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_loop_closes_over_the_net
+
+/-- info: 'Foam.Bridges.the_tame_walk_touches_the_net_once' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_touches_the_net_once
+
+theorem under_the_wire : ∀ (k m : Nat), k ≤ m + 1 → k ≤ m ∨ k = m + 1
+  | 0, m, _ => Or.inl (Nat.zero_le m)
+  | k + 1, 0, h =>
+      match k, Nat.le_of_succ_le_succ h with
+      | 0, _ => Or.inr rfl
+      | k + 1, h' => absurd h' (Nat.not_succ_le_zero k)
+  | k + 1, m + 1, h =>
+      match under_the_wire k m (Nat.le_of_succ_le_succ h) with
+      | Or.inl h' => Or.inl (Nat.succ_le_succ h')
+      | Or.inr e => Or.inr (congrArg (· + 1) e)
+
+theorem halves_agree : ∀ (a b : Nat), a + a = b + b → a = b
+  | 0, 0, _ => rfl
+  | 0, _ + 1, h => nomatch h
+  | _ + 1, 0, h => nomatch h
+  | a + 1, b + 1, h =>
+      congrArg (· + 1)
+        (halves_agree a b
+          (Nat.succ.inj
+            ((Nat.succ_add a a).symm.trans
+              ((Nat.succ.inj h).trans (Nat.succ_add b b)))))
+
+theorem carry_the_one (x y : Nat) : (x + y) + x = (x + x) + y := by
+  rw [Nat.add_assoc x y x, Nat.add_comm y x, ← Nat.add_assoc x x y]
+
+theorem double_the_step (x : Nat) : (x + 1) + (x + 1) = (x + x) + 2 :=
+  congrArg (· + 1) (carry_the_one x 1)
+
+theorem pair_up (a b : Nat) : (a + b) + (a + b) = (a + a) + (b + b) := by
+  rw [Nat.add_assoc a b (a + b), ← Nat.add_assoc b a b, Nat.add_comm b a,
+      Nat.add_assoc a b b, ← Nat.add_assoc a a (b + b)]
+
+theorem a_step_widens_the_gap : ∀ (a b : Nat), b ≤ a → (a + 1) - b = (a - b) + 1
+  | _, 0, _ => rfl
+  | 0, b + 1, h => absurd h (Nat.not_succ_le_zero b)
+  | a + 1, b + 1, h => by
+      rw [sub_both_tick (a + 1) b, sub_both_tick a b]
+      exact a_step_widens_the_gap a b (Nat.le_of_succ_le_succ h)
+
+theorem the_low_read_stays_on_the_page : ∀ (a b : Nat), 1 ≤ b →
+    ((a + 1) - b) + 1 ≤ a + 1
+  | a, b + 1, _ => by
+      rw [sub_both_tick a b]
+      exact Nat.succ_le_succ (the_toll_never_gains a b)
+  | _, 0, h => absurd h (Nat.not_succ_le_zero 0)
+
+theorem slack_holds_on_a_step (n : Nat) (h : T (n + 1) = T n + 1) :
+    slack (n + 1) = slack n := by
+  show (n + 1) - T (n + 1) = n - T n
+  rw [h]
+  exact sub_both_tick n (T n)
+
+theorem slack_slides_on_a_flat (n : Nat) (h : T (n + 1) = T n) (hle : T n ≤ n) :
+    slack (n + 1) = slack n + 1 := by
+  show (n + 1) - T (n + 1) = (n - T n) + 1
+  rw [h]
+  exact a_step_widens_the_gap n (T n) hle
+
+/-- info: 'Foam.Bridges.under_the_wire' does not depend on any axioms -/
+#guard_msgs in #print axioms under_the_wire
+
+/-- info: 'Foam.Bridges.halves_agree' does not depend on any axioms -/
+#guard_msgs in #print axioms halves_agree
+
+/-- info: 'Foam.Bridges.carry_the_one' does not depend on any axioms -/
+#guard_msgs in #print axioms carry_the_one
+
+/-- info: 'Foam.Bridges.double_the_step' does not depend on any axioms -/
+#guard_msgs in #print axioms double_the_step
+
+/-- info: 'Foam.Bridges.pair_up' does not depend on any axioms -/
+#guard_msgs in #print axioms pair_up
+
+/-- info: 'Foam.Bridges.a_step_widens_the_gap' does not depend on any axioms -/
+#guard_msgs in #print axioms a_step_widens_the_gap
+
+/-- info: 'Foam.Bridges.the_low_read_stays_on_the_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_low_read_stays_on_the_page
+
+/-- info: 'Foam.Bridges.slack_holds_on_a_step' does not depend on any axioms -/
+#guard_msgs in #print axioms slack_holds_on_a_step
+
+/-- info: 'Foam.Bridges.slack_slides_on_a_flat' does not depend on any axioms -/
+#guard_msgs in #print axioms slack_slides_on_a_flat
+
+def coasting (n : Nat) : Prop :=
+  T (n + 3) = T (n + 2)
+    ∧ T (slack (n + 2)) + T (slack (n + 2)) = T (n + 2)
+    ∧ T (slack (n + 3)) + T (slack (n + 3)) = T (n + 3)
+
+def gathering (n : Nat) : Prop :=
+  T (n + 3) = T (n + 2)
+    ∧ T (slack (n + 2)) + T (slack (n + 2)) = T (n + 2)
+    ∧ T (slack (n + 3)) + T (slack (n + 3)) = T (n + 3) + 2
+
+def springing (n : Nat) : Prop :=
+  T (n + 3) = T (n + 2) + 1
+    ∧ T (slack (n + 2)) + T (slack (n + 2)) = T (n + 2) + 2
+    ∧ T (slack (n + 3)) + T (slack (n + 3)) = T (n + 3) + 1
+
+def landing (n : Nat) : Prop :=
+  T (n + 3) = T (n + 2) + 1
+    ∧ T (slack (n + 2)) + T (slack (n + 2)) = T (n + 2) + 1
+    ∧ T (slack (n + 3)) + T (slack (n + 3)) = T (n + 3)
+
+def gait (n : Nat) : Prop := coasting n ∨ gathering n ∨ springing n ∨ landing n
+
+def paced (n : Nat) : Prop :=
+  (∀ k, k + 1 ≤ n + 3 → T (k + 1) = T k ∨ T (k + 1) = T k + 1)
+    ∧ T (n + 3) ≤ n + 3
+    ∧ gait n
+
+theorem paced_step (n : Nat) : paced n → paced (n + 1) := by
+  intro h
+  have steps := h.1
+  have sure := h.2.1
+  have loop : T ((n + 3) + 1) = T (slack (n + 3)) + T (slack (n + 2)) :=
+    the_tame_loop_closes_over_the_net (n + 1)
+  have glow3 : 1 ≤ T (n + 3) := the_tame_walk_glows (n + 3)
+  have finish : (T ((n + 3) + 1) = T (n + 3) ∨ T ((n + 3) + 1) = T (n + 3) + 1) →
+      gait (n + 1) → paced (n + 1) := by
+    intro hstep st'
+    refine ⟨?_, ?_, st'⟩
+    · intro k hk
+      match under_the_wire (k + 1) (n + 3) hk with
+      | Or.inl h' => exact steps k h'
+      | Or.inr e =>
+          have ek : k = n + 3 := Nat.succ.inj e
+          rw [ek]
+          exact hstep
+    · match hstep with
+      | Or.inl e =>
+          show T ((n + 3) + 1) ≤ (n + 3) + 1
+          rw [e]
+          exact Nat.le_trans sure (Nat.le_succ (n + 3))
+      | Or.inr e =>
+          show T ((n + 3) + 1) ≤ (n + 3) + 1
+          rw [e]
+          exact Nat.succ_le_succ sure
+  have flat_case : T ((n + 3) + 1) = T (n + 3) →
+      T (slack (n + 3)) + T (slack (n + 3)) = T (n + 3) → paced (n + 1) := by
+    intro hflat hd3
+    have hslide : slack ((n + 3) + 1) = slack (n + 3) + 1 :=
+      slack_slides_on_a_flat (n + 3) hflat sure
+    have hread := steps (slack (n + 3))
+      (the_low_read_stays_on_the_page (n + 2) (T (n + 3)) glow3)
+    match hread with
+    | Or.inl hb =>
+        exact finish (Or.inl hflat)
+          (Or.inl ⟨hflat, hd3, by
+            show T (slack ((n + 3) + 1)) + T (slack ((n + 3) + 1)) = T ((n + 3) + 1)
+            rw [hslide, hb, hd3, hflat]⟩)
+    | Or.inr hb =>
+        exact finish (Or.inl hflat)
+          (Or.inr (Or.inl ⟨hflat, hd3, by
+            show T (slack ((n + 3) + 1)) + T (slack ((n + 3) + 1)) = T ((n + 3) + 1) + 2
+            rw [hslide, hb, double_the_step, hd3, hflat]⟩))
+  match h.2.2 with
+  | Or.inl hA =>
+      have hU : T (n + 3) = T (n + 2) := hA.1
+      have hd2 : T (slack (n + 2)) + T (slack (n + 2)) = T (n + 2) := hA.2.1
+      have hd3 : T (slack (n + 3)) + T (slack (n + 3)) = T (n + 3) := hA.2.2
+      exact flat_case (halves_agree _ _ (by rw [loop, pair_up, hd3, hd2, hU])) hd3
+  | Or.inr (Or.inl hB) =>
+      have hU : T (n + 3) = T (n + 2) := hB.1
+      have hd2 : T (slack (n + 2)) + T (slack (n + 2)) = T (n + 2) := hB.2.1
+      have hd3 : T (slack (n + 3)) + T (slack (n + 3)) = T (n + 3) + 2 := hB.2.2
+      have hup : T ((n + 3) + 1) = T (n + 3) + 1 :=
+        halves_agree _ _ (by
+          rw [loop, pair_up, hd3, hd2, ← hU, carry_the_one (T (n + 3)) 2,
+              double_the_step])
+      have hhold : slack ((n + 3) + 1) = slack (n + 3) :=
+        slack_holds_on_a_step (n + 3) hup
+      exact finish (Or.inr hup)
+        (Or.inr (Or.inr (Or.inl ⟨hup, hd3, by
+          show T (slack ((n + 3) + 1)) + T (slack ((n + 3) + 1)) = T ((n + 3) + 1) + 1
+          rw [hhold, hd3, hup]⟩)))
+  | Or.inr (Or.inr (Or.inl hC)) =>
+      have hU : T (n + 3) = T (n + 2) + 1 := hC.1
+      have hd2 : T (slack (n + 2)) + T (slack (n + 2)) = T (n + 2) + 2 := hC.2.1
+      have hd3 : T (slack (n + 3)) + T (slack (n + 3)) = T (n + 3) + 1 := hC.2.2
+      have hup : T ((n + 3) + 1) = T (n + 3) + 1 :=
+        halves_agree _ _ (by rw [loop, pair_up, hd3, hd2, hU])
+      have hhold : slack ((n + 3) + 1) = slack (n + 3) :=
+        slack_holds_on_a_step (n + 3) hup
+      exact finish (Or.inr hup)
+        (Or.inr (Or.inr (Or.inr ⟨hup, hd3, by
+          show T (slack ((n + 3) + 1)) + T (slack ((n + 3) + 1)) = T ((n + 3) + 1)
+          rw [hhold, hd3, hup]⟩)))
+  | Or.inr (Or.inr (Or.inr hD)) =>
+      have hU : T (n + 3) = T (n + 2) + 1 := hD.1
+      have hd2 : T (slack (n + 2)) + T (slack (n + 2)) = T (n + 2) + 1 := hD.2.1
+      have hd3 : T (slack (n + 3)) + T (slack (n + 3)) = T (n + 3) := hD.2.2
+      exact flat_case (halves_agree _ _ (by rw [loop, pair_up, hd3, hd2, ← hU])) hd3
+
+theorem the_tame_walk_keeps_its_gait : ∀ (n : Nat), paced n
+  | 0 =>
+      ⟨fun k hk =>
+        match k, hk with
+        | 0, _ => Or.inl rfl
+        | 1, _ => Or.inl rfl
+        | 2, _ => Or.inr rfl
+        | k + 3, hk =>
+            absurd
+              (Nat.le_of_succ_le_succ
+                (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ hk)))
+              (Nat.not_succ_le_zero k),
+       Nat.le_succ 2,
+       Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl⟩))⟩
+  | n + 1 => paced_step n (the_tame_walk_keeps_its_gait n)
+
+/-- info: 'Foam.Bridges.paced_step' does not depend on any axioms -/
+#guard_msgs in #print axioms paced_step
+
+/-- info: 'Foam.Bridges.the_tame_walk_keeps_its_gait' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_keeps_its_gait
+
+theorem the_tame_walk_never_steps_back (n : Nat) : T n ≤ T (n + 1) := by
+  match (the_tame_walk_keeps_its_gait n).1 n (Nat.le_add_right (n + 1) 2) with
+  | Or.inl e => exact Nat.le_of_eq e.symm
+  | Or.inr e =>
+      rw [e]
+      exact Nat.le_succ (T n)
+
+theorem the_tame_walk_never_skips (n : Nat) : T (n + 1) ≤ T n + 1 := by
+  match (the_tame_walk_keeps_its_gait n).1 n (Nat.le_add_right (n + 1) 2) with
+  | Or.inl e =>
+      rw [e]
+      exact Nat.le_succ (T n)
+  | Or.inr e => exact Nat.le_of_eq e
+
+theorem the_tame_cousin_is_surefooted : ∀ (n : Nat), T (n + 1) ≤ n + 1
+  | 0 => Nat.le_refl 1
+  | 1 => Nat.le_succ 1
+  | 2 => Nat.le_succ 2
+  | n + 3 => (the_tame_walk_keeps_its_gait (n + 1)).2.1
+
+theorem the_tame_walk_stays_a_step_behind : ∀ (n : Nat), T (n + 2) ≤ n + 1
+  | 0 => Nat.le_refl 1
+  | n + 1 =>
+      Nat.le_trans (the_tame_walk_never_skips (n + 2))
+        (Nat.succ_le_succ (the_tame_walk_stays_a_step_behind n))
+
+theorem the_tame_walk_needs_no_net (n : Nat) :
+    1 ≤ (n + 2) - T (n + 2) ∧ (n + 2) - T (n + 2) ≤ n + 1 :=
+  ⟨gap_glows (n + 2) (T (n + 2))
+      (Nat.succ_le_succ (the_tame_walk_stays_a_step_behind n)),
+   Nat.le_of_succ_le_succ
+      (the_low_read_stays_on_the_page (n + 1) (T (n + 2)) (the_tame_walk_glows (n + 2)))⟩
+
+/-- info: 'Foam.Bridges.the_tame_walk_never_steps_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_never_steps_back
+
+/-- info: 'Foam.Bridges.the_tame_walk_never_skips' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_never_skips
+
+/-- info: 'Foam.Bridges.the_tame_cousin_is_surefooted' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_cousin_is_surefooted
+
+/-- info: 'Foam.Bridges.the_tame_walk_stays_a_step_behind' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_stays_a_step_behind
+
+/-- info: 'Foam.Bridges.the_tame_walk_needs_no_net' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_needs_no_net
+
 end Foam.Bridges
