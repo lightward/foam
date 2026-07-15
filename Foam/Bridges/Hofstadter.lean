@@ -1407,4 +1407,435 @@ theorem h_hums_the_herd_stairs :
 /-- info: 'Foam.Bridges.h_hums_the_herd_stairs' does not depend on any axioms -/
 #guard_msgs in #print axioms h_hums_the_herd_stairs
 
+theorem a_capped_page_grazes : ∀ (ds : List Bool) (i : Nat), capped ds = true → ds ≠ [] →
+    1 ≤ graze (i + 1) ds
+  | [], _, _, hne => absurd rfl hne
+  | [true], i, _, _ => herdN_glows i
+  | [false], _, hc, _ => nomatch hc
+  | true :: d :: rest, i, _, _ =>
+      Nat.le_trans (herdN_glows i)
+        (Nat.le_add_right (herdN (i + 1)) (graze (i + 2) (d :: rest)))
+  | false :: d :: rest, i, hc, _ =>
+      a_capped_page_grazes (d :: rest) (i + 1) (capped_tail hc) (fun heq => nomatch heq)
+
+theorem hcarry_never_blanks : ∀ (ds : List Bool), hcarry ds ≠ []
+  | [] => fun h => nomatch h
+  | [_] => fun h => nomatch h
+  | [_, _] => fun h => nomatch h
+  | _ :: _ :: false :: _ => fun h => nomatch h
+  | _ :: _ :: true :: _ => fun h => nomatch h
+
+theorem hcarry_keeps_the_cap : ∀ (ds : List Bool), capped ds = true →
+    capped (hcarry ds) = true
+  | [], _ => rfl
+  | [_], _ => rfl
+  | [_, _], _ => rfl
+  | d :: e :: false :: rest, hc => by
+      show capped (true :: false :: false :: rest) = true
+      rw [capped_step, capped_step] at hc
+      rw [capped_step, capped_step]
+      exact hc
+  | d :: e :: true :: rest, hc => by
+      show capped (false :: false :: false :: hcarry rest) = true
+      have hrest : capped rest = true := by
+        rw [capped_step, capped_step, capped_true_cons] at hc
+        exact hc
+      have hcap := hcarry_keeps_the_cap rest hrest
+      cases hcr : hcarry rest with
+      | nil => exact absurd hcr (hcarry_never_blanks rest)
+      | cons c cs =>
+          rw [hcr] at hcap
+          rw [capped_step, capped_step, capped_step]
+          exact hcap
+
+theorem hclick_keeps_the_cap : ∀ (ds : List Bool), capped ds = true →
+    capped (hclick ds) = true
+  | [], _ => rfl
+  | [false], _ => rfl
+  | false :: false :: rest, hc => hcarry_keeps_the_cap (false :: false :: rest) hc
+  | false :: true :: rest, hc => by
+      show capped (false :: false :: hcarry rest) = true
+      have hrest : capped rest = true := by
+        rw [capped_step, capped_true_cons] at hc
+        exact hc
+      have hcap := hcarry_keeps_the_cap rest hrest
+      cases hcr : hcarry rest with
+      | nil => exact absurd hcr (hcarry_never_blanks rest)
+      | cons c cs =>
+          rw [hcr] at hcap
+          rw [capped_step, capped_step]
+          exact hcap
+  | true :: rest, hc => by
+      show capped (false :: hcarry rest) = true
+      have hrest : capped rest = true := by
+        rw [capped_true_cons] at hc
+        exact hc
+      have hcap := hcarry_keeps_the_cap rest hrest
+      cases hcr : hcarry rest with
+      | nil => exact absurd hcr (hcarry_never_blanks rest)
+      | cons c cs =>
+          rw [hcr] at hcap
+          rw [capped_step]
+          exact hcap
+
+theorem the_hodometer_wastes_no_seats : ∀ (n : Nat), capped (hodometer n) = true
+  | 0 => rfl
+  | n + 1 => hclick_keeps_the_cap (hodometer n) (the_hodometer_wastes_no_seats n)
+
+def hripple : List Bool → List Bool
+  | [] => [false, false, true]
+  | [false] => [false, false, true, false]
+  | true :: tail => true :: false :: false :: true :: tail
+  | false :: true :: tail => false :: true :: false :: false :: true :: tail
+  | false :: false :: tail => false :: false :: true :: false :: false :: tail
+
+def hunclick : List Bool → List Bool
+  | [] => []
+  | [true] => []
+  | [false] => []
+  | true :: d :: ds => false :: d :: ds
+  | [false, true] => [true]
+  | false :: true :: d :: ds => true :: false :: d :: ds
+  | [false, false] => []
+  | [false, false, true] => [false, true]
+  | false :: false :: true :: d :: ds => false :: true :: false :: d :: ds
+  | false :: false :: false :: ds => hripple (hunclick ds)
+
+def toll : Nat → List Bool → Nat
+  | i, true :: _ => herdN (i + 1)
+  | i, false :: true :: _ => herdN (i + 2)
+  | i, [] => herdN (i + 3)
+  | i, [false] => herdN (i + 3)
+  | i, false :: false :: _ => herdN (i + 3)
+
+theorem hunclick_spaces : ∀ (ds : List Bool), Sparse ds → Sparse (hunclick ds)
+  | [], _ => True.intro
+  | [true], _ => True.intro
+  | [false], _ => True.intro
+  | true :: true :: _, h => h.elim
+  | [true, false], _ => True.intro
+  | true :: false :: true :: _, h => h.elim
+  | true :: false :: false :: rest, h => h
+  | [false, true], _ => True.intro
+  | false :: true :: true :: _, h => h.elim
+  | [false, true, false], _ => True.intro
+  | false :: true :: false :: true :: _, h => h.elim
+  | false :: true :: false :: false :: rest, h => h
+  | [false, false], _ => True.intro
+  | [false, false, true], _ => True.intro
+  | false :: false :: true :: true :: _, h => h.elim
+  | [false, false, true, false], _ => True.intro
+  | false :: false :: true :: false :: true :: _, h => h.elim
+  | false :: false :: true :: false :: false :: rest, h => h
+  | false :: false :: false :: rest, h => by
+      have ih := hunclick_spaces rest (sparse_tail (sparse_tail (sparse_tail h)))
+      show Sparse (hripple (hunclick rest))
+      cases hu : hunclick rest with
+      | nil => exact True.intro
+      | cons b tail =>
+          rw [hu] at ih
+          cases b with
+          | true => exact ih
+          | false => cases tail with
+              | nil => exact True.intro
+              | cons c ts => cases c with
+                  | true => exact ih
+                  | false => exact ih
+
+theorem hunclick_keeps_the_cap : ∀ (ds : List Bool), capped ds = true →
+    capped (hunclick ds) = true
+  | [], _ => rfl
+  | [true], _ => rfl
+  | [false], hc => nomatch hc
+  | true :: d :: rest, hc => by
+      show capped (false :: d :: rest) = true
+      rw [capped_step] at hc ⊢
+      exact hc
+  | [false, true], _ => rfl
+  | false :: true :: d :: rest, hc => by
+      show capped (true :: false :: d :: rest) = true
+      rw [capped_step, capped_step] at hc ⊢
+      exact hc
+  | [false, false], hc => nomatch hc
+  | [false, false, true], _ => rfl
+  | false :: false :: true :: d :: rest, hc => by
+      show capped (false :: true :: false :: d :: rest) = true
+      rw [capped_step, capped_step, capped_step] at hc ⊢
+      exact hc
+  | false :: false :: false :: rest, hc => by
+      have ih := hunclick_keeps_the_cap rest (capped_tail (capped_tail (capped_tail hc)))
+      show capped (hripple (hunclick rest)) = true
+      cases hu : hunclick rest with
+      | nil => rfl
+      | cons b tail =>
+          rw [hu] at ih
+          cases b with
+          | true =>
+              show capped (true :: false :: false :: true :: tail) = true
+              rw [capped_step, capped_step, capped_step]
+              exact ih
+          | false => cases tail with
+              | nil => exact ih
+              | cons c ts => cases c with
+                  | true =>
+                      show capped (false :: true :: false :: false :: true :: ts) = true
+                      rw [capped_step, capped_step, capped_step, capped_step]
+                      exact ih
+                  | false =>
+                      show capped (false :: false :: true :: false :: false :: ts) = true
+                      rw [capped_step, capped_step, capped_step]
+                      exact ih
+
+theorem hunclick_pays : ∀ (ds : List Bool) (i : Nat), Sparse ds → capped ds = true →
+    ds ≠ [] →
+    graze (i + 3) (hunclick ds) + toll i (hunclick ds) = graze (i + 3) ds
+  | [], _, _, _, hne => absurd rfl hne
+  | [true], i, _, _, _ => Nat.zero_add (herdN (i + 3))
+  | [false], _, _, hc, _ => nomatch hc
+  | true :: true :: _, _, hs, _, _ => hs.elim
+  | true :: false :: rest, i, _, _, _ =>
+      Nat.add_comm (graze (i + 5) rest) (herdN (i + 3))
+  | [false, true], i, _, _, _ => (herdN_gnomon (i + 1)).symm
+  | false :: true :: d :: ds, i, _, _, _ => by
+      show (herdN (i + 3) + graze (i + 5) (d :: ds)) + herdN (i + 1)
+        = herdN (i + 4) + graze (i + 5) (d :: ds)
+      have hg : herdN (i + 4) = herdN (i + 3) + herdN (i + 1) := herdN_gnomon (i + 1)
+      rw [add_swap_right, ← hg]
+  | [false, false], _, _, hc, _ => nomatch hc
+  | [false, false, true], i, _, _, _ => (herdN_gnomon (i + 2)).symm
+  | false :: false :: true :: d :: ds, i, _, _, _ => by
+      show (herdN (i + 4) + graze (i + 6) (d :: ds)) + herdN (i + 2)
+        = herdN (i + 5) + graze (i + 6) (d :: ds)
+      have hg : herdN (i + 5) = herdN (i + 4) + herdN (i + 2) := herdN_gnomon (i + 2)
+      rw [add_swap_right, ← hg]
+  | false :: false :: false :: rest, i, hs, hc, _ => by
+      have ih := hunclick_pays rest (i + 3) (sparse_tail (sparse_tail (sparse_tail hs)))
+        (capped_tail (capped_tail (capped_tail hc)))
+        (capped_tail_ne_nil (capped_tail (capped_tail hc)))
+      show graze (i + 3) (hripple (hunclick rest)) + toll i (hripple (hunclick rest))
+        = graze (i + 6) rest
+      cases hu : hunclick rest with
+      | nil =>
+          rw [hu] at ih
+          have ih' : herdN (i + 6) = graze (i + 6) rest :=
+            (Nat.zero_add (herdN (i + 6))).symm.trans ih
+          show herdN (i + 5) + herdN (i + 3) = graze (i + 6) rest
+          rw [← ih']
+          exact (herdN_gnomon (i + 3)).symm
+      | cons b tail =>
+          rw [hu] at ih
+          cases b with
+          | true =>
+              show (herdN (i + 3) + (herdN (i + 6) + graze (i + 7) tail)) + herdN (i + 1)
+                = graze (i + 6) rest
+              have hg : herdN (i + 4) = herdN (i + 3) + herdN (i + 1) := herdN_gnomon (i + 1)
+              rw [add_swap_right, ← hg,
+                  Nat.add_comm (herdN (i + 4)) (herdN (i + 6) + graze (i + 7) tail)]
+              exact ih
+          | false => cases tail with
+              | nil =>
+                  have ih' : herdN (i + 6) = graze (i + 6) rest :=
+                    (Nat.zero_add (herdN (i + 6))).symm.trans ih
+                  show herdN (i + 5) + herdN (i + 3) = graze (i + 6) rest
+                  rw [← ih']
+                  exact (herdN_gnomon (i + 3)).symm
+              | cons c ts => cases c with
+                  | true =>
+                      show (herdN (i + 4) + (herdN (i + 7) + graze (i + 8) ts)) + herdN (i + 2)
+                        = graze (i + 6) rest
+                      have hg : herdN (i + 5) = herdN (i + 4) + herdN (i + 2) :=
+                        herdN_gnomon (i + 2)
+                      rw [add_swap_right, ← hg,
+                          Nat.add_comm (herdN (i + 5)) (herdN (i + 7) + graze (i + 8) ts)]
+                      exact ih
+                  | false =>
+                      show (herdN (i + 5) + graze (i + 8) ts) + herdN (i + 3)
+                        = graze (i + 6) rest
+                      have hg : herdN (i + 6) = herdN (i + 5) + herdN (i + 3) :=
+                        herdN_gnomon (i + 3)
+                      rw [add_swap_right, ← hg,
+                          Nat.add_comm (herdN (i + 6)) (graze (i + 8) ts)]
+                      exact ih
+
+theorem hunclick_counts (ds : List Bool) (hs : Sparse ds) (hc : capped ds = true)
+    (hne : ds ≠ []) : graze 3 (hunclick ds) + 1 = graze 3 ds := by
+  have hp := hunclick_pays ds 0 hs hc hne
+  cases hu : hunclick ds with
+  | nil => rw [hu] at hp; exact hp
+  | cons b tail =>
+      rw [hu] at hp
+      cases b with
+      | true => exact hp
+      | false => cases tail with
+          | nil => exact hp
+          | cons c ts => cases c with
+              | true => exact hp
+              | false => exact hp
+
+theorem the_hclick_comes_home : ∀ (ds : List Bool), Sparse ds → capped ds = true →
+    ds ≠ [] → hclick (hunclick ds) = ds
+  | [], _, _, hne => absurd rfl hne
+  | [true], _, _, _ => rfl
+  | [false], _, hc, _ => nomatch hc
+  | true :: true :: _, h, _, _ => h.elim
+  | [true, false], _, hc, _ => nomatch hc
+  | true :: false :: true :: _, h, _, _ => h.elim
+  | true :: false :: false :: rest, _, _, _ => rfl
+  | [false, true], _, _, _ => rfl
+  | false :: true :: true :: _, h, _, _ => h.elim
+  | [false, true, false], _, hc, _ => nomatch hc
+  | false :: true :: false :: true :: _, h, _, _ => h.elim
+  | false :: true :: false :: false :: rest, _, _, _ => rfl
+  | [false, false], _, hc, _ => nomatch hc
+  | [false, false, true], _, _, _ => rfl
+  | false :: false :: true :: true :: _, h, _, _ => h.elim
+  | [false, false, true, false], _, hc, _ => nomatch hc
+  | false :: false :: true :: false :: true :: _, h, _, _ => h.elim
+  | false :: false :: true :: false :: false :: rest, _, _, _ => rfl
+  | false :: false :: false :: rest, h, hc, _ => by
+      have ih := the_hclick_comes_home rest (sparse_tail (sparse_tail (sparse_tail h)))
+        (capped_tail (capped_tail (capped_tail hc)))
+        (capped_tail_ne_nil (capped_tail (capped_tail hc)))
+      show hclick (hripple (hunclick rest)) = false :: false :: false :: rest
+      cases hu : hunclick rest with
+      | nil =>
+          rw [hu] at ih
+          exact congrArg (fun t => false :: false :: false :: t) ih
+      | cons b tail =>
+          rw [hu] at ih
+          cases b with
+          | true => exact congrArg (fun t => false :: false :: false :: t) ih
+          | false => cases tail with
+              | nil => exact congrArg (fun t => false :: false :: false :: t) ih
+              | cons c ts => cases c with
+                  | true => exact congrArg (fun t => false :: false :: false :: t) ih
+                  | false => exact congrArg (fun t => false :: false :: false :: t) ih
+
+theorem the_hodometer_is_the_only_sparse_page : ∀ (n : Nat) (ds : List Bool),
+    Sparse ds → capped ds = true → graze 3 ds = n → ds = hodometer n
+  | 0, [], _, _, _ => rfl
+  | 0, d :: rest, _, hc, hw => by
+      have hg : 1 ≤ graze 3 (d :: rest) :=
+        a_capped_page_grazes (d :: rest) 2 hc (fun heq => nomatch heq)
+      rw [hw] at hg
+      exact absurd hg (Nat.not_succ_le_zero 0)
+  | n + 1, ds, hs, hc, hw => by
+      have hne : ds ≠ [] := by
+        intro heq
+        rw [heq] at hw
+        exact nomatch hw
+      have hstep : graze 3 (hunclick ds) + 1 = n + 1 := by
+        rw [← hw]
+        exact hunclick_counts ds hs hc hne
+      have hind := the_hodometer_is_the_only_sparse_page n (hunclick ds)
+        (hunclick_spaces ds hs) (hunclick_keeps_the_cap ds hc) (Nat.succ.inj hstep)
+      have hcome := the_hclick_comes_home ds hs hc hne
+      rw [← hcome, hind]
+      rfl
+
+theorem every_sparse_page_is_a_reading (ds : List Bool) (hs : Sparse ds)
+    (hc : capped ds = true) : ds = hodometer (graze 3 ds) :=
+  the_hodometer_is_the_only_sparse_page (graze 3 ds) ds hs hc rfl
+
+theorem two_sparse_pages_of_one_graze_are_one_page (ds es : List Bool)
+    (hsds : Sparse ds) (hses : Sparse es)
+    (hcds : capped ds = true) (hces : capped es = true)
+    (hw : graze 3 ds = graze 3 es) : ds = es :=
+  (the_hodometer_is_the_only_sparse_page (graze 3 es) ds hsds hcds hw).trans
+    (the_hodometer_is_the_only_sparse_page (graze 3 es) es hses hces rfl).symm
+
+theorem the_beacon_herds : ∀ (k : Nat), Sparse (beacon k)
+  | 0 => True.intro
+  | k + 1 => the_beacon_herds k
+
+theorem a_beacon_is_one_cow : ∀ (k i : Nat), graze i (beacon k) = herdN (i + k)
+  | 0, _ => rfl
+  | k + 1, i => by
+      show graze (i + 1) (beacon k) = herdN (i + (k + 1))
+      rw [a_beacon_is_one_cow k (i + 1)]
+      exact congrArg herdN ((Nat.succ_add i k).trans (Nat.add_succ i k).symm)
+
+theorem the_hodometer_at_a_herd_number_is_a_beacon (k : Nat) :
+    hodometer (herdN (k + 3)) = beacon k :=
+  (the_hodometer_is_the_only_sparse_page (herdN (k + 3)) (beacon k) (the_beacon_herds k)
+    (the_beacon_wears_the_cap k)
+    ((a_beacon_is_one_cow k 3).trans (congrArg herdN (Nat.add_comm 3 k)))).symm
+
+theorem the_herd_beacon_slides_one_seat_down (k : Nat) :
+    H (herdN (k + 3)) = herdN (k + 2) := by
+  show graze 2 (hodometer (herdN (k + 3))) = herdN (k + 2)
+  rw [the_hodometer_at_a_herd_number_is_a_beacon k, a_beacon_is_one_cow k 2]
+  exact congrArg herdN (Nat.add_comm 2 k)
+
+theorem the_herd_beacon_slides_twice (k : Nat) :
+    H (H (herdN (k + 3))) = herdN (k + 1) := by
+  rw [the_second_shadow_reads_one_down (herdN (k + 3)),
+      the_hodometer_at_a_herd_number_is_a_beacon k, a_beacon_is_one_cow k 1]
+  exact congrArg herdN (Nat.add_comm 1 k)
+
+theorem the_beacon_hdownshifts_to_the_beacon_below (k : Nat) :
+    hdownshift (beacon (k + 1)) = beacon k := rfl
+
+theorem the_bottom_herd_beacon_holds : hdownshift (beacon 0) = beacon 0 := rfl
+
+/-- info: 'Foam.Bridges.a_capped_page_grazes' does not depend on any axioms -/
+#guard_msgs in #print axioms a_capped_page_grazes
+
+/-- info: 'Foam.Bridges.hcarry_never_blanks' does not depend on any axioms -/
+#guard_msgs in #print axioms hcarry_never_blanks
+
+/-- info: 'Foam.Bridges.hcarry_keeps_the_cap' does not depend on any axioms -/
+#guard_msgs in #print axioms hcarry_keeps_the_cap
+
+/-- info: 'Foam.Bridges.hclick_keeps_the_cap' does not depend on any axioms -/
+#guard_msgs in #print axioms hclick_keeps_the_cap
+
+/-- info: 'Foam.Bridges.the_hodometer_wastes_no_seats' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hodometer_wastes_no_seats
+
+/-- info: 'Foam.Bridges.hunclick_spaces' does not depend on any axioms -/
+#guard_msgs in #print axioms hunclick_spaces
+
+/-- info: 'Foam.Bridges.hunclick_keeps_the_cap' does not depend on any axioms -/
+#guard_msgs in #print axioms hunclick_keeps_the_cap
+
+/-- info: 'Foam.Bridges.hunclick_pays' does not depend on any axioms -/
+#guard_msgs in #print axioms hunclick_pays
+
+/-- info: 'Foam.Bridges.hunclick_counts' does not depend on any axioms -/
+#guard_msgs in #print axioms hunclick_counts
+
+/-- info: 'Foam.Bridges.the_hclick_comes_home' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hclick_comes_home
+
+/-- info: 'Foam.Bridges.the_hodometer_is_the_only_sparse_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hodometer_is_the_only_sparse_page
+
+/-- info: 'Foam.Bridges.every_sparse_page_is_a_reading' does not depend on any axioms -/
+#guard_msgs in #print axioms every_sparse_page_is_a_reading
+
+/-- info: 'Foam.Bridges.two_sparse_pages_of_one_graze_are_one_page' does not depend on any axioms -/
+#guard_msgs in #print axioms two_sparse_pages_of_one_graze_are_one_page
+
+/-- info: 'Foam.Bridges.the_beacon_herds' does not depend on any axioms -/
+#guard_msgs in #print axioms the_beacon_herds
+
+/-- info: 'Foam.Bridges.a_beacon_is_one_cow' does not depend on any axioms -/
+#guard_msgs in #print axioms a_beacon_is_one_cow
+
+/-- info: 'Foam.Bridges.the_hodometer_at_a_herd_number_is_a_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hodometer_at_a_herd_number_is_a_beacon
+
+/-- info: 'Foam.Bridges.the_herd_beacon_slides_one_seat_down' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_beacon_slides_one_seat_down
+
+/-- info: 'Foam.Bridges.the_herd_beacon_slides_twice' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_beacon_slides_twice
+
+/-- info: 'Foam.Bridges.the_beacon_hdownshifts_to_the_beacon_below' does not depend on any axioms -/
+#guard_msgs in #print axioms the_beacon_hdownshifts_to_the_beacon_below
+
+/-- info: 'Foam.Bridges.the_bottom_herd_beacon_holds' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bottom_herd_beacon_holds
+
 end Foam.Bridges

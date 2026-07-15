@@ -15,6 +15,11 @@ theorem the_herd_climbs_the_stairs :
     (herdN 3, herdN 4, herdN 5, herdN 6, herdN 7, herdN 8, herdN 9, herdN 10)
       = (1, 2, 3, 4, 6, 9, 13, 19) := rfl
 
+theorem herdN_glows : ∀ (n : Nat), 1 ≤ herdN (n + 1)
+  | 0 => Nat.le_refl 1
+  | 1 => Nat.le_refl 1
+  | n + 2 => Nat.le_trans (herdN_glows (n + 1)) (Nat.le_add_right (herdN (n + 2)) (herdN n))
+
 def graze : Nat → List Bool → Nat
   | _, [] => 0
   | i, false :: ds => graze (i + 1) ds
@@ -82,6 +87,9 @@ theorem herd_carry_compresses (rest : List Bool) :
 
 /-- info: 'Foam.Bridges.the_herd_climbs_the_stairs' does not depend on any axioms -/
 #guard_msgs in #print axioms the_herd_climbs_the_stairs
+
+/-- info: 'Foam.Bridges.herdN_glows' does not depend on any axioms -/
+#guard_msgs in #print axioms herdN_glows
 
 /-- info: 'Foam.Bridges.add_shuffle' does not depend on any axioms -/
 #guard_msgs in #print axioms add_shuffle
