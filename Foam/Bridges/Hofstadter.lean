@@ -2,6 +2,7 @@ import Foam.Int
 import Foam.Ledger
 import Foam.Golden
 import Foam.Bridges.Zeckendorf
+import Foam.Bridges.Narayana
 
 namespace Foam.Bridges
 
@@ -222,10 +223,6 @@ def worth : Nat → List Bool → Nat
   | _, [] => 0
   | i, false :: ds => worth (i + 1) ds
   | i, true :: ds => fibN i + worth (i + 1) ds
-
-theorem add_shuffle (a b c d : Nat) : (a + b) + (c + d) = (a + c) + (b + d) := by
-  rw [Nat.add_assoc, ← Nat.add_assoc b c d, Nat.add_comm b c,
-      Nat.add_assoc c b d, ← Nat.add_assoc]
 
 theorem worth_gnomon : ∀ (ds : List Bool) (i : Nat),
     worth (i + 2) ds = worth (i + 1) ds + worth i ds
@@ -524,9 +521,6 @@ theorem worth_matches_zval : ∀ (ds : List Bool) (i : Nat),
 
 /-- info: 'Foam.Bridges.fibN_gnomon' does not depend on any axioms -/
 #guard_msgs in #print axioms fibN_gnomon
-
-/-- info: 'Foam.Bridges.add_shuffle' does not depend on any axioms -/
-#guard_msgs in #print axioms add_shuffle
 
 /-- info: 'Foam.Bridges.worth_gnomon' does not depend on any axioms -/
 #guard_msgs in #print axioms worth_gnomon
@@ -1019,61 +1013,6 @@ theorem g_hums_the_fibonacci_stairs :
 /-- info: 'Foam.Bridges.g_hums_the_fibonacci_stairs' does not depend on any axioms -/
 #guard_msgs in #print axioms g_hums_the_fibonacci_stairs
 
-def herdN : Nat → Nat
-  | 0 => 0
-  | 1 => 1
-  | 2 => 1
-  | n + 3 => herdN (n + 2) + herdN n
-
-theorem herdN_gnomon (n : Nat) : herdN (n + 3) = herdN (n + 2) + herdN n := rfl
-
-def graze : Nat → List Bool → Nat
-  | _, [] => 0
-  | i, false :: ds => graze (i + 1) ds
-  | i, true :: ds => herdN i + graze (i + 1) ds
-
-theorem graze_gnomon : ∀ (ds : List Bool) (i : Nat),
-    graze (i + 3) ds = graze (i + 2) ds + graze i ds
-  | [], _ => rfl
-  | false :: rest, i => graze_gnomon rest (i + 1)
-  | true :: rest, i => by
-      show herdN (i + 3) + graze ((i + 1) + 3) rest
-        = (herdN (i + 2) + graze ((i + 1) + 2) rest) + (herdN i + graze (i + 1) rest)
-      rw [graze_gnomon rest (i + 1), herdN_gnomon]
-      exact add_shuffle (herdN (i + 2)) (herdN i)
-        (graze ((i + 1) + 2) rest) (graze (i + 1) rest)
-
-def Sparse : List Bool → Prop
-  | [] => True
-  | false :: rest => Sparse rest
-  | [true] => True
-  | true :: true :: _ => False
-  | true :: false :: true :: _ => False
-  | [true, false] => True
-  | true :: false :: false :: rest => Sparse rest
-
-def clearing : List Bool → Bool
-  | [] => true
-  | [false] => true
-  | true :: _ => false
-  | false :: true :: _ => false
-  | false :: false :: _ => true
-
-theorem sparse_tail : ∀ {d : Bool} {ds : List Bool}, Sparse (d :: ds) → Sparse ds
-  | false, _, h => h
-  | true, [], _ => True.intro
-  | true, true :: _, h => h.elim
-  | true, [false], _ => True.intro
-  | true, false :: true :: _, h => h.elim
-  | true, false :: false :: _, h => h
-
-theorem sparse_head : ∀ {ds : List Bool}, Sparse (true :: ds) → clearing ds = true
-  | [], _ => rfl
-  | [false], _ => rfl
-  | true :: _, h => h.elim
-  | false :: true :: _, h => h.elim
-  | false :: false :: _, _ => rfl
-
 def hcarry : List Bool → List Bool
   | [] => [true]
   | [_] => [true]
@@ -1194,10 +1133,6 @@ theorem the_hodometer_reads_true : ∀ (n : Nat), graze 3 (hodometer n) = n
           the_hodometer_reads_true n]
 
 def H (n : Nat) : Nat := graze 2 (hodometer n)
-
-theorem the_herd_climbs_the_stairs :
-    (herdN 3, herdN 4, herdN 5, herdN 6, herdN 7, herdN 8, herdN 9, herdN 10)
-      = (1, 2, 3, 4, 6, 9, 13, 19) := rfl
 
 theorem h_hums_its_opening_bars :
     (H 0, H 1, H 2, H 3, H 4, H 5, H 6, H 7) = (0, 1, 1, 2, 3, 4, 4, 5) := rfl
@@ -1379,18 +1314,6 @@ theorem the_drovers_seat_is_never_the_copy (n : Nat) : H (n + 2) < n + 2 := by
 theorem h_hums_the_herd_stairs :
     (H 1, H 2, H 3, H 4, H 6, H 9, H 13, H 19) = (1, 1, 2, 3, 4, 6, 9, 13) := rfl
 
-/-- info: 'Foam.Bridges.herdN_gnomon' does not depend on any axioms -/
-#guard_msgs in #print axioms herdN_gnomon
-
-/-- info: 'Foam.Bridges.graze_gnomon' does not depend on any axioms -/
-#guard_msgs in #print axioms graze_gnomon
-
-/-- info: 'Foam.Bridges.sparse_tail' does not depend on any axioms -/
-#guard_msgs in #print axioms sparse_tail
-
-/-- info: 'Foam.Bridges.sparse_head' does not depend on any axioms -/
-#guard_msgs in #print axioms sparse_head
-
 /-- info: 'Foam.Bridges.hcarry_pays' does not depend on any axioms -/
 #guard_msgs in #print axioms hcarry_pays
 
@@ -1417,9 +1340,6 @@ theorem h_hums_the_herd_stairs :
 
 /-- info: 'Foam.Bridges.the_hodometer_reads_true' does not depend on any axioms -/
 #guard_msgs in #print axioms the_hodometer_reads_true
-
-/-- info: 'Foam.Bridges.the_herd_climbs_the_stairs' does not depend on any axioms -/
-#guard_msgs in #print axioms the_herd_climbs_the_stairs
 
 /-- info: 'Foam.Bridges.h_hums_its_opening_bars' does not depend on any axioms -/
 #guard_msgs in #print axioms h_hums_its_opening_bars
