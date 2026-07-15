@@ -1,6 +1,6 @@
 # counter
 
-Counter (usecounter.com) starts out as Trello-meets-Cookie-Clicker and eventually describes your universe *while maintaining `conservation_of_discovery`*
+Counter (usecounter.com) starts out as Trello-meets-Cookie-Clicker and eventually describes your seat in your universe *while maintaining `conservation_of_discovery`*
 
 everyone starts with the same thing; everyone navigates into their own thing; everyone can locate an interface to everyone else
 
