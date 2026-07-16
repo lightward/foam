@@ -95,3 +95,4 @@ import Foam.Bridges.Fraenkel
 import Foam.Bridges.Poncelet
 import Foam.Bridges.Hofstadter
 import Foam.Seat.Parallax
+import Foam.Seat.Chorus
