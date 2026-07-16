@@ -5499,4 +5499,1808 @@ theorem the_family_reseals_the_golden_slide (k : Nat) : G (fibN (k + 2)) = fibN 
 /-- info: 'Foam.Bridges.the_family_reseals_the_golden_slide' does not depend on any axioms -/
 #guard_msgs in #print axioms the_family_reseals_the_golden_slide
 
+def veil (e : Nat) : List Nat → Bool
+  | [] => false
+  | [0] => true
+  | [p + 1] => Nat.beq (brand e p).2 1
+  | _ :: _ :: _ => false
+
+def sash (e : Nat) : List Nat → Bool
+  | [] => false
+  | [0] => false
+  | [p + 1] => Nat.beq (brand e p).2 0
+  | _ :: _ :: _ => false
+
+def bride (s : Nat → Nat) (e n : Nat) : Nat :=
+  W s e n + cond (veil e (crank e (n + 1))) 1 0
+
+def groom (s : Nat → Nat) (e n : Nat) : Nat :=
+  W s e n - cond (sash e (crank e (n + 1))) 1 0
+
+theorem the_family_bride_wakes_lit (t : Nat) (s : Nat → Nat) : bride s (t + 1) 0 = 1 := rfl
+
+theorem the_family_groom_wakes_dark (t : Nat) (s : Nat → Nat) : groom s (t + 1) 0 = 0 := rfl
+
+theorem the_family_bride_reads_the_shared_page (s : Nat → Nat) (e n : Nat) :
+    bride s e n = assay s e (crank e n)
+      + cond (veil e (tick e (crank e n))) 1 0 := rfl
+
+theorem the_family_groom_reads_the_shared_page (s : Nat → Nat) (e n : Nat) :
+    groom s e n = assay s e (crank e n)
+      - cond (sash e (tick e (crank e n))) 1 0 := rfl
+
+/-- info: 'Foam.Bridges.the_family_bride_wakes_lit' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_bride_wakes_lit
+
+/-- info: 'Foam.Bridges.the_family_groom_wakes_dark' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_groom_wakes_dark
+
+/-- info: 'Foam.Bridges.the_family_bride_reads_the_shared_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_bride_reads_the_shared_page
+
+/-- info: 'Foam.Bridges.the_family_groom_reads_the_shared_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_groom_reads_the_shared_page
+
+theorem the_veil_finds_its_beacon (e : Nat) (gs : List Nat) (h : veil e gs = true) :
+    gs = [0] ∨ ∃ p, gs = [p + 1] ∧ Nat.beq (brand e p).2 1 = true := by
+  match gs, h with
+  | 0 :: [], _ => exact Or.inl rfl
+  | (p + 1) :: [], h => exact Or.inr ⟨p, rfl, h⟩
+
+theorem the_sash_finds_its_beacon (e : Nat) (gs : List Nat) (h : sash e gs = true) :
+    ∃ p, gs = [p + 1] ∧ Nat.beq (brand e p).2 0 = true := by
+  match gs, h with
+  | 0 :: [], h => exact nomatch h
+  | (p + 1) :: [], h => exact ⟨p, rfl, h⟩
+
+theorem the_veil_and_sash_never_meet (e : Nat) (gs : List Nat) (h : veil e gs = true) :
+    sash e gs = false := by
+  match gs, h with
+  | 0 :: [], _ => rfl
+  | (p + 1) :: [], h =>
+      have h1 : (brand e p).2 = 1 := Nat.eq_of_beq_eq_true h
+      show Nat.beq (brand e p).2 0 = false
+      rw [h1]
+      rfl
+
+/-- info: 'Foam.Bridges.the_veil_finds_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_veil_finds_its_beacon
+
+/-- info: 'Foam.Bridges.the_sash_finds_its_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_sash_finds_its_beacon
+
+/-- info: 'Foam.Bridges.the_veil_and_sash_never_meet' does not depend on any axioms -/
+#guard_msgs in #print axioms the_veil_and_sash_never_meet
+
+theorem the_veil_rests_above_a_tall_stair (e m : Nat) :
+    veil e (tick e [m + 2]) = false := by
+  cases Nat.decLe (m + 2) e with
+  | isTrue hle =>
+      rw [the_tick_climbs_the_floor e (m + 2) hle]
+      show Nat.beq (brand e (m + 2)).2 1 = false
+      have hbr : brand e (0 + (m + 2)) = (0, m + 2) :=
+        the_brand_climbs_the_rungs e 0 (m + 2) hle
+      rw [Nat.zero_add (m + 2)] at hbr
+      rw [hbr]
+      exact beq_shuts_high 1 (m + 2) (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le m)))
+  | isFalse hgt =>
+      have hlt : e + 1 ≤ m + 2 := Nat.gt_of_not_le hgt
+      match Nat.le.dest hlt with
+      | ⟨w, hw⟩ =>
+          have hw' : tick e [e + 1 + w] = [0, e + w] := the_tick_leaves_the_rail e w
+          rw [hw] at hw'
+          rw [hw']
+          rfl
+
+theorem the_sash_rests_above_a_tall_stair (e m : Nat) :
+    sash e (tick e [m + 2]) = false := by
+  cases Nat.decLe (m + 2) e with
+  | isTrue hle =>
+      rw [the_tick_climbs_the_floor e (m + 2) hle]
+      show Nat.beq (brand e (m + 2)).2 0 = false
+      have hbr : brand e (0 + (m + 2)) = (0, m + 2) :=
+        the_brand_climbs_the_rungs e 0 (m + 2) hle
+      rw [Nat.zero_add (m + 2)] at hbr
+      rw [hbr]
+      exact beq_shuts_high 0 (m + 2) (Nat.succ_le_succ (Nat.zero_le (m + 1)))
+  | isFalse hgt =>
+      have hlt : e + 1 ≤ m + 2 := Nat.gt_of_not_le hgt
+      match Nat.le.dest hlt with
+      | ⟨w, hw⟩ =>
+          have hw' : tick e [e + 1 + w] = [0, e + w] := the_tick_leaves_the_rail e w
+          rw [hw] at hw'
+          rw [hw']
+          rfl
+
+/-- info: 'Foam.Bridges.the_veil_rests_above_a_tall_stair' does not depend on any axioms -/
+#guard_msgs in #print axioms the_veil_rests_above_a_tall_stair
+
+/-- info: 'Foam.Bridges.the_sash_rests_above_a_tall_stair' does not depend on any axioms -/
+#guard_msgs in #print axioms the_sash_rests_above_a_tall_stair
+
+theorem the_floor_reads_one (t : Nat) (s : Nat → Nat) (hf : Floored (t + 1) s) :
+    s (t + 1) = 1 := hf t (Nat.le_succ t)
+
+theorem the_rail_reads_one (t : Nat) (s : Nat → Nat) (hf : Floored (t + 1) s) :
+    s (t + 2) = 1 := hf (t + 1) (Nat.le_refl (t + 1))
+
+theorem the_first_flight_reads_two (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : s (t + 3) = 2 := by
+  have h := gnomon_tn t s hg 0
+  rw [the_rail_reads_one t s hf, hf 0 (Nat.zero_le (t + 1))] at h
+  exact h
+
+theorem the_second_flight_reads_three (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : s (t + 4) = 3 := by
+  have h := gnomon_tn t s hg 1
+  rw [the_first_flight_reads_two t s hg hf, hf 1 (Nat.succ_le_succ (Nat.zero_le t))] at h
+  exact h
+
+/-- info: 'Foam.Bridges.the_floor_reads_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_floor_reads_one
+
+/-- info: 'Foam.Bridges.the_rail_reads_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_rail_reads_one
+
+/-- info: 'Foam.Bridges.the_first_flight_reads_two' does not depend on any axioms -/
+#guard_msgs in #print axioms the_first_flight_reads_two
+
+/-- info: 'Foam.Bridges.the_second_flight_reads_three' does not depend on any axioms -/
+#guard_msgs in #print axioms the_second_flight_reads_three
+
+theorem the_walk_glows_on_a_written_page (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (g : Nat) (gs : List Nat) :
+    1 ≤ assay s (t + 1) (g :: gs) := by
+  show 1 ≤ s (t + 1 + g) + assay s (t + 1 + g + 1) gs
+  rw [seat_shuffles t g]
+  exact Nat.le_trans (a_grammar_glows (t + 1) s hg hf (t + g))
+    (Nat.le_add_right (s (t + g + 1)) (assay s (t + g + 1 + 1) gs))
+
+theorem a_crossing_reads_its_stair (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n k : Nat) (h : crank (t + 1) (n + 1) = [k]) :
+    n + 1 = s (t + k + 2) := by
+  have hd := the_dial_reads_true (t + 1) s hg hf (n + 1)
+  rw [h] at hd
+  show n + 1 = s (t + k + 1 + 1)
+  rw [← seat_shuffles t k, ← seat_shuffles (t + 1) k]
+  exact hd.symm
+
+/-- info: 'Foam.Bridges.the_walk_glows_on_a_written_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walk_glows_on_a_written_page
+
+/-- info: 'Foam.Bridges.a_crossing_reads_its_stair' does not depend on any axioms -/
+#guard_msgs in #print axioms a_crossing_reads_its_stair
+
+theorem the_walk_holds_the_groom (t : Nat) (s : Nat → Nat) (n : Nat) :
+    groom s (t + 1) n ≤ W s (t + 1) n :=
+  the_toll_never_gains (W s (t + 1) n) (cond (sash (t + 1) (crank (t + 1) (n + 1))) 1 0)
+
+theorem the_bride_holds_the_walk (t : Nat) (s : Nat → Nat) (n : Nat) :
+    W s (t + 1) n ≤ bride s (t + 1) n :=
+  Nat.le_add_right (W s (t + 1) n) (cond (veil (t + 1) (crank (t + 1) (n + 1))) 1 0)
+
+theorem the_household_holds_the_walk (t : Nat) (s : Nat → Nat) (n : Nat) :
+    groom s (t + 1) n ≤ W s (t + 1) n ∧ W s (t + 1) n ≤ bride s (t + 1) n :=
+  ⟨the_walk_holds_the_groom t s n, the_bride_holds_the_walk t s n⟩
+
+/-- info: 'Foam.Bridges.the_walk_holds_the_groom' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walk_holds_the_groom
+
+/-- info: 'Foam.Bridges.the_bride_holds_the_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_holds_the_walk
+
+/-- info: 'Foam.Bridges.the_household_holds_the_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms the_household_holds_the_walk
+
+theorem the_spouses_disagree_on_the_shallow_stairs (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (n : Nat) :
+    groom s (t + 1) n
+        + cond (veil (t + 1) (crank (t + 1) (n + 1))
+            || sash (t + 1) (crank (t + 1) (n + 1))) 1 0
+      = bride s (t + 1) n := by
+  cases hv : veil (t + 1) (crank (t + 1) (n + 1)) with
+  | true =>
+      have hs := the_veil_and_sash_never_meet (t + 1) (crank (t + 1) (n + 1)) hv
+      show groom s (t + 1) n + 1
+        = W s (t + 1) n + cond (veil (t + 1) (crank (t + 1) (n + 1))) 1 0
+      rw [hv]
+      show (W s (t + 1) n - cond (sash (t + 1) (crank (t + 1) (n + 1))) 1 0) + 1
+        = W s (t + 1) n + 1
+      rw [hs]
+      rfl
+  | false =>
+      cases hs : sash (t + 1) (crank (t + 1) (n + 1)) with
+      | false =>
+          show groom s (t + 1) n
+            = W s (t + 1) n + cond (veil (t + 1) (crank (t + 1) (n + 1))) 1 0
+          rw [hv]
+          show W s (t + 1) n - cond (sash (t + 1) (crank (t + 1) (n + 1))) 1 0
+            = W s (t + 1) n + 0
+          rw [hs]
+          rfl
+      | true =>
+          match the_sash_finds_its_beacon (t + 1) (crank (t + 1) (n + 1)) hs with
+          | ⟨p, hpage, _⟩ =>
+            have hcn : crank (t + 1) n = untick (t + 1) (crank (t + 1) (n + 1)) :=
+              the_crank_steps_back (t + 1) n
+            rw [hpage] at hcn
+            have hglow : 1 ≤ W s (t + 1) n := by
+              show 1 ≤ assay s (t + 1) (crank (t + 1) n)
+              rw [hcn]
+              exact the_walk_glows_on_a_written_page t s hg hf
+                (brand (t + 1) p).2 (unfurl (t + 1) (brand (t + 1) p).1 [])
+            show groom s (t + 1) n + 1
+              = W s (t + 1) n + cond (veil (t + 1) (crank (t + 1) (n + 1))) 1 0
+            rw [hv]
+            show (W s (t + 1) n - cond (sash (t + 1) (crank (t + 1) (n + 1))) 1 0) + 1
+              = W s (t + 1) n + 0
+            rw [hs]
+            show (W s (t + 1) n - 1) + 1 = W s (t + 1) n + 0
+            rw [sub_one_back (W s (t + 1) n) hglow]
+            rfl
+
+theorem the_household_agrees_on_the_deep_stairs (t : Nat) (s : Nat → Nat) (n : Nat)
+    (hv : veil (t + 1) (crank (t + 1) (n + 1)) = false)
+    (hs : sash (t + 1) (crank (t + 1) (n + 1)) = false) :
+    bride s (t + 1) n = W s (t + 1) n ∧ groom s (t + 1) n = W s (t + 1) n := by
+  constructor
+  · show W s (t + 1) n + cond (veil (t + 1) (crank (t + 1) (n + 1))) 1 0 = W s (t + 1) n
+    rw [hv]
+    rfl
+  · show W s (t + 1) n - cond (sash (t + 1) (crank (t + 1) (n + 1))) 1 0 = W s (t + 1) n
+    rw [hs]
+    rfl
+
+/-- info: 'Foam.Bridges.the_spouses_disagree_on_the_shallow_stairs' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spouses_disagree_on_the_shallow_stairs
+
+/-- info: 'Foam.Bridges.the_household_agrees_on_the_deep_stairs' does not depend on any axioms -/
+#guard_msgs in #print axioms the_household_agrees_on_the_deep_stairs
+
+theorem the_coil_rests_at_zero (t : Nat) (s : Nat → Nat) :
+    ∀ (j : Nat), coil (W s (t + 1)) j 0 = 0
+  | 0 => rfl
+  | j + 1 => the_coil_rests_at_zero t s j
+
+theorem the_coil_rests_at_the_floor (t : Nat) (s : Nat → Nat) (hf : Floored (t + 1) s) :
+    ∀ (j : Nat), coil (W s (t + 1)) j 1 = 1
+  | 0 => rfl
+  | j + 1 => by
+      have h1 : W s (t + 1) 1 = 1 := by
+        show s (t + 1 + 0) + 0 = 1
+        exact the_floor_reads_one t s hf
+      show coil (W s (t + 1)) j (W s (t + 1) 1) = 1
+      rw [h1]
+      exact the_coil_rests_at_the_floor t s hf j
+
+/-- info: 'Foam.Bridges.the_coil_rests_at_zero' does not depend on any axioms -/
+#guard_msgs in #print axioms the_coil_rests_at_zero
+
+/-- info: 'Foam.Bridges.the_coil_rests_at_the_floor' does not depend on any axioms -/
+#guard_msgs in #print axioms the_coil_rests_at_the_floor
+
+theorem coil_shuffle (t k j : Nat) : t + (k + j + 1) = t + k + j + 1 := by
+  rw [← Nat.add_assoc t (k + j) 1, ← Nat.add_assoc t k j]
+
+theorem the_beacon_rides_the_coil (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (j k : Nat),
+      coil (W s (t + 1)) j (s (t + k + j + 2)) = s (t + k + 2)
+  | 0, k => rfl
+  | j + 1, k => by
+      have hsl := the_family_beacon_slides t (k + j + 1) s hg hf
+      rw [coil_shuffle t k j] at hsl
+      show coil (W s (t + 1)) j (W s (t + 1) (s (t + k + j + 1 + 2))) = s (t + k + 2)
+      rw [hsl]
+      exact the_beacon_rides_the_coil t s hg hf j k
+
+/-- info: 'Foam.Bridges.coil_shuffle' does not depend on any axioms -/
+#guard_msgs in #print axioms coil_shuffle
+
+/-- info: 'Foam.Bridges.the_beacon_rides_the_coil' does not depend on any axioms -/
+#guard_msgs in #print axioms the_beacon_rides_the_coil
+
+theorem the_wounded_beacon_rides_the_coil (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (p x : Nat) (hbr : (brand (t + 1) p).2 = t + 1)
+    (hx : x + 1 = s (p + t + 3)) :
+    coil (W s (t + 1)) t x + 1 = s (p + 3) := by
+  cases t with
+  | zero => exact hx
+  | succ t' =>
+      have hcr := the_crank_at_a_stair_number_is_one_stride (t' + 1 + 1) (p + 1) s hg hf
+      have hcr' : crank (t' + 1 + 1) (s (p + (t' + 1) + 3)) = [p + 1] := by
+        have hidx : t' + 1 + 1 + (p + 1) + 1 = p + (t' + 1) + 3 := by
+          rw [Nat.add_comm (t' + 1 + 1) (p + 1)]
+          show p + 1 + t' + 3 = p + t' + 4
+          rw [seat_shuffles p t']
+        rw [hidx] at hcr
+        exact hcr
+      rw [← hx] at hcr'
+      have hcx : crank (t' + 1 + 1) x
+          = (t' + 1 + 1) :: unfurl (t' + 1 + 1) (brand (t' + 1 + 1) p).1 [] := by
+        rw [the_crank_steps_back (t' + 1 + 1) x, hcr']
+        show (brand (t' + 1 + 1) p).2 :: unfurl (t' + 1 + 1) (brand (t' + 1 + 1) p).1 [] = _
+        rw [hbr]
+      have hsh := the_shadows_descend (t' + 1) s hg hf t' 1 x
+        (congrArg (· + 1) (Nat.add_comm 1 t'))
+      rw [hcx] at hsh
+      have hpu := a_purse_and_a_stair_make_a_beacon (t' + 1 + 1) s hg
+        (brand (t' + 1 + 1) p).1 (t' + 1 + 1) 1
+      have hi1 : 1 + (t' + 1 + 1) + 2 = t' + 1 + 4 := by
+        rw [Nat.add_comm 1 (t' + 1 + 1)]
+      have hi2 : 1 + (t' + 1 + 1) + 1 = t' + 1 + 3 := by
+        rw [Nat.add_comm 1 (t' + 1 + 1)]
+      rw [hi1, hi2, the_second_flight_reads_three (t' + 1) s hg hf,
+        the_first_flight_reads_two (t' + 1) s hg hf] at hpu
+      have hrungs : rungs (t' + 1 + 1) (brand (t' + 1 + 1) p).1 + (t' + 1 + 1) = p := by
+        have h := the_brand_reads_the_rungs (t' + 1 + 1) p
+        rw [hbr] at h
+        exact h
+      have hout : 1 + rungs (t' + 1 + 1) (brand (t' + 1 + 1) p).1 + (t' + 1 + 1) + 2
+          = p + 3 := by
+        rw [Nat.add_comm 1 (rungs (t' + 1 + 1) (brand (t' + 1 + 1) p).1),
+          Nat.add_assoc (rungs (t' + 1 + 1) (brand (t' + 1 + 1) p).1) 1 (t' + 1 + 1),
+          Nat.add_comm 1 (t' + 1 + 1), ← Nat.add_assoc
+            (rungs (t' + 1 + 1) (brand (t' + 1 + 1) p).1) (t' + 1 + 1) 1, hrungs]
+      rw [hout] at hpu
+      show coil (W s (t' + 1 + 1)) (t' + 1) x + 1 = s (p + 3)
+      rw [hsh]
+      exact unstack (assay s (1 + 1)
+        ((t' + 1 + 1) :: unfurl (t' + 1 + 1) (brand (t' + 1 + 1) p).1 []) + 1)
+        (s (p + 3)) 2 hpu
+
+/-- info: 'Foam.Bridges.the_wounded_beacon_rides_the_coil' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wounded_beacon_rides_the_coil
+
+theorem the_family_marriage_closes_for_the_bride (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (hz : s 0 = 0) (n : Nat) :
+    bride s (t + 1) (n + 1)
+      + coil (W s (t + 1)) t (groom s (t + 1) (bride s (t + 1) n)) = n + 1 := by
+  cases hv : veil (t + 1) (crank (t + 1) (n + 1)) with
+  | true =>
+      cases the_veil_finds_its_beacon (t + 1) (crank (t + 1) (n + 1)) hv with
+      | inl h0 =>
+          have hn1 : n + 1 = s (t + 0 + 2) := a_crossing_reads_its_stair t s hg hf n 0 h0
+          have hn1' : n + 1 = 1 := by
+            rw [hn1]
+            exact the_rail_reads_one t s hf
+          have hn0 : n = 0 := Nat.succ.inj hn1'
+          subst hn0
+          have hw1 : W s (t + 1) 1 = 1 := by
+            show s (t + 1 + 0) + 0 = 1
+            exact the_floor_reads_one t s hf
+          have hg1 : groom s (t + 1) (bride s (t + 1) 0) = 0 := by
+            show W s (t + 1) 1 - cond (sash (t + 1) (crank (t + 1) (1 + 1))) 1 0 = 0
+            rw [hw1]
+            rfl
+          have hb1 : bride s (t + 1) (0 + 1) = 1 := by
+            show W s (t + 1) 1 + cond (veil (t + 1) (crank (t + 1) (1 + 1))) 1 0 = 1
+            rw [hw1]
+            rfl
+          rw [hb1, hg1, the_coil_rests_at_zero t s t]
+      | inr hex =>
+          match hex with
+          | ⟨p, hpage, hres⟩ =>
+            have hr1 : (brand (t + 1) p).2 = 1 := Nat.eq_of_beq_eq_true hres
+            have hrp : rungs (t + 1) (brand (t + 1) p).1 + 1 = p := by
+              have h := the_brand_reads_the_rungs (t + 1) p
+              rw [hr1] at h
+              exact h
+            have hn1 : n + 1 = s (t + (p + 1) + 2) :=
+              a_crossing_reads_its_stair t s hg hf n (p + 1) hpage
+            have hcn : crank (t + 1) n = 1 :: unfurl (t + 1) (brand (t + 1) p).1 [] := by
+              rw [the_crank_steps_back (t + 1) n, hpage]
+              show (brand (t + 1) p).2 :: unfurl (t + 1) (brand (t + 1) p).1 [] = _
+              rw [hr1]
+            have hpu' : assay s (t + 1) (1 :: unfurl (t + 1) (brand (t + 1) p).1 [])
+                  + s (t + 3)
+                = s (t + rungs (t + 1) (brand (t + 1) p).1 + 1 + 2) + s (t + 2) :=
+              a_purse_and_a_stair_make_a_beacon (t + 1) s hg (brand (t + 1) p).1 1 t
+            rw [the_first_flight_reads_two t s hg hf, the_rail_reads_one t s hf] at hpu'
+            have hmid : t + rungs (t + 1) (brand (t + 1) p).1 + 1 + 2 = t + p + 2 := by
+              rw [Nat.add_assoc t (rungs (t + 1) (brand (t + 1) p).1) 1, hrp]
+            rw [hmid] at hpu'
+            have hVn : W s (t + 1) n + 1 = s (t + p + 2) := by
+              have hWn : W s (t + 1) n
+                  = assay s (t + 1) (1 :: unfurl (t + 1) (brand (t + 1) p).1 []) := by
+                show assay s (t + 1) (crank (t + 1) n) = _
+                rw [hcn]
+              rw [hWn]
+              exact Nat.succ.inj hpu'
+            have hbn : bride s (t + 1) n = s (t + p + 2) := by
+              show W s (t + 1) n + cond (veil (t + 1) (crank (t + 1) (n + 1))) 1 0
+                = s (t + p + 2)
+              rw [hv]
+              exact hVn
+            have hcb : crank (t + 1) (s (t + p + 2)) = [p] := by
+              have h := the_crank_at_a_stair_number_is_one_stride (t + 1) p s hg hf
+              rw [seat_shuffles t p] at h
+              exact h
+            have hsashb : sash (t + 1) (crank (t + 1) (s (t + p + 2) + 1)) = false := by
+              have hct : crank (t + 1) (s (t + p + 2) + 1) = tick (t + 1) [p] := by
+                show tick (t + 1) (crank (t + 1) (s (t + p + 2))) = tick (t + 1) [p]
+                rw [hcb]
+              rw [hct]
+              cases hq : (brand (t + 1) p).1 with
+              | zero =>
+                  have hp1 : p = 1 := by
+                    rw [hq] at hrp
+                    exact hrp.symm
+                  rw [hp1,
+                    the_tick_climbs_the_floor (t + 1) 1 (Nat.succ_le_succ (Nat.zero_le t))]
+                  rfl
+              | succ q₀ =>
+                  have hp2 : rungs (t + 1) q₀ + t + 1 + 2 = p := by
+                    rw [hq] at hrp
+                    exact hrp
+                  rw [← hp2]
+                  exact the_sash_rests_above_a_tall_stair (t + 1) (rungs (t + 1) q₀ + t + 1)
+            have hgb : groom s (t + 1) (s (t + p + 2)) = s (t + p + 1) := by
+              show W s (t + 1) (s (t + p + 2))
+                  - cond (sash (t + 1) (crank (t + 1) (s (t + p + 2) + 1))) 1 0
+                = s (t + p + 1)
+              rw [hsashb, the_family_beacon_slides t p s hg hf]
+              rfl
+            have hcoil : coil (W s (t + 1)) t (s (t + p + 1)) = s (p + 1) := by
+              cases hq : (brand (t + 1) p).1 with
+              | zero =>
+                  have hp1 : p = 1 := by
+                    rw [hq] at hrp
+                    exact hrp.symm
+                  subst hp1
+                  show coil (W s (t + 1)) t (s (t + 2)) = s 2
+                  rw [the_rail_reads_one t s hf, the_coil_rests_at_the_floor t s hf t]
+                  exact (hf 1 (Nat.succ_le_succ (Nat.zero_le t))).symm
+              | succ q₀ =>
+                  have hp3 : rungs (t + 1) q₀ + t + 3 = p := by
+                    rw [hq] at hrp
+                    exact hrp
+                  have hride := the_beacon_rides_the_coil t s hg hf t
+                    (rungs (t + 1) q₀ + 2)
+                  have hin : t + (rungs (t + 1) q₀ + 2) + t + 2 = t + p + 1 := by
+                    rw [← hp3]
+                    show t + rungs (t + 1) q₀ + 2 + t + 2
+                      = t + (rungs (t + 1) q₀ + t) + 4
+                    rw [Nat.add_assoc (t + rungs (t + 1) q₀) 2 t, Nat.add_comm 2 t,
+                      ← Nat.add_assoc (t + rungs (t + 1) q₀) t 2,
+                      ← Nat.add_assoc t (rungs (t + 1) q₀) t]
+                  have hout : t + (rungs (t + 1) q₀ + 2) + 2 = p + 1 := by
+                    rw [← hp3]
+                    show t + rungs (t + 1) q₀ + 4 = rungs (t + 1) q₀ + t + 4
+                    rw [Nat.add_comm t (rungs (t + 1) q₀)]
+                  rw [hin, hout] at hride
+                  exact hride
+            have hbn1 : bride s (t + 1) (n + 1) = s (t + p + 2) := by
+              show W s (t + 1) (n + 1)
+                  + cond (veil (t + 1) (crank (t + 1) (n + 1 + 1))) 1 0
+                = s (t + p + 2)
+              have hcv : crank (t + 1) (n + 1 + 1) = tick (t + 1) [p + 1] := by
+                show tick (t + 1) (crank (t + 1) (n + 1)) = tick (t + 1) [p + 1]
+                rw [hpage]
+              have hveil : veil (t + 1) (tick (t + 1) [p + 1]) = false := by
+                have h := the_veil_rests_above_a_tall_stair (t + 1)
+                  (rungs (t + 1) (brand (t + 1) p).1)
+                rw [show rungs (t + 1) (brand (t + 1) p).1 + 2 = p + 1 from
+                  congrArg (· + 1) hrp] at h
+                exact h
+              have hW1 : W s (t + 1) (n + 1) = s (t + p + 2) := by
+                rw [hn1]
+                exact the_family_beacon_slides t (p + 1) s hg hf
+              rw [hcv, hveil, hW1]
+              rfl
+            rw [hbn, hgb, hcoil, hbn1, hn1]
+            show s (t + p + 2) + s (p + 1) = s (t + p + 3)
+            exact (gnomon_tn t s hg p).symm
+  | false =>
+      have hbnf : bride s (t + 1) n = W s (t + 1) n := by
+        show W s (t + 1) n + cond (veil (t + 1) (crank (t + 1) (n + 1))) 1 0
+          = W s (t + 1) n
+        rw [hv]
+        rfl
+      rw [hbnf]
+      cases hs : sash (t + 1) (crank (t + 1) (W s (t + 1) n + 1)) with
+      | false =>
+          have hgf : groom s (t + 1) (W s (t + 1) n)
+              = W s (t + 1) (W s (t + 1) n) := by
+            show W s (t + 1) (W s (t + 1) n)
+                - cond (sash (t + 1) (crank (t + 1) (W s (t + 1) n + 1))) 1 0 = _
+            rw [hs]
+            rfl
+          rw [hgf]
+          cases hb2 : veil (t + 1) (crank (t + 1) (n + 1 + 1)) with
+          | false =>
+              have hbn1 : bride s (t + 1) (n + 1) = W s (t + 1) (n + 1) := by
+                show W s (t + 1) (n + 1)
+                    + cond (veil (t + 1) (crank (t + 1) (n + 1 + 1))) 1 0 = _
+                rw [hb2]
+                rfl
+              rw [hbn1]
+              exact the_family_loop_closes t s hg hf hz n
+          | true =>
+              cases the_veil_finds_its_beacon (t + 1) (crank (t + 1) (n + 1 + 1)) hb2 with
+              | inl h0 =>
+                  have h1 : n + 1 + 1 = s (t + 0 + 2) :=
+                    a_crossing_reads_its_stair t s hg hf (n + 1) 0 h0
+                  have h2 : n + 1 + 1 = 1 := by
+                    rw [h1]
+                    exact the_rail_reads_one t s hf
+                  exact nomatch (Nat.succ.inj h2 : n + 1 = 0)
+              | inr hex2 =>
+                  match hex2 with
+                  | ⟨p, hpage2, hres2⟩ =>
+                    have hr1 : (brand (t + 1) p).2 = 1 := Nat.eq_of_beq_eq_true hres2
+                    have hrp : rungs (t + 1) (brand (t + 1) p).1 + 1 = p := by
+                      have h := the_brand_reads_the_rungs (t + 1) p
+                      rw [hr1] at h
+                      exact h
+                    have hcn1 : crank (t + 1) (n + 1)
+                        = 1 :: unfurl (t + 1) (brand (t + 1) p).1 [] := by
+                      rw [the_crank_steps_back (t + 1) (n + 1), hpage2]
+                      show (brand (t + 1) p).2
+                          :: unfurl (t + 1) (brand (t + 1) p).1 [] = _
+                      rw [hr1]
+                    cases hq : (brand (t + 1) p).1 with
+                    | zero =>
+                        rw [hq] at hcn1
+                        have hcn1' : crank (t + 1) (n + 1) = [1] := hcn1
+                        have hn1 : n + 1 = s (t + 1 + 2) :=
+                          a_crossing_reads_its_stair t s hg hf n 1 hcn1'
+                        have hn1' : n + 1 = 2 := by
+                          rw [hn1]
+                          exact the_first_flight_reads_two t s hg hf
+                        have hn' : n = 1 := Nat.succ.inj hn1'
+                        subst hn'
+                        have hw1 : W s (t + 1) 1 = 1 := by
+                          show s (t + 1 + 0) + 0 = 1
+                          exact the_floor_reads_one t s hf
+                        rw [hw1] at hs
+                        exact nomatch hs
+                    | succ q₀ =>
+                        have hp3 : rungs (t + 1) q₀ + t + 3 = p := by
+                          rw [hq] at hrp
+                          exact hrp
+                        have hcn0 : crank (t + 1) n
+                            = 0 :: (t + 1 + 1) :: unfurl (t + 1) q₀ [] := by
+                          rw [the_crank_steps_back (t + 1) n, hcn1, hq]
+                          rfl
+                        have hpu := a_purse_and_a_stair_make_a_beacon (t + 1) s hg q₀
+                          (t + 1 + 1) (t + 1)
+                        have hXY : s (t + 1 + (t + 1 + 1) + 2)
+                            = s (t + 1 + (t + 1 + 1) + 1) + s (t + 3) := by
+                          have h := hg (t + 2)
+                          rw [Nat.add_comm (t + 2) (t + 1)] at h
+                          exact h
+                        rw [hXY, the_first_flight_reads_two t s hg hf] at hpu
+                        rw [← Nat.add_assoc
+                          (assay s (t + 1 + 1)
+                            ((t + 1 + 1) :: unfurl (t + 1) q₀ []))
+                          (s (t + 1 + (t + 1 + 1) + 1)) 2] at hpu
+                        rw [add_swap_right
+                          (assay s (t + 1 + 1)
+                            ((t + 1 + 1) :: unfurl (t + 1) q₀ []))
+                          (s (t + 1 + (t + 1 + 1) + 1)) 2] at hpu
+                        have hA2 := unstack
+                          (assay s (t + 1 + 1)
+                            ((t + 1 + 1) :: unfurl (t + 1) q₀ []) + 2)
+                          (s (t + 1 + rungs (t + 1) q₀ + (t + 1 + 1) + 2))
+                          (s (t + 1 + (t + 1 + 1) + 1)) hpu
+                        have hmid2 : t + 1 + rungs (t + 1) q₀ + (t + 1 + 1) + 2
+                            = t + p + 2 := by
+                          rw [← hp3]
+                          show t + 1 + rungs (t + 1) q₀ + t + 4
+                            = t + (rungs (t + 1) q₀ + t) + 5
+                          rw [seat_shuffles t (rungs (t + 1) q₀),
+                            seat_shuffles (t + rungs (t + 1) q₀) t,
+                            ← Nat.add_assoc t (rungs (t + 1) q₀) t]
+                        rw [hmid2] at hA2
+                        have hVn : W s (t + 1) n + 1 = s (t + p + 2) := by
+                          have hWn : W s (t + 1) n = s (t + 1)
+                              + assay s (t + 1 + 1)
+                                ((t + 1 + 1) :: unfurl (t + 1) q₀ []) := by
+                            show assay s (t + 1) (crank (t + 1) n) = _
+                            rw [hcn0]
+                            rfl
+                          rw [hWn, the_floor_reads_one t s hf,
+                            Nat.add_comm 1 (assay s (t + 1 + 1)
+                              ((t + 1 + 1) :: unfurl (t + 1) q₀ []))]
+                          exact hA2
+                        have hcb : crank (t + 1) (W s (t + 1) n + 1) = [p] := by
+                          rw [hVn]
+                          have h := the_crank_at_a_stair_number_is_one_stride (t + 1) p s hg hf
+                          rw [seat_shuffles t p] at h
+                          exact h
+                        rw [hcb, ← hp3] at hs
+                        have hsash : sash (t + 1) [rungs (t + 1) q₀ + t + 3] = true := by
+                          show Nat.beq
+                            (brand (t + 1) (rungs (t + 1) q₀ + t + 2)).2 0 = true
+                          have hb' : brand (t + 1) (rungs (t + 1) q₀ + t + 2)
+                              = (q₀ + 1, 0) := the_brand_mounts_the_rungs (t + 1) (q₀ + 1)
+                          rw [hb']
+                          rfl
+                        exact nomatch (hsash.symm.trans hs)
+      | true =>
+          match the_sash_finds_its_beacon (t + 1)
+            (crank (t + 1) (W s (t + 1) n + 1)) hs with
+          | ⟨k, hpageW, hres0⟩ =>
+            have hr0 : (brand (t + 1) k).2 = 0 := Nat.eq_of_beq_eq_true hres0
+            have hrk : rungs (t + 1) (brand (t + 1) k).1 = k := by
+              have h := the_brand_reads_the_rungs (t + 1) k
+              rw [hr0] at h
+              exact h
+            have hcVn : crank (t + 1) (W s (t + 1) n)
+                = 0 :: unfurl (t + 1) (brand (t + 1) k).1 [] := by
+              rw [the_crank_steps_back (t + 1) (W s (t + 1) n), hpageW]
+              show (brand (t + 1) k).2 :: unfurl (t + 1) (brand (t + 1) k).1 [] = _
+              rw [hr0]
+            have hslip : slip (t + 1) (crank (t + 1) n)
+                = 0 :: unfurl (t + 1) (brand (t + 1) k).1 [] := by
+              rw [← the_family_shadow_walks_the_slip t s hg hf n]
+              exact hcVn
+            cases hP : crank (t + 1) n with
+            | nil =>
+                rw [hP] at hslip
+                exact nomatch hslip
+            | cons g rest =>
+              cases g with
+              | succ g' =>
+                  rw [hP] at hslip
+                  injection hslip with hg0 hrest
+                  subst hg0
+                  subst hrest
+                  have hcrn1 : crank (t + 1) (n + 1)
+                      = [rungs (t + 1) (brand (t + 1) k).1 + 1 + 1] := by
+                    show tick (t + 1) (crank (t + 1) n) = _
+                    rw [hP]
+                    have huntick : untick (t + 1)
+                        [rungs (t + 1) (brand (t + 1) k).1 + 1 + 1]
+                        = (0 + 1) :: unfurl (t + 1) (brand (t + 1) k).1 [] := by
+                      show (brand (t + 1)
+                          (rungs (t + 1) (brand (t + 1) k).1 + 1)).2
+                        :: unfurl (t + 1) (brand (t + 1)
+                          (rungs (t + 1) (brand (t + 1) k).1 + 1)).1 [] = _
+                      rw [the_brand_climbs_the_rungs (t + 1) (brand (t + 1) k).1 1
+                        (Nat.succ_le_succ (Nat.zero_le t))]
+                    rw [← huntick]
+                    exact the_tick_comes_home (t + 1)
+                      [rungs (t + 1) (brand (t + 1) k).1 + 1 + 1] True.intro
+                      (fun h => nomatch h)
+                  rw [hcrn1] at hv
+                  have hveil : veil (t + 1)
+                      [rungs (t + 1) (brand (t + 1) k).1 + 1 + 1] = true := by
+                    show Nat.beq (brand (t + 1)
+                        (rungs (t + 1) (brand (t + 1) k).1 + 1)).2 1 = true
+                    rw [the_brand_climbs_the_rungs (t + 1) (brand (t + 1) k).1 1
+                      (Nat.succ_le_succ (Nat.zero_le t))]
+                    rfl
+                  exact nomatch (hveil.symm.trans hv)
+              | zero =>
+                  rw [hP] at hslip
+                  cases rest with
+                  | nil =>
+                      injection hslip with _ hqnil
+                      cases hq : (brand (t + 1) k).1 with
+                      | succ q₀ =>
+                          rw [hq] at hqnil
+                          exact nomatch hqnil
+                      | zero =>
+                          have hd' : s (t + 2) = n := by
+                            have hd := the_dial_reads_true (t + 1) s hg hf n
+                            rw [hP] at hd
+                            exact hd
+                          have hn' : n = 1 := by
+                            rw [← hd']
+                            exact the_rail_reads_one t s hf
+                          subst hn'
+                          have hw1 : W s (t + 1) 1 = 1 := by
+                            show s (t + 1 + 0) + 0 = 1
+                            exact the_floor_reads_one t s hf
+                          have hg1 : groom s (t + 1) (W s (t + 1) 1) = 0 := by
+                            rw [hw1]
+                            show W s (t + 1) 1
+                                - cond (sash (t + 1) (crank (t + 1) (1 + 1))) 1 0 = 0
+                            rw [hw1]
+                            rfl
+                          have hcr3 : crank (t + 1) (1 + 1 + 1) = [2] := by
+                            show tick (t + 1) (crank (t + 1) (1 + 1)) = [2]
+                            exact the_tick_climbs_the_floor (t + 1) 1
+                              (Nat.succ_le_succ (Nat.zero_le t))
+                          have hb2v : bride s (t + 1) (1 + 1) = 1 + 1 := by
+                            show W s (t + 1) (1 + 1)
+                                + cond (veil (t + 1) (crank (t + 1) (1 + 1 + 1))) 1 0
+                              = 1 + 1
+                            rw [hcr3]
+                            have hw2 : W s (t + 1) (1 + 1) = 1 := by
+                              show s (t + 1 + 1 + 0) + 0 = 1
+                              exact the_rail_reads_one t s hf
+                            rw [hw2]
+                            rfl
+                          rw [hg1, the_coil_rests_at_zero t s t, hb2v]
+                  | cons γ rest' =>
+                      have hslip2 : cond (Nat.beq γ (t + 1))
+                            (lift (t + 1 + 1) (perch (t + 1) rest'))
+                            (0 :: (γ - 1) :: rest')
+                          = 0 :: unfurl (t + 1) (brand (t + 1) k).1 [] := hslip
+                      cases hbq : Nat.beq γ (t + 1) with
+                      | true =>
+                          rw [hbq] at hslip2
+                          cases hpr : perch (t + 1) rest' with
+                          | nil => exact absurd hpr (the_perch_never_blanks (t + 1) rest')
+                          | cons h0 hs0 =>
+                              rw [hpr] at hslip2
+                              injection hslip2 with hh _
+                              exact nomatch hh
+                      | false =>
+                          rw [hbq] at hslip2
+                          injection hslip2 with _ htail
+                          cases hq : (brand (t + 1) k).1 with
+                          | zero =>
+                              rw [hq] at htail
+                              exact nomatch htail
+                          | succ q₀ =>
+                              rw [hq] at htail
+                              injection htail with hγ hrest'
+                              cases γ with
+                              | zero => exact nomatch hγ
+                              | succ γ' =>
+                                  have hγ'' : γ' = t + 1 := hγ
+                                  subst hγ''
+                                  subst hrest'
+                                  rw [hq] at hrk
+                                  have hVn1 : W s (t + 1) n + 1 = s (t + (k + 1) + 2) :=
+                                    a_crossing_reads_its_stair t s hg hf
+                                      (W s (t + 1) n) (k + 1) hpageW
+                                  have hVVn : W s (t + 1) (W s (t + 1) n)
+                                      = s (t + k + 2) := by
+                                    have hpu' : assay s (t + 1)
+                                          (0 :: unfurl (t + 1) (q₀ + 1) [])
+                                          + s (t + 2)
+                                        = s (t + rungs (t + 1) (q₀ + 1) + 0 + 2)
+                                          + s (t + 1) :=
+                                      a_purse_and_a_stair_make_a_beacon (t + 1) s hg
+                                        (q₀ + 1) 0 t
+                                    rw [the_rail_reads_one t s hf,
+                                      the_floor_reads_one t s hf] at hpu'
+                                    have hWVn : W s (t + 1) (W s (t + 1) n)
+                                        = assay s (t + 1)
+                                          (0 :: unfurl (t + 1) (q₀ + 1) []) := by
+                                      show assay s (t + 1)
+                                        (crank (t + 1) (W s (t + 1) n)) = _
+                                      rw [hcVn, hq]
+                                    rw [hWVn]
+                                    have h' := unstack
+                                      (assay s (t + 1) (0 :: unfurl (t + 1) (q₀ + 1) []))
+                                      (s (t + rungs (t + 1) (q₀ + 1) + 0 + 2)) 1 hpu'
+                                    rw [h']
+                                    show s (t + rungs (t + 1) (q₀ + 1) + 2) = s (t + k + 2)
+                                    rw [hrk]
+                                  have hglow : 1 ≤ W s (t + 1) (W s (t + 1) n) := by
+                                    show 1 ≤ assay s (t + 1)
+                                      (crank (t + 1) (W s (t + 1) n))
+                                    rw [hcVn]
+                                    exact the_walk_glows_on_a_written_page t s hg hf 0
+                                      (unfurl (t + 1) (brand (t + 1) k).1 [])
+                                  have hgVn : groom s (t + 1) (W s (t + 1) n) + 1
+                                      = s (t + k + 2) := by
+                                    show (W s (t + 1) (W s (t + 1) n)
+                                        - cond (sash (t + 1)
+                                          (crank (t + 1) (W s (t + 1) n + 1))) 1 0) + 1
+                                      = s (t + k + 2)
+                                    rw [hs]
+                                    show (W s (t + 1) (W s (t + 1) n) - 1) + 1
+                                      = s (t + k + 2)
+                                    rw [sub_one_back (W s (t + 1) (W s (t + 1) n)) hglow]
+                                    exact hVVn
+                                  have hkq : rungs (t + 1) q₀ + t + 2 = k := by
+                                    rw [← hrk]
+                                    rfl
+                                  have hwound : coil (W s (t + 1)) t
+                                        (groom s (t + 1) (W s (t + 1) n)) + 1
+                                      = s (rungs (t + 1) q₀ + t + 4) := by
+                                    apply the_wounded_beacon_rides_the_coil t s hg hf
+                                      (rungs (t + 1) q₀ + t + 1)
+                                      (groom s (t + 1) (W s (t + 1) n))
+                                    · have hbb : brand (t + 1)
+                                          (rungs (t + 1) q₀ + (t + 1)) = (q₀, t + 1) :=
+                                        the_brand_climbs_the_rungs (t + 1) q₀ (t + 1)
+                                          (Nat.le_refl (t + 1))
+                                      show (brand (t + 1)
+                                        (rungs (t + 1) q₀ + (t + 1))).2 = t + 1
+                                      rw [hbb]
+                                    · rw [hgVn]
+                                      show s (t + k + 2)
+                                        = s (rungs (t + 1) q₀ + t + 1 + t + 3)
+                                      rw [← hkq]
+                                      show s (t + (rungs (t + 1) q₀ + t + 2) + 2)
+                                        = s (rungs (t + 1) q₀ + t + 1 + t + 3)
+                                      have hidx : t + (rungs (t + 1) q₀ + t + 2) + 2
+                                          = rungs (t + 1) q₀ + t + 1 + t + 3 := by
+                                        show t + (rungs (t + 1) q₀ + t) + 4
+                                          = rungs (t + 1) q₀ + t + 1 + t + 3
+                                        rw [seat_shuffles (rungs (t + 1) q₀ + t) t,
+                                          ← Nat.add_assoc t (rungs (t + 1) q₀) t,
+                                          Nat.add_comm (rungs (t + 1) q₀) t]
+                                      rw [hidx]
+                                  have hcrn1 : crank (t + 1) (n + 1)
+                                      = 1 :: unfurl (t + 1) (q₀ + 1) [] := by
+                                    show tick (t + 1) (crank (t + 1) n) = _
+                                    rw [hP]
+                                    show lift 1 (perch (t + 1)
+                                        ((t + 1 + 1) :: unfurl (t + 1) q₀ []))
+                                      = 1 :: unfurl (t + 1) (q₀ + 1) []
+                                    have hpq : perch (t + 1)
+                                        ((t + 1 + 1) :: unfurl (t + 1) q₀ [])
+                                        = 0 :: (t + 1) :: unfurl (t + 1) q₀ [] := by
+                                      show cond (Nat.beq (t + 1 + 1) (t + 1))
+                                          (lift (t + 1 + 1) (perch (t + 1)
+                                            (unfurl (t + 1) q₀ [])))
+                                          (0 :: (t + 1 + 1 - 1) :: unfurl (t + 1) q₀ [])
+                                        = 0 :: (t + 1) :: unfurl (t + 1) q₀ []
+                                      rw [beq_shuts_high (t + 1) (t + 1 + 1)
+                                        (Nat.le_refl (t + 1 + 1))]
+                                      rfl
+                                    rw [hpq]
+                                    rfl
+                                  have hveil2 : veil (t + 1)
+                                      (crank (t + 1) (n + 1 + 1)) = true := by
+                                    have hct : crank (t + 1) (n + 1 + 1)
+                                        = [rungs (t + 1) (q₀ + 1) + 1 + 1] := by
+                                      show tick (t + 1) (crank (t + 1) (n + 1)) = _
+                                      rw [hcrn1]
+                                      have huntick : untick (t + 1)
+                                          [rungs (t + 1) (q₀ + 1) + 1 + 1]
+                                          = 1 :: unfurl (t + 1) (q₀ + 1) [] := by
+                                        show (brand (t + 1)
+                                            (rungs (t + 1) (q₀ + 1) + 1)).2
+                                          :: unfurl (t + 1) (brand (t + 1)
+                                            (rungs (t + 1) (q₀ + 1) + 1)).1 [] = _
+                                        rw [the_brand_climbs_the_rungs (t + 1) (q₀ + 1) 1
+                                          (Nat.succ_le_succ (Nat.zero_le t))]
+                                      rw [← huntick]
+                                      exact the_tick_comes_home (t + 1)
+                                        [rungs (t + 1) (q₀ + 1) + 1 + 1] True.intro
+                                        (fun h => nomatch h)
+                                    rw [hct]
+                                    show Nat.beq (brand (t + 1)
+                                        (rungs (t + 1) (q₀ + 1) + 1)).2 1 = true
+                                    rw [the_brand_climbs_the_rungs (t + 1) (q₀ + 1) 1
+                                      (Nat.succ_le_succ (Nat.zero_le t))]
+                                    rfl
+                                  have hVnn : W s (t + 1) (n + 1) + 1
+                                      = s (t + rungs (t + 1) (q₀ + 1) + 3) := by
+                                    have hpu' : assay s (t + 1)
+                                          (1 :: unfurl (t + 1) (q₀ + 1) []) + s (t + 3)
+                                        = s (t + rungs (t + 1) (q₀ + 1) + 1 + 2)
+                                          + s (t + 2) :=
+                                      a_purse_and_a_stair_make_a_beacon (t + 1) s hg
+                                        (q₀ + 1) 1 t
+                                    rw [the_first_flight_reads_two t s hg hf,
+                                      the_rail_reads_one t s hf] at hpu'
+                                    have hWn1 : W s (t + 1) (n + 1)
+                                        = assay s (t + 1)
+                                          (1 :: unfurl (t + 1) (q₀ + 1) []) := by
+                                      show assay s (t + 1) (crank (t + 1) (n + 1)) = _
+                                      rw [hcrn1]
+                                    rw [hWn1]
+                                    have h' := Nat.succ.inj hpu'
+                                    rw [h']
+                                  have hn2 : n + 1 + 1
+                                      = s (t + rungs (t + 1) (q₀ + 1) + 4) := by
+                                    have hpu' : assay s (t + 1 + 1)
+                                          (1 :: unfurl (t + 1) (q₀ + 1) [])
+                                          + s (t + 1 + 1 + 2)
+                                        = s (t + 1 + rungs (t + 1) (q₀ + 1) + 1 + 2)
+                                          + s (t + 1 + 1 + 1) :=
+                                      a_purse_and_a_stair_make_a_beacon (t + 1) s hg
+                                        (q₀ + 1) 1 (t + 1)
+                                    have hpu'' : assay s (t + 1 + 1)
+                                          (1 :: unfurl (t + 1) (q₀ + 1) []) + s (t + 4)
+                                        = s (t + 1 + rungs (t + 1) (q₀ + 1) + 1 + 2)
+                                          + s (t + 3) := hpu'
+                                    rw [the_second_flight_reads_three t s hg hf,
+                                      the_first_flight_reads_two t s hg hf] at hpu''
+                                    have hdn : assay s (t + 1 + 1)
+                                        (1 :: unfurl (t + 1) (q₀ + 1) []) = n + 1 := by
+                                      have hd := the_dial_reads_true (t + 1) s hg hf (n + 1)
+                                      rw [hcrn1] at hd
+                                      exact hd
+                                    rw [hdn] at hpu''
+                                    have hmid3 : t + 1 + rungs (t + 1) (q₀ + 1) + 1 + 2
+                                        = t + rungs (t + 1) (q₀ + 1) + 4 := by
+                                      rw [seat_shuffles t (rungs (t + 1) (q₀ + 1))]
+                                    rw [hmid3] at hpu''
+                                    have h3 : (n + 1 + 1) + 2
+                                        = s (t + rungs (t + 1) (q₀ + 1) + 4) + 2 := hpu''
+                                    exact unstack (n + 1 + 1)
+                                      (s (t + rungs (t + 1) (q₀ + 1) + 4)) 2 h3
+                                  have hbb1 : bride s (t + 1) (n + 1)
+                                      = W s (t + 1) (n + 1) + 1 := by
+                                    show W s (t + 1) (n + 1)
+                                        + cond (veil (t + 1)
+                                          (crank (t + 1) (n + 1 + 1))) 1 0
+                                      = W s (t + 1) (n + 1) + 1
+                                    rw [hveil2]
+                                    rfl
+                                  rw [hbb1]
+                                  have hsum : (W s (t + 1) (n + 1) + 1
+                                        + coil (W s (t + 1)) t
+                                          (groom s (t + 1) (W s (t + 1) n))) + 1
+                                      = n + 1 + 1 := by
+                                    rw [Nat.add_assoc (W s (t + 1) (n + 1) + 1)
+                                      (coil (W s (t + 1)) t
+                                        (groom s (t + 1) (W s (t + 1) n))) 1,
+                                      hwound]
+                                    rw [hn2]
+                                    have hgnm := gnomon_tn t s hg
+                                      (rungs (t + 1) (q₀ + 1) + 1)
+                                    have hgnm' : s (t + rungs (t + 1) (q₀ + 1) + 4)
+                                        = s (t + rungs (t + 1) (q₀ + 1) + 3)
+                                          + s (rungs (t + 1) (q₀ + 1) + 2) := hgnm
+                                    rw [hgnm', ← hVnn]
+                                    show W s (t + 1) (n + 1) + 1
+                                        + s (rungs (t + 1) q₀ + t + 4)
+                                      = W s (t + 1) (n + 1) + 1
+                                        + s (rungs (t + 1) (q₀ + 1) + 2)
+                                    rfl
+                                  exact Nat.succ.inj hsum
+
+/-- info: 'Foam.Bridges.the_family_marriage_closes_for_the_bride' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_marriage_closes_for_the_bride
+
+theorem the_coil_winds_outward (t : Nat) (s : Nat → Nat) :
+    ∀ (j x : Nat), W s (t + 1) (coil (W s (t + 1)) j x)
+      = coil (W s (t + 1)) j (W s (t + 1) x)
+  | 0, _ => rfl
+  | j + 1, x => the_coil_winds_outward t s j (W s (t + 1) x)
+
+theorem the_family_stays_awake (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat) : 1 ≤ W s (t + 1) (n + 1) := by
+  cases hc : crank (t + 1) (n + 1) with
+  | nil => exact absurd hc (the_tick_never_blanks (t + 1) (crank (t + 1) n))
+  | cons g gs =>
+      show 1 ≤ assay s (t + 1) (crank (t + 1) (n + 1))
+      rw [hc]
+      exact the_walk_glows_on_a_written_page t s hg hf g gs
+
+theorem the_low_seat_glows (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (g : Nat) (gs : List Nat) :
+    1 ≤ assay s (0 + 1) (g :: gs) := by
+  show 1 ≤ s (0 + 1 + g) + assay s (0 + 1 + g + 1) gs
+  rw [Nat.zero_add 1, Nat.add_comm 1 g]
+  exact Nat.le_trans (a_grammar_glows (t + 1) s hg hf g)
+    (Nat.le_add_right (s (g + 1)) (assay s (g + 1 + 1) gs))
+
+/-- info: 'Foam.Bridges.the_coil_winds_outward' does not depend on any axioms -/
+#guard_msgs in #print axioms the_coil_winds_outward
+
+/-- info: 'Foam.Bridges.the_family_stays_awake' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_stays_awake
+
+/-- info: 'Foam.Bridges.the_low_seat_glows' does not depend on any axioms -/
+#guard_msgs in #print axioms the_low_seat_glows
+
+theorem the_slip_reads_back (t : Nat) : ∀ (gs : List Nat) (h : Nat) (rest : List Nat),
+    h + 1 ≤ t + 1 → slip (t + 1) gs = (h + 1) :: rest → gs = (h + 2) :: rest
+  | [], _, _, _, heq => nomatch heq
+  | (g + 1) :: gs', h, rest, _, heq => by
+      have heq' : g :: gs' = (h + 1) :: rest := heq
+      injection heq' with h1 h2
+      rw [h1, h2]
+  | 0 :: gs', h, rest, hle, heq => by
+      cases gs' with
+      | nil =>
+          have heq' : [0] = (h + 1) :: rest := heq
+          injection heq' with h1 _
+          exact nomatch h1
+      | cons γ r =>
+          have heq2 : cond (Nat.beq γ (t + 1))
+              (lift (t + 1 + 1) (perch (t + 1) r)) (0 :: (γ - 1) :: r)
+            = (h + 1) :: rest := heq
+          cases hbq : Nat.beq γ (t + 1) with
+          | true =>
+              rw [hbq] at heq2
+              cases hpr : perch (t + 1) r with
+              | nil => exact absurd hpr (the_perch_never_blanks (t + 1) r)
+              | cons x xs =>
+                  rw [hpr] at heq2
+                  injection heq2 with hx _
+                  have hge : t + 1 + 1 ≤ h + 1 := by
+                    rw [← hx]
+                    exact Nat.le_add_left (t + 1 + 1) x
+                  exact absurd (Nat.le_trans hge hle) (Nat.not_succ_le_self (t + 1))
+          | false =>
+              rw [hbq] at heq2
+              injection heq2 with h1 _
+              exact nomatch h1
+
+/-- info: 'Foam.Bridges.the_slip_reads_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_slip_reads_back
+
+theorem the_shadow_climbs_back (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (j x h : Nat) (rest : List Nat),
+      h + 1 + j ≤ t + 1 →
+      crank (t + 1) (coil (W s (t + 1)) (j + 1) x) = (h + 1) :: rest →
+      crank (t + 1) x = (h + j + 2) :: rest
+  | 0, x, h, rest, hle, heq => by
+      have hsl : slip (t + 1) (crank (t + 1) x) = (h + 1) :: rest := by
+        rw [← the_family_shadow_walks_the_slip t s hg hf x]
+        exact heq
+      exact the_slip_reads_back t (crank (t + 1) x) h rest hle hsl
+  | j + 1, x, h, rest, hle, heq => by
+      have hle2 : h + 1 + j + 1 ≤ t + 1 := hle
+      have hihle : h + 1 + j ≤ t + 1 := Nat.le_of_succ_le hle2
+      have hih := the_shadow_climbs_back t s hg hf j (W s (t + 1) x) h rest hihle heq
+      have hsl : slip (t + 1) (crank (t + 1) x) = (h + j + 1 + 1) :: rest := by
+        rw [← the_family_shadow_walks_the_slip t s hg hf x]
+        exact hih
+      have hle3 : h + j + 1 + 1 ≤ t + 1 := by
+        rw [← seat_shuffles h j]
+        exact hle2
+      exact the_slip_reads_back t (crank (t + 1) x) (h + j + 1) rest hle3 hsl
+
+/-- info: 'Foam.Bridges.the_shadow_climbs_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_shadow_climbs_back
+
+theorem the_family_marriage_closes_for_the_groom (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (hz : s 0 = 0) (n : Nat) :
+    groom s (t + 1) (n + 1)
+      + bride s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n)) = n + 1 := by
+  cases hσ : sash (t + 1) (crank (t + 1) (n + 1)) with
+  | true =>
+      match the_sash_finds_its_beacon (t + 1) (crank (t + 1) (n + 1)) hσ with
+      | ⟨k, hpage, hres0⟩ =>
+        have hr0 : (brand (t + 1) k).2 = 0 := Nat.eq_of_beq_eq_true hres0
+        have hrk : rungs (t + 1) (brand (t + 1) k).1 = k := by
+          have h := the_brand_reads_the_rungs (t + 1) k
+          rw [hr0] at h
+          exact h
+        have hn1 : n + 1 = s (t + (k + 1) + 2) :=
+          a_crossing_reads_its_stair t s hg hf n (k + 1) hpage
+        have hcn : crank (t + 1) n = 0 :: unfurl (t + 1) (brand (t + 1) k).1 [] := by
+          rw [the_crank_steps_back (t + 1) n, hpage]
+          show (brand (t + 1) k).2 :: unfurl (t + 1) (brand (t + 1) k).1 [] = _
+          rw [hr0]
+        have hWn : W s (t + 1) n = s (t + k + 2) := by
+          have hpu' : assay s (t + 1) (0 :: unfurl (t + 1) (brand (t + 1) k).1 [])
+                + s (t + 2)
+              = s (t + rungs (t + 1) (brand (t + 1) k).1 + 0 + 2) + s (t + 1) :=
+            a_purse_and_a_stair_make_a_beacon (t + 1) s hg (brand (t + 1) k).1 0 t
+          rw [the_rail_reads_one t s hf, the_floor_reads_one t s hf] at hpu'
+          have hW : W s (t + 1) n
+              = assay s (t + 1) (0 :: unfurl (t + 1) (brand (t + 1) k).1 []) := by
+            show assay s (t + 1) (crank (t + 1) n) = _
+            rw [hcn]
+          rw [hW]
+          have h' := unstack
+            (assay s (t + 1) (0 :: unfurl (t + 1) (brand (t + 1) k).1 []))
+            (s (t + rungs (t + 1) (brand (t + 1) k).1 + 0 + 2)) 1 hpu'
+          rw [h']
+          show s (t + rungs (t + 1) (brand (t + 1) k).1 + 2) = s (t + k + 2)
+          rw [hrk]
+        have hgroomn : groom s (t + 1) n + 1 = s (t + k + 2) := by
+          show (W s (t + 1) n - cond (sash (t + 1) (crank (t + 1) (n + 1))) 1 0) + 1
+            = s (t + k + 2)
+          rw [hσ]
+          show (W s (t + 1) n - 1) + 1 = s (t + k + 2)
+          have hglow : 1 ≤ W s (t + 1) n := by
+            show 1 ≤ assay s (t + 1) (crank (t + 1) n)
+            rw [hcn]
+            exact the_walk_glows_on_a_written_page t s hg hf 0
+              (unfurl (t + 1) (brand (t + 1) k).1 [])
+          rw [sub_one_back (W s (t + 1) n) hglow]
+          exact hWn
+        cases hq : (brand (t + 1) k).1 with
+        | zero =>
+            have hk0 : k = 0 := by
+              rw [hq] at hrk
+              exact hrk.symm
+            subst hk0
+            have hn1' : n + 1 = 2 := by
+              rw [hn1]
+              exact the_first_flight_reads_two t s hg hf
+            have hn' : n = 1 := Nat.succ.inj hn1'
+            subst hn'
+            have hw1 : W s (t + 1) 1 = 1 := by
+              show s (t + 1 + 0) + 0 = 1
+              exact the_floor_reads_one t s hf
+            have hg1 : groom s (t + 1) 1 = 0 := by
+              show W s (t + 1) 1 - cond (sash (t + 1) (crank (t + 1) (1 + 1))) 1 0 = 0
+              rw [hw1]
+              rfl
+            rw [hg1, the_coil_rests_at_zero t s t]
+            have hcr3 : crank (t + 1) (1 + 1 + 1) = [2] := by
+              show tick (t + 1) (crank (t + 1) (1 + 1)) = [2]
+              exact the_tick_climbs_the_floor (t + 1) 1 (Nat.succ_le_succ (Nat.zero_le t))
+            have hg2 : groom s (t + 1) (1 + 1) = 1 := by
+              show W s (t + 1) (1 + 1)
+                  - cond (sash (t + 1) (crank (t + 1) (1 + 1 + 1))) 1 0 = 1
+              rw [hcr3]
+              have hw2 : W s (t + 1) (1 + 1) = 1 := by
+                show s (t + 1 + 1 + 0) + 0 = 1
+                exact the_rail_reads_one t s hf
+              rw [hw2]
+              rfl
+            rw [hg2]
+            rfl
+        | succ q₀ =>
+            have hkq : rungs (t + 1) q₀ + t + 2 = k := by
+              rw [hq] at hrk
+              exact hrk
+            have hwound : coil (W s (t + 1)) t (groom s (t + 1) n) + 1
+                = s (rungs (t + 1) q₀ + t + 4) := by
+              apply the_wounded_beacon_rides_the_coil t s hg hf
+                (rungs (t + 1) q₀ + t + 1) (groom s (t + 1) n)
+              · have hbb : brand (t + 1) (rungs (t + 1) q₀ + (t + 1)) = (q₀, t + 1) :=
+                  the_brand_climbs_the_rungs (t + 1) q₀ (t + 1) (Nat.le_refl (t + 1))
+                show (brand (t + 1) (rungs (t + 1) q₀ + (t + 1))).2 = t + 1
+                rw [hbb]
+              · rw [hgroomn]
+                show s (t + k + 2) = s (rungs (t + 1) q₀ + t + 1 + t + 3)
+                rw [← hkq]
+                have hidx : t + (rungs (t + 1) q₀ + t + 2) + 2
+                    = rungs (t + 1) q₀ + t + 1 + t + 3 := by
+                  show t + (rungs (t + 1) q₀ + t) + 4
+                    = rungs (t + 1) q₀ + t + 1 + t + 3
+                  rw [seat_shuffles (rungs (t + 1) q₀ + t) t,
+                    ← Nat.add_assoc t (rungs (t + 1) q₀) t,
+                    Nat.add_comm (rungs (t + 1) q₀) t]
+                rw [hidx]
+            have hcrch : crank (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n) + 1)
+                = [rungs (t + 1) q₀ + 2] := by
+              have h := the_crank_at_a_stair_number_is_one_stride (t + 1)
+                (rungs (t + 1) q₀ + 2) s hg hf
+              have hidx2 : t + 1 + (rungs (t + 1) q₀ + 2) + 1
+                  = rungs (t + 1) q₀ + t + 4 := by
+                show t + 1 + rungs (t + 1) q₀ + 3 = rungs (t + 1) q₀ + t + 4
+                rw [seat_shuffles t (rungs (t + 1) q₀),
+                  Nat.add_comm t (rungs (t + 1) q₀)]
+              rw [hidx2] at h
+              rw [hwound]
+              exact h
+            have hcch : crank (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n))
+                = 1 :: unfurl (t + 1) q₀ [] := by
+              rw [the_crank_steps_back (t + 1)
+                (coil (W s (t + 1)) t (groom s (t + 1) n)), hcrch]
+              show (brand (t + 1) (rungs (t + 1) q₀ + 1)).2
+                  :: unfurl (t + 1) (brand (t + 1) (rungs (t + 1) q₀ + 1)).1 [] = _
+              rw [the_brand_climbs_the_rungs (t + 1) q₀ 1
+                (Nat.succ_le_succ (Nat.zero_le t))]
+            have hWch : W s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n)) + 1
+                = s (t + rungs (t + 1) q₀ + 3) := by
+              have hpu' : assay s (t + 1) (1 :: unfurl (t + 1) q₀ []) + s (t + 3)
+                  = s (t + rungs (t + 1) q₀ + 1 + 2) + s (t + 2) :=
+                a_purse_and_a_stair_make_a_beacon (t + 1) s hg q₀ 1 t
+              rw [the_first_flight_reads_two t s hg hf, the_rail_reads_one t s hf] at hpu'
+              have hW : W s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n))
+                  = assay s (t + 1) (1 :: unfurl (t + 1) q₀ []) := by
+                show assay s (t + 1)
+                  (crank (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n))) = _
+                rw [hcch]
+              rw [hW]
+              exact Nat.succ.inj hpu'
+            have hbridech : bride s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n))
+                = s (t + rungs (t + 1) q₀ + 3) := by
+              show W s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n))
+                  + cond (veil (t + 1) (crank (t + 1)
+                    (coil (W s (t + 1)) t (groom s (t + 1) n) + 1))) 1 0
+                = s (t + rungs (t + 1) q₀ + 3)
+              rw [hcrch]
+              have hveilch : veil (t + 1) [rungs (t + 1) q₀ + 2] = true := by
+                show Nat.beq (brand (t + 1) (rungs (t + 1) q₀ + 1)).2 1 = true
+                rw [the_brand_climbs_the_rungs (t + 1) q₀ 1
+                  (Nat.succ_le_succ (Nat.zero_le t))]
+                rfl
+              rw [hveilch]
+              exact hWch
+            have hWn1 : W s (t + 1) (n + 1) = s (t + k + 2) := by
+              rw [hn1]
+              exact the_family_beacon_slides t (k + 1) s hg hf
+            have hsashn2 : sash (t + 1) (crank (t + 1) (n + 1 + 1)) = false := by
+              have hct : crank (t + 1) (n + 1 + 1) = tick (t + 1) [k + 1] := by
+                show tick (t + 1) (crank (t + 1) (n + 1)) = tick (t + 1) [k + 1]
+                rw [hpage]
+              rw [hct]
+              have hk1 : k + 1 = rungs (t + 1) q₀ + t + 1 + 2 := by
+                rw [← hkq]
+              rw [hk1]
+              exact the_sash_rests_above_a_tall_stair (t + 1) (rungs (t + 1) q₀ + t + 1)
+            have hgn1 : groom s (t + 1) (n + 1) = s (t + k + 2) := by
+              show W s (t + 1) (n + 1)
+                  - cond (sash (t + 1) (crank (t + 1) (n + 1 + 1))) 1 0 = s (t + k + 2)
+              rw [hsashn2, hWn1]
+              rfl
+            rw [hgn1, hbridech, hn1]
+            show s (t + k + 2) + s (t + rungs (t + 1) q₀ + 3) = s (t + k + 3)
+            have hkk : t + rungs (t + 1) q₀ + 3 = k + 1 := by
+              rw [← hkq]
+              show t + rungs (t + 1) q₀ + 3 = rungs (t + 1) q₀ + t + 3
+              rw [Nat.add_comm t (rungs (t + 1) q₀)]
+            rw [hkk]
+            exact (gnomon_tn t s hg k).symm
+  | false =>
+      have hgnf : groom s (t + 1) n = W s (t + 1) n := by
+        show W s (t + 1) n - cond (sash (t + 1) (crank (t + 1) (n + 1))) 1 0
+          = W s (t + 1) n
+        rw [hσ]
+        rfl
+      rw [hgnf]
+      cases hgn2 : sash (t + 1) (crank (t + 1) (n + 1 + 1)) with
+      | false =>
+          cases hb : veil (t + 1)
+            (crank (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n) + 1)) with
+          | false =>
+              have hbch : bride s (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n))
+                  = W s (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n)) := by
+                show W s (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n))
+                    + cond (veil (t + 1) (crank (t + 1)
+                      (coil (W s (t + 1)) t (W s (t + 1) n) + 1))) 1 0 = _
+                rw [hb]
+                rfl
+              have hgn1f : groom s (t + 1) (n + 1) = W s (t + 1) (n + 1) := by
+                show W s (t + 1) (n + 1)
+                    - cond (sash (t + 1) (crank (t + 1) (n + 1 + 1))) 1 0 = _
+                rw [hgn2]
+                rfl
+              rw [hgn1f, hbch, the_coil_winds_outward t s t (W s (t + 1) n)]
+              exact the_family_loop_closes t s hg hf hz n
+          | true =>
+              cases the_veil_finds_its_beacon (t + 1)
+                (crank (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n) + 1)) hb with
+              | inl h0 =>
+                  have hch1 : coil (W s (t + 1)) t (W s (t + 1) n) + 1
+                      = s (t + 0 + 2) :=
+                    a_crossing_reads_its_stair t s hg hf
+                      (coil (W s (t + 1)) t (W s (t + 1) n)) 0 h0
+                  have hch1' : coil (W s (t + 1)) t (W s (t + 1) n) + 1 = 1 := by
+                    rw [hch1]
+                    exact the_rail_reads_one t s hf
+                  have hch0 : coil (W s (t + 1)) t (W s (t + 1) n) = 0 :=
+                    Nat.succ.inj hch1'
+                  have hsh := the_shadows_descend t s hg hf t 0 n
+                    (congrArg (· + 1) (Nat.zero_add t))
+                  cases hP : crank (t + 1) n with
+                  | cons g gs =>
+                      have hglow : 1 ≤ assay s (0 + 1) (crank (t + 1) n) := by
+                        rw [hP]
+                        exact the_low_seat_glows t s hg hf g gs
+                      rw [← hsh] at hglow
+                      have hglow' : 1 ≤ coil (W s (t + 1)) t (W s (t + 1) n) := hglow
+                      rw [hch0] at hglow'
+                      exact absurd hglow' (Nat.not_succ_le_zero 0)
+                  | nil =>
+                      have hd : assay s (t + 1 + 1) (crank (t + 1) n) = n :=
+                        the_dial_reads_true (t + 1) s hg hf n
+                      rw [hP] at hd
+                      rw [← hd] at hgn2
+                      exact nomatch hgn2
+              | inr hex =>
+                  match hex with
+                  | ⟨j, hpagec, hresc⟩ =>
+                    have hr1 : (brand (t + 1) j).2 = 1 := Nat.eq_of_beq_eq_true hresc
+                    have hcch : crank (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n))
+                        = 1 :: unfurl (t + 1) (brand (t + 1) j).1 [] := by
+                      rw [the_crank_steps_back (t + 1)
+                        (coil (W s (t + 1)) t (W s (t + 1) n)), hpagec]
+                      show (brand (t + 1) j).2
+                          :: unfurl (t + 1) (brand (t + 1) j).1 [] = _
+                      rw [hr1]
+                    have hpin : crank (t + 1) n
+                        = (0 + t + 2) :: unfurl (t + 1) (brand (t + 1) j).1 [] := by
+                      apply the_shadow_climbs_back t s hg hf t n 0
+                        (unfurl (t + 1) (brand (t + 1) j).1 [])
+                      · show 0 + 1 + t ≤ t + 1
+                        rw [Nat.zero_add 1, Nat.add_comm 1 t]
+                        exact Nat.le_refl (t + 1)
+                      · exact hcch
+                    have hpin' : crank (t + 1) n
+                        = (t + 1 + 1) :: unfurl (t + 1) (brand (t + 1) j).1 [] := by
+                      rw [hpin]
+                      show (0 + t + 2) :: unfurl (t + 1) (brand (t + 1) j).1 []
+                        = (t + 1 + 1) :: unfurl (t + 1) (brand (t + 1) j).1 []
+                      rw [Nat.zero_add t]
+                    have hpu := a_purse_and_a_stair_make_a_beacon (t + 1) s hg
+                      (brand (t + 1) j).1 (t + 1 + 1) (t + 1)
+                    have hXY : s (t + 1 + (t + 1 + 1) + 2)
+                        = s (t + 1 + (t + 1 + 1) + 1) + s (t + 3) := by
+                      have h := hg (t + 2)
+                      rw [Nat.add_comm (t + 2) (t + 1)] at h
+                      exact h
+                    rw [hXY, the_first_flight_reads_two t s hg hf] at hpu
+                    rw [← Nat.add_assoc
+                      (assay s (t + 1 + 1)
+                        ((t + 1 + 1) :: unfurl (t + 1) (brand (t + 1) j).1 []))
+                      (s (t + 1 + (t + 1 + 1) + 1)) 2] at hpu
+                    rw [add_swap_right
+                      (assay s (t + 1 + 1)
+                        ((t + 1 + 1) :: unfurl (t + 1) (brand (t + 1) j).1 []))
+                      (s (t + 1 + (t + 1 + 1) + 1)) 2] at hpu
+                    have hA2 := unstack
+                      (assay s (t + 1 + 1)
+                        ((t + 1 + 1) :: unfurl (t + 1) (brand (t + 1) j).1 []) + 2)
+                      (s (t + 1 + rungs (t + 1) (brand (t + 1) j).1 + (t + 1 + 1) + 2))
+                      (s (t + 1 + (t + 1 + 1) + 1)) hpu
+                    have hdn : assay s (t + 1 + 1)
+                        ((t + 1 + 1) :: unfurl (t + 1) (brand (t + 1) j).1 []) = n := by
+                      have hd := the_dial_reads_true (t + 1) s hg hf n
+                      rw [hpin'] at hd
+                      exact hd
+                    rw [hdn] at hA2
+                    have hcr2 : crank (t + 1) (n + 1 + 1)
+                        = [rungs (t + 1) (brand (t + 1) j).1 + t + 3] := by
+                      have h := the_crank_at_a_stair_number_is_one_stride (t + 1)
+                        (rungs (t + 1) (brand (t + 1) j).1 + t + 3) s hg hf
+                      have hidx : t + 1 + (rungs (t + 1) (brand (t + 1) j).1 + t + 3) + 1
+                          = t + 1 + rungs (t + 1) (brand (t + 1) j).1 + (t + 1 + 1) + 2 := by
+                        show t + 1 + (rungs (t + 1) (brand (t + 1) j).1 + t) + 4
+                          = t + 1 + rungs (t + 1) (brand (t + 1) j).1 + t + 4
+                        rw [← Nat.add_assoc (t + 1) (rungs (t + 1) (brand (t + 1) j).1) t]
+                      rw [hidx] at h
+                      rw [← hA2] at h
+                      exact h
+                    have hsash2 : sash (t + 1)
+                        [rungs (t + 1) (brand (t + 1) j).1 + t + 3] = true := by
+                      show Nat.beq (brand (t + 1)
+                          (rungs (t + 1) (brand (t + 1) j).1 + t + 2)).2 0 = true
+                      have hb' : brand (t + 1)
+                          (rungs (t + 1) ((brand (t + 1) j).1 + 1)) = ((brand (t + 1) j).1 + 1, 0) :=
+                        the_brand_mounts_the_rungs (t + 1) ((brand (t + 1) j).1 + 1)
+                      have hb'' : brand (t + 1)
+                          (rungs (t + 1) (brand (t + 1) j).1 + t + 2)
+                          = ((brand (t + 1) j).1 + 1, 0) := hb'
+                      rw [hb'']
+                      rfl
+                    rw [hcr2] at hgn2
+                    exact nomatch (hsash2.symm.trans hgn2)
+      | true =>
+          match the_sash_finds_its_beacon (t + 1) (crank (t + 1) (n + 1 + 1)) hgn2 with
+          | ⟨k, hpage2, hres0⟩ =>
+            have hr0 : (brand (t + 1) k).2 = 0 := Nat.eq_of_beq_eq_true hres0
+            have hrk : rungs (t + 1) (brand (t + 1) k).1 = k := by
+              have h := the_brand_reads_the_rungs (t + 1) k
+              rw [hr0] at h
+              exact h
+            have hcn1 : crank (t + 1) (n + 1)
+                = 0 :: unfurl (t + 1) (brand (t + 1) k).1 [] := by
+              rw [the_crank_steps_back (t + 1) (n + 1), hpage2]
+              show (brand (t + 1) k).2 :: unfurl (t + 1) (brand (t + 1) k).1 [] = _
+              rw [hr0]
+            cases hq : (brand (t + 1) k).1 with
+            | zero =>
+                rw [hq] at hcn1
+                have hd : assay s (t + 1 + 1) (crank (t + 1) (n + 1)) = n + 1 :=
+                  the_dial_reads_true (t + 1) s hg hf (n + 1)
+                rw [hcn1] at hd
+                have hd' : s (t + 2) = n + 1 := hd
+                have hn0 : n + 1 = 1 := by
+                  rw [← hd']
+                  exact the_rail_reads_one t s hf
+                have hn0' : n = 0 := Nat.succ.inj hn0
+                subst hn0'
+                have hw1 : W s (t + 1) 1 = 1 := by
+                  show s (t + 1 + 0) + 0 = 1
+                  exact the_floor_reads_one t s hf
+                have hg1 : groom s (t + 1) (0 + 1) = 0 := by
+                  show W s (t + 1) 1 - cond (sash (t + 1) (crank (t + 1) (1 + 1))) 1 0 = 0
+                  rw [hw1]
+                  rfl
+                rw [hg1]
+                show 0 + bride s (t + 1) (coil (W s (t + 1)) t 0) = 0 + 1
+                rw [the_coil_rests_at_zero t s t]
+                rfl
+            | succ q₀ =>
+                have hcn0 : crank (t + 1) n
+                    = (t + 1 + 1) :: unfurl (t + 1) q₀ [] := by
+                  rw [the_crank_steps_back (t + 1) n, hcn1, hq]
+                  rfl
+                have hkq : rungs (t + 1) q₀ + t + 2 = k := by
+                  rw [hq] at hrk
+                  exact hrk
+                have hsh := the_shadows_descend t s hg hf t 0 n
+                  (congrArg (· + 1) (Nat.zero_add t))
+                have hpu' : assay s (0 + 1) ((t + 1 + 1) :: unfurl (t + 1) q₀ [])
+                      + s (0 + (t + 1 + 1) + 2)
+                    = s (0 + rungs (t + 1) q₀ + (t + 1 + 1) + 2)
+                      + s (0 + (t + 1 + 1) + 1) :=
+                  a_purse_and_a_stair_make_a_beacon (t + 1) s hg q₀ (t + 1 + 1) 0
+                have hpu'' : assay s (0 + 1) ((t + 1 + 1) :: unfurl (t + 1) q₀ [])
+                      + s (t + 1 + 3)
+                    = s (0 + rungs (t + 1) q₀ + (t + 1 + 1) + 2) + s (t + 1 + 2) := by
+                  have h1 : (0 : Nat) + (t + 1 + 1) + 2 = t + 1 + 3 := by
+                    rw [Nat.zero_add (t + 1 + 1)]
+                  have h2 : (0 : Nat) + (t + 1 + 1) + 1 = t + 1 + 2 := by
+                    rw [Nat.zero_add (t + 1 + 1)]
+                  rw [h1, h2] at hpu'
+                  exact hpu'
+                rw [the_second_flight_reads_three t s hg hf,
+                  the_first_flight_reads_two t s hg hf] at hpu''
+                have hchain : coil (W s (t + 1)) t (W s (t + 1) n) + 1
+                    = s (rungs (t + 1) q₀ + t + 4) := by
+                  have hchsh : coil (W s (t + 1)) t (W s (t + 1) n)
+                      = assay s (0 + 1) ((t + 1 + 1) :: unfurl (t + 1) q₀ []) := by
+                    have hsh' : coil (W s (t + 1)) t (W s (t + 1) n)
+                        = assay s (0 + 1) (crank (t + 1) n) := hsh
+                    rw [hsh', hcn0]
+                  rw [hchsh]
+                  have h3 := unstack
+                    (assay s (0 + 1) ((t + 1 + 1) :: unfurl (t + 1) q₀ []) + 1)
+                    (s (0 + rungs (t + 1) q₀ + (t + 1 + 1) + 2)) 2 hpu''
+                  rw [h3]
+                  show s (0 + rungs (t + 1) q₀ + (t + 1 + 1) + 2)
+                    = s (rungs (t + 1) q₀ + t + 4)
+                  rw [Nat.zero_add (rungs (t + 1) q₀)]
+                  rfl
+                have hcrch : crank (t + 1)
+                    (coil (W s (t + 1)) t (W s (t + 1) n) + 1)
+                    = [rungs (t + 1) q₀ + 2] := by
+                  have h := the_crank_at_a_stair_number_is_one_stride (t + 1)
+                    (rungs (t + 1) q₀ + 2) s hg hf
+                  have hidx2 : t + 1 + (rungs (t + 1) q₀ + 2) + 1
+                      = rungs (t + 1) q₀ + t + 4 := by
+                    show t + 1 + rungs (t + 1) q₀ + 3 = rungs (t + 1) q₀ + t + 4
+                    rw [seat_shuffles t (rungs (t + 1) q₀),
+                      Nat.add_comm t (rungs (t + 1) q₀)]
+                  rw [hidx2] at h
+                  rw [hchain]
+                  exact h
+                have hcch : crank (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n))
+                    = 1 :: unfurl (t + 1) q₀ [] := by
+                  rw [the_crank_steps_back (t + 1)
+                    (coil (W s (t + 1)) t (W s (t + 1) n)), hcrch]
+                  show (brand (t + 1) (rungs (t + 1) q₀ + 1)).2
+                      :: unfurl (t + 1) (brand (t + 1) (rungs (t + 1) q₀ + 1)).1 [] = _
+                  rw [the_brand_climbs_the_rungs (t + 1) q₀ 1
+                    (Nat.succ_le_succ (Nat.zero_le t))]
+                have hWch : W s (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n)) + 1
+                    = s (t + rungs (t + 1) q₀ + 3) := by
+                  have hpu2 : assay s (t + 1) (1 :: unfurl (t + 1) q₀ []) + s (t + 3)
+                      = s (t + rungs (t + 1) q₀ + 1 + 2) + s (t + 2) :=
+                    a_purse_and_a_stair_make_a_beacon (t + 1) s hg q₀ 1 t
+                  rw [the_first_flight_reads_two t s hg hf,
+                    the_rail_reads_one t s hf] at hpu2
+                  have hW : W s (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n))
+                      = assay s (t + 1) (1 :: unfurl (t + 1) q₀ []) := by
+                    show assay s (t + 1)
+                      (crank (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n))) = _
+                    rw [hcch]
+                  rw [hW]
+                  exact Nat.succ.inj hpu2
+                have hbridech : bride s (t + 1)
+                    (coil (W s (t + 1)) t (W s (t + 1) n))
+                    = s (t + rungs (t + 1) q₀ + 3) := by
+                  show W s (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n))
+                      + cond (veil (t + 1) (crank (t + 1)
+                        (coil (W s (t + 1)) t (W s (t + 1) n) + 1))) 1 0
+                    = s (t + rungs (t + 1) q₀ + 3)
+                  rw [hcrch]
+                  have hveilch : veil (t + 1) [rungs (t + 1) q₀ + 2] = true := by
+                    show Nat.beq (brand (t + 1) (rungs (t + 1) q₀ + 1)).2 1 = true
+                    rw [the_brand_climbs_the_rungs (t + 1) q₀ 1
+                      (Nat.succ_le_succ (Nat.zero_le t))]
+                    rfl
+                  rw [hveilch]
+                  exact hWch
+                have hWn1 : W s (t + 1) (n + 1)
+                    = s (t + rungs (t + 1) (q₀ + 1) + 2) := by
+                  have hpu2 : assay s (t + 1) (0 :: unfurl (t + 1) (q₀ + 1) [])
+                        + s (t + 2)
+                      = s (t + rungs (t + 1) (q₀ + 1) + 0 + 2) + s (t + 1) :=
+                    a_purse_and_a_stair_make_a_beacon (t + 1) s hg (q₀ + 1) 0 t
+                  rw [the_rail_reads_one t s hf, the_floor_reads_one t s hf] at hpu2
+                  have hW : W s (t + 1) (n + 1)
+                      = assay s (t + 1) (0 :: unfurl (t + 1) (q₀ + 1) []) := by
+                    show assay s (t + 1) (crank (t + 1) (n + 1)) = _
+                    rw [hcn1, hq]
+                  rw [hW]
+                  have h' := unstack
+                    (assay s (t + 1) (0 :: unfurl (t + 1) (q₀ + 1) []))
+                    (s (t + rungs (t + 1) (q₀ + 1) + 0 + 2)) 1 hpu2
+                  rw [h']
+                have hgro : groom s (t + 1) (n + 1) + 1 = W s (t + 1) (n + 1) := by
+                  show (W s (t + 1) (n + 1)
+                      - cond (sash (t + 1) (crank (t + 1) (n + 1 + 1))) 1 0) + 1
+                    = W s (t + 1) (n + 1)
+                  rw [hgn2]
+                  exact sub_one_back (W s (t + 1) (n + 1))
+                    (the_family_stays_awake t s hg hf n)
+                have hn2 : n + 1 + 1 = s (t + rungs (t + 1) (q₀ + 1) + 3) := by
+                  have hpu2 : assay s (t + 1 + 1) (0 :: unfurl (t + 1) (q₀ + 1) [])
+                        + s (t + 1 + 0 + 2)
+                      = s (t + 1 + rungs (t + 1) (q₀ + 1) + 0 + 2)
+                        + s (t + 1 + 0 + 1) :=
+                    a_purse_and_a_stair_make_a_beacon (t + 1) s hg (q₀ + 1) 0 (t + 1)
+                  have hpu3 : assay s (t + 1 + 1) (0 :: unfurl (t + 1) (q₀ + 1) [])
+                        + s (t + 3)
+                      = s (t + 1 + rungs (t + 1) (q₀ + 1) + 0 + 2) + s (t + 2) := hpu2
+                  rw [the_first_flight_reads_two t s hg hf,
+                    the_rail_reads_one t s hf] at hpu3
+                  have hdn : assay s (t + 1 + 1) (0 :: unfurl (t + 1) (q₀ + 1) [])
+                      = n + 1 := by
+                    have hd := the_dial_reads_true (t + 1) s hg hf (n + 1)
+                    rw [hcn1, hq] at hd
+                    exact hd
+                  rw [hdn] at hpu3
+                  have h3 : (n + 1 + 1) + 1
+                      = s (t + 1 + rungs (t + 1) (q₀ + 1) + 0 + 2) + 1 := hpu3
+                  have h4 := Nat.succ.inj h3
+                  rw [h4]
+                  show s (t + 1 + rungs (t + 1) (q₀ + 1) + 2)
+                    = s (t + rungs (t + 1) (q₀ + 1) + 3)
+                  rw [seat_shuffles t (rungs (t + 1) (q₀ + 1))]
+                have hsum : (groom s (t + 1) (n + 1)
+                      + bride s (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n))) + 1
+                    = n + 1 + 1 := by
+                  rw [add_swap_right (groom s (t + 1) (n + 1))
+                    (bride s (t + 1) (coil (W s (t + 1)) t (W s (t + 1) n))) 1,
+                    hgro, hbridech, hWn1, hn2]
+                  have hgnm : s (t + rungs (t + 1) (q₀ + 1) + 3)
+                      = s (t + rungs (t + 1) (q₀ + 1) + 2)
+                        + s (rungs (t + 1) (q₀ + 1) + 1) :=
+                    gnomon_tn t s hg (rungs (t + 1) (q₀ + 1))
+                  rw [hgnm]
+                  show s (t + rungs (t + 1) (q₀ + 1) + 2) + s (t + rungs (t + 1) q₀ + 3)
+                    = s (t + rungs (t + 1) (q₀ + 1) + 2)
+                      + s (rungs (t + 1) (q₀ + 1) + 1)
+                  have hlast : t + rungs (t + 1) q₀ + 3
+                      = rungs (t + 1) (q₀ + 1) + 1 := by
+                    show t + rungs (t + 1) q₀ + 3 = rungs (t + 1) q₀ + (t + 1 + 1) + 1
+                    rw [Nat.add_comm t (rungs (t + 1) q₀)]
+                    rfl
+                  rw [hlast]
+                exact Nat.succ.inj hsum
+
+/-- info: 'Foam.Bridges.the_family_marriage_closes_for_the_groom' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_marriage_closes_for_the_groom
+
+theorem the_family_household_closes (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (hz : s 0 = 0) (n : Nat) :
+    bride s (t + 1) (n + 1)
+        + coil (W s (t + 1)) t (groom s (t + 1) (bride s (t + 1) n)) = n + 1
+      ∧ groom s (t + 1) (n + 1)
+        + bride s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n)) = n + 1 :=
+  ⟨the_family_marriage_closes_for_the_bride t s hg hf hz n,
+    the_family_marriage_closes_for_the_groom t s hg hf hz n⟩
+
+theorem the_grounded_bride_satisfies_the_family_marriage (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (hz : s 0 = 0) (n : Nat) :
+    bride s (t + 1) (n + 1)
+      = (n + 1) - coil (W s (t + 1)) t (groom s (t + 1) (bride s (t + 1) n)) :=
+  calc bride s (t + 1) (n + 1)
+      = (bride s (t + 1) (n + 1)
+          + coil (W s (t + 1)) t (groom s (t + 1) (bride s (t + 1) n)))
+        - coil (W s (t + 1)) t (groom s (t + 1) (bride s (t + 1) n)) :=
+        (add_then_sub (bride s (t + 1) (n + 1))
+          (coil (W s (t + 1)) t (groom s (t + 1) (bride s (t + 1) n)))).symm
+    _ = (n + 1) - coil (W s (t + 1)) t (groom s (t + 1) (bride s (t + 1) n)) := by
+        rw [the_family_marriage_closes_for_the_bride t s hg hf hz n]
+
+theorem the_grounded_groom_satisfies_the_family_marriage (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (hz : s 0 = 0) (n : Nat) :
+    groom s (t + 1) (n + 1)
+      = (n + 1) - bride s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n)) :=
+  calc groom s (t + 1) (n + 1)
+      = (groom s (t + 1) (n + 1)
+          + bride s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n)))
+        - bride s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n)) :=
+        (add_then_sub (groom s (t + 1) (n + 1))
+          (bride s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n)))).symm
+    _ = (n + 1) - bride s (t + 1) (coil (W s (t + 1)) t (groom s (t + 1) n)) := by
+        rw [the_family_marriage_closes_for_the_groom t s hg hf hz n]
+
+/-- info: 'Foam.Bridges.the_family_household_closes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_household_closes
+
+/-- info: 'Foam.Bridges.the_grounded_bride_satisfies_the_family_marriage' does not depend on any axioms -/
+#guard_msgs in #print axioms the_grounded_bride_satisfies_the_family_marriage
+
+/-- info: 'Foam.Bridges.the_grounded_groom_satisfies_the_family_marriage' does not depend on any axioms -/
+#guard_msgs in #print axioms the_grounded_groom_satisfies_the_family_marriage
+
+theorem the_spelling_lights_the_beacon : ∀ (k : Nat), spell [k] = beacon k
+  | 0 => rfl
+  | k + 1 => congrArg (List.cons false) (the_spelling_lights_the_beacon k)
+
+theorem the_rungs_pair_at_the_golden_register : ∀ (j : Nat), rungs 1 j = j + j
+  | 0 => rfl
+  | j + 1 => by
+      show rungs 1 j + 2 = (j + 1) + (j + 1)
+      rw [the_rungs_pair_at_the_golden_register j, seats_pair j]
+
+/-- info: 'Foam.Bridges.the_spelling_lights_the_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spelling_lights_the_beacon
+
+/-- info: 'Foam.Bridges.the_rungs_pair_at_the_golden_register' does not depend on any axioms -/
+#guard_msgs in #print axioms the_rungs_pair_at_the_golden_register
+
+theorem the_veil_skips_two_strides (e g g' : Nat) (rest : List Nat) :
+    veil e (g :: g' :: rest) = false := by
+  cases g with
+  | zero => rfl
+  | succ p => rfl
+
+theorem the_sash_skips_two_strides (e g g' : Nat) (rest : List Nat) :
+    sash e (g :: g' :: rest) = false := by
+  cases g with
+  | zero => rfl
+  | succ p => rfl
+
+/-- info: 'Foam.Bridges.the_veil_skips_two_strides' does not depend on any axioms -/
+#guard_msgs in #print axioms the_veil_skips_two_strides
+
+/-- info: 'Foam.Bridges.the_sash_skips_two_strides' does not depend on any axioms -/
+#guard_msgs in #print axioms the_sash_skips_two_strides
+
+theorem the_veil_is_the_even_flag : ∀ (gs : List Nat), veil 1 gs = evenBeacon (spell gs)
+  | [] => rfl
+  | [0] => rfl
+  | [p + 1] => by
+      show Nat.beq (brand 1 p).2 1 = evenBeacon (spell [p + 1])
+      rw [the_spelling_lights_the_beacon (p + 1)]
+      cases every_seat_takes_a_side p with
+      | inl hj =>
+          match hj with
+          | ⟨j, hjj⟩ =>
+            subst hjj
+            have hbr : brand 1 (rungs 1 j + 0) = (j, 0) :=
+              the_brand_climbs_the_rungs 1 j 0 (Nat.zero_le 1)
+            have hbr' : brand 1 (j + j) = (j, 0) := by
+              rw [← the_rungs_pair_at_the_golden_register j]
+              exact hbr
+            rw [hbr', the_even_flag_skips_odd_beacons j]
+            rfl
+      | inr hj =>
+          match hj with
+          | ⟨j, hjj⟩ =>
+            subst hjj
+            have hbr : brand 1 (rungs 1 j + 1) = (j, 1) :=
+              the_brand_climbs_the_rungs 1 j 1 (Nat.le_refl 1)
+            have hbr' : brand 1 (j + j + 1) = (j, 1) := by
+              rw [← the_rungs_pair_at_the_golden_register j]
+              exact hbr
+            rw [hbr']
+            have hfly := the_even_flag_flies_on_its_beacon (j + 1)
+            rw [seats_pair j] at hfly
+            rw [hfly]
+            rfl
+  | g :: g' :: rest => by
+      cases hE : evenBeacon (spell (g :: g' :: rest)) with
+      | false => exact the_veil_skips_two_strides 1 g g' rest
+      | true =>
+          match the_even_flag_finds_its_beacon (spell (g :: g' :: rest)) hE with
+          | ⟨j, hbe⟩ =>
+            have hsp : spell (g :: g' :: rest) = spell [j + j] := by
+              rw [hbe, the_spelling_lights_the_beacon (j + j)]
+            have hun := congrArg unspell hsp
+            rw [the_spelling_reads_back (g :: g' :: rest),
+              the_spelling_reads_back [j + j]] at hun
+            exact nomatch hun
+
+theorem the_sash_is_the_odd_flag : ∀ (gs : List Nat), sash 1 gs = oddBeacon (spell gs)
+  | [] => rfl
+  | [0] => rfl
+  | [p + 1] => by
+      show Nat.beq (brand 1 p).2 0 = oddBeacon (spell [p + 1])
+      rw [the_spelling_lights_the_beacon (p + 1)]
+      cases every_seat_takes_a_side p with
+      | inl hj =>
+          match hj with
+          | ⟨j, hjj⟩ =>
+            subst hjj
+            have hbr : brand 1 (rungs 1 j + 0) = (j, 0) :=
+              the_brand_climbs_the_rungs 1 j 0 (Nat.zero_le 1)
+            have hbr' : brand 1 (j + j) = (j, 0) := by
+              rw [← the_rungs_pair_at_the_golden_register j]
+              exact hbr
+            rw [hbr', the_odd_flag_flies_on_its_beacon j]
+            rfl
+      | inr hj =>
+          match hj with
+          | ⟨j, hjj⟩ =>
+            subst hjj
+            have hbr : brand 1 (rungs 1 j + 1) = (j, 1) :=
+              the_brand_climbs_the_rungs 1 j 1 (Nat.le_refl 1)
+            have hbr' : brand 1 (j + j + 1) = (j, 1) := by
+              rw [← the_rungs_pair_at_the_golden_register j]
+              exact hbr
+            rw [hbr']
+            have hskip := the_odd_flag_skips_even_beacons (j + 1)
+            rw [seats_pair j] at hskip
+            rw [hskip]
+            rfl
+  | g :: g' :: rest => by
+      cases hO : oddBeacon (spell (g :: g' :: rest)) with
+      | false => exact the_sash_skips_two_strides 1 g g' rest
+      | true =>
+          match the_odd_flag_finds_its_beacon (spell (g :: g' :: rest)) hO with
+          | ⟨j, hbe⟩ =>
+            have hsp : spell (g :: g' :: rest) = spell [j + j + 1] := by
+              rw [hbe, the_spelling_lights_the_beacon (j + j + 1)]
+            have hun := congrArg unspell hsp
+            rw [the_spelling_reads_back (g :: g' :: rest),
+              the_spelling_reads_back [j + j + 1]] at hun
+            exact nomatch hun
+
+/-- info: 'Foam.Bridges.the_veil_is_the_even_flag' does not depend on any axioms -/
+#guard_msgs in #print axioms the_veil_is_the_even_flag
+
+/-- info: 'Foam.Bridges.the_sash_is_the_odd_flag' does not depend on any axioms -/
+#guard_msgs in #print axioms the_sash_is_the_odd_flag
+
+theorem the_family_reseals_the_bride (n : Nat) : bride fibN 1 n = F n := by
+  show W fibN 1 n + cond (veil 1 (crank 1 (n + 1))) 1 0
+    = G n + cond (evenBeacon (odometer (n + 1))) 1 0
+  rw [the_walker_is_the_golden_cousin n, the_veil_is_the_even_flag (crank 1 (n + 1)),
+    the_golden_crank_writes_the_golden_page (n + 1)]
+
+theorem the_family_reseals_the_groom (n : Nat) : groom fibN 1 n = M n := by
+  show W fibN 1 n - cond (sash 1 (crank 1 (n + 1))) 1 0
+    = G n - cond (oddBeacon (odometer (n + 1))) 1 0
+  rw [the_walker_is_the_golden_cousin n, the_sash_is_the_odd_flag (crank 1 (n + 1)),
+    the_golden_crank_writes_the_golden_page (n + 1)]
+
+theorem the_family_reseals_the_marriage (n : Nat) :
+    F (n + 1) + M (F n) = n + 1 := by
+  have h := the_family_marriage_closes_for_the_bride 0 fibN
+    the_golden_staircase_holds_the_gnomon the_golden_staircase_holds_the_floor rfl n
+  rw [the_family_reseals_the_bride (n + 1), the_family_reseals_the_bride n] at h
+  show F (n + 1) + M (F n) = n + 1
+  rw [← the_family_reseals_the_groom (F n)]
+  exact h
+
+/-- info: 'Foam.Bridges.the_family_reseals_the_bride' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reseals_the_bride
+
+/-- info: 'Foam.Bridges.the_family_reseals_the_groom' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reseals_the_groom
+
+/-- info: 'Foam.Bridges.the_family_reseals_the_marriage' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reseals_the_marriage
+
+theorem the_herd_marriage_closes (n : Nat) :
+    bride herdN 2 (n + 1) + W herdN 2 (groom herdN 2 (bride herdN 2 n)) = n + 1
+      ∧ groom herdN 2 (n + 1) + bride herdN 2 (W herdN 2 (groom herdN 2 n)) = n + 1 :=
+  ⟨the_family_marriage_closes_for_the_bride 1 herdN
+      the_herd_holds_the_gnomon the_herd_holds_the_floor rfl n,
+    the_family_marriage_closes_for_the_groom 1 herdN
+      the_herd_holds_the_gnomon the_herd_holds_the_floor rfl n⟩
+
+theorem the_herd_household_hums :
+    (bride herdN 2 0, bride herdN 2 1, bride herdN 2 2, bride herdN 2 3,
+      bride herdN 2 4, bride herdN 2 5, bride herdN 2 6, bride herdN 2 7,
+      bride herdN 2 8, bride herdN 2 9, bride herdN 2 10, bride herdN 2 11)
+      = (1, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7)
+    ∧ (groom herdN 2 0, groom herdN 2 1, groom herdN 2 2, groom herdN 2 3,
+      groom herdN 2 4, groom herdN 2 5, groom herdN 2 6, groom herdN 2 7,
+      groom herdN 2 8, groom herdN 2 9, groom herdN 2 10, groom herdN 2 11)
+      = (0, 0, 1, 2, 3, 3, 4, 5, 5, 6, 7, 7) := ⟨rfl, rfl⟩
+
+theorem the_next_household_hums :
+    (bride (stair 3) 3 0, bride (stair 3) 3 1, bride (stair 3) 3 2, bride (stair 3) 3 3,
+      bride (stair 3) 3 4, bride (stair 3) 3 5, bride (stair 3) 3 6, bride (stair 3) 3 7,
+      bride (stair 3) 3 8, bride (stair 3) 3 9, bride (stair 3) 3 10, bride (stair 3) 3 11)
+      = (1, 1, 2, 2, 3, 4, 5, 5, 6, 7, 7, 8)
+    ∧ (groom (stair 3) 3 0, groom (stair 3) 3 1, groom (stair 3) 3 2, groom (stair 3) 3 3,
+      groom (stair 3) 3 4, groom (stair 3) 3 5, groom (stair 3) 3 6, groom (stair 3) 3 7,
+      groom (stair 3) 3 8, groom (stair 3) 3 9, groom (stair 3) 3 10, groom (stair 3) 3 11)
+      = (0, 0, 1, 2, 3, 4, 4, 5, 6, 6, 7, 8) := ⟨rfl, rfl⟩
+
+theorem the_next_household_closes (n : Nat) :
+    bride (stair 3) 3 (n + 1)
+        + coil (W (stair 3) 3) 2 (groom (stair 3) 3 (bride (stair 3) 3 n)) = n + 1
+      ∧ groom (stair 3) 3 (n + 1)
+        + bride (stair 3) 3 (coil (W (stair 3) 3) 2 (groom (stair 3) 3 n)) = n + 1 :=
+  ⟨the_family_marriage_closes_for_the_bride 2 (stair 3)
+      (the_stairway_holds_the_gnomon 3) (the_stairway_holds_the_floor 3) rfl n,
+    the_family_marriage_closes_for_the_groom 2 (stair 3)
+      (the_stairway_holds_the_gnomon 3) (the_stairway_holds_the_floor 3) rfl n⟩
+
+/-- info: 'Foam.Bridges.the_herd_marriage_closes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_marriage_closes
+
+/-- info: 'Foam.Bridges.the_herd_household_hums' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_household_hums
+
+/-- info: 'Foam.Bridges.the_next_household_hums' does not depend on any axioms -/
+#guard_msgs in #print axioms the_next_household_hums
+
+/-- info: 'Foam.Bridges.the_next_household_closes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_next_household_closes
+
 end Foam.Bridges
