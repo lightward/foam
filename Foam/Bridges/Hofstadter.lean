@@ -7303,4 +7303,1651 @@ theorem the_next_household_closes (n : Nat) :
 /-- info: 'Foam.Bridges.the_next_household_closes' does not depend on any axioms -/
 #guard_msgs in #print axioms the_next_household_closes
 
+def crest (e r : Nat) : List Nat → Bool
+  | [] => false
+  | [0] => true
+  | [p + 1] => Nat.beq (brand e p).2 r
+  | _ :: _ :: _ => false
+
+def spur (e r : Nat) : List Nat → Bool
+  | [] => false
+  | [0] => false
+  | [p + 1] => Nat.beq (brand e p).2 r
+  | _ :: _ :: _ => false
+
+def matron (s : Nat → Nat) (e j n : Nat) : Nat :=
+  coil (W s e) j n + cond (crest e j (crank e (n + 1))) 1 0
+
+def patron (s : Nat → Nat) (e j n : Nat) : Nat :=
+  coil (W s e) j n - cond (spur e (j - 1) (crank e (n + 1))) 1 0
+
+theorem the_crest_is_the_veil (e : Nat) : ∀ (gs : List Nat), crest e 1 gs = veil e gs
+  | [] => rfl
+  | 0 :: [] => rfl
+  | (_ + 1) :: [] => rfl
+  | _ :: _ :: _ => rfl
+
+theorem the_spur_is_the_sash (e : Nat) : ∀ (gs : List Nat), spur e 0 gs = sash e gs
+  | [] => rfl
+  | 0 :: [] => rfl
+  | (_ + 1) :: [] => rfl
+  | _ :: _ :: _ => rfl
+
+theorem the_matron_is_the_bride (s : Nat → Nat) (e n : Nat) :
+    matron s e 1 n = bride s e n := by
+  show W s e n + cond (crest e 1 (crank e (n + 1))) 1 0
+    = W s e n + cond (veil e (crank e (n + 1))) 1 0
+  rw [the_crest_is_the_veil e (crank e (n + 1))]
+
+theorem the_patron_is_the_groom (s : Nat → Nat) (e n : Nat) :
+    patron s e 1 n = groom s e n := by
+  show W s e n - cond (spur e 0 (crank e (n + 1))) 1 0
+    = W s e n - cond (sash e (crank e (n + 1))) 1 0
+  rw [the_spur_is_the_sash e (crank e (n + 1))]
+
+/-- info: 'Foam.Bridges.the_crest_is_the_veil' does not depend on any axioms -/
+#guard_msgs in #print axioms the_crest_is_the_veil
+
+/-- info: 'Foam.Bridges.the_spur_is_the_sash' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spur_is_the_sash
+
+/-- info: 'Foam.Bridges.the_matron_is_the_bride' does not depend on any axioms -/
+#guard_msgs in #print axioms the_matron_is_the_bride
+
+/-- info: 'Foam.Bridges.the_patron_is_the_groom' does not depend on any axioms -/
+#guard_msgs in #print axioms the_patron_is_the_groom
+
+theorem the_matron_wakes_lit (t j : Nat) (s : Nat → Nat) : matron s (t + 1) j 0 = 1 := by
+  show coil (W s (t + 1)) j 0 + cond (crest (t + 1) j (crank (t + 1) 1)) 1 0 = 1
+  rw [the_coil_rests_at_zero t s j]
+  rfl
+
+theorem the_patron_wakes_dark (t j : Nat) (s : Nat → Nat) : patron s (t + 1) j 0 = 0 := by
+  show coil (W s (t + 1)) j 0 - cond (spur (t + 1) (j - 1) (crank (t + 1) 1)) 1 0 = 0
+  rw [the_coil_rests_at_zero t s j]
+  rfl
+
+theorem the_elders_hold_the_deep_shadow (t j n : Nat) (s : Nat → Nat) :
+    patron s (t + 1) j n ≤ coil (W s (t + 1)) j n
+      ∧ coil (W s (t + 1)) j n ≤ matron s (t + 1) j n :=
+  ⟨the_toll_never_gains (coil (W s (t + 1)) j n)
+      (cond (spur (t + 1) (j - 1) (crank (t + 1) (n + 1))) 1 0),
+    Nat.le_add_right (coil (W s (t + 1)) j n)
+      (cond (crest (t + 1) j (crank (t + 1) (n + 1))) 1 0)⟩
+
+theorem the_crest_and_spur_never_meet (e r : Nat) (gs : List Nat)
+    (h : crest e (r + 1) gs = true) : spur e r gs = false := by
+  match gs, h with
+  | 0 :: [], _ => rfl
+  | (p + 1) :: [], h =>
+      have h2 : (brand e p).2 = r + 1 := Nat.eq_of_beq_eq_true h
+      show Nat.beq (brand e p).2 r = false
+      rw [h2]
+      exact beq_shuts_high r (r + 1) (Nat.le_refl (r + 1))
+
+/-- info: 'Foam.Bridges.the_matron_wakes_lit' does not depend on any axioms -/
+#guard_msgs in #print axioms the_matron_wakes_lit
+
+/-- info: 'Foam.Bridges.the_patron_wakes_dark' does not depend on any axioms -/
+#guard_msgs in #print axioms the_patron_wakes_dark
+
+/-- info: 'Foam.Bridges.the_elders_hold_the_deep_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_elders_hold_the_deep_shadow
+
+/-- info: 'Foam.Bridges.the_crest_and_spur_never_meet' does not depend on any axioms -/
+#guard_msgs in #print axioms the_crest_and_spur_never_meet
+
+theorem the_herd_inlaws_hum :
+    ((matron herdN 2 2 0, matron herdN 2 2 1, matron herdN 2 2 2, matron herdN 2 2 3,
+        matron herdN 2 2 4, matron herdN 2 2 5, matron herdN 2 2 6, matron herdN 2 2 7,
+        matron herdN 2 2 8, matron herdN 2 2 9, matron herdN 2 2 10, matron herdN 2 2 11),
+      (patron herdN 2 2 0, patron herdN 2 2 1, patron herdN 2 2 2, patron herdN 2 2 3,
+        patron herdN 2 2 4, patron herdN 2 2 5, patron herdN 2 2 6, patron herdN 2 2 7,
+        patron herdN 2 2 8, patron herdN 2 2 9, patron herdN 2 2 10, patron herdN 2 2 11))
+    = ((1, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5),
+      (0, 1, 0, 1, 2, 3, 3, 4, 3, 4, 5, 5)) := rfl
+
+theorem the_upper_marriage_does_not_close :
+    matron herdN 2 2 2 + patron herdN 2 2 (matron herdN 2 2 1) ≠ W herdN 2 2 :=
+  fun h => nomatch Nat.succ.inj h
+
+/-- info: 'Foam.Bridges.the_herd_inlaws_hum' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_inlaws_hum
+
+/-- info: 'Foam.Bridges.the_upper_marriage_does_not_close' does not depend on any axioms -/
+#guard_msgs in #print axioms the_upper_marriage_does_not_close
+
+theorem a_branded_crossing_steps_the_walk (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n p r : Nat) (hpage : crank (t + 1) (n + 1) = [p + 1])
+    (hbr : (brand (t + 1) p).2 = r + 1) (hre : r + 1 ≤ t + 1) :
+    W s (t + 1) n + 1 = W s (t + 1) (n + 1) := by
+  have hn1 : n + 1 = s (t + (p + 1) + 2) := a_crossing_reads_its_stair t s hg hf n (p + 1) hpage
+  have hW1 : W s (t + 1) (n + 1) = s (t + p + 2) := by
+    rw [hn1]
+    exact the_family_beacon_slides t (p + 1) s hg hf
+  have hcn : crank (t + 1) n = (r + 1) :: unfurl (t + 1) (brand (t + 1) p).1 [] := by
+    rw [the_crank_steps_back (t + 1) n, hpage, the_untick_opens_the_purse (t + 1) p, hbr]
+  have hrungs : rungs (t + 1) (brand (t + 1) p).1 + (r + 1) = p := by
+    have h := the_brand_reads_the_rungs (t + 1) p
+    rw [hbr] at h
+    exact h
+  have hpu := a_purse_and_a_stair_make_a_beacon (t + 1) s hg (brand (t + 1) p).1 (r + 1) t
+  have hidx : s (t + rungs (t + 1) (brand (t + 1) p).1 + (r + 1) + 2) = s (t + p + 2) := by
+    have h : t + rungs (t + 1) (brand (t + 1) p).1 + (r + 1) + 2 = t + p + 2 := by
+      rw [Nat.add_assoc t (rungs (t + 1) (brand (t + 1) p).1) (r + 1), hrungs]
+    rw [h]
+  rw [hidx] at hpu
+  have hgn : s (t + (r + 1) + 2) = s (t + (r + 1) + 1) + 1 := by
+    have h : s (t + r + 3) = s (t + r + 2) + s (r + 1) := gnomon_tn t s hg r
+    rw [hf r (Nat.le_of_succ_le hre)] at h
+    exact h
+  rw [hgn] at hpu
+  have hpu2 : assay s (t + 1) ((r + 1) :: unfurl (t + 1) (brand (t + 1) p).1 []) + 1
+      + s (t + (r + 1) + 1)
+      = s (t + p + 2) + s (t + (r + 1) + 1) := by
+    rw [seat_shuffles (assay s (t + 1) ((r + 1) :: unfurl (t + 1) (brand (t + 1) p).1 []))
+      (s (t + (r + 1) + 1))]
+    exact hpu
+  have hfin := unstack (assay s (t + 1) ((r + 1) :: unfurl (t + 1) (brand (t + 1) p).1 []) + 1)
+    (s (t + p + 2)) (s (t + (r + 1) + 1)) hpu2
+  rw [hW1]
+  show assay s (t + 1) (crank (t + 1) n) + 1 = s (t + p + 2)
+  rw [hcn]
+  exact hfin
+
+/-- info: 'Foam.Bridges.a_branded_crossing_steps_the_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms a_branded_crossing_steps_the_walk
+
+theorem a_wrapped_crossing_rests_the_walk (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n p : Nat) (hpage : crank (t + 1) (n + 1) = [p + 1])
+    (hbr : (brand (t + 1) p).2 = 0) :
+    W s (t + 1) n = W s (t + 1) (n + 1) := by
+  have hn1 : n + 1 = s (t + (p + 1) + 2) := a_crossing_reads_its_stair t s hg hf n (p + 1) hpage
+  have hW1 : W s (t + 1) (n + 1) = s (t + p + 2) := by
+    rw [hn1]
+    exact the_family_beacon_slides t (p + 1) s hg hf
+  have hcn : crank (t + 1) n = 0 :: unfurl (t + 1) (brand (t + 1) p).1 [] := by
+    rw [the_crank_steps_back (t + 1) n, hpage, the_untick_opens_the_purse (t + 1) p, hbr]
+  have hrungs : rungs (t + 1) (brand (t + 1) p).1 = p := by
+    have h := the_brand_reads_the_rungs (t + 1) p
+    rw [hbr] at h
+    exact h
+  have hpu0 := a_purse_and_a_stair_make_a_beacon (t + 1) s hg (brand (t + 1) p).1 0 t
+  have hpu : assay s (t + 1) (0 :: unfurl (t + 1) (brand (t + 1) p).1 []) + s (t + 2)
+      = s (t + rungs (t + 1) (brand (t + 1) p).1 + 2) + s (t + 1) := hpu0
+  rw [hrungs, hf (t + 1) (Nat.le_refl (t + 1)), hf t (Nat.le_succ t)] at hpu
+  rw [hW1]
+  show assay s (t + 1) (crank (t + 1) n) = s (t + p + 2)
+  rw [hcn]
+  exact Nat.succ.inj hpu
+
+/-- info: 'Foam.Bridges.a_wrapped_crossing_rests_the_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms a_wrapped_crossing_rests_the_walk
+
+theorem a_branded_crossing_pins_the_walked_page (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (n p r : Nat)
+    (hpage : crank (t + 1) (n + 1) = [p + 1]) (hbr : (brand (t + 1) p).2 = r + 1)
+    (hre : r + 1 ≤ t + 1) :
+    crank (t + 1) (W s (t + 1) n + 1) = [p] := by
+  have hstep := a_branded_crossing_steps_the_walk t s hg hf n p r hpage hbr hre
+  have hn1 : n + 1 = s (t + (p + 1) + 2) := a_crossing_reads_its_stair t s hg hf n (p + 1) hpage
+  have hW1 : W s (t + 1) (n + 1) = s (t + p + 2) := by
+    rw [hn1]
+    exact the_family_beacon_slides t (p + 1) s hg hf
+  rw [hstep, hW1]
+  have h := the_crank_at_a_stair_number_is_one_stride (t + 1) p s hg hf
+  have hix : t + 1 + p + 1 = t + p + 2 := congrArg (· + 1) (seat_shuffles t p)
+  rw [hix] at h
+  exact h
+
+/-- info: 'Foam.Bridges.a_branded_crossing_pins_the_walked_page' does not depend on any axioms -/
+#guard_msgs in #print axioms a_branded_crossing_pins_the_walked_page
+
+theorem the_family_walks_forward (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (d a : Nat), W s (t + 1) a ≤ W s (t + 1) (a + d)
+  | 0, a => Nat.le_refl (W s (t + 1) a)
+  | d + 1, a => Nat.le_trans (the_family_walks_forward t s hg hf d a)
+      (the_family_never_steps_back t s hg hf (a + d))
+
+theorem the_hour_bounds_the_walk (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n v : Nat) (hW : W s (t + 1) n = v) :
+    n ≤ stime s (t + 1) v := by
+  cases Nat.decLe n (stime s (t + 1) v) with
+  | isTrue h => exact h
+  | isFalse h =>
+      have hlt : stime s (t + 1) v + 1 ≤ n := Nat.gt_of_not_le h
+      match Nat.le.dest hlt with
+      | ⟨d, hd⟩ =>
+          have hmono := the_family_walks_forward t s hg hf d (stime s (t + 1) v + 1)
+          rw [hd, the_family_walks_at_the_first_beat t s hg hf v, hW] at hmono
+          exact absurd hmono (Nat.not_succ_le_self v)
+
+theorem the_walk_needs_its_hour (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n v : Nat) (hW : W s (t + 1) n = v + 1) :
+    stime s (t + 1) v + 1 ≤ n := by
+  cases Nat.decLe (stime s (t + 1) v + 1) n with
+  | isTrue h => exact h
+  | isFalse h =>
+      have hle : n ≤ stime s (t + 1) v := Nat.le_of_succ_le_succ (Nat.gt_of_not_le h)
+      match Nat.le.dest hle with
+      | ⟨d, hd⟩ =>
+          have hmono := the_family_walks_forward t s hg hf d n
+          rw [hd, the_family_arrives_on_the_hour t s hg hf v, hW] at hmono
+          exact absurd hmono (Nat.not_succ_le_self v)
+
+/-- info: 'Foam.Bridges.the_family_walks_forward' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_walks_forward
+
+/-- info: 'Foam.Bridges.the_hour_bounds_the_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hour_bounds_the_walk
+
+/-- info: 'Foam.Bridges.the_walk_needs_its_hour' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walk_needs_its_hour
+
+theorem the_walk_pins_the_page_below (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n p r : Nat)
+    (hpage : crank (t + 1) (W s (t + 1) n + 1) = [p + 1])
+    (hbr : (brand (t + 1) p).2 = r + 1) (hre : r + 2 ≤ t + 1) :
+    crank (t + 1) (n + 1) = [rungs (t + 1) (brand (t + 1) p).1 + r + 3] := by
+  cases hWn : W s (t + 1) n with
+  | zero =>
+      rw [hWn] at hpage
+      have hpage' : [0] = [p + 1] := hpage
+      injection hpage' with h1 _
+      exact nomatch h1
+  | succ μ =>
+      rw [hWn] at hpage
+      have hp1 : crank (t + 1) (μ + 1)
+          = (r + 1) :: unfurl (t + 1) (brand (t + 1) p).1 [] := by
+        rw [the_crank_steps_back (t + 1) (μ + 1), hpage,
+          the_untick_opens_the_purse (t + 1) p, hbr]
+      have hbr2 : brand (t + 1) r = (0, r) := by
+        have h : brand (t + 1) (0 + r) = (0, r) :=
+          the_brand_climbs_the_rungs (t + 1) 0 r
+            (Nat.le_of_succ_le (Nat.le_of_succ_le hre))
+        rw [Nat.zero_add r] at h
+        exact h
+      have hp0 : crank (t + 1) μ
+          = r :: unfurl (t + 1) 0 (unfurl (t + 1) (brand (t + 1) p).1 []) := by
+        rw [the_crank_steps_back (t + 1) μ, hp1]
+        show (brand (t + 1) r).2
+            :: unfurl (t + 1) (brand (t + 1) r).1 (unfurl (t + 1) (brand (t + 1) p).1 [])
+          = r :: unfurl (t + 1) 0 (unfurl (t + 1) (brand (t + 1) p).1 [])
+        rw [hbr2]
+      have hroomy : roomy (t + 1) (crank (t + 1) μ) = false := by
+        rw [hp0]
+        show Nat.ble (t + 1) r = false
+        exact ble_shuts_high r (t + 1) (Nat.le_of_succ_le hre)
+      have hbeat : stime s (t + 1) (μ + 1) = stime s (t + 1) μ + 1 := by
+        rw [the_family_beat_reads_the_gate t s hg hf μ, hroomy]
+        rfl
+      have hup : n ≤ stime s (t + 1) (μ + 1) :=
+        the_hour_bounds_the_walk t s hg hf n (μ + 1) hWn
+      have hdown : stime s (t + 1) (μ + 1) ≤ n := by
+        rw [hbeat]
+        exact the_walk_needs_its_hour t s hg hf n μ hWn
+      have hn : n = stime s (t + 1) (μ + 1) := Nat.le_antisymm hup hdown
+      have hcn : crank (t + 1) n = (r + 2) :: unfurl (t + 1) (brand (t + 1) p).1 [] := by
+        rw [hn, the_family_hour_writes_the_page_above t s hg hf (μ + 1), hp1]
+        rfl
+      show tick (t + 1) (crank (t + 1) n) = [rungs (t + 1) (brand (t + 1) p).1 + r + 3]
+      rw [hcn]
+      exact the_tick_tops_the_purse (t + 1) (r + 1) (brand (t + 1) p).1 hre
+
+/-- info: 'Foam.Bridges.the_walk_pins_the_page_below' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walk_pins_the_page_below
+
+theorem the_crest_skips_two_strides (e r g g' : Nat) (rest : List Nat) :
+    crest e r (g :: g' :: rest) = false := by
+  cases g with
+  | zero => rfl
+  | succ _ => rfl
+
+theorem the_spur_skips_two_strides (e r g g' : Nat) (rest : List Nat) :
+    spur e r (g :: g' :: rest) = false := by
+  cases g with
+  | zero => rfl
+  | succ _ => rfl
+
+/-- info: 'Foam.Bridges.the_crest_skips_two_strides' does not depend on any axioms -/
+#guard_msgs in #print axioms the_crest_skips_two_strides
+
+/-- info: 'Foam.Bridges.the_spur_skips_two_strides' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spur_skips_two_strides
+
+theorem the_crest_slides_forward (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (m r : Nat) (hre : r + 2 ≤ t + 1)
+    (hflag : crest (t + 1) (r + 2) (crank (t + 1) (m + 1 + 1)) = true) :
+    crest (t + 1) (r + 1) (crank (t + 1) (W s (t + 1) (m + 1) + 1)) = true := by
+  cases hc : crank (t + 1) (m + 1 + 1) with
+  | nil => rw [hc] at hflag; exact nomatch hflag
+  | cons g gs =>
+      cases gs with
+      | cons g₂ gs₂ =>
+              rw [hc, the_crest_skips_two_strides (t + 1) (r + 2) g g₂ gs₂] at hflag
+              exact nomatch hflag
+      | nil =>
+          cases g with
+          | zero =>
+              have hd := the_dial_reads_true (t + 1) s hg hf (m + 1 + 1)
+              rw [hc] at hd
+              have hd' : s (t + 2) = m + 1 + 1 := hd
+              rw [hf (t + 1) (Nat.le_refl (t + 1))] at hd'
+              exact nomatch (Nat.succ.inj hd')
+          | succ p =>
+              rw [hc] at hflag
+              have hbr : (brand (t + 1) p).2 = r + 2 := Nat.eq_of_beq_eq_true hflag
+              cases p with
+              | zero => exact nomatch hbr
+              | succ p₁ =>
+                  have hpin := a_branded_crossing_pins_the_walked_page t s hg hf
+                    (m + 1) (p₁ + 1) (r + 1) hc hbr hre
+                  rw [hpin]
+                  show Nat.beq (brand (t + 1) p₁).2 (r + 1) = true
+                  rw [the_brand_steps_back (t + 1) p₁ (r + 1) hbr]
+                  exact beq_mirrors (r + 1)
+
+theorem the_walked_crest_reads_back (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (m r : Nat) (hre : r + 2 ≤ t + 1)
+    (hflag : crest (t + 1) (r + 1) (crank (t + 1) (W s (t + 1) (m + 1) + 1)) = true) :
+    crest (t + 1) (r + 2) (crank (t + 1) (m + 1 + 1)) = true := by
+  cases hc' : crank (t + 1) (W s (t + 1) (m + 1) + 1) with
+  | nil => rw [hc'] at hflag; exact nomatch hflag
+  | cons g' gs' =>
+      cases gs' with
+      | cons g₂ gs₂ =>
+              rw [hc', the_crest_skips_two_strides (t + 1) (r + 1) g' g₂ gs₂] at hflag
+              exact nomatch hflag
+      | nil =>
+          cases g' with
+          | zero =>
+              have hd := the_dial_reads_true (t + 1) s hg hf (W s (t + 1) (m + 1) + 1)
+              rw [hc'] at hd
+              have hd' : s (t + 2) = W s (t + 1) (m + 1) + 1 := hd
+              rw [hf (t + 1) (Nat.le_refl (t + 1))] at hd'
+              have hz : 0 = W s (t + 1) (m + 1) := Nat.succ.inj hd'
+              have haw := the_family_stays_awake t s hg hf m
+              rw [← hz] at haw
+              exact absurd haw (Nat.not_succ_le_zero 0)
+          | succ p' =>
+              rw [hc'] at hflag
+              have hbr' : (brand (t + 1) p').2 = r + 1 := Nat.eq_of_beq_eq_true hflag
+              have hpin := the_walk_pins_the_page_below t s hg hf (m + 1) p' r hc' hbr' hre
+              rw [hpin]
+              show Nat.beq (brand (t + 1) (rungs (t + 1) (brand (t + 1) p').1 + r + 2)).2
+                  (r + 2) = true
+              have hcl : brand (t + 1) (rungs (t + 1) (brand (t + 1) p').1 + r + 2)
+                  = ((brand (t + 1) p').1, r + 2) :=
+                the_brand_climbs_the_rungs (t + 1) (brand (t + 1) p').1 (r + 2) hre
+              rw [hcl]
+              exact beq_mirrors (r + 2)
+
+/-- info: 'Foam.Bridges.the_crest_slides_forward' does not depend on any axioms -/
+#guard_msgs in #print axioms the_crest_slides_forward
+
+/-- info: 'Foam.Bridges.the_walked_crest_reads_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walked_crest_reads_back
+
+theorem the_crest_slides_down_the_walk (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (r n : Nat) (hre : r + 2 ≤ t + 1) :
+    crest (t + 1) (r + 2) (crank (t + 1) (n + 1))
+      = crest (t + 1) (r + 1) (crank (t + 1) (W s (t + 1) n + 1)) := by
+  cases n with
+  | zero => rfl
+  | succ m =>
+      cases hL : crest (t + 1) (r + 2) (crank (t + 1) (m + 1 + 1)) with
+      | true => rw [the_crest_slides_forward t s hg hf m r hre hL]
+      | false =>
+          cases hR : crest (t + 1) (r + 1) (crank (t + 1) (W s (t + 1) (m + 1) + 1)) with
+          | false => rfl
+          | true =>
+              rw [the_walked_crest_reads_back t s hg hf m r hre hR] at hL
+              exact nomatch hL
+
+/-- info: 'Foam.Bridges.the_crest_slides_down_the_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms the_crest_slides_down_the_walk
+
+theorem the_spur_slides_forward (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n r : Nat) (hre : r + 2 ≤ t + 1)
+    (hflag : spur (t + 1) (r + 2) (crank (t + 1) (n + 1)) = true) :
+    spur (t + 1) (r + 1) (crank (t + 1) (W s (t + 1) n + 1)) = true := by
+  cases hc : crank (t + 1) (n + 1) with
+  | nil => rw [hc] at hflag; exact nomatch hflag
+  | cons g gs =>
+      cases gs with
+      | cons g₂ gs₂ =>
+              rw [hc, the_spur_skips_two_strides (t + 1) (r + 2) g g₂ gs₂] at hflag
+              exact nomatch hflag
+      | nil =>
+          cases g with
+          | zero => rw [hc] at hflag; exact nomatch hflag
+          | succ p =>
+              rw [hc] at hflag
+              have hbr : (brand (t + 1) p).2 = r + 2 := Nat.eq_of_beq_eq_true hflag
+              cases p with
+              | zero => exact nomatch hbr
+              | succ p₁ =>
+                  have hpin := a_branded_crossing_pins_the_walked_page t s hg hf
+                    n (p₁ + 1) (r + 1) hc hbr hre
+                  rw [hpin]
+                  show Nat.beq (brand (t + 1) p₁).2 (r + 1) = true
+                  rw [the_brand_steps_back (t + 1) p₁ (r + 1) hbr]
+                  exact beq_mirrors (r + 1)
+
+theorem the_walked_spur_reads_back (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (m r : Nat) (hre : r + 2 ≤ t + 1)
+    (hflag : spur (t + 1) (r + 1) (crank (t + 1) (W s (t + 1) (m + 1) + 1)) = true) :
+    spur (t + 1) (r + 2) (crank (t + 1) (m + 1 + 1)) = true := by
+  cases hc' : crank (t + 1) (W s (t + 1) (m + 1) + 1) with
+  | nil => rw [hc'] at hflag; exact nomatch hflag
+  | cons g' gs' =>
+      cases gs' with
+      | cons g₂ gs₂ =>
+              rw [hc', the_spur_skips_two_strides (t + 1) (r + 1) g' g₂ gs₂] at hflag
+              exact nomatch hflag
+      | nil =>
+          cases g' with
+          | zero => rw [hc'] at hflag; exact nomatch hflag
+          | succ p' =>
+              rw [hc'] at hflag
+              have hbr' : (brand (t + 1) p').2 = r + 1 := Nat.eq_of_beq_eq_true hflag
+              have hpin := the_walk_pins_the_page_below t s hg hf (m + 1) p' r hc' hbr' hre
+              rw [hpin]
+              show Nat.beq (brand (t + 1) (rungs (t + 1) (brand (t + 1) p').1 + r + 2)).2
+                  (r + 2) = true
+              have hcl : brand (t + 1) (rungs (t + 1) (brand (t + 1) p').1 + r + 2)
+                  = ((brand (t + 1) p').1, r + 2) :=
+                the_brand_climbs_the_rungs (t + 1) (brand (t + 1) p').1 (r + 2) hre
+              rw [hcl]
+              exact beq_mirrors (r + 2)
+
+theorem the_spur_slides_down_the_walk (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (r n : Nat) (hre : r + 2 ≤ t + 1) :
+    spur (t + 1) (r + 2) (crank (t + 1) (n + 1))
+      = spur (t + 1) (r + 1) (crank (t + 1) (W s (t + 1) n + 1)) := by
+  cases n with
+  | zero => rfl
+  | succ m =>
+      cases hL : spur (t + 1) (r + 2) (crank (t + 1) (m + 1 + 1)) with
+      | true => rw [the_spur_slides_forward t s hg hf (m + 1) r hre hL]
+      | false =>
+          cases hR : spur (t + 1) (r + 1) (crank (t + 1) (W s (t + 1) (m + 1) + 1)) with
+          | false => rfl
+          | true =>
+              rw [the_walked_spur_reads_back t s hg hf m r hre hR] at hL
+              exact nomatch hL
+
+/-- info: 'Foam.Bridges.the_spur_slides_forward' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spur_slides_forward
+
+/-- info: 'Foam.Bridges.the_walked_spur_reads_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walked_spur_reads_back
+
+/-- info: 'Foam.Bridges.the_spur_slides_down_the_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spur_slides_down_the_walk
+
+theorem the_matron_speaks_one_altitude_down (t j : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (hj : j + 2 ≤ t + 1) (n : Nat) :
+    matron s (t + 1) (j + 2) n = matron s (t + 1) (j + 1) (W s (t + 1) n) := by
+  show coil (W s (t + 1)) (j + 2) n
+      + cond (crest (t + 1) (j + 2) (crank (t + 1) (n + 1))) 1 0
+    = coil (W s (t + 1)) (j + 1) (W s (t + 1) n)
+      + cond (crest (t + 1) (j + 1) (crank (t + 1) (W s (t + 1) n + 1))) 1 0
+  rw [the_crest_slides_down_the_walk t s hg hf j n hj]
+  rfl
+
+theorem the_patron_speaks_one_altitude_down (t j : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (hj : j + 3 ≤ t + 1) (n : Nat) :
+    patron s (t + 1) (j + 3) n = patron s (t + 1) (j + 2) (W s (t + 1) n) := by
+  show coil (W s (t + 1)) (j + 3) n
+      - cond (spur (t + 1) (j + 2) (crank (t + 1) (n + 1))) 1 0
+    = coil (W s (t + 1)) (j + 2) (W s (t + 1) n)
+      - cond (spur (t + 1) (j + 1) (crank (t + 1) (W s (t + 1) n + 1))) 1 0
+  rw [the_spur_slides_down_the_walk t s hg hf j n (Nat.le_of_succ_le hj)]
+  rfl
+
+/-- info: 'Foam.Bridges.the_matron_speaks_one_altitude_down' does not depend on any axioms -/
+#guard_msgs in #print axioms the_matron_speaks_one_altitude_down
+
+/-- info: 'Foam.Bridges.the_patron_speaks_one_altitude_down' does not depend on any axioms -/
+#guard_msgs in #print axioms the_patron_speaks_one_altitude_down
+
+theorem the_spur_slides_to_the_wrap (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat)
+    (h1 : spur (t + 1) 1 (crank (t + 1) (n + 1)) = true) :
+    spur (t + 1) 0 (crank (t + 1) (W s (t + 1) n + 1)) = true := by
+  cases hc : crank (t + 1) (n + 1) with
+  | nil => rw [hc] at h1; exact nomatch h1
+  | cons g gs =>
+      cases gs with
+      | cons g₂ gs₂ =>
+          rw [hc, the_spur_skips_two_strides (t + 1) 1 g g₂ gs₂] at h1
+          exact nomatch h1
+      | nil =>
+          cases g with
+          | zero => rw [hc] at h1; exact nomatch h1
+          | succ k =>
+              rw [hc] at h1
+              have hbr : (brand (t + 1) k).2 = 1 := Nat.eq_of_beq_eq_true h1
+              cases k with
+              | zero => exact nomatch hbr
+              | succ k₁ =>
+                  have hpin := a_branded_crossing_pins_the_walked_page t s hg hf
+                    n (k₁ + 1) 0 hc hbr (Nat.succ_le_succ (Nat.zero_le t))
+                  rw [hpin]
+                  show Nat.beq (brand (t + 1) k₁).2 0 = true
+                  rw [the_brand_steps_back (t + 1) k₁ 0 hbr]
+                  rfl
+
+/-- info: 'Foam.Bridges.the_spur_slides_to_the_wrap' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spur_slides_to_the_wrap
+
+theorem the_low_wrap_holds_the_walk (t : Nat) (s : Nat → Nat)
+    (hf : Floored (t + 1) s) : ∀ (gs : List Nat),
+    assay s (t + 1) (0 :: unfurl (t + 1) 0 gs) = assay s (t + 1) (1 :: gs)
+  | [] => by
+      show s (t + 1) + (0 : Nat) = s (t + 2) + 0
+      rw [hf t (Nat.le_succ t), hf (t + 1) (Nat.le_refl (t + 1))]
+  | g :: rest => by
+      show s (t + 1) + (s (t + 2 + g + 1) + assay s (t + 2 + g + 1 + 1) rest)
+        = s (t + 2) + (s (t + 3 + g) + assay s (t + 3 + g + 1) rest)
+      have hidx : t + 3 + g = t + 2 + g + 1 := seat_shuffles (t + 2) g
+      rw [hidx, hf t (Nat.le_succ t), hf (t + 1) (Nat.le_refl (t + 1))]
+
+/-- info: 'Foam.Bridges.the_low_wrap_holds_the_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms the_low_wrap_holds_the_walk
+
+theorem the_veil_shades_the_wrap (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat)
+    (hv : veil (t + 1) (crank (t + 1) (n + 2)) = true) :
+    spur (t + 1) 0 (crank (t + 1) (W s (t + 1) n + 1)) = true := by
+  cases hc : crank (t + 1) (n + 2) with
+  | nil => rw [hc] at hv; exact nomatch hv
+  | cons g gs =>
+      cases gs with
+      | cons g₂ gs₂ =>
+          rw [hc, the_veil_skips_two_strides (t + 1) g g₂ gs₂] at hv
+          exact nomatch hv
+      | nil =>
+          cases g with
+          | zero =>
+              have hd := the_dial_reads_true (t + 1) s hg hf (n + 2)
+              rw [hc] at hd
+              have hd' : s (t + 2) = n + 2 := hd
+              rw [hf (t + 1) (Nat.le_refl (t + 1))] at hd'
+              exact nomatch (Nat.succ.inj hd')
+          | succ k =>
+              rw [hc] at hv
+              have hbr : (brand (t + 1) k).2 = 1 := Nat.eq_of_beq_eq_true hv
+              have hp1 : crank (t + 1) (n + 1)
+                  = 1 :: unfurl (t + 1) (brand (t + 1) k).1 [] := by
+                rw [the_crank_steps_back (t + 1) (n + 1), hc,
+                  the_untick_opens_the_purse (t + 1) k, hbr]
+              have hp0 : crank (t + 1) n
+                  = 0 :: unfurl (t + 1) 0 (unfurl (t + 1) (brand (t + 1) k).1 []) := by
+                rw [the_crank_steps_back (t + 1) n, hp1]
+                rfl
+              have hWflat : W s (t + 1) n = W s (t + 1) (n + 1) := by
+                show assay s (t + 1) (crank (t + 1) n)
+                  = assay s (t + 1) (crank (t + 1) (n + 1))
+                rw [hp0, hp1]
+                exact the_low_wrap_holds_the_walk t s hf
+                  (unfurl (t + 1) (brand (t + 1) k).1 [])
+              cases k with
+              | zero => exact nomatch hbr
+              | succ k₁ =>
+                  have hpin := a_branded_crossing_pins_the_walked_page t s hg hf
+                    (n + 1) (k₁ + 1) 0 hc hbr (Nat.succ_le_succ (Nat.zero_le t))
+                  rw [hWflat, hpin]
+                  show Nat.beq (brand (t + 1) k₁).2 0 = true
+                  rw [the_brand_steps_back (t + 1) k₁ 0 hbr]
+                  rfl
+
+/-- info: 'Foam.Bridges.the_veil_shades_the_wrap' does not depend on any axioms -/
+#guard_msgs in #print axioms the_veil_shades_the_wrap
+
+theorem the_wrap_names_its_two_seats (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat)
+    (hL : spur (t + 1) 0 (crank (t + 1) (W s (t + 1) n + 1)) = true) :
+    (spur (t + 1) 1 (crank (t + 1) (n + 1)) || veil (t + 1) (crank (t + 1) (n + 2)))
+      = true := by
+  cases hc : crank (t + 1) (W s (t + 1) n + 1) with
+  | nil => rw [hc] at hL; exact nomatch hL
+  | cons g gs =>
+      cases gs with
+      | cons g₂ gs₂ =>
+          rw [hc, the_spur_skips_two_strides (t + 1) 0 g g₂ gs₂] at hL
+          exact nomatch hL
+      | nil =>
+          cases g with
+          | zero => rw [hc] at hL; exact nomatch hL
+          | succ p =>
+              rw [hc] at hL
+              have hbr : (brand (t + 1) p).2 = 0 := Nat.eq_of_beq_eq_true hL
+              have hrungs : rungs (t + 1) (brand (t + 1) p).1 = p := by
+                have h := the_brand_reads_the_rungs (t + 1) p
+                rw [hbr] at h
+                exact h
+              cases hq : (brand (t + 1) p).1 with
+              | zero =>
+                  rw [hq] at hrungs
+                  have hp0 : (0 : Nat) = p := hrungs
+                  subst hp0
+                  have hd := the_dial_reads_true (t + 1) s hg hf (W s (t + 1) n + 1)
+                  rw [hc] at hd
+                  have hd' : s (t + 3) = W s (t + 1) n + 1 := hd
+                  rw [the_first_flight_reads_two t s hg hf] at hd'
+                  have hW1 : W s (t + 1) n = 1 := (Nat.succ.inj hd').symm
+                  have hup : n ≤ stime s (t + 1) 1 :=
+                    the_hour_bounds_the_walk t s hg hf n 1 hW1
+                  have hdown : stime s (t + 1) 0 + 1 ≤ n :=
+                    the_walk_needs_its_hour t s hg hf n 0 hW1
+                  have hst1 : stime s (t + 1) 1 = 2 := by
+                    rw [the_family_beat_reads_the_gate t s hg hf 0]
+                    rfl
+                  rw [hst1] at hup
+                  have hd1 : (1 : Nat) ≤ n := hdown
+                  cases n with
+                  | zero => exact absurd hd1 (Nat.not_succ_le_zero 0)
+                  | succ n₁ =>
+                      have hc3 : crank (t + 1) 3 = [2] := by
+                        show tick (t + 1) (crank (t + 1) 2) = [2]
+                        have hc2 : crank (t + 1) 2 = [1] := rfl
+                        rw [hc2]
+                        exact the_tick_climbs_the_floor (t + 1) 1
+                          (Nat.succ_le_succ (Nat.zero_le t))
+                      cases n₁ with
+                      | zero =>
+                          rw [hc3]
+                          show (spur (t + 1) 1 [1]
+                              || Nat.beq (brand (t + 1) 1).2 1) = true
+                          rw [(rfl : brand (t + 1) 1 = (0, 1))]
+                          rfl
+                      | succ n₂ =>
+                          cases n₂ with
+                          | zero =>
+                              rw [hc3]
+                              show (Nat.beq (brand (t + 1) 1).2 1
+                                  || veil (t + 1) (crank (t + 1) 4)) = true
+                              rw [(rfl : brand (t + 1) 1 = (0, 1))]
+                              rfl
+                          | succ n₃ =>
+                              have h3 : n₃ + 3 ≤ 2 := hup
+                              exact absurd (Nat.le_of_succ_le_succ
+                                  (Nat.le_of_succ_le_succ h3))
+                                (Nat.not_succ_le_zero n₃)
+              | succ q₁ =>
+                  cases hWn : W s (t + 1) n with
+                  | zero =>
+                      rw [hWn] at hc
+                      have hc1 : [0] = [p + 1] := hc
+                      injection hc1 with h0 _
+                      exact nomatch h0
+                  | succ μ =>
+                      rw [hWn] at hc
+                      have hp1 : crank (t + 1) (μ + 1)
+                          = 0 :: unfurl (t + 1) (brand (t + 1) p).1 [] := by
+                        rw [the_crank_steps_back (t + 1) (μ + 1), hc,
+                          the_untick_opens_the_purse (t + 1) p, hbr]
+                      have hp0 : crank (t + 1) μ
+                          = (t + 2) :: unfurl (t + 1) q₁ [] := by
+                        rw [the_crank_steps_back (t + 1) μ, hp1, hq]
+                        rfl
+                      have hroomy : roomy (t + 1) (crank (t + 1) μ) = true := by
+                        rw [hp0]
+                        exact Nat.ble_eq_true_of_le (Nat.le_succ (t + 1))
+                      have hbeat : stime s (t + 1) (μ + 1) = stime s (t + 1) μ + 2 := by
+                        rw [the_family_beat_reads_the_gate t s hg hf μ, hroomy]
+                        rfl
+                      have hdown : stime s (t + 1) μ + 1 ≤ n :=
+                        the_walk_needs_its_hour t s hg hf n μ hWn
+                      have hup : n ≤ stime s (t + 1) μ + 2 := by
+                        rw [← hbeat]
+                        exact the_hour_bounds_the_walk t s hg hf n (μ + 1) hWn
+                      match Nat.le.dest hdown with
+                      | ⟨d, hd⟩ =>
+                          have hd2 : stime s (t + 1) μ + 1 + d ≤ stime s (t + 1) μ + 2 := by
+                            rw [hd]
+                            exact hup
+                          rw [seat_shuffles (stime s (t + 1) μ) d] at hd2
+                          have hdle : d + 1 ≤ 2 :=
+                            stack_free (stime s (t + 1) μ) (d + 1) 2 hd2
+                          cases d with
+                          | zero =>
+                              have hn : stime s (t + 1) μ + 1 = n := hd
+                              have hcn1 : crank (t + 1) (n + 1)
+                                  = 1 :: unfurl (t + 1) (brand (t + 1) p).1 [] := by
+                                rw [← hn]
+                                show tick (t + 1) (tick (t + 1)
+                                    (crank (t + 1) (stime s (t + 1) μ)))
+                                  = 1 :: unfurl (t + 1) (brand (t + 1) p).1 []
+                                rw [the_family_hour_writes_the_page_above t s hg hf μ]
+                                rw [tick_twice_rides_the_lift t (crank (t + 1) μ) hroomy]
+                                show lift 1 (crank (t + 1) (μ + 1))
+                                  = 1 :: unfurl (t + 1) (brand (t + 1) p).1 []
+                                rw [hp1]
+                                rfl
+                              have hcn2 : crank (t + 1) (n + 2)
+                                  = [rungs (t + 1) (brand (t + 1) p).1 + 2] := by
+                                show tick (t + 1) (crank (t + 1) (n + 1))
+                                  = [rungs (t + 1) (brand (t + 1) p).1 + 2]
+                                rw [hcn1]
+                                exact the_tick_tops_the_purse (t + 1) 0
+                                  (brand (t + 1) p).1 (Nat.succ_le_succ (Nat.zero_le t))
+                              rw [hcn1, hcn2, hq]
+                              show (spur (t + 1) 1 (1 :: (t + 1) :: unfurl (t + 1) q₁ [])
+                                  || Nat.beq
+                                    (brand (t + 1) (rungs (t + 1) (q₁ + 1) + 1)).2 1)
+                                = true
+                              rw [the_spur_skips_two_strides (t + 1) 1 1 (t + 1)
+                                (unfurl (t + 1) q₁ [])]
+                              have hcl : brand (t + 1) (rungs (t + 1) (q₁ + 1) + 1)
+                                  = (q₁ + 1, 1) :=
+                                the_brand_climbs_the_rungs (t + 1) (q₁ + 1) 1
+                                  (Nat.succ_le_succ (Nat.zero_le t))
+                              rw [hcl]
+                              rfl
+                          | succ d' =>
+                              cases d' with
+                              | zero =>
+                                  have hn' : n = stime s (t + 1) (μ + 1) := by
+                                    rw [hbeat]
+                                    exact hd.symm
+                                  have hcn1 : crank (t + 1) (n + 1)
+                                      = [rungs (t + 1) (brand (t + 1) p).1 + 2] := by
+                                    rw [hn']
+                                    show tick (t + 1)
+                                        (crank (t + 1) (stime s (t + 1) (μ + 1)))
+                                      = [rungs (t + 1) (brand (t + 1) p).1 + 2]
+                                    rw [the_family_hour_writes_the_page_above t s hg hf
+                                      (μ + 1), hp1]
+                                    show tick (t + 1)
+                                        (1 :: unfurl (t + 1) (brand (t + 1) p).1 [])
+                                      = [rungs (t + 1) (brand (t + 1) p).1 + 2]
+                                    exact the_tick_tops_the_purse (t + 1) 0
+                                      (brand (t + 1) p).1
+                                      (Nat.succ_le_succ (Nat.zero_le t))
+                                  rw [hcn1]
+                                  show (Nat.beq (brand (t + 1)
+                                        (rungs (t + 1) (brand (t + 1) p).1 + 1)).2 1
+                                      || veil (t + 1) (crank (t + 1) (n + 2))) = true
+                                  have hcl : brand (t + 1)
+                                      (rungs (t + 1) (brand (t + 1) p).1 + 1)
+                                      = ((brand (t + 1) p).1, 1) :=
+                                    the_brand_climbs_the_rungs (t + 1)
+                                      (brand (t + 1) p).1 1
+                                      (Nat.succ_le_succ (Nat.zero_le t))
+                                  rw [hcl]
+                                  rfl
+                              | succ d'' =>
+                                  exact absurd (Nat.le_of_succ_le_succ
+                                      (Nat.le_of_succ_le_succ hdle))
+                                    (Nat.not_succ_le_zero d'')
+
+/-- info: 'Foam.Bridges.the_wrap_names_its_two_seats' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wrap_names_its_two_seats
+
+theorem the_spur_and_the_oncoming_veil_never_meet (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (n : Nat)
+    (h1 : spur (t + 1) 1 (crank (t + 1) (n + 1)) = true) :
+    veil (t + 1) (crank (t + 1) (n + 2)) = false := by
+  cases hc : crank (t + 1) (n + 1) with
+  | nil => rw [hc] at h1; exact nomatch h1
+  | cons g gs =>
+      cases gs with
+      | cons g₂ gs₂ =>
+          rw [hc, the_spur_skips_two_strides (t + 1) 1 g g₂ gs₂] at h1
+          exact nomatch h1
+      | nil =>
+          cases g with
+          | zero => rw [hc] at h1; exact nomatch h1
+          | succ k =>
+              rw [hc] at h1
+              have hbr : (brand (t + 1) k).2 = 1 := Nat.eq_of_beq_eq_true h1
+              have hnext : crank (t + 1) (n + 2) = tick (t + 1) [k + 1] := by
+                show tick (t + 1) (crank (t + 1) (n + 1)) = tick (t + 1) [k + 1]
+                rw [hc]
+              cases Nat.decLe (k + 1) (t + 1) with
+              | isTrue hle =>
+                  rw [hnext, the_tick_climbs_the_floor (t + 1) (k + 1) hle]
+                  show Nat.beq (brand (t + 1) (k + 1)).2 1 = false
+                  cases t with
+                  | zero =>
+                      have hb : Nat.beq (brand 1 k).2 1 = true := by
+                        rw [hbr]
+                        rfl
+                      rw [brand_wraps 1 k hb]
+                      rfl
+                  | succ t' =>
+                      have hb : Nat.beq (brand (t' + 2) k).2 (t' + 2) = false := by
+                        rw [hbr]
+                        exact beq_shuts_low 1 (t' + 2)
+                          (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le t')))
+                      rw [brand_steps (t' + 2) k hb, hbr]
+                      rfl
+              | isFalse hgt =>
+                  have hlt : t + 2 ≤ k + 1 := Nat.gt_of_not_le hgt
+                  match Nat.le.dest hlt with
+                  | ⟨w, hw⟩ =>
+                      have htk : tick (t + 1) [k + 1] = [0, t + 1 + w] := by
+                        rw [← hw]
+                        exact the_tick_leaves_the_rail (t + 1) w
+                      rw [hnext, htk,
+                        the_veil_skips_two_strides (t + 1) 0 (t + 1 + w) []]
+
+/-- info: 'Foam.Bridges.the_spur_and_the_oncoming_veil_never_meet' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spur_and_the_oncoming_veil_never_meet
+
+theorem the_spur_snags_on_the_veil (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat) :
+    spur (t + 1) 0 (crank (t + 1) (W s (t + 1) n + 1))
+      = (spur (t + 1) 1 (crank (t + 1) (n + 1))
+        || veil (t + 1) (crank (t + 1) (n + 2))) := by
+  cases hs1 : spur (t + 1) 1 (crank (t + 1) (n + 1)) with
+  | true =>
+      rw [the_spur_slides_to_the_wrap t s hg hf n hs1]
+      rfl
+  | false =>
+      cases hv : veil (t + 1) (crank (t + 1) (n + 2)) with
+      | true =>
+          rw [the_veil_shades_the_wrap t s hg hf n hv]
+          rfl
+      | false =>
+          cases hL : spur (t + 1) 0 (crank (t + 1) (W s (t + 1) n + 1)) with
+          | false => rfl
+          | true =>
+              have h := the_wrap_names_its_two_seats t s hg hf n hL
+              rw [hs1, hv] at h
+              exact nomatch h
+
+/-- info: 'Foam.Bridges.the_spur_snags_on_the_veil' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spur_snags_on_the_veil
+
+theorem the_patron_chain_snags_on_the_veil (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (n : Nat) :
+    patron s (t + 1) 2 n = patron s (t + 1) 1 (W s (t + 1) n)
+      + cond (veil (t + 1) (crank (t + 1) (n + 2))) 1 0 := by
+  show coil (W s (t + 1)) 2 n - cond (spur (t + 1) 1 (crank (t + 1) (n + 1))) 1 0
+    = coil (W s (t + 1)) 1 (W s (t + 1) n)
+        - cond (spur (t + 1) 0 (crank (t + 1) (W s (t + 1) n + 1))) 1 0
+      + cond (veil (t + 1) (crank (t + 1) (n + 2))) 1 0
+  rw [the_spur_snags_on_the_veil t s hg hf n]
+  cases hs1 : spur (t + 1) 1 (crank (t + 1) (n + 1)) with
+  | true =>
+      rw [the_spur_and_the_oncoming_veil_never_meet t s hg hf n hs1]
+      rfl
+  | false =>
+      cases hv : veil (t + 1) (crank (t + 1) (n + 2)) with
+      | false => rfl
+      | true =>
+          cases n with
+          | zero => exact nomatch hv
+          | succ m =>
+              have hw := the_family_stays_awake t s hg hf m
+              match a_tick_is_a_step (W s (t + 1) (m + 1)) hw with
+              | ⟨w, hwd⟩ =>
+                  have hA : 1 ≤ coil (W s (t + 1)) 2 (m + 1) := by
+                    show 1 ≤ W s (t + 1) (W s (t + 1) (m + 1))
+                    rw [hwd]
+                    exact the_family_stays_awake t s hg hf w
+                  show coil (W s (t + 1)) 2 (m + 1) - 0
+                    = coil (W s (t + 1)) 2 (m + 1) - 1 + 1
+                  exact (sub_one_back (coil (W s (t + 1)) 2 (m + 1)) hA).symm
+
+/-- info: 'Foam.Bridges.the_patron_chain_snags_on_the_veil' does not depend on any axioms -/
+#guard_msgs in #print axioms the_patron_chain_snags_on_the_veil
+
+theorem the_walk_and_the_second_patron_square_the_couple (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (n : Nat) :
+    patron s (t + 1) 2 n + W s (t + 1) (n + 1)
+      = groom s (t + 1) (W s (t + 1) n) + bride s (t + 1) (n + 1) := by
+  rw [the_patron_chain_snags_on_the_veil t s hg hf n,
+    the_patron_is_the_groom s (t + 1) (W s (t + 1) n)]
+  show groom s (t + 1) (W s (t + 1) n) + cond (veil (t + 1) (crank (t + 1) (n + 2))) 1 0
+      + W s (t + 1) (n + 1)
+    = groom s (t + 1) (W s (t + 1) n)
+      + (W s (t + 1) (n + 1) + cond (veil (t + 1) (crank (t + 1) (n + 2))) 1 0)
+  rw [Nat.add_assoc (groom s (t + 1) (W s (t + 1) n))
+    (cond (veil (t + 1) (crank (t + 1) (n + 2))) 1 0) (W s (t + 1) (n + 1))]
+  rw [Nat.add_comm (cond (veil (t + 1) (crank (t + 1) (n + 2))) 1 0) (W s (t + 1) (n + 1))]
+
+/-- info: 'Foam.Bridges.the_walk_and_the_second_patron_square_the_couple' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walk_and_the_second_patron_square_the_couple
+
+theorem the_matrons_descend_from_the_bride (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) :
+    ∀ (j : Nat), j + 1 ≤ t + 1 → ∀ (n : Nat),
+      matron s (t + 1) (j + 1) n = bride s (t + 1) (coil (W s (t + 1)) j n)
+  | 0, _, n => the_matron_is_the_bride s (t + 1) n
+  | j + 1, hj, n => by
+      rw [the_matron_speaks_one_altitude_down t j s hg hf hj n]
+      exact the_matrons_descend_from_the_bride t s hg hf j
+        (Nat.le_of_succ_le hj) (W s (t + 1) n)
+
+theorem the_patrons_descend_from_the_second (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) :
+    ∀ (j : Nat), j + 2 ≤ t + 1 → ∀ (n : Nat),
+      patron s (t + 1) (j + 2) n = patron s (t + 1) 2 (coil (W s (t + 1)) j n)
+  | 0, _, _ => rfl
+  | j + 1, hj, n => by
+      rw [the_patron_speaks_one_altitude_down t j s hg hf hj n]
+      exact the_patrons_descend_from_the_second t s hg hf j
+        (Nat.le_of_succ_le hj) (W s (t + 1) n)
+
+/-- info: 'Foam.Bridges.the_matrons_descend_from_the_bride' does not depend on any axioms -/
+#guard_msgs in #print axioms the_matrons_descend_from_the_bride
+
+/-- info: 'Foam.Bridges.the_patrons_descend_from_the_second' does not depend on any axioms -/
+#guard_msgs in #print axioms the_patrons_descend_from_the_second
+
+theorem a_clocked_walk_wakes_stepping (f : Nat → Nat) (hc : Clocked f) : f 1 = 1 := by
+  obtain ⟨c, h0, hs, hr⟩ := hc
+  have h1 : c 0 + 0 + 1 ≤ c 1 := by
+    have h := hs 0
+    rw [h0] at h ⊢
+    exact h
+  have h2 := hr 0 0 h1
+  rw [h0] at h2
+  exact h2
+
+/-- info: 'Foam.Bridges.a_clocked_walk_wakes_stepping' does not depend on any axioms -/
+#guard_msgs in #print axioms a_clocked_walk_wakes_stepping
+
+theorem the_groom_oversleeps (t : Nat) (s : Nat → Nat) (hf : Floored (t + 1) s) :
+    groom s (t + 1) 1 = 0 := by
+  show s (t + 1) + 0 - 1 = 0
+  rw [hf t (Nat.le_succ t)]
+
+theorem the_groom_reads_no_clock (t : Nat) (s : Nat → Nat) (hf : Floored (t + 1) s) :
+    ¬ Clocked (groom s (t + 1)) := fun hc => by
+  have h1 := a_clocked_walk_wakes_stepping (groom s (t + 1)) hc
+  rw [the_groom_oversleeps t s hf] at h1
+  exact nomatch h1
+
+theorem the_bride_reads_no_page (t : Nat) (s : Nat → Nat) :
+    ¬ Paged (bride s (t + 1)) := fun hp => by
+  have h := a_paged_walk_never_outruns_the_count (bride s (t + 1)) hp 0
+  rw [the_family_bride_wakes_lit t s] at h
+  exact absurd h (Nat.not_succ_le_zero 0)
+
+theorem the_groom_reads_no_page (t : Nat) (s : Nat → Nat) (hf : Floored (t + 1) s) :
+    ¬ Paged (groom s (t + 1)) := fun hp => by
+  have h := a_paged_walk_holds_the_half (groom s (t + 1)) hp 1
+  rw [the_groom_oversleeps t s hf] at h
+  exact absurd h (Nat.not_succ_le_zero 0)
+
+theorem the_matron_reads_no_page (t j : Nat) (s : Nat → Nat) :
+    ¬ Paged (matron s (t + 1) j) := fun hp => by
+  have h := a_paged_walk_never_outruns_the_count (matron s (t + 1) j) hp 0
+  rw [the_matron_wakes_lit t j s] at h
+  exact absurd h (Nat.not_succ_le_zero 0)
+
+theorem the_household_leans_out_of_space (t : Nat) (s : Nat → Nat)
+    (hf : Floored (t + 1) s) :
+    ¬ Paged (bride s (t + 1)) ∧ ¬ Paged (groom s (t + 1)) :=
+  ⟨the_bride_reads_no_page t s, the_groom_reads_no_page t s hf⟩
+
+/-- info: 'Foam.Bridges.the_groom_oversleeps' does not depend on any axioms -/
+#guard_msgs in #print axioms the_groom_oversleeps
+
+/-- info: 'Foam.Bridges.the_groom_reads_no_clock' does not depend on any axioms -/
+#guard_msgs in #print axioms the_groom_reads_no_clock
+
+/-- info: 'Foam.Bridges.the_bride_reads_no_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_reads_no_page
+
+/-- info: 'Foam.Bridges.the_groom_reads_no_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_groom_reads_no_page
+
+/-- info: 'Foam.Bridges.the_matron_reads_no_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_matron_reads_no_page
+
+/-- info: 'Foam.Bridges.the_household_leans_out_of_space' does not depend on any axioms -/
+#guard_msgs in #print axioms the_household_leans_out_of_space
+
+theorem the_second_patron_steps_back (t : Nat) (s : Nat → Nat)
+    (hf : Floored (t + 2) s) :
+    patron s (t + 2) 2 1 = 1 ∧ patron s (t + 2) 2 2 = 0 := by
+  have hw1 : W s (t + 2) 1 = 1 := by
+    show s (t + 2) + 0 = 1
+    rw [hf (t + 1) (Nat.le_succ (t + 1))]
+  have hw2 : W s (t + 2) 2 = 1 := by
+    show s (t + 3) + 0 = 1
+    rw [hf (t + 2) (Nat.le_refl (t + 2))]
+  constructor
+  · show W s (t + 2) (W s (t + 2) 1) - 0 = 1
+    rw [hw1, hw1]
+  · have hc3 : crank (t + 2) 3 = [2] := by
+      show tick (t + 2) (crank (t + 2) 2) = [2]
+      have hc2 : crank (t + 2) 2 = [1] := rfl
+      rw [hc2]
+      exact the_tick_climbs_the_floor (t + 2) 1 (Nat.succ_le_succ (Nat.zero_le (t + 1)))
+    show coil (W s (t + 2)) 2 2 - cond (spur (t + 2) 1 (crank (t + 2) 3)) 1 0 = 0
+    rw [hc3]
+    show W s (t + 2) (W s (t + 2) 2) - 1 = 0
+    rw [hw2, hw1]
+
+theorem the_second_patron_reads_no_clock (t : Nat) (s : Nat → Nat)
+    (hf : Floored (t + 2) s) : ¬ Clocked (patron s (t + 2) 2) := fun hc => by
+  have h := a_clocked_walk_never_steps_back (patron s (t + 2) 2) hc 0
+  rw [(the_second_patron_steps_back t s hf).1,
+    (the_second_patron_steps_back t s hf).2] at h
+  exact absurd h (Nat.not_succ_le_zero 0)
+
+/-- info: 'Foam.Bridges.the_second_patron_steps_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_second_patron_steps_back
+
+/-- info: 'Foam.Bridges.the_second_patron_reads_no_clock' does not depend on any axioms -/
+#guard_msgs in #print axioms the_second_patron_reads_no_clock
+
+def btime (s : Nat → Nat) (e v : Nat) : Nat :=
+  v + coil (W s e) (e - 1) (groom s e v)
+
+theorem the_first_hour_strikes_at_two (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : stime s (t + 1) 1 = 2 := by
+  rw [the_family_beat_reads_the_gate t s hg hf 0]
+  rfl
+
+/-- info: 'Foam.Bridges.the_first_hour_strikes_at_two' does not depend on any axioms -/
+#guard_msgs in #print axioms the_first_hour_strikes_at_two
+
+theorem the_bride_never_steps_back (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat) :
+    bride s (t + 1) n ≤ bride s (t + 1) (n + 1) := by
+  cases hv : veil (t + 1) (crank (t + 1) (n + 1)) with
+  | false =>
+      have h1 : bride s (t + 1) n = W s (t + 1) n := by
+        show W s (t + 1) n + cond (veil (t + 1) (crank (t + 1) (n + 1))) 1 0 = W s (t + 1) n
+        rw [hv]
+        rfl
+      rw [h1]
+      exact Nat.le_trans (the_family_never_steps_back t s hg hf n)
+        (Nat.le_add_right (W s (t + 1) (n + 1))
+          (cond (veil (t + 1) (crank (t + 1) (n + 1 + 1))) 1 0))
+  | true =>
+      have h1 : bride s (t + 1) n = W s (t + 1) n + 1 := by
+        show W s (t + 1) n + cond (veil (t + 1) (crank (t + 1) (n + 1))) 1 0
+          = W s (t + 1) n + 1
+        rw [hv]
+        rfl
+      cases hcp : crank (t + 1) (n + 1) with
+      | nil => rw [hcp] at hv; exact nomatch hv
+      | cons g gs =>
+          cases gs with
+          | cons g₂ gs₂ =>
+              rw [hcp, the_veil_skips_two_strides (t + 1) g g₂ gs₂] at hv
+              exact nomatch hv
+          | nil =>
+              cases g with
+              | zero =>
+                  have hd := the_dial_reads_true (t + 1) s hg hf (n + 1)
+                  rw [hcp] at hd
+                  have hd' : s (t + 2) = n + 1 := hd
+                  rw [hf (t + 1) (Nat.le_refl (t + 1))] at hd'
+                  have hn0 : 0 = n := Nat.succ.inj hd'
+                  have hb1 : bride s (t + 1) 1 = 1 := by
+                    show s (t + 1) + 0 + cond (veil (t + 1) (crank (t + 1) 2)) 1 0 = 1
+                    rw [hf t (Nat.le_succ t)]
+                    rfl
+                  rw [← hn0, the_family_bride_wakes_lit t s, hb1]
+                  exact Nat.le_refl 1
+              | succ p =>
+                  rw [hcp] at hv
+                  have hbr : (brand (t + 1) p).2 = 1 := Nat.eq_of_beq_eq_true hv
+                  have hstep := a_branded_crossing_steps_the_walk t s hg hf n p 0 hcp hbr
+                    (Nat.succ_le_succ (Nat.zero_le t))
+                  rw [h1, hstep]
+                  exact Nat.le_add_right (W s (t + 1) (n + 1))
+                    (cond (veil (t + 1) (crank (t + 1) (n + 1 + 1))) 1 0)
+
+theorem the_bride_walks_forward (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (d a : Nat), bride s (t + 1) a ≤ bride s (t + 1) (a + d)
+  | 0, a => Nat.le_refl (bride s (t + 1) a)
+  | d + 1, a => Nat.le_trans (the_bride_walks_forward t s hg hf d a)
+      (the_bride_never_steps_back t s hg hf (a + d))
+
+/-- info: 'Foam.Bridges.the_bride_never_steps_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_never_steps_back
+
+/-- info: 'Foam.Bridges.the_bride_walks_forward' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_walks_forward
+
+theorem coil_ride_shuffle (a b : Nat) : a + (b + 2) + a + 2 = a + (b + a + 2) + 2 := by
+  have h2 : b + 1 + a = b + a + 1 := seat_shuffles b a
+  have h1 : b + 1 + 1 + a = b + 1 + a + 1 := seat_shuffles (b + 1) a
+  rw [h2] at h1
+  have h : b + 2 + a = b + a + 2 := h1
+  rw [Nat.add_assoc a (b + 2) a, h]
+
+/-- info: 'Foam.Bridges.coil_ride_shuffle' does not depend on any axioms -/
+#guard_msgs in #print axioms coil_ride_shuffle
+
+theorem the_brides_hour_docks_the_sash (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (v : Nat) :
+    btime s (t + 1) v + cond (sash (t + 1) (crank (t + 1) (v + 1))) 1 0
+      = stime s (t + 1) v := by
+  cases hσ : sash (t + 1) (crank (t + 1) (v + 1)) with
+  | false =>
+      have hgv : groom s (t + 1) v = W s (t + 1) v := by
+        show W s (t + 1) v - cond (sash (t + 1) (crank (t + 1) (v + 1))) 1 0 = W s (t + 1) v
+        rw [hσ]
+        rfl
+      show v + coil (W s (t + 1)) t (groom s (t + 1) v) + 0 = stime s (t + 1) v
+      rw [hgv]
+      have hst : stime s (t + 1) v = v + coil (W s (t + 1)) (t + 1) v :=
+        the_family_clock_adds_the_deep_shadow t s hg hf v
+      rw [hst]
+      rfl
+  | true =>
+      match the_sash_finds_its_beacon (t + 1) (crank (t + 1) (v + 1)) hσ with
+      | ⟨k, hpage, hres⟩ =>
+          have hbrk : (brand (t + 1) k).2 = 0 := Nat.eq_of_beq_eq_true hres
+          have hrungs : rungs (t + 1) (brand (t + 1) k).1 = k := by
+            have h := the_brand_reads_the_rungs (t + 1) k
+            rw [hbrk] at h
+            exact h
+          cases hq : (brand (t + 1) k).1 with
+          | zero =>
+              rw [hq] at hrungs
+              have hk0 : (0 : Nat) = k := hrungs
+              have hpage' : crank (t + 1) (v + 1) = [1] := by
+                rw [hpage, ← hk0]
+              have hd := the_dial_reads_true (t + 1) s hg hf (v + 1)
+              rw [hpage'] at hd
+              have hd' : s (t + 3) = v + 1 := hd
+              rw [the_first_flight_reads_two t s hg hf] at hd'
+              have hv1 : 1 = v := Nat.succ.inj hd'
+              have hg1 : groom s (t + 1) v = 0 := by
+                rw [← hv1]
+                exact the_groom_oversleeps t s hf
+              show v + coil (W s (t + 1)) t (groom s (t + 1) v) + 1 = stime s (t + 1) v
+              rw [hg1, the_coil_rests_at_zero t s t, ← hv1,
+                the_first_hour_strikes_at_two t s hg hf]
+          | succ q₁ =>
+              have hk : rungs (t + 1) q₁ + t + 2 = k := by
+                rw [hq] at hrungs
+                exact hrungs
+              have hv1 : v + 1 = s (t + (k + 1) + 2) :=
+                a_crossing_reads_its_stair t s hg hf v (k + 1) hpage
+              have hrest : W s (t + 1) v = W s (t + 1) (v + 1) :=
+                a_wrapped_crossing_rests_the_walk t s hg hf v k hpage hbrk
+              have hWv : W s (t + 1) v = s (t + k + 2) := by
+                rw [hrest, hv1]
+                exact the_family_beacon_slides t (k + 1) s hg hf
+              have hglow : 1 ≤ s (t + k + 2) := a_grammar_glows (t + 1) s hg hf (t + k + 1)
+              match a_tick_is_a_step (s (t + k + 2)) hglow with
+              | ⟨x, hx⟩ =>
+                  have hgv : groom s (t + 1) v = x := by
+                    show W s (t + 1) v
+                        - cond (sash (t + 1) (crank (t + 1) (v + 1))) 1 0 = x
+                    rw [hσ, hWv, hx]
+                    rfl
+                  have hcl : brand (t + 1) (rungs (t + 1) q₁ + t + 1) = (q₁, t + 1) :=
+                    the_brand_climbs_the_rungs (t + 1) q₁ (t + 1) (Nat.le_refl (t + 1))
+                  have hbrp : (brand (t + 1) (rungs (t + 1) q₁ + t + 1)).2 = t + 1 := by
+                    rw [hcl]
+                  have hix : rungs (t + 1) q₁ + t + 1 + t + 3
+                      = t + (rungs (t + 1) q₁ + t + 2) + 2 := by
+                    rw [seat_shuffles (rungs (t + 1) q₁ + t) t]
+                    exact congrArg (· + 4) (Nat.add_comm (rungs (t + 1) q₁ + t) t)
+                  have hx' : x + 1 = s (rungs (t + 1) q₁ + t + 1 + t + 3) := by
+                    rw [hix]
+                    rw [← hk] at hx
+                    exact hx.symm
+                  have hwound := the_wounded_beacon_rides_the_coil t s hg hf
+                    (rungs (t + 1) q₁ + t + 1) x hbrp hx'
+                  have hride := the_beacon_rides_the_coil t s hg hf t
+                    (rungs (t + 1) q₁ + 2)
+                  rw [coil_ride_shuffle t (rungs (t + 1) q₁)] at hride
+                  rw [hk] at hride
+                  have hix3 : t + (rungs (t + 1) q₁ + 2) + 2
+                      = rungs (t + 1) q₁ + t + 1 + 3 :=
+                    congrArg (· + 4) (Nat.add_comm t (rungs (t + 1) q₁))
+                  rw [hix3] at hride
+                  have hst : stime s (t + 1) v
+                      = v + coil (W s (t + 1)) t (W s (t + 1) v) :=
+                    the_family_clock_adds_the_deep_shadow t s hg hf v
+                  rw [hWv] at hst
+                  show v + coil (W s (t + 1)) t (groom s (t + 1) v) + 1
+                    = stime s (t + 1) v
+                  rw [hgv, hst, hride, ← hwound]
+                  rfl
+
+/-- info: 'Foam.Bridges.the_brides_hour_docks_the_sash' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brides_hour_docks_the_sash
+
+theorem the_bride_walks_at_the_first_beat (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (v : Nat) :
+    bride s (t + 1) (btime s (t + 1) v + 1) = v + 1 := by
+  cases hσ : sash (t + 1) (crank (t + 1) (v + 1)) with
+  | false =>
+      have hbt : btime s (t + 1) v = stime s (t + 1) v := by
+        have h := the_brides_hour_docks_the_sash t s hg hf v
+        rw [hσ] at h
+        exact h
+      rw [hbt]
+      show W s (t + 1) (stime s (t + 1) v + 1)
+          + cond (veil (t + 1) (crank (t + 1) (stime s (t + 1) v + 1 + 1))) 1 0 = v + 1
+      rw [the_family_walks_at_the_first_beat t s hg hf v]
+      cases hr : roomy (t + 1) (crank (t + 1) v) with
+      | true =>
+          have hb2 : stime s (t + 1) (v + 1) = stime s (t + 1) v + 2 := by
+            rw [the_family_beat_reads_the_gate t s hg hf v, hr]
+            rfl
+          have hb2' : stime s (t + 1) v + 1 + 1 = stime s (t + 1) (v + 1) := hb2.symm
+          have hcc : crank (t + 1) (stime s (t + 1) v + 1 + 1)
+              = lift 1 (crank (t + 1) (v + 1)) := by
+            rw [hb2']
+            exact the_family_hour_writes_the_page_above t s hg hf (v + 1)
+          rw [hcc]
+          cases hcv : crank (t + 1) (v + 1) with
+          | nil => rfl
+          | cons a as =>
+              cases as with
+              | cons a₂ as₂ =>
+                  show v + 1
+                      + cond (veil (t + 1) ((a + 1) :: a₂ :: as₂)) 1 0 = v + 1
+                  rw [the_veil_skips_two_strides (t + 1) (a + 1) a₂ as₂]
+                  rfl
+              | nil =>
+                  show v + 1 + cond (Nat.beq (brand (t + 1) a).2 1) 1 0 = v + 1
+                  cases hba : Nat.beq (brand (t + 1) a).2 1 with
+                  | false => rfl
+                  | true =>
+                      have hbra : (brand (t + 1) a).2 = 1 := Nat.eq_of_beq_eq_true hba
+                      cases a with
+                      | zero => exact nomatch hbra
+                      | succ a₁ =>
+                          have hbr0 : (brand (t + 1) a₁).2 = 0 :=
+                            the_brand_steps_back (t + 1) a₁ 0 hbra
+                          have hpv : crank (t + 1) v
+                              = 0 :: unfurl (t + 1) (brand (t + 1) a₁).1 [] := by
+                            rw [the_crank_steps_back (t + 1) v, hcv,
+                              the_untick_opens_the_purse (t + 1) a₁, hbr0]
+                          rw [hpv] at hr
+                          exact nomatch hr
+      | false =>
+          have hb1 : stime s (t + 1) (v + 1) = stime s (t + 1) v + 1 := by
+            rw [the_family_beat_reads_the_gate t s hg hf v, hr]
+            rfl
+          have hb1' : stime s (t + 1) v + 1 = stime s (t + 1) (v + 1) := hb1.symm
+          have hcc : crank (t + 1) (stime s (t + 1) v + 1 + 1)
+              = tick (t + 1) (lift 1 (crank (t + 1) (v + 1))) := by
+            rw [hb1']
+            show tick (t + 1) (crank (t + 1) (stime s (t + 1) (v + 1)))
+              = tick (t + 1) (lift 1 (crank (t + 1) (v + 1)))
+            rw [the_family_hour_writes_the_page_above t s hg hf (v + 1)]
+          rw [hcc]
+          cases hbig : veil (t + 1) (tick (t + 1) (lift 1 (crank (t + 1) (v + 1)))) with
+          | false => rfl
+          | true =>
+              have hsp : Spread (t + 1) (lift 1 (crank (t + 1) (v + 1))) :=
+                the_lift_keeps_the_spread (t + 1) 1 (crank (t + 1) (v + 1))
+                  (the_dial_keeps_the_spread (t + 1) (v + 1))
+              have hut := the_untick_comes_home (t + 1)
+                (lift 1 (crank (t + 1) (v + 1))) hsp
+              match the_veil_finds_its_beacon (t + 1)
+                  (tick (t + 1) (lift 1 (crank (t + 1) (v + 1)))) hbig with
+              | Or.inl h0 =>
+                  rw [h0] at hut
+                  cases hcv : crank (t + 1) (v + 1) with
+                  | nil =>
+                      exact absurd hcv
+                        (the_tick_never_blanks (t + 1) (crank (t + 1) v))
+                  | cons a as =>
+                      rw [hcv] at hut
+                      exact nomatch hut
+              | Or.inr hex =>
+                  match hex with
+                  | ⟨x, hx, hclx⟩ =>
+                      rw [hx] at hut
+                      have hclx' : (brand (t + 1) x).2 = 1 := Nat.eq_of_beq_eq_true hclx
+                      rw [the_untick_opens_the_purse (t + 1) x, hclx'] at hut
+                      cases hcv : crank (t + 1) (v + 1) with
+                      | nil =>
+                          exact absurd hcv
+                            (the_tick_never_blanks (t + 1) (crank (t + 1) v))
+                      | cons a as =>
+                          rw [hcv] at hut
+                          have hut' : 1 :: unfurl (t + 1) (brand (t + 1) x).1 []
+                              = (a + 1) :: as := hut
+                          injection hut' with h1 h2
+                          have ha0 : (0 : Nat) = a := Nat.succ.inj h1
+                          have hpv : crank (t + 1) v
+                              = unfurl (t + 1) 0 (unfurl (t + 1) (brand (t + 1) x).1 []) := by
+                            rw [the_crank_steps_back (t + 1) v, hcv, ← ha0, h2]
+                            rfl
+                          cases hq : (brand (t + 1) x).1 with
+                          | zero =>
+                              rw [hq] at hpv
+                              have hpv' : crank (t + 1) v = [] := hpv
+                              rw [hpv'] at hr
+                              exact nomatch hr
+                          | succ q₁ =>
+                              rw [hq] at hpv
+                              have hpv' : crank (t + 1) v
+                                  = (t + 2) :: unfurl (t + 1) q₁ [] := hpv
+                              rw [hpv'] at hr
+                              have hr' : Nat.ble (t + 1) (t + 2) = false := hr
+                              rw [Nat.ble_eq_true_of_le (Nat.le_succ (t + 1))] at hr'
+                              exact nomatch hr'
+  | true =>
+      have hbt : btime s (t + 1) v + 1 = stime s (t + 1) v := by
+        have h := the_brides_hour_docks_the_sash t s hg hf v
+        rw [hσ] at h
+        exact h
+      rw [hbt]
+      show W s (t + 1) (stime s (t + 1) v)
+          + cond (veil (t + 1) (crank (t + 1) (stime s (t + 1) v + 1))) 1 0 = v + 1
+      rw [the_family_arrives_on_the_hour t s hg hf v]
+      match the_sash_finds_its_beacon (t + 1) (crank (t + 1) (v + 1)) hσ with
+      | ⟨k, hpage, hres⟩ =>
+          have hbrk : (brand (t + 1) k).2 = 0 := Nat.eq_of_beq_eq_true hres
+          have hpv : crank (t + 1) v = 0 :: unfurl (t + 1) (brand (t + 1) k).1 [] := by
+            rw [the_crank_steps_back (t + 1) v, hpage,
+              the_untick_opens_the_purse (t + 1) k, hbrk]
+          have hcc : crank (t + 1) (stime s (t + 1) v + 1)
+              = [rungs (t + 1) (brand (t + 1) k).1 + 2] := by
+            show tick (t + 1) (crank (t + 1) (stime s (t + 1) v))
+              = [rungs (t + 1) (brand (t + 1) k).1 + 2]
+            rw [the_family_hour_writes_the_page_above t s hg hf v, hpv]
+            show tick (t + 1) (1 :: unfurl (t + 1) (brand (t + 1) k).1 [])
+              = [rungs (t + 1) (brand (t + 1) k).1 + 2]
+            exact the_tick_tops_the_purse (t + 1) 0 (brand (t + 1) k).1
+              (Nat.succ_le_succ (Nat.zero_le t))
+          rw [hcc]
+          show v + cond (Nat.beq
+              (brand (t + 1) (rungs (t + 1) (brand (t + 1) k).1 + 1)).2 1) 1 0 = v + 1
+          rw [the_brand_climbs_the_rungs (t + 1) (brand (t + 1) k).1 1
+            (Nat.succ_le_succ (Nat.zero_le t))]
+          rfl
+
+/-- info: 'Foam.Bridges.the_bride_walks_at_the_first_beat' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_walks_at_the_first_beat
+
+theorem the_bride_arrives_on_her_hour (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (v : Nat) :
+    bride s (t + 1) (btime s (t + 1) (v + 1)) = v + 1 := by
+  cases hσ : sash (t + 1) (crank (t + 1) (v + 1 + 1)) with
+  | false =>
+      have hbt : btime s (t + 1) (v + 1) = stime s (t + 1) (v + 1) := by
+        have h := the_brides_hour_docks_the_sash t s hg hf (v + 1)
+        rw [hσ] at h
+        exact h
+      rw [hbt]
+      show W s (t + 1) (stime s (t + 1) (v + 1))
+          + cond (veil (t + 1) (crank (t + 1) (stime s (t + 1) (v + 1) + 1))) 1 0 = v + 1
+      rw [the_family_arrives_on_the_hour t s hg hf (v + 1)]
+      have hcc : crank (t + 1) (stime s (t + 1) (v + 1) + 1)
+          = tick (t + 1) (lift 1 (crank (t + 1) (v + 1))) := by
+        show tick (t + 1) (crank (t + 1) (stime s (t + 1) (v + 1)))
+          = tick (t + 1) (lift 1 (crank (t + 1) (v + 1)))
+        rw [the_family_hour_writes_the_page_above t s hg hf (v + 1)]
+      rw [hcc]
+      cases hbig : veil (t + 1) (tick (t + 1) (lift 1 (crank (t + 1) (v + 1)))) with
+      | false => rfl
+      | true =>
+          have hsp : Spread (t + 1) (lift 1 (crank (t + 1) (v + 1))) :=
+            the_lift_keeps_the_spread (t + 1) 1 (crank (t + 1) (v + 1))
+              (the_dial_keeps_the_spread (t + 1) (v + 1))
+          have hut := the_untick_comes_home (t + 1)
+            (lift 1 (crank (t + 1) (v + 1))) hsp
+          match the_veil_finds_its_beacon (t + 1)
+              (tick (t + 1) (lift 1 (crank (t + 1) (v + 1)))) hbig with
+          | Or.inl h0 =>
+              rw [h0] at hut
+              cases hcv : crank (t + 1) (v + 1) with
+              | nil =>
+                  exact absurd hcv (the_tick_never_blanks (t + 1) (crank (t + 1) v))
+              | cons a as =>
+                  rw [hcv] at hut
+                  exact nomatch hut
+          | Or.inr hex =>
+              match hex with
+              | ⟨x, hx, hclx⟩ =>
+                  rw [hx] at hut
+                  have hclx' : (brand (t + 1) x).2 = 1 := Nat.eq_of_beq_eq_true hclx
+                  rw [the_untick_opens_the_purse (t + 1) x, hclx'] at hut
+                  cases hcv : crank (t + 1) (v + 1) with
+                  | nil =>
+                      exact absurd hcv
+                        (the_tick_never_blanks (t + 1) (crank (t + 1) v))
+                  | cons a as =>
+                      rw [hcv] at hut
+                      have hut' : 1 :: unfurl (t + 1) (brand (t + 1) x).1 []
+                          = (a + 1) :: as := hut
+                      injection hut' with h1 h2
+                      have ha0 : (0 : Nat) = a := Nat.succ.inj h1
+                      have hc2 : crank (t + 1) (v + 1 + 1)
+                          = [rungs (t + 1) (brand (t + 1) x).1 + 1] := by
+                        show tick (t + 1) (crank (t + 1) (v + 1))
+                          = [rungs (t + 1) (brand (t + 1) x).1 + 1]
+                        rw [hcv, ← ha0, ← h2]
+                        show lift 1 (perch (t + 1)
+                            (unfurl (t + 1) (brand (t + 1) x).1 []))
+                          = [rungs (t + 1) (brand (t + 1) x).1 + 1]
+                        rw [the_perch_comes_home (t + 1) (brand (t + 1) x).1 [] True.intro]
+                        rfl
+                      rw [hc2] at hσ
+                      have hσ' : Nat.beq
+                          (brand (t + 1) (rungs (t + 1) (brand (t + 1) x).1)).2 0
+                          = false := hσ
+                      rw [the_brand_mounts_the_rungs (t + 1) (brand (t + 1) x).1] at hσ'
+                      exact nomatch hσ'
+  | true =>
+      match the_sash_finds_its_beacon (t + 1) (crank (t + 1) (v + 1 + 1)) hσ with
+      | ⟨k, hpage, hres⟩ =>
+          have hbrk : (brand (t + 1) k).2 = 0 := Nat.eq_of_beq_eq_true hres
+          have hpv1 : crank (t + 1) (v + 1)
+              = 0 :: unfurl (t + 1) (brand (t + 1) k).1 [] := by
+            rw [the_crank_steps_back (t + 1) (v + 1), hpage,
+              the_untick_opens_the_purse (t + 1) k, hbrk]
+          have hbt : btime s (t + 1) (v + 1) + 1 = stime s (t + 1) (v + 1) := by
+            have h := the_brides_hour_docks_the_sash t s hg hf (v + 1)
+            rw [hσ] at h
+            exact h
+          cases hq : (brand (t + 1) k).1 with
+          | zero =>
+              rw [hq] at hpv1
+              have hpv1' : crank (t + 1) (v + 1) = [0] := hpv1
+              have hd := the_dial_reads_true (t + 1) s hg hf (v + 1)
+              rw [hpv1'] at hd
+              have hd' : s (t + 2) = v + 1 := hd
+              rw [hf (t + 1) (Nat.le_refl (t + 1))] at hd'
+              have hv0 : 0 = v := Nat.succ.inj hd'
+              rw [← hv0] at hbt ⊢
+              rw [the_first_hour_strikes_at_two t s hg hf] at hbt
+              have hbt1 : btime s (t + 1) 1 = 1 := Nat.succ.inj hbt
+              rw [hbt1]
+              show s (t + 1) + 0 + cond (veil (t + 1) (crank (t + 1) 2)) 1 0 = 0 + 1
+              rw [hf t (Nat.le_succ t)]
+              rfl
+          | succ q₁ =>
+              have hpv0 : crank (t + 1) v = (t + 2) :: unfurl (t + 1) q₁ [] := by
+                rw [the_crank_steps_back (t + 1) v, hpv1, hq]
+                rfl
+              have hroomy : roomy (t + 1) (crank (t + 1) v) = true := by
+                rw [hpv0]
+                exact Nat.ble_eq_true_of_le (Nat.le_succ (t + 1))
+              have hbeat : stime s (t + 1) (v + 1) = stime s (t + 1) v + 2 := by
+                rw [the_family_beat_reads_the_gate t s hg hf v, hroomy]
+                rfl
+              rw [hbeat] at hbt
+              have hbt' : btime s (t + 1) (v + 1) = stime s (t + 1) v + 1 :=
+                Nat.succ.inj hbt
+              rw [hbt']
+              show W s (t + 1) (stime s (t + 1) v + 1)
+                  + cond (veil (t + 1)
+                    (crank (t + 1) (stime s (t + 1) v + 1 + 1))) 1 0 = v + 1
+              rw [the_family_walks_at_the_first_beat t s hg hf v]
+              have hb2' : stime s (t + 1) v + 1 + 1 = stime s (t + 1) (v + 1) :=
+                hbeat.symm
+              have hcc : crank (t + 1) (stime s (t + 1) v + 1 + 1)
+                  = 1 :: unfurl (t + 1) (q₁ + 1) [] := by
+                rw [hb2']
+                rw [the_family_hour_writes_the_page_above t s hg hf (v + 1), hpv1, hq]
+                rfl
+              rw [hcc]
+              show v + 1
+                  + cond (veil (t + 1) (1 :: (t + 1) :: unfurl (t + 1) q₁ [])) 1 0
+                = v + 1
+              rw [the_veil_skips_two_strides (t + 1) 1 (t + 1) (unfurl (t + 1) q₁ [])]
+              rfl
+
+/-- info: 'Foam.Bridges.the_bride_arrives_on_her_hour' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_arrives_on_her_hour
+
+theorem the_brides_clock_never_stalls (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (v : Nat) :
+    btime s (t + 1) v < btime s (t + 1) (v + 1) := by
+  cases Nat.decLe (btime s (t + 1) v + 1) (btime s (t + 1) (v + 1)) with
+  | isTrue h => exact h
+  | isFalse h =>
+      have hle : btime s (t + 1) (v + 1) ≤ btime s (t + 1) v :=
+        Nat.le_of_succ_le_succ (Nat.gt_of_not_le h)
+      match Nat.le.dest (Nat.succ_le_succ hle) with
+      | ⟨d, hd⟩ =>
+          have hm := the_bride_walks_forward t s hg hf d (btime s (t + 1) (v + 1) + 1)
+          rw [hd, the_bride_walks_at_the_first_beat t s hg hf (v + 1),
+            the_bride_walks_at_the_first_beat t s hg hf v] at hm
+          exact absurd hm (Nat.not_succ_le_self (v + 1))
+
+theorem the_bride_reads_her_hours (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (v i : Nat),
+    btime s (t + 1) v + i + 1 ≤ btime s (t + 1) (v + 1) →
+      bride s (t + 1) (btime s (t + 1) v + i + 1) = v + 1 := by
+  intro v i h
+  have hup : bride s (t + 1) (btime s (t + 1) v + i + 1) ≤ v + 1 := by
+    match Nat.le.dest h with
+    | ⟨d, hd⟩ =>
+        have h1 := the_bride_walks_forward t s hg hf d (btime s (t + 1) v + i + 1)
+        rw [hd, the_bride_arrives_on_her_hour t s hg hf v] at h1
+        exact h1
+  have hdn : v + 1 ≤ bride s (t + 1) (btime s (t + 1) v + i + 1) := by
+    have h2 := the_bride_walks_forward t s hg hf i (btime s (t + 1) v + 1)
+    rw [seat_shuffles (btime s (t + 1) v) i] at h2
+    rw [the_bride_walks_at_the_first_beat t s hg hf v] at h2
+    exact h2
+  exact Nat.le_antisymm hup hdn
+
+theorem the_bride_is_clocked (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : Clocked (bride s (t + 1)) := by
+  refine ⟨btime s (t + 1), ?_, the_brides_clock_never_stalls t s hg hf,
+    the_bride_reads_her_hours t s hg hf⟩
+  show 0 + coil (W s (t + 1)) t 0 = 0
+  rw [the_coil_rests_at_zero t s t]
+
+/-- info: 'Foam.Bridges.the_brides_clock_never_stalls' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brides_clock_never_stalls
+
+/-- info: 'Foam.Bridges.the_bride_reads_her_hours' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_reads_her_hours
+
+/-- info: 'Foam.Bridges.the_bride_is_clocked' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bride_is_clocked
+
+theorem time_keeps_only_the_bride (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) :
+    Clocked (bride s (t + 1)) ∧ ¬ Clocked (groom s (t + 1)) :=
+  ⟨the_bride_is_clocked t s hg hf, the_groom_reads_no_clock t s hf⟩
+
+/-- info: 'Foam.Bridges.time_keeps_only_the_bride' does not depend on any axioms -/
+#guard_msgs in #print axioms time_keeps_only_the_bride
+
+theorem the_hours_march_forward (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (d a : Nat), stime s (t + 1) a ≤ stime s (t + 1) (a + d)
+  | 0, a => Nat.le_refl (stime s (t + 1) a)
+  | d + 1, a => Nat.le_trans (the_hours_march_forward t s hg hf d a)
+      (Nat.le_of_succ_le (the_family_clock_never_stalls t s hg hf (a + d)))
+
+theorem a_clocked_walk_walks_the_register (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (f : Nat → Nat) (hc : Clocked f) :
+    Clocked (fun n => f (W s (t + 1) n)) := by
+  obtain ⟨c, h0, hs, hr⟩ := hc
+  refine ⟨fun v => stime s (t + 1) (c v), ?_, ?_, ?_⟩
+  · show stime s (t + 1) (c 0) = 0
+    rw [h0]
+    rfl
+  · intro v
+    match Nat.le.dest (hs v) with
+    | ⟨d, hd⟩ =>
+        have h1 := the_family_clock_never_stalls t s hg hf (c v)
+        have h2 := the_hours_march_forward t s hg hf d (c v + 1)
+        rw [hd] at h2
+        exact Nat.le_trans h1 h2
+  · intro v j h
+    have hlow : c v + 1 ≤ W s (t + 1) (stime s (t + 1) (c v) + j + 1) := by
+      have hm := the_family_walks_forward t s hg hf j (stime s (t + 1) (c v) + 1)
+      rw [seat_shuffles (stime s (t + 1) (c v)) j,
+        the_family_walks_at_the_first_beat t s hg hf (c v)] at hm
+      exact hm
+    have hhigh : W s (t + 1) (stime s (t + 1) (c v) + j + 1) ≤ c (v + 1) := by
+      match Nat.le.dest h with
+      | ⟨d2, hd2⟩ =>
+          have hm := the_family_walks_forward t s hg hf d2
+            (stime s (t + 1) (c v) + j + 1)
+          rw [hd2, the_family_arrives_on_the_hour t s hg hf (c (v + 1))] at hm
+          exact hm
+    match Nat.le.dest hlow with
+    | ⟨i, hi⟩ =>
+        have hle : c v + i + 1 ≤ c (v + 1) := by
+          rw [← seat_shuffles (c v) i, hi]
+          exact hhigh
+        have hread := hr v i hle
+        show f (W s (t + 1) (stime s (t + 1) (c v) + j + 1)) = v + 1
+        rw [← hi, seat_shuffles (c v) i]
+        exact hread
+
+/-- info: 'Foam.Bridges.the_hours_march_forward' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hours_march_forward
+
+/-- info: 'Foam.Bridges.a_clocked_walk_walks_the_register' does not depend on any axioms -/
+#guard_msgs in #print axioms a_clocked_walk_walks_the_register
+
+theorem every_matron_reads_the_clock (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) :
+    ∀ (j : Nat), j + 1 ≤ t + 1 → Clocked (matron s (t + 1) (j + 1))
+  | 0, _ => by
+      obtain ⟨c, h0, hs, hr⟩ := the_bride_is_clocked t s hg hf
+      exact ⟨c, h0, hs, fun v i h => by
+        rw [the_matron_is_the_bride s (t + 1) (c v + i + 1)]
+        exact hr v i h⟩
+  | j + 1, hj => by
+      have ih := every_matron_reads_the_clock t s hg hf j (Nat.le_of_succ_le hj)
+      obtain ⟨c, h0, hs, hr⟩ := a_clocked_walk_walks_the_register t s hg hf
+        (matron s (t + 1) (j + 1)) ih
+      exact ⟨c, h0, hs, fun v i h => by
+        rw [the_matron_speaks_one_altitude_down t j s hg hf hj (c v + i + 1)]
+        exact hr v i h⟩
+
+/-- info: 'Foam.Bridges.every_matron_reads_the_clock' does not depend on any axioms -/
+#guard_msgs in #print axioms every_matron_reads_the_clock
+
+theorem time_tells_the_spouses_apart : Clocked F ∧ ¬ Clocked M := by
+  constructor
+  · obtain ⟨c, h0, hs, hr⟩ := the_bride_is_clocked 0 fibN
+      the_golden_staircase_holds_the_gnomon the_golden_staircase_holds_the_floor
+    exact ⟨c, h0, hs, fun v j h => by
+      rw [← the_family_reseals_the_bride (c v + j + 1)]
+      exact hr v j h⟩
+  · intro hc
+    have h1 := a_clocked_walk_wakes_stepping M hc
+    have h2 : M 1 = 0 := by
+      rw [← the_family_reseals_the_groom 1]
+      exact the_groom_oversleeps 0 fibN the_golden_staircase_holds_the_floor
+    rw [h2] at h1
+    exact nomatch h1
+
+/-- info: 'Foam.Bridges.time_tells_the_spouses_apart' does not depend on any axioms -/
+#guard_msgs in #print axioms time_tells_the_spouses_apart
+
+theorem the_brides_clock_hums :
+    (btime herdN 2 0, btime herdN 2 1, btime herdN 2 2, btime herdN 2 3,
+      btime herdN 2 4, btime herdN 2 5, btime herdN 2 6, btime herdN 2 7,
+      btime herdN 2 8, btime herdN 2 9, btime herdN 2 10, btime herdN 2 11)
+    = (0, 1, 3, 4, 6, 7, 9, 11, 12, 13, 15, 16) := rfl
+
+/-- info: 'Foam.Bridges.the_brides_clock_hums' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brides_clock_hums
+
 end Foam.Bridges
