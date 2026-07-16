@@ -3,6 +3,7 @@ import Foam.Ledger
 import Foam.Golden
 import Foam.Bridges.Zeckendorf
 import Foam.Bridges.Narayana
+import Foam.Bridges.Leibniz
 
 namespace Foam.Bridges
 
@@ -3282,5 +3283,520 @@ theorem the_tame_walk_needs_no_net (n : Nat) :
 
 /-- info: 'Foam.Bridges.the_tame_walk_needs_no_net' does not depend on any axioms -/
 #guard_msgs in #print axioms the_tame_walk_needs_no_net
+
+def bodometer : Nat → List Bool
+  | 0 => []
+  | n + 1 => bclick (bodometer n)
+
+theorem the_bodometer_reads_true : ∀ (n : Nat), gauge 0 (bodometer n) = n
+  | 0 => rfl
+  | n + 1 => by
+      show gauge 0 (bclick (bodometer n)) = n + 1
+      rw [a_click_deposits_one_notch (bodometer n) 0, the_bodometer_reads_true n]
+      exact Nat.add_comm 1 n
+
+theorem the_gate_reads_the_parity : ∀ (u : Nat),
+    bodometer (u + u + 1) = true :: bodometer u
+      ∧ bodometer (u + u + 2) = false :: bodometer (u + 1)
+  | 0 => ⟨rfl, rfl⟩
+  | u + 1 => by
+      have ih := the_gate_reads_the_parity u
+      have hidx : (u + 1) + (u + 1) = u + u + 2 := Nat.succ_add u (u + 1)
+      constructor
+      · rw [hidx]
+        show bclick (bodometer (u + u + 2)) = true :: bodometer (u + 1)
+        rw [ih.2]
+        rfl
+      · rw [hidx]
+        show bclick (bodometer (u + u + 3)) = false :: bodometer (u + 2)
+        rw [show bodometer (u + u + 3) = true :: bodometer (u + 1) from by
+              show bclick (bodometer (u + u + 2)) = true :: bodometer (u + 1)
+              rw [ih.2]
+              rfl]
+        rfl
+
+theorem an_odd_count_lights_the_gate (u : Nat) :
+    bodometer (u + u + 1) = true :: bodometer u := (the_gate_reads_the_parity u).1
+
+theorem an_even_count_rests_the_gate (u : Nat) :
+    bodometer (u + u + 2) = false :: bodometer (u + 1) := (the_gate_reads_the_parity u).2
+
+/-- info: 'Foam.Bridges.the_bodometer_reads_true' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bodometer_reads_true
+
+/-- info: 'Foam.Bridges.the_gate_reads_the_parity' does not depend on any axioms -/
+#guard_msgs in #print axioms the_gate_reads_the_parity
+
+/-- info: 'Foam.Bridges.an_odd_count_lights_the_gate' does not depend on any axioms -/
+#guard_msgs in #print axioms an_odd_count_lights_the_gate
+
+/-- info: 'Foam.Bridges.an_even_count_rests_the_gate' does not depend on any axioms -/
+#guard_msgs in #print axioms an_even_count_rests_the_gate
+
+def mtime : Nat → Nat
+  | 0 => 0
+  | n + 1 => mtime n + beat (bodometer n)
+
+theorem the_clock_hums_the_ruler :
+    (mtime 1, mtime 2, mtime 3, mtime 4, mtime 5, mtime 6, mtime 7, mtime 8)
+      = (2, 5, 6, 10, 11, 13, 14, 19) := rfl
+
+theorem the_clock_folds_at_its_half : ∀ (u : Nat),
+    mtime (u + u + 1) = mtime u + (u + u + 2)
+      ∧ mtime (u + u + 2) = mtime (u + 1) + (u + u + 3)
+  | 0 => ⟨rfl, rfl⟩
+  | u + 1 => by
+      have ih := the_clock_folds_at_its_half u
+      have hidx : (u + 1) + (u + 1) = u + u + 2 := Nat.succ_add u (u + 1)
+      have h1 : mtime (u + u + 3) = mtime (u + 1) + (u + u + 4) := by
+        show mtime (u + u + 2) + beat (bodometer (u + u + 2)) = mtime (u + 1) + (u + u + 4)
+        rw [an_even_count_rests_the_gate u, ih.2]
+        rfl
+      have h2 : mtime (u + u + 4) = mtime (u + 2) + (u + u + 5) := by
+        show mtime (u + u + 3) + beat (bodometer (u + u + 3)) = mtime (u + 2) + (u + u + 5)
+        rw [show bodometer (u + u + 3) = true :: bodometer (u + 1) from by
+              show bclick (bodometer (u + u + 2)) = true :: bodometer (u + 1)
+              rw [an_even_count_rests_the_gate u]
+              rfl,
+            h1]
+        show mtime (u + 1) + (u + u + 4) + (beat (bodometer (u + 1)) + 1)
+          = mtime (u + 1) + beat (bodometer (u + 1)) + (u + u + 5)
+        exact add_shuffle (mtime (u + 1)) (u + u + 4) (beat (bodometer (u + 1))) 1
+      constructor
+      · rw [hidx]
+        exact h1
+      · rw [hidx]
+        exact h2
+
+theorem stack_right : ∀ (a b c : Nat), a ≤ b → a + c ≤ b + c
+  | _, _, 0, h => h
+  | a, b, c + 1, h => Nat.succ_le_succ (stack_right a b c h)
+
+theorem stack_left (a b c : Nat) (h : b ≤ c) : a + b ≤ a + c := by
+  rw [Nat.add_comm a b, Nat.add_comm a c]
+  exact stack_right b c a h
+
+theorem the_clock_never_stalls (v : Nat) : mtime v < mtime (v + 1) := by
+  show mtime v + 1 ≤ mtime v + beat (bodometer v)
+  exact stack_left (mtime v) 1 (beat (bodometer v)) (every_beat_ticks (bodometer v))
+
+/-- info: 'Foam.Bridges.the_clock_hums_the_ruler' does not depend on any axioms -/
+#guard_msgs in #print axioms the_clock_hums_the_ruler
+
+/-- info: 'Foam.Bridges.the_clock_folds_at_its_half' does not depend on any axioms -/
+#guard_msgs in #print axioms the_clock_folds_at_its_half
+
+/-- info: 'Foam.Bridges.stack_right' does not depend on any axioms -/
+#guard_msgs in #print axioms stack_right
+
+/-- info: 'Foam.Bridges.stack_left' does not depend on any axioms -/
+#guard_msgs in #print axioms stack_left
+
+/-- info: 'Foam.Bridges.the_clock_never_stalls' does not depend on any axioms -/
+#guard_msgs in #print axioms the_clock_never_stalls
+
+theorem unstack : ∀ (a b c : Nat), a + c = b + c → a = b
+  | _, _, 0, h => h
+  | a, b, c + 1, h => unstack a b c (Nat.succ.inj h)
+
+theorem the_clock_charges_twice_less_the_light : ∀ (n : Nat),
+    mtime n + ones (bodometer n) = n + n + (bodometer n).length
+  | 0 => rfl
+  | n + 1 => by
+      apply unstack _ _ (bodometer n).length
+      show mtime n + beat (bodometer n) + ones (bclick (bodometer n)) + (bodometer n).length
+        = (n + 1) + (n + 1) + (bclick (bodometer n)).length + (bodometer n).length
+      rw [Nat.add_assoc (mtime n) (beat (bodometer n)) (ones (bclick (bodometer n))),
+          Nat.add_comm (beat (bodometer n)) (ones (bclick (bodometer n))),
+          Nat.add_assoc (mtime n) (ones (bclick (bodometer n)) + beat (bodometer n))
+            (bodometer n).length,
+          the_carry_bills_its_erasures (bodometer n),
+          Nat.add_assoc (ones (bodometer n)) 2 (bclick (bodometer n)).length,
+          ← Nat.add_assoc (mtime n) (ones (bodometer n)) (2 + (bclick (bodometer n)).length),
+          the_clock_charges_twice_less_the_light n,
+          double_the_step n,
+          add_shuffle (n + n) (bodometer n).length 2 (bclick (bodometer n)).length,
+          Nat.add_comm (bodometer n).length (bclick (bodometer n)).length,
+          ← Nat.add_assoc (n + n + 2) (bclick (bodometer n)).length (bodometer n).length]
+
+/-- info: 'Foam.Bridges.unstack' does not depend on any axioms -/
+#guard_msgs in #print axioms unstack
+
+/-- info: 'Foam.Bridges.the_clock_charges_twice_less_the_light' does not depend on any axioms -/
+#guard_msgs in #print axioms the_clock_charges_twice_less_the_light
+
+theorem pull_out_the_middle (a b c : Nat) : a + b + c - b = a + c := by
+  rw [Nat.add_assoc a b c, Nat.add_comm b c, ← Nat.add_assoc a c b]
+  exact add_then_sub (a + c) b
+
+theorem a_tick_is_a_step : ∀ (m : Nat), 1 ≤ m → ∃ c, m = c + 1
+  | m + 1, _ => ⟨m, rfl⟩
+  | 0, h => absurd h (Nat.not_succ_le_zero 0)
+
+theorem every_count_finds_its_door : ∀ (v : Nat),
+    v = 0 ∨ v = 1 ∨ (∃ t, v = t + t + 2) ∨ (∃ t, v = t + t + 3)
+  | 0 => Or.inl rfl
+  | 1 => Or.inr (Or.inl rfl)
+  | 2 => Or.inr (Or.inr (Or.inl ⟨0, rfl⟩))
+  | 3 => Or.inr (Or.inr (Or.inr ⟨0, rfl⟩))
+  | v + 4 =>
+      match every_count_finds_its_door (v + 2) with
+      | Or.inl h => Or.inr (Or.inr (Or.inl ⟨0, congrArg (· + 2) h⟩))
+      | Or.inr (Or.inl h) => Or.inr (Or.inr (Or.inr ⟨0, congrArg (· + 2) h⟩))
+      | Or.inr (Or.inr (Or.inl ⟨t, h⟩)) =>
+          Or.inr (Or.inr (Or.inl ⟨t + 1,
+            (congrArg (· + 2) h).trans (congrArg (· + 2) (Nat.succ_add t (t + 1))).symm⟩))
+      | Or.inr (Or.inr (Or.inr ⟨t, h⟩)) =>
+          Or.inr (Or.inr (Or.inr ⟨t + 1,
+            (congrArg (· + 2) h).trans (congrArg (· + 3) (Nat.succ_add t (t + 1))).symm⟩))
+
+/-- info: 'Foam.Bridges.pull_out_the_middle' does not depend on any axioms -/
+#guard_msgs in #print axioms pull_out_the_middle
+
+/-- info: 'Foam.Bridges.a_tick_is_a_step' does not depend on any axioms -/
+#guard_msgs in #print axioms a_tick_is_a_step
+
+/-- info: 'Foam.Bridges.every_count_finds_its_door' does not depend on any axioms -/
+#guard_msgs in #print axioms every_count_finds_its_door
+
+def metered (n : Nat) : Prop :=
+  ∀ v j, j < beat (bodometer v) → mtime v + j + 1 ≤ n → T (mtime v + j + 1) = v + 1
+
+theorem metered_step (n : Nat) (ih : metered n) : metered (n + 1) := by
+  intro v j hj hle
+  match every_count_finds_its_door v with
+  | Or.inl hv =>
+      subst hv
+      match j, hj with
+      | 0, _ => rfl
+      | 1, _ => rfl
+      | j + 2, hjj =>
+          exact absurd (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ hjj))
+            (Nat.not_succ_le_zero j)
+  | Or.inr (Or.inl hv) =>
+      subst hv
+      match j, hj with
+      | 0, _ => rfl
+      | 1, _ => rfl
+      | 2, _ => rfl
+      | j + 3, hjj =>
+          exact absurd
+            (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ hjj)))
+            (Nat.not_succ_le_zero j)
+  | Or.inr (Or.inr (Or.inl ⟨t, hv⟩)) =>
+      subst hv
+      have hb1 : beat (bodometer (t + t + 2)) = 1 := by
+        rw [an_even_count_rests_the_gate t]
+        rfl
+      rw [hb1] at hj
+      match j, hj with
+      | j + 1, hjj =>
+          exact absurd (Nat.le_of_succ_le_succ hjj) (Nat.not_succ_le_zero j)
+      | 0, _ =>
+          obtain ⟨c, hc⟩ :=
+            a_tick_is_a_step (beat (bodometer t)) (every_beat_ticks (bodometer t))
+          have hM1 : mtime (t + t + 1) = mtime t + (t + t + 2) :=
+            (the_clock_folds_at_its_half t).1
+          have hM2 : mtime (t + t + 2) = mtime t + (t + t + 2) + (c + 2) := by
+            show mtime (t + t + 1) + beat (bodometer (t + t + 1))
+              = mtime t + (t + t + 2) + (c + 2)
+            rw [an_odd_count_lights_the_gate t, hM1]
+            show mtime t + (t + t + 2) + (beat (bodometer t) + 1)
+              = mtime t + (t + t + 2) + (c + 2)
+            rw [hc]
+          have hle' : mtime t + (t + t + 2) + c + 2 ≤ n := by
+            have h := hle
+            rw [hM2] at h
+            exact Nat.le_of_succ_le_succ h
+          have hfloor : mtime t + c + 2 ≤ n :=
+            Nat.le_trans
+              (stack_right (mtime t + c) (mtime t + (t + t + 2) + c) 2
+                (stack_right (mtime t) (mtime t + (t + t + 2)) c
+                  (Nat.le_add_right (mtime t) (t + t + 2))))
+              hle'
+          have h1 : T (mtime t + (t + t + 2) + c + 2) = t + t + 2 := by
+            have h := ih (t + t + 1) (c + 1)
+              (by rw [an_odd_count_lights_the_gate t]
+                  show c + 1 < beat (bodometer t) + 1
+                  rw [hc]
+                  exact Nat.le_refl (c + 2))
+              (by rw [hM1]; exact hle')
+            rw [hM1] at h
+            exact h
+          have h2 : T (mtime t + (t + t + 2) + c + 1) = t + t + 2 := by
+            have h := ih (t + t + 1) c
+              (by rw [an_odd_count_lights_the_gate t]
+                  show c < beat (bodometer t) + 1
+                  rw [hc]
+                  exact Nat.le_succ (c + 1))
+              (by rw [hM1]
+                  exact Nat.le_trans (Nat.le_succ (mtime t + (t + t + 2) + c + 1)) hle')
+            rw [hM1] at h
+            exact h
+          have h3 : T (mtime t + c + 2) = t + 2 := by
+            have h := ih (t + 1) 0 (every_beat_ticks (bodometer (t + 1)))
+              (by show mtime t + beat (bodometer t) + 0 + 1 ≤ n
+                  rw [hc]
+                  exact hfloor)
+            rw [show mtime t + c + 2 = mtime (t + 1) + 0 + 1 from by
+                  show mtime t + c + 2 = mtime t + beat (bodometer t) + 0 + 1
+                  rw [hc]
+                  rfl]
+            exact h
+          have h4 : T (mtime t + c + 1) = t + 1 :=
+            ih t c (by rw [hc]; exact Nat.le_refl (c + 1))
+              (Nat.le_trans (Nat.le_succ (mtime t + c + 1)) hfloor)
+          rw [hM2]
+          show T (mtime t + (t + t + 2) + c + 3) = t + t + 3
+          rw [the_tame_loop_closes_over_the_net (mtime t + (t + t + 2) + c), h1, h2,
+              show mtime t + (t + t + 2) + c + 2 - (t + t + 2) = mtime t + c + 2 from
+                pull_out_the_middle (mtime t) (t + t + 2) (c + 2),
+              show mtime t + (t + t + 2) + c + 1 - (t + t + 2) = mtime t + c + 1 from
+                pull_out_the_middle (mtime t) (t + t + 2) (c + 1),
+              h3, h4]
+          exact congrArg (· + 1) (carry_the_one t 2)
+  | Or.inr (Or.inr (Or.inr ⟨t, hv⟩)) =>
+      subst hv
+      have hg3 : bodometer (t + t + 3) = true :: bodometer (t + 1) := by
+        show bclick (bodometer (t + t + 2)) = true :: bodometer (t + 1)
+        rw [an_even_count_rests_the_gate t]
+        rfl
+      have hb3 : beat (bodometer (t + t + 3)) = beat (bodometer (t + 1)) + 1 := by
+        rw [hg3]
+        rfl
+      have hM3 : mtime (t + t + 3) = mtime (t + 1) + (t + t + 4) := by
+        show mtime (t + t + 2) + beat (bodometer (t + t + 2))
+          = mtime (t + 1) + (t + t + 4)
+        rw [an_even_count_rests_the_gate t, (the_clock_folds_at_its_half t).2]
+        rfl
+      rw [hb3] at hj
+      match j, hj with
+      | 0, _ =>
+          obtain ⟨c, hc⟩ :=
+            a_tick_is_a_step (beat (bodometer t)) (every_beat_ticks (bodometer t))
+          have hle' : mtime (t + 1) + (t + t + 2) + 2 ≤ n := by
+            have h := hle
+            rw [hM3] at h
+            exact Nat.le_of_succ_le_succ h
+          have h1 : T (mtime (t + 1) + (t + t + 2) + 2) = t + t + 3 := by
+            have h := ih (t + t + 2) 0 (every_beat_ticks (bodometer (t + t + 2)))
+              (by rw [(the_clock_folds_at_its_half t).2]; exact hle')
+            rw [(the_clock_folds_at_its_half t).2] at h
+            exact h
+          have h2 : T (mtime (t + 1) + (t + t + 2) + 1) = t + t + 2 := by
+            have hpos : mtime (t + 1) + (t + t + 2) + 1 = mtime (t + t + 1) + (c + 1) + 1 := by
+              rw [(the_clock_folds_at_its_half t).1]
+              show mtime t + beat (bodometer t) + (t + t + 2) + 1
+                = mtime t + (t + t + 2) + (c + 1) + 1
+              rw [hc]
+              exact add_shuffle (mtime t) (c + 1) (t + t + 2) 1
+            rw [hpos]
+            exact ih (t + t + 1) (c + 1)
+              (by rw [an_odd_count_lights_the_gate t]
+                  show c + 1 < beat (bodometer t) + 1
+                  rw [hc]
+                  exact Nat.le_refl (c + 2))
+              (by rw [← hpos]
+                  exact Nat.le_trans (Nat.le_succ (mtime (t + 1) + (t + t + 2) + 1)) hle')
+          have h3 : T (mtime (t + 1) + 1) = t + 2 :=
+            ih (t + 1) 0 (every_beat_ticks (bodometer (t + 1)))
+              (Nat.le_trans
+                (stack_left (mtime (t + 1)) 1 (t + t + 4) (Nat.le_add_left 1 (t + t + 3)))
+                hle')
+          rw [hM3]
+          show T (mtime (t + 1) + (t + t + 2) + 3) = t + t + 4
+          rw [the_tame_loop_closes_over_the_net (mtime (t + 1) + (t + t + 2)), h1, h2,
+              show mtime (t + 1) + (t + t + 2) + 2 - (t + t + 3) = mtime (t + 1) + 1 from
+                pull_out_the_middle (mtime (t + 1)) (t + t + 3) 1,
+              show mtime (t + 1) + (t + t + 2) + 1 - (t + t + 2) = mtime (t + 1) + 1 from
+                pull_out_the_middle (mtime (t + 1)) (t + t + 2) 1,
+              h3]
+          exact congrArg (· + 2) (carry_the_one t 2)
+      | 1, _ =>
+          have hle' : mtime (t + 1) + (t + t + 3) + 2 ≤ n := by
+            have h := hle
+            rw [hM3] at h
+            exact Nat.le_of_succ_le_succ h
+          have h1 : T (mtime (t + 1) + (t + t + 3) + 2) = t + t + 4 := by
+            have h := ih (t + t + 3) 0 (every_beat_ticks (bodometer (t + t + 3)))
+              (by rw [hM3]; exact hle')
+            rw [hM3] at h
+            exact h
+          have h2 : T (mtime (t + 1) + (t + t + 3) + 1) = t + t + 3 := by
+            have h := ih (t + t + 2) 0 (every_beat_ticks (bodometer (t + t + 2)))
+              (by rw [(the_clock_folds_at_its_half t).2]
+                  exact Nat.le_trans (Nat.le_succ (mtime (t + 1) + (t + t + 3) + 1)) hle')
+            rw [(the_clock_folds_at_its_half t).2] at h
+            exact h
+          have h3 : T (mtime (t + 1) + 1) = t + 2 :=
+            ih (t + 1) 0 (every_beat_ticks (bodometer (t + 1)))
+              (Nat.le_trans
+                (stack_left (mtime (t + 1)) 1 (t + t + 5) (Nat.le_add_left 1 (t + t + 4)))
+                hle')
+          rw [hM3]
+          show T (mtime (t + 1) + (t + t + 3) + 3) = t + t + 4
+          rw [the_tame_loop_closes_over_the_net (mtime (t + 1) + (t + t + 3)), h1, h2,
+              show mtime (t + 1) + (t + t + 3) + 2 - (t + t + 4) = mtime (t + 1) + 1 from
+                pull_out_the_middle (mtime (t + 1)) (t + t + 4) 1,
+              show mtime (t + 1) + (t + t + 3) + 1 - (t + t + 3) = mtime (t + 1) + 1 from
+                pull_out_the_middle (mtime (t + 1)) (t + t + 3) 1,
+              h3]
+          exact congrArg (· + 2) (carry_the_one t 2)
+      | j' + 2, hj2 =>
+          have hle' : mtime (t + 1) + (t + t + 4) + j' + 2 ≤ n := by
+            have h := hle
+            rw [hM3] at h
+            exact Nat.le_of_succ_le_succ h
+          have h1 : T (mtime (t + 1) + (t + t + 4) + j' + 2) = t + t + 4 := by
+            have h := ih (t + t + 3) (j' + 1)
+              (by rw [hb3]; exact Nat.le_trans (Nat.le_succ (j' + 2)) hj2)
+              (by rw [hM3]; exact hle')
+            rw [hM3] at h
+            exact h
+          have h2 : T (mtime (t + 1) + (t + t + 4) + j' + 1) = t + t + 4 := by
+            have h := ih (t + t + 3) j'
+              (by rw [hb3]
+                  exact Nat.le_trans (Nat.le_succ (j' + 1))
+                    (Nat.le_trans (Nat.le_succ (j' + 2)) hj2))
+              (by rw [hM3]
+                  exact Nat.le_trans (Nat.le_succ (mtime (t + 1) + (t + t + 4) + j' + 1)) hle')
+            rw [hM3] at h
+            exact h
+          have hfloor : mtime (t + 1) + j' + 2 ≤ n :=
+            Nat.le_trans
+              (stack_right (mtime (t + 1) + j') (mtime (t + 1) + (t + t + 4) + j') 2
+                (stack_right (mtime (t + 1)) (mtime (t + 1) + (t + t + 4)) j'
+                  (Nat.le_add_right (mtime (t + 1)) (t + t + 4))))
+              hle'
+          have h3 : T (mtime (t + 1) + j' + 2) = t + 2 :=
+            ih (t + 1) (j' + 1) (Nat.le_of_succ_le_succ hj2) hfloor
+          have h4 : T (mtime (t + 1) + j' + 1) = t + 2 :=
+            ih (t + 1) j'
+              (Nat.le_of_succ_le_succ (Nat.le_trans (Nat.le_succ (j' + 2)) hj2))
+              (Nat.le_trans (Nat.le_succ (mtime (t + 1) + j' + 1)) hfloor)
+          rw [hM3]
+          show T (mtime (t + 1) + (t + t + 4) + j' + 3) = t + t + 4
+          rw [the_tame_loop_closes_over_the_net (mtime (t + 1) + (t + t + 4) + j'), h1, h2,
+              show mtime (t + 1) + (t + t + 4) + j' + 2 - (t + t + 4)
+                  = mtime (t + 1) + j' + 2 from
+                pull_out_the_middle (mtime (t + 1)) (t + t + 4) (j' + 2),
+              show mtime (t + 1) + (t + t + 4) + j' + 1 - (t + t + 4)
+                  = mtime (t + 1) + j' + 1 from
+                pull_out_the_middle (mtime (t + 1)) (t + t + 4) (j' + 1),
+              h3, h4]
+          exact congrArg (· + 2) (carry_the_one t 2)
+
+theorem the_tame_walk_keeps_the_meter : ∀ (n : Nat), metered n
+  | 0 => fun _ _ _ hle => absurd hle (Nat.not_succ_le_zero _)
+  | n + 1 => metered_step n (the_tame_walk_keeps_the_meter n)
+
+/-- info: 'Foam.Bridges.metered_step' does not depend on any axioms -/
+#guard_msgs in #print axioms metered_step
+
+/-- info: 'Foam.Bridges.the_tame_walk_keeps_the_meter' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_keeps_the_meter
+
+theorem the_tame_walk_reads_the_binary_odometer (v j : Nat)
+    (h : j < beat (bodometer v)) : T (mtime v + j + 1) = v + 1 :=
+  the_tame_walk_keeps_the_meter (mtime v + j + 1) v j h (Nat.le_refl (mtime v + j + 1))
+
+theorem a_new_count_reads_at_its_first_beat (v : Nat) : T (mtime v + 1) = v + 1 :=
+  the_tame_walk_reads_the_binary_odometer v 0 (every_beat_ticks (bodometer v))
+
+theorem the_walk_arrives_on_the_hour (v : Nat) : T (mtime (v + 1)) = v + 1 := by
+  obtain ⟨c, hc⟩ := a_tick_is_a_step (beat (bodometer v)) (every_beat_ticks (bodometer v))
+  show T (mtime v + beat (bodometer v)) = v + 1
+  rw [hc]
+  exact the_tame_walk_reads_the_binary_odometer v c (by rw [hc]; exact Nat.le_refl (c + 1))
+
+theorem t_hums_the_hours :
+    (T 2, T 5, T 6, T 10, T 11, T 13, T 14, T 19) = (1, 2, 3, 4, 5, 6, 7, 8) := rfl
+
+/-- info: 'Foam.Bridges.the_tame_walk_reads_the_binary_odometer' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_reads_the_binary_odometer
+
+/-- info: 'Foam.Bridges.a_new_count_reads_at_its_first_beat' does not depend on any axioms -/
+#guard_msgs in #print axioms a_new_count_reads_at_its_first_beat
+
+/-- info: 'Foam.Bridges.the_walk_arrives_on_the_hour' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walk_arrives_on_the_hour
+
+/-- info: 'Foam.Bridges.t_hums_the_hours' does not depend on any axioms -/
+#guard_msgs in #print axioms t_hums_the_hours
+
+theorem every_hour_strikes_some_count : ∀ (n : Nat),
+    ∃ v j, j < beat (bodometer v) ∧ n + 1 = mtime v + j + 1
+  | 0 => ⟨0, 0, Nat.le_succ 1, rfl⟩
+  | n + 1 =>
+      match every_hour_strikes_some_count n with
+      | ⟨v, j, hj, he⟩ =>
+          match a_tick_is_a_step (beat (bodometer v)) (every_beat_ticks (bodometer v)) with
+          | ⟨c, hc⟩ =>
+              match under_the_wire (j + 1) c (hc ▸ hj) with
+              | Or.inl h =>
+                  ⟨v, j + 1, by rw [hc]; exact Nat.succ_le_succ h, congrArg (· + 1) he⟩
+              | Or.inr h =>
+                  ⟨v + 1, 0, every_beat_ticks (bodometer (v + 1)),
+                    (congrArg (· + 1) he).trans (by
+                      show mtime v + j + 1 + 1 = mtime (v + 1) + 0 + 1
+                      rw [Nat.succ.inj h]
+                      show mtime v + c + 1 + 1 = mtime v + beat (bodometer v) + 0 + 1
+                      rw [hc]
+                      rfl)⟩
+
+theorem the_clock_tells_the_whole_walk (n : Nat) :
+    ∃ v, mtime v < n + 1 ∧ n + 1 ≤ mtime (v + 1) ∧ T (n + 1) = v + 1 := by
+  obtain ⟨v, j, hj, he⟩ := every_hour_strikes_some_count n
+  refine ⟨v, ?_, ?_, ?_⟩
+  · rw [he]
+    exact Nat.succ_le_succ (Nat.le_add_right (mtime v) j)
+  · rw [he]
+    show mtime v + j + 1 ≤ mtime v + beat (bodometer v)
+    exact stack_left (mtime v) (j + 1) (beat (bodometer v)) hj
+  · rw [he]
+    exact the_tame_walk_reads_the_binary_odometer v j hj
+
+/-- info: 'Foam.Bridges.every_hour_strikes_some_count' does not depend on any axioms -/
+#guard_msgs in #print axioms every_hour_strikes_some_count
+
+/-- info: 'Foam.Bridges.the_clock_tells_the_whole_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms the_clock_tells_the_whole_walk
+
+theorem the_shadow_beats_at_half_time (u j : Nat)
+    (h : j < beat (bodometer (u + u + 1))) :
+    slack (mtime (u + u + 1) + j + 1) = mtime u + j + 1 := by
+  show mtime (u + u + 1) + j + 1 - T (mtime (u + u + 1) + j + 1) = mtime u + j + 1
+  rw [the_tame_walk_reads_the_binary_odometer (u + u + 1) j h,
+      (the_clock_folds_at_its_half u).1]
+  show mtime u + (u + u + 2) + j + 1 - (u + u + 2) = mtime u + j + 1
+  exact pull_out_the_middle (mtime u) (u + u + 2) (j + 1)
+
+theorem the_tame_shadow_halves_an_odd_count (u j : Nat)
+    (h : j < beat (bodometer u)) :
+    T (slack (mtime (u + u + 1) + j + 1)) = u + 1 := by
+  rw [the_shadow_beats_at_half_time u j
+        (by rw [an_odd_count_lights_the_gate u]
+            show j < beat (bodometer u) + 1
+            exact Nat.le_trans h (Nat.le_succ (beat (bodometer u))))]
+  exact the_tame_walk_reads_the_binary_odometer u j h
+
+theorem the_tame_shadow_rounds_up_at_an_even_count (u : Nat) :
+    T (slack (mtime (u + u + 2) + 1)) = u + 2 := by
+  rw [show slack (mtime (u + u + 2) + 1) = mtime (u + 1) + 1 from by
+        show mtime (u + u + 2) + 1 - T (mtime (u + u + 2) + 1) = mtime (u + 1) + 1
+        rw [a_new_count_reads_at_its_first_beat (u + u + 2),
+            (the_clock_folds_at_its_half u).2]
+        show mtime (u + 1) + (u + u + 3) + 1 - (u + u + 3) = mtime (u + 1) + 1
+        exact pull_out_the_middle (mtime (u + 1)) (u + u + 3) 1]
+  exact a_new_count_reads_at_its_first_beat (u + 1)
+
+/-- info: 'Foam.Bridges.the_shadow_beats_at_half_time' does not depend on any axioms -/
+#guard_msgs in #print axioms the_shadow_beats_at_half_time
+
+/-- info: 'Foam.Bridges.the_tame_shadow_halves_an_odd_count' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_shadow_halves_an_odd_count
+
+/-- info: 'Foam.Bridges.the_tame_shadow_rounds_up_at_an_even_count' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_shadow_rounds_up_at_an_even_count
 
 end Foam.Bridges
