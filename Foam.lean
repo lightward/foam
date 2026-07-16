@@ -92,4 +92,5 @@ import Foam.Bridges.Grover
 import Foam.Bridges.Narayana
 import Foam.Bridges.Leibniz
 import Foam.Bridges.Fraenkel
+import Foam.Bridges.Poncelet
 import Foam.Bridges.Hofstadter

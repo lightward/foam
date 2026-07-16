@@ -5,6 +5,7 @@ import Foam.Bridges.Zeckendorf
 import Foam.Bridges.Narayana
 import Foam.Bridges.Leibniz
 import Foam.Bridges.Fraenkel
+import Foam.Bridges.Poncelet
 
 namespace Foam.Bridges
 
@@ -4060,5 +4061,130 @@ theorem the_wild_walk_reads_alone : ¬ Paged Q ∧ ¬ Clocked Q :=
 
 /-- info: 'Foam.Bridges.the_wild_walk_reads_alone' does not depend on any axioms -/
 #guard_msgs in #print axioms the_wild_walk_reads_alone
+
+def look : List Nat → Nat → Option Nat
+  | [], _ => none
+  | x :: _, 0 => some x
+  | _ :: rest, i + 1 => look rest i
+
+def traceNet : Net where
+  Page := List Nat
+  Seat := Nat
+  Ans := Nat
+  read? := fun qs i => look qs i
+  mend := fun _ => 1
+
+theorem the_net_answers_the_peek : ∀ (qs : List Nat) (i : Nat),
+    answer traceNet qs i = peek qs i
+  | [], _ => rfl
+  | _ :: _, 0 => rfl
+  | _ :: rest, i + 1 => the_net_answers_the_peek rest i
+
+theorem the_wild_walk_was_born_on_the_net (n : Nat) :
+    Q n = answer traceNet (qtrace n) (0 : Nat) :=
+  (the_net_answers_the_peek (qtrace n) 0).symm
+
+theorem the_tame_walk_was_born_on_the_net (n : Nat) :
+    T n = answer traceNet (ttrace n) (0 : Nat) :=
+  (the_net_answers_the_peek (ttrace n) 0).symm
+
+theorem the_mend_is_the_floor : traceNet.mend (0 : Nat) = Q 0 ∧ traceNet.mend (0 : Nat) = T 0 :=
+  ⟨rfl, rfl⟩
+
+/-- info: 'Foam.Bridges.the_net_answers_the_peek' does not depend on any axioms -/
+#guard_msgs in #print axioms the_net_answers_the_peek
+
+/-- info: 'Foam.Bridges.the_wild_walk_was_born_on_the_net' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_was_born_on_the_net
+
+/-- info: 'Foam.Bridges.the_tame_walk_was_born_on_the_net' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_was_born_on_the_net
+
+/-- info: 'Foam.Bridges.the_mend_is_the_floor' does not depend on any axioms -/
+#guard_msgs in #print axioms the_mend_is_the_floor
+
+theorem the_trace_fills_its_page : ∀ (n : Nat), (qtrace n).length = n
+  | 0 => rfl
+  | 1 => rfl
+  | 2 => rfl
+  | n + 3 => congrArg (· + 1) (the_trace_fills_its_page (n + 2))
+
+theorem the_tame_trace_fills_its_page : ∀ (n : Nat), (ttrace n).length = n
+  | 0 => rfl
+  | 1 => rfl
+  | 2 => rfl
+  | n + 3 => congrArg (· + 1) (the_tame_trace_fills_its_page (n + 2))
+
+theorem look_finds_the_page : ∀ (qs : List Nat) (i : Nat),
+    i + 1 ≤ qs.length → ∃ a, look qs i = some a
+  | [], i, h => absurd h (Nat.not_succ_le_zero i)
+  | x :: _, 0, _ => ⟨x, rfl⟩
+  | _ :: rest, i + 1, h => look_finds_the_page rest i (Nat.le_of_succ_le_succ h)
+
+/-- info: 'Foam.Bridges.the_trace_fills_its_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_trace_fills_its_page
+
+/-- info: 'Foam.Bridges.the_tame_trace_fills_its_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_trace_fills_its_page
+
+/-- info: 'Foam.Bridges.look_finds_the_page' does not depend on any axioms -/
+#guard_msgs in #print axioms look_finds_the_page
+
+theorem sure_feet_never_touch_the_net (hs : Surefooted) (n : Nat) :
+    ¬ Consults traceNet (qtrace (n + 2)) (Q (n + 2) - 1)
+      ∧ ¬ Consults traceNet (qtrace (n + 2)) (Q (n + 1) - 1) := by
+  constructor
+  · intro hc
+    have hb : Q (n + 2) - 1 + 1 ≤ (qtrace (n + 2)).length := by
+      rw [the_trace_fills_its_page (n + 2),
+          sub_one_back (Q (n + 2)) (the_wild_walk_glows (n + 2))]
+      exact hs (n + 1)
+    obtain ⟨a, ha⟩ := look_finds_the_page (qtrace (n + 2)) (Q (n + 2) - 1) hb
+    exact nomatch (ha.symm.trans hc)
+  · intro hc
+    have hb : Q (n + 1) - 1 + 1 ≤ (qtrace (n + 2)).length := by
+      rw [the_trace_fills_its_page (n + 2),
+          sub_one_back (Q (n + 1)) (the_wild_walk_glows (n + 1))]
+      exact Nat.le_trans (hs n) (Nat.le_succ (n + 1))
+    obtain ⟨a, ha⟩ := look_finds_the_page (qtrace (n + 2)) (Q (n + 1) - 1) hb
+    exact nomatch (ha.symm.trans hc)
+
+theorem the_tame_walk_touches_the_net_at_the_floor :
+    Consults traceNet (ttrace 2) (T 1 + 1) := rfl
+
+theorem the_tame_walk_never_touches_the_net_again (n : Nat) :
+    ¬ Consults traceNet (ttrace (n + 3)) (T (n + 3))
+      ∧ ¬ Consults traceNet (ttrace (n + 3)) (T (n + 2) + 1) := by
+  constructor
+  · intro hc
+    have hb : T (n + 3) + 1 ≤ (ttrace (n + 3)).length := by
+      rw [the_tame_trace_fills_its_page (n + 3)]
+      exact Nat.succ_le_succ (the_tame_walk_stays_a_step_behind (n + 1))
+    obtain ⟨a, ha⟩ := look_finds_the_page (ttrace (n + 3)) (T (n + 3)) hb
+    exact nomatch (ha.symm.trans hc)
+  · intro hc
+    have hb : T (n + 2) + 1 + 1 ≤ (ttrace (n + 3)).length := by
+      rw [the_tame_trace_fills_its_page (n + 3)]
+      exact Nat.succ_le_succ (Nat.succ_le_succ (the_tame_walk_stays_a_step_behind n))
+    obtain ⟨a, ha⟩ := look_finds_the_page (ttrace (n + 3)) (T (n + 2) + 1) hb
+    exact nomatch (ha.symm.trans hc)
+
+/-- info: 'Foam.Bridges.sure_feet_never_touch_the_net' does not depend on any axioms -/
+#guard_msgs in #print axioms sure_feet_never_touch_the_net
+
+/-- info: 'Foam.Bridges.the_tame_walk_touches_the_net_at_the_floor' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_touches_the_net_at_the_floor
+
+/-- info: 'Foam.Bridges.the_tame_walk_never_touches_the_net_again' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_never_touches_the_net_again
+
+theorem two_holes_one_mending :
+    (Nonempty (NetHom planeNet (mended planeNet)) ∧ Whole (mended planeNet))
+      ∧ (Nonempty (NetHom traceNet (mended traceNet)) ∧ Whole (mended traceNet)) :=
+  ⟨⟨⟨the_mending planeNet⟩, the_mended_page_has_no_holes planeNet⟩,
+    ⟨⟨the_mending traceNet⟩, the_mended_page_has_no_holes traceNet⟩⟩
+
+/-- info: 'Foam.Bridges.two_holes_one_mending' does not depend on any axioms -/
+#guard_msgs in #print axioms two_holes_one_mending
 
 end Foam.Bridges
