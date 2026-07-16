@@ -4,6 +4,8 @@ import Foam.Golden
 import Foam.Bridges.Zeckendorf
 import Foam.Bridges.Narayana
 import Foam.Bridges.Leibniz
+import Foam.Bridges.Fraenkel
+import Foam.Bridges.Poncelet
 
 namespace Foam.Bridges
 
@@ -3798,5 +3800,391 @@ theorem the_tame_shadow_rounds_up_at_an_even_count (u : Nat) :
 
 /-- info: 'Foam.Bridges.the_tame_shadow_rounds_up_at_an_even_count' does not depend on any axioms -/
 #guard_msgs in #print axioms the_tame_shadow_rounds_up_at_an_even_count
+
+theorem the_golden_staircase_holds_the_gnomon : Gnomon 1 fibN :=
+  fun n => fibN_gnomon (n + 1)
+
+theorem the_golden_staircase_holds_the_floor : Floored 1 fibN := fun k h =>
+  match k, h with
+  | 0, _ => rfl
+  | 1, _ => rfl
+  | k + 2, h => absurd (Nat.le_of_succ_le_succ h) (Nat.not_succ_le_zero k)
+
+theorem worth_is_the_golden_price : ∀ (ds : List Bool) (i : Nat), worth i ds = price fibN i ds
+  | [], _ => rfl
+  | false :: rest, i => worth_is_the_golden_price rest (i + 1)
+  | true :: rest, i => congrArg (fibN i + ·) (worth_is_the_golden_price rest (i + 1))
+
+theorem the_golden_grammar_names_fibonacci (s : Nat → Nat)
+    (hg : Gnomon 1 s) (hf : Floored 1 s) (n : Nat) : s (n + 1) = fibN (n + 1) :=
+  the_grammar_names_its_staircase 1 s fibN hg hf
+    the_golden_staircase_holds_the_gnomon the_golden_staircase_holds_the_floor n
+
+theorem the_gate_is_the_unlit_lamp : ∀ (ds : List Bool), cleared 1 ds = !lit ds
+  | [] => rfl
+  | true :: _ => rfl
+  | false :: _ => rfl
+
+/-- info: 'Foam.Bridges.the_golden_staircase_holds_the_gnomon' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_staircase_holds_the_gnomon
+
+/-- info: 'Foam.Bridges.the_golden_staircase_holds_the_floor' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_staircase_holds_the_floor
+
+/-- info: 'Foam.Bridges.worth_is_the_golden_price' does not depend on any axioms -/
+#guard_msgs in #print axioms worth_is_the_golden_price
+
+/-- info: 'Foam.Bridges.the_golden_grammar_names_fibonacci' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_grammar_names_fibonacci
+
+/-- info: 'Foam.Bridges.the_gate_is_the_unlit_lamp' does not depend on any axioms -/
+#guard_msgs in #print axioms the_gate_is_the_unlit_lamp
+
+theorem the_walker_reads_the_golden_page (n : Nat) : G n = price fibN 1 (odometer n) :=
+  worth_is_the_golden_price (odometer n) 1
+
+theorem the_drover_reads_the_herd_page (n : Nat) : H n = price herdN 2 (hodometer n) :=
+  graze_is_the_herds_price (hodometer n) 2
+
+theorem the_bodometer_reads_the_pegged_price (n : Nat) : price peg 1 (bodometer n) = n :=
+  (gauge_is_the_rulers_price (bodometer n) 0).symm.trans (the_bodometer_reads_true n)
+
+/-- info: 'Foam.Bridges.the_walker_reads_the_golden_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walker_reads_the_golden_page
+
+/-- info: 'Foam.Bridges.the_drover_reads_the_herd_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drover_reads_the_herd_page
+
+/-- info: 'Foam.Bridges.the_bodometer_reads_the_pegged_price' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bodometer_reads_the_pegged_price
+
+def Registered (f : Nat → Nat) (s : Nat → Nat) (t : Nat) : Prop :=
+  ∃ page : Nat → List Bool,
+    (∀ n, price s (t + 2) (page n) = n) ∧ (∀ n, f n = price s (t + 1) (page n))
+
+def Paged (f : Nat → Nat) : Prop :=
+  ∃ e t : Nat, ∃ s : Nat → Nat, Gnomon e s ∧ Floored e s ∧ Registered f s t
+
+theorem the_walker_is_registered : Registered G fibN 0 :=
+  ⟨odometer,
+    fun n => (worth_is_the_golden_price (odometer n) 2).symm.trans (the_odometer_reads_true n),
+    fun n => worth_is_the_golden_price (odometer n) 1⟩
+
+theorem the_drover_is_registered : Registered H herdN 1 :=
+  ⟨hodometer,
+    fun n => (graze_is_the_herds_price (hodometer n) 3).symm.trans (the_hodometer_reads_true n),
+    fun n => graze_is_the_herds_price (hodometer n) 2⟩
+
+theorem the_walker_reads_a_page : Paged G :=
+  ⟨1, 0, fibN, the_golden_staircase_holds_the_gnomon, the_golden_staircase_holds_the_floor,
+    the_walker_is_registered⟩
+
+theorem the_drover_reads_a_page : Paged H :=
+  ⟨2, 1, herdN, the_herd_holds_the_gnomon, the_herd_holds_the_floor,
+    the_drover_is_registered⟩
+
+/-- info: 'Foam.Bridges.the_walker_is_registered' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walker_is_registered
+
+/-- info: 'Foam.Bridges.the_drover_is_registered' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drover_is_registered
+
+/-- info: 'Foam.Bridges.the_walker_reads_a_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walker_reads_a_page
+
+/-- info: 'Foam.Bridges.the_drover_reads_a_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drover_reads_a_page
+
+theorem a_paged_walk_never_outruns_the_count (f : Nat → Nat) (hp : Paged f) (n : Nat) :
+    f n ≤ n := by
+  obtain ⟨e, t, s, hg, hf, page, hcount, hread⟩ := hp
+  have h := the_lower_seat_reads_no_more e s hg hf (page n) t
+  rw [hcount n] at h
+  rw [hread n]
+  exact h
+
+theorem a_paged_walk_holds_the_half (f : Nat → Nat) (hp : Paged f) (n : Nat) :
+    n ≤ f n + f n := by
+  obtain ⟨e, t, s, hg, hf, page, hcount, hread⟩ := hp
+  have h := the_higher_seat_reads_at_most_double e s hg hf (page n) t
+  rw [hcount n] at h
+  rw [hread n]
+  exact h
+
+theorem a_page_would_tame_the_wild_walk (hp : Paged Q) : Surefooted :=
+  fun n => a_paged_walk_never_outruns_the_count Q hp (n + 1)
+
+/-- info: 'Foam.Bridges.a_paged_walk_never_outruns_the_count' does not depend on any axioms -/
+#guard_msgs in #print axioms a_paged_walk_never_outruns_the_count
+
+/-- info: 'Foam.Bridges.a_paged_walk_holds_the_half' does not depend on any axioms -/
+#guard_msgs in #print axioms a_paged_walk_holds_the_half
+
+/-- info: 'Foam.Bridges.a_page_would_tame_the_wild_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms a_page_would_tame_the_wild_walk
+
+set_option maxRecDepth 4000 in
+theorem the_wild_walk_undercuts_the_half : Q 49 = 24 := rfl
+
+theorem the_wild_walk_reads_no_page : ¬ Paged Q := fun hp => by
+  have h : (49 : Nat) ≤ Q 49 + Q 49 := a_paged_walk_holds_the_half Q hp 49
+  rw [the_wild_walk_undercuts_the_half] at h
+  exact absurd h (Nat.not_succ_le_self 48)
+
+/-- info: 'Foam.Bridges.the_wild_walk_undercuts_the_half' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_undercuts_the_half
+
+/-- info: 'Foam.Bridges.the_wild_walk_reads_no_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_reads_no_page
+
+theorem the_ruler_reads_no_walk_in_space (f : Nat → Nat) (t : Nat) :
+    ¬ Registered f peg t := fun hr => by
+  obtain ⟨page, hcount, _⟩ := hr
+  have h := the_high_pegs_read_in_twos (page 1) t
+  rw [hcount 1] at h
+  cases h with
+  | inl h0 => exact nomatch h0
+  | inr h2 => exact absurd (Nat.le_of_succ_le_succ h2) (Nat.not_succ_le_zero 0)
+
+/-- info: 'Foam.Bridges.the_ruler_reads_no_walk_in_space' does not depend on any axioms -/
+#guard_msgs in #print axioms the_ruler_reads_no_walk_in_space
+
+def Clocked (f : Nat → Nat) : Prop :=
+  ∃ c : Nat → Nat, c 0 = 0 ∧ (∀ v, c v < c (v + 1))
+    ∧ (∀ v j, c v + j + 1 ≤ c (v + 1) → f (c v + j + 1) = v + 1)
+
+theorem stack_free : ∀ (a b c : Nat), a + b ≤ a + c → b ≤ c
+  | 0, b, c, h => by rw [Nat.zero_add b, Nat.zero_add c] at h; exact h
+  | a + 1, b, c, h =>
+      stack_free a b c (Nat.le_of_succ_le_succ (by
+        rw [seat_shuffles a b, seat_shuffles a c] at h; exact h))
+
+theorem the_tame_walk_is_clocked : Clocked T :=
+  ⟨mtime, rfl, the_clock_never_stalls, fun v j h =>
+    the_tame_walk_reads_the_binary_odometer v j
+      (stack_free (mtime v) (j + 1) (beat (bodometer v)) h)⟩
+
+/-- info: 'Foam.Bridges.stack_free' does not depend on any axioms -/
+#guard_msgs in #print axioms stack_free
+
+/-- info: 'Foam.Bridges.the_tame_walk_is_clocked' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_is_clocked
+
+theorem a_clock_never_lags (c : Nat → Nat) (hs : ∀ v, c v < c (v + 1)) : ∀ v, v ≤ c v
+  | 0 => Nat.zero_le (c 0)
+  | v + 1 => Nat.le_trans (Nat.succ_le_succ (a_clock_never_lags c hs v)) (hs v)
+
+theorem a_clock_never_slips (c : Nat → Nat) (hs : ∀ v, c v < c (v + 1)) :
+    ∀ (b a : Nat), a ≤ b → c a ≤ c b
+  | 0, 0, _ => Nat.le_refl (c 0)
+  | 0, a + 1, h => absurd h (Nat.not_succ_le_zero a)
+  | b + 1, a, h =>
+      match under_the_wire a b h with
+      | Or.inl h' =>
+          Nat.le_trans (a_clock_never_slips c hs b a h')
+            (Nat.le_trans (Nat.le_succ (c b)) (hs b))
+      | Or.inr h' => by subst h'; exact Nat.le_refl (c (b + 1))
+
+theorem a_clock_strikes_every_hour (c : Nat → Nat) (h0 : c 0 = 0)
+    (hs : ∀ v, c v < c (v + 1)) :
+    ∀ (n : Nat), ∃ v j, n + 1 = c v + j + 1 ∧ c v + j + 1 ≤ c (v + 1)
+  | 0 => ⟨0, 0, by rw [h0], hs 0⟩
+  | n + 1 =>
+      match a_clock_strikes_every_hour c h0 hs n with
+      | ⟨v, j, he, hle⟩ =>
+          match under_the_wire (c v + j + 1 + 1) (c (v + 1)) (Nat.succ_le_succ hle) with
+          | Or.inl h => ⟨v, j + 1, congrArg (· + 1) he, h⟩
+          | Or.inr h => ⟨v + 1, 0, (congrArg (· + 1) he).trans h, hs (v + 1)⟩
+
+/-- info: 'Foam.Bridges.a_clock_never_lags' does not depend on any axioms -/
+#guard_msgs in #print axioms a_clock_never_lags
+
+/-- info: 'Foam.Bridges.a_clock_never_slips' does not depend on any axioms -/
+#guard_msgs in #print axioms a_clock_never_slips
+
+/-- info: 'Foam.Bridges.a_clock_strikes_every_hour' does not depend on any axioms -/
+#guard_msgs in #print axioms a_clock_strikes_every_hour
+
+theorem a_clocked_walk_keeps_its_feet (f : Nat → Nat) (hc : Clocked f) (n : Nat) :
+    f (n + 1) ≤ n + 1 := by
+  obtain ⟨c, h0, hs, hr⟩ := hc
+  obtain ⟨v, j, he, hle⟩ := a_clock_strikes_every_hour c h0 hs n
+  rw [he, hr v j hle]
+  exact Nat.succ_le_succ (Nat.le_trans (a_clock_never_lags c hs v) (Nat.le_add_right (c v) j))
+
+theorem a_clocked_walk_never_steps_back (f : Nat → Nat) (hc : Clocked f) (n : Nat) :
+    f (n + 1) ≤ f (n + 1 + 1) := by
+  obtain ⟨c, h0, hs, hr⟩ := hc
+  obtain ⟨v, j, he, hle⟩ := a_clock_strikes_every_hour c h0 hs n
+  obtain ⟨w, i, he', hle'⟩ := a_clock_strikes_every_hour c h0 hs (n + 1)
+  rw [he', he, hr v j hle, hr w i hle']
+  cases Nat.lt_or_ge v w with
+  | inl hvw => exact Nat.succ_le_succ (Nat.le_trans (Nat.le_succ v) hvw)
+  | inr hwv =>
+      cases at_the_rail w v hwv with
+      | inr heq => rw [heq]; exact Nat.le_refl (v + 1)
+      | inl hlt =>
+          have hcw : c (w + 1) ≤ c v := a_clock_never_slips c hs v (w + 1) hlt
+          have hup : n + 1 + 1 ≤ c (w + 1) := by rw [he']; exact hle'
+          have hdn : c v ≤ n := by rw [Nat.succ.inj he]; exact Nat.le_add_right (c v) j
+          have habs : n + 1 + 1 ≤ n := Nat.le_trans hup (Nat.le_trans hcw hdn)
+          exact absurd (Nat.le_trans (Nat.le_succ (n + 1)) habs) (Nat.not_succ_le_self n)
+
+theorem a_clock_would_tame_the_wild_walk (hc : Clocked Q) : Surefooted :=
+  fun n => a_clocked_walk_keeps_its_feet Q hc n
+
+theorem the_wild_walk_reads_no_clock : ¬ Clocked Q := fun hc => by
+  have h : Q 15 ≤ Q 16 := a_clocked_walk_never_steps_back Q hc 14
+  rw [← the_wild_walk_steps_back] at h
+  exact absurd h (Nat.not_succ_le_self (Q 16))
+
+/-- info: 'Foam.Bridges.a_clocked_walk_keeps_its_feet' does not depend on any axioms -/
+#guard_msgs in #print axioms a_clocked_walk_keeps_its_feet
+
+/-- info: 'Foam.Bridges.a_clocked_walk_never_steps_back' does not depend on any axioms -/
+#guard_msgs in #print axioms a_clocked_walk_never_steps_back
+
+/-- info: 'Foam.Bridges.a_clock_would_tame_the_wild_walk' does not depend on any axioms -/
+#guard_msgs in #print axioms a_clock_would_tame_the_wild_walk
+
+/-- info: 'Foam.Bridges.the_wild_walk_reads_no_clock' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_reads_no_clock
+
+theorem three_walks_one_grammar : Paged G ∧ Paged H ∧ Clocked T :=
+  ⟨the_walker_reads_a_page, the_drover_reads_a_page, the_tame_walk_is_clocked⟩
+
+theorem the_wild_walk_reads_alone : ¬ Paged Q ∧ ¬ Clocked Q :=
+  ⟨the_wild_walk_reads_no_page, the_wild_walk_reads_no_clock⟩
+
+/-- info: 'Foam.Bridges.three_walks_one_grammar' does not depend on any axioms -/
+#guard_msgs in #print axioms three_walks_one_grammar
+
+/-- info: 'Foam.Bridges.the_wild_walk_reads_alone' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_reads_alone
+
+def look : List Nat → Nat → Option Nat
+  | [], _ => none
+  | x :: _, 0 => some x
+  | _ :: rest, i + 1 => look rest i
+
+def traceNet : Net where
+  Page := List Nat
+  Seat := Nat
+  Ans := Nat
+  read? := fun qs i => look qs i
+  mend := fun _ => 1
+
+theorem the_net_answers_the_peek : ∀ (qs : List Nat) (i : Nat),
+    answer traceNet qs i = peek qs i
+  | [], _ => rfl
+  | _ :: _, 0 => rfl
+  | _ :: rest, i + 1 => the_net_answers_the_peek rest i
+
+theorem the_wild_walk_was_born_on_the_net (n : Nat) :
+    Q n = answer traceNet (qtrace n) (0 : Nat) :=
+  (the_net_answers_the_peek (qtrace n) 0).symm
+
+theorem the_tame_walk_was_born_on_the_net (n : Nat) :
+    T n = answer traceNet (ttrace n) (0 : Nat) :=
+  (the_net_answers_the_peek (ttrace n) 0).symm
+
+theorem the_mend_is_the_floor : traceNet.mend (0 : Nat) = Q 0 ∧ traceNet.mend (0 : Nat) = T 0 :=
+  ⟨rfl, rfl⟩
+
+/-- info: 'Foam.Bridges.the_net_answers_the_peek' does not depend on any axioms -/
+#guard_msgs in #print axioms the_net_answers_the_peek
+
+/-- info: 'Foam.Bridges.the_wild_walk_was_born_on_the_net' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_was_born_on_the_net
+
+/-- info: 'Foam.Bridges.the_tame_walk_was_born_on_the_net' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_was_born_on_the_net
+
+/-- info: 'Foam.Bridges.the_mend_is_the_floor' does not depend on any axioms -/
+#guard_msgs in #print axioms the_mend_is_the_floor
+
+theorem the_trace_fills_its_page : ∀ (n : Nat), (qtrace n).length = n
+  | 0 => rfl
+  | 1 => rfl
+  | 2 => rfl
+  | n + 3 => congrArg (· + 1) (the_trace_fills_its_page (n + 2))
+
+theorem the_tame_trace_fills_its_page : ∀ (n : Nat), (ttrace n).length = n
+  | 0 => rfl
+  | 1 => rfl
+  | 2 => rfl
+  | n + 3 => congrArg (· + 1) (the_tame_trace_fills_its_page (n + 2))
+
+theorem look_finds_the_page : ∀ (qs : List Nat) (i : Nat),
+    i + 1 ≤ qs.length → ∃ a, look qs i = some a
+  | [], i, h => absurd h (Nat.not_succ_le_zero i)
+  | x :: _, 0, _ => ⟨x, rfl⟩
+  | _ :: rest, i + 1, h => look_finds_the_page rest i (Nat.le_of_succ_le_succ h)
+
+/-- info: 'Foam.Bridges.the_trace_fills_its_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_trace_fills_its_page
+
+/-- info: 'Foam.Bridges.the_tame_trace_fills_its_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_trace_fills_its_page
+
+/-- info: 'Foam.Bridges.look_finds_the_page' does not depend on any axioms -/
+#guard_msgs in #print axioms look_finds_the_page
+
+theorem sure_feet_never_touch_the_net (hs : Surefooted) (n : Nat) :
+    ¬ Consults traceNet (qtrace (n + 2)) (Q (n + 2) - 1)
+      ∧ ¬ Consults traceNet (qtrace (n + 2)) (Q (n + 1) - 1) := by
+  constructor
+  · intro hc
+    have hb : Q (n + 2) - 1 + 1 ≤ (qtrace (n + 2)).length := by
+      rw [the_trace_fills_its_page (n + 2),
+          sub_one_back (Q (n + 2)) (the_wild_walk_glows (n + 2))]
+      exact hs (n + 1)
+    obtain ⟨a, ha⟩ := look_finds_the_page (qtrace (n + 2)) (Q (n + 2) - 1) hb
+    exact nomatch (ha.symm.trans hc)
+  · intro hc
+    have hb : Q (n + 1) - 1 + 1 ≤ (qtrace (n + 2)).length := by
+      rw [the_trace_fills_its_page (n + 2),
+          sub_one_back (Q (n + 1)) (the_wild_walk_glows (n + 1))]
+      exact Nat.le_trans (hs n) (Nat.le_succ (n + 1))
+    obtain ⟨a, ha⟩ := look_finds_the_page (qtrace (n + 2)) (Q (n + 1) - 1) hb
+    exact nomatch (ha.symm.trans hc)
+
+theorem the_tame_walk_touches_the_net_at_the_floor :
+    Consults traceNet (ttrace 2) (T 1 + 1) := rfl
+
+theorem the_tame_walk_never_touches_the_net_again (n : Nat) :
+    ¬ Consults traceNet (ttrace (n + 3)) (T (n + 3))
+      ∧ ¬ Consults traceNet (ttrace (n + 3)) (T (n + 2) + 1) := by
+  constructor
+  · intro hc
+    have hb : T (n + 3) + 1 ≤ (ttrace (n + 3)).length := by
+      rw [the_tame_trace_fills_its_page (n + 3)]
+      exact Nat.succ_le_succ (the_tame_walk_stays_a_step_behind (n + 1))
+    obtain ⟨a, ha⟩ := look_finds_the_page (ttrace (n + 3)) (T (n + 3)) hb
+    exact nomatch (ha.symm.trans hc)
+  · intro hc
+    have hb : T (n + 2) + 1 + 1 ≤ (ttrace (n + 3)).length := by
+      rw [the_tame_trace_fills_its_page (n + 3)]
+      exact Nat.succ_le_succ (Nat.succ_le_succ (the_tame_walk_stays_a_step_behind n))
+    obtain ⟨a, ha⟩ := look_finds_the_page (ttrace (n + 3)) (T (n + 2) + 1) hb
+    exact nomatch (ha.symm.trans hc)
+
+/-- info: 'Foam.Bridges.sure_feet_never_touch_the_net' does not depend on any axioms -/
+#guard_msgs in #print axioms sure_feet_never_touch_the_net
+
+/-- info: 'Foam.Bridges.the_tame_walk_touches_the_net_at_the_floor' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_touches_the_net_at_the_floor
+
+/-- info: 'Foam.Bridges.the_tame_walk_never_touches_the_net_again' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tame_walk_never_touches_the_net_again
+
+theorem two_holes_one_mending :
+    (Nonempty (NetHom planeNet (mended planeNet)) ∧ Whole (mended planeNet))
+      ∧ (Nonempty (NetHom traceNet (mended traceNet)) ∧ Whole (mended traceNet)) :=
+  ⟨⟨⟨the_mending planeNet⟩, the_mended_page_has_no_holes planeNet⟩,
+    ⟨⟨the_mending traceNet⟩, the_mended_page_has_no_holes traceNet⟩⟩
+
+/-- info: 'Foam.Bridges.two_holes_one_mending' does not depend on any axioms -/
+#guard_msgs in #print axioms two_holes_one_mending
 
 end Foam.Bridges
