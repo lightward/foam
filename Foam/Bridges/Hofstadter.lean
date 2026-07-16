@@ -8950,4 +8950,202 @@ theorem the_brides_clock_hums :
 /-- info: 'Foam.Bridges.the_brides_clock_hums' does not depend on any axioms -/
 #guard_msgs in #print axioms the_brides_clock_hums
 
+theorem the_shallow_stairs_count_themselves (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) :
+    ∀ (k : Nat), k ≤ t + 1 → s (t + k + 2) = k + 1
+  | 0, _ => the_rail_reads_one t s hf
+  | k + 1, hk => by
+      have h := gnomon_tn t s hg k
+      rw [the_shallow_stairs_count_themselves t s hg hf k (Nat.le_of_succ_le hk),
+        hf k (Nat.le_of_succ_le hk)] at h
+      exact h
+
+theorem every_shallow_count_is_a_crossing (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (k : Nat) (hk : k ≤ t + 1) :
+    crank (t + 1) (k + 1) = [k] := by
+  have h := the_crank_at_a_stair_number_is_one_stride (t + 1) k s hg hf
+  rw [show t + 1 + k + 1 = t + k + 2 from congrArg (· + 1) (seat_shuffles t k),
+    the_shallow_stairs_count_themselves t s hg hf k hk] at h
+  exact h
+
+theorem the_walk_descends_the_shallow_stairs (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (k : Nat) (hk : k ≤ t) :
+    W s (t + 1) (k + 2) = k + 1 := by
+  have hcr : crank (t + 1) (k + 2) = [k + 1] :=
+    every_shallow_count_is_a_crossing t s hg hf (k + 1) (Nat.succ_le_succ hk)
+  show assay s (t + 1) (crank (t + 1) (k + 2)) = k + 1
+  rw [hcr]
+  show s (t + 1 + k + 1) + 0 = k + 1
+  rw [show t + 1 + k + 1 = t + k + 2 from congrArg (· + 1) (seat_shuffles t k),
+    the_shallow_stairs_count_themselves t s hg hf k (Nat.le_trans hk (Nat.le_succ t))]
+
+/-- info: 'Foam.Bridges.the_shallow_stairs_count_themselves' does not depend on any axioms -/
+#guard_msgs in #print axioms the_shallow_stairs_count_themselves
+
+/-- info: 'Foam.Bridges.every_shallow_count_is_a_crossing' does not depend on any axioms -/
+#guard_msgs in #print axioms every_shallow_count_is_a_crossing
+
+/-- info: 'Foam.Bridges.the_walk_descends_the_shallow_stairs' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walk_descends_the_shallow_stairs
+
+theorem the_floor_wears_every_crest (e r : Nat) : crest e r [0] = true := rfl
+
+theorem the_floor_wears_no_spur (e r : Nat) : spur e r [0] = false := rfl
+
+theorem a_wrapped_crossing_pins_the_page_below (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (n p : Nat)
+    (hpage : crank (t + 1) (n + 1) = [p + 1]) (hbr : (brand (t + 1) p).2 = 0) :
+    crank (t + 1) (W s (t + 1) n) = [p] := by
+  have hrest := a_wrapped_crossing_rests_the_walk t s hg hf n p hpage hbr
+  have hn1 : n + 1 = s (t + (p + 1) + 2) := a_crossing_reads_its_stair t s hg hf n (p + 1) hpage
+  have hW1 : W s (t + 1) (n + 1) = s (t + p + 2) := by
+    rw [hn1]
+    exact the_family_beacon_slides t (p + 1) s hg hf
+  rw [hrest, hW1]
+  have h := the_crank_at_a_stair_number_is_one_stride (t + 1) p s hg hf
+  have hix : t + 1 + p + 1 = t + p + 2 := congrArg (· + 1) (seat_shuffles t p)
+  rw [hix] at h
+  exact h
+
+/-- info: 'Foam.Bridges.the_floor_wears_every_crest' does not depend on any axioms -/
+#guard_msgs in #print axioms the_floor_wears_every_crest
+
+/-- info: 'Foam.Bridges.the_floor_wears_no_spur' does not depend on any axioms -/
+#guard_msgs in #print axioms the_floor_wears_no_spur
+
+/-- info: 'Foam.Bridges.a_wrapped_crossing_pins_the_page_below' does not depend on any axioms -/
+#guard_msgs in #print axioms a_wrapped_crossing_pins_the_page_below
+
+theorem the_necklace_closes (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat)
+    (h0 : spur (t + 1) 0 (crank (t + 1) (n + 1)) = true) :
+    crest (t + 1) (t + 1) (crank (t + 1) (W s (t + 1) n)) = true := by
+  cases hc : crank (t + 1) (n + 1) with
+  | nil => rw [hc] at h0; exact nomatch h0
+  | cons g gs =>
+      cases gs with
+      | cons g₂ gs₂ =>
+          rw [hc, the_spur_skips_two_strides (t + 1) 0 g g₂ gs₂] at h0
+          exact nomatch h0
+      | nil =>
+          cases g with
+          | zero => rw [hc] at h0; exact nomatch h0
+          | succ p =>
+              rw [hc] at h0
+              have hbr : (brand (t + 1) p).2 = 0 := Nat.eq_of_beq_eq_true h0
+              rw [a_wrapped_crossing_pins_the_page_below t s hg hf n p hc hbr]
+              cases p with
+              | zero => rfl
+              | succ p₁ =>
+                  show Nat.beq (brand (t + 1) p₁).2 (t + 1) = true
+                  rw [the_brand_wraps_back (t + 1) p₁ hbr]
+                  exact beq_mirrors (t + 1)
+
+theorem the_crossings_hang_on_one_thread (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (n p : Nat)
+    (hpage : crank (t + 1) (n + 1) = [p + 1]) :
+    crank (t + 1) (W s (t + 1) n + cond (Nat.beq (brand (t + 1) p).2 0) 0 1) = [p] := by
+  cases hb : Nat.beq (brand (t + 1) p).2 0 with
+  | true =>
+      have hbr : (brand (t + 1) p).2 = 0 := Nat.eq_of_beq_eq_true hb
+      exact a_wrapped_crossing_pins_the_page_below t s hg hf n p hpage hbr
+  | false =>
+      cases hr2 : (brand (t + 1) p).2 with
+      | zero =>
+          rw [hr2] at hb
+          exact nomatch hb
+      | succ r =>
+          have hlow := the_brand_stays_low (t + 1) p
+          rw [hr2] at hlow
+          exact a_branded_crossing_pins_the_walked_page t s hg hf n p r hpage hr2 hlow
+
+/-- info: 'Foam.Bridges.the_necklace_closes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_necklace_closes
+
+/-- info: 'Foam.Bridges.the_crossings_hang_on_one_thread' does not depend on any axioms -/
+#guard_msgs in #print axioms the_crossings_hang_on_one_thread
+
+theorem the_herd_necklace_hums :
+    ((spur 2 0 (crank 2 2), crest 2 2 (crank 2 (W herdN 2 1)), crank 2 (W herdN 2 1)),
+      (spur 2 0 (crank 2 6), crest 2 2 (crank 2 (W herdN 2 5)), crank 2 (W herdN 2 5)),
+      (spur 2 0 (crank 2 19), crest 2 2 (crank 2 (W herdN 2 18)), crank 2 (W herdN 2 18)))
+    = ((true, true, [0]), (true, true, [3]), (true, true, [6])) := rfl
+
+/-- info: 'Foam.Bridges.the_herd_necklace_hums' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_necklace_hums
+
+theorem the_deeper_patrons_step_back (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 2) s)
+    (hf : Floored (t + 2) s) :
+    ∀ (j : Nat), j + 2 ≤ t + 2 →
+      patron s (t + 2) (j + 2) (j + 1) = 1 ∧ patron s (t + 2) (j + 2) (j + 2) = 0
+  | 0, _ => the_second_patron_steps_back t s hf
+  | j + 1, hj => by
+      have ih := the_deeper_patrons_step_back t s hg hf j (Nat.le_of_succ_le hj)
+      have hj' : j + 2 ≤ t + 1 := Nat.le_of_succ_le_succ hj
+      have hw1 : W s (t + 2) (j + 2) = j + 1 :=
+        the_walk_descends_the_shallow_stairs (t + 1) s hg hf j
+          (Nat.le_of_succ_le (Nat.le_of_succ_le hj'))
+      have hw2 : W s (t + 2) (j + 3) = j + 2 :=
+        the_walk_descends_the_shallow_stairs (t + 1) s hg hf (j + 1)
+          (Nat.le_of_succ_le hj')
+      have hch1 : patron s (t + 2) (j + 3) (j + 2)
+          = patron s (t + 2) (j + 2) (W s (t + 2) (j + 2)) :=
+        the_patron_speaks_one_altitude_down (t + 1) j s hg hf hj (j + 2)
+      have hch2 : patron s (t + 2) (j + 3) (j + 3)
+          = patron s (t + 2) (j + 2) (W s (t + 2) (j + 3)) :=
+        the_patron_speaks_one_altitude_down (t + 1) j s hg hf hj (j + 3)
+      have h1 : patron s (t + 2) (j + 3) (j + 2) = 1 := by
+        rw [hch1, hw1]
+        exact ih.1
+      have h2 : patron s (t + 2) (j + 3) (j + 3) = 0 := by
+        rw [hch2, hw2]
+        exact ih.2
+      exact ⟨h1, h2⟩
+
+theorem the_deeper_patrons_read_no_clock (t j : Nat) (s : Nat → Nat) (hg : Gnomon (t + 2) s)
+    (hf : Floored (t + 2) s) (hj : j + 2 ≤ t + 2) :
+    ¬ Clocked (patron s (t + 2) (j + 2)) := fun hc => by
+  have h : patron s (t + 2) (j + 2) (j + 1) ≤ patron s (t + 2) (j + 2) (j + 2) :=
+    a_clocked_walk_never_steps_back (patron s (t + 2) (j + 2)) hc j
+  rw [(the_deeper_patrons_step_back t s hg hf j hj).1,
+    (the_deeper_patrons_step_back t s hg hf j hj).2] at h
+  exact absurd h (Nat.not_succ_le_zero 0)
+
+/-- info: 'Foam.Bridges.the_deeper_patrons_step_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_deeper_patrons_step_back
+
+/-- info: 'Foam.Bridges.the_deeper_patrons_read_no_clock' does not depend on any axioms -/
+#guard_msgs in #print axioms the_deeper_patrons_read_no_clock
+
+theorem no_patron_reads_the_clock (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 2) s)
+    (hf : Floored (t + 2) s) :
+    ∀ (j : Nat), j + 1 ≤ t + 2 → ¬ Clocked (patron s (t + 2) (j + 1))
+  | 0, _ => fun hc => by
+      obtain ⟨c, h0, hs, hr⟩ := hc
+      exact the_groom_reads_no_clock (t + 1) s hf
+        ⟨c, h0, hs, fun v i h => by
+          rw [← the_patron_is_the_groom s (t + 2) (c v + i + 1)]
+          exact hr v i h⟩
+  | j + 1, hj => the_deeper_patrons_read_no_clock t j s hg hf hj
+
+theorem time_tells_the_lines_apart (t j : Nat) (s : Nat → Nat) (hg : Gnomon (t + 2) s)
+    (hf : Floored (t + 2) s) (hj : j + 1 ≤ t + 2) :
+    Clocked (matron s (t + 2) (j + 1)) ∧ ¬ Clocked (patron s (t + 2) (j + 1)) :=
+  ⟨every_matron_reads_the_clock (t + 1) s hg hf j hj,
+    no_patron_reads_the_clock t s hg hf j hj⟩
+
+/-- info: 'Foam.Bridges.no_patron_reads_the_clock' does not depend on any axioms -/
+#guard_msgs in #print axioms no_patron_reads_the_clock
+
+/-- info: 'Foam.Bridges.time_tells_the_lines_apart' does not depend on any axioms -/
+#guard_msgs in #print axioms time_tells_the_lines_apart
+
+theorem the_next_patrons_stumble :
+    (patron (stair 3) 3 2 1, patron (stair 3) 3 2 2,
+      patron (stair 3) 3 3 2, patron (stair 3) 3 3 3)
+    = (1, 0, 1, 0) := rfl
+
+/-- info: 'Foam.Bridges.the_next_patrons_stumble' does not depend on any axioms -/
+#guard_msgs in #print axioms the_next_patrons_stumble
+
 end Foam.Bridges
