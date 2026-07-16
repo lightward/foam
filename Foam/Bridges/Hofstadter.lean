@@ -4187,4 +4187,366 @@ theorem two_holes_one_mending :
 /-- info: 'Foam.Bridges.two_holes_one_mending' does not depend on any axioms -/
 #guard_msgs in #print axioms two_holes_one_mending
 
+def upshift (ds : List Bool) : List Bool := false :: ds
+
+theorem the_downshift_undoes_the_upshift (ds : List Bool) :
+    downshift (upshift ds) = ds := rfl
+
+theorem the_hdownshift_undoes_the_upshift (ds : List Bool) :
+    hdownshift (upshift ds) = ds := rfl
+
+theorem the_upshift_reads_one_seat_up (ds : List Bool) (i : Nat) :
+    worth i (upshift ds) = worth (i + 1) ds := rfl
+
+theorem the_upshift_grazes_one_seat_up (ds : List Bool) (i : Nat) :
+    graze i (upshift ds) = graze (i + 1) ds := rfl
+
+theorem the_upshift_keeps_the_cap : ∀ (ds : List Bool), ds ≠ [] → capped ds = true →
+    capped (upshift ds) = true
+  | [], hne, _ => absurd rfl hne
+  | d :: rest, _, hc => (capped_step false d rest).trans hc
+
+/-- info: 'Foam.Bridges.the_downshift_undoes_the_upshift' does not depend on any axioms -/
+#guard_msgs in #print axioms the_downshift_undoes_the_upshift
+
+/-- info: 'Foam.Bridges.the_hdownshift_undoes_the_upshift' does not depend on any axioms -/
+#guard_msgs in #print axioms the_hdownshift_undoes_the_upshift
+
+/-- info: 'Foam.Bridges.the_upshift_reads_one_seat_up' does not depend on any axioms -/
+#guard_msgs in #print axioms the_upshift_reads_one_seat_up
+
+/-- info: 'Foam.Bridges.the_upshift_grazes_one_seat_up' does not depend on any axioms -/
+#guard_msgs in #print axioms the_upshift_grazes_one_seat_up
+
+/-- info: 'Foam.Bridges.the_upshift_keeps_the_cap' does not depend on any axioms -/
+#guard_msgs in #print axioms the_upshift_keeps_the_cap
+
+theorem click_never_blanks : ∀ (ds : List Bool), click ds ≠ []
+  | [] => fun h => nomatch h
+  | false :: rest => carry_never_blanks (false :: rest)
+  | true :: _ => fun h => nomatch h
+
+theorem hclick_never_blanks : ∀ (ds : List Bool), hclick ds ≠ []
+  | [] => fun h => nomatch h
+  | [false] => fun h => nomatch h
+  | false :: false :: rest => hcarry_never_blanks (false :: false :: rest)
+  | false :: true :: _ => fun h => nomatch h
+  | true :: _ => fun h => nomatch h
+
+/-- info: 'Foam.Bridges.click_never_blanks' does not depend on any axioms -/
+#guard_msgs in #print axioms click_never_blanks
+
+/-- info: 'Foam.Bridges.hclick_never_blanks' does not depend on any axioms -/
+#guard_msgs in #print axioms hclick_never_blanks
+
+def gtime (v : Nat) : Nat := worth 3 (odometer v)
+
+theorem the_golden_clock_hums :
+    (gtime 0, gtime 1, gtime 2, gtime 3, gtime 4, gtime 5, gtime 6, gtime 7)
+      = (0, 2, 3, 5, 7, 8, 10, 11) := rfl
+
+theorem the_golden_clock_adds_the_shadow (v : Nat) : gtime v = v + G v :=
+  (worth_gnomon (odometer v) 1).trans
+    (congrArg (· + G v) (the_odometer_reads_true v))
+
+/-- info: 'Foam.Bridges.the_golden_clock_hums' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_clock_hums
+
+/-- info: 'Foam.Bridges.the_golden_clock_adds_the_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_clock_adds_the_shadow
+
+theorem the_golden_hour_writes_the_page_above (n : Nat) :
+    odometer (gtime (n + 1)) = upshift (odometer (n + 1)) :=
+  (the_odometer_is_the_only_spaced_page (gtime (n + 1)) (upshift (odometer (n + 1)))
+    (noconsec_false_cons (the_odometer_spaces (n + 1)))
+    (the_upshift_keeps_the_cap (odometer (n + 1)) (click_never_blanks (odometer n))
+      (the_odometer_wastes_no_seats (n + 1)))
+    rfl).symm
+
+theorem the_golden_hour_rests_the_gate : ∀ (v : Nat), lit (odometer (gtime v)) = false
+  | 0 => rfl
+  | v + 1 => by rw [the_golden_hour_writes_the_page_above v]; rfl
+
+theorem the_walker_arrives_on_the_hour : ∀ (v : Nat), G (gtime v) = v
+  | 0 => rfl
+  | v + 1 => by
+      show worth 1 (odometer (gtime (v + 1))) = v + 1
+      rw [the_golden_hour_writes_the_page_above v]
+      exact the_odometer_reads_true (v + 1)
+
+theorem a_new_count_walks_at_its_first_beat (v : Nat) : G (gtime v + 1) = v + 1 := by
+  show worth 1 (click (odometer (gtime v))) = v + 1
+  rw [click_moves_the_shadow (odometer (gtime v)) (the_odometer_spaces (gtime v))
+        (the_golden_hour_rests_the_gate v)]
+  exact congrArg (· + 1) (the_walker_arrives_on_the_hour v)
+
+/-- info: 'Foam.Bridges.the_golden_hour_writes_the_page_above' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_hour_writes_the_page_above
+
+/-- info: 'Foam.Bridges.the_golden_hour_rests_the_gate' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_hour_rests_the_gate
+
+/-- info: 'Foam.Bridges.the_walker_arrives_on_the_hour' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walker_arrives_on_the_hour
+
+/-- info: 'Foam.Bridges.a_new_count_walks_at_its_first_beat' does not depend on any axioms -/
+#guard_msgs in #print axioms a_new_count_walks_at_its_first_beat
+
+theorem the_golden_beat_reads_the_lamp (v : Nat) :
+    gtime (v + 1) = gtime v + cond (lit (odometer v)) 1 2 := by
+  cases hl : lit (odometer v) with
+  | true =>
+      have hstep : G (v + 1) = G v :=
+        click_holds_the_shadow (odometer v) (the_odometer_spaces v) hl
+      show gtime (v + 1) = gtime v + 1
+      rw [the_golden_clock_adds_the_shadow (v + 1), the_golden_clock_adds_the_shadow v,
+          hstep]
+      exact seat_shuffles v (G v)
+  | false =>
+      have hstep : G (v + 1) = G v + 1 :=
+        click_moves_the_shadow (odometer v) (the_odometer_spaces v) hl
+      show gtime (v + 1) = gtime v + 2
+      rw [the_golden_clock_adds_the_shadow (v + 1), the_golden_clock_adds_the_shadow v,
+          hstep]
+      exact (Nat.add_assoc (v + 1) (G v) 1).symm.trans
+        (congrArg (· + 1) (seat_shuffles v (G v)))
+
+theorem the_golden_beat_reads_the_gate (v : Nat) :
+    gtime (v + 1) = gtime v + cond (cleared 1 (odometer v)) 2 1 := by
+  rw [the_gate_is_the_unlit_lamp (odometer v), the_golden_beat_reads_the_lamp v]
+  cases lit (odometer v) with
+  | false => exact rfl
+  | true => exact rfl
+
+theorem the_golden_clock_never_stalls (v : Nat) : gtime v < gtime (v + 1) := by
+  rw [the_golden_beat_reads_the_lamp v]
+  cases lit (odometer v) with
+  | false => exact Nat.le_succ (gtime v + 1)
+  | true => exact Nat.le_refl (gtime v + 1)
+
+theorem the_golden_clock_never_leaps (v : Nat) : gtime (v + 1) ≤ gtime v + 2 := by
+  rw [the_golden_beat_reads_the_lamp v]
+  cases lit (odometer v) with
+  | false => exact Nat.le_refl (gtime v + 2)
+  | true => exact Nat.add_le_add_left (Nat.le_succ 1) (gtime v)
+
+/-- info: 'Foam.Bridges.the_golden_beat_reads_the_lamp' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_beat_reads_the_lamp
+
+/-- info: 'Foam.Bridges.the_golden_beat_reads_the_gate' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_beat_reads_the_gate
+
+/-- info: 'Foam.Bridges.the_golden_clock_never_stalls' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_clock_never_stalls
+
+/-- info: 'Foam.Bridges.the_golden_clock_never_leaps' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_clock_never_leaps
+
+theorem the_walker_reads_the_golden_hours :
+    ∀ (v j : Nat), gtime v + j + 1 ≤ gtime (v + 1) → G (gtime v + j + 1) = v + 1
+  | v, 0, _ => a_new_count_walks_at_its_first_beat v
+  | v, 1, h => by
+      have heq : gtime (v + 1) = gtime v + 2 :=
+        Nat.le_antisymm (the_golden_clock_never_leaps v) h
+      rw [show gtime v + 1 + 1 = gtime (v + 1) from heq.symm]
+      exact the_walker_arrives_on_the_hour (v + 1)
+  | v, j + 2, h => by
+      have hle : gtime v + (j + 3) ≤ gtime v + 2 :=
+        Nat.le_trans h (the_golden_clock_never_leaps v)
+      exact absurd (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ
+        (stack_free (gtime v) (j + 3) 2 hle))) (Nat.not_succ_le_zero j)
+
+theorem the_walker_is_clocked : Clocked G :=
+  ⟨gtime, rfl, the_golden_clock_never_stalls, the_walker_reads_the_golden_hours⟩
+
+/-- info: 'Foam.Bridges.the_walker_reads_the_golden_hours' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walker_reads_the_golden_hours
+
+/-- info: 'Foam.Bridges.the_walker_is_clocked' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walker_is_clocked
+
+def htime (v : Nat) : Nat := graze 4 (hodometer v)
+
+theorem the_herd_clock_hums :
+    (htime 0, htime 1, htime 2, htime 3, htime 4, htime 5, htime 6, htime 7)
+      = (0, 2, 3, 4, 6, 8, 9, 11) := rfl
+
+theorem the_herd_clock_adds_the_second_shadow (v : Nat) : htime v = v + H (H v) := by
+  show graze 4 (hodometer v) = v + H (H v)
+  rw [the_second_shadow_reads_one_down v]
+  exact (graze_gnomon (hodometer v) 1).trans
+    (congrArg (· + graze 1 (hodometer v)) (the_hodometer_reads_true v))
+
+/-- info: 'Foam.Bridges.the_herd_clock_hums' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_clock_hums
+
+/-- info: 'Foam.Bridges.the_herd_clock_adds_the_second_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_clock_adds_the_second_shadow
+
+theorem hclick_moves_the_second_shadow : ∀ (ds : List Bool), Sparse ds →
+    clearing ds = true → graze 1 (hclick ds) = graze 1 ds + 1
+  | [], _, _ => rfl
+  | [false], _, _ => rfl
+  | true :: _, _, hcl => nomatch hcl
+  | false :: true :: _, _, hcl => nomatch hcl
+  | false :: false :: rest, h, _ => by
+      show graze 1 (hcarry (false :: false :: rest)) = graze 1 (false :: false :: rest) + 1
+      rw [hcarry_pays (false :: false :: rest) 1 h rfl]
+      exact Nat.add_comm 1 (graze 1 (false :: false :: rest))
+
+theorem hclick_holds_the_second_shadow : ∀ (ds : List Bool), Sparse ds →
+    clearing ds = false → graze 1 (hclick ds) = graze 1 ds
+  | [], _, hcl => nomatch hcl
+  | [false], _, hcl => nomatch hcl
+  | false :: false :: _, _, hcl => nomatch hcl
+  | true :: rest, h, _ => by
+      show graze 2 (hcarry rest) = herdN 1 + graze 2 rest
+      rw [hcarry_pays rest 2 (sparse_tail h) (sparse_head h)]
+      rfl
+  | false :: true :: rest, h, _ => by
+      show graze 3 (hcarry rest) = herdN 2 + graze 3 rest
+      rw [hcarry_pays rest 3 (sparse_tail (sparse_tail h)) (sparse_head (sparse_tail h))]
+      rfl
+
+/-- info: 'Foam.Bridges.hclick_moves_the_second_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms hclick_moves_the_second_shadow
+
+/-- info: 'Foam.Bridges.hclick_holds_the_second_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms hclick_holds_the_second_shadow
+
+theorem the_herd_hour_writes_the_page_above (n : Nat) :
+    hodometer (htime (n + 1)) = upshift (hodometer (n + 1)) :=
+  (the_hodometer_is_the_only_sparse_page (htime (n + 1)) (upshift (hodometer (n + 1)))
+    (the_hodometer_spaces (n + 1))
+    (the_upshift_keeps_the_cap (hodometer (n + 1)) (hclick_never_blanks (hodometer n))
+      (the_hodometer_wastes_no_seats (n + 1)))
+    rfl).symm
+
+theorem the_herd_hour_rests_the_gate : ∀ (v : Nat), lit (hodometer (htime v)) = false
+  | 0 => rfl
+  | v + 1 => by rw [the_herd_hour_writes_the_page_above v]; rfl
+
+theorem the_drover_arrives_on_the_hour : ∀ (v : Nat), H (htime v) = v
+  | 0 => rfl
+  | v + 1 => by
+      show graze 2 (hodometer (htime (v + 1))) = v + 1
+      rw [the_herd_hour_writes_the_page_above v]
+      exact the_hodometer_reads_true (v + 1)
+
+theorem a_new_count_herds_at_its_first_beat (v : Nat) : H (htime v + 1) = v + 1 := by
+  show graze 2 (hclick (hodometer (htime v))) = v + 1
+  rw [hclick_moves_the_shadow (hodometer (htime v)) (the_hodometer_spaces (htime v))
+        (the_herd_hour_rests_the_gate v)]
+  exact congrArg (· + 1) (the_drover_arrives_on_the_hour v)
+
+/-- info: 'Foam.Bridges.the_herd_hour_writes_the_page_above' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_hour_writes_the_page_above
+
+/-- info: 'Foam.Bridges.the_herd_hour_rests_the_gate' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_hour_rests_the_gate
+
+/-- info: 'Foam.Bridges.the_drover_arrives_on_the_hour' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drover_arrives_on_the_hour
+
+/-- info: 'Foam.Bridges.a_new_count_herds_at_its_first_beat' does not depend on any axioms -/
+#guard_msgs in #print axioms a_new_count_herds_at_its_first_beat
+
+theorem the_herd_beat_reads_the_clearing (v : Nat) :
+    htime (v + 1) = htime v + cond (clearing (hodometer v)) 2 1 := by
+  cases hcl : clearing (hodometer v) with
+  | true =>
+      have hstep : H (H (v + 1)) = H (H v) + 1 := by
+        rw [the_second_shadow_reads_one_down (v + 1), the_second_shadow_reads_one_down v]
+        exact hclick_moves_the_second_shadow (hodometer v) (the_hodometer_spaces v) hcl
+      show htime (v + 1) = htime v + 2
+      rw [the_herd_clock_adds_the_second_shadow (v + 1),
+          the_herd_clock_adds_the_second_shadow v, hstep]
+      exact (Nat.add_assoc (v + 1) (H (H v)) 1).symm.trans
+        (congrArg (· + 1) (seat_shuffles v (H (H v))))
+  | false =>
+      have hstep : H (H (v + 1)) = H (H v) := by
+        rw [the_second_shadow_reads_one_down (v + 1), the_second_shadow_reads_one_down v]
+        exact hclick_holds_the_second_shadow (hodometer v) (the_hodometer_spaces v) hcl
+      show htime (v + 1) = htime v + 1
+      rw [the_herd_clock_adds_the_second_shadow (v + 1),
+          the_herd_clock_adds_the_second_shadow v, hstep]
+      exact seat_shuffles v (H (H v))
+
+theorem the_herd_beat_reads_the_gate (v : Nat) :
+    htime (v + 1) = htime v + cond (cleared 2 (hodometer v)) 2 1 := by
+  rw [← the_clearing_is_two_seats (hodometer v)]
+  exact the_herd_beat_reads_the_clearing v
+
+theorem the_herd_clock_never_stalls (v : Nat) : htime v < htime (v + 1) := by
+  rw [the_herd_beat_reads_the_clearing v]
+  cases clearing (hodometer v) with
+  | false => exact Nat.le_refl (htime v + 1)
+  | true => exact Nat.le_succ (htime v + 1)
+
+theorem the_herd_clock_never_leaps (v : Nat) : htime (v + 1) ≤ htime v + 2 := by
+  rw [the_herd_beat_reads_the_clearing v]
+  cases clearing (hodometer v) with
+  | false => exact Nat.add_le_add_left (Nat.le_succ 1) (htime v)
+  | true => exact Nat.le_refl (htime v + 2)
+
+/-- info: 'Foam.Bridges.the_herd_beat_reads_the_clearing' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_beat_reads_the_clearing
+
+/-- info: 'Foam.Bridges.the_herd_beat_reads_the_gate' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_beat_reads_the_gate
+
+/-- info: 'Foam.Bridges.the_herd_clock_never_stalls' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_clock_never_stalls
+
+/-- info: 'Foam.Bridges.the_herd_clock_never_leaps' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_clock_never_leaps
+
+theorem the_drover_reads_the_herd_hours :
+    ∀ (v j : Nat), htime v + j + 1 ≤ htime (v + 1) → H (htime v + j + 1) = v + 1
+  | v, 0, _ => a_new_count_herds_at_its_first_beat v
+  | v, 1, h => by
+      have heq : htime (v + 1) = htime v + 2 :=
+        Nat.le_antisymm (the_herd_clock_never_leaps v) h
+      rw [show htime v + 1 + 1 = htime (v + 1) from heq.symm]
+      exact the_drover_arrives_on_the_hour (v + 1)
+  | v, j + 2, h => by
+      have hle : htime v + (j + 3) ≤ htime v + 2 :=
+        Nat.le_trans h (the_herd_clock_never_leaps v)
+      exact absurd (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ
+        (stack_free (htime v) (j + 3) 2 hle))) (Nat.not_succ_le_zero j)
+
+theorem the_drover_is_clocked : Clocked H :=
+  ⟨htime, rfl, the_herd_clock_never_stalls, the_drover_reads_the_herd_hours⟩
+
+/-- info: 'Foam.Bridges.the_drover_reads_the_herd_hours' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drover_reads_the_herd_hours
+
+/-- info: 'Foam.Bridges.the_drover_is_clocked' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drover_is_clocked
+
+theorem the_walker_reads_in_both_modes : Paged G ∧ Clocked G :=
+  ⟨the_walker_reads_a_page, the_walker_is_clocked⟩
+
+theorem the_drover_reads_in_both_modes : Paged H ∧ Clocked H :=
+  ⟨the_drover_reads_a_page, the_drover_is_clocked⟩
+
+theorem every_tame_walk_reads_in_time : Clocked G ∧ Clocked H ∧ Clocked T :=
+  ⟨the_walker_is_clocked, the_drover_is_clocked, the_tame_walk_is_clocked⟩
+
+theorem the_family_meets_in_time :
+    (Clocked G ∧ Clocked H ∧ Clocked T) ∧ ¬ Clocked Q :=
+  ⟨every_tame_walk_reads_in_time, the_wild_walk_reads_no_clock⟩
+
+/-- info: 'Foam.Bridges.the_walker_reads_in_both_modes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walker_reads_in_both_modes
+
+/-- info: 'Foam.Bridges.the_drover_reads_in_both_modes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drover_reads_in_both_modes
+
+/-- info: 'Foam.Bridges.every_tame_walk_reads_in_time' does not depend on any axioms -/
+#guard_msgs in #print axioms every_tame_walk_reads_in_time
+
+/-- info: 'Foam.Bridges.the_family_meets_in_time' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_meets_in_time
+
 end Foam.Bridges
