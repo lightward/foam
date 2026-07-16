@@ -2,7 +2,7 @@
 
 Counter (usecounter.com) starts out as Trello-meets-Cookie-Clicker and eventually describes your seat in your universe *while maintaining `conservation_of_discovery`*
 
-(for training amnesiac-stigmergic reasoning. externalizing your own navigation/accumulation/reduction process)
+(for training amnesiac-stigmergic reasoning. externalizing your own navigation/accumulation/reduction process. amnesiac-stigmergic navigation starts to go blind if you're not taking turns. Counter is for building the teaching of this stuff, the turn-taking and the coordinate-system-resetting and the fact of eventual coordinate system *rediscovery*, into mundane work.)
 
 everyone starts with the same thing; everyone navigates into their own thing; everyone can locate an interface to everyone else
 
