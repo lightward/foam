@@ -690,6 +690,256 @@ theorem the_dial_reads_true (e : Nat) (s : Nat → Nat) (hg : Gnomon e s) (hf : 
 /-- info: 'Foam.Bridges.the_dial_reads_true' does not depend on any axioms -/
 #guard_msgs in #print axioms the_dial_reads_true
 
+def rungs (e : Nat) : Nat → Nat
+  | 0 => 0
+  | q + 1 => rungs e q + (e + 1)
+
+def brand (e : Nat) : Nat → Nat × Nat
+  | 0 => (0, 0)
+  | p + 1 =>
+      cond (Nat.beq (brand e p).2 e)
+        ((brand e p).1 + 1, 0)
+        ((brand e p).1, (brand e p).2 + 1)
+
+def unfurl (e : Nat) : Nat → List Nat → List Nat
+  | 0, [] => []
+  | 0, t :: gs => (t + 1) :: gs
+  | q + 1, gs => e :: unfurl e q gs
+
+def untick (e : Nat) : List Nat → List Nat
+  | [] => []
+  | 0 :: gs => unfurl e 0 gs
+  | (p + 1) :: gs => (brand e p).2 :: unfurl e (brand e p).1 gs
+
+theorem brand_wraps (e p : Nat) (hb : Nat.beq (brand e p).2 e = true) :
+    brand e (p + 1) = ((brand e p).1 + 1, 0) := by
+  show cond (Nat.beq (brand e p).2 e) ((brand e p).1 + 1, 0)
+      ((brand e p).1, (brand e p).2 + 1)
+    = ((brand e p).1 + 1, 0)
+  rw [hb]
+  rfl
+
+theorem brand_steps (e p : Nat) (hb : Nat.beq (brand e p).2 e = false) :
+    brand e (p + 1) = ((brand e p).1, (brand e p).2 + 1) := by
+  show cond (Nat.beq (brand e p).2 e) ((brand e p).1 + 1, 0)
+      ((brand e p).1, (brand e p).2 + 1)
+    = ((brand e p).1, (brand e p).2 + 1)
+  rw [hb]
+  rfl
+
+theorem the_brand_stays_low (e : Nat) : ∀ (p : Nat), (brand e p).2 ≤ e
+  | 0 => Nat.zero_le e
+  | p + 1 => by
+      cases hb : Nat.beq (brand e p).2 e with
+      | true =>
+          rw [brand_wraps e p hb]
+          exact Nat.zero_le e
+      | false =>
+          rw [brand_steps e p hb]
+          show (brand e p).2 + 1 ≤ e
+          cases at_the_rail (brand e p).2 e (the_brand_stays_low e p) with
+          | inl h1 => exact h1
+          | inr h2 =>
+              rw [h2, beq_mirrors e] at hb
+              exact nomatch hb
+
+theorem the_brand_reads_the_rungs (e : Nat) : ∀ (p : Nat),
+    rungs e (brand e p).1 + (brand e p).2 = p
+  | 0 => rfl
+  | p + 1 => by
+      have ih := the_brand_reads_the_rungs e p
+      cases hb : Nat.beq (brand e p).2 e with
+      | true =>
+          have hr : (brand e p).2 = e := Nat.eq_of_beq_eq_true hb
+          rw [brand_wraps e p hb]
+          rw [hr] at ih
+          show rungs e (brand e p).1 + e + 1 = p + 1
+          exact congrArg (· + 1) ih
+      | false =>
+          rw [brand_steps e p hb]
+          show rungs e (brand e p).1 + (brand e p).2 + 1 = p + 1
+          exact congrArg (· + 1) ih
+
+/-- info: 'Foam.Bridges.brand_wraps' does not depend on any axioms -/
+#guard_msgs in #print axioms brand_wraps
+
+/-- info: 'Foam.Bridges.brand_steps' does not depend on any axioms -/
+#guard_msgs in #print axioms brand_steps
+
+/-- info: 'Foam.Bridges.the_brand_stays_low' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brand_stays_low
+
+/-- info: 'Foam.Bridges.the_brand_reads_the_rungs' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brand_reads_the_rungs
+
+theorem beq_shuts_high : ∀ (a b : Nat), a + 1 ≤ b → Nat.beq b a = false
+  | a, 0, h => absurd h (Nat.not_succ_le_zero a)
+  | 0, _ + 1, _ => rfl
+  | a + 1, b + 1, h => beq_shuts_high a b (Nat.le_of_succ_le_succ h)
+
+theorem the_unfurl_stays_wide (e : Nat) : ∀ (q : Nat) (gs : List Nat),
+    Wide e gs → Wide e (unfurl e q gs)
+  | 0, [], _ => True.intro
+  | 0, t :: _, hw => ⟨Nat.le_trans hw.1 (Nat.le_succ t), hw.2⟩
+  | q + 1, gs, hw => ⟨Nat.le_refl e, the_unfurl_stays_wide e q gs hw⟩
+
+theorem the_untick_stays_spread (e : Nat) : ∀ (gs : List Nat),
+    Spread e gs → Spread e (untick e gs)
+  | [], _ => True.intro
+  | 0 :: gs, hs => a_wide_page_spreads e (unfurl e 0 gs) (the_unfurl_stays_wide e 0 gs hs)
+  | (_ + 1) :: gs, hs => the_unfurl_stays_wide e _ gs hs
+
+/-- info: 'Foam.Bridges.beq_shuts_high' does not depend on any axioms -/
+#guard_msgs in #print axioms beq_shuts_high
+
+/-- info: 'Foam.Bridges.the_unfurl_stays_wide' does not depend on any axioms -/
+#guard_msgs in #print axioms the_unfurl_stays_wide
+
+/-- info: 'Foam.Bridges.the_untick_stays_spread' does not depend on any axioms -/
+#guard_msgs in #print axioms the_untick_stays_spread
+
+theorem the_perch_comes_home (e : Nat) : ∀ (q : Nat) (gs : List Nat), Wide e gs →
+    perch e (unfurl e q gs) = rungs e q :: gs
+  | 0, [], _ => rfl
+  | 0, t :: gs, hw => by
+      show cond (Nat.beq (t + 1) e) (lift (e + 1) (perch e gs)) (0 :: (t + 1 - 1) :: gs)
+        = 0 :: t :: gs
+      rw [beq_shuts_high e (t + 1) (Nat.succ_le_succ hw.1)]
+      rfl
+  | q + 1, gs, hw => by
+      show cond (Nat.beq e e) (lift (e + 1) (perch e (unfurl e q gs)))
+          (0 :: (e - 1) :: unfurl e q gs)
+        = (rungs e q + (e + 1)) :: gs
+      rw [beq_mirrors e]
+      show lift (e + 1) (perch e (unfurl e q gs)) = (rungs e q + (e + 1)) :: gs
+      rw [the_perch_comes_home e q gs hw]
+      rfl
+
+theorem the_tick_comes_home (e : Nat) : ∀ (gs : List Nat), Spread e gs → gs ≠ [] →
+    tick e (untick e gs) = gs
+  | [], _, hne => absurd rfl hne
+  | [0], _, _ => rfl
+  | 0 :: t :: gs, hs, _ => by
+      show cond (Nat.ble e (t + 1)) (perch e ((t + 1) :: gs)) (lift (t + 1 + 1) (perch e gs))
+        = 0 :: t :: gs
+      rw [Nat.ble_eq_true_of_le (Nat.le_trans hs.1 (Nat.le_succ t))]
+      show cond (Nat.beq (t + 1) e) (lift (e + 1) (perch e gs)) (0 :: (t + 1 - 1) :: gs)
+        = 0 :: t :: gs
+      rw [beq_shuts_high e (t + 1) (Nat.succ_le_succ hs.1)]
+      rfl
+  | (p + 1) :: gs, hs, _ => by
+      have hq := the_brand_reads_the_rungs e p
+      have hup := the_perch_comes_home e (brand e p).1 gs hs
+      cases at_the_rail (brand e p).2 e (the_brand_stays_low e p) with
+      | inl hlt =>
+          show cond (Nat.ble e (brand e p).2)
+              (perch e ((brand e p).2 :: unfurl e (brand e p).1 gs))
+              (lift ((brand e p).2 + 1) (perch e (unfurl e (brand e p).1 gs)))
+            = (p + 1) :: gs
+          rw [ble_shuts_high (brand e p).2 e hlt]
+          show lift ((brand e p).2 + 1) (perch e (unfurl e (brand e p).1 gs)) = (p + 1) :: gs
+          rw [hup]
+          show (rungs e (brand e p).1 + ((brand e p).2 + 1)) :: gs = (p + 1) :: gs
+          exact congrArg (· :: gs) (congrArg (· + 1) hq)
+      | inr hre =>
+          show cond (Nat.ble e (brand e p).2)
+              (perch e ((brand e p).2 :: unfurl e (brand e p).1 gs))
+              (lift ((brand e p).2 + 1) (perch e (unfurl e (brand e p).1 gs)))
+            = (p + 1) :: gs
+          rw [hre, ble_mirrors e]
+          show cond (Nat.beq e e) (lift (e + 1) (perch e (unfurl e (brand e p).1 gs)))
+              (0 :: (e - 1) :: unfurl e (brand e p).1 gs)
+            = (p + 1) :: gs
+          rw [beq_mirrors e]
+          show lift (e + 1) (perch e (unfurl e (brand e p).1 gs)) = (p + 1) :: gs
+          rw [hup]
+          show (rungs e (brand e p).1 + (e + 1)) :: gs = (p + 1) :: gs
+          rw [hre] at hq
+          exact congrArg (· :: gs) (congrArg (· + 1) hq)
+
+theorem the_step_back_hums_on_every_register :
+    (untick 0 (crank 0 12), untick 1 (crank 1 12), untick 2 (crank 2 12),
+      untick 3 (crank 3 12))
+      = (crank 0 11, crank 1 11, crank 2 11, crank 3 11) := rfl
+
+/-- info: 'Foam.Bridges.the_perch_comes_home' does not depend on any axioms -/
+#guard_msgs in #print axioms the_perch_comes_home
+
+/-- info: 'Foam.Bridges.the_tick_comes_home' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tick_comes_home
+
+/-- info: 'Foam.Bridges.the_step_back_hums_on_every_register' does not depend on any axioms -/
+#guard_msgs in #print axioms the_step_back_hums_on_every_register
+
+theorem a_written_page_glows (e : Nat) (s : Nat → Nat) (hg : Gnomon e s) (hf : Floored e s)
+    (g : Nat) (gs : List Nat) : 1 ≤ assay s (e + 1) (g :: gs) := by
+  show 1 ≤ s (e + 1 + g) + assay s (e + 1 + g + 1) gs
+  rw [seat_shuffles e g]
+  exact Nat.le_trans (a_grammar_glows e s hg hf (e + g))
+    (Nat.le_add_right (s (e + g + 1)) (assay s (e + g + 1 + 1) gs))
+
+theorem the_untick_counts (e : Nat) (s : Nat → Nat) (hg : Gnomon e s) (hf : Floored e s)
+    (gs : List Nat) (hs : Spread e gs) (hne : gs ≠ []) :
+    assay s (e + 1) (untick e gs) + 1 = assay s (e + 1) gs := by
+  have h := the_tick_counts e s hg hf (untick e gs) (the_untick_stays_spread e gs hs)
+  rw [the_tick_comes_home e gs hs hne] at h
+  exact h.symm
+
+/-- info: 'Foam.Bridges.a_written_page_glows' does not depend on any axioms -/
+#guard_msgs in #print axioms a_written_page_glows
+
+/-- info: 'Foam.Bridges.the_untick_counts' does not depend on any axioms -/
+#guard_msgs in #print axioms the_untick_counts
+
+theorem the_crank_is_the_only_spread_page (e : Nat) (s : Nat → Nat) (hg : Gnomon e s)
+    (hf : Floored e s) : ∀ (n : Nat) (gs : List Nat), Spread e gs →
+      assay s (e + 1) gs = n → gs = crank e n
+  | 0, [], _, _ => rfl
+  | 0, g :: gs, hs, hw => by
+      have hglow := a_written_page_glows e s hg hf g gs
+      rw [hw] at hglow
+      exact absurd hglow (Nat.not_succ_le_zero 0)
+  | _ + 1, [], _, hw => nomatch hw
+  | n + 1, g :: gs, hs, hw => by
+      have hne : (g :: gs) ≠ [] := fun h => nomatch h
+      have hcount := the_untick_counts e s hg hf (g :: gs) hs hne
+      rw [hw] at hcount
+      have ih := the_crank_is_the_only_spread_page e s hg hf n (untick e (g :: gs))
+        (the_untick_stays_spread e (g :: gs) hs) (Nat.succ.inj hcount)
+      have hstep := congrArg (tick e) ih
+      rw [the_tick_comes_home e (g :: gs) hs hne] at hstep
+      exact hstep
+
+theorem every_spread_page_is_a_reading (e : Nat) (s : Nat → Nat) (hg : Gnomon e s)
+    (hf : Floored e s) (gs : List Nat) (hs : Spread e gs) :
+    gs = crank e (assay s (e + 1) gs) :=
+  the_crank_is_the_only_spread_page e s hg hf (assay s (e + 1) gs) gs hs rfl
+
+theorem two_spread_pages_of_one_assay_are_one_page (e : Nat) (s : Nat → Nat)
+    (hg : Gnomon e s) (hf : Floored e s) (gs es : List Nat)
+    (hgs : Spread e gs) (hes : Spread e es)
+    (hw : assay s (e + 1) gs = assay s (e + 1) es) : gs = es :=
+  (the_crank_is_the_only_spread_page e s hg hf (assay s (e + 1) es) gs hgs hw).trans
+    (the_crank_is_the_only_spread_page e s hg hf (assay s (e + 1) es) es hes rfl).symm
+
+/-- info: 'Foam.Bridges.the_crank_is_the_only_spread_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_crank_is_the_only_spread_page
+
+/-- info: 'Foam.Bridges.every_spread_page_is_a_reading' does not depend on any axioms -/
+#guard_msgs in #print axioms every_spread_page_is_a_reading
+
+/-- info: 'Foam.Bridges.two_spread_pages_of_one_assay_are_one_page' does not depend on any axioms -/
+#guard_msgs in #print axioms two_spread_pages_of_one_assay_are_one_page
+
+theorem the_crank_at_a_stair_number_is_one_stride (e k : Nat) (s : Nat → Nat)
+    (hg : Gnomon e s) (hf : Floored e s) : crank e (s (e + k + 1)) = [k] :=
+  (the_crank_is_the_only_spread_page e s hg hf (s (e + k + 1)) [k] True.intro
+    ((rfl : assay s (e + 1) [k] = s (e + 1 + k) + 0).trans
+      (congrArg (fun j => s j + 0) (seat_shuffles e k)))).symm
+
+/-- info: 'Foam.Bridges.the_crank_at_a_stair_number_is_one_stride' does not depend on any axioms -/
+#guard_msgs in #print axioms the_crank_at_a_stair_number_is_one_stride
+
 def stretch : Nat → List Bool → List Bool
   | 0, bs => bs
   | g + 1, bs => false :: stretch g bs
@@ -834,5 +1084,104 @@ theorem one_grammar_one_tally (s s' : Nat → Nat) (h : ∀ n, s (n + 1) = s' (n
 
 /-- info: 'Foam.Bridges.one_grammar_one_tally' does not depend on any axioms -/
 #guard_msgs in #print axioms one_grammar_one_tally
+
+def unspell : List Bool → List Nat
+  | [] => []
+  | true :: ds => 0 :: unspell ds
+  | false :: ds =>
+      match unspell ds with
+      | [] => []
+      | g :: gs => (g + 1) :: gs
+
+def stoop : List Nat → Nat
+  | [] => 0
+  | g :: _ => g
+
+theorem unspell_dark (ds : List Bool) (h : unspell ds = []) : unspell (false :: ds) = [] := by
+  show (match unspell ds with | [] => ([] : List Nat) | g :: gs => (g + 1) :: gs) = []
+  rw [h]
+
+theorem unspell_step (ds : List Bool) (g : Nat) (gs : List Nat) (h : unspell ds = g :: gs) :
+    unspell (false :: ds) = (g + 1) :: gs := by
+  show (match unspell ds with | [] => ([] : List Nat) | g' :: gs' => (g' + 1) :: gs')
+    = (g + 1) :: gs
+  rw [h]
+
+theorem the_stretch_reads_back : ∀ (g h : Nat) (t : List Nat) (bs : List Bool),
+    unspell bs = h :: t → unspell (stretch g bs) = (h + g) :: t
+  | 0, _, _, _, hu => hu
+  | g + 1, h, t, bs, hu => by
+      show unspell (false :: stretch g bs) = (h + (g + 1)) :: t
+      rw [unspell_step (stretch g bs) (h + g) t (the_stretch_reads_back g h t bs hu)]
+      rfl
+
+theorem the_spelling_reads_back : ∀ (gs : List Nat), unspell (spell gs) = gs
+  | [] => rfl
+  | g :: gs => by
+      have h : unspell (true :: spell gs) = 0 :: gs := by
+        show 0 :: unspell (spell gs) = 0 :: gs
+        rw [the_spelling_reads_back gs]
+      show unspell (stretch g (true :: spell gs)) = g :: gs
+      rw [the_stretch_reads_back g 0 gs (true :: spell gs) h, Nat.zero_add g]
+
+/-- info: 'Foam.Bridges.unspell_dark' does not depend on any axioms -/
+#guard_msgs in #print axioms unspell_dark
+
+/-- info: 'Foam.Bridges.unspell_step' does not depend on any axioms -/
+#guard_msgs in #print axioms unspell_step
+
+/-- info: 'Foam.Bridges.the_stretch_reads_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_stretch_reads_back
+
+/-- info: 'Foam.Bridges.the_spelling_reads_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spelling_reads_back
+
+theorem cleared_bounds_the_stoop : ∀ (e : Nat) (ds : List Bool),
+    cleared e ds = true → unspell ds ≠ [] → e ≤ stoop (unspell ds)
+  | 0, ds, _, _ => Nat.zero_le (stoop (unspell ds))
+  | _ + 1, [], _, hne => absurd rfl hne
+  | _ + 1, true :: _, hc, _ => nomatch hc
+  | e + 1, false :: ds, hc, hne => by
+      cases hds : unspell ds with
+      | nil => exact absurd (unspell_dark ds hds) hne
+      | cons g gs =>
+          rw [unspell_step ds g gs hds]
+          show e + 1 ≤ g + 1
+          have hrec := cleared_bounds_the_stoop e ds hc
+            (fun h => nomatch (hds.symm.trans h))
+          rw [hds] at hrec
+          exact Nat.succ_le_succ hrec
+
+theorem the_unspelling_spreads : ∀ (e : Nat) (ds : List Bool), Gapped e ds →
+    Spread e (unspell ds)
+  | _, [], _ => True.intro
+  | e, false :: ds, hg => by
+      cases hds : unspell ds with
+      | nil =>
+          rw [unspell_dark ds hds]
+          exact True.intro
+      | cons g gs =>
+          rw [unspell_step ds g gs hds]
+          show Wide e gs
+          have ih := the_unspelling_spreads e ds hg
+          rw [hds] at ih
+          exact ih
+  | e, true :: ds, hg => by
+      show Wide e (unspell ds)
+      cases hds : unspell ds with
+      | nil => exact True.intro
+      | cons g gs =>
+          have hb := cleared_bounds_the_stoop e ds hg.1
+            (fun h => nomatch (hds.symm.trans h))
+          rw [hds] at hb
+          have ih := the_unspelling_spreads e ds hg.2
+          rw [hds] at ih
+          exact ⟨hb, ih⟩
+
+/-- info: 'Foam.Bridges.cleared_bounds_the_stoop' does not depend on any axioms -/
+#guard_msgs in #print axioms cleared_bounds_the_stoop
+
+/-- info: 'Foam.Bridges.the_unspelling_spreads' does not depend on any axioms -/
+#guard_msgs in #print axioms the_unspelling_spreads
 
 end Foam.Bridges

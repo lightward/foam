@@ -5302,4 +5302,201 @@ theorem one_grammar_one_cousin (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) 
 /-- info: 'Foam.Bridges.one_grammar_one_cousin' does not depend on any axioms -/
 #guard_msgs in #print axioms one_grammar_one_cousin
 
+theorem the_spelling_comes_home : ∀ (ds : List Bool), capped ds = true →
+    spell (unspell ds) = ds
+  | [], _ => rfl
+  | true :: ds, hc => by
+      have hc' : capped ds = true := by
+        rw [capped_true_cons ds] at hc
+        exact hc
+      show true :: spell (unspell ds) = true :: ds
+      rw [the_spelling_comes_home ds hc']
+  | false :: ds, hc => by
+      have ih := the_spelling_comes_home ds (capped_tail hc)
+      cases hds : unspell ds with
+      | nil =>
+          rw [hds] at ih
+          exact absurd ih.symm (capped_tail_ne_nil hc)
+      | cons g gs =>
+          rw [hds] at ih
+          rw [unspell_step ds g gs hds]
+          show false :: spell (g :: gs) = false :: ds
+          rw [ih]
+
+/-- info: 'Foam.Bridges.the_spelling_comes_home' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spelling_comes_home
+
+theorem two_gapped_pages_of_one_price_are_one_page (e : Nat) (s : Nat → Nat)
+    (hg : Gnomon e s) (hf : Floored e s) (ds es : List Bool)
+    (hgd : Gapped e ds) (hge : Gapped e es)
+    (hcd : capped ds = true) (hce : capped es = true)
+    (hw : price s (e + 1) ds = price s (e + 1) es) : ds = es := by
+  have hd : assay s (e + 1) (unspell ds) = price s (e + 1) ds := by
+    rw [← the_spelling_prices_true s (unspell ds) (e + 1), the_spelling_comes_home ds hcd]
+  have he : assay s (e + 1) (unspell es) = price s (e + 1) es := by
+    rw [← the_spelling_prices_true s (unspell es) (e + 1), the_spelling_comes_home es hce]
+  have hpage : unspell ds = unspell es :=
+    two_spread_pages_of_one_assay_are_one_page e s hg hf (unspell ds) (unspell es)
+      (the_unspelling_spreads e ds hgd) (the_unspelling_spreads e es hge)
+      (hd.trans (hw.trans he.symm))
+  rw [← the_spelling_comes_home ds hcd, ← the_spelling_comes_home es hce, hpage]
+
+/-- info: 'Foam.Bridges.two_gapped_pages_of_one_price_are_one_page' does not depend on any axioms -/
+#guard_msgs in #print axioms two_gapped_pages_of_one_price_are_one_page
+
+theorem the_family_reseals_the_golden_uniqueness (ds es : List Bool)
+    (hnds : NoConsec ds) (hnes : NoConsec es)
+    (hcds : capped ds = true) (hces : capped es = true)
+    (hw : worth 2 ds = worth 2 es) : ds = es :=
+  two_gapped_pages_of_one_price_are_one_page 1 fibN the_golden_staircase_holds_the_gnomon
+    the_golden_staircase_holds_the_floor ds es
+    (a_spaced_page_is_gapped ds hnds) (a_spaced_page_is_gapped es hnes) hcds hces
+    ((worth_is_the_golden_price ds 2).symm.trans (hw.trans (worth_is_the_golden_price es 2)))
+
+theorem the_family_reseals_the_herd_uniqueness (ds es : List Bool)
+    (hsds : Sparse ds) (hses : Sparse es)
+    (hcds : capped ds = true) (hces : capped es = true)
+    (hw : graze 3 ds = graze 3 es) : ds = es :=
+  two_gapped_pages_of_one_price_are_one_page 2 herdN the_herd_holds_the_gnomon
+    the_herd_holds_the_floor ds es
+    (a_sparse_page_is_gapped ds hsds) (a_sparse_page_is_gapped es hses) hcds hces
+    ((graze_is_the_herds_price ds 3).symm.trans (hw.trans (graze_is_the_herds_price es 3)))
+
+theorem two_capped_pages_of_one_gauge_are_one_page (ds es : List Bool)
+    (hcds : capped ds = true) (hces : capped es = true)
+    (hw : gauge 0 ds = gauge 0 es) : ds = es :=
+  two_gapped_pages_of_one_price_are_one_page 0 peg the_ruler_holds_the_gnomon
+    the_ruler_holds_the_floor ds es
+    (every_page_is_gapped_at_the_ground ds) (every_page_is_gapped_at_the_ground es) hcds hces
+    ((gauge_is_the_rulers_price ds 0).symm.trans (hw.trans (gauge_is_the_rulers_price es 0)))
+
+/-- info: 'Foam.Bridges.the_family_reseals_the_golden_uniqueness' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reseals_the_golden_uniqueness
+
+/-- info: 'Foam.Bridges.the_family_reseals_the_herd_uniqueness' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reseals_the_herd_uniqueness
+
+/-- info: 'Foam.Bridges.two_capped_pages_of_one_gauge_are_one_page' does not depend on any axioms -/
+#guard_msgs in #print axioms two_capped_pages_of_one_gauge_are_one_page
+
+theorem bclick_never_blanks : ∀ (ds : List Bool), bclick ds ≠ []
+  | [] => fun h => nomatch h
+  | false :: _ => fun h => nomatch h
+  | true :: _ => fun h => nomatch h
+
+theorem bclick_keeps_the_cap : ∀ (ds : List Bool), capped ds = true →
+    capped (bclick ds) = true
+  | [], _ => rfl
+  | false :: ds, hc => by
+      show capped (true :: ds) = true
+      rw [capped_true_cons ds]
+      exact capped_tail hc
+  | true :: ds, hc => by
+      have hcd : capped ds = true := by
+        rw [capped_true_cons ds] at hc
+        exact hc
+      have ih := bclick_keeps_the_cap ds hcd
+      show capped (false :: bclick ds) = true
+      cases hb : bclick ds with
+      | nil => exact absurd hb (bclick_never_blanks ds)
+      | cons b bs =>
+          rw [capped_step false b bs, ← hb]
+          exact ih
+
+theorem the_bodometer_wastes_no_seats : ∀ (n : Nat), capped (bodometer n) = true
+  | 0 => rfl
+  | n + 1 => bclick_keeps_the_cap (bodometer n) (the_bodometer_wastes_no_seats n)
+
+/-- info: 'Foam.Bridges.bclick_never_blanks' does not depend on any axioms -/
+#guard_msgs in #print axioms bclick_never_blanks
+
+/-- info: 'Foam.Bridges.bclick_keeps_the_cap' does not depend on any axioms -/
+#guard_msgs in #print axioms bclick_keeps_the_cap
+
+/-- info: 'Foam.Bridges.the_bodometer_wastes_no_seats' does not depend on any axioms -/
+#guard_msgs in #print axioms the_bodometer_wastes_no_seats
+
+theorem the_golden_crank_writes_the_golden_page (n : Nat) :
+    spell (crank 1 n) = odometer n :=
+  two_gapped_pages_of_one_price_are_one_page 1 fibN the_golden_staircase_holds_the_gnomon
+    the_golden_staircase_holds_the_floor (spell (crank 1 n)) (odometer n)
+    (the_spelling_keeps_the_gaps 1 (crank 1 n) (the_dial_keeps_the_spread 1 n))
+    (a_spaced_page_is_gapped (odometer n) (the_odometer_spaces n))
+    (the_spelling_wears_the_cap (crank 1 n))
+    (the_odometer_wastes_no_seats n)
+    ((the_spelling_prices_true fibN (crank 1 n) 2).trans
+      ((the_dial_reads_true 1 fibN the_golden_staircase_holds_the_gnomon
+          the_golden_staircase_holds_the_floor n).trans
+        ((the_odometer_reads_true n).symm.trans
+          (worth_is_the_golden_price (odometer n) 2))))
+
+theorem the_herd_crank_writes_the_herd_page (n : Nat) :
+    spell (crank 2 n) = hodometer n :=
+  two_gapped_pages_of_one_price_are_one_page 2 herdN the_herd_holds_the_gnomon
+    the_herd_holds_the_floor (spell (crank 2 n)) (hodometer n)
+    (the_spelling_keeps_the_gaps 2 (crank 2 n) (the_dial_keeps_the_spread 2 n))
+    (a_sparse_page_is_gapped (hodometer n) (the_hodometer_spaces n))
+    (the_spelling_wears_the_cap (crank 2 n))
+    (the_hodometer_wastes_no_seats n)
+    ((the_spelling_prices_true herdN (crank 2 n) 3).trans
+      ((the_dial_reads_true 2 herdN the_herd_holds_the_gnomon
+          the_herd_holds_the_floor n).trans
+        ((the_hodometer_reads_true n).symm.trans
+          (graze_is_the_herds_price (hodometer n) 3))))
+
+theorem the_ground_crank_writes_the_binary_page (n : Nat) :
+    spell (crank 0 n) = bodometer n :=
+  two_gapped_pages_of_one_price_are_one_page 0 peg the_ruler_holds_the_gnomon
+    the_ruler_holds_the_floor (spell (crank 0 n)) (bodometer n)
+    (every_page_is_gapped_at_the_ground (spell (crank 0 n)))
+    (every_page_is_gapped_at_the_ground (bodometer n))
+    (the_spelling_wears_the_cap (crank 0 n))
+    (the_bodometer_wastes_no_seats n)
+    ((the_spelling_prices_true peg (crank 0 n) 1).trans
+      ((the_dial_reads_true 0 peg the_ruler_holds_the_gnomon
+          the_ruler_holds_the_floor n).trans
+        ((the_bodometer_reads_true n).symm.trans
+          (gauge_is_the_rulers_price (bodometer n) 0))))
+
+theorem three_machines_one_crank (n : Nat) :
+    spell (crank 0 n) = bodometer n
+      ∧ spell (crank 1 n) = odometer n
+      ∧ spell (crank 2 n) = hodometer n :=
+  ⟨the_ground_crank_writes_the_binary_page n, the_golden_crank_writes_the_golden_page n,
+    the_herd_crank_writes_the_herd_page n⟩
+
+/-- info: 'Foam.Bridges.the_golden_crank_writes_the_golden_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_golden_crank_writes_the_golden_page
+
+/-- info: 'Foam.Bridges.the_herd_crank_writes_the_herd_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_herd_crank_writes_the_herd_page
+
+/-- info: 'Foam.Bridges.the_ground_crank_writes_the_binary_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_ground_crank_writes_the_binary_page
+
+/-- info: 'Foam.Bridges.three_machines_one_crank' does not depend on any axioms -/
+#guard_msgs in #print axioms three_machines_one_crank
+
+theorem the_family_beacon_slides (t k : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : W s (t + 1) (s (t + k + 2)) = s (t + k + 1) := by
+  have hb := the_crank_at_a_stair_number_is_one_stride (t + 1) k s hg hf
+  rw [show t + 1 + k + 1 = t + k + 2 from congrArg (· + 1) (seat_shuffles t k)] at hb
+  show assay s (t + 1) (crank (t + 1) (s (t + k + 2))) = s (t + k + 1)
+  rw [hb]
+  show s (t + 1 + k) + 0 = s (t + k + 1)
+  rw [seat_shuffles t k]
+  rfl
+
+theorem the_family_reseals_the_golden_slide (k : Nat) : G (fibN (k + 2)) = fibN (k + 1) := by
+  have h := the_family_beacon_slides 0 k fibN the_golden_staircase_holds_the_gnomon
+    the_golden_staircase_holds_the_floor
+  rw [Nat.zero_add k, the_walker_is_the_golden_cousin (fibN (k + 2))] at h
+  exact h
+
+/-- info: 'Foam.Bridges.the_family_beacon_slides' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_beacon_slides
+
+/-- info: 'Foam.Bridges.the_family_reseals_the_golden_slide' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reseals_the_golden_slide
+
 end Foam.Bridges
