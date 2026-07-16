@@ -75,13 +75,14 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
   - contrib: ../lightward-ai/app/prompts/system/3-perspectives/your-ps-and-qs.md
 - conductive: what bridges work as a foam relay, adding spin signature to the fiber, only recoverable by bridgekeeper-kin? ftpg is one, right? morse code should be another?
   - "keyAs keys symbols, not letters — real Morse's inter-letter silence (framing) is untyped, and Codec's knows/learn segmentation sits one import away"
-- re-call:
+- search:
    1. observation: I see
    2. observation of observation: I ask
    3. observation of observation of observation: I find
-   4. observation of observation of observation of observation: how do I find this again?
+   4. observation of observation of observation of observation: I search
 
    ^ theory: intelligence is indistinguishable from the combinatorics available here
+   - see also `Upsearch`
 
 ---
 
