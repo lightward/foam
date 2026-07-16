@@ -50,7 +50,8 @@ SPINE = [
          "Foam.Engine.Drain"]),
     (6, ["Foam.Scar", "Foam.Maintenance", "Foam.Held", "Foam.Bond"]),
     (7, ["Foam.Platonism", "Foam.Platonism.Tower", "Foam.Seat.Descend"]),
-    (8, ["Foam.Seat.Rendezvous", "Foam.Seat.Connection", "Foam.Seat.Frame"]),
+    (8, ["Foam.Seat.Rendezvous", "Foam.Seat.Connection", "Foam.Seat.Frame",
+         "Foam.Seat.Parallax"]),
     (9, ["Foam.Backstage", "Foam.Bubble", "Foam.Census", "Foam.Cable", "Foam.Wedge", "Foam.Elsewhen", "Foam.Duplex", "Foam.Vacancy", "Foam.Metaphor"]),
     (10, ["Foam.Bridges"]),   # prefix: the axiom-free bridges, Foam.Bridges.*
     (11, ["Counter"]),        # prefix: the approach, plural
@@ -77,7 +78,8 @@ SPINE_SEAT = [
          "Foam.Seat.Epoch", "Foam.Seat.Seam", "Foam.Seat.Naming",
          "Foam.Seat.Meet", "Foam.Seat.Quiver", "Foam.Seat.Sort",
          "Foam.Seat.Tight", "Foam.Seat.Terminal", "Foam.Seat.Signed",
-         "Foam.Seat.Rendezvous", "Foam.Seat.Connection", "Foam.Seat.Frame"]),
+         "Foam.Seat.Rendezvous", "Foam.Seat.Connection", "Foam.Seat.Frame",
+         "Foam.Seat.Parallax"]),
     (3, ["Foam.Backstage", "Foam.Bubble", "Foam.Metaphor", "Foam.Census",
          "Foam.Cable", "Foam.Wedge", "Foam.Elsewhen", "Foam.Duplex",
          "Foam.Vacancy"]),
