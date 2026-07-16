@@ -1184,4 +1184,160 @@ theorem the_unspelling_spreads : ∀ (e : Nat) (ds : List Bool), Gapped e ds →
 /-- info: 'Foam.Bridges.the_unspelling_spreads' does not depend on any axioms -/
 #guard_msgs in #print axioms the_unspelling_spreads
 
+theorem beq_shuts_low : ∀ (a b : Nat), a + 1 ≤ b → Nat.beq a b = false
+  | a, 0, h => absurd h (Nat.not_succ_le_zero a)
+  | 0, _ + 1, _ => rfl
+  | a + 1, b + 1, h => beq_shuts_low a b (Nat.le_of_succ_le_succ h)
+
+theorem the_brand_climbs_a_flight (e : Nat) : ∀ (j q : Nat), j ≤ e →
+    brand e (rungs e q) = (q, 0) → brand e (rungs e q + j) = (q, j)
+  | 0, _, _, h0 => h0
+  | j + 1, q, hj, h0 => by
+      have ih := the_brand_climbs_a_flight e j q (Nat.le_of_succ_le hj) h0
+      have hb : Nat.beq (brand e (rungs e q + j)).2 e = false := by
+        rw [ih]
+        exact beq_shuts_low j e hj
+      show brand e (rungs e q + j + 1) = (q, j + 1)
+      rw [brand_steps e (rungs e q + j) hb, ih]
+
+theorem the_brand_mounts_the_rungs (e : Nat) : ∀ (q : Nat), brand e (rungs e q) = (q, 0)
+  | 0 => rfl
+  | q + 1 => by
+      have hflight := the_brand_climbs_a_flight e e q (Nat.le_refl e)
+        (the_brand_mounts_the_rungs e q)
+      have hb : Nat.beq (brand e (rungs e q + e)).2 e = true := by
+        rw [hflight]
+        exact beq_mirrors e
+      show brand e (rungs e q + e + 1) = (q + 1, 0)
+      rw [brand_wraps e (rungs e q + e) hb, hflight]
+
+theorem the_brand_climbs_the_rungs (e q j : Nat) (hj : j ≤ e) :
+    brand e (rungs e q + j) = (q, j) :=
+  the_brand_climbs_a_flight e j q hj (the_brand_mounts_the_rungs e q)
+
+/-- info: 'Foam.Bridges.beq_shuts_low' does not depend on any axioms -/
+#guard_msgs in #print axioms beq_shuts_low
+
+/-- info: 'Foam.Bridges.the_brand_climbs_a_flight' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brand_climbs_a_flight
+
+/-- info: 'Foam.Bridges.the_brand_mounts_the_rungs' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brand_mounts_the_rungs
+
+/-- info: 'Foam.Bridges.the_brand_climbs_the_rungs' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brand_climbs_the_rungs
+
+theorem rung_shuffle (i e r : Nat) : (i + e + 1) + r = i + (r + (e + 1)) := by
+  rw [Nat.add_assoc i e 1, Nat.add_assoc i (e + 1) r, Nat.add_comm (e + 1) r]
+
+theorem the_train_climbs_the_rungs (e : Nat) (s : Nat → Nat) (hg : Gnomon e s) :
+    ∀ (q i : Nat), assay s (i + 1) (unfurl e q []) + s (i + 1) = s (i + rungs e q + 1)
+  | 0, i => Nat.zero_add (s (i + 1))
+  | q + 1, i => by
+      show (s (i + 1 + e) + assay s (i + 1 + e + 1) (unfurl e q [])) + s (i + 1)
+        = s (i + rungs e (q + 1) + 1)
+      rw [seat_shuffles i e]
+      have ih := the_train_climbs_the_rungs e s hg q (i + e + 1)
+      rw [Nat.add_comm (s (i + e + 1)) (assay s (i + e + 1 + 1) (unfurl e q [])),
+        Nat.add_assoc (assay s (i + e + 1 + 1) (unfurl e q [])) (s (i + e + 1)) (s (i + 1)),
+        ← hg i]
+      show assay s (i + e + 1 + 1) (unfurl e q []) + s (i + e + 1 + 1)
+        = s (i + rungs e (q + 1) + 1)
+      rw [ih]
+      show s (i + e + 1 + rungs e q + 1) = s (i + (rungs e q + (e + 1)) + 1)
+      exact congrArg (fun m => s (m + 1)) (rung_shuffle i e (rungs e q))
+
+theorem purse_shuffle (i r g : Nat) : (i + r + 1) + g + 1 = (i + g + r + 1) + 1 := by
+  rw [Nat.add_assoc i r 1, Nat.add_assoc i (r + 1) g, Nat.add_comm (r + 1) g,
+    ← Nat.add_assoc i g (r + 1), ← Nat.add_assoc (i + g) r 1]
+
+theorem a_purse_and_a_stair_make_a_beacon (e : Nat) (s : Nat → Nat) (hg : Gnomon e s)
+    (q r i : Nat) : assay s (i + 1) (r :: unfurl e q []) + s (i + r + 2)
+      = s (i + rungs e q + r + 2) + s (i + r + 1) := by
+  show (s (i + 1 + r) + assay s (i + 1 + r + 1) (unfurl e q [])) + s (i + r + 2)
+    = s (i + rungs e q + r + 2) + s (i + r + 1)
+  rw [seat_shuffles i r]
+  have htr := the_train_climbs_the_rungs e s hg q (i + r + 1)
+  rw [Nat.add_assoc (s (i + r + 1)) (assay s (i + r + 1 + 1) (unfurl e q [])) (s (i + r + 2))]
+  show s (i + r + 1) + (assay s (i + r + 1 + 1) (unfurl e q []) + s (i + r + 1 + 1))
+    = s (i + rungs e q + r + 2) + s (i + r + 1)
+  rw [htr]
+  rw [Nat.add_comm (s (i + r + 1)) (s (i + r + 1 + rungs e q + 1))]
+  show s ((i + r + 1) + rungs e q + 1) + s (i + r + 1)
+    = s ((i + rungs e q + r + 1) + 1) + s (i + r + 1)
+  exact congrArg (fun m => s m + s (i + r + 1)) (purse_shuffle i r (rungs e q))
+
+theorem the_untick_opens_the_purse (e p : Nat) :
+    untick e [p + 1] = (brand e p).2 :: unfurl e (brand e p).1 [] := rfl
+
+/-- info: 'Foam.Bridges.rung_shuffle' does not depend on any axioms -/
+#guard_msgs in #print axioms rung_shuffle
+
+/-- info: 'Foam.Bridges.the_train_climbs_the_rungs' does not depend on any axioms -/
+#guard_msgs in #print axioms the_train_climbs_the_rungs
+
+/-- info: 'Foam.Bridges.purse_shuffle' does not depend on any axioms -/
+#guard_msgs in #print axioms purse_shuffle
+
+/-- info: 'Foam.Bridges.a_purse_and_a_stair_make_a_beacon' does not depend on any axioms -/
+#guard_msgs in #print axioms a_purse_and_a_stair_make_a_beacon
+
+/-- info: 'Foam.Bridges.the_untick_opens_the_purse' does not depend on any axioms -/
+#guard_msgs in #print axioms the_untick_opens_the_purse
+
+theorem the_untick_comes_home (e : Nat) (gs : List Nat) (hs : Spread e gs) :
+    untick e (tick e gs) = gs := by
+  have hgσ := the_stairway_holds_the_gnomon e
+  have hfσ := the_stairway_holds_the_floor e
+  have hts : Spread e (tick e gs) := the_tick_keeps_the_spread e gs hs
+  have hcount := the_untick_counts e (stair e) hgσ hfσ (tick e gs) hts
+    (the_tick_never_blanks e gs)
+  rw [the_tick_counts e (stair e) hgσ hfσ gs hs] at hcount
+  exact two_spread_pages_of_one_assay_are_one_page e (stair e) hgσ hfσ
+    (untick e (tick e gs)) gs (the_untick_stays_spread e (tick e gs) hts) hs
+    (Nat.succ.inj hcount)
+
+theorem the_crank_steps_back (e n : Nat) : crank e n = untick e (crank e (n + 1)) :=
+  (the_untick_comes_home e (crank e n) (the_dial_keeps_the_spread e n)).symm
+
+/-- info: 'Foam.Bridges.the_untick_comes_home' does not depend on any axioms -/
+#guard_msgs in #print axioms the_untick_comes_home
+
+/-- info: 'Foam.Bridges.the_crank_steps_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_crank_steps_back
+
+theorem the_tick_climbs_the_floor (e : Nat) : ∀ (k : Nat), k ≤ e → tick e [k] = [k + 1] := by
+  intro k hk
+  show cond (Nat.ble e k) (perch e [k]) (lift (k + 1) (perch e [])) = [k + 1]
+  cases at_the_rail k e hk with
+  | inl hlt =>
+      rw [ble_shuts_high k e hlt]
+      show lift (k + 1) [0] = [k + 1]
+      show [0 + (k + 1)] = [k + 1]
+      rw [Nat.zero_add (k + 1)]
+  | inr heq =>
+      subst heq
+      rw [ble_mirrors k]
+      show cond (Nat.beq k k) (lift (k + 1) (perch k [])) (0 :: (k - 1) :: []) = [k + 1]
+      rw [beq_mirrors k]
+      show [0 + (k + 1)] = [k + 1]
+      rw [Nat.zero_add (k + 1)]
+
+theorem the_tick_leaves_the_rail (e m : Nat) : tick e [e + 1 + m] = [0, e + m] := by
+  show cond (Nat.ble e (e + 1 + m)) (perch e [e + 1 + m])
+      (lift (e + 1 + m + 1) (perch e [])) = [0, e + m]
+  rw [seat_shuffles e m]
+  rw [Nat.ble_eq_true_of_le (Nat.le_of_succ_le (Nat.succ_le_succ (Nat.le_add_right e m)))]
+  show cond (Nat.beq (e + m + 1) e) (lift (e + 1) (perch e [])) (0 :: (e + m + 1 - 1) :: [])
+    = [0, e + m]
+  rw [beq_shuts_high e (e + m + 1)
+    (Nat.succ_le_succ (Nat.le_add_right e m))]
+  rfl
+
+/-- info: 'Foam.Bridges.the_tick_climbs_the_floor' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tick_climbs_the_floor
+
+/-- info: 'Foam.Bridges.the_tick_leaves_the_rail' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tick_leaves_the_rail
+
 end Foam.Bridges
