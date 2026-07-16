@@ -1340,4 +1340,58 @@ theorem the_tick_leaves_the_rail (e m : Nat) : tick e [e + 1 + m] = [0, e + m] :
 /-- info: 'Foam.Bridges.the_tick_leaves_the_rail' does not depend on any axioms -/
 #guard_msgs in #print axioms the_tick_leaves_the_rail
 
+theorem the_brand_steps_back (e p r : Nat) (h : (brand e (p + 1)).2 = r + 1) :
+    (brand e p).2 = r := by
+  cases hb : Nat.beq (brand e p).2 e with
+  | true =>
+      rw [brand_wraps e p hb] at h
+      exact nomatch h
+  | false =>
+      rw [brand_steps e p hb] at h
+      exact Nat.succ.inj h
+
+theorem the_brand_wraps_back (e p : Nat) (h : (brand e (p + 1)).2 = 0) :
+    (brand e p).2 = e := by
+  cases hb : Nat.beq (brand e p).2 e with
+  | true => exact Nat.eq_of_beq_eq_true hb
+  | false =>
+      rw [brand_steps e p hb] at h
+      exact nomatch h
+
+theorem the_brand_stays_under_its_seat (e p : Nat) : (brand e p).2 ≤ p := by
+  have hle : (brand e p).2 ≤ rungs e (brand e p).1 + (brand e p).2 :=
+    Nat.le_add_left (brand e p).2 (rungs e (brand e p).1)
+  rw [the_brand_reads_the_rungs e p] at hle
+  exact hle
+
+/-- info: 'Foam.Bridges.the_brand_steps_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brand_steps_back
+
+/-- info: 'Foam.Bridges.the_brand_wraps_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brand_wraps_back
+
+/-- info: 'Foam.Bridges.the_brand_stays_under_its_seat' does not depend on any axioms -/
+#guard_msgs in #print axioms the_brand_stays_under_its_seat
+
+theorem the_tick_tops_the_purse (e r q : Nat) (hr : r + 1 ≤ e) :
+    tick e ((r + 1) :: unfurl e q []) = [rungs e q + r + 2] := by
+  have hp : perch e (unfurl e q []) = [rungs e q] := the_perch_comes_home e q [] True.intro
+  show cond (Nat.ble e (r + 1)) (perch e ((r + 1) :: unfurl e q []))
+      (lift (r + 1 + 1) (perch e (unfurl e q []))) = [rungs e q + r + 2]
+  cases at_the_rail (r + 1) e hr with
+  | inl hlt =>
+      rw [ble_shuts_high (r + 1) e hlt, hp]
+      rfl
+  | inr heq =>
+      rw [heq, ble_mirrors e]
+      show cond (Nat.beq e e) (lift (e + 1) (perch e (unfurl e q [])))
+          (0 :: (e - 1) :: unfurl e q []) = [rungs e q + r + 2]
+      rw [beq_mirrors e, hp]
+      show [rungs e q + (e + 1)] = [rungs e q + r + 2]
+      rw [← heq]
+      rfl
+
+/-- info: 'Foam.Bridges.the_tick_tops_the_purse' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tick_tops_the_purse
+
 end Foam.Bridges
