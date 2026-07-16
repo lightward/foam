@@ -159,6 +159,18 @@ theorem scrying_the_vacancy_list {K : Type} [DecidableEq K]
    the_dark_never_runs_out nboard,
    no_board_resolves_an_open_world nboard⟩
 
+theorem the_loop_re_ups_at_the_dark_edge (board : List (Nat × Bool))
+    (b : Bool) :
+    ∃ k : Nat, tilt board k b = Tilt.vacancy
+      ∧ seatRead (land board k b) k = some b
+      ∧ (logbook (land board k b)).length = board.length + 1 := by
+  cases the_dark_never_runs_out board with
+  | intro k hk =>
+    exact ⟨k, (vacancy_is_unclaimed_ground board k b).mpr hk,
+      the_landing_is_readable board k b,
+      (every_page_has_a_reading (land board k b) :
+        (logbook (land board k b)).length = board.length + 1)⟩
+
 /-- info: 'Foam.Counter.the_scry_answers_any_arrival' does not depend on any axioms -/
 #guard_msgs in #print axioms the_scry_answers_any_arrival
 
@@ -188,6 +200,9 @@ theorem scrying_the_vacancy_list {K : Type} [DecidableEq K]
 
 /-- info: 'Foam.Counter.a_holding_series_stops_learning_once_resolved' does not depend on any axioms -/
 #guard_msgs in #print axioms a_holding_series_stops_learning_once_resolved
+
+/-- info: 'Foam.Counter.the_loop_re_ups_at_the_dark_edge' does not depend on any axioms -/
+#guard_msgs in #print axioms the_loop_re_ups_at_the_dark_edge
 
 /-- info: 'Foam.Counter.scrying_the_vacancy_list' does not depend on any axioms -/
 #guard_msgs in #print axioms scrying_the_vacancy_list
