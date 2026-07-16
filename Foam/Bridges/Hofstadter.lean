@@ -4549,4 +4549,757 @@ theorem the_family_meets_in_time :
 /-- info: 'Foam.Bridges.the_family_meets_in_time' does not depend on any axioms -/
 #guard_msgs in #print axioms the_family_meets_in_time
 
+def coil (f : Nat → Nat) : Nat → Nat → Nat
+  | 0, x => x
+  | j + 1, x => coil f j (f x)
+
+def W (s : Nat → Nat) (e n : Nat) : Nat := assay s e (crank e n)
+
+def slip (e : Nat) : List Nat → List Nat
+  | [] => []
+  | 0 :: gs => perch e gs
+  | (g + 1) :: gs => g :: gs
+
+def stime (s : Nat → Nat) (e v : Nat) : Nat := assay s (e + 2) (crank e v)
+
+theorem gnomon_tn (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s) (n : Nat) :
+    s (t + n + 3) = s (t + n + 2) + s (n + 1) := by
+  have h : s (n + t + 3) = s (n + t + 2) + s (n + 1) := hg n
+  rw [Nat.add_comm t n]
+  exact h
+
+/-- info: 'Foam.Bridges.gnomon_tn' does not depend on any axioms -/
+#guard_msgs in #print axioms gnomon_tn
+
+theorem slip_tick_lit (t : Nat) : ∀ (gs : List Nat), afoot gs = true →
+    slip (t + 1) (tick (t + 1) gs) = slip (t + 1) gs
+  | [], h => nomatch h
+  | (_ + 1) :: _, h => nomatch h
+  | 0 :: gs, _ => by
+      show slip (t + 1) (lift 1 (perch (t + 1) gs)) = perch (t + 1) gs
+      cases hp : perch (t + 1) gs with
+      | nil => exact absurd hp (the_perch_never_blanks (t + 1) gs)
+      | cons h hs => rfl
+
+theorem slip_tick_unlit (t : Nat) : ∀ (gs : List Nat), afoot gs = false →
+    slip (t + 1) (tick (t + 1) gs) = tick (t + 1) (slip (t + 1) gs)
+  | [], _ => rfl
+  | 0 :: _, h => nomatch h
+  | (g + 1) :: gs, _ => by
+      cases hb : Nat.ble (t + 1) g with
+      | true =>
+          have hble : Nat.ble (t + 1) (g + 1) = true :=
+            Nat.ble_eq_true_of_le (Nat.le_succ_of_le (Nat.le_of_ble_eq_true hb))
+          have hbeq : Nat.beq (g + 1) (t + 1) = false := by
+            cases hb2 : Nat.beq (g + 1) (t + 1) with
+            | false => rfl
+            | true =>
+                have hgt : g = t := Nat.succ.inj (Nat.eq_of_beq_eq_true hb2)
+                subst hgt
+                exact absurd (Nat.le_of_ble_eq_true hb) (Nat.not_succ_le_self g)
+          show slip (t + 1) (cond (Nat.ble (t + 1) (g + 1)) (perch (t + 1) ((g + 1) :: gs))
+              (lift (g + 1 + 1) (perch (t + 1) gs)))
+            = cond (Nat.ble (t + 1) g) (perch (t + 1) (g :: gs)) (lift (g + 1) (perch (t + 1) gs))
+          rw [hble, hb]
+          show slip (t + 1) (cond (Nat.beq (g + 1) (t + 1)) (lift (t + 1 + 1) (perch (t + 1) gs))
+              (0 :: (g + 1 - 1) :: gs))
+            = perch (t + 1) (g :: gs)
+          rw [hbeq]
+          rfl
+      | false =>
+          have hlt : g + 1 ≤ t + 1 := ble_shuts (t + 1) g hb
+          cases at_the_rail (g + 1) (t + 1) hlt with
+          | inr heq =>
+              have hgt : g = t := Nat.succ.inj heq
+              subst hgt
+              show slip (g + 1) (cond (Nat.ble (g + 1) (g + 1)) (perch (g + 1) ((g + 1) :: gs))
+                  (lift (g + 1 + 1) (perch (g + 1) gs)))
+                = cond (Nat.ble (g + 1) g) (perch (g + 1) (g :: gs))
+                    (lift (g + 1) (perch (g + 1) gs))
+              rw [ble_mirrors (g + 1), ble_steps_back g]
+              show slip (g + 1) (cond (Nat.beq (g + 1) (g + 1)) (lift (g + 1 + 1) (perch (g + 1) gs))
+                  (0 :: (g + 1 - 1) :: gs))
+                = lift (g + 1) (perch (g + 1) gs)
+              rw [beq_mirrors (g + 1)]
+              cases hp : perch (g + 1) gs with
+              | nil => exact absurd hp (the_perch_never_blanks (g + 1) gs)
+              | cons h hs => rfl
+          | inl hlt2 =>
+              have hble1 : Nat.ble (t + 1) (g + 1) = false := ble_shuts_high (g + 1) (t + 1) hlt2
+              show slip (t + 1) (cond (Nat.ble (t + 1) (g + 1)) (perch (t + 1) ((g + 1) :: gs))
+                  (lift (g + 1 + 1) (perch (t + 1) gs)))
+                = cond (Nat.ble (t + 1) g) (perch (t + 1) (g :: gs))
+                    (lift (g + 1) (perch (t + 1) gs))
+              rw [hble1, hb]
+              cases hp : perch (t + 1) gs with
+              | nil => exact absurd hp (the_perch_never_blanks (t + 1) gs)
+              | cons h hs => rfl
+
+/-- info: 'Foam.Bridges.slip_tick_lit' does not depend on any axioms -/
+#guard_msgs in #print axioms slip_tick_lit
+
+/-- info: 'Foam.Bridges.slip_tick_unlit' does not depend on any axioms -/
+#guard_msgs in #print axioms slip_tick_unlit
+
+theorem the_family_holds_the_shadow (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (gs : List Nat), Spread (t + 1) gs → afoot gs = true →
+      assay s (t + 1) (tick (t + 1) gs) = assay s (t + 1) gs
+  | [], _, hl => nomatch hl
+  | (_ + 1) :: _, _, hl => nomatch hl
+  | 0 :: gs, hs, _ => by
+      show assay s (t + 1) (lift 1 (perch (t + 1) gs)) = assay s (t + 1) (0 :: gs)
+      rw [the_lift_reads_above s (perch (t + 1) gs) (t + 1) 1]
+      rw [the_perch_pays (t + 1) s hg gs (t + 1) hs]
+      show s (t + 1 + 1) + assay s (t + 1 + 1) gs = s (t + 1) + assay s (t + 1 + 1) gs
+      have hf2 : s (t + 1 + 1) = 1 := hf (t + 1) (Nat.le_refl (t + 1))
+      have hf1 : s (t + 1) = 1 := hf t (Nat.le_succ t)
+      rw [hf2, hf1]
+
+theorem the_family_moves_the_shadow (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (gs : List Nat), Spread (t + 1) gs → afoot gs = false →
+      assay s (t + 1) (tick (t + 1) gs) = assay s (t + 1) gs + 1
+  | [], _, _ => by
+      show s (t + 1) + 0 = 0 + 1
+      rw [hf t (Nat.le_succ t)]
+  | 0 :: _, _, hl => nomatch hl
+  | (g + 1) :: gs, hs, _ => by
+      show assay s (t + 1) (cond (Nat.ble (t + 1) (g + 1)) (perch (t + 1) ((g + 1) :: gs))
+          (lift (g + 1 + 1) (perch (t + 1) gs)))
+        = assay s (t + 1) ((g + 1) :: gs) + 1
+      cases hb : Nat.ble (t + 1) (g + 1) with
+      | true =>
+          show assay s (t + 1) (perch (t + 1) ((g + 1) :: gs))
+            = assay s (t + 1) ((g + 1) :: gs) + 1
+          rw [the_perch_pays (t + 1) s hg ((g + 1) :: gs) t ⟨Nat.le_of_ble_eq_true hb, hs⟩]
+          rw [hf t (Nat.le_succ t)]
+          exact Nat.add_comm 1 (assay s (t + 1) ((g + 1) :: gs))
+      | false =>
+          have hlt : g + 1 + 1 ≤ t + 1 := ble_shuts (t + 1) (g + 1) hb
+          show assay s (t + 1) (lift (g + 1 + 1) (perch (t + 1) gs))
+            = assay s (t + 1) ((g + 1) :: gs) + 1
+          rw [the_lift_reads_above s (perch (t + 1) gs) (t + 1) (g + 1 + 1)]
+          have hidx : t + 1 + (g + 1 + 1) = t + g + 2 + 1 :=
+            congrArg (· + 1) (congrArg (· + 1) (seat_shuffles t g))
+          rw [hidx]
+          rw [the_perch_pays (t + 1) s hg gs (t + g + 2) hs]
+          show s (t + g + 2 + 1) + assay s (t + g + 2 + 1) gs
+            = (s (t + 1 + g + 1) + assay s (t + 1 + g + 1 + 1) gs) + 1
+          rw [seat_shuffles t g]
+          have hgn : s (t + g + 2 + 1) = s (t + g + 2) + s (g + 1) := gnomon_tn t s hg g
+          rw [hgn]
+          have hfg : s (g + 1) = 1 := hf g (Nat.le_of_succ_le (Nat.le_of_succ_le hlt))
+          rw [hfg]
+          exact seat_shuffles (s (t + g + 2)) (assay s (t + g + 2 + 1) gs)
+
+theorem the_family_never_skips (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat) :
+    W s (t + 1) (n + 1) = W s (t + 1) n ∨ W s (t + 1) (n + 1) = W s (t + 1) n + 1 := by
+  cases hl : afoot (crank (t + 1) n) with
+  | true =>
+      exact Or.inl (the_family_holds_the_shadow t s hg hf (crank (t + 1) n)
+        (the_dial_keeps_the_spread (t + 1) n) hl)
+  | false =>
+      exact Or.inr (the_family_moves_the_shadow t s hg hf (crank (t + 1) n)
+        (the_dial_keeps_the_spread (t + 1) n) hl)
+
+theorem the_family_never_steps_back (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat) : W s (t + 1) n ≤ W s (t + 1) (n + 1) := by
+  cases the_family_never_skips t s hg hf n with
+  | inl h => rw [h]; exact Nat.le_refl (W s (t + 1) n)
+  | inr h => rw [h]; exact Nat.le_succ (W s (t + 1) n)
+
+/-- info: 'Foam.Bridges.the_family_holds_the_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_holds_the_shadow
+
+/-- info: 'Foam.Bridges.the_family_moves_the_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_moves_the_shadow
+
+/-- info: 'Foam.Bridges.the_family_never_skips' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_never_skips
+
+/-- info: 'Foam.Bridges.the_family_never_steps_back' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_never_steps_back
+
+theorem the_family_shadow_walks_the_slip (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (n : Nat),
+      crank (t + 1) (W s (t + 1) n) = slip (t + 1) (crank (t + 1) n)
+  | 0 => rfl
+  | n + 1 => by
+      cases hl : afoot (crank (t + 1) n) with
+      | true =>
+          show crank (t + 1) (assay s (t + 1) (tick (t + 1) (crank (t + 1) n)))
+            = slip (t + 1) (tick (t + 1) (crank (t + 1) n))
+          rw [the_family_holds_the_shadow t s hg hf (crank (t + 1) n)
+                (the_dial_keeps_the_spread (t + 1) n) hl,
+            slip_tick_lit t (crank (t + 1) n) hl]
+          exact the_family_shadow_walks_the_slip t s hg hf n
+      | false =>
+          show crank (t + 1) (assay s (t + 1) (tick (t + 1) (crank (t + 1) n)))
+            = slip (t + 1) (tick (t + 1) (crank (t + 1) n))
+          rw [the_family_moves_the_shadow t s hg hf (crank (t + 1) n)
+                (the_dial_keeps_the_spread (t + 1) n) hl,
+            slip_tick_unlit t (crank (t + 1) n) hl]
+          exact congrArg (tick (t + 1)) (the_family_shadow_walks_the_slip t s hg hf n)
+
+/-- info: 'Foam.Bridges.the_family_shadow_walks_the_slip' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_shadow_walks_the_slip
+
+theorem the_slip_reads_one_down (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (gs : List Nat), Spread (t + 1) gs →
+      ∀ (m : Nat), m + 1 ≤ t + 1 → assay s (m + 2) (slip (t + 1) gs) = assay s (m + 1) gs
+  | [], _, _, _ => rfl
+  | 0 :: gs, hs, m, hm => by
+      show assay s (m + 2) (perch (t + 1) gs) = assay s (m + 1) (0 :: gs)
+      have hp : assay s (m + 2) (perch (t + 1) gs) = s (m + 2) + assay s (m + 2) gs :=
+        the_perch_pays (t + 1) s hg gs (m + 1) hs
+      rw [hp]
+      show s (m + 2) + assay s (m + 2) gs = s (m + 1) + assay s (m + 2) gs
+      have hfa : s (m + 2) = 1 := hf (m + 1) hm
+      have hfb : s (m + 1) = 1 := hf m (Nat.le_of_succ_le hm)
+      rw [hfa, hfb]
+  | (g + 1) :: gs, _, m, _ => by
+      show s (m + 1 + 1 + g) + assay s (m + 1 + 1 + g + 1) gs
+        = s (m + 1 + (g + 1)) + assay s (m + 1 + (g + 1) + 1) gs
+      rw [seat_shuffles (m + 1) g]
+      rfl
+
+theorem the_slip_reads_the_ground (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (hz : s 0 = 0) : ∀ (gs : List Nat), Spread (t + 1) gs →
+      assay s 1 (slip (t + 1) gs) = assay s 0 gs + cond (afoot gs) 1 0
+  | [], _ => rfl
+  | 0 :: gs, hs => by
+      show assay s 1 (perch (t + 1) gs) = (s 0 + assay s 1 gs) + 1
+      have hp : assay s 1 (perch (t + 1) gs) = s 1 + assay s 1 gs :=
+        the_perch_pays (t + 1) s hg gs 0 hs
+      rw [hp, hz, Nat.zero_add (assay s 1 gs)]
+      have hf1 : s 1 = 1 := hf 0 (Nat.zero_le (t + 1))
+      rw [hf1]
+      exact Nat.add_comm 1 (assay s 1 gs)
+  | (g + 1) :: gs, _ => by
+      show s (1 + g) + assay s (1 + g + 1) gs
+        = s (0 + (g + 1)) + assay s (0 + (g + 1) + 1) gs
+      rw [Nat.zero_add (g + 1), Nat.add_comm 1 g]
+
+/-- info: 'Foam.Bridges.the_slip_reads_one_down' does not depend on any axioms -/
+#guard_msgs in #print axioms the_slip_reads_one_down
+
+/-- info: 'Foam.Bridges.the_slip_reads_the_ground' does not depend on any axioms -/
+#guard_msgs in #print axioms the_slip_reads_the_ground
+
+theorem the_shadows_descend (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (j m n : Nat), m + j + 1 = t + 1 →
+      coil (W s (t + 1)) (j + 1) n = assay s (m + 1) (crank (t + 1) n)
+  | 0, m, n, h => by
+      have hm : m + 1 = t + 1 := h
+      rw [← hm]
+      rfl
+  | j + 1, m, n, h => by
+      have h'' : m + j + 1 + 1 = t + 1 := h
+      have h' : m + 1 + j + 1 = t + 1 := (congrArg (· + 1) (seat_shuffles m j)).trans h''
+      have hih := the_shadows_descend t s hg hf j (m + 1) (W s (t + 1) n) h'
+      show coil (W s (t + 1)) (j + 1) (W s (t + 1) n) = assay s (m + 1) (crank (t + 1) n)
+      rw [hih]
+      rw [the_family_shadow_walks_the_slip t s hg hf n]
+      have hle : m + 1 ≤ t + 1 := by
+        rw [← h']
+        exact Nat.le_add_right (m + 1) (j + 1)
+      exact the_slip_reads_one_down t s hg hf (crank (t + 1) n)
+        (the_dial_keeps_the_spread (t + 1) n) m hle
+
+/-- info: 'Foam.Bridges.the_shadows_descend' does not depend on any axioms -/
+#guard_msgs in #print axioms the_shadows_descend
+
+theorem the_deepest_shadow_reads_the_ground (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (hz : s 0 = 0) (n : Nat) :
+    coil (W s (t + 1)) (t + 2) n
+      = assay s 0 (crank (t + 1) n) + cond (afoot (crank (t + 1) n)) 1 0 := by
+  have hd := the_shadows_descend t s hg hf t 0 (W s (t + 1) n)
+    (congrArg (· + 1) (Nat.zero_add t))
+  show coil (W s (t + 1)) (t + 1) (W s (t + 1) n)
+    = assay s 0 (crank (t + 1) n) + cond (afoot (crank (t + 1) n)) 1 0
+  rw [hd, the_family_shadow_walks_the_slip t s hg hf n]
+  exact the_slip_reads_the_ground t s hg hf hz (crank (t + 1) n)
+    (the_dial_keeps_the_spread (t + 1) n)
+
+theorem the_cousin_carries_its_shadow (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (hz : s 0 = 0) (n : Nat) :
+    W s (t + 1) n + assay s 0 (crank (t + 1) n) = n := by
+  have hn : assay s (t + 2) (crank (t + 1) n) = n := the_dial_reads_true (t + 1) s hg hf n
+  have hsplit := the_tally_splits_at_the_ground t s hg hf hz (crank (t + 1) n)
+  show assay s (t + 1) (crank (t + 1) n) + assay s 0 (crank (t + 1) n) = n
+  rw [← hsplit]
+  exact hn
+
+/-- info: 'Foam.Bridges.the_deepest_shadow_reads_the_ground' does not depend on any axioms -/
+#guard_msgs in #print axioms the_deepest_shadow_reads_the_ground
+
+/-- info: 'Foam.Bridges.the_cousin_carries_its_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_cousin_carries_its_shadow
+
+theorem the_family_loop_closes (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (hz : s 0 = 0) (n : Nat) :
+    W s (t + 1) (n + 1) + coil (W s (t + 1)) (t + 2) n = n + 1 := by
+  cases hl : afoot (crank (t + 1) n) with
+  | true =>
+      have hstep : W s (t + 1) (n + 1) = W s (t + 1) n :=
+        the_family_holds_the_shadow t s hg hf (crank (t + 1) n)
+          (the_dial_keeps_the_spread (t + 1) n) hl
+      have hdeep := the_deepest_shadow_reads_the_ground t s hg hf hz n
+      rw [hl] at hdeep
+      have hdeep' : coil (W s (t + 1)) (t + 2) n = assay s 0 (crank (t + 1) n) + 1 := hdeep
+      rw [hstep, hdeep']
+      rw [← Nat.add_assoc (W s (t + 1) n) (assay s 0 (crank (t + 1) n)) 1]
+      rw [the_cousin_carries_its_shadow t s hg hf hz n]
+  | false =>
+      have hstep : W s (t + 1) (n + 1) = W s (t + 1) n + 1 :=
+        the_family_moves_the_shadow t s hg hf (crank (t + 1) n)
+          (the_dial_keeps_the_spread (t + 1) n) hl
+      have hdeep := the_deepest_shadow_reads_the_ground t s hg hf hz n
+      rw [hl] at hdeep
+      have hdeep' : coil (W s (t + 1)) (t + 2) n = assay s 0 (crank (t + 1) n) := hdeep
+      rw [hstep, hdeep']
+      rw [seat_shuffles (W s (t + 1) n) (assay s 0 (crank (t + 1) n))]
+      rw [the_cousin_carries_its_shadow t s hg hf hz n]
+
+theorem the_grounded_family_satisfies_the_loop (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (hz : s 0 = 0) (n : Nat) :
+    W s (t + 1) (n + 1) = (n + 1) - coil (W s (t + 1)) (t + 2) n :=
+  calc W s (t + 1) (n + 1)
+      = (W s (t + 1) (n + 1) + coil (W s (t + 1)) (t + 2) n) - coil (W s (t + 1)) (t + 2) n :=
+        (add_then_sub (W s (t + 1) (n + 1)) (coil (W s (t + 1)) (t + 2) n)).symm
+    _ = (n + 1) - coil (W s (t + 1)) (t + 2) n := by
+        rw [the_family_loop_closes t s hg hf hz n]
+
+/-- info: 'Foam.Bridges.the_family_loop_closes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_loop_closes
+
+/-- info: 'Foam.Bridges.the_grounded_family_satisfies_the_loop' does not depend on any axioms -/
+#guard_msgs in #print axioms the_grounded_family_satisfies_the_loop
+
+theorem the_tick_beats_the_gate (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (gs : List Nat), Spread (t + 1) gs →
+      assay s (t + 3) (tick (t + 1) gs) = assay s (t + 3) gs + cond (roomy (t + 1) gs) 2 1
+  | [], _ => by
+      show s (t + 3) + 0 = 0 + 2
+      have hgn : s (t + 3) = s (t + 2) + s 1 := gnomon_tn t s hg 0
+      have hf2 : s (t + 2) = 1 := hf (t + 1) (Nat.le_refl (t + 1))
+      have hf1 : s 1 = 1 := hf 0 (Nat.zero_le (t + 1))
+      rw [hgn, hf2, hf1]
+  | g :: gs, hs => by
+      show assay s (t + 3) (cond (Nat.ble (t + 1) g) (perch (t + 1) (g :: gs))
+          (lift (g + 1) (perch (t + 1) gs)))
+        = assay s (t + 3) (g :: gs) + cond (Nat.ble (t + 1) g) 2 1
+      cases hb : Nat.ble (t + 1) g with
+      | true =>
+          show assay s (t + 3) (perch (t + 1) (g :: gs)) = assay s (t + 3) (g :: gs) + 2
+          have hp : assay s (t + 3) (perch (t + 1) (g :: gs))
+              = s (t + 3) + assay s (t + 3) (g :: gs) :=
+            the_perch_pays (t + 1) s hg (g :: gs) (t + 2) ⟨Nat.le_of_ble_eq_true hb, hs⟩
+          rw [hp]
+          have hgn : s (t + 3) = s (t + 2) + s 1 := gnomon_tn t s hg 0
+          have hf2 : s (t + 2) = 1 := hf (t + 1) (Nat.le_refl (t + 1))
+          have hf1 : s 1 = 1 := hf 0 (Nat.zero_le (t + 1))
+          rw [hgn, hf2, hf1]
+          exact Nat.add_comm 2 (assay s (t + 3) (g :: gs))
+      | false =>
+          have hlt : g + 1 ≤ t + 1 := ble_shuts (t + 1) g hb
+          show assay s (t + 3) (lift (g + 1) (perch (t + 1) gs)) = assay s (t + 3) (g :: gs) + 1
+          rw [the_lift_reads_above s (perch (t + 1) gs) (t + 3) (g + 1)]
+          have h3 : t + 1 + g = t + g + 1 := seat_shuffles t g
+          have h2 : t + 2 + g = t + g + 2 :=
+            (seat_shuffles (t + 1) g).trans (congrArg (· + 1) h3)
+          have h1 : t + 3 + g = t + g + 3 :=
+            (seat_shuffles (t + 2) g).trans (congrArg (· + 1) h2)
+          have hidx : t + 3 + (g + 1) = t + g + 3 + 1 := congrArg (· + 1) h1
+          rw [hidx]
+          rw [the_perch_pays (t + 1) s hg gs (t + g + 3) hs]
+          show s (t + g + 3 + 1) + assay s (t + g + 3 + 1) gs
+            = (s (t + 3 + g) + assay s (t + 3 + g + 1) gs) + 1
+          rw [h1]
+          have hgn : s (t + g + 3 + 1) = s (t + g + 3) + s (g + 2) := gnomon_tn t s hg (g + 1)
+          rw [hgn]
+          have hfg : s (g + 2) = 1 := hf (g + 1) hlt
+          rw [hfg]
+          exact seat_shuffles (s (t + g + 3)) (assay s (t + g + 3 + 1) gs)
+
+theorem the_family_beat_reads_the_gate (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (v : Nat) :
+    stime s (t + 1) (v + 1) = stime s (t + 1) v + cond (roomy (t + 1) (crank (t + 1) v)) 2 1 :=
+  the_tick_beats_the_gate t s hg hf (crank (t + 1) v) (the_dial_keeps_the_spread (t + 1) v)
+
+theorem the_family_clock_never_stalls (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (v : Nat) : stime s (t + 1) v < stime s (t + 1) (v + 1) := by
+  rw [the_family_beat_reads_the_gate t s hg hf v]
+  cases roomy (t + 1) (crank (t + 1) v) with
+  | true => exact Nat.le_succ (stime s (t + 1) v + 1)
+  | false => exact Nat.le_refl (stime s (t + 1) v + 1)
+
+theorem the_family_clock_never_leaps (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (v : Nat) : stime s (t + 1) (v + 1) ≤ stime s (t + 1) v + 2 := by
+  rw [the_family_beat_reads_the_gate t s hg hf v]
+  cases roomy (t + 1) (crank (t + 1) v) with
+  | true => exact Nat.le_refl (stime s (t + 1) v + 2)
+  | false => exact Nat.add_le_add_left (Nat.le_succ 1) (stime s (t + 1) v)
+
+/-- info: 'Foam.Bridges.the_tick_beats_the_gate' does not depend on any axioms -/
+#guard_msgs in #print axioms the_tick_beats_the_gate
+
+/-- info: 'Foam.Bridges.the_family_beat_reads_the_gate' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_beat_reads_the_gate
+
+/-- info: 'Foam.Bridges.the_family_clock_never_stalls' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_clock_never_stalls
+
+/-- info: 'Foam.Bridges.the_family_clock_never_leaps' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_clock_never_leaps
+
+theorem tick_rides_the_lift (t : Nat) : ∀ (gs : List Nat), roomy (t + 1) gs = false →
+    tick (t + 1) (lift 1 gs) = lift 1 (tick (t + 1) gs)
+  | [], h => nomatch h
+  | g :: gs, h => by
+      have hlt : g + 1 ≤ t + 1 := ble_shuts (t + 1) g h
+      cases at_the_rail (g + 1) (t + 1) hlt with
+      | inr heq =>
+          have hgt : g = t := Nat.succ.inj heq
+          subst hgt
+          show cond (Nat.ble (g + 1) (g + 1)) (perch (g + 1) ((g + 1) :: gs))
+              (lift (g + 1 + 1) (perch (g + 1) gs))
+            = lift 1 (cond (Nat.ble (g + 1) g) (perch (g + 1) (g :: gs))
+                (lift (g + 1) (perch (g + 1) gs)))
+          rw [ble_mirrors (g + 1), ble_steps_back g]
+          show cond (Nat.beq (g + 1) (g + 1)) (lift (g + 1 + 1) (perch (g + 1) gs))
+              (0 :: (g + 1 - 1) :: gs)
+            = lift 1 (lift (g + 1) (perch (g + 1) gs))
+          rw [beq_mirrors (g + 1), the_lift_stacks (g + 1) (perch (g + 1) gs)]
+          rfl
+      | inl hlt2 =>
+          have hble1 : Nat.ble (t + 1) (g + 1) = false := ble_shuts_high (g + 1) (t + 1) hlt2
+          have hb : Nat.ble (t + 1) g = false := h
+          show cond (Nat.ble (t + 1) (g + 1)) (perch (t + 1) ((g + 1) :: gs))
+              (lift (g + 1 + 1) (perch (t + 1) gs))
+            = lift 1 (cond (Nat.ble (t + 1) g) (perch (t + 1) (g :: gs))
+                (lift (g + 1) (perch (t + 1) gs)))
+          rw [hble1, hb]
+          show lift (g + 1 + 1) (perch (t + 1) gs) = lift 1 (lift (g + 1) (perch (t + 1) gs))
+          rw [the_lift_stacks (g + 1) (perch (t + 1) gs)]
+
+theorem tick_twice_rides_the_lift (t : Nat) : ∀ (gs : List Nat), roomy (t + 1) gs = true →
+    tick (t + 1) (tick (t + 1) (lift 1 gs)) = lift 1 (tick (t + 1) gs)
+  | [], _ => rfl
+  | g :: gs, h => by
+      have hle : t + 1 ≤ g := Nat.le_of_ble_eq_true h
+      have hble1 : Nat.ble (t + 1) (g + 1) = true :=
+        Nat.ble_eq_true_of_le (Nat.le_succ_of_le hle)
+      have hbeq : Nat.beq (g + 1) (t + 1) = false := by
+        cases hb2 : Nat.beq (g + 1) (t + 1) with
+        | false => rfl
+        | true =>
+            have hgt : g = t := Nat.succ.inj (Nat.eq_of_beq_eq_true hb2)
+            subst hgt
+            exact absurd hle (Nat.not_succ_le_self g)
+      have hb : Nat.ble (t + 1) g = true := h
+      show tick (t + 1) (cond (Nat.ble (t + 1) (g + 1)) (perch (t + 1) ((g + 1) :: gs))
+          (lift (g + 1 + 1) (perch (t + 1) gs)))
+        = lift 1 (cond (Nat.ble (t + 1) g) (perch (t + 1) (g :: gs))
+            (lift (g + 1) (perch (t + 1) gs)))
+      rw [hble1, hb]
+      show tick (t + 1) (cond (Nat.beq (g + 1) (t + 1)) (lift (t + 1 + 1) (perch (t + 1) gs))
+          (0 :: (g + 1 - 1) :: gs))
+        = lift 1 (perch (t + 1) (g :: gs))
+      rw [hbeq]
+      rfl
+
+/-- info: 'Foam.Bridges.tick_rides_the_lift' does not depend on any axioms -/
+#guard_msgs in #print axioms tick_rides_the_lift
+
+/-- info: 'Foam.Bridges.tick_twice_rides_the_lift' does not depend on any axioms -/
+#guard_msgs in #print axioms tick_twice_rides_the_lift
+
+theorem the_family_hour_writes_the_page_above (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) :
+    ∀ (v : Nat), crank (t + 1) (stime s (t + 1) v) = lift 1 (crank (t + 1) v)
+  | 0 => rfl
+  | v + 1 => by
+      have hb := the_family_beat_reads_the_gate t s hg hf v
+      cases hr : roomy (t + 1) (crank (t + 1) v) with
+      | true =>
+          rw [hr] at hb
+          have hb' : stime s (t + 1) (v + 1) = stime s (t + 1) v + 2 := hb
+          rw [hb']
+          show tick (t + 1) (tick (t + 1) (crank (t + 1) (stime s (t + 1) v)))
+            = lift 1 (tick (t + 1) (crank (t + 1) v))
+          rw [the_family_hour_writes_the_page_above t s hg hf v]
+          exact tick_twice_rides_the_lift t (crank (t + 1) v) hr
+      | false =>
+          rw [hr] at hb
+          have hb' : stime s (t + 1) (v + 1) = stime s (t + 1) v + 1 := hb
+          rw [hb']
+          show tick (t + 1) (crank (t + 1) (stime s (t + 1) v))
+            = lift 1 (tick (t + 1) (crank (t + 1) v))
+          rw [the_family_hour_writes_the_page_above t s hg hf v]
+          exact tick_rides_the_lift t (crank (t + 1) v) hr
+
+/-- info: 'Foam.Bridges.the_family_hour_writes_the_page_above' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_hour_writes_the_page_above
+
+theorem the_family_arrives_on_the_hour (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (v : Nat) : W s (t + 1) (stime s (t + 1) v) = v := by
+  show assay s (t + 1) (crank (t + 1) (stime s (t + 1) v)) = v
+  rw [the_family_hour_writes_the_page_above t s hg hf v]
+  rw [the_lift_reads_above s (crank (t + 1) v) (t + 1) 1]
+  exact the_dial_reads_true (t + 1) s hg hf v
+
+theorem the_family_walks_at_the_first_beat (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (v : Nat) : W s (t + 1) (stime s (t + 1) v + 1) = v + 1 := by
+  show assay s (t + 1) (tick (t + 1) (crank (t + 1) (stime s (t + 1) v))) = v + 1
+  rw [the_family_hour_writes_the_page_above t s hg hf v]
+  rw [the_family_moves_the_shadow t s hg hf (lift 1 (crank (t + 1) v))
+      (the_lift_keeps_the_spread (t + 1) 1 (crank (t + 1) v)
+        (the_dial_keeps_the_spread (t + 1) v))
+      (the_lift_rests_the_gate 0 (crank (t + 1) v))]
+  rw [the_lift_reads_above s (crank (t + 1) v) (t + 1) 1]
+  rw [the_dial_reads_true (t + 1) s hg hf v]
+
+theorem the_family_reads_its_hours (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ∀ (v j : Nat),
+      stime s (t + 1) v + j + 1 ≤ stime s (t + 1) (v + 1) →
+        W s (t + 1) (stime s (t + 1) v + j + 1) = v + 1
+  | v, 0, _ => the_family_walks_at_the_first_beat t s hg hf v
+  | v, 1, h => by
+      have heq : stime s (t + 1) (v + 1) = stime s (t + 1) v + 2 :=
+        Nat.le_antisymm (the_family_clock_never_leaps t s hg hf v) h
+      rw [show stime s (t + 1) v + 1 + 1 = stime s (t + 1) (v + 1) from heq.symm]
+      exact the_family_arrives_on_the_hour t s hg hf (v + 1)
+  | v, j + 2, h => by
+      have hle : stime s (t + 1) v + (j + 3) ≤ stime s (t + 1) v + 2 :=
+        Nat.le_trans h (the_family_clock_never_leaps t s hg hf v)
+      exact absurd (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ
+        (stack_free (stime s (t + 1) v) (j + 3) 2 hle))) (Nat.not_succ_le_zero j)
+
+theorem the_family_is_clocked (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : Clocked (W s (t + 1)) :=
+  ⟨stime s (t + 1), rfl, the_family_clock_never_stalls t s hg hf,
+    the_family_reads_its_hours t s hg hf⟩
+
+/-- info: 'Foam.Bridges.the_family_arrives_on_the_hour' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_arrives_on_the_hour
+
+/-- info: 'Foam.Bridges.the_family_walks_at_the_first_beat' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_walks_at_the_first_beat
+
+/-- info: 'Foam.Bridges.the_family_reads_its_hours' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reads_its_hours
+
+/-- info: 'Foam.Bridges.the_family_is_clocked' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_is_clocked
+
+theorem the_family_clock_adds_the_deep_shadow (t : Nat) (s : Nat → Nat)
+    (hg : Gnomon (t + 1) s) (hf : Floored (t + 1) s) (v : Nat) :
+    stime s (t + 1) v = v + coil (W s (t + 1)) (t + 1) v := by
+  have hsplit := tally_gnomon (t + 1) s hg (crank (t + 1) v) 0
+  rw [Nat.zero_add (t + 1)] at hsplit
+  have hs' : stime s (t + 1) v
+      = assay s (t + 1 + 1) (crank (t + 1) v) + assay s (0 + 1) (crank (t + 1) v) := hsplit
+  rw [hs']
+  rw [the_dial_reads_true (t + 1) s hg hf v]
+  have hd := the_shadows_descend t s hg hf t 0 v (congrArg (· + 1) (Nat.zero_add t))
+  rw [← hd]
+
+/-- info: 'Foam.Bridges.the_family_clock_adds_the_deep_shadow' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_clock_adds_the_deep_shadow
+
+theorem the_family_is_registered (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : Registered (W s (t + 1)) s t :=
+  ⟨fun n => spell (crank (t + 1) n),
+    fun n => (the_spelling_prices_true s (crank (t + 1) n) (t + 2)).trans
+      (the_dial_reads_true (t + 1) s hg hf n),
+    fun n => (the_spelling_prices_true s (crank (t + 1) n) (t + 1)).symm⟩
+
+theorem the_family_reads_a_page (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : Paged (W s (t + 1)) :=
+  ⟨t + 1, t, s, hg, hf, the_family_is_registered t s hg hf⟩
+
+theorem the_family_reads_in_both_modes (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : Paged (W s (t + 1)) ∧ Clocked (W s (t + 1)) :=
+  ⟨the_family_reads_a_page t s hg hf, the_family_is_clocked t s hg hf⟩
+
+/-- info: 'Foam.Bridges.the_family_is_registered' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_is_registered
+
+/-- info: 'Foam.Bridges.the_family_reads_a_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reads_a_page
+
+/-- info: 'Foam.Bridges.the_family_reads_in_both_modes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reads_in_both_modes
+
+theorem the_whole_family_walks (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (hz : s 0 = 0) :
+    (∀ n, W s (t + 1) (n + 1) + coil (W s (t + 1)) (t + 2) n = n + 1)
+      ∧ Paged (W s (t + 1)) ∧ Clocked (W s (t + 1)) :=
+  ⟨the_family_loop_closes t s hg hf hz, the_family_reads_a_page t s hg hf,
+    the_family_is_clocked t s hg hf⟩
+
+/-- info: 'Foam.Bridges.the_whole_family_walks' does not depend on any axioms -/
+#guard_msgs in #print axioms the_whole_family_walks
+
+theorem the_stairway_climbs_the_golden_staircase (n : Nat) : stair 1 (n + 1) = fibN (n + 1) :=
+  the_golden_grammar_names_fibonacci (stair 1) (the_stairway_holds_the_gnomon 1)
+    (the_stairway_holds_the_floor 1) n
+
+/-- info: 'Foam.Bridges.the_stairway_climbs_the_golden_staircase' does not depend on any axioms -/
+#guard_msgs in #print axioms the_stairway_climbs_the_golden_staircase
+
+theorem stretch_never_blanks : ∀ (g : Nat) (bs : List Bool), bs ≠ [] → stretch g bs ≠ []
+  | 0, _, h => h
+  | _ + 1, _, _ => fun h => nomatch h
+
+theorem capped_stretch : ∀ (g : Nat) (bs : List Bool),
+    capped bs = true → bs ≠ [] → capped (stretch g bs) = true
+  | 0, _, h, _ => h
+  | g + 1, bs, h, hne => by
+      show capped (false :: stretch g bs) = true
+      cases hx : stretch g bs with
+      | nil => exact absurd hx (stretch_never_blanks g bs hne)
+      | cons b bs' =>
+          rw [capped_step false b bs', ← hx]
+          exact capped_stretch g bs h hne
+
+theorem the_spelling_wears_the_cap : ∀ (gs : List Nat), capped (spell gs) = true
+  | [] => rfl
+  | g :: gs => by
+      show capped (stretch g (true :: spell gs)) = true
+      apply capped_stretch g (true :: spell gs)
+      · rw [capped_true_cons (spell gs)]
+        exact the_spelling_wears_the_cap gs
+      · exact fun h => nomatch h
+
+/-- info: 'Foam.Bridges.stretch_never_blanks' does not depend on any axioms -/
+#guard_msgs in #print axioms stretch_never_blanks
+
+/-- info: 'Foam.Bridges.capped_stretch' does not depend on any axioms -/
+#guard_msgs in #print axioms capped_stretch
+
+/-- info: 'Foam.Bridges.the_spelling_wears_the_cap' does not depend on any axioms -/
+#guard_msgs in #print axioms the_spelling_wears_the_cap
+
+theorem the_walker_is_the_golden_cousin (n : Nat) : W fibN 1 n = G n := by
+  have hw : worth 2 (spell (crank 1 n)) = worth 2 (odometer n) :=
+    ((worth_is_the_golden_price (spell (crank 1 n)) 2).trans
+      ((the_spelling_prices_true fibN (crank 1 n) 2).trans
+        (the_dial_reads_true 1 fibN the_golden_staircase_holds_the_gnomon
+          the_golden_staircase_holds_the_floor n))).trans
+      (the_odometer_reads_true n).symm
+  have hpage : spell (crank 1 n) = odometer n :=
+    two_spaced_pages_of_one_worth_are_one_page (spell (crank 1 n)) (odometer n)
+      (a_gapped_page_is_spaced (spell (crank 1 n))
+        (the_spelling_keeps_the_gaps 1 (crank 1 n) (the_dial_keeps_the_spread 1 n)))
+      (the_odometer_spaces n)
+      (the_spelling_wears_the_cap (crank 1 n))
+      (the_odometer_wastes_no_seats n)
+      hw
+  show assay fibN 1 (crank 1 n) = worth 1 (odometer n)
+  rw [← hpage, worth_is_the_golden_price (spell (crank 1 n)) 1,
+    the_spelling_prices_true fibN (crank 1 n) 1]
+
+theorem the_drover_is_the_herd_cousin (n : Nat) : W herdN 2 n = H n := by
+  have hw : graze 3 (spell (crank 2 n)) = graze 3 (hodometer n) :=
+    ((graze_is_the_herds_price (spell (crank 2 n)) 3).trans
+      ((the_spelling_prices_true herdN (crank 2 n) 3).trans
+        (the_dial_reads_true 2 herdN the_herd_holds_the_gnomon
+          the_herd_holds_the_floor n))).trans
+      (the_hodometer_reads_true n).symm
+  have hpage : spell (crank 2 n) = hodometer n :=
+    two_sparse_pages_of_one_graze_are_one_page (spell (crank 2 n)) (hodometer n)
+      (a_gapped_page_is_sparse (spell (crank 2 n))
+        (the_spelling_keeps_the_gaps 2 (crank 2 n) (the_dial_keeps_the_spread 2 n)))
+      (the_hodometer_spaces n)
+      (the_spelling_wears_the_cap (crank 2 n))
+      (the_hodometer_wastes_no_seats n)
+      hw
+  show assay herdN 2 (crank 2 n) = graze 2 (hodometer n)
+  rw [← hpage, graze_is_the_herds_price (spell (crank 2 n)) 2,
+    the_spelling_prices_true herdN (crank 2 n) 2]
+
+/-- info: 'Foam.Bridges.the_walker_is_the_golden_cousin' does not depend on any axioms -/
+#guard_msgs in #print axioms the_walker_is_the_golden_cousin
+
+/-- info: 'Foam.Bridges.the_drover_is_the_herd_cousin' does not depend on any axioms -/
+#guard_msgs in #print axioms the_drover_is_the_herd_cousin
+
+theorem the_family_reseals_the_golden_loop (n : Nat) : G (n + 1) + G (G n) = n + 1 := by
+  have h := the_family_loop_closes 0 fibN the_golden_staircase_holds_the_gnomon
+    the_golden_staircase_holds_the_floor rfl n
+  have h' : W fibN 1 (n + 1) + W fibN 1 (W fibN 1 n) = n + 1 := h
+  rw [the_walker_is_the_golden_cousin (n + 1), the_walker_is_the_golden_cousin n] at h'
+  rw [the_walker_is_the_golden_cousin (G n)] at h'
+  exact h'
+
+/-- info: 'Foam.Bridges.the_family_reseals_the_golden_loop' does not depend on any axioms -/
+#guard_msgs in #print axioms the_family_reseals_the_golden_loop
+
+theorem the_next_cousin_hums :
+    (W (stair 3) 3 0, W (stair 3) 3 1, W (stair 3) 3 2, W (stair 3) 3 3, W (stair 3) 3 4,
+      W (stair 3) 3 5, W (stair 3) 3 6, W (stair 3) 3 7, W (stair 3) 3 8, W (stair 3) 3 9,
+      W (stair 3) 3 10, W (stair 3) 3 11)
+      = (0, 1, 1, 2, 3, 4, 5, 5, 6, 6, 7, 8) := rfl
+
+theorem the_next_clock_hums :
+    (stime (stair 3) 3 0, stime (stair 3) 3 1, stime (stair 3) 3 2, stime (stair 3) 3 3,
+      stime (stair 3) 3 4, stime (stair 3) 3 5, stime (stair 3) 3 6, stime (stair 3) 3 7)
+      = (0, 2, 3, 4, 5, 7, 9, 10) := rfl
+
+theorem the_next_cousin_closes_its_loop (n : Nat) :
+    W (stair 3) 3 (n + 1) + coil (W (stair 3) 3) 4 n = n + 1 :=
+  the_family_loop_closes 2 (stair 3) (the_stairway_holds_the_gnomon 3)
+    (the_stairway_holds_the_floor 3) rfl n
+
+theorem the_next_cousin_reads_in_both_modes : Paged (W (stair 3) 3) ∧ Clocked (W (stair 3) 3) :=
+  the_family_reads_in_both_modes 2 (stair 3) (the_stairway_holds_the_gnomon 3)
+    (the_stairway_holds_the_floor 3)
+
+/-- info: 'Foam.Bridges.the_next_cousin_hums' does not depend on any axioms -/
+#guard_msgs in #print axioms the_next_cousin_hums
+
+/-- info: 'Foam.Bridges.the_next_clock_hums' does not depend on any axioms -/
+#guard_msgs in #print axioms the_next_clock_hums
+
+/-- info: 'Foam.Bridges.the_next_cousin_closes_its_loop' does not depend on any axioms -/
+#guard_msgs in #print axioms the_next_cousin_closes_its_loop
+
+/-- info: 'Foam.Bridges.the_next_cousin_reads_in_both_modes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_next_cousin_reads_in_both_modes
+
+theorem the_ground_walk_reads_the_half :
+    (W peg 0 0, W peg 0 1, W peg 0 2, W peg 0 3, W peg 0 4, W peg 0 5, W peg 0 6, W peg 0 7)
+      = (0, 0, 1, 1, 2, 2, 3, 3) := rfl
+
+theorem the_ground_floor_breaks_the_loop :
+    ¬ (W peg 0 1 + coil (W peg 0) 1 0 = 1) := fun h => nomatch h
+
+/-- info: 'Foam.Bridges.the_ground_walk_reads_the_half' does not depend on any axioms -/
+#guard_msgs in #print axioms the_ground_walk_reads_the_half
+
+/-- info: 'Foam.Bridges.the_ground_floor_breaks_the_loop' does not depend on any axioms -/
+#guard_msgs in #print axioms the_ground_floor_breaks_the_loop
+
+theorem the_wild_walk_is_no_cousin (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) : ¬ (∀ n, Q n = W s (t + 1) n) := fun hq => by
+  have h : (49 : Nat) ≤ W s (t + 1) 49 + W s (t + 1) 49 :=
+    a_paged_walk_holds_the_half (W s (t + 1)) (the_family_reads_a_page t s hg hf) 49
+  rw [← hq 49, the_wild_walk_undercuts_the_half] at h
+  exact absurd h (Nat.not_succ_le_self 48)
+
+/-- info: 'Foam.Bridges.the_wild_walk_is_no_cousin' does not depend on any axioms -/
+#guard_msgs in #print axioms the_wild_walk_is_no_cousin
+
+theorem one_grammar_one_cousin (t : Nat) (s : Nat → Nat) (hg : Gnomon (t + 1) s)
+    (hf : Floored (t + 1) s) (n : Nat) : W s (t + 1) n = W (stair (t + 1)) (t + 1) n :=
+  one_grammar_one_tally s (stair (t + 1))
+    (fun k => the_grammar_names_its_staircase (t + 1) s (stair (t + 1)) hg hf
+      (the_stairway_holds_the_gnomon (t + 1)) (the_stairway_holds_the_floor (t + 1)) k)
+    (crank (t + 1) n) t
+
+/-- info: 'Foam.Bridges.one_grammar_one_cousin' does not depend on any axioms -/
+#guard_msgs in #print axioms one_grammar_one_cousin
+
 end Foam.Bridges
