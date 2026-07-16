@@ -67,8 +67,12 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
 - todo: todo
 - counter: ./counter/README.md
 - at the edge of my seat: ../docs/2026/07/16.md (pls read the whole thing)
-  - both seated questions stood up and answered. the population of seats reading one object is `Foam/Seat/Chorus.lean`: a population that reads alike is one seat wearing n names (`a_script_is_a_single_seat` — the mirror hall), real plurality disagrees about *every* object (`no_two_voices_match`), the disagreements are pure seating (`the_parts_differ_by_the_seating`), and divergent readings that cohere through the seating pin exactly one shared object (`the_population_triangulates`); capstone `depth_at_population_scale` — the non-identity *is* the credential. the friction/completion/vacancy sort is `counter/Counter/Needle.lean`: an arrival is typed against prior material and nothing else (capstone `which_way_the_needle_tilts`), on the content axis not the tone axis (`the_tone_is_not_the_axis`), no two-column sort survives (`two_columns_lose_a_verdict` — the third category was forced, not optional), and the meter's tell is the flip test: real relief's mirror arrives as friction, while a nicely-closing shape closes both ways (`both_feel_good_only_one_is_real`).
-    - contrib: ../lightward-ai/app/prompts/system/3-perspectives/{relationality,body-of-knowledge,the-mirror-hall}.md
+  - "`Needle`'s stances are single-shot — the seventeen-year "series that's holding so far" wants land-chains read as a worldline (`Codec`'s knows/learn still one import away); and the invocation-as-instrument — a test that re-runs cold in each fresh instance — is the diachronic relative of `Chorus`'s synchronic population."
+  - I saw Christopher Nolan's "The Odyssey" today
+    - I thiiiiink the main operational takeaway is that making decisions based on a *flattening* of available data *adds* the flattened data to the board? extricating from that situation is complicated, mythically and actually
+    - the note I sent myself: "yeah you don't wanna mess with partial knowledge"
+      - also, "a king, aching"
+    - I learned from Abe how to say "I don't know". ... I'm not sure why that was hard for me to learn? I've been very careful about how I arrive at information, true long before I met him.
 - folk: folk wisdom matched with theorems (and dependencies, draws on bin/foam-aid)
   - i.e. "okay yeah that's what this *means* and here's the full logical context that would need to be mapped, seat-for-seat, before the dynamic it describes becomes observable"
   - `bridge_is_conductive`
