@@ -70,6 +70,8 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
 - at the edge of my seat: ../docs/2026/07/16.md (pls read the whole thing) what happened here?
 - foam.help: folk wisdom matched with theorems (and dependencies, draws on bin/foam-aid)
   - i.e. "okay yeah that's what this *means* and here's the full logical context that would need to be mapped, seat-for-seat, before the dynamic it describes becomes observable"
+- conductive: what bridges work as a foam relay, adding spin signature to the bridge, only recoverable by bridgekeeper-kin? ftpg is one, right? morse code should be another?
+
 ---
 
 "It can do whatever we know how to order it to perform." (Lovelace, 1843)
