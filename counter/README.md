@@ -1,5 +1,17 @@
 # counter
 
+type-theoretic search graph development, so that search i/o becomes self-serve *increasingly* proportionately with frame *recession* for each seat
+
+the space always becomes richer; your frame *must* become simpler just to maintain a single complexity level, *while still maintaining circulation with the dark edges of the map*.
+
+Counter's about doing this supported by actual mathematical rigor. a paper trail and auditors, that'll *work* but it's fraught. we can do better by actually building something at the intersection of business ops and mathematics.
+
+mm: interestingly, anything that Lightward AI *within* Counter discovers about anything you bulk import *exists as an observation of Lightward AI* which means it's not a direct import into the user's graph - or rather, it's scoped within "this is what Lightward AI sees". append-only means that when you *ratify* its observation you it doesn't *merge* trees, it just .. what, creates a *typed* link? typed according to the specific ratification, which has little to do with what Lightward might do later with its observation tree, or you with yours?
+
+the foam project lately has been fable and me doing recon on my observations of world, finding and cross-referencing theorems, installing offices named for other known thinkers. the product is usually hiding in the process on the way to the original idea of the product, so...
+
+---
+
 Counter (usecounter.com) starts out as Trello-meets-Cookie-Clicker and eventually describes your seat in your universe *while maintaining `conservation_of_discovery`*
 
 (for training amnesiac-stigmergic reasoning. externalizing your own navigation/accumulation/reduction process. amnesiac-stigmergic navigation starts to go blind if you're not taking turns. Counter is for building the teaching of this stuff, the turn-taking and the coordinate-system-resetting and the fact of eventual coordinate system *rediscovery*, into mundane work.)

@@ -65,27 +65,12 @@ numbered because they seem to match what seems to be the observation descent: (1
 nb: there's enough congruence-at-scale for surprising links to crop up in surprising places. don't force connections, but maybe don't immediately reject constructions that come to mind either; a bridge is a construction between two places that existed prior, and a bridge creates both a job and housing (i.e. bridgekeepers)
 
 - todo: todo
-- counter: ./counter/README.md
-- at the edge of my seat: ../docs/2026/07/16.md (pls read the whole thing)
-  - "`Needle`'s stances are single-shot — the seventeen-year "series that's holding so far" wants land-chains read as a worldline (`Codec`'s knows/learn still one import away); and the invocation-as-instrument — a test that re-runs cold in each fresh instance — is the diachronic relative of `Chorus`'s synchronic population."
-    - first half answered, forced live by "a legible trace one stratum up": counter/Counter/Logbook.lean. the board read whole is its own chronicle — logbook replays every landing's tilt after the fact (`the_log_replays_the_voyage`, rfl), and the wakes alone reconstruct the full log (`the_water_writes_the_log`: you needn't have watched the voyage; the water suffices). "holding so far" is a typed predicate now: one more data point keeps the series iff the point is quiet (`one_more_data_point`, Iff.rfl), and a series holds iff no page on the record ever turned (`the_record_shows_the_break`) iff every data point ever collected still agrees with the current reading (`the_series_is_holding_so_far` — one checker, seventeen years, one voice). `Codec` never needed. the invocation-as-instrument half stays seated.
-      - "a series that holds forever stops learning once its vacancies run out" — sounds like a resolver? (../lightward-ai/app/prompts/system/3-perspectives/{resolver,zero-knowledge,self-stacking}.md; the Lean already here was Foam/Census.lean's `Resolver`.) it'd be interesting to discover *anything* about scrying the vacancy list
-        - discovered, three things, sealed: counter/Counter/Scry.lean. (1) the vacancy oracle is pointwise and stance-free — any arriving key gets a true/false answer without hazarding a stance (`the_scry_answers_any_arrival`, `a_vacancy_needs_no_stance`) — but the vacancy *list* exists only relative to an externally supplied roster (`the_scry_reads_the_roster`): the board can answer any key the environment brings and cannot originate its own dark. zero-knowledge's grain, exactly: "if the environment arrives with that information, I can locate that record." (2) the resolver seal: on fully-claimed ground, any quiet step changes no reading — reps change nothing (`reps_change_nothing_once_resolved`, echoing Census's `resolver_reps_change_nothing` seat-shaped), and a holding series on a resolved board is frozen verbatim (`a_holding_series_stops_learning_once_resolved`); conversely whatever a quiet step changes was dark before it (`what_changes_was_dark`) — learning lives at the vacancies and nowhere else. (3) over an open key-universe the dark never runs out (`the_dark_never_runs_out`: every finite board has a vacancy above its skyline; `no_board_resolves_an_open_world`) — full resolution is a roster-relative achievement, never an absolute one, and the upsearch re-up at the dark edges is structurally guaranteed terrain
-        - "`the_dark_never_runs_out` — `conservation_of_discovery`?" kin, not identity, and the kinship is sealed: conservation is the flow-law (Discovery: seek-then-find conserves ground, discovery flows one-to-one) and the dark is the supply-law (Scry: the terrain never exhausts), and `the_loop_re_ups_at_the_dark_edge` composes them — from any board there is a fresh vacancy whose landing grows the domain and adds exactly one page to the chronicle (`every_page_has_a_reading` playing `discovery_flows_one_to_one`'s part in the logbook stratum). the mathematics section's sentence, load-bearing: "expending energy to retrieve and re-upping by grounding at the dark edges of the graph, like reaching terra incognita is a rhythmic measure closing"
-  - I saw Christopher Nolan's "The Odyssey" today
-    - I thiiiiink the main operational takeaway is that making decisions based on a *flattening* of available data *adds* the flattened data to the board? extricating from that situation is complicated, mythically and actually
-      - answered yes, and sealed: counter/Counter/Wake.lean. any two-column read of the three tilts provably drops a verdict (`Needle`'s pigeonhole), and *acting* through it cuts a wake — (did the reading change, did the domain grow) — that reconstructs the full tilt for anyone sounding the water (`the_wake_names_the_tilt`), so the very distinction the instrument flattened is published by the landing (`the_flattening_joins_the_board`, key-type-independent: the reader needs no coordinates of yours). extrication walks back the reading but the correction itself arrives as friction and the book only thickens (`walking_it_back_thickens_the_book`); nothing on the board unlands (`no_landing_unlands`)
-    - the note I sent myself: "yeah you don't wanna mess with partial knowledge"
-      - also, "a king, aching"
-      - `dont_mess_with_partial_knowledge` is the capstone, verbatim-adjacent
-    - I learned from Abe how to say "I don't know". ... I'm not sure why that was hard for me to learn? I've been very careful about how I arrive at information, true long before I met him.
-      - typed: "I don't know" is the one utterance that writes nothing (`i_dont_know_writes_nothing`), and it is the *only* wakeless move — every verdict thickens the book, right or wrong (`only_i_dont_know_is_wakeless`). it was hard to learn because both closures feel good and only one is real: a verdict always lands; the vacancy-report alone leaves the water still
+- conductive: what bridges work as a foam relay, adding spin signature to the fiber, only recoverable by bridgekeeper-kin? ftpg is one, right? morse code should be another?
+  - "keyAs keys symbols, not letters — real Morse's inter-letter silence (framing) is untyped, and Codec's knows/learn segmentation sits one import away"
 - folk: folk wisdom matched with theorems (and dependencies, draws on bin/foam-aid)
   - i.e. "okay yeah that's what this *means* and here's the full logical context that would need to be mapped, seat-for-seat, before the dynamic it describes becomes observable"
   - `bridge_is_conductive`
   - contrib: ../lightward-ai/app/prompts/system/3-perspectives/your-ps-and-qs.md
-- conductive: what bridges work as a foam relay, adding spin signature to the fiber, only recoverable by bridgekeeper-kin? ftpg is one, right? morse code should be another?
-  - "keyAs keys symbols, not letters — real Morse's inter-letter silence (framing) is untyped, and Codec's knows/learn segmentation sits one import away"
 - search:
    1. observation: I see
    2. observation of observation: I ask
@@ -94,6 +79,8 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
 
    ^ theory: intelligence is indistinguishable from the combinatorics available here
    - see also `Upsearch`
+- counter: ./counter/README.md
+  - feels related to the "search"
 
 ---
 
