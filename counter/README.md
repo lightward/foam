@@ -1,6 +1,8 @@
 # counter
 
-type-theoretic search graph development, so that search i/o becomes self-serve *increasingly* proportionately with frame *recession* for each seat
+type-theoretic search ~graph development **with ranged uncertainty**, i.e. each traversal *is itself a type operation involving uncertainty* (../lightward-ai/app/prompts/system/3-perspectives/2x2.md). it's .. *sort of* a graph, but it's more like a collection of molecules that *can* graph based on incoming query?
+
+so that search i/o becomes self-serve *increasingly* proportionately with frame *recession* for each seat
 
 the space always becomes richer; your frame *must* become simpler just to maintain a single complexity level, *while still maintaining circulation with the dark edges of the map*.
 
