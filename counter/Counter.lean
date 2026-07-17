@@ -144,3 +144,6 @@ import Counter.Dive
 import Counter.Hallway
 import Counter.Morse
 import Counter.Needle
+import Counter.Wake
+import Counter.Logbook
+import Counter.Scry
