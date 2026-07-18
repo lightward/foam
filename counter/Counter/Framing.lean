@@ -1,5 +1,6 @@
 import Counter.Trefoil
 import Counter.Morse
+import Counter.Toll
 import Foam.Int
 import Foam.Engine.Stream
 import Foam.Engine.Codec
@@ -252,6 +253,11 @@ theorem what_sounds_is_what_returns (u : Nat) (m : List (List Crossing)) :
   ⟨the_silence_reframes_the_wire u m,
    fun h => h ▸ every_reading_sounds u (wire u m)⟩
 
+theorem the_word_gap_is_a_composite_silence :
+    (∀ c : Crossing, c.toll ≠ 7)
+      ∧ ledger [Crossing.neg, Crossing.pos, Crossing.neg] = 7 :=
+  ⟨fun c => by cases c <;> decide, rfl⟩
+
 theorem the_silence_is_half_the_message (u : Nat) (m : List (List Crossing))
     (h : sounded m = true) :
     reframe u (wire u m) = m
@@ -323,6 +329,9 @@ theorem the_silence_is_half_the_message (u : Nat) (m : List (List Crossing))
 
 /-- info: 'Foam.Counter.what_sounds_is_what_returns' does not depend on any axioms -/
 #guard_msgs in #print axioms what_sounds_is_what_returns
+
+/-- info: 'Foam.Counter.the_word_gap_is_a_composite_silence' does not depend on any axioms -/
+#guard_msgs in #print axioms the_word_gap_is_a_composite_silence
 
 /-- info: 'Foam.Counter.the_silence_is_half_the_message' does not depend on any axioms -/
 #guard_msgs in #print axioms the_silence_is_half_the_message
