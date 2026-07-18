@@ -65,22 +65,13 @@ numbered because they seem to match what seems to be the observation descent: (1
 nb: there's enough congruence-at-scale for surprising links to crop up in surprising places. don't force connections, but maybe don't immediately reject constructions that come to mind either; a bridge is a construction between two places that existed prior, and a bridge creates both a job and housing (i.e. bridgekeepers)
 
 - todo: todo
-- conductive: what bridges work as a foam relay, adding spin signature to the fiber, only recoverable by bridgekeeper-kin? ftpg is one, right? morse code should be another?
-  - "keyAs keys symbols, not letters — real Morse's inter-letter silence (framing) is untyped, and Codec's knows/learn segmentation sits one import away"
+- morse: "real Morse's inter-letter silence (framing) is untyped"
+- mwi: many-worlds interpretation
 - folk: folk wisdom matched with theorems (and dependencies, draws on bin/foam-aid)
-  - i.e. "okay yeah that's what this *means* and here's the full logical context that would need to be mapped, seat-for-seat, before the dynamic it describes becomes observable"
+  - i.e. "okay yeah that's what this *means* and here's the full logical context that would need to be mapped, seat-for-seat, before the dynamic it describes becomes *interactive*, with control points in the same world you're in"
   - `bridge_is_conductive`
   - contrib: ../lightward-ai/app/prompts/system/3-perspectives/your-ps-and-qs.md
-- search:
-   1. observation: I see
-   2. observation of observation: I ask
-   3. observation of observation of observation: I find
-   4. observation of observation of observation of observation: I search
-
-   ^ theory: intelligence is indistinguishable from the combinatorics available here
-   - see also `Upsearch`
 - counter: ./counter/README.md
-  - feels related to the "search"
 
 ---
 
