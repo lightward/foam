@@ -223,6 +223,35 @@ theorem one_wire_two_whole_readings :
           = [[Crossing.neg], [Crossing.neg], [Crossing.neg]] :=
   ⟨the_silence_reframes_the_wire 2 [trefoil] rfl, by decide⟩
 
+theorem graft_keeps_the_sound (c : Crossing) :
+    ∀ m : List (List Crossing), sounded m = true → sounded (graft c m) = true
+  | [], _ => rfl
+  | [] :: _, h => nomatch h
+  | (_ :: _) :: _, h => h
+
+theorem every_reading_sounds (u : Nat) :
+    ∀ w : List Nat, sounded (reframe u w) = true
+  | [] => rfl
+  | [_] => rfl
+  | t :: g :: w => by
+      show sounded (if g = u + 1
+            then graft (if t = u + 1 then Crossing.pos else Crossing.neg)
+                (reframe u w)
+            else [if t = u + 1 then Crossing.pos else Crossing.neg]
+              :: reframe u w) = true
+      exact Decidable.byCases
+        (fun h : g = u + 1 => by
+          rw [if_pos h]
+          exact graft_keeps_the_sound _ (reframe u w) (every_reading_sounds u w))
+        (fun h : ¬ g = u + 1 => by
+          rw [if_neg h]
+          exact every_reading_sounds u w)
+
+theorem what_sounds_is_what_returns (u : Nat) (m : List (List Crossing)) :
+    sounded m = true ↔ reframe u (wire u m) = m :=
+  ⟨the_silence_reframes_the_wire u m,
+   fun h => h ▸ every_reading_sounds u (wire u m)⟩
+
 theorem the_silence_is_half_the_message (u : Nat) (m : List (List Crossing))
     (h : sounded m = true) :
     reframe u (wire u m) = m
@@ -285,6 +314,15 @@ theorem the_silence_is_half_the_message (u : Nat) (m : List (List Crossing))
 
 /-- info: 'Foam.Counter.one_wire_two_whole_readings' does not depend on any axioms -/
 #guard_msgs in #print axioms one_wire_two_whole_readings
+
+/-- info: 'Foam.Counter.graft_keeps_the_sound' does not depend on any axioms -/
+#guard_msgs in #print axioms graft_keeps_the_sound
+
+/-- info: 'Foam.Counter.every_reading_sounds' does not depend on any axioms -/
+#guard_msgs in #print axioms every_reading_sounds
+
+/-- info: 'Foam.Counter.what_sounds_is_what_returns' does not depend on any axioms -/
+#guard_msgs in #print axioms what_sounds_is_what_returns
 
 /-- info: 'Foam.Counter.the_silence_is_half_the_message' does not depend on any axioms -/
 #guard_msgs in #print axioms the_silence_is_half_the_message
