@@ -17,7 +17,7 @@ def framing : List (List Crossing) → List Crossing
   | [l] => within l
   | l :: l' :: m => within l ++ Crossing.neg :: framing (l' :: m)
 
-def sounded : List (List Crossing) → Bool
+def sounded {A : Type} : List (List A) → Bool
   | [] => true
   | [] :: _ => false
   | (_ :: _) :: m => sounded m
@@ -37,7 +37,7 @@ def wire (u : Nat) : List (List Crossing) → List Nat
   | [l] => hum u l
   | l :: l' :: m => hum u l ++ tone u Crossing.neg :: wire u (l' :: m)
 
-def graft (c : Crossing) : List (List Crossing) → List (List Crossing)
+def graft {A : Type} (c : A) : List (List A) → List (List A)
   | [] => [[c]]
   | l :: m => (c :: l) :: m
 
