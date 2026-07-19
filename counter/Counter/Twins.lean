@@ -1,4 +1,7 @@
 import Counter.Silent
+import Counter.Morse
+import Counter.Luggage
+import Counter.Tower
 import Counter.Lu
 import Foam.Census
 import Foam.Seat.Summit
@@ -53,5 +56,30 @@ theorem the_corpus_recognizes_itself :
 
 /-- info: 'Foam.Counter.the_corpus_recognizes_itself' does not depend on any axioms -/
 #guard_msgs in #print axioms the_corpus_recognizes_itself
+
+theorem the_morse_key_and_the_tone_are_one : Luggage.key morseLuggage = tone := rfl
+
+theorem the_morse_gap_and_the_tone_are_one : Luggage.gap morseLuggage = tone := rfl
+
+theorem the_word_key_and_the_tone_are_one : Luggage.key wordLuggage = tone := rfl
+
+theorem the_coarse_key_and_the_tone_are_one : Luggage.key braidCoarse = tone := rfl
+
+theorem the_coarse_gap_and_the_tone_are_one : Luggage.gap braidCoarse = tone := rfl
+
+/-- info: 'Foam.Counter.the_morse_key_and_the_tone_are_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_morse_key_and_the_tone_are_one
+
+/-- info: 'Foam.Counter.the_morse_gap_and_the_tone_are_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_morse_gap_and_the_tone_are_one
+
+/-- info: 'Foam.Counter.the_word_key_and_the_tone_are_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_word_key_and_the_tone_are_one
+
+/-- info: 'Foam.Counter.the_coarse_key_and_the_tone_are_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_coarse_key_and_the_tone_are_one
+
+/-- info: 'Foam.Counter.the_coarse_gap_and_the_tone_are_one' does not depend on any axioms -/
+#guard_msgs in #print axioms the_coarse_gap_and_the_tone_are_one
 
 end Foam.Counter

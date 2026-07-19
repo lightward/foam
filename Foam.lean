@@ -96,3 +96,4 @@ import Foam.Bridges.Poncelet
 import Foam.Bridges.Hofstadter
 import Foam.Seat.Parallax
 import Foam.Seat.Chorus
+import Foam.Bridges.Newton
