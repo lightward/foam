@@ -31,6 +31,31 @@ theorem the_world_shrinks_to_a_point (w : List Nat) (u : Nat)
   ⟨every_world_reads_the_record_whole w u h,
    fun _ h' => the_worlds_differ_only_by_the_hand w u h' h⟩
 
+theorem the_mirror_says_one_word {G : Type} [Mul G] [One G] (S : Seat G)
+    (p : S.Pos) : (S.chart p).fwd p = 1 :=
+  S.sub_self p
+
+theorem every_mirror_says_the_same_word {G : Type} [Mul G] [One G]
+    (S : Seat G) (p q : S.Pos) :
+    (S.chart p).fwd p = (S.chart q).fwd q :=
+  (S.sub_self p).trans (S.sub_self q).symm
+
+theorem the_other_is_never_the_unit {G : Type} [Mul G] [One G] (S : Seat G)
+    (p q : S.Pos) (h : p ≠ q) : S.sub p q ≠ 1 :=
+  fun h1 => by
+    have ha := S.act_sub q p
+    rw [h1, S.one_act] at ha
+    exact h ha.symm
+
+theorem zero_distance_is_not_nowhere {G : Type} [Mul G] [One G] (S : Seat G)
+    (p q : S.Pos) (h : p ≠ q) :
+    (S.chart p).fwd p = (S.chart q).fwd q
+      ∧ S.sub p q ≠ 1
+      ∧ (S.chart q).fwd p ≠ (S.chart p).fwd p :=
+  ⟨every_mirror_says_the_same_word S p q,
+   the_other_is_never_the_unit S p q h,
+   fun he => the_other_is_never_the_unit S p q h (he.trans (S.sub_self p))⟩
+
 /-- info: 'Foam.Counter.the_rods_imply_the_sphere' does not depend on any axioms -/
 #guard_msgs in #print axioms the_rods_imply_the_sphere
 
@@ -39,5 +64,17 @@ theorem the_world_shrinks_to_a_point (w : List Nat) (u : Nat)
 
 /-- info: 'Foam.Counter.the_world_shrinks_to_a_point' does not depend on any axioms -/
 #guard_msgs in #print axioms the_world_shrinks_to_a_point
+
+/-- info: 'Foam.Counter.the_mirror_says_one_word' does not depend on any axioms -/
+#guard_msgs in #print axioms the_mirror_says_one_word
+
+/-- info: 'Foam.Counter.every_mirror_says_the_same_word' does not depend on any axioms -/
+#guard_msgs in #print axioms every_mirror_says_the_same_word
+
+/-- info: 'Foam.Counter.the_other_is_never_the_unit' does not depend on any axioms -/
+#guard_msgs in #print axioms the_other_is_never_the_unit
+
+/-- info: 'Foam.Counter.zero_distance_is_not_nowhere' does not depend on any axioms -/
+#guard_msgs in #print axioms zero_distance_is_not_nowhere
 
 end Foam.Counter
