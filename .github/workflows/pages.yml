@@ -1,14 +1,3 @@
-# pages — the relief, published as ephemera.
-#
-# the html is a READING, not a holding: it is never committed, only emitted —
-# recomputed from the record on every update of main and served at foam.is.
-# the site's law is counter/Counter/Tower.lean:the_coarse_luggage_reads_the_relief;
-# this workflow is that theorem's ops face (readings are derived; the record
-# stays the record; the projection cannot perturb what it projects).
-#
-# build: bin/foam-relief emits wiki/ (untracked, .gitignored), then the
-# standard Jekyll build renders the READMEs and carries wiki/ through as
-# static passthrough. deploy: the official Pages artifact flow.
 name: pages
 
 on:
@@ -30,8 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: emit the relief (html-as-ephemera)
-        run: bin/foam-relief
+      - name: emit the wiki
+        run: bin/foam-wiki
+      - name: promote wiki to root
+        run: mv wiki/* . && rm -rf wiki
       - uses: actions/configure-pages@v5
       - uses: actions/jekyll-build-pages@v1
         with:
