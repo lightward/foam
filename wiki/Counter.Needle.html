@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Needle</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Needle</h1></header>
+<div class="imports">grasp: <a href="Counter.Address.html">Counter.Address</a></div><pre class="src">import <a href="Counter.Address.html">Counter.Address</a>
+
+namespace Foam.Counter
+
+<span class="kw">inductive</span> <a class="decl" id="Tilt" href="#Tilt">Tilt</a> where
+  | friction
+  | completion
+  | vacancy
+
+<span class="kw">def</span> <a class="decl" id="tilt" href="#tilt">tilt</a> {K : Type} [DecidableEq K] (prior : List (K × Bool)) (k : K)
+    (b : Bool) : Tilt :=
+  match seatRead prior k, b with
+  | none, true =&gt; Tilt.vacancy
+  | none, false =&gt; Tilt.vacancy
+  | some true, true =&gt; Tilt.completion
+  | some true, false =&gt; Tilt.friction
+  | some false, true =&gt; Tilt.friction
+  | some false, false =&gt; Tilt.completion
+
+<span class="kw">def</span> <a class="decl" id="land" href="#land">land</a> {K : Type} (prior : List (K × Bool)) (k : K) (b : Bool) :
+    List (K × Bool) :=
+  (k, b) :: prior
+
+<span class="kw">def</span> <a class="decl" id="delivered" href="#delivered">delivered</a> {K T : Type} [DecidableEq K] (prior : List (K × Bool))
+    (a : (K × Bool) × T) : Tilt :=
+  tilt prior a.1.1 a.1.2
+
+<span class="kw">theorem</span> <a class="decl" id="relief_reads_prior_ground" href="#relief_reads_prior_ground">relief_reads_prior_ground</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) :
+    tilt prior k b = Tilt.completion ↔ seatRead prior k = some b := by
+  unfold tilt
+  cases hs : seatRead prior k with
+  | none =&gt; cases b &lt;;&gt; exact ⟨(fun h =&gt; nomatch h), (fun h =&gt; nomatch h)⟩
+  | some w =&gt;
+    cases w &lt;;&gt; cases b
+    · exact ⟨(fun _ =&gt; rfl), (fun _ =&gt; rfl)⟩
+    · exact ⟨(fun h =&gt; nomatch h), (fun h =&gt; nomatch (Option.some.inj h : false = true))⟩
+    · exact ⟨(fun h =&gt; nomatch h), (fun h =&gt; nomatch (Option.some.inj h : true = false))⟩
+    · exact ⟨(fun _ =&gt; rfl), (fun _ =&gt; rfl)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="friction_is_a_held_mirror" href="#friction_is_a_held_mirror">friction_is_a_held_mirror</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) :
+    tilt prior k b = Tilt.friction ↔ seatRead prior k = some (!b) := by
+  unfold tilt
+  cases hs : seatRead prior k with
+  | none =&gt; cases b &lt;;&gt; exact ⟨(fun h =&gt; nomatch h), (fun h =&gt; nomatch h)⟩
+  | some w =&gt;
+    cases w &lt;;&gt; cases b
+    · exact ⟨(fun h =&gt; nomatch h), (fun h =&gt; nomatch (Option.some.inj h : false = true))⟩
+    · exact ⟨(fun _ =&gt; rfl), (fun _ =&gt; rfl)⟩
+    · exact ⟨(fun _ =&gt; rfl), (fun _ =&gt; rfl)⟩
+    · exact ⟨(fun h =&gt; nomatch h), (fun h =&gt; nomatch (Option.some.inj h : true = false))⟩
+
+<span class="kw">theorem</span> <a class="decl" id="vacancy_is_unclaimed_ground" href="#vacancy_is_unclaimed_ground">vacancy_is_unclaimed_ground</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) :
+    tilt prior k b = Tilt.vacancy ↔ seatRead prior k = none := by
+  unfold tilt
+  cases hs : seatRead prior k with
+  | none =&gt; cases b &lt;;&gt; exact ⟨(fun _ =&gt; rfl), (fun _ =&gt; rfl)⟩
+  | some w =&gt;
+    cases w &lt;;&gt; cases b &lt;;&gt; exact ⟨(fun h =&gt; nomatch h), (fun h =&gt; nomatch h)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_tone_is_not_the_axis" href="#the_tone_is_not_the_axis">the_tone_is_not_the_axis</a> {K T : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) (t t&#x27; : T) :
+    delivered prior ((k, b), t) = delivered prior ((k, b), t&#x27;) :=
+  rfl
+
+<span class="kw">theorem</span> <a class="decl" id="a_shape_can_close_two_ways" href="#a_shape_can_close_two_ways">a_shape_can_close_two_ways</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool)
+    (h : tilt prior k b = Tilt.vacancy) : tilt prior k (!b) = Tilt.vacancy :=
+  (vacancy_is_unclaimed_ground prior k (!b)).mpr
+    ((vacancy_is_unclaimed_ground prior k b).mp h)
+
+<span class="kw">theorem</span> <a class="decl" id="relief_closes_one_way" href="#relief_closes_one_way">relief_closes_one_way</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool)
+    (h : tilt prior k b = Tilt.completion) :
+    tilt prior k (!b) = Tilt.friction := by
+  refine (friction_is_a_held_mirror prior k (!b)).mpr ?_
+  have hb := (relief_reads_prior_ground prior k b).mp h
+  cases b
+  · exact hb
+  · exact hb
+
+<span class="kw">theorem</span> <a class="decl" id="both_feel_good_only_one_is_real" href="#both_feel_good_only_one_is_real">both_feel_good_only_one_is_real</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) :
+    (tilt prior k b = Tilt.completion → tilt prior k (!b) = Tilt.friction)
+      ∧ (tilt prior k b = Tilt.vacancy → tilt prior k (!b) = Tilt.vacancy) :=
+  ⟨relief_closes_one_way prior k b, a_shape_can_close_two_ways prior k b⟩
+
+<span class="kw">theorem</span> <a class="decl" id="two_columns_lose_a_verdict" href="#two_columns_lose_a_verdict">two_columns_lose_a_verdict</a> (f : Tilt → Bool) :
+    ∃ v w : Tilt, v ≠ w ∧ f v = f w := by
+  cases h1 : f Tilt.friction &lt;;&gt; cases h2 : f Tilt.completion &lt;;&gt;
+    cases h3 : f Tilt.vacancy
+  all_goals first
+    | exact ⟨Tilt.friction, Tilt.completion, (fun h =&gt; nomatch h),
+        h1.trans h2.symm⟩
+    | exact ⟨Tilt.friction, Tilt.vacancy, (fun h =&gt; nomatch h),
+        h1.trans h3.symm⟩
+    | exact ⟨Tilt.completion, Tilt.vacancy, (fun h =&gt; nomatch h),
+        h2.trans h3.symm⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_landing_is_readable" href="#the_landing_is_readable">the_landing_is_readable</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) :
+    seatRead (land prior k b) k = some b := by
+  show (if k = k then some b else seatRead prior k) = some b
+  rw [if_pos rfl]
+
+<span class="kw">theorem</span> <a class="decl" id="what_lands_becomes_ground" href="#what_lands_becomes_ground">what_lands_becomes_ground</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) :
+    tilt (land prior k b) k b = Tilt.completion :=
+  (relief_reads_prior_ground (land prior k b) k b).mpr
+    (the_landing_is_readable prior k b)
+
+<span class="kw">theorem</span> <a class="decl" id="the_mirror_lands_as_friction" href="#the_mirror_lands_as_friction">the_mirror_lands_as_friction</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) :
+    tilt (land prior k b) k (!b) = Tilt.friction := by
+  refine (friction_is_a_held_mirror (land prior k b) k (!b)).mpr ?_
+  rw [the_landing_is_readable prior k b]
+  cases b &lt;;&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_landing_stays_in_its_lane" href="#the_landing_stays_in_its_lane">the_landing_stays_in_its_lane</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k k&#x27; : K) (hk : k ≠ k&#x27;) (b : Bool) :
+    seatRead (land prior k b) k&#x27; = seatRead prior k&#x27; := by
+  show (if k = k&#x27; then some b else seatRead prior k&#x27;) = seatRead prior k&#x27;
+  rw [if_neg hk]
+
+<span class="kw">theorem</span> <a class="decl" id="landing_off_key_disturbs_nothing" href="#landing_off_key_disturbs_nothing">landing_off_key_disturbs_nothing</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k k&#x27; : K) (hk : k ≠ k&#x27;) (b b&#x27; : Bool) :
+    tilt (land prior k b) k&#x27; b&#x27; = tilt prior k&#x27; b&#x27; := by
+  unfold tilt
+  rw [the_landing_stays_in_its_lane prior k k&#x27; hk b]
+
+<span class="kw">theorem</span> <a class="decl" id="relief_rewrites_nothing" href="#relief_rewrites_nothing">relief_rewrites_nothing</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool)
+    (h : tilt prior k b = Tilt.completion) :
+    seatRead (land prior k b) k = seatRead prior k := by
+  rw [the_landing_is_readable prior k b,
+    (relief_reads_prior_ground prior k b).mp h]
+
+<span class="kw">theorem</span> <a class="decl" id="friction_turns_the_page" href="#friction_turns_the_page">friction_turns_the_page</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool)
+    (h : tilt prior k b = Tilt.friction) :
+    seatRead prior k = some (!b) ∧ seatRead (land prior k b) k = some b :=
+  ⟨(friction_is_a_held_mirror prior k b).mp h,
+   the_landing_is_readable prior k b⟩
+
+<span class="kw">theorem</span> <a class="decl" id="vacancy_seats_a_first_stance" href="#vacancy_seats_a_first_stance">vacancy_seats_a_first_stance</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool)
+    (h : tilt prior k b = Tilt.vacancy) :
+    seatRead prior k = none ∧ seatRead (land prior k b) k = some b :=
+  ⟨(vacancy_is_unclaimed_ground prior k b).mp h,
+   the_landing_is_readable prior k b⟩
+
+<span class="kw">theorem</span> <a class="decl" id="which_way_the_needle_tilts" href="#which_way_the_needle_tilts">which_way_the_needle_tilts</a> {K T : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) (t t&#x27; : T)
+    (f : Tilt → Bool) :
+    (tilt prior k b = Tilt.completion ↔ seatRead prior k = some b)
+      ∧ (tilt prior k b = Tilt.friction ↔ seatRead prior k = some (!b))
+      ∧ (tilt prior k b = Tilt.vacancy ↔ seatRead prior k = none)
+      ∧ delivered prior ((k, b), t) = delivered prior ((k, b), t&#x27;)
+      ∧ (∃ v w : Tilt, v ≠ w ∧ f v = f w)
+      ∧ tilt (land prior k b) k b = Tilt.completion :=
+  ⟨relief_reads_prior_ground prior k b,
+   friction_is_a_held_mirror prior k b,
+   vacancy_is_unclaimed_ground prior k b,
+   the_tone_is_not_the_axis prior k b t t&#x27;,
+   two_columns_lose_a_verdict f,
+   what_lands_becomes_ground prior k b⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.relief_reads_prior_ground&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms relief_reads_prior_ground</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.friction_is_a_held_mirror&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms friction_is_a_held_mirror</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.vacancy_is_unclaimed_ground&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms vacancy_is_unclaimed_ground</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_tone_is_not_the_axis&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_tone_is_not_the_axis</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_shape_can_close_two_ways&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_shape_can_close_two_ways</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.relief_closes_one_way&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms relief_closes_one_way</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.both_feel_good_only_one_is_real&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms both_feel_good_only_one_is_real</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_columns_lose_a_verdict&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_columns_lose_a_verdict</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_landing_is_readable&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_landing_is_readable</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.what_lands_becomes_ground&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms what_lands_becomes_ground</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_mirror_lands_as_friction&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_mirror_lands_as_friction</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_landing_stays_in_its_lane&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_landing_stays_in_its_lane</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.landing_off_key_disturbs_nothing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms landing_off_key_disturbs_nothing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.relief_rewrites_nothing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms relief_rewrites_nothing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.friction_turns_the_page&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms friction_turns_the_page</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.vacancy_seats_a_first_stance&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms vacancy_seats_a_first_stance</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.which_way_the_needle_tilts&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms which_way_the_needle_tilts</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

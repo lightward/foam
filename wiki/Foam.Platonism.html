@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Platonism</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Platonism</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Epoch.html">Foam.Seat.Epoch</a> · <a href="Foam.Golden.html">Foam.Golden</a></div><pre class="src">import <a href="Foam.Seat.Epoch.html">Foam.Seat.Epoch</a>
+import <a href="Foam.Golden.html">Foam.Golden</a>
+
+namespace Foam
+
+variable {State : Type}
+
+<span class="kw">def</span> <a class="decl" id="Beholder.dress" href="#Beholder.dress">Beholder.dress</a> (b : Beholder State) : Beholder (State × Int) where
+  Probe := b.Probe
+  Ans := b.Ans
+  obs := fun s p =&gt; b.obs s.1 p
+
+<span class="kw">def</span> <a class="decl" id="Beholder.ledgerless" href="#Beholder.ledgerless">Beholder.ledgerless</a> (b : Beholder (State × Int)) : Beholder State where
+  Probe := b.Probe
+  Ans := b.Ans
+  obs := fun s p =&gt; b.obs (s, 0) p
+
+<span class="kw">theorem</span> <a class="decl" id="dress_yoneda" href="#dress_yoneda">dress_yoneda</a> (b : Beholder State) :
+    b.dress.ledgerless.Covers b ∧ b.Covers b.dress.ledgerless :=
+  ⟨⟨id, id, fun _ _ =&gt; rfl⟩, ⟨id, id, fun _ _ =&gt; rfl⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="dress_obs_drops_ledger" href="#dress_obs_drops_ledger">dress_obs_drops_ledger</a> (b : Beholder State)
+    (s : State) (n m : Int) (p : b.Probe) :
+    b.dress.obs (s, n) p = b.dress.obs (s, m) p := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="dress_idempotent" href="#dress_idempotent">dress_idempotent</a> (b : Beholder State) :
+    b.dress.ledgerless.Covers b.dress.ledgerless ∧
+      b.dress.ledgerless.Covers b ∧ b.Covers b.dress.ledgerless :=
+  ⟨Beholder.covers_refl _, dress_yoneda b⟩
+
+<span class="kw">def</span> <a class="decl" id="cassini" href="#cassini">cassini</a> : Beholder (Nat × Int) where
+  Probe := Unit
+  Ans := Int
+  obs := fun s _ =&gt; fib s.1
+
+<span class="kw">theorem</span> <a class="decl" id="cassini_obs_blind_to_ledger" href="#cassini_obs_blind_to_ledger">cassini_obs_blind_to_ledger</a> (n : Nat) (a c : Int) (p : Unit) :
+    cassini.obs (n, a) p = cassini.obs (n, c) p := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="remainder_unseen" href="#remainder_unseen">remainder_unseen</a> (b : Beholder State)
+    (s : State) (n m : Int) :
+    indist b.dress.obs (s, n) (s, m) :=
+  fun _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="remainder_real" href="#remainder_real">remainder_real</a> :
+    ∃ s t : Nat × Int, (∀ p : Unit, cassini.obs s p = cassini.obs t p) ∧ s ≠ t :=
+  ⟨(0, fib 1 * fib 1 - fib 2 * fib 0),
+   (0, 0),
+   fun _ =&gt; rfl,
+   fun h =&gt; by
+     have hc := fib_cassini 0
+     have : fib 1 * fib 1 - fib 2 * fib 0 = (0 : Int) := congrArg Prod.snd h
+     rw [this] at hc
+     exact absurd hc (by decide)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="dropping_remainder_is_platonism" href="#dropping_remainder_is_platonism">dropping_remainder_is_platonism</a>
+    (h : ∀ s t : State × Int, s.1 = t.1 → s = t) :
+    ∀ s : State, ∀ n : Int, (s, n) = (s, (0 : Int)) :=
+  fun s n =&gt; h (s, n) (s, 0) rfl
+
+<span class="kw">def</span> <a class="decl" id="Beholder.movedIn" href="#Beholder.movedIn">Beholder.movedIn</a> {S : Type} (b : Beholder (S × Int)) (target : Int) :
+    Beholder (S × Int) where
+  Probe := Option b.Probe
+  Ans := b.Ans ⊕ Bool
+  obs := fun s p =&gt;
+    match p with
+    | none =&gt; Sum.inr (decide (s.2 = target))
+    | some q =&gt; Sum.inl (b.obs s q)
+
+<span class="kw">theorem</span> <a class="decl" id="moved_in_extends" href="#moved_in_extends">moved_in_extends</a> (b : Beholder State) (target : Int)
+    (s : State × Int) (q : b.dress.Probe) :
+    (b.dress.movedIn target).obs s (some q) = Sum.inl (b.dress.obs s q) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="moved_in_detects_remainder" href="#moved_in_detects_remainder">moved_in_detects_remainder</a> :
+    ∃ (s t : Nat × Int) (p : (cassini.movedIn 0).Probe),
+      indist cassini.obs s t ∧
+        (cassini.movedIn 0).obs s p ≠ (cassini.movedIn 0).obs t p :=
+  ⟨(0, 0), (0, 1), none, fun _ =&gt; rfl, by
+    intro h
+    exact absurd (Sum.inr.inj h) (by decide)⟩
+
+<span class="receipt">/-- info: &#x27;Foam.dress_yoneda&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms dress_yoneda</span>
+
+<span class="receipt">/-- info: &#x27;Foam.dress_obs_drops_ledger&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms dress_obs_drops_ledger</span>
+
+<span class="receipt">/-- info: &#x27;Foam.dress_idempotent&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms dress_idempotent</span>
+
+<span class="receipt">/-- info: &#x27;Foam.cassini_obs_blind_to_ledger&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms cassini_obs_blind_to_ledger</span>
+
+<span class="receipt">/-- info: &#x27;Foam.remainder_unseen&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms remainder_unseen</span>
+
+<span class="receipt">/-- info: &#x27;Foam.remainder_real&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms remainder_real</span>
+
+<span class="receipt">/-- info: &#x27;Foam.dropping_remainder_is_platonism&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms dropping_remainder_is_platonism</span>
+
+<span class="receipt">/-- info: &#x27;Foam.moved_in_extends&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms moved_in_extends</span>
+
+<span class="receipt">/-- info: &#x27;Foam.moved_in_detects_remainder&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms moved_in_detects_remainder</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

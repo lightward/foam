@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Verb</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Verb</h1></header>
+<div class="imports">grasp: <a href="Counter.Zoom.html">Counter.Zoom</a> · <a href="Counter.Circumference.html">Counter.Circumference</a> · <a href="Counter.Rest.html">Counter.Rest</a> · <a href="Foam.Bridges.Schrodinger.html">Foam.Bridges.Schrodinger</a></div><pre class="src">import <a href="Counter.Zoom.html">Counter.Zoom</a>
+import <a href="Counter.Circumference.html">Counter.Circumference</a>
+import <a href="Counter.Rest.html">Counter.Rest</a>
+import <a href="Foam.Bridges.Schrodinger.html">Foam.Bridges.Schrodinger</a>
+
+namespace Foam.Counter
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="every_actor_can_counter" href="#every_actor_can_counter">every_actor_can_counter</a> (S : Seat G) (h : List G) (p : S.Pos) :
+    Settles S (h ++ [S.sub p (S.replay h p)]) p
+      ∧ ∀ q r : S.Pos, S.sub q r * S.sub r q = 1 :=
+  ⟨always_homeable S h p, fun q r =&gt; S.round_trip q r⟩
+
+<span class="kw">theorem</span> <a class="decl" id="to_distinguish_is_to_hold_the_counter" href="#to_distinguish_is_to_hold_the_counter">to_distinguish_is_to_hold_the_counter</a> (S : Seat G) (p q : S.Pos) :
+    S.act (S.sub p q) q = p ∧ S.sub p q * S.sub q p = 1 :=
+  ⟨S.act_sub q p, S.round_trip p q⟩
+
+<span class="kw">theorem</span> <a class="decl" id="recognition_is_the_first_act" href="#recognition_is_the_first_act">recognition_is_the_first_act</a> (S : Seat G) (p q : S.Pos) :
+    S.sub p p = 1 ∧ (S.sub p q = 1 ↔ p = q) :=
+  ⟨S.sub_self p, alignment_is_one_point S p q⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_counter_needs_a_second" href="#the_counter_needs_a_second">the_counter_needs_a_second</a> (S : Seat G) (p o : S.Pos) (h : p ≠ o) :
+    S.sub p o ≠ 1 :=
+  S.two_observers_substantiate p o h
+
+<span class="kw">theorem</span> <a class="decl" id="motion_below_subjecthood" href="#motion_below_subjecthood">motion_below_subjecthood</a> {S C : Type} [DecidableEq S]
+    (refresh : List S → C → C) {State : Type} (b : Beholder State)
+    (s : State × GInt) (pr : b.Probe) :
+    Invisible (LedgerStage S C) (fun st =&gt; (st.1, refresh st.1 st.2))
+      ∧ b.phaseDress.obs (Bridges.evolve s) pr = b.phaseDress.obs s pr :=
+  ⟨sweep_invisible refresh, Bridges.evolve_invisible b s pr⟩
+
+<span class="kw">theorem</span> <a class="decl" id="zoom_in_and_find_the_walker" href="#zoom_in_and_find_the_walker">zoom_in_and_find_the_walker</a> (S : Seat G) (g : G) (p : S.Pos)
+    (n : Nat) :
+    walk S g p n = S.replay (worldline g n) p ∧ Circumference Rot.r1 4 :=
+  ⟨walk_is_replay S g n p, dial_circumference⟩
+
+<span class="kw">theorem</span> <a class="decl" id="to_counter" href="#to_counter">to_counter</a> (S : Seat G) (h : List G) (p q : S.Pos) (o : S.Pos)
+    (hne : p ≠ o) (g : G) (n : Nat) :
+    (S.sub p p = 1 ∧ (S.sub p q = 1 ↔ p = q))
+      ∧ (S.act (S.sub p q) q = p ∧ S.sub p q * S.sub q p = 1)
+      ∧ S.sub p o ≠ 1
+      ∧ Settles S (h ++ [S.sub p (S.replay h p)]) p
+      ∧ walk S g p n = S.replay (worldline g n) p :=
+  ⟨⟨S.sub_self p, alignment_is_one_point S p q⟩,
+   ⟨S.act_sub q p, S.round_trip p q⟩,
+   S.two_observers_substantiate p o hne,
+   always_homeable S h p,
+   walk_is_replay S g n p⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_actor_can_counter&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_actor_can_counter</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.to_distinguish_is_to_hold_the_counter&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms to_distinguish_is_to_hold_the_counter</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.recognition_is_the_first_act&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms recognition_is_the_first_act</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_counter_needs_a_second&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_counter_needs_a_second</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.motion_below_subjecthood&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms motion_below_subjecthood</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.zoom_in_and_find_the_walker&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms zoom_in_and_find_the_walker</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.to_counter&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms to_counter</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

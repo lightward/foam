@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Seat.Born</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Seat.Born</h1></header>
+<div class="imports">grasp: <a href="Foam.Int.html">Foam.Int</a> · <a href="Foam.Seat.Dial.html">Foam.Seat.Dial</a></div><pre class="src">import <a href="Foam.Int.html">Foam.Int</a>
+import <a href="Foam.Seat.Dial.html">Foam.Seat.Dial</a>
+
+namespace Foam
+
+open Foam.FInt (
+  addComm add_assoc add_right_neg neg_add zero_add
+  mulComm mul_assoc mul_add add_mul one_mul mul_one neg_mul mul_neg
+)
+
+<span class="kw">theorem</span> <a class="decl" id="Int.add_swap_inner" href="#Int.add_swap_inner">Int.add_swap_inner</a> (p q r s : Int) : (p + q) + (r + s) = (p + r) + (q + s) := by
+  rw [add_assoc p q (r + s), ← add_assoc q r s, addComm q r,
+      add_assoc r q s, ← add_assoc p r (q + s)]
+
+<span class="kw">theorem</span> <a class="decl" id="Int.add_cross_swap" href="#Int.add_cross_swap">Int.add_cross_swap</a> (p q r s : Int) : (p + q) + (r + s) = (p + s) + (q + r) := by
+  rw [add_assoc p q (r + s), addComm r s, ← add_assoc q s r,
+      addComm q s, add_assoc s q r, ← add_assoc p s (q + r)]
+
+<span class="kw">theorem</span> <a class="decl" id="Int.two_mul&#x27;" href="#Int.two_mul&#x27;">Int.two_mul&#x27;</a> (x : Int) : 2 * x = x + x := by
+  rw [show (2 : Int) = 1 + 1 from rfl, add_mul, one_mul]
+
+<span class="kw">theorem</span> <a class="decl" id="Int.mul_interchange" href="#Int.mul_interchange">Int.mul_interchange</a> (a b c d : Int) : (a * c) * (b * d) = (a * b) * (c * d) := by
+  rw [mul_assoc a c (b * d), ← mul_assoc c b d, mulComm c b,
+      mul_assoc b c d, ← mul_assoc a b (c * d)]
+
+<span class="kw">theorem</span> <a class="decl" id="Int.sq_interchange" href="#Int.sq_interchange">Int.sq_interchange</a> (a c : Int) : (a * c) * (a * c) = (a * a) * (c * c) :=
+  Int.mul_interchange a a c c
+
+<span class="kw">theorem</span> <a class="decl" id="Int.neg_mul_neg&#x27;" href="#Int.neg_mul_neg&#x27;">Int.neg_mul_neg&#x27;</a> (a b : Int) : (-a) * (-b) = a * b := by
+  rw [neg_mul, mul_neg, Int.neg_neg]
+
+<span class="kw">theorem</span> <a class="decl" id="Int.parseval_collect" href="#Int.parseval_collect">Int.parseval_collect</a> (W K Z M N : Int) :
+    ((W + K) + (K + Z)) + ((M + (-K)) + ((-K) + N)) = (W + M) + (N + Z) := by
+  rw [Int.add_cross_swap W K K Z, Int.add_cross_swap M (-K) (-K) N,
+      Int.add_swap_inner (W + Z) (K + K) (M + N) ((-K) + (-K)),
+      Int.add_cross_swap K K (-K) (-K), add_right_neg K, Int.add_zero, Int.add_zero,
+      Int.add_swap_inner W Z M N, addComm Z N]
+
+<span class="kw">theorem</span> <a class="decl" id="Int.lagrange" href="#Int.lagrange">Int.lagrange</a> (a b c d : Int) :
+    (a * c + b * d) * (a * c + b * d)
+      + (-(b * c) + a * d) * (-(b * c) + a * d)
+    = (a * a + b * b) * (c * c + d * d) := by
+  rw [mul_add (a * c + b * d) (a * c) (b * d),
+      add_mul (a * c) (b * d) (a * c), add_mul (a * c) (b * d) (b * d)]
+  rw [mul_add (-(b * c) + a * d) (-(b * c)) (a * d),
+      add_mul (-(b * c)) (a * d) (-(b * c)), add_mul (-(b * c)) (a * d) (a * d)]
+  rw [mul_add (a * a + b * b) (c * c) (d * d),
+      add_mul (a * a) (b * b) (c * c), add_mul (a * a) (b * b) (d * d)]
+  rw [Int.sq_interchange a c, Int.sq_interchange b d]
+  rw [Int.neg_mul_neg&#x27; (b * c) (b * c), Int.sq_interchange b c, Int.sq_interchange a d]
+  rw [mul_neg (a * d) (b * c), neg_mul (b * c) (a * d)]
+  rw [mulComm (b * d) (a * c), Int.mul_interchange a b c d]
+  rw [Int.mul_interchange a b d c, mulComm d c]
+  rw [mulComm (b * c) (a * d), Int.mul_interchange a b d c, mulComm d c]
+  exact Int.parseval_collect (a * a * (c * c)) (a * b * (c * d)) (b * b * (d * d))
+        (b * b * (c * c)) (a * a * (d * d))
+
+<span class="kw">def</span> <a class="decl" id="GInt.neg" href="#GInt.neg">GInt.neg</a> (z : GInt) : GInt := ⟨-z.re, -z.im⟩
+<span class="kw">def</span> <a class="decl" id="GInt.rot" href="#GInt.rot">GInt.rot</a> (z : GInt) : GInt := ⟨-z.im, z.re⟩
+<span class="kw">def</span> <a class="decl" id="GInt.align" href="#GInt.align">GInt.align</a> (w z : GInt) : Int := w.re * z.re + w.im * z.im
+<span class="kw">def</span> <a class="decl" id="GInt.born" href="#GInt.born">GInt.born</a> (w z : GInt) : Int := GInt.align w z * GInt.align w z
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.born_nonneg" href="#GInt.born_nonneg">GInt.born_nonneg</a> (w z : GInt) : ∃ k : Nat, GInt.born w z = Int.ofNat k :=
+  GInt.sq_image (GInt.align w z)
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.rot_sq" href="#GInt.rot_sq">GInt.rot_sq</a> (z : GInt) : GInt.rot (GInt.rot z) = GInt.neg z := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.align_neg" href="#GInt.align_neg">GInt.align_neg</a> (w z : GInt) : GInt.align w (GInt.neg z) = -(GInt.align w z) := by
+  show w.re * (-z.re) + w.im * (-z.im) = -(w.re * z.re + w.im * z.im)
+  rw [mul_neg, mul_neg, ← neg_add]
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.align_add" href="#GInt.align_add">GInt.align_add</a> (θ a b : GInt) :
+    GInt.align θ (GInt.add a b) = GInt.align θ a + GInt.align θ b := by
+  show θ.re * (a.re + b.re) + θ.im * (a.im + b.im)
+     = (θ.re * a.re + θ.im * a.im) + (θ.re * b.re + θ.im * b.im)
+  rw [mul_add, mul_add]
+  exact Int.add_swap_inner (θ.re * a.re) (θ.re * b.re) (θ.im * a.im) (θ.im * b.im)
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.smul_neg" href="#GInt.smul_neg">GInt.smul_neg</a> (k : Int) (z : GInt) :
+    GInt.smul k (GInt.neg z) = GInt.smul (-k) z := by
+  show GInt.mk (k * -z.re) (k * -z.im) = GInt.mk (-k * z.re) (-k * z.im)
+  rw [mul_neg, mul_neg, neg_mul, neg_mul]
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.align_smul" href="#GInt.align_smul">GInt.align_smul</a> (θ z : GInt) (k : Int) :
+    GInt.align θ (GInt.smul k z) = k * GInt.align θ z := by
+  show θ.re * (k * z.re) + θ.im * (k * z.im) = k * (θ.re * z.re + θ.im * z.im)
+  rw [mul_add, ← mul_assoc θ.re k z.re, mulComm θ.re k, mul_assoc k θ.re z.re,
+      ← mul_assoc θ.im k z.im, mulComm θ.im k, mul_assoc k θ.im z.im]
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.born_smul" href="#GInt.born_smul">GInt.born_smul</a> (θ z : GInt) (k : Int) :
+    GInt.born θ (GInt.smul k z) = k * k * GInt.born θ z := by
+  show GInt.align θ (GInt.smul k z) * GInt.align θ (GInt.smul k z)
+     = k * k * (GInt.align θ z * GInt.align θ z)
+  rw [GInt.align_smul]
+  exact Int.mul_interchange k k (GInt.align θ z) (GInt.align θ z)
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.align_rot_swap" href="#GInt.align_rot_swap">GInt.align_rot_swap</a> (θ z : GInt) :
+    GInt.align θ (GInt.rot z) = -(GInt.align (GInt.rot θ) z) := by
+  show θ.re * -z.im + θ.im * z.re = -(-θ.im * z.re + θ.re * z.im)
+  rw [mul_neg, neg_mul, neg_add, Int.neg_neg,
+      addComm (θ.im * z.re) (-(θ.re * z.im))]
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.born_rot_flip" href="#GInt.born_rot_flip">GInt.born_rot_flip</a> (θ z : GInt) :
+    GInt.born θ (GInt.rot z) = GInt.born (GInt.rot θ) z := by
+  show GInt.align θ (GInt.rot z) * GInt.align θ (GInt.rot z)
+     = GInt.align (GInt.rot θ) z * GInt.align (GInt.rot θ) z
+  rw [GInt.align_rot_swap, Int.neg_mul_neg&#x27;]
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.decoherence" href="#GInt.decoherence">GInt.decoherence</a> (θ z : GInt) :
+    GInt.align θ z + GInt.align θ (GInt.rot z)
+      + GInt.align θ (GInt.rot (GInt.rot z))
+      + GInt.align θ (GInt.rot (GInt.rot (GInt.rot z))) = 0 := by
+  have e3 : GInt.align θ (GInt.rot (GInt.rot z)) = -(GInt.align θ z) := by
+    rw [GInt.rot_sq, GInt.align_neg]
+  have e4 : GInt.align θ (GInt.rot (GInt.rot (GInt.rot z))) = -(GInt.align θ (GInt.rot z)) := by
+    rw [GInt.rot_sq (GInt.rot z), GInt.align_neg]
+  rw [e3, e4,
+      add_assoc (GInt.align θ z + GInt.align θ (GInt.rot z))
+        (-(GInt.align θ z)) (-(GInt.align θ (GInt.rot z))),
+      Int.add_swap_inner (GInt.align θ z) (GInt.align θ (GInt.rot z))
+        (-(GInt.align θ z)) (-(GInt.align θ (GInt.rot z))),
+      add_right_neg, add_right_neg, Int.add_zero]
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.decoherence_halfturn" href="#GInt.decoherence_halfturn">GInt.decoherence_halfturn</a> (θ z : GInt) :
+    GInt.align θ z + GInt.align θ (GInt.neg z) = 0 := by
+  rw [GInt.align_neg]; exact add_right_neg _
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.born_halfturn_invariant" href="#GInt.born_halfturn_invariant">GInt.born_halfturn_invariant</a> (θ z : GInt) :
+    GInt.born θ (GInt.neg z) = GInt.born θ z := by
+  show GInt.align θ (GInt.neg z) * GInt.align θ (GInt.neg z)
+     = GInt.align θ z * GInt.align θ z
+  rw [GInt.align_neg, neg_mul, mul_neg, Int.neg_neg]
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.bar_pairs_as_halfturns" href="#GInt.bar_pairs_as_halfturns">GInt.bar_pairs_as_halfturns</a> (θ z : GInt) :
+    GInt.align θ (GInt.rot (GInt.rot z)) = GInt.align θ (GInt.neg z)
+      ∧ GInt.align θ (GInt.rot (GInt.rot (GInt.rot z)))
+          = GInt.align θ (GInt.neg (GInt.rot z)) :=
+  ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.born_superpose" href="#GInt.born_superpose">GInt.born_superpose</a> (θ a b : GInt) :
+    GInt.born θ (GInt.add a b)
+      = GInt.born θ a + GInt.born θ b + 2 * (GInt.align θ a * GInt.align θ b) := by
+  show GInt.align θ (GInt.add a b) * GInt.align θ (GInt.add a b)
+     = GInt.align θ a * GInt.align θ a + GInt.align θ b * GInt.align θ b
+       + 2 * (GInt.align θ a * GInt.align θ b)
+  rw [GInt.align_add θ a b, Int.two_mul&#x27; (GInt.align θ a * GInt.align θ b),
+      add_mul (GInt.align θ a) (GInt.align θ b) (GInt.align θ a + GInt.align θ b),
+      mul_add (GInt.align θ a) (GInt.align θ a) (GInt.align θ b),
+      mul_add (GInt.align θ b) (GInt.align θ a) (GInt.align θ b),
+      mulComm (GInt.align θ b) (GInt.align θ a)]
+  exact Int.add_cross_swap (GInt.align θ a * GInt.align θ a) (GInt.align θ a * GInt.align θ b)
+        (GInt.align θ a * GInt.align θ b) (GInt.align θ b * GInt.align θ b)
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.born_parseval" href="#GInt.born_parseval">GInt.born_parseval</a> (θ z : GInt) :
+    GInt.born θ z + GInt.born (GInt.rot θ) z = GInt.normSq θ * GInt.normSq z := by
+  show (θ.re * z.re + θ.im * z.im) * (θ.re * z.re + θ.im * z.im)
+     + ((-θ.im) * z.re + θ.re * z.im) * ((-θ.im) * z.re + θ.re * z.im)
+     = (θ.re * θ.re + θ.im * θ.im) * (z.re * z.re + z.im * z.im)
+  rw [neg_mul θ.im z.re]
+  exact Int.lagrange θ.re θ.im z.re z.im
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.born_nonneg&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.born_nonneg</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.rot_sq&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.rot_sq</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.smul_neg&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.smul_neg</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.align_smul&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.align_smul</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.born_smul&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.born_smul</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.align_rot_swap&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.align_rot_swap</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.born_rot_flip&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.born_rot_flip</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.decoherence&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.decoherence</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.decoherence_halfturn&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.decoherence_halfturn</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.born_halfturn_invariant&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.born_halfturn_invariant</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.bar_pairs_as_halfturns&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.bar_pairs_as_halfturns</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.born_superpose&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.born_superpose</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.born_parseval&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.born_parseval</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

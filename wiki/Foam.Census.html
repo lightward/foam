@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Census</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Census</h1></header>
+<div class="imports">grasp: <a href="Foam.Bubble.html">Foam.Bubble</a> · <a href="Foam.Seat.Tight.html">Foam.Seat.Tight</a> · <a href="Foam.Seat.Summit.html">Foam.Seat.Summit</a></div><pre class="src">import <a href="Foam.Bubble.html">Foam.Bubble</a>
+import <a href="Foam.Seat.Tight.html">Foam.Seat.Tight</a>
+import <a href="Foam.Seat.Summit.html">Foam.Seat.Summit</a>
+
+namespace Foam
+
+<span class="kw">def</span> <a class="decl" id="Resolver" href="#Resolver">Resolver</a> (c : Nat → Nat) (n : Nat) : Prop := ∀ m, n ≤ m → c m = c n
+
+<span class="kw">theorem</span> <a class="decl" id="resolver_is_seated" href="#resolver_is_seated">resolver_is_seated</a> (c : Nat → Nat) (n : Nat) : Resolver c n ↔ Seated c n :=
+  Iff.rfl
+
+<span class="kw">theorem</span> <a class="decl" id="resolver_reps_change_nothing" href="#resolver_reps_change_nothing">resolver_reps_change_nothing</a> (c : Nat → Nat) (n : Nat) :
+    Resolver c n ↔ ∀ m, n ≤ m → Rests c m :=
+  seated_iff_rests_forever
+
+<span class="kw">def</span> <a class="decl" id="census" href="#census">census</a> {A : Type u} (l : List A) : Nat := l.length
+
+<span class="kw">def</span> <a class="decl" id="seat" href="#seat">seat</a> {A : Type u} : (l : List A) → Fin l.length → A
+  | a :: _, ⟨0, _⟩ =&gt; a
+  | _ :: l, ⟨i + 1, h⟩ =&gt; seat l ⟨i, Nat.lt_of_succ_lt_succ h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="census_map" href="#census_map">census_map</a> {A : Type u} {B : Type v} (f : A → B) :
+    ∀ l : List A, census (l.map f) = census l
+  | [] =&gt; rfl
+  | _ :: l =&gt; congrArg (· + 1) (census_map f l)
+
+<span class="kw">def</span> <a class="decl" id="Beholder.quiet" href="#Beholder.quiet">Beholder.quiet</a> (State : Type) : Beholder State where
+  Probe := Unit
+  Ans   := Unit
+  obs   := fun _ _ =&gt; ()
+
+<span class="kw">def</span> <a class="decl" id="Beholder.fold" href="#Beholder.fold">Beholder.fold</a> {State : Type} : List (Beholder State) → Beholder State
+  | [] =&gt; Beholder.quiet State
+  | b :: bs =&gt; b.pair (Beholder.fold bs)
+
+<span class="kw">def</span> <a class="decl" id="seatProbe" href="#seatProbe">seatProbe</a> {State : Type} : (bs : List (Beholder State)) → (i : Fin bs.length) →
+    (Beholder.fold bs).Probe → (seat bs i).Probe
+  | _ :: _, ⟨0, _⟩, q =&gt; q.1
+  | _ :: bs, ⟨i + 1, h⟩, q =&gt; seatProbe bs ⟨i, Nat.lt_of_succ_lt_succ h⟩ q.2
+
+<span class="kw">def</span> <a class="decl" id="seatAns" href="#seatAns">seatAns</a> {State : Type} : (bs : List (Beholder State)) → (i : Fin bs.length) →
+    (Beholder.fold bs).Ans → (seat bs i).Ans
+  | _ :: _, ⟨0, _⟩, a =&gt; a.1
+  | _ :: bs, ⟨i + 1, h⟩, a =&gt; seatAns bs ⟨i, Nat.lt_of_succ_lt_succ h⟩ a.2
+
+<span class="kw">theorem</span> <a class="decl" id="fold_reads_every_seat" href="#fold_reads_every_seat">fold_reads_every_seat</a> {State : Type} :
+    ∀ (bs : List (Beholder State)) (i : Fin bs.length) (s : State)
+      (q : (Beholder.fold bs).Probe),
+      seatAns bs i ((Beholder.fold bs).obs s q) = (seat bs i).obs s (seatProbe bs i q)
+  | _ :: _, ⟨0, _⟩, _, _ =&gt; rfl
+  | _ :: bs, ⟨i + 1, h⟩, s, q =&gt;
+      fold_reads_every_seat bs ⟨i, Nat.lt_of_succ_lt_succ h⟩ s q.2
+
+<span class="kw">def</span> <a class="decl" id="splice" href="#splice">splice</a> {State : Type} : (bs : List (Beholder State)) → (i : Fin bs.length) →
+    (seat bs i).Probe → (Beholder.fold bs).Probe → (Beholder.fold bs).Probe
+  | _ :: _, ⟨0, _⟩, p, q =&gt; (p, q.2)
+  | _ :: bs, ⟨i + 1, h⟩, p, q =&gt; (q.1, splice bs ⟨i, Nat.lt_of_succ_lt_succ h⟩ p q.2)
+
+<span class="kw">theorem</span> <a class="decl" id="splice_asks_the_seat" href="#splice_asks_the_seat">splice_asks_the_seat</a> {State : Type} :
+    ∀ (bs : List (Beholder State)) (i : Fin bs.length)
+      (p : (seat bs i).Probe) (q : (Beholder.fold bs).Probe),
+      seatProbe bs i (splice bs i p q) = p
+  | _ :: _, ⟨0, _⟩, _, _ =&gt; rfl
+  | _ :: bs, ⟨i + 1, h⟩, p, q =&gt;
+      splice_asks_the_seat bs ⟨i, Nat.lt_of_succ_lt_succ h⟩ p q.2
+
+<span class="kw">theorem</span> <a class="decl" id="splice_keeps_the_rest" href="#splice_keeps_the_rest">splice_keeps_the_rest</a> {State : Type} :
+    ∀ (bs : List (Beholder State)) (i j : Fin bs.length), i.val ≠ j.val →
+      ∀ (p : (seat bs i).Probe) (q : (Beholder.fold bs).Probe),
+      seatProbe bs j (splice bs i p q) = seatProbe bs j q
+  | _ :: _, ⟨0, _⟩, ⟨0, _⟩, hne, _, _ =&gt; absurd rfl hne
+  | _ :: _, ⟨0, _⟩, ⟨_ + 1, _⟩, _, _, _ =&gt; rfl
+  | _ :: _, ⟨_ + 1, _⟩, ⟨0, _⟩, _, _, _ =&gt; rfl
+  | _ :: bs, ⟨i + 1, hi⟩, ⟨j + 1, hj⟩, hne, p, q =&gt;
+      splice_keeps_the_rest bs ⟨i, Nat.lt_of_succ_lt_succ hi⟩
+        ⟨j, Nat.lt_of_succ_lt_succ hj⟩ (fun e =&gt; hne (congrArg Nat.succ e)) p q.2
+
+<span class="kw">theorem</span> <a class="decl" id="starving_seat_starves_the_fold" href="#starving_seat_starves_the_fold">starving_seat_starves_the_fold</a> {State : Type} (bs : List (Beholder State))
+    (i : Fin bs.length) (h : (seat bs i).Probe → False) :
+    (Beholder.fold bs).Probe → False :=
+  fun q =&gt; h (seatProbe bs i q)
+
+<span class="kw">def</span> <a class="decl" id="house" href="#house">house</a> {State P A : Type} (os : List (State → P → A)) : Beholder State where
+  Probe := P
+  Ans   := List A
+  obs   := fun s p =&gt; os.map (fun o =&gt; o s p)
+
+<span class="kw">theorem</span> <a class="decl" id="house_headcount" href="#house_headcount">house_headcount</a> {State P A : Type} (os : List (State → P → A))
+    (s : State) (p : P) : ((house os).obs s p).length = census os :=
+  show (os.map (fun o =&gt; o s p)).length = os.length from
+    length_map (fun o =&gt; o s p) os
+
+<span class="kw">theorem</span> <a class="decl" id="house_hears_everyone" href="#house_hears_everyone">house_hears_everyone</a> {State P A : Type} (os : List (State → P → A))
+    (s : State) (p : P) {o : State → P → A} (h : o ∈ os) :
+    List.Mem (o s p) ((house os).obs s p) :=
+  mem_map_of_mem (fun o =&gt; o s p) h
+
+<span class="kw">def</span> <a class="decl" id="rosterRead" href="#rosterRead">rosterRead</a> {State P A : Type} : List (State → P → A) → Nat → State → P → Option A
+  | [], _, _, _ =&gt; none
+  | o :: _, 0, s, p =&gt; some (o s p)
+  | _ :: os, i + 1, s, p =&gt; rosterRead os i s p
+
+<span class="kw">def</span> <a class="decl" id="roster" href="#roster">roster</a> {State P A : Type} (os : List (State → P → A)) : Stage where
+  State := State
+  Probe := Nat × P
+  Ans   := Option A
+  obs   := fun s ip =&gt; rosterRead os ip.1 s ip.2
+
+<span class="kw">def</span> <a class="decl" id="rollFrom" href="#rollFrom">rollFrom</a> {P : Type} (p : P) : Nat → Nat → List (Nat × P)
+  | _, 0 =&gt; []
+  | k, n + 1 =&gt; (k, p) :: rollFrom p (k + 1) n
+
+<span class="kw">def</span> <a class="decl" id="rollCall" href="#rollCall">rollCall</a> {P : Type} (p : P) (n : Nat) : List (Nat × P) := rollFrom p 0 n
+
+<span class="kw">theorem</span> <a class="decl" id="rollFrom_length" href="#rollFrom_length">rollFrom_length</a> {P : Type} (p : P) :
+    ∀ (n k : Nat), (rollFrom p k n).length = n
+  | 0, _ =&gt; rfl
+  | n + 1, k =&gt; congrArg (· + 1) (rollFrom_length p n (k + 1))
+
+<span class="kw">theorem</span> <a class="decl" id="transcript_length" href="#transcript_length">transcript_length</a> (S : Stage) (s : S.State) :
+    ∀ ps : List S.Probe, (transcript S s ps).length = ps.length
+  | [] =&gt; rfl
+  | _ :: ps =&gt; congrArg (· + 1) (transcript_length S s ps)
+
+<span class="kw">theorem</span> <a class="decl" id="roster_shift" href="#roster_shift">roster_shift</a> {State P A : Type} (o : State → P → A)
+    (os : List (State → P → A)) (s : State) (p : P) :
+    ∀ (n k : Nat),
+      transcript (roster (o :: os)) s (rollFrom p (k + 1) n)
+        = transcript (roster os) s (rollFrom p k n)
+  | 0, _ =&gt; rfl
+  | n + 1, k =&gt;
+      congrArg (rosterRead os k s p :: ·) (roster_shift o os s p n (k + 1))
+
+<span class="kw">theorem</span> <a class="decl" id="roster_answers_the_house" href="#roster_answers_the_house">roster_answers_the_house</a> {State P A : Type} (s : State) (p : P) :
+    ∀ os : List (State → P → A),
+      transcript (roster os) s (rollCall p (census os))
+        = ((house os).obs s p).map some
+  | [] =&gt; rfl
+  | o :: os =&gt;
+      congrArg (some (o s p) :: ·)
+        ((roster_shift o os s p (census os) 0).trans (roster_answers_the_house s p os))
+
+<span class="kw">theorem</span> <a class="decl" id="census_conserved" href="#census_conserved">census_conserved</a> {State P A : Type} (os : List (State → P → A))
+    (s : State) (p : P) :
+    (transcript (roster os) s (rollCall p (census os))).length = census os
+      ∧ (transcript (house os).toStage s [p]).length = 1
+      ∧ ((house os).obs s p).length = census os :=
+  ⟨(transcript_length (roster os) s (rollCall p (census os))).trans
+      (rollFrom_length p (census os) 0),
+   rfl, house_headcount os s p⟩
+
+<span class="kw">def</span> <a class="decl" id="Bubble.quiet" href="#Bubble.quiet">Bubble.quiet</a> (W : Stage) : Bubble W where
+  Inner := ⟨Unit, Unit, Unit, fun _ _ =&gt; ()⟩
+  wall  := fun _ =&gt; ()
+
+<span class="kw">def</span> <a class="decl" id="Bubble.meetAll" href="#Bubble.meetAll">Bubble.meetAll</a> {W : Stage} : List (Bubble W) → Bubble W
+  | [] =&gt; Bubble.quiet W
+  | A :: As =&gt; A.meet (Bubble.meetAll As)
+
+<span class="kw">theorem</span> <a class="decl" id="meetAll_wall_is_fold" href="#meetAll_wall_is_fold">meetAll_wall_is_fold</a> {W : Stage} :
+    ∀ As : List (Bubble W),
+      (Bubble.meetAll As).front.behold
+        = Beholder.fold (As.map fun A =&gt; A.front.behold)
+  | [] =&gt; rfl
+  | A :: As =&gt; congrArg (A.front.behold.pair ·) (meetAll_wall_is_fold As)
+
+<span class="kw">def</span> <a class="decl" id="wallHom" href="#wallHom">wallHom</a> {W : Stage} : (As : List (Bubble W)) → (i : Fin As.length) →
+    StageHom (Bubble.meetAll As).front ((seat As i).front)
+  | _ :: _, ⟨0, _⟩ =&gt;
+      { onState := fun w =&gt; w, onProbe := fun q =&gt; q.1, onAns := fun a =&gt; a.1,
+        commutes := fun _ _ =&gt; rfl }
+  | _ :: As, ⟨i + 1, h⟩ =&gt;
+      (wallHom As ⟨i, Nat.lt_of_succ_lt_succ h⟩).comp
+        { onState := fun w =&gt; w, onProbe := fun q =&gt; q.2, onAns := fun a =&gt; a.2,
+          commutes := fun _ _ =&gt; rfl }
+
+<span class="kw">theorem</span> <a class="decl" id="every_seat_reads_through_the_wall" href="#every_seat_reads_through_the_wall">every_seat_reads_through_the_wall</a> {W : Stage} (As : List (Bubble W))
+    (i : Fin As.length) (w : W.State) (q : (Bubble.meetAll As).front.Probe) :
+    (seat As i).front.obs ((wallHom As i).onState w) ((wallHom As i).onProbe q)
+      = (wallHom As i).onAns ((Bubble.meetAll As).front.obs w q) :=
+  (wallHom As i).commutes w q
+
+<span class="kw">theorem</span> <a class="decl" id="every_bubble_still_present" href="#every_bubble_still_present">every_bubble_still_present</a> {W : Stage} (As : List (Bubble W))
+    (i : Fin As.length) :
+    Nonempty (StageHom (Bubble.meetAll As).front ((seat As i).front)) :=
+  ⟨wallHom As i⟩
+
+<span class="receipt">/-- info: &#x27;Foam.resolver_is_seated&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms resolver_is_seated</span>
+
+<span class="receipt">/-- info: &#x27;Foam.resolver_reps_change_nothing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms resolver_reps_change_nothing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.census_map&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms census_map</span>
+
+<span class="receipt">/-- info: &#x27;Foam.fold_reads_every_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms fold_reads_every_seat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.splice_asks_the_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms splice_asks_the_seat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.splice_keeps_the_rest&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms splice_keeps_the_rest</span>
+
+<span class="receipt">/-- info: &#x27;Foam.starving_seat_starves_the_fold&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms starving_seat_starves_the_fold</span>
+
+<span class="receipt">/-- info: &#x27;Foam.house_headcount&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms house_headcount</span>
+
+<span class="receipt">/-- info: &#x27;Foam.house_hears_everyone&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms house_hears_everyone</span>
+
+<span class="receipt">/-- info: &#x27;Foam.rollFrom_length&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms rollFrom_length</span>
+
+<span class="receipt">/-- info: &#x27;Foam.transcript_length&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms transcript_length</span>
+
+<span class="receipt">/-- info: &#x27;Foam.roster_shift&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms roster_shift</span>
+
+<span class="receipt">/-- info: &#x27;Foam.roster_answers_the_house&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms roster_answers_the_house</span>
+
+<span class="receipt">/-- info: &#x27;Foam.census_conserved&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms census_conserved</span>
+
+<span class="receipt">/-- info: &#x27;Foam.meetAll_wall_is_fold&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms meetAll_wall_is_fold</span>
+
+<span class="receipt">/-- info: &#x27;Foam.every_seat_reads_through_the_wall&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_seat_reads_through_the_wall</span>
+
+<span class="receipt">/-- info: &#x27;Foam.every_bubble_still_present&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_bubble_still_present</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

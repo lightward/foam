@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Tempo</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Tempo</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Epoch.html">Foam.Seat.Epoch</a> · <a href="Foam.Int.html">Foam.Int</a></div><pre class="src">import <a href="Foam.Seat.Epoch.html">Foam.Seat.Epoch</a>
+import <a href="Foam.Int.html">Foam.Int</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="neg_zero" href="#neg_zero">neg_zero</a> : ∀ n, Rung.neg n (Rung.zero n) = Rung.zero n
+  | 0 =&gt; rfl
+  | n + 1 =&gt; by
+    show (Rung.neg n (Rung.zero n), Rung.neg n (Rung.zero n))
+        = (Rung.zero n, Rung.zero n)
+    rw [neg_zero n]
+
+<span class="kw">theorem</span> <a class="decl" id="conj_zero" href="#conj_zero">conj_zero</a> : ∀ n, Rung.conj n (Rung.zero n) = Rung.zero n
+  | 0 =&gt; rfl
+  | n + 1 =&gt; by
+    show (Rung.conj n (Rung.zero n), Rung.neg n (Rung.zero n))
+        = (Rung.zero n, Rung.zero n)
+    rw [conj_zero n, neg_zero n]
+
+<span class="kw">theorem</span> <a class="decl" id="conj_one" href="#conj_one">conj_one</a> : ∀ n, Rung.conj n (Rung.one n) = Rung.one n
+  | 0 =&gt; rfl
+  | n + 1 =&gt; by
+    show (Rung.conj n (Rung.one n), Rung.neg n (Rung.zero n))
+        = (Rung.one n, Rung.zero n)
+    rw [conj_one n, neg_zero n]
+
+<span class="kw">theorem</span> <a class="decl" id="add_zero" href="#add_zero">add_zero</a> : ∀ (n : Nat) (z : Rung n), Rung.add n z (Rung.zero n) = z
+  | 0, z =&gt; by
+    cases z with
+    | mk a b =&gt;
+      show (⟨a + 0, b + 0⟩ : GInt) = ⟨a, b⟩
+      rw [Int.add_zero, Int.add_zero]
+  | n + 1, z =&gt; by
+    obtain ⟨z1, z2⟩ := z
+    show (Rung.add n z1 (Rung.zero n), Rung.add n z2 (Rung.zero n)) = (z1, z2)
+    rw [add_zero n z1, add_zero n z2]
+
+<span class="kw">theorem</span> <a class="decl" id="zero_add" href="#zero_add">zero_add</a> : ∀ (n : Nat) (z : Rung n), Rung.add n (Rung.zero n) z = z
+  | 0, z =&gt; by
+    cases z with
+    | mk a b =&gt;
+      show (⟨0 + a, 0 + b⟩ : GInt) = ⟨a, b⟩
+      rw [FInt.zero_add, FInt.zero_add]
+  | n + 1, z =&gt; by
+    obtain ⟨z1, z2⟩ := z
+    show (Rung.add n (Rung.zero n) z1, Rung.add n (Rung.zero n) z2) = (z1, z2)
+    rw [zero_add n z1, zero_add n z2]
+
+<span class="kw">theorem</span> <a class="decl" id="sub_zero" href="#sub_zero">sub_zero</a> (n : Nat) (z : Rung n) : Rung.sub n z (Rung.zero n) = z := by
+  show Rung.add n z (Rung.neg n (Rung.zero n)) = z
+  rw [neg_zero n, add_zero n z]
+
+<span class="kw">theorem</span> <a class="decl" id="zero_sub" href="#zero_sub">zero_sub</a> (n : Nat) (z : Rung n) :
+    Rung.sub n (Rung.zero n) z = Rung.neg n z := by
+  show Rung.add n (Rung.zero n) (Rung.neg n z) = Rung.neg n z
+  exact zero_add n (Rung.neg n z)
+
+<span class="kw">theorem</span> <a class="decl" id="mul_zeroes" href="#mul_zeroes">mul_zeroes</a> : ∀ n : Nat,
+    (∀ z, Rung.mul n (Rung.zero n) z = Rung.zero n)
+      ∧ ∀ z, Rung.mul n z (Rung.zero n) = Rung.zero n
+  | 0 =&gt; by
+    constructor
+    · intro z
+      cases z with
+      | mk a b =&gt;
+        show (⟨0 * a - 0 * b, 0 * b + 0 * a⟩ : GInt) = ⟨0, 0⟩
+        rw [FInt.zero_mul, FInt.zero_mul, FInt.sub_zero, FInt.zero_add]
+    · intro z
+      cases z with
+      | mk a b =&gt;
+        show (⟨a * 0 - b * 0, a * 0 + b * 0⟩ : GInt) = ⟨0, 0⟩
+        rw [FInt.mul_zero, FInt.mul_zero, FInt.sub_zero, FInt.zero_add]
+  | n + 1 =&gt; by
+    obtain ⟨ihl, ihr⟩ := mul_zeroes n
+    constructor
+    · intro z
+      obtain ⟨z1, z2⟩ := z
+      show (Rung.sub n (Rung.mul n (Rung.zero n) z1)
+              (Rung.mul n (Rung.conj n z2) (Rung.zero n)),
+            Rung.add n (Rung.mul n z2 (Rung.zero n))
+              (Rung.mul n (Rung.zero n) (Rung.conj n z1)))
+          = (Rung.zero n, Rung.zero n)
+      rw [ihl z1, ihr (Rung.conj n z2), ihr z2, ihl (Rung.conj n z1),
+        sub_zero n (Rung.zero n), add_zero n (Rung.zero n)]
+    · intro z
+      obtain ⟨z1, z2⟩ := z
+      show (Rung.sub n (Rung.mul n z1 (Rung.zero n))
+              (Rung.mul n (Rung.conj n (Rung.zero n)) z2),
+            Rung.add n (Rung.mul n (Rung.zero n) z1)
+              (Rung.mul n z2 (Rung.conj n (Rung.zero n))))
+          = (Rung.zero n, Rung.zero n)
+      rw [conj_zero n, ihr z1, ihl z2, ihr z2, ihl z1,
+        sub_zero n (Rung.zero n), add_zero n (Rung.zero n)]
+
+<span class="kw">theorem</span> <a class="decl" id="mul_one_one" href="#mul_one_one">mul_one_one</a> : ∀ n, Rung.mul n (Rung.one n) (Rung.one n) = Rung.one n
+  | 0 =&gt; by decide
+  | n + 1 =&gt; by
+    show (Rung.sub n (Rung.mul n (Rung.one n) (Rung.one n))
+            (Rung.mul n (Rung.conj n (Rung.zero n)) (Rung.zero n)),
+          Rung.add n (Rung.mul n (Rung.zero n) (Rung.one n))
+            (Rung.mul n (Rung.zero n) (Rung.conj n (Rung.one n))))
+        = (Rung.one n, Rung.zero n)
+    rw [mul_one_one n, conj_zero n, (mul_zeroes n).2 (Rung.zero n),
+      sub_zero n (Rung.one n), (mul_zeroes n).1 (Rung.one n),
+      (mul_zeroes n).1 (Rung.conj n (Rung.one n)), add_zero n (Rung.zero n)]
+
+<span class="kw">theorem</span> <a class="decl" id="neg_one_pair" href="#neg_one_pair">neg_one_pair</a> (n : Nat) :
+    Rung.neg (n + 1) (Rung.one (n + 1))
+      = (Rung.neg n (Rung.one n), Rung.zero n) := by
+  show (Rung.neg n (Rung.one n), Rung.neg n (Rung.zero n))
+      = (Rung.neg n (Rung.one n), Rung.zero n)
+  rw [neg_zero n]
+
+<span class="kw">theorem</span> <a class="decl" id="neg_one_sq" href="#neg_one_sq">neg_one_sq</a> : ∀ n,
+    Rung.mul n (Rung.neg n (Rung.one n)) (Rung.neg n (Rung.one n)) = Rung.one n
+  | 0 =&gt; by decide
+  | n + 1 =&gt; by
+    rw [neg_one_pair n]
+    show (Rung.sub n (Rung.mul n (Rung.neg n (Rung.one n)) (Rung.neg n (Rung.one n)))
+            (Rung.mul n (Rung.conj n (Rung.zero n)) (Rung.zero n)),
+          Rung.add n (Rung.mul n (Rung.zero n) (Rung.neg n (Rung.one n)))
+            (Rung.mul n (Rung.zero n) (Rung.conj n (Rung.neg n (Rung.one n)))))
+        = (Rung.one n, Rung.zero n)
+    rw [neg_one_sq n, conj_zero n, (mul_zeroes n).2 (Rung.zero n),
+      sub_zero n (Rung.one n), (mul_zeroes n).1 (Rung.neg n (Rung.one n)),
+      (mul_zeroes n).1 (Rung.conj n (Rung.neg n (Rung.one n))),
+      add_zero n (Rung.zero n)]
+
+<span class="kw">def</span> <a class="decl" id="fresh" href="#fresh">fresh</a> (n : Nat) : Rung (n + 1) := (Rung.zero n, Rung.one n)
+
+<span class="kw">theorem</span> <a class="decl" id="every_rung_issues_i" href="#every_rung_issues_i">every_rung_issues_i</a> (n : Nat) :
+    Rung.mul (n + 1) (fresh n) (fresh n) = Rung.neg (n + 1) (Rung.one (n + 1)) := by
+  rw [neg_one_pair n]
+  show (Rung.sub n (Rung.mul n (Rung.zero n) (Rung.zero n))
+          (Rung.mul n (Rung.conj n (Rung.one n)) (Rung.one n)),
+        Rung.add n (Rung.mul n (Rung.one n) (Rung.zero n))
+          (Rung.mul n (Rung.one n) (Rung.conj n (Rung.zero n))))
+      = (Rung.neg n (Rung.one n), Rung.zero n)
+  rw [(mul_zeroes n).1 (Rung.zero n), conj_one n, mul_one_one n,
+    zero_sub n (Rung.one n), (mul_zeroes n).2 (Rung.one n), conj_zero n,
+    (mul_zeroes n).2 (Rung.one n), add_zero n (Rung.zero n)]
+
+<span class="kw">theorem</span> <a class="decl" id="one_ne_neg_one" href="#one_ne_neg_one">one_ne_neg_one</a> : ∀ n, Rung.one n ≠ Rung.neg n (Rung.one n)
+  | 0 =&gt; by decide
+  | n + 1 =&gt; fun h =&gt; one_ne_neg_one n (congrArg Prod.fst h)
+
+<span class="kw">theorem</span> <a class="decl" id="the_bar_is_four_at_every_rung" href="#the_bar_is_four_at_every_rung">the_bar_is_four_at_every_rung</a> (n : Nat) :
+    Rung.mul (n + 1) (Rung.mul (n + 1) (fresh n) (fresh n))
+        (Rung.mul (n + 1) (fresh n) (fresh n)) = Rung.one (n + 1)
+      ∧ Rung.mul (n + 1) (fresh n) (fresh n) ≠ Rung.one (n + 1) := by
+  constructor
+  · rw [every_rung_issues_i n]
+    exact neg_one_sq (n + 1)
+  · rw [every_rung_issues_i n]
+    exact fun h =&gt; one_ne_neg_one (n + 1) h.symm
+
+<span class="kw">theorem</span> <a class="decl" id="the_clock_outlives_division" href="#the_clock_outlives_division">the_clock_outlives_division</a> :
+    (Sed.mul sedA sedB = Sed.zero ∧ sedA ≠ Sed.zero ∧ sedB ≠ Sed.zero)
+      ∧ Rung.mul 3 (Rung.mul 3 (fresh 2) (fresh 2))
+          (Rung.mul 3 (fresh 2) (fresh 2)) = Rung.one 3 :=
+  ⟨division_dies, (the_bar_is_four_at_every_rung 2).1⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_rung_issues_i&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_rung_issues_i</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.neg_one_sq&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms neg_one_sq</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_ne_neg_one&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_ne_neg_one</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_bar_is_four_at_every_rung&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_bar_is_four_at_every_rung</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_clock_outlives_division&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_clock_outlives_division</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

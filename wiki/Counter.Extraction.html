@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Extraction</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Extraction</h1></header>
+<div class="imports">grasp: <a href="Counter.Shelf.html">Counter.Shelf</a></div><pre class="src">import <a href="Counter.Shelf.html">Counter.Shelf</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="cone" href="#cone">cone</a> {H : Type} (q : Quiver H) (app : H) : H → Prop :=
+  fun x =&gt; Nonempty (Path q x app)
+
+<span class="kw">def</span> <a class="decl" id="SelfContained" href="#SelfContained">SelfContained</a> {H : Type} (q : Quiver H) (S : H → Prop) : Prop :=
+  ∀ e ∈ q, S e.2 → S e.1
+
+<span class="kw">def</span> <a class="decl" id="Extractable" href="#Extractable">Extractable</a> {H : Type} (q : Quiver H) (app : H) (S : H → Prop) : Prop :=
+  SelfContained q S ∧ ∀ x, S x → cone q app x
+
+<span class="kw">def</span> <a class="decl" id="commons" href="#commons">commons</a> {H : Type} (q : Quiver H) (a b : H) : H → Prop :=
+  fun x =&gt; cone q a x ∧ cone q b x
+
+<span class="kw">theorem</span> <a class="decl" id="the_app_anchors_its_cone" href="#the_app_anchors_its_cone">the_app_anchors_its_cone</a> {H : Type} (q : Quiver H) (app : H) :
+    cone q app app :=
+  ⟨Path.nil⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_cone_is_self_contained" href="#the_cone_is_self_contained">the_cone_is_self_contained</a> {H : Type} (q : Quiver H) (app : H) :
+    SelfContained q (cone q app) := by
+  intro e he hS
+  obtain ⟨p⟩ := hS
+  exact ⟨Path.cons he p⟩
+
+<span class="kw">theorem</span> <a class="decl" id="one_app_extracts_everything" href="#one_app_extracts_everything">one_app_extracts_everything</a> {H : Type} (q : Quiver H) (app : H) :
+    Extractable q app (cone q app)
+      ∧ ∀ S : H → Prop, Extractable q app S → ∀ x, S x → cone q app x :=
+  ⟨⟨the_cone_is_self_contained q app, fun _ h =&gt; h⟩, fun _ hS =&gt; hS.2⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_commons_is_self_contained" href="#the_commons_is_self_contained">the_commons_is_self_contained</a> {H : Type} (q : Quiver H) (a b : H) :
+    SelfContained q (commons q a b) :=
+  fun e he h =&gt;
+    ⟨the_cone_is_self_contained q a e he h.1, the_cone_is_self_contained q b e he h.2⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_commons_is_extractable_from_both" href="#the_commons_is_extractable_from_both">the_commons_is_extractable_from_both</a> {H : Type} (q : Quiver H) (a b : H) :
+    Extractable q a (commons q a b) ∧ Extractable q b (commons q a b) :=
+  ⟨⟨the_commons_is_self_contained q a b, fun _ h =&gt; h.1⟩,
+   ⟨the_commons_is_self_contained q a b, fun _ h =&gt; h.2⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_commons_is_the_largest_shared" href="#the_commons_is_the_largest_shared">the_commons_is_the_largest_shared</a> {H : Type} (q : Quiver H) (a b : H)
+    (S : H → Prop) (hA : Extractable q a S) (hB : Extractable q b S) :
+    ∀ x, S x → commons q a b x :=
+  fun x hx =&gt; ⟨hA.2 x hx, hB.2 x hx⟩
+
+<span class="kw">def</span> <a class="decl" id="basecamp" href="#basecamp">basecamp</a> : Quiver Nat := [(0, 1), (1, 2), (0, 3)]
+
+<span class="kw">def</span> <a class="decl" id="baseOnly" href="#baseOnly">baseOnly</a> : Nat → Prop := fun x =&gt; x = 0
+
+<span class="kw">def</span> <a class="decl" id="baseAndMid" href="#baseAndMid">baseAndMid</a> : Nat → Prop := fun x =&gt; x = 0 ∨ x = 1
+
+<span class="kw">def</span> <a class="decl" id="reach02" href="#reach02">reach02</a> : Path basecamp 0 2 :=
+  Path.cons (List.Mem.head _) (Path.cons (List.Mem.tail _ (List.Mem.head _)) Path.nil)
+
+<span class="kw">def</span> <a class="decl" id="reach12" href="#reach12">reach12</a> : Path basecamp 1 2 :=
+  Path.cons (List.Mem.tail _ (List.Mem.head _)) Path.nil
+
+<span class="kw">theorem</span> <a class="decl" id="base_only_extracts" href="#base_only_extracts">base_only_extracts</a> : Extractable basecamp 2 baseOnly := by
+  constructor
+  · intro e he
+    cases he with
+    | head =&gt; exact fun h =&gt; nomatch h
+    | tail _ h1 =&gt;
+        cases h1 with
+        | head =&gt; exact fun h =&gt; nomatch h
+        | tail _ h2 =&gt;
+            cases h2 with
+            | head =&gt; exact fun h =&gt; nomatch h
+            | tail _ h3 =&gt; exact nomatch h3
+  · intro x hx
+    cases hx
+    exact ⟨reach02⟩
+
+<span class="kw">theorem</span> <a class="decl" id="base_and_mid_extracts" href="#base_and_mid_extracts">base_and_mid_extracts</a> : Extractable basecamp 2 baseAndMid := by
+  constructor
+  · intro e he
+    cases he with
+    | head =&gt; exact fun _ =&gt; Or.inl rfl
+    | tail _ h1 =&gt;
+        cases h1 with
+        | head =&gt; exact fun h =&gt; absurd h (show ¬((2 : Nat) = 0 ∨ (2 : Nat) = 1) by decide)
+        | tail _ h2 =&gt;
+            cases h2 with
+            | head =&gt; exact fun h =&gt; absurd h (show ¬((3 : Nat) = 0 ∨ (3 : Nat) = 1) by decide)
+            | tail _ h3 =&gt; exact nomatch h3
+  · intro x hx
+    cases hx with
+    | inl h =&gt; cases h; exact ⟨reach02⟩
+    | inr h =&gt; cases h; exact ⟨reach12⟩
+
+<span class="kw">theorem</span> <a class="decl" id="one_app_pins_nothing" href="#one_app_pins_nothing">one_app_pins_nothing</a> :
+    Extractable basecamp 2 baseOnly ∧ Extractable basecamp 2 baseAndMid
+      ∧ baseAndMid 1 ∧ ¬ baseOnly 1 :=
+  ⟨base_only_extracts, base_and_mid_extracts, Or.inr rfl, fun h =&gt; nomatch h⟩
+
+<span class="kw">def</span> <a class="decl" id="basecampChart" href="#basecampChart">basecampChart</a> : Nat → Nat :=
+  fun x =&gt; if x = 2 then 2 else if x = 0 then 0 else 1
+
+<span class="kw">theorem</span> <a class="decl" id="basecamp_sorted" href="#basecamp_sorted">basecamp_sorted</a> : sortedBy basecampChart basecamp := by
+  intro e he
+  cases he with
+  | head =&gt; decide
+  | tail _ h1 =&gt;
+      cases h1 with
+      | head =&gt; decide
+      | tail _ h2 =&gt;
+          cases h2 with
+          | head =&gt; decide
+          | tail _ h3 =&gt; exact nomatch h3
+
+<span class="kw">theorem</span> <a class="decl" id="the_empty_walk_stays_home" href="#the_empty_walk_stays_home">the_empty_walk_stays_home</a> {H : Type} {q : Quiver H} :
+    {a b : H} → (p : Path q a b) → p.edges = [] → a = b
+  | _, _, Path.nil, _ =&gt; rfl
+  | _, _, Path.cons _ _, h =&gt; nomatch h
+
+<span class="kw">theorem</span> <a class="decl" id="mid_walks_only_upward" href="#mid_walks_only_upward">mid_walks_only_upward</a> (p : Path basecamp 1 3) : p.edges ≠ [] :=
+  fun h =&gt; absurd (the_empty_walk_stays_home p h) (by decide)
+
+<span class="kw">theorem</span> <a class="decl" id="the_base_is_common" href="#the_base_is_common">the_base_is_common</a> : commons basecamp 2 3 0 :=
+  ⟨⟨reach02⟩, ⟨Path.cons (List.Mem.tail _ (List.Mem.tail _ (List.Mem.head _))) Path.nil⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_second_app_draws_the_boundary" href="#the_second_app_draws_the_boundary">the_second_app_draws_the_boundary</a> :
+    cone basecamp 2 1 ∧ ¬ commons basecamp 2 3 1 := by
+  constructor
+  · exact ⟨reach12⟩
+  · intro h
+    obtain ⟨p⟩ := h.2
+    exact absurd (path_climbs basecamp_sorted p (mid_walks_only_upward p)) (by decide)
+
+<span class="kw">theorem</span> <a class="decl" id="activefoam_is_read_at_the_commons" href="#activefoam_is_read_at_the_commons">activefoam_is_read_at_the_commons</a> {H : Type} (q : Quiver H) (a b : H) :
+    (Extractable q a (commons q a b) ∧ Extractable q b (commons q a b))
+      ∧ (∀ S : H → Prop, Extractable q a S → Extractable q b S →
+          ∀ x, S x → commons q a b x)
+      ∧ (Extractable basecamp 2 baseOnly ∧ Extractable basecamp 2 baseAndMid
+          ∧ baseAndMid 1 ∧ ¬ baseOnly 1)
+      ∧ (cone basecamp 2 1 ∧ ¬ commons basecamp 2 3 1) :=
+  ⟨the_commons_is_extractable_from_both q a b,
+   the_commons_is_the_largest_shared q a b,
+   one_app_pins_nothing,
+   the_second_app_draws_the_boundary⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_app_anchors_its_cone&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_app_anchors_its_cone</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_cone_is_self_contained&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_cone_is_self_contained</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_app_extracts_everything&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_app_extracts_everything</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_commons_is_self_contained&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_commons_is_self_contained</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_commons_is_extractable_from_both&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_commons_is_extractable_from_both</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_commons_is_the_largest_shared&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_commons_is_the_largest_shared</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.base_only_extracts&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms base_only_extracts</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.base_and_mid_extracts&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms base_and_mid_extracts</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_app_pins_nothing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_app_pins_nothing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.basecamp_sorted&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms basecamp_sorted</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_empty_walk_stays_home&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_empty_walk_stays_home</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.mid_walks_only_upward&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms mid_walks_only_upward</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_base_is_common&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_base_is_common</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_second_app_draws_the_boundary&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_second_app_draws_the_boundary</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.activefoam_is_read_at_the_commons&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms activefoam_is_read_at_the_commons</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

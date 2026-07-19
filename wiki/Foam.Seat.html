@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Seat</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Seat</h1></header>
+<pre class="src">namespace Foam
+
+<span class="kw">structure</span> <a class="decl" id="Iso" href="#Iso">Iso</a> (A B : Type) where
+  fwd     : A → B
+  bwd     : B → A
+  fwd_bwd : ∀ b, fwd (bwd b) = b
+  bwd_fwd : ∀ a, bwd (fwd a) = a
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">structure</span> <a class="decl" id="Seat" href="#Seat">Seat</a> (G : Type) [Mul G] [One G] where
+  Pos     : Type
+  act     : G → Pos → Pos
+  one_act : ∀ p, act 1 p = p
+  mul_act : ∀ g h p, act (g * h) p = act g (act h p)
+  sub     : Pos → Pos → G
+  act_sub : ∀ p q, act (sub q p) p = q
+  sub_act : ∀ g p, sub (act g p) p = g
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.sub_self" href="#Seat.sub_self">Seat.sub_self</a> (S : Seat G) (p : S.Pos) : S.sub p p = 1 := by
+  have h := S.sub_act 1 p
+  rw [S.one_act] at h
+  exact h
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.sub_inv" href="#Seat.sub_inv">Seat.sub_inv</a> (S : Seat G) (p q : S.Pos) : S.sub q p * S.sub p q = 1 := by
+  have e : S.act (S.sub q p * S.sub p q) q = q := by
+    rw [S.mul_act, S.act_sub q p, S.act_sub p q]
+  have h := S.sub_act (S.sub q p * S.sub p q) q
+  rw [e, S.sub_self] at h
+  exact h.symm
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.sub_cocycle" href="#Seat.sub_cocycle">Seat.sub_cocycle</a> (S : Seat G) (p q r : S.Pos) :
+    S.sub p r = S.sub p q * S.sub q r := by
+  have e : S.act (S.sub p q * S.sub q r) r = p := by
+    rw [S.mul_act, S.act_sub r q, S.act_sub q p]
+  have h := S.sub_act (S.sub p q * S.sub q r) r
+  rw [e] at h
+  exact h
+
+<span class="kw">def</span> <a class="decl" id="Seat.chart" href="#Seat.chart">Seat.chart</a> (S : Seat G) (origin : S.Pos) : Iso S.Pos G where
+  fwd     := fun p =&gt; S.sub p origin
+  bwd     := fun g =&gt; S.act g origin
+  fwd_bwd := fun g =&gt; S.sub_act g origin
+  bwd_fwd := fun p =&gt; S.act_sub origin p
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.chart_equivariant" href="#Seat.chart_equivariant">Seat.chart_equivariant</a> (S : Seat G) (g : G) (p o : S.Pos) :
+    (S.chart o).fwd (S.act g p) = g * (S.chart o).fwd p := by
+  show S.sub (S.act g p) o = g * S.sub p o
+  have e : S.act (g * S.sub p o) o = S.act g p := by
+    rw [S.mul_act, S.act_sub o p]
+  have h := S.sub_act (g * S.sub p o) o
+  rw [e] at h
+  exact h
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.change_of_frame" href="#Seat.change_of_frame">Seat.change_of_frame</a> (S : Seat G) (o o&#x27; p : S.Pos) :
+    (S.chart o).fwd p = (S.chart o&#x27;).fwd p * S.sub o&#x27; o := by
+  show S.sub p o = S.sub p o&#x27; * S.sub o&#x27; o
+  exact S.sub_cocycle p o&#x27; o
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.chart_origin_dependent" href="#Seat.chart_origin_dependent">Seat.chart_origin_dependent</a> (S : Seat G) (o o&#x27; : S.Pos) (h : o ≠ o&#x27;) :
+    ∃ p, (S.chart o).fwd p ≠ (S.chart o&#x27;).fwd p := by
+  refine ⟨o, ?_⟩
+  show S.sub o o ≠ S.sub o o&#x27;
+  rw [S.sub_self]
+  intro hbad
+  apply h
+  have h1 := S.act_sub o&#x27; o
+  rw [← hbad, S.one_act] at h1
+  exact h1.symm
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.singleton_no_field" href="#Seat.singleton_no_field">Seat.singleton_no_field</a> (S : Seat G) (hsing : ∀ p q : S.Pos, p = q) (p o : S.Pos) :
+    S.sub p o = 1 := by rw [hsing p o]; exact S.sub_self o
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.two_observers_substantiate" href="#Seat.two_observers_substantiate">Seat.two_observers_substantiate</a> (S : Seat G) (p o : S.Pos) (h : p ≠ o) :
+    S.sub p o ≠ 1 := by
+  intro he
+  apply h
+  have hp := S.act_sub o p
+  rw [he, S.one_act] at hp
+  exact hp.symm
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.act_faithful" href="#Seat.act_faithful">Seat.act_faithful</a> (S : Seat G) (o : S.Pos) {g g&#x27; : G}
+    (h : S.act g o = S.act g&#x27; o) : g = g&#x27; := by
+  have e1 := S.sub_act g o
+  have e2 := S.sub_act g&#x27; o
+  rw [h] at e1
+  exact e1.symm.trans e2
+
+<span class="kw">theorem</span> <a class="decl" id="Seat.mul_assoc_at" href="#Seat.mul_assoc_at">Seat.mul_assoc_at</a> (S : Seat G) (o : S.Pos) (g h k : G) :
+    (g * h) * k = g * (h * k) := by
+  apply S.act_faithful o
+  rw [S.mul_act (g * h) k o, S.mul_act g h (S.act k o),
+      S.mul_act g (h * k) o, S.mul_act h k o]
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.sub_self&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.sub_self</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.singleton_no_field&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.singleton_no_field</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.two_observers_substantiate&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.two_observers_substantiate</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.sub_inv&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.sub_inv</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.sub_cocycle&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.sub_cocycle</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.chart_equivariant&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.chart_equivariant</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.change_of_frame&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.change_of_frame</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.chart_origin_dependent&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.chart_origin_dependent</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.act_faithful&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.act_faithful</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Seat.mul_assoc_at&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Seat.mul_assoc_at</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

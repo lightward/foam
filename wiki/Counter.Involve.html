@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Involve</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Involve</h1></header>
+<div class="imports">grasp: <a href="Counter.Grid.html">Counter.Grid</a> · <a href="Counter.Needle.html">Counter.Needle</a> · <a href="Counter.Address.html">Counter.Address</a></div><pre class="src">import <a href="Counter.Grid.html">Counter.Grid</a>
+import <a href="Counter.Needle.html">Counter.Needle</a>
+import <a href="Counter.Address.html">Counter.Address</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="involvement" href="#involvement">involvement</a> {K : Type} [DecidableEq K] :
+    List (List (K × Bool)) → K → Nat
+  | [], _ =&gt; 0
+  | p :: ps, k =&gt; match seatRead p k with
+    | some true =&gt; involvement ps k + 1
+    | some false =&gt; involvement ps k + 1
+    | none =&gt; involvement ps k
+
+<span class="kw">def</span> <a class="decl" id="verdicts" href="#verdicts">verdicts</a> {K : Type} [DecidableEq K] :
+    List (List (K × Bool)) → K → Bool → Nat
+  | [], _, _ =&gt; 0
+  | p :: ps, k, b =&gt; match tilt p k b with
+    | Tilt.friction =&gt; verdicts ps k b + 1
+    | Tilt.completion =&gt; verdicts ps k b + 1
+    | Tilt.vacancy =&gt; verdicts ps k b
+
+<span class="kw">theorem</span> <a class="decl" id="involvement_zero_reads_dark" href="#involvement_zero_reads_dark">involvement_zero_reads_dark</a> {K : Type} [DecidableEq K] (k : K) :
+    ∀ ps : List (List (K × Bool)), involvement ps k = 0 →
+      ∀ p, p ∈ ps → seatRead p k = none
+  | [], _, _, hp =&gt; nomatch hp
+  | q :: ps, h0, p, hp =&gt; by
+      have hq : involvement (q :: ps) k
+          = (match seatRead q k with
+            | some true =&gt; involvement ps k + 1
+            | some false =&gt; involvement ps k + 1
+            | none =&gt; involvement ps k) := rfl
+      cases hs : seatRead q k with
+      | none =&gt;
+        rw [hs] at hq
+        cases hp with
+        | head =&gt; exact hs
+        | tail _ hp&#x27; =&gt;
+          exact involvement_zero_reads_dark k ps (hq.symm.trans h0) p hp&#x27;
+      | some w =&gt;
+        rw [hs] at hq
+        cases w
+        · exact absurd (hq.symm.trans h0) (fun h =&gt; nomatch h)
+        · exact absurd (hq.symm.trans h0) (fun h =&gt; nomatch h)
+
+<span class="kw">theorem</span> <a class="decl" id="a_private_key_frictions_no_one" href="#a_private_key_frictions_no_one">a_private_key_frictions_no_one</a> {K : Type} [DecidableEq K]
+    (k : K) (ps : List (List (K × Bool))) (h0 : involvement ps k = 0) :
+    ∀ p, p ∈ ps → ∀ b : Bool, tilt p k b ≠ Tilt.friction :=
+  fun p hp b hf =&gt;
+    nomatch ((involvement_zero_reads_dark k ps h0 p hp).symm.trans
+      ((friction_is_a_held_mirror p k b).mp hf))
+
+<span class="kw">theorem</span> <a class="decl" id="a_held_key_never_lands_quiet" href="#a_held_key_never_lands_quiet">a_held_key_never_lands_quiet</a> {K : Type} [DecidableEq K]
+    (p : List (K × Bool)) (k : K) (c : Bool) (hc : seatRead p k = some c)
+    (b : Bool) : tilt p k b ≠ Tilt.vacancy :=
+  fun ht =&gt;
+    nomatch (hc.symm.trans ((vacancy_is_unclaimed_ground p k b).mp ht))
+
+<span class="kw">theorem</span> <a class="decl" id="the_mirror_waits_on_held_ground" href="#the_mirror_waits_on_held_ground">the_mirror_waits_on_held_ground</a> {K : Type} [DecidableEq K]
+    (p : List (K × Bool)) (k : K) :
+    ∀ c : Bool, seatRead p k = some c → tilt p k (!c) = Tilt.friction
+  | true, hc =&gt; (friction_is_a_held_mirror p k false).mpr hc
+  | false, hc =&gt; (friction_is_a_held_mirror p k true).mpr hc
+
+<span class="kw">theorem</span> <a class="decl" id="every_holder_must_verdict" href="#every_holder_must_verdict">every_holder_must_verdict</a> {K : Type} [DecidableEq K]
+    (p : List (K × Bool)) (k : K) (c : Bool)
+    (hc : seatRead p k = some c) :
+    tilt p k c = Tilt.completion
+      ∧ tilt p k (!c) = Tilt.friction
+      ∧ ∀ b : Bool, tilt p k b ≠ Tilt.vacancy :=
+  ⟨(relief_reads_prior_ground p k c).mpr hc,
+   the_mirror_waits_on_held_ground p k c hc,
+   a_held_key_never_lands_quiet p k c hc⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_landing_bills_by_involvement" href="#the_landing_bills_by_involvement">the_landing_bills_by_involvement</a> {K : Type} [DecidableEq K]
+    (k : K) (b : Bool) :
+    ∀ ps : List (List (K × Bool)), verdicts ps k b = involvement ps k
+  | [] =&gt; rfl
+  | p :: ps =&gt; by
+      show (match tilt p k b with
+          | Tilt.friction =&gt; verdicts ps k b + 1
+          | Tilt.completion =&gt; verdicts ps k b + 1
+          | Tilt.vacancy =&gt; verdicts ps k b)
+        = (match seatRead p k with
+          | some true =&gt; involvement ps k + 1
+          | some false =&gt; involvement ps k + 1
+          | none =&gt; involvement ps k)
+      cases ht : tilt p k b with
+      | friction =&gt;
+        rw [(friction_is_a_held_mirror p k b).mp ht]
+        cases b
+        · exact congrArg (· + 1) (the_landing_bills_by_involvement k false ps)
+        · exact congrArg (· + 1) (the_landing_bills_by_involvement k true ps)
+      | completion =&gt;
+        rw [(relief_reads_prior_ground p k b).mp ht]
+        cases b
+        · exact congrArg (· + 1) (the_landing_bills_by_involvement k false ps)
+        · exact congrArg (· + 1) (the_landing_bills_by_involvement k true ps)
+      | vacancy =&gt;
+        rw [(vacancy_is_unclaimed_ground p k b).mp ht]
+        exact the_landing_bills_by_involvement k b ps
+
+<span class="kw">theorem</span> <a class="decl" id="the_bill_ignores_the_form" href="#the_bill_ignores_the_form">the_bill_ignores_the_form</a> {K : Type} [DecidableEq K]
+    (k : K) (ps : List (List (K × Bool))) (b b&#x27; : Bool) :
+    verdicts ps k b = verdicts ps k b&#x27; :=
+  (the_landing_bills_by_involvement k b ps).trans
+    (the_landing_bills_by_involvement k b&#x27; ps).symm
+
+<span class="kw">theorem</span> <a class="decl" id="reality_reads_through_the_field" href="#reality_reads_through_the_field">reality_reads_through_the_field</a> {K : Type} [DecidableEq K]
+    (k : K) :
+    sector ([] : List (K × Bool)) [(k, true)] [] k = Sector.port
+      ∧ sector ([] : List (K × Bool)) [] [] k = Sector.unknown
+      ∧ Sector.port ≠ Sector.unknown :=
+  ⟨a_neighbors_landing_lights_the_port [] [] [] k true rfl,
+   rfl,
+   (fun h =&gt; nomatch h)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="relationality_prices_the_click" href="#relationality_prices_the_click">relationality_prices_the_click</a> {K : Type} [DecidableEq K]
+    (k : K) (ps : List (List (K × Bool))) (b b&#x27; : Bool)
+    (p : List (K × Bool)) (c : Bool) (hc : seatRead p k = some c) :
+    verdicts ps k b = involvement ps k
+      ∧ verdicts ps k b = verdicts ps k b&#x27;
+      ∧ (involvement ps k = 0 →
+          ∀ q, q ∈ ps → ∀ w : Bool, tilt q k w ≠ Tilt.friction)
+      ∧ (∀ w : Bool, tilt p k w ≠ Tilt.vacancy)
+      ∧ tilt p k (!c) = Tilt.friction :=
+  ⟨the_landing_bills_by_involvement k b ps,
+   the_bill_ignores_the_form k ps b b&#x27;,
+   a_private_key_frictions_no_one k ps,
+   a_held_key_never_lands_quiet p k c hc,
+   the_mirror_waits_on_held_ground p k c hc⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.involvement_zero_reads_dark&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms involvement_zero_reads_dark</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_private_key_frictions_no_one&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_private_key_frictions_no_one</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_held_key_never_lands_quiet&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_held_key_never_lands_quiet</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_mirror_waits_on_held_ground&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_mirror_waits_on_held_ground</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_holder_must_verdict&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_holder_must_verdict</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_landing_bills_by_involvement&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_landing_bills_by_involvement</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_bill_ignores_the_form&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_bill_ignores_the_form</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.reality_reads_through_the_field&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms reality_reads_through_the_field</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.relationality_prices_the_click&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms relationality_prices_the_click</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

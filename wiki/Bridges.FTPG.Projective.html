@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.FTPG.Projective</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.FTPG.Projective</h1></header>
+<div class="imports">grasp: Mathlib.Order.ModularLattice · Mathlib.Order.Atoms · Mathlib.Order.KrullDimension · Mathlib.Order.Height · Mathlib.LinearAlgebra.Basis.VectorSpace · Mathlib.LinearAlgebra.Span.Basic · Mathlib.LinearAlgebra.Dimension.Finrank · Mathlib.LinearAlgebra.Projectivization.Basic</div><pre class="src">import Mathlib.Order.ModularLattice
+import Mathlib.Order.Atoms
+import Mathlib.Order.KrullDimension
+import Mathlib.Order.Height
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.Projectivization.Basic
+
+namespace Foam.Bridges
+
+universe u
+
+<span class="kw">def</span> <a class="decl" id="ftpg_statement" href="#ftpg_statement">ftpg_statement</a> : Prop :=
+  ∀ (L : Type u) [Lattice L] [BoundedOrder L]
+    [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L]
+    (_h_irred : ∀ (a b : L), IsAtom a → IsAtom b → a ≠ b →
+      ∃ c : L, IsAtom c ∧ c ≤ a ⊔ b ∧ c ≠ a ∧ c ≠ b)
+    (_h_height : ∃ (a b c d : L), ⊥ &lt; a ∧ a &lt; b ∧ b &lt; c ∧ c &lt; d),
+    ∃ (D : Type u) (_ : DivisionRing D)
+      (V : Type u) (_ : AddCommGroup V) (_ : Module D V),
+    Nonempty (L ≃o Submodule D V)
+
+variable {L : Type u} [Lattice L] [BoundedOrder L]
+  [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L]
+
+omit [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="IsAtom.eq_of_le" href="#IsAtom.eq_of_le">IsAtom.eq_of_le</a> {a b : L} (ha : IsAtom a) (hb : IsAtom b) (h : a ≤ b) :
+    a = b :=
+  (hb.le_iff.mp h).resolve_left ha.1
+
+omit [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="atoms_disjoint" href="#atoms_disjoint">atoms_disjoint</a> {a b : L} (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) :
+    a ⊓ b = ⊥ := by
+  rcases ha.le_iff.mp inf_le_left with h | h
+  · exact h
+  · exfalso; apply hab
+    have hab&#x27; : a ≤ b := h ▸ inf_le_right
+    exact le_antisymm hab&#x27; (hb.le_iff.mp hab&#x27; |&gt;.resolve_left ha.1 ▸ le_refl b)
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="atom_covBy_join" href="#atom_covBy_join">atom_covBy_join</a> {a b : L} (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) :
+    a ⋖ a ⊔ b := by
+  have h_meet : a ⊓ b = ⊥ := atoms_disjoint ha hb hab
+  exact covBy_sup_of_inf_covBy_of_inf_covBy_left (h_meet ▸ ha.bot_covBy) (h_meet ▸ hb.bot_covBy)
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="third_atom_on_line" href="#third_atom_on_line">third_atom_on_line</a> {a b : L} (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    ∃ c : L, IsAtom c ∧ c ≤ a ⊔ b ∧ c ≠ a ∧ c ≠ b ∧ a ⊔ b = a ⊔ c := by
+  obtain ⟨c, hc_atom, hc_le, hc_ne_a, hc_ne_b⟩ := h_irred a b ha hb hab
+  refine ⟨c, hc_atom, hc_le, hc_ne_a, hc_ne_b, ?_⟩
+  have h_cov := atom_covBy_join ha hb hab
+  have h_c_not_le_a : ¬ c ≤ a := by
+    intro hle
+    exact hc_ne_a (le_antisymm hle (ha.le_iff.mp hle |&gt;.resolve_left hc_atom.1 ▸ le_refl a))
+  have h_a_lt_ac : a &lt; a ⊔ c := lt_of_le_of_ne le_sup_left (by
+    intro heq; exact h_c_not_le_a (heq ▸ le_sup_right))
+  have h_ac_le_ab : a ⊔ c ≤ a ⊔ b := sup_le le_sup_left hc_le
+  exact ((h_cov.eq_or_eq h_a_lt_ac.le h_ac_le_ab).resolve_left (ne_of_gt h_a_lt_ac)).symm
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="line_covers_its_atoms" href="#line_covers_its_atoms">line_covers_its_atoms</a> {a b c : L}
+    (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b)
+    (hc : IsAtom c) (hc_le : c ≤ a ⊔ b) :
+    c ⋖ a ⊔ b := by
+  by_cases hca : c = a
+  · subst hca; exact atom_covBy_join hc hb hab
+  by_cases hcb : c = b
+  · subst hcb; rw [sup_comm]; exact atom_covBy_join hc ha (Ne.symm hab)
+  · have h_cov_ab := atom_covBy_join ha hb hab
+    have h_c_not_le_a : ¬ c ≤ a := by
+      intro hle; exact hca (le_antisymm hle (ha.le_iff.mp hle |&gt;.resolve_left hc.1 ▸ le_refl a))
+    have h_a_lt_ac : a &lt; a ⊔ c := lt_of_le_of_ne le_sup_left (by
+      intro heq; exact h_c_not_le_a (heq ▸ le_sup_right))
+    have h_eq : a ⊔ b = a ⊔ c :=
+      ((h_cov_ab.eq_or_eq h_a_lt_ac.le (sup_le le_sup_left hc_le)).resolve_left
+        (ne_of_gt h_a_lt_ac)).symm
+    have hac : a ≠ c := fun h =&gt; hca h.symm
+    have h_cov_ca := atom_covBy_join hc ha hac.symm
+    rwa [sup_comm c a, ← h_eq] at h_cov_ca
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="line_eq_of_atom_le" href="#line_eq_of_atom_le">line_eq_of_atom_le</a> {a b c : L}
+    (ha : IsAtom a) (hb : IsAtom b) (hc : IsAtom c)
+    (hab : a ≠ b) (hac : a ≠ c) (_hbc : b ≠ c)
+    (hc_le : c ≤ a ⊔ b) :
+    a ⊔ b = a ⊔ c := by
+  have h_cov := atom_covBy_join ha hb hab
+  have h_c_not_le_a : ¬ c ≤ a := by
+    intro hle; exact hac.symm (le_antisymm hle (ha.le_iff.mp hle |&gt;.resolve_left hc.1 ▸ le_refl a))
+  have h_a_lt_ac : a &lt; a ⊔ c := lt_of_le_of_ne le_sup_left (by
+    intro heq; exact h_c_not_le_a (heq ▸ le_sup_right))
+  exact ((h_cov.eq_or_eq h_a_lt_ac.le (sup_le le_sup_left hc_le)).resolve_left
+    (ne_of_gt h_a_lt_ac)).symm
+
+omit [ComplementedLattice L] in
+
+<span class="kw">theorem</span> <a class="decl" id="line_height_two" href="#line_height_two">line_height_two</a> {a b : L} (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b)
+    {x : L} (hx_pos : ⊥ &lt; x) (hx_lt : x &lt; a ⊔ b) :
+    IsAtom x := by
+  obtain ⟨s, hs_lub, hs_atoms⟩ := IsAtomistic.isLUB_atoms x
+  have hs_ne : s.Nonempty := by
+    by_contra hs_empty
+    simp only [Set.not_nonempty_iff_eq_empty] at hs_empty
+    subst hs_empty
+    have : x ≤ ⊥ := hs_lub.2 (fun _ hx =&gt; (Set.mem_empty_iff_false _).mp hx |&gt;.elim)
+    exact ne_of_gt hx_pos (le_antisymm this bot_le)
+  obtain ⟨p, hp_mem⟩ := hs_ne
+  have hp_atom := hs_atoms p hp_mem
+  have hp_le_x : p ≤ x := hs_lub.1 hp_mem
+  have hp_cov := line_covers_its_atoms ha hb hab hp_atom (le_trans hp_le_x hx_lt.le)
+  rcases hp_cov.eq_or_eq hp_le_x hx_lt.le with h | h
+  · exact h ▸ hp_atom
+  · exact absurd h (ne_of_lt hx_lt)
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="line_covBy_plane" href="#line_covBy_plane">line_covBy_plane</a> {a b c : L}
+    (_ha : IsAtom a) (_hb : IsAtom b) (hc : IsAtom c)
+    (_hab : a ≠ b) (_hac : a ≠ c) (_hbc : b ≠ c)
+    (h_not_collinear : ¬ c ≤ a ⊔ b) :
+    a ⊔ b ⋖ a ⊔ b ⊔ c := by
+  have h_meet : c ⊓ (a ⊔ b) = ⊥ := by
+    rcases hc.le_iff.mp inf_le_left with h | h
+    · exact h
+    · exact absurd (h ▸ inf_le_right) h_not_collinear
+  have h1 := covBy_sup_of_inf_covBy_left (h_meet ▸ hc.bot_covBy)
+  rw [show c ⊔ (a ⊔ b) = a ⊔ b ⊔ c from sup_comm _ _] at h1
+  exact h1
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="modular_intersection" href="#modular_intersection">modular_intersection</a> {a b c : L}
+    (ha : IsAtom a) (hb : IsAtom b) (hc : IsAtom c)
+    (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c)
+    (h_not_collinear : ¬ c ≤ a ⊔ b) :
+    (a ⊔ b) ⊓ (a ⊔ c) = a := by
+  rw [sup_inf_assoc_of_le b (le_sup_left : a ≤ a ⊔ c)]
+  have : b ⊓ (a ⊔ c) = ⊥ := by
+    rcases hb.le_iff.mp inf_le_left with h | h
+    · exact h
+    · exfalso; apply h_not_collinear
+      have hb_le : b ≤ a ⊔ c := h ▸ inf_le_right
+      exact (line_eq_of_atom_le ha hc hb hac hab hbc.symm hb_le) ▸ le_sup_right
+  rw [this, sup_bot_eq]
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="covBy_inf_disjoint_atom" href="#covBy_inf_disjoint_atom">covBy_inf_disjoint_atom</a> {x y z : L}
+    (h_cov : x ⋖ z) (hy_le : y ≤ z) (hy_not_le : ¬ y ≤ x) (h_disj : x ⊓ y = ⊥) :
+    ⊥ ⋖ y := by
+  have h_join : x ⊔ y = z := by
+    have h_lt : x &lt; x ⊔ y := lt_of_le_of_ne le_sup_left
+      (fun h =&gt; hy_not_le (le_trans le_sup_right (ge_of_eq h)))
+    exact (h_cov.eq_or_eq h_lt.le (sup_le h_cov.le hy_le)).resolve_left (ne_of_gt h_lt)
+  have h_inf_cov : x ⊓ y ⋖ y := by
+    rw [← h_join] at h_cov
+    exact IsLowerModularLattice.inf_covBy_of_covBy_sup h_cov
+  rwa [h_disj] at h_inf_cov
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="lines_meet_if_coplanar" href="#lines_meet_if_coplanar">lines_meet_if_coplanar</a> {l₁ l₂ z : L}
+    (h_cov : l₁ ⋖ z) (hl₂_le : l₂ ≤ z) (hl₂_not : ¬ l₂ ≤ l₁)
+    {p : L} (hp : IsAtom p) (hp_lt : p &lt; l₂) :
+    l₁ ⊓ l₂ ≠ ⊥ := by
+  intro h_disj
+  exact (covBy_inf_disjoint_atom h_cov hl₂_le hl₂_not h_disj).2 hp.bot_lt hp_lt
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="veblen_young" href="#veblen_young">veblen_young</a> {a b c d : L}
+    (ha : IsAtom a) (hb : IsAtom b) (hc : IsAtom c) (hd : IsAtom d)
+    (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c) (had : a ≠ d)
+    (h_nc : ¬ c ≤ a ⊔ b)
+    (hd_le : d ≤ a ⊔ b ⊔ c)
+    (_hd_not_bc : ¬ d ≤ b ⊔ c) :
+    (b ⊔ c) ⊓ (a ⊔ d) ≠ ⊥ := by
+  have ha_not_bc : ¬ a ≤ b ⊔ c := by
+    intro hle; apply h_nc
+    calc c ≤ b ⊔ c := le_sup_right
+      _ = b ⊔ a := line_eq_of_atom_le hb hc ha hbc hab.symm hac.symm hle
+      _ = a ⊔ b := sup_comm b a
+  have ha_meet_bc : a ⊓ (b ⊔ c) = ⊥ := by
+    rcases ha.le_iff.mp inf_le_left with h | h
+    · exact h
+    · exact absurd (h ▸ inf_le_right) ha_not_bc
+  have h_plane_covers_bc : b ⊔ c ⋖ a ⊔ (b ⊔ c) :=
+    covBy_sup_of_inf_covBy_left (ha_meet_bc ▸ ha.bot_covBy)
+  have h_ad_le_plane : a ⊔ d ≤ a ⊔ b ⊔ c :=
+    sup_le (le_sup_of_le_left le_sup_left) hd_le
+  have h_join_le : (b ⊔ c) ⊔ (a ⊔ d) ≤ a ⊔ (b ⊔ c) := by
+    rw [(sup_assoc a b c).symm]
+    exact sup_le (sup_le (le_sup_right.trans le_sup_left) le_sup_right) h_ad_le_plane
+  have h_bc_lt_join : b ⊔ c &lt; (b ⊔ c) ⊔ (a ⊔ d) :=
+    lt_of_le_of_ne le_sup_left (fun h =&gt; ha_not_bc
+      (le_trans le_sup_left (le_trans le_sup_right (ge_of_eq h))))
+  have h_join_eq : (b ⊔ c) ⊔ (a ⊔ d) = a ⊔ (b ⊔ c) :=
+    (h_plane_covers_bc.eq_or_eq h_bc_lt_join.le h_join_le).resolve_left
+      (ne_of_gt h_bc_lt_join)
+  intro h_disjoint
+  rw [← h_join_eq] at h_plane_covers_bc
+  have h_cov_ad : (b ⊔ c) ⊓ (a ⊔ d) ⋖ (a ⊔ d) :=
+    IsLowerModularLattice.inf_covBy_of_covBy_sup h_plane_covers_bc
+  rw [h_disjoint] at h_cov_ad
+  exact h_cov_ad.2
+    (show ⊥ &lt; a from ha.bot_lt)
+    (show a &lt; a ⊔ d from lt_of_le_of_ne le_sup_left (by
+      intro heq
+      exact had (le_antisymm (ha.le_iff.mp (heq ▸ le_sup_right) |&gt;.resolve_left hd.1 ▸ le_refl a)
+        (heq ▸ le_sup_right))))
+
+omit [ComplementedLattice L] in
+
+<span class="kw">theorem</span> <a class="decl" id="meet_of_lines_is_atom" href="#meet_of_lines_is_atom">meet_of_lines_is_atom</a> {a b c d : L}
+    (ha : IsAtom a) (hb : IsAtom b) (_hc : IsAtom c) (_hd : IsAtom d)
+    (hab : a ≠ b) (_hcd : c ≠ d)
+    (h_not_le : ¬ a ⊔ b ≤ c ⊔ d)
+    (h_meet_ne : (a ⊔ b) ⊓ (c ⊔ d) ≠ ⊥) :
+    IsAtom ((a ⊔ b) ⊓ (c ⊔ d)) :=
+  line_height_two ha hb hab
+    (bot_lt_iff_ne_bot.mpr h_meet_ne)
+    (lt_of_le_of_ne inf_le_left (fun heq =&gt; h_not_le (heq ▸ inf_le_right)))
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="two_lines" href="#two_lines">two_lines</a> {X Y Z l₁ : L}
+    (hX : IsAtom X) (hY : IsAtom Y) (hZ : IsAtom Z)
+    (hXZ : X ≠ Z)
+    (hX_l : X ≤ l₁) (hY_l : Y ≤ l₁)
+    (hY_XZ : Y ≤ X ⊔ Z)
+    (hZ_not_l : ¬ Z ≤ l₁)
+    (hX_cov : X ⋖ l₁) :
+    X = Y := by
+
+  have h_not_le : ¬ l₁ ≤ X ⊔ Z := by
+    intro hle
+    exact hZ_not_l (((atom_covBy_join hX hZ hXZ).eq_or_eq hX_cov.lt.le hle).resolve_left
+      (ne_of_gt hX_cov.lt) ▸ le_sup_right)
+  have h_lt : l₁ ⊓ (X ⊔ Z) &lt; l₁ := lt_of_le_of_ne inf_le_left
+    (fun h =&gt; h_not_le (h ▸ inf_le_right))
+  have h_meet_eq_X : l₁ ⊓ (X ⊔ Z) = X :=
+    (hX_cov.eq_or_eq (le_inf hX_l le_sup_left) h_lt.le).resolve_right h_lt.ne
+  have hY_le_X : Y ≤ X := h_meet_eq_X ▸ le_inf hY_l hY_XZ
+  exact ((hX.le_iff.mp hY_le_X).resolve_left hY.1).symm
+
+noncomputable def project (c p l : L) : L := (p ⊔ c) ⊓ l
+
+omit [ComplementedLattice L] in
+
+<span class="kw">theorem</span> <a class="decl" id="project_is_atom" href="#project_is_atom">project_is_atom</a> {c p a b : L}
+    (hc : IsAtom c) (hp : IsAtom p) (hcp : c ≠ p)
+    (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b)
+    (hc_not_l : ¬ c ≤ a ⊔ b) (hp_not_l : ¬ p ≤ a ⊔ b)
+    (h_coplanar : p ⊔ c ≤ (a ⊔ b) ⊔ c) :
+    IsAtom (project c p (a ⊔ b)) := by
+  unfold project
+  have hc_meet : c ⊓ (a ⊔ b) = ⊥ := by
+    rcases hc.le_iff.mp inf_le_left with h | h
+    · exact h
+    · exact absurd (h ▸ inf_le_right) hc_not_l
+  have h_plane_cov : (a ⊔ b) ⋖ (a ⊔ b) ⊔ c := by
+    rw [show (a ⊔ b) ⊔ c = c ⊔ (a ⊔ b) from sup_comm _ _]
+    exact covBy_sup_of_inf_covBy_left (hc_meet ▸ hc.bot_covBy)
+  have h_pc_not_le : ¬ p ⊔ c ≤ a ⊔ b :=
+    fun h =&gt; hc_not_l (le_trans le_sup_right h)
+  have h_c_not_le_p : ¬ c ≤ p := by
+    intro hle
+    exact hcp.symm (le_antisymm (hp.le_iff.mp hle |&gt;.resolve_left hc.1 ▸ le_refl p) hle)
+  have h_p_lt_pc : p &lt; p ⊔ c := lt_of_le_of_ne le_sup_left
+    (fun h =&gt; h_c_not_le_p (h ▸ le_sup_right))
+  have h_meet_ne : (a ⊔ b) ⊓ (p ⊔ c) ≠ ⊥ :=
+    lines_meet_if_coplanar h_plane_cov h_coplanar h_pc_not_le hp h_p_lt_pc
+  apply line_height_two ha hb hab
+  · exact bot_lt_iff_ne_bot.mpr (by rwa [inf_comm] at h_meet_ne)
+  · apply lt_of_le_of_ne inf_le_right
+    intro heq
+    have hab_le : a ⊔ b ≤ p ⊔ c := heq ▸ inf_le_left
+    have ha_cov_pc := line_covers_its_atoms hp hc hcp.symm ha (le_trans le_sup_left hab_le)
+    rcases ha_cov_pc.eq_or_eq (atom_covBy_join ha hb hab |&gt;.lt |&gt;.le) hab_le with h | h
+    · exact ne_of_gt (atom_covBy_join ha hb hab |&gt;.lt) h
+    · exact hp_not_l (h ▸ le_sup_left)
+
+omit [BoundedOrder L] [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="planes_meet_covBy" href="#planes_meet_covBy">planes_meet_covBy</a> {π₁ π₂ s : L}
+    (h₁ : π₁ ⋖ s) (h₂ : π₂ ⋖ s) (h_ne : π₁ ≠ π₂) :
+    (π₁ ⊓ π₂) ⋖ π₁ ∧ (π₁ ⊓ π₂) ⋖ π₂ := by
+  have h₂_not_le : ¬ π₂ ≤ π₁ := by
+    intro hle
+    rcases h₂.eq_or_eq hle h₁.le with h | h
+    · exact h_ne h
+    · exact ne_of_lt h₁.lt h
+  have h_join : π₁ ⊔ π₂ = s := by
+    have h_lt : π₁ &lt; π₁ ⊔ π₂ := lt_of_le_of_ne le_sup_left
+      (fun h =&gt; h₂_not_le (le_trans le_sup_right (ge_of_eq h)))
+    exact (h₁.eq_or_eq h_lt.le (sup_le h₁.le h₂.le)).resolve_left (ne_of_gt h_lt)
+  constructor
+  ·
+    rw [← h_join] at h₂
+    rw [sup_comm] at h₂
+    have := IsLowerModularLattice.inf_covBy_of_covBy_sup h₂
+    rwa [inf_comm] at this
+  ·
+    rw [← h_join] at h₁
+    exact IsLowerModularLattice.inf_covBy_of_covBy_sup h₁
+
+omit [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="desargues_nonplanar" href="#desargues_nonplanar">desargues_nonplanar</a>
+    {o a₁ a₂ a₃ b₁ b₂ b₃ : L}
+
+    (_ho : IsAtom o) (_ha₁ : IsAtom a₁) (_ha₂ : IsAtom a₂) (_ha₃ : IsAtom a₃)
+    (_hb₁ : IsAtom b₁) (_hb₂ : IsAtom b₂) (_hb₃ : IsAtom b₃)
+
+    (_hb₁_on : b₁ ≤ o ⊔ a₁) (_hb₂_on : b₂ ≤ o ⊔ a₂) (_hb₃_on : b₃ ≤ o ⊔ a₃)
+
+    (πA : L) (hπA : πA = a₁ ⊔ a₂ ⊔ a₃)
+    (πB : L) (hπB : πB = b₁ ⊔ b₂ ⊔ b₃)
+
+    :
+
+    (a₁ ⊔ a₂) ⊓ (b₁ ⊔ b₂) ≤ πA ⊓ πB ∧
+    (a₁ ⊔ a₃) ⊓ (b₁ ⊔ b₃) ≤ πA ⊓ πB ∧
+    (a₂ ⊔ a₃) ⊓ (b₂ ⊔ b₃) ≤ πA ⊓ πB := by
+  subst hπA; subst hπB
+
+  refine ⟨le_inf (inf_le_left.trans ?_) (inf_le_right.trans ?_),
+          le_inf (inf_le_left.trans ?_) (inf_le_right.trans ?_),
+          le_inf (inf_le_left.trans ?_) (inf_le_right.trans ?_)⟩
+
+  ·
+    exact le_sup_left
+  ·
+    exact le_sup_left
+  ·
+    exact sup_le (le_sup_left.trans le_sup_left) le_sup_right
+  ·
+    exact sup_le (le_sup_left.trans le_sup_left) le_sup_right
+  ·
+    exact sup_le (le_sup_right.trans le_sup_left) le_sup_right
+  ·
+    exact sup_le (le_sup_right.trans le_sup_left) le_sup_right
+
+omit [ComplementedLattice L] in
+
+<span class="kw">theorem</span> <a class="decl" id="project_injective" href="#project_injective">project_injective</a> {c a b p q : L}
+    (hc : IsAtom c) (hp : IsAtom p) (hq : IsAtom q)
+    (ha : IsAtom a) (hb : IsAtom b)
+    (hcp : c ≠ p) (hcq : c ≠ q) (hpq : p ≠ q) (hab : a ≠ b)
+    (hc_not_l : ¬ c ≤ a ⊔ b)
+    (hp_not_l : ¬ p ≤ a ⊔ b) (_hq_not_l : ¬ q ≤ a ⊔ b)
+    (hp_coplanar : p ⊔ c ≤ (a ⊔ b) ⊔ c)
+    (_hq_coplanar : q ⊔ c ≤ (a ⊔ b) ⊔ c)
+
+    (hpq_diff : p ⊔ c ≠ q ⊔ c) :
+    project c p (a ⊔ b) ≠ project c q (a ⊔ b) := by
+  unfold project
+  intro heq
+
+  have hm_atom := project_is_atom hc hp hcp ha hb hab hc_not_l hp_not_l hp_coplanar
+  unfold project at hm_atom
+
+  have hm_le_pc : (p ⊔ c) ⊓ (a ⊔ b) ≤ p ⊔ c := inf_le_left
+  have hm_le_qc : (p ⊔ c) ⊓ (a ⊔ b) ≤ q ⊔ c := heq ▸ inf_le_left
+  have hm_le_ab : (p ⊔ c) ⊓ (a ⊔ b) ≤ a ⊔ b := inf_le_right
+
+  have hm_le_meet : (p ⊔ c) ⊓ (a ⊔ b) ≤ (p ⊔ c) ⊓ (q ⊔ c) :=
+    le_inf hm_le_pc hm_le_qc
+
+  have hq_not_pc : ¬ q ≤ p ⊔ c := by
+    intro hle
+    apply hpq_diff
+    rw [sup_comm p c, sup_comm q c]
+    exact line_eq_of_atom_le hc hp hq hcp hcq hpq (sup_comm p c ▸ hle)
+
+  have h_meet_eq : (c ⊔ p) ⊓ (c ⊔ q) = c :=
+    modular_intersection hc hp hq hcp hcq hpq (sup_comm c p ▸ hq_not_pc)
+
+  have hm_le_c : (p ⊔ c) ⊓ (a ⊔ b) ≤ c := by
+    calc (p ⊔ c) ⊓ (a ⊔ b)
+        ≤ (p ⊔ c) ⊓ (q ⊔ c) := hm_le_meet
+      _ = (c ⊔ p) ⊓ (c ⊔ q) := by rw [sup_comm p c, sup_comm q c]
+      _ = c := h_meet_eq
+
+  rcases hc.le_iff.mp hm_le_c with h | h
+  · exact hm_atom.1 h
+  · exact hc_not_l (h ▸ hm_le_ab)
+
+<span class="kw">def</span> <a class="decl" id="AtomsOn" href="#AtomsOn">AtomsOn</a> (l : L) : Type u := {a : L // IsAtom a ∧ a ≤ l}
+
+<span class="kw">def</span> <a class="decl" id="AtomsOn.mk_left" href="#AtomsOn.mk_left">AtomsOn.mk_left</a> {a b : L} (ha : IsAtom a) (_hb : IsAtom b) (_hab : a ≠ b) :
+    AtomsOn (a ⊔ b) :=
+  ⟨a, ha, le_sup_left⟩
+
+<span class="kw">def</span> <a class="decl" id="AtomsOn.mk_right" href="#AtomsOn.mk_right">AtomsOn.mk_right</a> {a b : L} (_ha : IsAtom a) (hb : IsAtom b) (_hab : a ≠ b) :
+    AtomsOn (a ⊔ b) :=
+  ⟨b, hb, le_sup_right⟩
+
+noncomputable def projectOn {c a b : L}
+    (hc : IsAtom c) (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b)
+    (hc_not : ¬ c ≤ a ⊔ b) :
+
+    {p : L // IsAtom p ∧ ¬ p ≤ a ⊔ b ∧ p ⊔ c ≤ (a ⊔ b) ⊔ c ∧ c ≠ p} →
+    AtomsOn (a ⊔ b) :=
+  fun ⟨p, hp_atom, hp_not, hp_cop, hcp⟩ =&gt;
+    ⟨project c p (a ⊔ b),
+     project_is_atom hc hp_atom hcp ha hb hab hc_not hp_not hp_cop,
+     inf_le_right⟩
+
+omit [ComplementedLattice L] in
+
+<span class="kw">theorem</span> <a class="decl" id="perspect_atom" href="#perspect_atom">perspect_atom</a> {p c a₂ b₂ : L}
+    (hc : IsAtom c) (hp : IsAtom p) (hpc : p ≠ c)
+    (_ha₂ : IsAtom a₂) (_hb₂ : IsAtom b₂) (_hab₂ : a₂ ≠ b₂)
+    (hc_not : ¬ c ≤ a₂ ⊔ b₂)
+    (h_in_plane : p ⊔ c ≤ (a₂ ⊔ b₂) ⊔ c) :
+    IsAtom ((p ⊔ c) ⊓ (a₂ ⊔ b₂)) := by
+
+  have hc_meet : c ⊓ (a₂ ⊔ b₂) = ⊥ := by
+    rcases hc.le_iff.mp inf_le_left with h | h
+    · exact h
+    · exact absurd (h ▸ inf_le_right) hc_not
+  have h_cov : (a₂ ⊔ b₂) ⋖ (a₂ ⊔ b₂) ⊔ c := by
+    rw [show (a₂ ⊔ b₂) ⊔ c = c ⊔ (a₂ ⊔ b₂) from sup_comm _ _]
+    exact covBy_sup_of_inf_covBy_left (hc_meet ▸ hc.bot_covBy)
+
+  have h_pc_not : ¬ p ⊔ c ≤ a₂ ⊔ b₂ :=
+    fun h =&gt; hc_not (le_trans le_sup_right h)
+
+  have hc_not_le_p : ¬ c ≤ p := by
+    intro hle
+    exact hpc.symm (hp.le_iff.mp hle |&gt;.resolve_left hc.1)
+  have hp_lt_pc : p &lt; p ⊔ c := lt_of_le_of_ne le_sup_left
+    (fun h =&gt; hc_not_le_p (h ▸ le_sup_right))
+
+  have h_meet_ne : (a₂ ⊔ b₂) ⊓ (p ⊔ c) ≠ ⊥ :=
+    lines_meet_if_coplanar h_cov h_in_plane h_pc_not hp hp_lt_pc
+
+  exact line_height_two hp hc hpc
+    (bot_lt_iff_ne_bot.mpr (by rwa [inf_comm] at h_meet_ne))
+    (lt_of_le_of_ne inf_le_left (fun h =&gt; h_pc_not (h ▸ inf_le_right)))
+
+noncomputable def perspectivity {c a₁ b₁ a₂ b₂ : L}
+    (hc : IsAtom c) (_ha₁ : IsAtom a₁) (_hb₁ : IsAtom b₁) (ha₂ : IsAtom a₂) (hb₂ : IsAtom b₂)
+    (_hab₁ : a₁ ≠ b₁) (hab₂ : a₂ ≠ b₂)
+    (hc_not_l₁ : ¬ c ≤ a₁ ⊔ b₁) (hc_not_l₂ : ¬ c ≤ a₂ ⊔ b₂)
+    (h_coplanar : a₁ ⊔ b₁ ⊔ c = a₂ ⊔ b₂ ⊔ c) :
+    AtomsOn (a₁ ⊔ b₁) → AtomsOn (a₂ ⊔ b₂) :=
+  fun ⟨p, hp_atom, hp_le⟩ =&gt;
+    have hpc : p ≠ c := fun h =&gt; hc_not_l₁ (h ▸ hp_le)
+    have hp_in_plane : p ⊔ c ≤ (a₂ ⊔ b₂) ⊔ c :=
+      h_coplanar ▸ sup_le (le_sup_of_le_left hp_le) le_sup_right
+    ⟨(p ⊔ c) ⊓ (a₂ ⊔ b₂),
+     perspect_atom hc hp_atom hpc ha₂ hb₂ hab₂ hc_not_l₂ hp_in_plane,
+     inf_le_right⟩
+
+omit [ComplementedLattice L] in
+
+<span class="kw">theorem</span> <a class="decl" id="perspectivity_injective" href="#perspectivity_injective">perspectivity_injective</a> {c a₁ b₁ a₂ b₂ : L}
+    (hc : IsAtom c)
+    (ha₁ : IsAtom a₁) (hb₁ : IsAtom b₁) (ha₂ : IsAtom a₂) (hb₂ : IsAtom b₂)
+    (hab₁ : a₁ ≠ b₁) (hab₂ : a₂ ≠ b₂)
+    (hc_not_l₁ : ¬ c ≤ a₁ ⊔ b₁) (hc_not_l₂ : ¬ c ≤ a₂ ⊔ b₂)
+    (h_coplanar : a₁ ⊔ b₁ ⊔ c = a₂ ⊔ b₂ ⊔ c)
+    {p q : AtomsOn (a₁ ⊔ b₁)} (hpq : p ≠ q) :
+    perspectivity hc ha₁ hb₁ ha₂ hb₂ hab₁ hab₂ hc_not_l₁ hc_not_l₂ h_coplanar p ≠
+    perspectivity hc ha₁ hb₁ ha₂ hb₂ hab₁ hab₂ hc_not_l₁ hc_not_l₂ h_coplanar q := by
+  obtain ⟨p, hp_atom, hp_le⟩ := p
+  obtain ⟨q, hq_atom, hq_le⟩ := q
+
+  have hpq_val : p ≠ q := fun h =&gt; hpq (Subtype.ext h)
+  simp only [perspectivity]
+  intro heq
+
+  have heq_val : (p ⊔ c) ⊓ (a₂ ⊔ b₂) = (q ⊔ c) ⊓ (a₂ ⊔ b₂) := congrArg Subtype.val heq
+  have hpc : p ≠ c := fun h =&gt; hc_not_l₁ (h ▸ hp_le)
+  have hqc : q ≠ c := fun h =&gt; hc_not_l₁ (h ▸ hq_le)
+  by_cases h_lines : p ⊔ c = q ⊔ c
+  ·
+    have h_ne : a₁ ⊔ b₁ ≠ p ⊔ c := fun h =&gt; hc_not_l₁ (h ▸ le_sup_right)
+    have hl₁_not_le : ¬ (a₁ ⊔ b₁) ≤ p ⊔ c := by
+      intro hle
+      apply h_ne
+      have ha₁_cov := line_covers_its_atoms hp_atom hc hpc ha₁ (le_trans le_sup_left hle)
+      exact (ha₁_cov.eq_or_eq (atom_covBy_join ha₁ hb₁ hab₁).lt.le hle).resolve_left
+        (ne_of_gt (atom_covBy_join ha₁ hb₁ hab₁).lt)
+    have hp_le_meet : p ≤ (a₁ ⊔ b₁) ⊓ (p ⊔ c) := le_inf hp_le le_sup_left
+    have hq_le_meet : q ≤ (a₁ ⊔ b₁) ⊓ (p ⊔ c) := le_inf hq_le (h_lines ▸ le_sup_left)
+    have h_meet_atom : IsAtom ((a₁ ⊔ b₁) ⊓ (p ⊔ c)) :=
+      line_height_two ha₁ hb₁ hab₁
+        (bot_lt_iff_ne_bot.mpr (fun h =&gt; hp_atom.1 (le_antisymm (h ▸ hp_le_meet) bot_le)))
+        (lt_of_le_of_ne inf_le_left (fun h =&gt; hl₁_not_le (h ▸ inf_le_right)))
+    have hp_eq := le_antisymm hp_le_meet
+      (h_meet_atom.le_iff.mp hp_le_meet |&gt;.resolve_left hp_atom.1 ▸ le_refl _)
+    have hq_eq := le_antisymm hq_le_meet
+      (h_meet_atom.le_iff.mp hq_le_meet |&gt;.resolve_left hq_atom.1 ▸ le_refl _)
+    exact absurd (hp_eq.trans hq_eq.symm) hpq_val
+  ·
+    have hm_le_pc : (p ⊔ c) ⊓ (a₂ ⊔ b₂) ≤ p ⊔ c := inf_le_left
+    have hm_le_qc : (p ⊔ c) ⊓ (a₂ ⊔ b₂) ≤ q ⊔ c := heq_val ▸ inf_le_left
+    have hq_not_pc : ¬ q ≤ p ⊔ c := by
+      intro hle
+      apply h_lines
+      rw [sup_comm p c, sup_comm q c]
+      exact line_eq_of_atom_le hc hp_atom hq_atom hpc.symm hqc.symm hpq_val
+        (sup_comm p c ▸ hle)
+    have h_meet_eq : (c ⊔ p) ⊓ (c ⊔ q) = c :=
+      modular_intersection hc hp_atom hq_atom hpc.symm hqc.symm hpq_val
+        (sup_comm c p ▸ hq_not_pc)
+    have hm_le_c : (p ⊔ c) ⊓ (a₂ ⊔ b₂) ≤ c := by
+      calc (p ⊔ c) ⊓ (a₂ ⊔ b₂)
+          ≤ (p ⊔ c) ⊓ (q ⊔ c) := le_inf hm_le_pc hm_le_qc
+        _ = (c ⊔ p) ⊓ (c ⊔ q) := by rw [sup_comm p c, sup_comm q c]
+        _ = c := h_meet_eq
+    have hp_in_plane : p ⊔ c ≤ (a₂ ⊔ b₂) ⊔ c :=
+      h_coplanar ▸ sup_le (le_sup_of_le_left hp_le) le_sup_right
+    have hm_atom := perspect_atom hc hp_atom hpc ha₂ hb₂ hab₂ hc_not_l₂ hp_in_plane
+    rcases hc.le_iff.mp hm_le_c with h | h
+    · exact absurd h hm_atom.1
+    · exact absurd (h ▸ inf_le_right : c ≤ a₂ ⊔ b₂) hc_not_l₂
+
+omit [ComplementedLattice L] [IsAtomistic L] in
+
+<span class="kw">theorem</span> <a class="decl" id="perspect_line_eq" href="#perspect_line_eq">perspect_line_eq</a> {p c l : L}
+    (hc : IsAtom c) (hp : IsAtom p) (hpc : p ≠ c)
+    (hc_not : ¬ c ≤ l)
+    (_h_in_plane : p ⊔ c ≤ l ⊔ c)
+    (hq_atom : IsAtom ((p ⊔ c) ⊓ l)) :
+    ((p ⊔ c) ⊓ l) ⊔ c = p ⊔ c := by
+
+  have hqc_le : ((p ⊔ c) ⊓ l) ⊔ c ≤ p ⊔ c := sup_le inf_le_left le_sup_right
+
+  have hqc_ne : (p ⊔ c) ⊓ l ≠ c := fun h =&gt; hc_not (h ▸ inf_le_right)
+
+  have hc_lt_qc : c &lt; ((p ⊔ c) ⊓ l) ⊔ c := by
+    apply lt_of_le_of_ne le_sup_right
+    intro h
+
+    have q_le_c : (p ⊔ c) ⊓ l ≤ c := le_sup_left.trans h.symm.le
+    rcases hc.le_iff.mp q_le_c with h | h
+    · exact hq_atom.1 h
+    · exact hqc_ne h
+
+  have hc_cov_pc : c ⋖ p ⊔ c := by
+    rw [sup_comm]; exact atom_covBy_join hc hp hpc.symm
+  exact (hc_cov_pc.eq_or_eq hc_lt_qc.le hqc_le).resolve_left (ne_of_gt hc_lt_qc)
+
+omit [ComplementedLattice L] in
+
+<span class="kw">theorem</span> <a class="decl" id="perspect_roundtrip" href="#perspect_roundtrip">perspect_roundtrip</a> {p c a₁ b₁ a₂ b₂ : L}
+    (hc : IsAtom c) (hp : IsAtom p) (hpc : p ≠ c)
+    (ha₁ : IsAtom a₁) (hb₁ : IsAtom b₁) (hab₁ : a₁ ≠ b₁)
+    (ha₂ : IsAtom a₂) (hb₂ : IsAtom b₂) (hab₂ : a₂ ≠ b₂)
+    (hc_not_l₁ : ¬ c ≤ a₁ ⊔ b₁) (hc_not_l₂ : ¬ c ≤ a₂ ⊔ b₂)
+    (h_coplanar : a₁ ⊔ b₁ ⊔ c = a₂ ⊔ b₂ ⊔ c)
+    (hp_le : p ≤ a₁ ⊔ b₁) :
+    ((p ⊔ c) ⊓ (a₂ ⊔ b₂) ⊔ c) ⊓ (a₁ ⊔ b₁) = p := by
+
+  have hp_in_plane : p ⊔ c ≤ (a₂ ⊔ b₂) ⊔ c :=
+    h_coplanar ▸ sup_le (le_sup_of_le_left hp_le) le_sup_right
+  have hq_atom := perspect_atom hc hp hpc ha₂ hb₂ hab₂ hc_not_l₂ hp_in_plane
+  have h_line_eq : (p ⊔ c) ⊓ (a₂ ⊔ b₂) ⊔ c = p ⊔ c :=
+    perspect_line_eq hc hp hpc hc_not_l₂ hp_in_plane hq_atom
+
+  rw [h_line_eq]
+
+  have hp_le_meet : p ≤ (p ⊔ c) ⊓ (a₁ ⊔ b₁) := le_inf le_sup_left hp_le
+
+  have hq_in_plane : p ⊔ c ≤ (a₁ ⊔ b₁) ⊔ c :=
+    sup_le (le_sup_of_le_left hp_le) le_sup_right
+  have h_meet_atom := perspect_atom hc hp hpc ha₁ hb₁ hab₁ hc_not_l₁ hq_in_plane
+
+  exact (h_meet_atom.le_iff.mp hp_le_meet |&gt;.resolve_left hp.1).symm
+
+omit [ComplementedLattice L] in
+
+<span class="kw">theorem</span> <a class="decl" id="perspect_fixes_intersection" href="#perspect_fixes_intersection">perspect_fixes_intersection</a> {p c a₁ b₁ a₂ b₂ : L}
+    (hc : IsAtom c) (hp : IsAtom p) (hpc : p ≠ c)
+    (_ha₂ : IsAtom a₂) (_hb₂ : IsAtom b₂) (_hab₂ : a₂ ≠ b₂)
+    (hc_not_l₂ : ¬ c ≤ a₂ ⊔ b₂)
+    (_hp_le₁ : p ≤ a₁ ⊔ b₁) (hp_le₂ : p ≤ a₂ ⊔ b₂)
+    (h_in_plane : p ⊔ c ≤ (a₂ ⊔ b₂) ⊔ c) :
+    (p ⊔ c) ⊓ (a₂ ⊔ b₂) = p := by
+
+  have hp_le_meet : p ≤ (p ⊔ c) ⊓ (a₂ ⊔ b₂) := le_inf le_sup_left hp_le₂
+
+  have h_atom := perspect_atom hc hp hpc _ha₂ _hb₂ _hab₂ hc_not_l₂ h_in_plane
+
+  exact (h_atom.le_iff.mp hp_le_meet |&gt;.resolve_left hp.1).symm
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.ftpg_statement&#x27; depends on axioms: [propext, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms ftpg_statement</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.IsAtom.eq_of_le&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms IsAtom.eq_of_le</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.atoms_disjoint&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms atoms_disjoint</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.atom_covBy_join&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms atom_covBy_join</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.third_atom_on_line&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms third_atom_on_line</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.line_covers_its_atoms&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms line_covers_its_atoms</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.line_eq_of_atom_le&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms line_eq_of_atom_le</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.line_height_two&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms line_height_two</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.line_covBy_plane&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms line_covBy_plane</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.modular_intersection&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms modular_intersection</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.covBy_inf_disjoint_atom&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms covBy_inf_disjoint_atom</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.lines_meet_if_coplanar&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms lines_meet_if_coplanar</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.veblen_young&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms veblen_young</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.meet_of_lines_is_atom&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms meet_of_lines_is_atom</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.two_lines&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_lines</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.project_is_atom&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms project_is_atom</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.planes_meet_covBy&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms planes_meet_covBy</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.desargues_nonplanar&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms desargues_nonplanar</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.project_injective&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms project_injective</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.AtomsOn&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms AtomsOn</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.AtomsOn.mk_left&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms AtomsOn.mk_left</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.AtomsOn.mk_right&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms AtomsOn.mk_right</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.perspect_atom&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms perspect_atom</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.perspectivity_injective&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms perspectivity_injective</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.perspect_line_eq&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms perspect_line_eq</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.perspect_roundtrip&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms perspect_roundtrip</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.perspect_fixes_intersection&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms perspect_fixes_intersection</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.FTPG.Flat</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.FTPG.Flat</h1></header>
+<div class="imports">grasp: <a href="Bridges.FTPG.Plane.html">Bridges.FTPG.Plane</a> · <a href="Bridges.FTPG.Iso.html">Bridges.FTPG.Iso</a></div><pre class="src">import <a href="Bridges.FTPG.Plane.html">Bridges.FTPG.Plane</a>
+import <a href="Bridges.FTPG.Iso.html">Bridges.FTPG.Iso</a>
+
+/-!
+# Camp three, second pitch: the plane interval is the subspace lattice
+
+`Plane.lean` put the *atoms* of the frame plane `π = O ⊔ U ⊔ V` in bijection
+with the projective points of `(Dᵐᵒᵖ)³`.  This file extends the bijection to
+every element of the interval `[⊥, π]`: the interval is order-isomorphic to
+the full submodule lattice of `(Dᵐᵒᵖ)³`, heights 0/1/2/3 landing on
+finranks 0/1/2/3.
+
+* `line_covBy_π` — every join of two distinct plane atoms is covered by `π`:
+  the trace atom on `m` is covered in `m`, and the modular law transports the
+  covering up the sup.
+* `plane_flat_cases` — the height classification: every `x ≤ π` is `⊥`, an
+  atom, a join of two distinct atoms, or `π` itself.
+* `planeFlat` — the span of the coordinate vectors of the atoms below `x`.
+* `flat_rank_zero` … `flat_rank_three` — submodules of `K³` classified by
+  finrank, over any division ring.
+* `plane_interval_iso` — the summit: `Set.Iic π ≃o Submodule Dᵐᵒᵖ (Dᵐᵒᵖ)³`,
+  the `PointSystem` conclusion realized on the interval `[⊥, π]`.
+-/
+
+namespace Foam.Bridges
+
+universe u
+
+/-! ## The abstract linear side: submodules of `K³` classified by finrank -/
+
+section FlatLinear
+
+open Module
+
+variable {K : Type*} [DivisionRing K]
+
+<span class="kw">theorem</span> <a class="decl" id="flat_span_basis_val" href="#flat_span_basis_val">flat_span_basis_val</a> {n : ℕ} (W : Submodule K (Fin 3 → K))
+    (b : Basis (Fin n) K W) :
+    Submodule.span K (Subtype.val &#x27;&#x27; Set.range b) = W := by
+  have h := congrArg (Submodule.map W.subtype) b.span_eq
+  rwa [Submodule.map_span, Submodule.map_top, Submodule.range_subtype] at h
+
+<span class="kw">theorem</span> <a class="decl" id="flat_finrank_le" href="#flat_finrank_le">flat_finrank_le</a> (W : Submodule K (Fin 3 → K)) :
+    finrank K W ≤ 3 := by
+  have h := Submodule.finrank_le W
+  have h3 : finrank K (Fin 3 → K) = 3 := by simp
+  omega
+
+<span class="kw">theorem</span> <a class="decl" id="flat_rank_zero" href="#flat_rank_zero">flat_rank_zero</a> (W : Submodule K (Fin 3 → K))
+    (h : finrank K W = 0) : W = ⊥ :=
+  Submodule.finrank_eq_zero.mp h
+
+<span class="kw">theorem</span> <a class="decl" id="flat_rank_three" href="#flat_rank_three">flat_rank_three</a> (W : Submodule K (Fin 3 → K))
+    (h : finrank K W = 3) : W = ⊤ :=
+  Submodule.eq_top_of_finrank_eq (by simp [h])
+
+<span class="kw">theorem</span> <a class="decl" id="flat_rank_one" href="#flat_rank_one">flat_rank_one</a> (W : Submodule K (Fin 3 → K))
+    (h : finrank K W = 1) :
+    ∃ v : Fin 3 → K, v ≠ 0 ∧ W = Submodule.span K {v} := by
+  let b := Module.finBasisOfFinrankEq K W h
+  refine ⟨(b 0 : W).1, ?_, ?_⟩
+  · intro h0
+    exact b.ne_zero 0 (Subtype.ext h0)
+  · have hr : Subtype.val &#x27;&#x27; Set.range b = {((b 0 : W) : Fin 3 → K)} := by
+      rw [Set.range_unique]
+      simp
+    rw [← hr]
+    exact (flat_span_basis_val W b).symm
+
+<span class="kw">theorem</span> <a class="decl" id="flat_rank_two" href="#flat_rank_two">flat_rank_two</a> (W : Submodule K (Fin 3 → K))
+    (h : finrank K W = 2) :
+    ∃ u v : Fin 3 → K, u ≠ 0 ∧ v ∉ Submodule.span K {u} ∧
+      W = Submodule.span K {u, v} := by
+  let b := Module.finBasisOfFinrankEq K W h
+  have hr : Subtype.val &#x27;&#x27; Set.range b =
+      {((b 0 : W) : Fin 3 → K), ((b 1 : W) : Fin 3 → K)} := by
+    ext w
+    simp [Fin.exists_fin_two, eq_comm]
+  have hW : W = Submodule.span K
+      {((b 0 : W) : Fin 3 → K), ((b 1 : W) : Fin 3 → K)} := by
+    rw [← hr]
+    exact (flat_span_basis_val W b).symm
+  refine ⟨_, _, ?_, ?_, hW⟩
+  · intro h0
+    exact b.ne_zero 0 (Subtype.ext h0)
+  · intro hmem
+    have hle : Submodule.span K
+        {((b 0 : W) : Fin 3 → K), ((b 1 : W) : Fin 3 → K)} ≤
+        Submodule.span K {((b 0 : W) : Fin 3 → K)} := by
+      rw [Submodule.span_le]
+      rintro w (rfl | rfl)
+      · exact Submodule.mem_span_singleton_self _
+      · exact hmem
+    have h1 : finrank K W ≤ 1 := by
+      calc finrank K W = finrank K (Submodule.span K
+            {((b 0 : W) : Fin 3 → K), ((b 1 : W) : Fin 3 → K)}) := by rw [← hW]
+        _ ≤ finrank K (Submodule.span K {((b 0 : W) : Fin 3 → K)}) :=
+            Submodule.finrank_mono hle
+        _ ≤ 1 := by
+            by_cases h0 : ((b 0 : W) : Fin 3 → K) = 0
+            · rw [h0, Submodule.span_zero_singleton]
+              simp
+            · rw [finrank_span_singleton h0]
+    omega
+
+<span class="kw">theorem</span> <a class="decl" id="flat_std_basis_span" href="#flat_std_basis_span">flat_std_basis_span</a> :
+    Submodule.span K ({![1,0,0], ![0,1,0], ![0,0,1]} : Set (Fin 3 → K)) = ⊤ := by
+  rw [eq_top_iff]
+  intro v _
+  have h0 : (![1,0,0] : Fin 3 → K) ∈
+      Submodule.span K ({![1,0,0], ![0,1,0], ![0,0,1]} : Set (Fin 3 → K)) :=
+    Submodule.subset_span (by simp)
+  have h1 : (![0,1,0] : Fin 3 → K) ∈
+      Submodule.span K ({![1,0,0], ![0,1,0], ![0,0,1]} : Set (Fin 3 → K)) :=
+    Submodule.subset_span (by simp)
+  have h2 : (![0,0,1] : Fin 3 → K) ∈
+      Submodule.span K ({![1,0,0], ![0,1,0], ![0,0,1]} : Set (Fin 3 → K)) :=
+    Submodule.subset_span (by simp)
+  have hv : v = v 0 • ![1,0,0] + v 1 • ![0,1,0] + v 2 • ![0,0,1] := by
+    funext i
+    fin_cases i &lt;;&gt; simp
+  rw [hv]
+  exact Submodule.add_mem _ (Submodule.add_mem _
+    (Submodule.smul_mem _ _ h0) (Submodule.smul_mem _ _ h1))
+    (Submodule.smul_mem _ _ h2)
+
+end FlatLinear
+
+/-! ## The lattice side: lines are covered by the plane, flats classified
+by height -/
+
+variable {L : Type u} [Lattice L] [BoundedOrder L]
+  [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.line_covBy_π" href="#CoordSystem.line_covBy_π">CoordSystem.line_covBy_π</a> (Γ : CoordSystem L) {p q : L}
+    (hp : IsAtom p) (hq : IsAtom q) (hpq : p ≠ q)
+    (hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hq_π : q ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) :
+    p ⊔ q ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V := by
+  have hpq_π : p ⊔ q ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := sup_le hp_π hq_π
+  by_cases hm : p ⊔ q ≤ Γ.U ⊔ Γ.V
+  · have h : p ⊔ q = Γ.U ⊔ Γ.V :=
+      line_eq_of_two_atoms_le Γ.hU Γ.hV Γ.hUV hp hq hpq
+        (le_sup_left.trans hm) (le_sup_right.trans hm)
+    rw [h]
+    exact Γ.m_covBy_π
+  · have hS_atom : IsAtom ((p ⊔ q) ⊓ (Γ.U ⊔ Γ.V)) :=
+      trace_atom hp hq hpq Γ.m_covBy_π hpq_π hm
+    have hS_cov : (p ⊔ q) ⊓ (Γ.U ⊔ Γ.V) ⋖ Γ.U ⊔ Γ.V :=
+      line_covers_its_atoms Γ.hU Γ.hV Γ.hUV hS_atom inf_le_right
+    have hcov : p ⊔ q ⋖ (Γ.U ⊔ Γ.V) ⊔ (p ⊔ q) := by
+      apply covBy_sup_of_inf_covBy_left
+      rwa [inf_comm]
+    have hr : ¬ p ≤ Γ.U ⊔ Γ.V ∨ ¬ q ≤ Γ.U ⊔ Γ.V := by
+      by_cases hpm : p ≤ Γ.U ⊔ Γ.V
+      · exact Or.inr (fun hqm =&gt; hm (sup_le hpm hqm))
+      · exact Or.inl hpm
+    have h_eq : (Γ.U ⊔ Γ.V) ⊔ (p ⊔ q) = Γ.O ⊔ Γ.U ⊔ Γ.V := by
+      apply le_antisymm (sup_le Γ.m_le_π hpq_π)
+      rcases hr with h | h
+      · have h_lt : Γ.U ⊔ Γ.V &lt; (Γ.U ⊔ Γ.V) ⊔ p :=
+          lt_of_le_of_ne le_sup_left (fun heq =&gt; h (heq ▸ le_sup_right))
+        have h_top : (Γ.U ⊔ Γ.V) ⊔ p = Γ.O ⊔ Γ.U ⊔ Γ.V :=
+          (Γ.m_covBy_π.eq_or_eq h_lt.le (sup_le Γ.m_le_π hp_π)).resolve_left
+            (ne_of_gt h_lt)
+        rw [← h_top]
+        exact sup_le le_sup_left ((le_sup_left : p ≤ p ⊔ q).trans le_sup_right)
+      · have h_lt : Γ.U ⊔ Γ.V &lt; (Γ.U ⊔ Γ.V) ⊔ q :=
+          lt_of_le_of_ne le_sup_left (fun heq =&gt; h (heq ▸ le_sup_right))
+        have h_top : (Γ.U ⊔ Γ.V) ⊔ q = Γ.O ⊔ Γ.U ⊔ Γ.V :=
+          (Γ.m_covBy_π.eq_or_eq h_lt.le (sup_le Γ.m_le_π hq_π)).resolve_left
+            (ne_of_gt h_lt)
+        rw [← h_top]
+        exact sup_le le_sup_left ((le_sup_right : q ≤ p ⊔ q).trans le_sup_right)
+    rwa [h_eq] at hcov
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.plane_flat_cases" href="#CoordSystem.plane_flat_cases">CoordSystem.plane_flat_cases</a> (Γ : CoordSystem L) {x : L}
+    (hx_π : x ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) :
+    x = ⊥ ∨ IsAtom x ∨
+    (∃ p q, IsAtom p ∧ IsAtom q ∧ p ≠ q ∧ x = p ⊔ q) ∨
+    x = Γ.O ⊔ Γ.U ⊔ Γ.V := by
+  obtain ⟨s, hs_lub, hs_atoms⟩ := IsAtomistic.isLUB_atoms x
+  rcases Set.eq_empty_or_nonempty s with hs_e | ⟨p, hp_mem⟩
+  · left
+    rw [hs_e] at hs_lub
+    exact hs_lub.unique isLUB_empty
+  · have hp := hs_atoms p hp_mem
+    have hp_le : p ≤ x := hs_lub.1 hp_mem
+    by_cases hq_e : ∃ q ∈ s, q ≠ p
+    · obtain ⟨q, hq_mem, hqp⟩ := hq_e
+      have hq := hs_atoms q hq_mem
+      have hq_le : q ≤ x := hs_lub.1 hq_mem
+      by_cases hr_e : ∃ r ∈ s, ¬ r ≤ p ⊔ q
+      · obtain ⟨r, hr_mem, hr_not⟩ := hr_e
+        have hr_le : r ≤ x := hs_lub.1 hr_mem
+        right; right; right
+        have hline : p ⊔ q ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+          Γ.line_covBy_π hp hq (Ne.symm hqp) (hp_le.trans hx_π)
+            (hq_le.trans hx_π)
+        have h_lt : p ⊔ q &lt; (p ⊔ q) ⊔ r :=
+          lt_of_le_of_ne le_sup_left (fun heq =&gt; hr_not (heq ▸ le_sup_right))
+        have h_top : (p ⊔ q) ⊔ r = Γ.O ⊔ Γ.U ⊔ Γ.V :=
+          (hline.eq_or_eq h_lt.le (sup_le (sup_le (hp_le.trans hx_π)
+            (hq_le.trans hx_π)) (hr_le.trans hx_π))).resolve_left
+            (ne_of_gt h_lt)
+        apply le_antisymm hx_π
+        rw [← h_top]
+        exact sup_le (sup_le hp_le hq_le) hr_le
+      · right; right; left
+        refine ⟨p, q, hp, hq, Ne.symm hqp, le_antisymm ?_ (sup_le hp_le hq_le)⟩
+        exact hs_lub.2 (fun t ht_mem =&gt; by
+          by_contra ht
+          exact hr_e ⟨t, ht_mem, ht⟩)
+    · right; left
+      have hs_eq : s = {p} := by
+        ext t
+        constructor
+        · intro ht
+          by_contra htp
+          exact hq_e ⟨t, ht, htp⟩
+        · intro ht
+          rw [Set.mem_singleton_iff] at ht
+          rw [ht]
+          exact hp_mem
+      rw [hs_eq] at hs_lub
+      rw [hs_lub.unique isLUB_singleton]
+      exact hp
+
+/-! ## The frame vectors are the standard basis -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.hvec_U" href="#CoordSystem.hvec_U">CoordSystem.hvec_U</a> (Γ : CoordSystem L) :
+    Γ.hvec Γ.U = ![1, 0, 0] := by
+  have h : Γ.slopeC Γ.U = 0 := by
+    apply Subtype.ext
+    rw [Γ.slopeC_val Γ.hU le_sup_left Γ.hUV]
+    exact Γ.slope_U
+  rw [Γ.hvec_dir le_sup_left Γ.hUV, h, MulOpposite.op_zero]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.hvec_O" href="#CoordSystem.hvec_O">CoordSystem.hvec_O</a> (Γ : CoordSystem L) :
+    Γ.hvec Γ.O = ![0, 0, 1] := by
+  have hO_π : Γ.O ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := le_sup_left.trans le_sup_left
+  have hx : Γ.xcoordC Γ.O = 0 := by
+    apply Subtype.ext
+    rw [Γ.xcoordC_val Γ.hO hO_π Γ.hO_not_m]
+    exact Γ.xproj_of_on_l Γ.hO le_sup_left Γ.hOU
+  have hy : Γ.ycoordC Γ.O = 0 := by
+    apply Subtype.ext
+    rw [Γ.ycoordC_val Γ.hO hO_π Γ.hO_not_m]
+    exact Γ.ycoord_of_on_l Γ.hO le_sup_left Γ.hOU
+  rw [Γ.hvec_affine Γ.hO_not_m, hx, hy, MulOpposite.op_zero]
+
+/-! ## The flat map: spans of coordinate vectors, evaluated at every height -/
+
+noncomputable def CoordFrame.planeFlat (Φ : CoordFrame L) (x : L) :
+    Submodule (Coordinate Φ.Γ)ᵐᵒᵖ (Fin 3 → (Coordinate Φ.Γ)ᵐᵒᵖ) :=
+  Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ (Φ.Γ.hvec &#x27;&#x27; {p | IsAtom p ∧ p ≤ x})
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.planeFlat_bot" href="#CoordFrame.planeFlat_bot">CoordFrame.planeFlat_bot</a> (Φ : CoordFrame L) :
+    Φ.planeFlat ⊥ = ⊥ := by
+  unfold CoordFrame.planeFlat
+  have h : {p : L | IsAtom p ∧ p ≤ ⊥} = ∅ := by
+    ext p
+    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_and]
+    intro hp hle
+    exact hp.1 (le_bot_iff.mp hle)
+  rw [h, Set.image_empty, Submodule.span_empty]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.planeFlat_atom" href="#CoordFrame.planeFlat_atom">CoordFrame.planeFlat_atom</a> (Φ : CoordFrame L) {q : L} (hq : IsAtom q) :
+    Φ.planeFlat q = Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ {Φ.Γ.hvec q} := by
+  unfold CoordFrame.planeFlat
+  have h : {p : L | IsAtom p ∧ p ≤ q} = {q} := by
+    ext p
+    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff]
+    constructor
+    · rintro ⟨hp, hle⟩
+      exact (hq.le_iff.mp hle).resolve_left hp.1
+    · rintro rfl
+      exact ⟨hq, le_rfl⟩
+  rw [h, Set.image_singleton]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.planeFlat_line" href="#CoordFrame.planeFlat_line">CoordFrame.planeFlat_line</a> (Φ : CoordFrame L) {p q : L}
+    (hp : IsAtom p) (hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hq : IsAtom q) (hq_π : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) (hpq : p ≠ q) :
+    Φ.planeFlat (p ⊔ q) =
+      Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ {Φ.Γ.hvec p, Φ.Γ.hvec q} := by
+  apply le_antisymm
+  · unfold CoordFrame.planeFlat
+    rw [Submodule.span_le]
+    rintro w ⟨t, ⟨ht, ht_le⟩, rfl⟩
+    exact (Φ.plane_collinear_iff hp hp_π hq hq_π ht
+      (ht_le.trans (sup_le hp_π hq_π)) hpq).mp ht_le
+  · apply Submodule.span_mono
+    rintro w (rfl | rfl)
+    · exact ⟨p, ⟨hp, le_sup_left⟩, rfl⟩
+    · exact ⟨q, ⟨hq, le_sup_right⟩, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.planeFlat_π" href="#CoordFrame.planeFlat_π">CoordFrame.planeFlat_π</a> (Φ : CoordFrame L) :
+    Φ.planeFlat (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = ⊤ := by
+  rw [eq_top_iff, ← flat_std_basis_span (K := (Coordinate Φ.Γ)ᵐᵒᵖ),
+    Submodule.span_le]
+  rintro w (rfl | rfl | rfl)
+  · exact Submodule.subset_span
+      ⟨Φ.Γ.U, ⟨Φ.Γ.hU, le_sup_right.trans le_sup_left⟩, Φ.Γ.hvec_U⟩
+  · exact Submodule.subset_span ⟨Φ.Γ.V, ⟨Φ.Γ.hV, le_sup_right⟩, Φ.Γ.hvec_V⟩
+  · exact Submodule.subset_span
+      ⟨Φ.Γ.O, ⟨Φ.Γ.hO, le_sup_left.trans le_sup_left⟩, Φ.Γ.hvec_O⟩
+
+/-! ## The order iso: le-iff both ways, surjectivity, the packaging -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.planeFlat_le_of_le" href="#CoordFrame.planeFlat_le_of_le">CoordFrame.planeFlat_le_of_le</a> (Φ : CoordFrame L) {x y : L}
+    (hxy : x ≤ y) : Φ.planeFlat x ≤ Φ.planeFlat y :=
+  Submodule.span_mono (Set.image_mono (fun _ hp =&gt; ⟨hp.1, hp.2.trans hxy⟩))
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.le_of_planeFlat_le" href="#CoordFrame.le_of_planeFlat_le">CoordFrame.le_of_planeFlat_le</a> (Φ : CoordFrame L) {x y : L}
+    (hx_π : x ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) (hy_π : y ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (h : Φ.planeFlat x ≤ Φ.planeFlat y) : x ≤ y := by
+  have hatom : ∀ t, IsAtom t → t ≤ x → t ≤ y := by
+    intro t ht ht_le
+    have ht_π : t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V := ht_le.trans hx_π
+    have hmem : Φ.Γ.hvec t ∈ Φ.planeFlat y :=
+      h (Submodule.subset_span ⟨t, ⟨ht, ht_le⟩, rfl⟩)
+    rcases Φ.Γ.plane_flat_cases hy_π with rfl | hy_atom |
+      ⟨p, q, hp, hq, hpq, rfl⟩ | rfl
+    · rw [Φ.planeFlat_bot] at hmem
+      exact absurd (Submodule.mem_bot _ |&gt;.mp hmem) (Φ.Γ.hvec_ne_zero t)
+    · rw [Φ.planeFlat_atom hy_atom] at hmem
+      by_cases hty : t = y
+      · exact hty.le
+      · exact absurd hmem
+          (Φ.hvec_span_inj hy_atom hy_π ht ht_π (fun h&#x27; =&gt; hty h&#x27;.symm))
+    · have hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V := le_sup_left.trans hy_π
+      have hq_π : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V := le_sup_right.trans hy_π
+      rw [Φ.planeFlat_line hp hp_π hq hq_π hpq] at hmem
+      exact (Φ.plane_collinear_iff hp hp_π hq hq_π ht ht_π hpq).mpr hmem
+    · exact ht_π
+  obtain ⟨s, hs_lub, hs_atoms⟩ := IsAtomistic.isLUB_atoms x
+  apply hs_lub.2
+  intro t ht_mem
+  exact hatom t (hs_atoms t ht_mem) (hs_lub.1 ht_mem)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.planeFlat_surjective" href="#CoordFrame.planeFlat_surjective">CoordFrame.planeFlat_surjective</a> (Φ : CoordFrame L)
+    (W : Submodule (Coordinate Φ.Γ)ᵐᵒᵖ (Fin 3 → (Coordinate Φ.Γ)ᵐᵒᵖ)) :
+    ∃ x : L, x ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ∧ Φ.planeFlat x = W := by
+  have hle : Module.finrank (Coordinate Φ.Γ)ᵐᵒᵖ W ≤ 3 := flat_finrank_le W
+  by_cases h0 : Module.finrank (Coordinate Φ.Γ)ᵐᵒᵖ W = 0
+  · exact ⟨⊥, bot_le, by rw [Φ.planeFlat_bot, flat_rank_zero W h0]⟩
+  by_cases h1 : Module.finrank (Coordinate Φ.Γ)ᵐᵒᵖ W = 1
+  · obtain ⟨v, hv, hW⟩ := flat_rank_one W h1
+    obtain ⟨p, hp, hp_π, hspan⟩ := Φ.hvec_span_surj v hv
+    exact ⟨p, hp_π, by rw [Φ.planeFlat_atom hp, hspan, hW]⟩
+  by_cases h2 : Module.finrank (Coordinate Φ.Γ)ᵐᵒᵖ W = 2
+  · obtain ⟨u, v, hu, hv_not, hW⟩ := flat_rank_two W h2
+    have hv : v ≠ 0 := fun h =&gt; hv_not (h ▸ Submodule.zero_mem _)
+    obtain ⟨p, hp, hp_π, hspan_p⟩ := Φ.hvec_span_surj u hu
+    obtain ⟨q, hq, hq_π, hspan_q⟩ := Φ.hvec_span_surj v hv
+    have hpq : p ≠ q := by
+      rintro rfl
+      apply hv_not
+      have hmem : v ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ {v} :=
+        Submodule.mem_span_singleton_self v
+      rw [← hspan_q, hspan_p] at hmem
+      exact hmem
+    refine ⟨p ⊔ q, sup_le hp_π hq_π, ?_⟩
+    rw [Φ.planeFlat_line hp hp_π hq hq_π hpq, hW, Submodule.span_insert,
+      Submodule.span_insert, hspan_p, hspan_q]
+  · have h3 : Module.finrank (Coordinate Φ.Γ)ᵐᵒᵖ W = 3 := by omega
+    exact ⟨Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V, le_rfl,
+      by rw [Φ.planeFlat_π, flat_rank_three W h3]⟩
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.plane_interval_iso" href="#CoordFrame.plane_interval_iso">CoordFrame.plane_interval_iso</a> (Φ : CoordFrame L) :
+    Nonempty (Set.Iic (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) ≃o
+      Submodule (Coordinate Φ.Γ)ᵐᵒᵖ (Fin 3 → (Coordinate Φ.Γ)ᵐᵒᵖ)) := by
+  apply orderIso_of_mono_reflect_surj (fun x =&gt; Φ.planeFlat x.1)
+  · intro a b hab
+    exact Φ.planeFlat_le_of_le (Subtype.coe_le_coe.mpr hab)
+  · intro a b hab
+    exact Subtype.coe_le_coe.mp (Φ.le_of_planeFlat_le a.2 b.2 hab)
+  · intro W
+    obtain ⟨x, hx_π, hx⟩ := Φ.planeFlat_surjective W
+    exact ⟨⟨x, hx_π⟩, hx⟩
+
+end Foam.Bridges
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.flat_span_basis_val&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.flat_span_basis_val</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.flat_finrank_le&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.flat_finrank_le</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.flat_rank_zero&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.flat_rank_zero</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.flat_rank_three&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.flat_rank_three</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.flat_rank_one&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.flat_rank_one</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.flat_rank_two&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.flat_rank_two</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.flat_std_basis_span&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.flat_std_basis_span</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.line_covBy_π&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.line_covBy_π</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.plane_flat_cases&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.plane_flat_cases</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.hvec_U&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.hvec_U</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.hvec_O&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.hvec_O</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.planeFlat&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.planeFlat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.planeFlat_bot&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.planeFlat_bot</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.planeFlat_atom&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.planeFlat_atom</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.planeFlat_line&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.planeFlat_line</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.planeFlat_π&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.planeFlat_π</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.planeFlat_le_of_le&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.planeFlat_le_of_le</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.le_of_planeFlat_le&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.le_of_planeFlat_le</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.planeFlat_surjective&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.planeFlat_surjective</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.plane_interval_iso&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.plane_interval_iso</span></pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

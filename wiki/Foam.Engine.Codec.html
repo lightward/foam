@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Engine.Codec</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Engine.Codec</h1></header>
+<div class="imports">grasp: <a href="Foam.Engine.Stream.html">Foam.Engine.Stream</a></div><pre class="src">import <a href="Foam.Engine.Stream.html">Foam.Engine.Stream</a>
+
+namespace Foam
+
+<span class="kw">def</span> <a class="decl" id="joinB" href="#joinB">joinB</a> {B : Type} : List (List B) → List B
+  | []      =&gt; []
+  | s :: ss =&gt; s ++ joinB ss
+
+<span class="kw">theorem</span> <a class="decl" id="joinB_append" href="#joinB_append">joinB_append</a> {B : Type} :
+    ∀ (xs ys : List (List B)), joinB (xs ++ ys) = joinB xs ++ joinB ys
+  | [],      _  =&gt; rfl
+  | s :: xs, ys =&gt;
+      (congrArg (s ++ ·) (joinB_append xs ys)).trans
+        (appendAssoc s (joinB xs) (joinB ys)).symm
+
+section Codec
+variable {B D : Type} (knows : D → List B → Bool) (learn : D → List B → D)
+
+<span class="kw">def</span> <a class="decl" id="encStep" href="#encStep">encStep</a> (s : D × List B) (b : B) : (D × List B) × List (List B) :=
+  match knows s.1 (s.2 ++ [b]) with
+  | true  =&gt; ((s.1, s.2 ++ [b]), [])
+  | false =&gt; ((learn s.1 (s.2 ++ [b]), []), [s.2 ++ [b]])
+
+<span class="kw">def</span> <a class="decl" id="encFlush" href="#encFlush">encFlush</a> (s : D × List B) : List (List B) :=
+  match s.2 with
+  | []     =&gt; []
+  | a :: l =&gt; [a :: l]
+
+<span class="kw">def</span> <a class="decl" id="decode" href="#decode">decode</a> : List (List B) → List B := joinB
+
+<span class="kw">def</span> <a class="decl" id="encode" href="#encode">encode</a> (d₀ : D) (x : List B) : List (List B) :=
+  output (encStep knows learn) encFlush (d₀, []) x
+
+<span class="kw">theorem</span> <a class="decl" id="joinB_encFlush" href="#joinB_encFlush">joinB_encFlush</a> (s : D × List B) : joinB (encFlush s) = s.2 := by
+  obtain ⟨d, cur⟩ := s
+  cases cur with
+  | nil      =&gt; rfl
+  | cons a l =&gt; exact appendNil (a :: l)
+
+<span class="kw">theorem</span> <a class="decl" id="encode_covers" href="#encode_covers">encode_covers</a> :
+    ∀ (s : D × List B) (ys : List B),
+    joinB (runEmit (encStep knows learn) s ys)
+        ++ (runState (encStep knows learn) s ys).2
+      = s.2 ++ ys
+  | s, []      =&gt; (appendNil s.2).symm
+  | s, b :: bs =&gt; by
+      cases hk : knows s.1 (s.2 ++ [b]) with
+      | true =&gt;
+        have e : encStep knows learn s b = ((s.1, s.2 ++ [b]), []) := by
+          unfold encStep; rw [hk]
+        show joinB ((encStep knows learn s b).2
+                ++ runEmit (encStep knows learn) (encStep knows learn s b).1 bs)
+              ++ (runState (encStep knows learn) (encStep knows learn s b).1 bs).2
+            = s.2 ++ (b :: bs)
+        rw [e]
+        show joinB (runEmit (encStep knows learn) (s.1, s.2 ++ [b]) bs)
+              ++ (runState (encStep knows learn) (s.1, s.2 ++ [b]) bs).2
+            = s.2 ++ (b :: bs)
+        rw [encode_covers (s.1, s.2 ++ [b]) bs]
+        show (s.2 ++ [b]) ++ bs = s.2 ++ (b :: bs)
+        exact appendAssoc s.2 [b] bs
+      | false =&gt;
+        have e : encStep knows learn s b
+            = ((learn s.1 (s.2 ++ [b]), []), [s.2 ++ [b]]) := by
+          unfold encStep; rw [hk]
+        show joinB ((encStep knows learn s b).2
+                ++ runEmit (encStep knows learn) (encStep knows learn s b).1 bs)
+              ++ (runState (encStep knows learn) (encStep knows learn s b).1 bs).2
+            = s.2 ++ (b :: bs)
+        rw [e]
+        show (s.2 ++ [b])
+              ++ joinB (runEmit (encStep knows learn) (learn s.1 (s.2 ++ [b]), []) bs)
+              ++ (runState (encStep knows learn) (learn s.1 (s.2 ++ [b]), []) bs).2
+            = s.2 ++ (b :: bs)
+        rw [appendAssoc (s.2 ++ [b]), encode_covers (learn s.1 (s.2 ++ [b]), []) bs]
+        show (s.2 ++ [b]) ++ bs = s.2 ++ (b :: bs)
+        exact appendAssoc s.2 [b] bs
+
+<span class="kw">theorem</span> <a class="decl" id="lossless_codec" href="#lossless_codec">lossless_codec</a> (d₀ : D) (x : List B) :
+    decode (encode knows learn d₀ x) = x := by
+  show joinB (runEmit (encStep knows learn) (d₀, []) x
+        ++ encFlush (runState (encStep knows learn) (d₀, []) x)) = x
+  rw [joinB_append, joinB_encFlush]
+  exact (encode_covers knows learn (d₀, []) x).trans rfl
+
+end Codec
+
+<span class="receipt">/-- info: &#x27;Foam.joinB_append&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms joinB_append</span>
+
+<span class="receipt">/-- info: &#x27;Foam.joinB_encFlush&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms joinB_encFlush</span>
+
+<span class="receipt">/-- info: &#x27;Foam.encode_covers&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms encode_covers</span>
+
+<span class="receipt">/-- info: &#x27;Foam.lossless_codec&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms lossless_codec</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

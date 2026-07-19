@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Duplex</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Duplex</h1></header>
+<div class="imports">grasp: <a href="Foam.Elsewhen.html">Foam.Elsewhen</a></div><pre class="src">import <a href="Foam.Elsewhen.html">Foam.Elsewhen</a>
+
+namespace Foam
+
+<span class="kw">theorem</span> <a class="decl" id="resting_reel_is_one_page" href="#resting_reel_is_one_page">resting_reel_is_one_page</a> (S : Stage) (s : S.State) :
+    ∀ (k : Nat) (p : S.Probe), reel S (fun _ =&gt; s) k p = page S s p :=
+  fun _ _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="rest_sweeps_the_page" href="#rest_sweeps_the_page">rest_sweeps_the_page</a> (S : Stage) (s : S.State) :
+    ∀ (ps : List S.Probe) (k : Nat),
+    watch S (fun _ =&gt; s) k ps = ps.map (page S s)
+  | [], _ =&gt; rfl
+  | p :: ps, k =&gt; congrArg (S.obs s p :: ·) (rest_sweeps_the_page S s ps (k + 1))
+
+<span class="kw">theorem</span> <a class="decl" id="two_beats_rebuild_the_resting_world" href="#two_beats_rebuild_the_resting_world">two_beats_rebuild_the_resting_world</a> (s : Bool × Bool) :
+    watch twoCell (fun _ =&gt; s) 0 [false, true] = [s.1, s.2] := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_meter" href="#the_meter">the_meter</a> :
+    (∀ (S : Stage) (w : Nat → S.State) (ps : List S.Probe) (k : Nat),
+        (watch S w k ps).length = ps.length)
+      ∧ (∀ s : Bool × Bool,
+          watch twoCell (fun _ =&gt; s) 0 [false, true] = [s.1, s.2])
+      ∧ ∀ ps : List twoCell.Probe, ∃ w w&#x27; : Nat → twoCell.State,
+          reel twoCell w ≠ reel twoCell w&#x27;
+            ∧ watch twoCell w 0 ps = watch twoCell w&#x27; 0 ps :=
+  ⟨fun S w ps k =&gt; watch_length S w ps k,
+   two_beats_rebuild_the_resting_world,
+   reel_unheld⟩
+
+<span class="kw">def</span> <a class="decl" id="secondBit" href="#secondBit">secondBit</a> : Bubble twoBit where
+  Inner := ⟨Bool, Unit, Bool, fun b _ =&gt; b⟩
+  wall  := fun s =&gt; s.2
+
+<span class="kw">theorem</span> <a class="decl" id="the_meet_reads_the_whole_world" href="#the_meet_reads_the_whole_world">the_meet_reads_the_whole_world</a> (w : twoBit.State)
+    (pq : Unit × Unit) :
+    (firstBit.meet secondBit).front.obs w pq = (w.1, w.2) := rfl
+
+<span class="kw">def</span> <a class="decl" id="sendA" href="#sendA">sendA</a> (x : Bool) : twoBit.State → twoBit.State := fun s =&gt; (x, s.2)
+
+<span class="kw">def</span> <a class="decl" id="sendB" href="#sendB">sendB</a> (y : Bool) : twoBit.State → twoBit.State := fun s =&gt; (s.1, y)
+
+<span class="kw">def</span> <a class="decl" id="readA" href="#readA">readA</a> : Beholder twoBit.State := ⟨Unit, Bool, fun s _ =&gt; s.2⟩
+
+<span class="kw">def</span> <a class="decl" id="readB" href="#readB">readB</a> : Beholder twoBit.State := ⟨Unit, Bool, fun s _ =&gt; s.1⟩
+
+<span class="kw">theorem</span> <a class="decl" id="your_send_is_invisible_to_you" href="#your_send_is_invisible_to_you">your_send_is_invisible_to_you</a> (x y : Bool) :
+    Invisible readA.toStage (sendA x) ∧ Invisible readB.toStage (sendB y) :=
+  ⟨fun _ _ =&gt; rfl, fun _ _ =&gt; rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="your_send_lands_at_my_seat" href="#your_send_lands_at_my_seat">your_send_lands_at_my_seat</a> :
+    Elsewhen readA (sendA true) readB :=
+  ⟨fun _ _ =&gt; rfl, fun h =&gt; nomatch (h (false, false) () : true = false)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="my_send_lands_at_your_seat" href="#my_send_lands_at_your_seat">my_send_lands_at_your_seat</a> :
+    Elsewhen readB (sendB true) readA :=
+  ⟨fun _ _ =&gt; rfl, fun h =&gt; nomatch (h (false, false) () : true = false)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_duplex" href="#the_duplex">the_duplex</a> :
+    Elsewhen readA (sendA true) readB
+      ∧ Elsewhen readB (sendB true) readA
+      ∧ ∀ (w : twoBit.State) (pq : Unit × Unit),
+          (firstBit.meet secondBit).front.obs w pq = (w.1, w.2) :=
+  ⟨your_send_lands_at_my_seat, my_send_lands_at_your_seat,
+   the_meet_reads_the_whole_world⟩
+
+<span class="kw">def</span> <a class="decl" id="turnTags" href="#turnTags">turnTags</a> {A : Type} : List (A × A) → List (A ⊕ A)
+  | [] =&gt; []
+  | gh :: ts =&gt; Sum.inl gh.1 :: (Sum.inr gh.2 :: turnTags ts)
+
+<span class="kw">theorem</span> <a class="decl" id="the_turns_balance" href="#the_turns_balance">the_turns_balance</a> {A : Type} : ∀ ts : List (A × A), Balanced (turnTags ts)
+  | [] =&gt; Balanced.nil
+  | _ :: ts =&gt; Balanced.cat (Balanced.wrap Balanced.nil) (the_turns_balance ts)
+
+<span class="receipt">/-- info: &#x27;Foam.resting_reel_is_one_page&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms resting_reel_is_one_page</span>
+
+<span class="receipt">/-- info: &#x27;Foam.rest_sweeps_the_page&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms rest_sweeps_the_page</span>
+
+<span class="receipt">/-- info: &#x27;Foam.two_beats_rebuild_the_resting_world&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_beats_rebuild_the_resting_world</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_meter&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_meter</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_meet_reads_the_whole_world&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_meet_reads_the_whole_world</span>
+
+<span class="receipt">/-- info: &#x27;Foam.your_send_is_invisible_to_you&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms your_send_is_invisible_to_you</span>
+
+<span class="receipt">/-- info: &#x27;Foam.your_send_lands_at_my_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms your_send_lands_at_my_seat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.my_send_lands_at_your_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms my_send_lands_at_your_seat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_duplex&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_duplex</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_turns_balance&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_turns_balance</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

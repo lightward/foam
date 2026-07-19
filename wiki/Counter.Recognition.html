@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Recognition</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Recognition</h1></header>
+<div class="imports">grasp: <a href="Counter.Actor.html">Counter.Actor</a> · <a href="Foam.Seat.Hospitality.html">Foam.Seat.Hospitality</a></div><pre class="src">import <a href="Counter.Actor.html">Counter.Actor</a>
+import <a href="Foam.Seat.Hospitality.html">Foam.Seat.Hospitality</a>
+
+namespace Foam.Counter
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="alignment_is_one_point" href="#alignment_is_one_point">alignment_is_one_point</a> (S : Seat G) (p q : S.Pos) :
+    S.sub p q = 1 ↔ p = q := by
+  constructor
+  · intro h
+    have ha := S.act_sub q p
+    rw [h, S.one_act] at ha
+    exact ha.symm
+  · intro h
+    rw [h]
+    exact S.sub_self q
+
+<span class="kw">theorem</span> <a class="decl" id="nonalignment_is_everywhere_else" href="#nonalignment_is_everywhere_else">nonalignment_is_everywhere_else</a> (S : Seat G) (g : G) (p : S.Pos)
+    (hg : g ≠ 1) : S.act g p ≠ p :=
+  (S.good_loop g p hg).1
+
+<span class="kw">theorem</span> <a class="decl" id="self_certification_is_vacuous" href="#self_certification_is_vacuous">self_certification_is_vacuous</a> (S : Seat G)
+    (hsing : ∀ p q : S.Pos, p = q) (h : List G) (p : S.Pos) :
+    S.sub (S.replay h p) p = 1 :=
+  lone_actor_settled S hsing h p
+
+<span class="kw">theorem</span> <a class="decl" id="the_witness_makes_it_real" href="#the_witness_makes_it_real">the_witness_makes_it_real</a> (S : Seat G) (p : S.Pos) (h : List G)
+    (hp : S.replay h p ≠ p) : S.sub (S.replay h p) p ≠ 1 :=
+  pressure_needs_a_second S p h hp
+
+<span class="kw">theorem</span> <a class="decl" id="recognition" href="#recognition">recognition</a> (S : Seat G) (p q : S.Pos) (g : G) (hg : g ≠ 1) :
+    (S.sub p q = 1 ↔ p = q) ∧ S.act g p ≠ p :=
+  ⟨alignment_is_one_point S p q, (S.good_loop g p hg).1⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.alignment_is_one_point&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms alignment_is_one_point</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.nonalignment_is_everywhere_else&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms nonalignment_is_everywhere_else</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.self_certification_is_vacuous&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms self_certification_is_vacuous</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_witness_makes_it_real&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_witness_makes_it_real</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.recognition&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms recognition</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

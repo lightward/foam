@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Logbook</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Logbook</h1></header>
+<div class="imports">grasp: <a href="Counter.Wake.html">Counter.Wake</a> · <a href="Counter.Needle.html">Counter.Needle</a> · <a href="Counter.Address.html">Counter.Address</a></div><pre class="src">import <a href="Counter.Wake.html">Counter.Wake</a>
+import <a href="Counter.Needle.html">Counter.Needle</a>
+import <a href="Counter.Address.html">Counter.Address</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="logbook" href="#logbook">logbook</a> {K : Type} [DecidableEq K] : List (K × Bool) → List Tilt
+  | [] =&gt; []
+  | (k, b) :: rest =&gt; tilt rest k b :: logbook rest
+
+<span class="kw">def</span> <a class="decl" id="wakes" href="#wakes">wakes</a> {K : Type} [DecidableEq K] : List (K × Bool) → List (Bool × Bool)
+  | [] =&gt; []
+  | (k, b) :: rest =&gt; wake rest k b :: wakes rest
+
+<span class="kw">def</span> <a class="decl" id="Holding" href="#Holding">Holding</a> {K : Type} [DecidableEq K] : List (K × Bool) → Prop
+  | [] =&gt; True
+  | (k, b) :: rest =&gt; tilt rest k b ≠ Tilt.friction ∧ Holding rest
+
+<span class="kw">theorem</span> <a class="decl" id="the_log_replays_the_voyage" href="#the_log_replays_the_voyage">the_log_replays_the_voyage</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) :
+    logbook (land prior k b) = tilt prior k b :: logbook prior :=
+  rfl
+
+<span class="kw">theorem</span> <a class="decl" id="every_page_has_a_reading" href="#every_page_has_a_reading">every_page_has_a_reading</a> {K : Type} [DecidableEq K] :
+    ∀ board : List (K × Bool), (logbook board).length = board.length
+  | [] =&gt; rfl
+  | (_, _) :: rest =&gt; congrArg (· + 1) (every_page_has_a_reading rest)
+
+<span class="kw">theorem</span> <a class="decl" id="the_water_writes_the_log" href="#the_water_writes_the_log">the_water_writes_the_log</a> {K : Type} [DecidableEq K] :
+    ∀ board : List (K × Bool), (wakes board).map sounding = logbook board
+  | [] =&gt; rfl
+  | (n, c) :: rest =&gt; by
+      show sounding (wake rest n c) :: (wakes rest).map sounding
+        = tilt rest n c :: logbook rest
+      rw [the_wake_names_the_tilt rest n c, the_water_writes_the_log rest]
+
+<span class="kw">theorem</span> <a class="decl" id="no_stance_is_its_own_mirror" href="#no_stance_is_its_own_mirror">no_stance_is_its_own_mirror</a> : ∀ x : Bool, x ≠ !x
+  | true, h =&gt; nomatch h
+  | false, h =&gt; nomatch h
+
+<span class="kw">theorem</span> <a class="decl" id="an_unmirrored_stance_matches" href="#an_unmirrored_stance_matches">an_unmirrored_stance_matches</a> : ∀ x y : Bool, x ≠ !y → x = y
+  | true, true, _ =&gt; rfl
+  | false, false, _ =&gt; rfl
+  | true, false, h =&gt; absurd rfl h
+  | false, true, h =&gt; absurd rfl h
+
+<span class="kw">theorem</span> <a class="decl" id="a_reading_names_a_page" href="#a_reading_names_a_page">a_reading_names_a_page</a> {K : Type} [DecidableEq K] :
+    ∀ (board : List (K × Bool)) (k : K) (b : Bool),
+      seatRead board k = some b → (k, b) ∈ board
+  | [], _, _, h =&gt; nomatch h
+  | (n, c) :: rest, k, b, h =&gt; by
+      have h&#x27; : (if n = k then some c else seatRead rest k) = some b := h
+      by_cases hn : n = k
+      · rw [if_pos hn] at h&#x27;
+        rw [← hn, ← Option.some.inj h&#x27;]
+        exact List.Mem.head rest
+      · rw [if_neg hn] at h&#x27;
+        exact List.Mem.tail (n, c) (a_reading_names_a_page rest k b h&#x27;)
+
+<span class="kw">theorem</span> <a class="decl" id="a_page_keeps_the_key_claimed" href="#a_page_keeps_the_key_claimed">a_page_keeps_the_key_claimed</a> {K : Type} [DecidableEq K] :
+    ∀ (board : List (K × Bool)) (p : K × Bool), p ∈ board →
+      ∃ q : Bool, seatRead board p.1 = some q
+  | [], _, hp =&gt; nomatch hp
+  | (n, c) :: rest, p, hp =&gt; by
+      cases hp with
+      | head =&gt; exact ⟨c, the_landing_is_readable rest n c⟩
+      | tail _ hp&#x27; =&gt;
+        by_cases hn : n = p.1
+        · refine ⟨c, ?_⟩
+          show (if n = p.1 then some c else seatRead rest p.1) = some c
+          rw [if_pos hn]
+        · cases a_page_keeps_the_key_claimed rest p hp&#x27; with
+          | intro q hq =&gt;
+            exact ⟨q, (the_landing_stays_in_its_lane rest n p.1 hn c).trans hq⟩
+
+<span class="kw">theorem</span> <a class="decl" id="one_more_data_point" href="#one_more_data_point">one_more_data_point</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool) :
+    Holding (land prior k b)
+      ↔ (tilt prior k b ≠ Tilt.friction ∧ Holding prior) :=
+  Iff.rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_turned_page_breaks_the_series" href="#the_turned_page_breaks_the_series">the_turned_page_breaks_the_series</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k : K) (b : Bool)
+    (h : tilt prior k b = Tilt.friction) : ¬ Holding (land prior k b) :=
+  fun hh =&gt; hh.1 h
+
+<span class="kw">theorem</span> <a class="decl" id="the_record_shows_the_break" href="#the_record_shows_the_break">the_record_shows_the_break</a> {K : Type} [DecidableEq K] :
+    ∀ board : List (K × Bool),
+      Holding board ↔ ∀ t ∈ logbook board, t ≠ Tilt.friction
+  | [] =&gt; ⟨(fun _ t ht =&gt; nomatch ht), (fun _ =&gt; True.intro)⟩
+  | (n, c) :: rest =&gt; by
+      constructor
+      · intro hh t ht
+        have ht&#x27; : t ∈ tilt rest n c :: logbook rest := ht
+        cases ht&#x27; with
+        | head =&gt; exact hh.1
+        | tail _ htr =&gt; exact ((the_record_shows_the_break rest).mp hh.2) t htr
+      · intro hall
+        exact ⟨hall (tilt rest n c) (List.Mem.head _),
+          (the_record_shows_the_break rest).mpr
+            (fun t ht =&gt; hall t (List.Mem.tail _ ht))⟩
+
+<span class="kw">theorem</span> <a class="decl" id="a_holding_log_speaks_with_one_voice" href="#a_holding_log_speaks_with_one_voice">a_holding_log_speaks_with_one_voice</a> {K : Type} [DecidableEq K] :
+    ∀ board : List (K × Bool), Holding board →
+      ∀ p : K × Bool, p ∈ board → seatRead board p.1 = some p.2
+  | [], _, _, hp =&gt; nomatch hp
+  | (n, c) :: rest, hh, p, hp =&gt; by
+      cases hp with
+      | head =&gt; exact the_landing_is_readable rest n c
+      | tail _ hp&#x27; =&gt;
+        have hprev := a_holding_log_speaks_with_one_voice rest hh.2 p hp&#x27;
+        by_cases hn : n = p.1
+        · have hns : seatRead rest n = some p.2 := by rw [hn]; exact hprev
+          have hpc : p.2 = c :=
+            an_unmirrored_stance_matches p.2 c
+              (fun he =&gt; hh.1 ((friction_is_a_held_mirror rest n c).mpr
+                (hns.trans (congrArg some he))))
+          show (if n = p.1 then some c else seatRead rest p.1) = some p.2
+          rw [if_pos hn, hpc]
+        · exact (the_landing_stays_in_its_lane rest n p.1 hn c).trans hprev
+
+<span class="kw">theorem</span> <a class="decl" id="one_voice_holds_the_log" href="#one_voice_holds_the_log">one_voice_holds_the_log</a> {K : Type} [DecidableEq K] :
+    ∀ board : List (K × Bool),
+      (∀ p : K × Bool, p ∈ board → seatRead board p.1 = some p.2) →
+      Holding board
+  | [], _ =&gt; True.intro
+  | (n, c) :: rest, hall =&gt; by
+      refine ⟨fun hf =&gt; ?_, one_voice_holds_the_log rest (fun p hp =&gt; ?_)⟩
+      · exact no_stance_is_its_own_mirror c
+          (Option.some.inj ((the_landing_is_readable rest n c).symm.trans
+            (hall (n, !c) (List.Mem.tail _
+              (a_reading_names_a_page rest n (!c)
+                ((friction_is_a_held_mirror rest n c).mp hf))))))
+      · cases a_page_keeps_the_key_claimed rest p hp with
+        | intro q hq =&gt;
+          have hq&#x27; : seatRead ((n, c) :: rest) p.1 = some q :=
+            hall (p.1, q) (List.Mem.tail _ (a_reading_names_a_page rest p.1 q hq))
+          have hp2 : seatRead ((n, c) :: rest) p.1 = some p.2 :=
+            hall p (List.Mem.tail _ hp)
+          exact (Option.some.inj (hq&#x27;.symm.trans hp2)) ▸ hq
+
+<span class="kw">theorem</span> <a class="decl" id="the_series_is_holding_so_far" href="#the_series_is_holding_so_far">the_series_is_holding_so_far</a> {K : Type} [DecidableEq K]
+    (board prior : List (K × Bool)) (k : K) (b : Bool) :
+    logbook (land prior k b) = tilt prior k b :: logbook prior
+      ∧ (logbook board).length = board.length
+      ∧ (wakes board).map sounding = logbook board
+      ∧ (Holding (land prior k b)
+          ↔ (tilt prior k b ≠ Tilt.friction ∧ Holding prior))
+      ∧ (Holding board ↔ ∀ t ∈ logbook board, t ≠ Tilt.friction)
+      ∧ (Holding board
+          ↔ ∀ p : K × Bool, p ∈ board → seatRead board p.1 = some p.2) :=
+  ⟨rfl,
+   every_page_has_a_reading board,
+   the_water_writes_the_log board,
+   one_more_data_point prior k b,
+   the_record_shows_the_break board,
+   ⟨a_holding_log_speaks_with_one_voice board,
+    one_voice_holds_the_log board⟩⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_log_replays_the_voyage&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_log_replays_the_voyage</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_page_has_a_reading&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_page_has_a_reading</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_water_writes_the_log&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_water_writes_the_log</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_stance_is_its_own_mirror&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_stance_is_its_own_mirror</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.an_unmirrored_stance_matches&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms an_unmirrored_stance_matches</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_reading_names_a_page&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_reading_names_a_page</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_page_keeps_the_key_claimed&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_page_keeps_the_key_claimed</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_more_data_point&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_more_data_point</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_turned_page_breaks_the_series&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_turned_page_breaks_the_series</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_record_shows_the_break&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_record_shows_the_break</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_holding_log_speaks_with_one_voice&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_holding_log_speaks_with_one_voice</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_voice_holds_the_log&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_voice_holds_the_log</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_series_is_holding_so_far&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_series_is_holding_so_far</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

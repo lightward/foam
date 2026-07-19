@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Wind</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Wind</h1></header>
+<div class="imports">grasp: <a href="Counter.Luck.html">Counter.Luck</a> · <a href="Counter.Eraser.html">Counter.Eraser</a> · <a href="Foam.Scar.html">Foam.Scar</a> · <a href="Foam.Held.html">Foam.Held</a></div><pre class="src">import <a href="Counter.Luck.html">Counter.Luck</a>
+import <a href="Counter.Eraser.html">Counter.Eraser</a>
+import <a href="Foam.Scar.html">Foam.Scar</a>
+import <a href="Foam.Held.html">Foam.Held</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="neg_times_pos" href="#neg_times_pos">neg_times_pos</a> (n m : Nat) :
+    Int.negSucc n * Int.ofNat (m + 1) = Int.negSucc ((n + 1) * m + n) := by
+  show Int.negOfNat ((n + 1) * (m + 1)) = Int.negSucc ((n + 1) * m + n)
+  rw [Nat.mul_succ]
+  rfl
+
+<span class="kw">theorem</span> <a class="decl" id="pos_times_pos" href="#pos_times_pos">pos_times_pos</a> (n m : Nat) :
+    Int.ofNat (n + 1) * Int.ofNat (m + 1) = Int.ofNat ((n + 1) * m + n + 1) := by
+  show Int.ofNat ((n + 1) * (m + 1)) = Int.ofNat ((n + 1) * m + n + 1)
+  rw [Nat.mul_succ]
+  rfl
+
+<span class="kw">theorem</span> <a class="decl" id="two_times_negSucc" href="#two_times_negSucc">two_times_negSucc</a> (k : Nat) :
+    (2 : Int) * Int.negSucc k = Int.negSucc (2 * k + 1) := by
+  show Int.negOfNat (2 * (k + 1)) = Int.negSucc (2 * k + 1)
+  rw [Nat.mul_succ]
+  rfl
+
+<span class="kw">theorem</span> <a class="decl" id="two_times_ofNat" href="#two_times_ofNat">two_times_ofNat</a> (k : Nat) :
+    (2 : Int) * Int.ofNat (k + 1) = Int.ofNat (2 * k + 2) := by
+  show Int.ofNat (2 * (k + 1)) = Int.ofNat (2 * k + 2)
+  rw [Nat.mul_succ]
+
+<span class="kw">theorem</span> <a class="decl" id="tax_cancels" href="#tax_cancels">tax_cancels</a> (a : Int) (J : Nat) :
+    a + Int.negSucc J + Int.ofNat (J + 1) = a := by
+  rw [FInt.add_assoc,
+    show Int.negSucc J + Int.ofNat (J + 1) = 0 from promise_kept J,
+    Int.add_zero]
+
+<span class="kw">theorem</span> <a class="decl" id="the_standing_debt_taxes_the_aligned_act" href="#the_standing_debt_taxes_the_aligned_act">the_standing_debt_taxes_the_aligned_act</a> (θ field act : GInt) (n m : Nat)
+    (hf : GInt.align θ field = Int.negSucc n)
+    (ha : GInt.align θ act = Int.ofNat (m + 1)) :
+    GInt.born θ (field.add act) + Int.ofNat (2 * ((n + 1) * m + n) + 1 + 1)
+      = GInt.born θ field + GInt.born θ act := by
+  have hs := GInt.born_superpose θ field act
+  rw [hf, ha, neg_times_pos n m, two_times_negSucc ((n + 1) * m + n)] at hs
+  rw [hs]
+  exact tax_cancels (GInt.born θ field + GInt.born θ act) (2 * ((n + 1) * m + n) + 1)
+
+<span class="kw">theorem</span> <a class="decl" id="the_standing_grain_boosts_the_aligned_act" href="#the_standing_grain_boosts_the_aligned_act">the_standing_grain_boosts_the_aligned_act</a> (θ field act : GInt) (n m : Nat)
+    (hf : GInt.align θ field = Int.ofNat (n + 1))
+    (ha : GInt.align θ act = Int.ofNat (m + 1)) :
+    GInt.born θ (field.add act)
+      = GInt.born θ field + GInt.born θ act
+        + Int.ofNat (2 * ((n + 1) * m + n) + 2) := by
+  have hs := GInt.born_superpose θ field act
+  rw [hf, ha, pos_times_pos n m, two_times_ofNat ((n + 1) * m + n)] at hs
+  exact hs
+
+<span class="kw">theorem</span> <a class="decl" id="the_turned_field_pays_no_standing_tax" href="#the_turned_field_pays_no_standing_tax">the_turned_field_pays_no_standing_tax</a> (θ act field : GInt) :
+    GInt.align θ act * GInt.align θ field
+      + GInt.align θ act * GInt.align θ (GInt.rot field)
+      + GInt.align θ act * GInt.align θ (GInt.rot (GInt.rot field))
+      + GInt.align θ act * GInt.align θ (GInt.rot (GInt.rot (GInt.rot field)))
+      = 0 := by
+  rw [← FInt.mul_add, ← FInt.mul_add, ← FInt.mul_add, GInt.decoherence θ field,
+    FInt.mul_zero]
+
+<span class="kw">theorem</span> <a class="decl" id="the_wind_is_never_aimed" href="#the_wind_is_never_aimed">the_wind_is_never_aimed</a> {Src B : Type} (s t : Src) (v : List B) :
+    unsign (sign s v) = unsign (sign t v)
+      ∧ ∃ act θ f f&#x27; : GInt,
+          f ≠ f&#x27;
+            ∧ GInt.born θ (f.add act) - GInt.born θ f
+                ≠ GInt.born θ (f&#x27;.add act) - GInt.born θ f&#x27; :=
+  ⟨the_fold_is_source_blind s t v, fortune_not_in_your_record⟩
+
+<span class="kw">theorem</span> <a class="decl" id="upkeep_is_free_neglect_is_priced" href="#upkeep_is_free_neglect_is_priced">upkeep_is_free_neglect_is_priced</a> {S C : Type} [DecidableEq S]
+    (refresh : List S → C → C) (θ field act : GInt) (n m : Nat)
+    (hf : GInt.align θ field = Int.negSucc n)
+    (ha : GInt.align θ act = Int.ofNat (m + 1)) :
+    Invisible (LedgerStage S C) (fun st =&gt; (st.1, refresh st.1 st.2))
+      ∧ GInt.born θ (field.add act) + Int.ofNat (2 * ((n + 1) * m + n) + 1 + 1)
+          = GInt.born θ field + GInt.born θ act :=
+  ⟨sweep_invisible refresh,
+   the_standing_debt_taxes_the_aligned_act θ field act n m hf ha⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_biased_wind" href="#the_biased_wind">the_biased_wind</a> (θ field act : GInt) (n m : Nat)
+    (hf : GInt.align θ field = Int.negSucc n)
+    (ha : GInt.align θ act = Int.ofNat (m + 1)) :
+    (GInt.born θ (field.add act) + Int.ofNat (2 * ((n + 1) * m + n) + 1 + 1)
+        = GInt.born θ field + GInt.born θ act)
+      ∧ (GInt.align θ act * GInt.align θ field
+          + GInt.align θ act * GInt.align θ (GInt.rot field)
+          + GInt.align θ act * GInt.align θ (GInt.rot (GInt.rot field))
+          + GInt.align θ act * GInt.align θ (GInt.rot (GInt.rot (GInt.rot field)))
+          = 0)
+      ∧ GInt.align θ field * GInt.align θ act
+          + GInt.align θ field * GInt.align θ (GInt.rot act)
+          + GInt.align θ field * GInt.align θ (GInt.rot (GInt.rot act))
+          + GInt.align θ field * GInt.align θ (GInt.rot (GInt.rot (GInt.rot act)))
+          = 0 :=
+  ⟨the_standing_debt_taxes_the_aligned_act θ field act n m hf ha,
+   the_turned_field_pays_no_standing_tax θ act field,
+   luck_is_timing θ field act⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.neg_times_pos&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms neg_times_pos</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.pos_times_pos&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms pos_times_pos</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_times_negSucc&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_times_negSucc</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_times_ofNat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_times_ofNat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.tax_cancels&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms tax_cancels</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_standing_debt_taxes_the_aligned_act&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_standing_debt_taxes_the_aligned_act</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_standing_grain_boosts_the_aligned_act&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_standing_grain_boosts_the_aligned_act</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_turned_field_pays_no_standing_tax&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_turned_field_pays_no_standing_tax</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_wind_is_never_aimed&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_wind_is_never_aimed</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.upkeep_is_free_neglect_is_priced&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms upkeep_is_free_neglect_is_priced</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_biased_wind&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_biased_wind</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

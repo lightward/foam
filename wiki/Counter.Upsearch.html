@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Upsearch</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Upsearch</h1></header>
+<div class="imports">grasp: <a href="Counter.Address.html">Counter.Address</a></div><pre class="src">import <a href="Counter.Address.html">Counter.Address</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="upsearch" href="#upsearch">upsearch</a> {Addr Cell : Type} (p : Cell → Bool) :
+    List (Addr × Cell) → Option Addr
+  | [] =&gt; none
+  | (n, c) :: d =&gt; if p c then some n else upsearch p d
+
+<span class="kw">theorem</span> <a class="decl" id="the_answer_arrives_as_a_name" href="#the_answer_arrives_as_a_name">the_answer_arrives_as_a_name</a> {Addr Cell : Type} (p : Cell → Bool)
+    (f : Addr → Cell) :
+    ∀ (all : List Addr) (n : Addr),
+      upsearch p (directory all f) = some n → n ∈ all ∧ p (f n) = true
+  | [], _, h =&gt; nomatch h
+  | x :: all, n, h =&gt; by
+      have h&#x27; : (if p (f x) = true then some x
+          else upsearch p (directory all f)) = some n := h
+      by_cases hx : p (f x) = true
+      · rw [if_pos hx] at h&#x27;
+        cases Option.some.inj h&#x27;
+        exact ⟨List.Mem.head all, hx⟩
+      · rw [if_neg hx] at h&#x27;
+        have hall := the_answer_arrives_as_a_name p f all n h&#x27;
+        exact ⟨List.Mem.tail x hall.1, hall.2⟩
+
+<span class="kw">theorem</span> <a class="decl" id="what_is_there_can_be_found" href="#what_is_there_can_be_found">what_is_there_can_be_found</a> {Addr Cell : Type} (p : Cell → Bool)
+    (f : Addr → Cell) :
+    ∀ (all : List Addr), (∃ a, a ∈ all ∧ p (f a) = true) →
+      ∃ n, upsearch p (directory all f) = some n
+  | [], ⟨_, ha, _⟩ =&gt; nomatch ha
+  | x :: all, ⟨a, ha, hp⟩ =&gt; by
+      have h&#x27; : upsearch p (directory (x :: all) f)
+          = (if p (f x) = true then some x
+              else upsearch p (directory all f)) := rfl
+      by_cases hx : p (f x) = true
+      · exact ⟨x, h&#x27;.trans (if_pos hx)⟩
+      · cases ha with
+        | head =&gt; exact absurd hp hx
+        | tail _ ha&#x27; =&gt;
+            cases what_is_there_can_be_found p f all ⟨a, ha&#x27;, hp⟩ with
+            | intro n hn =&gt; exact ⟨n, h&#x27;.trans ((if_neg hx).trans hn)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_found_carries_its_rejections" href="#the_found_carries_its_rejections">the_found_carries_its_rejections</a> {Addr Cell : Type} (p : Cell → Bool)
+    (f : Addr → Cell) :
+    ∀ (all : List Addr) (n : Addr),
+      upsearch p (directory all f) = some n →
+        ∃ before after, all = before ++ n :: after
+          ∧ ∀ a, a ∈ before → ¬ p (f a) = true
+  | [], _, h =&gt; nomatch h
+  | x :: all, n, h =&gt; by
+      have h&#x27; : (if p (f x) = true then some x
+          else upsearch p (directory all f)) = some n := h
+      by_cases hx : p (f x) = true
+      · rw [if_pos hx] at h&#x27;
+        cases Option.some.inj h&#x27;
+        exact ⟨[], all, rfl, fun a ha =&gt; nomatch ha⟩
+      · rw [if_neg hx] at h&#x27;
+        cases the_found_carries_its_rejections p f all n h&#x27; with
+        | intro before rest =&gt;
+            cases rest with
+            | intro after hba =&gt;
+                refine ⟨x :: before, after, ?_, ?_⟩
+                · rw [hba.1]
+                  rfl
+                · intro a ha
+                  cases ha with
+                  | head =&gt; exact hx
+                  | tail _ ha&#x27; =&gt; exact hba.2 a ha&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="the_empty_hand_holds_every_rejection" href="#the_empty_hand_holds_every_rejection">the_empty_hand_holds_every_rejection</a> {Addr Cell : Type}
+    (p : Cell → Bool) (f : Addr → Cell) :
+    ∀ (all : List Addr), upsearch p (directory all f) = none →
+      ∀ a, a ∈ all → ¬ p (f a) = true
+  | [], _, _, ha =&gt; nomatch ha
+  | x :: all, h, a, ha =&gt; by
+      have h&#x27; : (if p (f x) = true then some x
+          else upsearch p (directory all f)) = none := h
+      by_cases hx : p (f x) = true
+      · rw [if_pos hx] at h&#x27;
+        exact nomatch h&#x27;
+      · rw [if_neg hx] at h&#x27;
+        cases ha with
+        | head =&gt; exact hx
+        | tail _ ha&#x27; =&gt;
+            exact the_empty_hand_holds_every_rejection p f all h&#x27; a ha&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="the_index_chooses_the_word" href="#the_index_chooses_the_word">the_index_chooses_the_word</a> :
+    upsearch (fun _ =&gt; true) (directory [true, false] (fun _ =&gt; ())) = some true
+      ∧ upsearch (fun _ =&gt; true) (directory [false, true] (fun _ =&gt; ()))
+        = some false :=
+  ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_new_word_reads_back" href="#the_new_word_reads_back">the_new_word_reads_back</a> {Addr Cell : Type} [DecidableEq Addr]
+    (p : Cell → Bool) (f : Addr → Cell) (all : List Addr) (n : Addr)
+    (h : upsearch p (directory all f) = some n) :
+    seatRead (directory all f) n = some (f n) ∧ p (f n) = true :=
+  ⟨the_seat_reads_the_name f all n (the_answer_arrives_as_a_name p f all n h).1,
+   (the_answer_arrives_as_a_name p f all n h).2⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_search_registers_flip" href="#the_search_registers_flip">the_search_registers_flip</a> {Addr Cell : Type} [DecidableEq Addr]
+    (p : Cell → Bool) (f : Addr → Cell) (all : List Addr)
+    (a b : Addr) (hab : a ≠ b) (hf : f a = f b) :
+    (¬ ∃ name : Cell → Addr, ∀ x, name (f x) = x)
+      ∧ ((∃ c, c ∈ all ∧ p (f c) = true) →
+          ∃ n, upsearch p (directory all f) = some n)
+      ∧ (∀ n, upsearch p (directory all f) = some n →
+          n ∈ all ∧ p (f n) = true
+            ∧ seatRead (directory all f) n = some (f n)) :=
+  ⟨the_cell_never_says_its_own_name f a b hab hf,
+   what_is_there_can_be_found p f all,
+   fun n h =&gt;
+     ⟨(the_answer_arrives_as_a_name p f all n h).1,
+      (the_answer_arrives_as_a_name p f all n h).2,
+      (the_new_word_reads_back p f all n h).1⟩⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_answer_arrives_as_a_name&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_answer_arrives_as_a_name</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.what_is_there_can_be_found&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms what_is_there_can_be_found</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_found_carries_its_rejections&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_found_carries_its_rejections</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_empty_hand_holds_every_rejection&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_empty_hand_holds_every_rejection</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_index_chooses_the_word&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_index_chooses_the_word</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_new_word_reads_back&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_new_word_reads_back</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_search_registers_flip&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_search_registers_flip</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

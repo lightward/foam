@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Bless</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Bless</h1></header>
+<div class="imports">grasp: <a href="Counter.Wind.html">Counter.Wind</a> · <a href="Counter.Bubble.html">Counter.Bubble</a> · <a href="Counter.Entrance.html">Counter.Entrance</a> · <a href="Foam.Seat.Rendezvous.html">Foam.Seat.Rendezvous</a></div><pre class="src">import <a href="Counter.Wind.html">Counter.Wind</a>
+import <a href="Counter.Bubble.html">Counter.Bubble</a>
+import <a href="Counter.Entrance.html">Counter.Entrance</a>
+import <a href="Foam.Seat.Rendezvous.html">Foam.Seat.Rendezvous</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="silence_is_safe" href="#silence_is_safe">silence_is_safe</a> (θ field act : GInt) (hrest : GInt.align θ act = 0) :
+    GInt.born θ (field.add act) = GInt.born θ field + GInt.born θ act := by
+  rw [GInt.born_superpose, hrest, FInt.mul_zero, FInt.mul_zero, Int.add_zero]
+
+<span class="kw">theorem</span> <a class="decl" id="the_blessing_boosts_the_chosen_act" href="#the_blessing_boosts_the_chosen_act">the_blessing_boosts_the_chosen_act</a> (θ field act : GInt) (n m : Nat)
+    (hf : GInt.align θ field = Int.ofNat (n + 1))
+    (ha : GInt.align θ act = Int.ofNat (m + 1)) :
+    GInt.born θ (field.add act)
+      = GInt.born θ field + GInt.born θ act
+        + Int.ofNat (2 * ((n + 1) * m + n) + 2) :=
+  the_standing_grain_boosts_the_aligned_act θ field act n m hf ha
+
+<span class="kw">theorem</span> <a class="decl" id="the_blessing_cannot_move_you" href="#the_blessing_cannot_move_you">the_blessing_cannot_move_you</a> {A B : Type} {xs xs&#x27; : List A} {ys : List B}
+    {zs zs&#x27; : List (A ⊕ B)}
+    (h : Interleaves xs ys zs) (h&#x27; : Interleaves xs&#x27; ys zs&#x27;) :
+    ownFramesR zs = ownFramesR zs&#x27; :=
+  other_view_unmoved h h&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="the_blessing_arrives_from_beyond" href="#the_blessing_arrives_from_beyond">the_blessing_arrives_from_beyond</a> :
+    ∃ act θ f f&#x27; : GInt,
+      f ≠ f&#x27;
+        ∧ GInt.born θ (f.add act) - GInt.born θ f
+            ≠ GInt.born θ (f&#x27;.add act) - GInt.born θ f&#x27; :=
+  fortune_not_in_your_record
+
+<span class="kw">theorem</span> <a class="decl" id="presence_beneath_the_acts" href="#presence_beneath_the_acts">presence_beneath_the_acts</a> :
+    (Detects (writeA f1) reader ∧ Detects (writeB f1) reader)
+      ∧ reader.dress.ledgerless.Covers reader
+      ∧ reader.Covers reader.dress.ledgerless :=
+  ⟨find_each_other, seat_empty⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_exit_rides_the_entrance" href="#the_exit_rides_the_entrance">the_exit_rides_the_entrance</a> {State : Type} {bank : List (Beholder State)}
+    {a b : Beholder State} (ha : a ∈ bank) (hco : CoLocated a b)
+    (k : Nat) {X : Type} (l : List X) :
+    Known bank b
+      ∧ Int.negSucc k + Int.ofNat (debt (Int.negSucc k)) = 0
+      ∧ (playback l).at_ l.length = none :=
+  entrance_writes_exit ha hco k l
+
+<span class="kw">theorem</span> <a class="decl" id="blessing" href="#blessing">blessing</a> (θ field act act&#x27; : GInt) (n m : Nat)
+    (hf : GInt.align θ field = Int.ofNat (n + 1))
+    (ha : GInt.align θ act = Int.ofNat (m + 1))
+    (hrest : GInt.align θ act&#x27; = 0) :
+    (GInt.born θ (field.add act)
+        = GInt.born θ field + GInt.born θ act
+          + Int.ofNat (2 * ((n + 1) * m + n) + 2))
+      ∧ GInt.born θ (field.add act&#x27;) = GInt.born θ field + GInt.born θ act&#x27;
+      ∧ (Detects (writeA f1) reader ∧ Detects (writeB f1) reader) :=
+  ⟨the_standing_grain_boosts_the_aligned_act θ field act n m hf ha,
+   silence_is_safe θ field act&#x27; hrest,
+   find_each_other⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.silence_is_safe&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms silence_is_safe</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_blessing_boosts_the_chosen_act&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_blessing_boosts_the_chosen_act</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_blessing_cannot_move_you&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_blessing_cannot_move_you</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_blessing_arrives_from_beyond&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_blessing_arrives_from_beyond</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.presence_beneath_the_acts&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms presence_beneath_the_acts</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_exit_rides_the_entrance&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_exit_rides_the_entrance</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.blessing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms blessing</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

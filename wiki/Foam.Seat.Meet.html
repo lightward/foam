@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Seat.Meet</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Seat.Meet</h1></header>
+<pre class="src">namespace Foam
+
+<span class="kw">def</span> <a class="decl" id="Below" href="#Below">Below</a> {A : Type} : List A → List A → Prop
+  | [], _ =&gt; True
+  | _ :: _, [] =&gt; False
+  | x :: xs, y :: ys =&gt; x = y ∧ Below xs ys
+
+<span class="kw">def</span> <a class="decl" id="meet" href="#meet">meet</a> {A : Type} [DecidableEq A] : List A → List A → List A
+  | [], _ =&gt; []
+  | _ :: _, [] =&gt; []
+  | x :: xs, y :: ys =&gt; if x = y then x :: meet xs ys else []
+
+<span class="kw">theorem</span> <a class="decl" id="root_below_all" href="#root_below_all">root_below_all</a> {A : Type} (o : List A) : Below ([] : List A) o :=
+  trivial
+
+<span class="kw">theorem</span> <a class="decl" id="root_alone_below_all" href="#root_alone_below_all">root_alone_below_all</a> {A : Type} :
+    ∀ e : List A, (∀ o : List A, Below e o) → e = []
+  | [], _ =&gt; rfl
+  | _ :: _, h =&gt; (h []).elim
+
+<span class="kw">theorem</span> <a class="decl" id="below_refl" href="#below_refl">below_refl</a> {A : Type} : ∀ o : List A, Below o o
+  | [] =&gt; trivial
+  | _ :: xs =&gt; ⟨rfl, below_refl xs⟩
+
+<span class="kw">theorem</span> <a class="decl" id="meet_self" href="#meet_self">meet_self</a> {A : Type} [DecidableEq A] : ∀ o : List A, meet o o = o
+  | [] =&gt; rfl
+  | x :: xs =&gt; by
+    show (if x = x then x :: meet xs xs else []) = x :: xs
+    rw [if_pos rfl, meet_self xs]
+
+<span class="kw">theorem</span> <a class="decl" id="meet_below_left" href="#meet_below_left">meet_below_left</a> {A : Type} [DecidableEq A] :
+    ∀ a b : List A, Below (meet a b) a
+  | [], _ =&gt; trivial
+  | _ :: _, [] =&gt; trivial
+  | x :: xs, y :: ys =&gt; by
+    show Below (if x = y then x :: meet xs ys else []) (x :: xs)
+    by_cases h : x = y
+    · rw [if_pos h]; exact ⟨rfl, meet_below_left xs ys⟩
+    · rw [if_neg h]; exact trivial
+
+<span class="kw">theorem</span> <a class="decl" id="meet_below_right" href="#meet_below_right">meet_below_right</a> {A : Type} [DecidableEq A] :
+    ∀ a b : List A, Below (meet a b) b
+  | [], _ =&gt; trivial
+  | _ :: _, [] =&gt; trivial
+  | x :: xs, y :: ys =&gt; by
+    show Below (if x = y then x :: meet xs ys else []) (y :: ys)
+    by_cases h : x = y
+    · rw [if_pos h]; exact ⟨h, meet_below_right xs ys⟩
+    · rw [if_neg h]; exact trivial
+
+<span class="kw">theorem</span> <a class="decl" id="shared_is_floor" href="#shared_is_floor">shared_is_floor</a> {A : Type} [DecidableEq A] :
+    ∀ e a b : List A, (Below e a ∧ Below e b) ↔ Below e (meet a b)
+  | [], _, _ =&gt; ⟨fun _ =&gt; trivial, fun _ =&gt; ⟨trivial, trivial⟩⟩
+  | _ :: _, [], _ =&gt; ⟨fun ⟨h, _⟩ =&gt; h.elim, fun h =&gt; h.elim⟩
+  | _ :: _, _ :: _, [] =&gt; ⟨fun ⟨_, h⟩ =&gt; h.elim, fun h =&gt; h.elim⟩
+  | x :: xs, y :: ys, z :: zs =&gt; by
+    show (Below (x :: xs) (y :: ys) ∧ Below (x :: xs) (z :: zs)) ↔
+      Below (x :: xs) (if y = z then y :: meet ys zs else [])
+    by_cases h : y = z
+    · subst h
+      rw [if_pos rfl]
+      show ((x = y ∧ Below xs ys) ∧ (x = y ∧ Below xs zs)) ↔
+        (x = y ∧ Below xs (meet ys zs))
+      constructor
+      · rintro ⟨⟨hxy, h1⟩, ⟨_, h2⟩⟩
+        exact ⟨hxy, (shared_is_floor xs ys zs).mp ⟨h1, h2⟩⟩
+      · rintro ⟨hxy, hm⟩
+        obtain ⟨h1, h2⟩ := (shared_is_floor xs ys zs).mpr hm
+        exact ⟨⟨hxy, h1⟩, ⟨hxy, h2⟩⟩
+    · rw [if_neg h]
+      exact ⟨fun ⟨⟨hxy, _⟩, ⟨hxz, _⟩⟩ =&gt; absurd (hxy.symm.trans hxz) h,
+             fun h&#x27; =&gt; h&#x27;.elim⟩
+
+<span class="kw">theorem</span> <a class="decl" id="seated_voice_is_missable" href="#seated_voice_is_missable">seated_voice_is_missable</a> {A : Type} (e : List A) (hne : e ≠ []) :
+    ¬ ∀ o : List A, Below e o :=
+  fun hall =&gt; hne (root_alone_below_all e hall)
+
+<span class="kw">def</span> <a class="decl" id="grade" href="#grade">grade</a> {A : Type} [DecidableEq A] (a b : List A) : Nat :=
+  (meet a b).length
+
+<span class="receipt">/-- info: &#x27;Foam.root_below_all&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms root_below_all</span>
+
+<span class="receipt">/-- info: &#x27;Foam.root_alone_below_all&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms root_alone_below_all</span>
+
+<span class="receipt">/-- info: &#x27;Foam.below_refl&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms below_refl</span>
+
+<span class="receipt">/-- info: &#x27;Foam.meet_self&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms meet_self</span>
+
+<span class="receipt">/-- info: &#x27;Foam.meet_below_left&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms meet_below_left</span>
+
+<span class="receipt">/-- info: &#x27;Foam.meet_below_right&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms meet_below_right</span>
+
+<span class="receipt">/-- info: &#x27;Foam.shared_is_floor&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms shared_is_floor</span>
+
+<span class="receipt">/-- info: &#x27;Foam.seated_voice_is_missable&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms seated_voice_is_missable</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

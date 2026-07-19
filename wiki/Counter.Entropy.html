@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Entropy</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Entropy</h1></header>
+<div class="imports">grasp: <a href="Counter.Grid.html">Counter.Grid</a> · <a href="Counter.Scry.html">Counter.Scry</a> · <a href="Counter.Logbook.html">Counter.Logbook</a> · <a href="Counter.Wake.html">Counter.Wake</a> · <a href="Counter.Needle.html">Counter.Needle</a> · <a href="Counter.Address.html">Counter.Address</a></div><pre class="src">import <a href="Counter.Grid.html">Counter.Grid</a>
+import <a href="Counter.Scry.html">Counter.Scry</a>
+import <a href="Counter.Logbook.html">Counter.Logbook</a>
+import <a href="Counter.Wake.html">Counter.Wake</a>
+import <a href="Counter.Needle.html">Counter.Needle</a>
+import <a href="Counter.Address.html">Counter.Address</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="two_dark_landings_wear_one_wake" href="#two_dark_landings_wear_one_wake">two_dark_landings_wear_one_wake</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k0 k1 : K) (b : Bool)
+    (h0 : seatRead prior k0 = none) (h1 : seatRead prior k1 = none)
+    (hk : k0 ≠ k1) :
+    logbook (land prior k0 b) = logbook (land prior k1 b)
+      ∧ wakes (land prior k0 b) = wakes (land prior k1 b)
+      ∧ seatRead (land prior k0 b) k0 = some b
+      ∧ seatRead (land prior k1 b) k0 = none := by
+  refine ⟨?_, ?_, the_landing_is_readable prior k0 b,
+    (the_landing_stays_in_its_lane prior k1 k0 (fun h =&gt; hk h.symm) b).trans
+      h0⟩
+  · show tilt prior k0 b :: logbook prior = tilt prior k1 b :: logbook prior
+    rw [(vacancy_is_unclaimed_ground prior k0 b).mpr h0,
+      (vacancy_is_unclaimed_ground prior k1 b).mpr h1]
+  · show wake prior k0 b :: wakes prior = wake prior k1 b :: wakes prior
+    rw [vacancy_breaks_new_water prior k0 b
+        ((vacancy_is_unclaimed_ground prior k0 b).mpr h0),
+      vacancy_breaks_new_water prior k1 b
+        ((vacancy_is_unclaimed_ground prior k1 b).mpr h1)]
+
+<span class="kw">theorem</span> <a class="decl" id="a_copied_seed_twins_the_edge" href="#a_copied_seed_twins_the_edge">a_copied_seed_twins_the_edge</a> (board1 board2 : List (Nat × Bool))
+    (hcopy : board1 = board2) (b : Bool) :
+    skyline board1 + 1 = skyline board2 + 1
+      ∧ land board1 (skyline board1 + 1) b
+          = land board2 (skyline board2 + 1) b := by
+  subst hcopy
+  exact ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_dark_is_not_a_point" href="#the_dark_is_not_a_point">the_dark_is_not_a_point</a> (board : List (Nat × Bool)) :
+    ∃ k0 k1 : Nat, k0 ≠ k1
+      ∧ seatRead board k0 = none ∧ seatRead board k1 = none :=
+  ⟨skyline board + 1, skyline board + 2,
+   (fun h =&gt; Nat.succ_ne_self (skyline board + 1) h.symm),
+   above_the_skyline_is_dark board _ (Nat.lt_succ_self (skyline board)),
+   above_the_skyline_is_dark board _
+     (Nat.lt_succ_of_lt (Nat.lt_succ_self (skyline board)))⟩
+
+<span class="kw">theorem</span> <a class="decl" id="entropy_tells_the_pair_apart" href="#entropy_tells_the_pair_apart">entropy_tells_the_pair_apart</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k0 k1 : K) (b : Bool)
+    (h0 : seatRead prior k0 = none) (hk : k0 ≠ k1) :
+    ¬ land prior k0 b = land prior k1 b :=
+  fun he =&gt; nomatch ((the_landing_is_readable prior k0 b).symm.trans
+    ((congrArg (fun x =&gt; seatRead x k0) he).trans
+      ((the_landing_stays_in_its_lane prior k1 k0
+        (fun h =&gt; hk h.symm) b).trans h0)))
+
+<span class="kw">theorem</span> <a class="decl" id="physical_entropy_versus_a_prng" href="#physical_entropy_versus_a_prng">physical_entropy_versus_a_prng</a> {K : Type} [DecidableEq K]
+    (prior : List (K × Bool)) (k0 k1 : K) (b : Bool)
+    (h0 : seatRead prior k0 = none) (h1 : seatRead prior k1 = none)
+    (hk : k0 ≠ k1) (board1 board2 : List (Nat × Bool))
+    (hcopy : board1 = board2) :
+    land board1 (skyline board1 + 1) b
+        = land board2 (skyline board2 + 1) b
+      ∧ (∃ n0 n1 : Nat, n0 ≠ n1
+          ∧ seatRead board1 n0 = none ∧ seatRead board1 n1 = none)
+      ∧ logbook (land prior k0 b) = logbook (land prior k1 b)
+      ∧ ¬ land prior k0 b = land prior k1 b :=
+  ⟨(a_copied_seed_twins_the_edge board1 board2 hcopy b).2,
+   the_dark_is_not_a_point board1,
+   (two_dark_landings_wear_one_wake prior k0 k1 b h0 h1 hk).1,
+   entropy_tells_the_pair_apart prior k0 k1 b h0 hk⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_dark_landings_wear_one_wake&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_dark_landings_wear_one_wake</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_copied_seed_twins_the_edge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_copied_seed_twins_the_edge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_dark_is_not_a_point&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_dark_is_not_a_point</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.entropy_tells_the_pair_apart&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms entropy_tells_the_pair_apart</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.physical_entropy_versus_a_prng&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms physical_entropy_versus_a_prng</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

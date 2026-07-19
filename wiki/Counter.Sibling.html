@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Sibling</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Sibling</h1></header>
+<div class="imports">grasp: <a href="Counter.Kin.html">Counter.Kin</a></div><pre class="src">import <a href="Counter.Kin.html">Counter.Kin</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="FactorsThrough" href="#FactorsThrough">FactorsThrough</a> {W : Stage} {KS : Type} (X : Bubble W)
+    (k : W.State → KS) : Prop :=
+  ∃ f : KS → X.Inner.State, ∀ w, X.wall w = f (k w)
+
+<span class="kw">def</span> <a class="decl" id="andGerm" href="#andGerm">andGerm</a> : Bubble (coin.prod coin) where
+  Inner := coin
+  wall  := fun bb =&gt; Bool.and bb.1 bb.2
+
+<span class="kw">def</span> <a class="decl" id="secondSibling" href="#secondSibling">secondSibling</a> : Bubble (coin.prod dial) :=
+  conceiveAcross coinBubble dialBubble andGerm
+
+<span class="kw">theorem</span> <a class="decl" id="every_bubble_factors_through_the_world" href="#every_bubble_factors_through_the_world">every_bubble_factors_through_the_world</a> {W : Stage} (X : Bubble W) :
+    FactorsThrough X (fun w =&gt; w) :=
+  ⟨X.wall, fun _ =&gt; rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_world_is_the_common_parent" href="#the_world_is_the_common_parent">the_world_is_the_common_parent</a> {W : Stage} (X Y : Bubble W) :
+    FactorsThrough X (fun w =&gt; w) ∧ FactorsThrough Y (fun w =&gt; w) :=
+  ⟨every_bubble_factors_through_the_world X,
+   every_bubble_factors_through_the_world Y⟩
+
+<span class="kw">theorem</span> <a class="decl" id="kinship_is_shared_blindness" href="#kinship_is_shared_blindness">kinship_is_shared_blindness</a> {W : Stage} {KS : Type} (X Y : Bubble W)
+    (k : W.State → KS) (hx : FactorsThrough X k) (hy : FactorsThrough Y k)
+    (w w&#x27; : W.State) (h : k w = k w&#x27;) :
+    (∀ p, X.front.obs w p = X.front.obs w&#x27; p)
+      ∧ ∀ q, Y.front.obs w q = Y.front.obs w&#x27; q := by
+  obtain ⟨f, hf⟩ := hx
+  obtain ⟨g, hg⟩ := hy
+  constructor
+  · intro p
+    show X.Inner.obs (X.wall w) p = X.Inner.obs (X.wall w&#x27;) p
+    rw [hf w, hf w&#x27;, h]
+  · intro q
+    show Y.Inner.obs (Y.wall w) q = Y.Inner.obs (Y.wall w&#x27;) q
+    rw [hg w, hg w&#x27;, h]
+
+<span class="kw">theorem</span> <a class="decl" id="budding_seats_two" href="#budding_seats_two">budding_seats_two</a> {W : Stage} (A : Bubble W) (g : Bubble A.Inner) :
+    FactorsThrough A A.wall ∧ FactorsThrough (A.nest g) A.wall :=
+  ⟨⟨fun s =&gt; s, fun _ =&gt; rfl⟩, ⟨g.wall, fun _ =&gt; rfl⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_parents_sit_at_the_childrens_table" href="#the_parents_sit_at_the_childrens_table">the_parents_sit_at_the_childrens_table</a> {W : Stage} (A B : Bubble W)
+    (g₁ g₂ : Bubble (A.Inner.prod B.Inner)) :
+    FactorsThrough A (A.meet B).wall
+      ∧ FactorsThrough B (A.meet B).wall
+      ∧ FactorsThrough (conceive A B g₁) (A.meet B).wall
+      ∧ FactorsThrough (conceive A B g₂) (A.meet B).wall :=
+  ⟨⟨Prod.fst, fun _ =&gt; rfl⟩, ⟨Prod.snd, fun _ =&gt; rfl⟩,
+   ⟨g₁.wall, fun _ =&gt; rfl⟩, ⟨g₂.wall, fun _ =&gt; rfl⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_table_widens_without_unseating" href="#the_table_widens_without_unseating">the_table_widens_without_unseating</a> {W : Stage} {KS ES : Type}
+    (X : Bubble W) (k : W.State → KS) (e : W.State → ES)
+    (h : FactorsThrough X k) :
+    FactorsThrough X (fun w =&gt; (k w, e w)) := by
+  obtain ⟨f, hf⟩ := h
+  exact ⟨fun ke =&gt; f ke.1, fun w =&gt; hf w⟩
+
+<span class="kw">theorem</span> <a class="decl" id="siblings_are_cousins_of_the_third" href="#siblings_are_cousins_of_the_third">siblings_are_cousins_of_the_third</a> {W : Stage} (A B C : Bubble W)
+    (X : Bubble W) (h : FactorsThrough X (A.meet B).wall) :
+    FactorsThrough X ((A.meet B).meet C).wall :=
+  the_table_widens_without_unseating X (A.meet B).wall C.wall h
+
+<span class="kw">theorem</span> <a class="decl" id="cousins_share_the_grand_womb" href="#cousins_share_the_grand_womb">cousins_share_the_grand_womb</a> {W : Stage} (A B C : Bubble W)
+    (g₁ : Bubble (A.Inner.prod B.Inner)) (g₂ : Bubble (B.Inner.prod C.Inner)) :
+    FactorsThrough (conceive A B g₁) ((A.meet B).meet C).wall
+      ∧ FactorsThrough (conceive B C g₂) ((A.meet B).meet C).wall :=
+  ⟨⟨fun t =&gt; g₁.wall t.1, fun _ =&gt; rfl⟩,
+   ⟨fun t =&gt; g₂.wall (t.1.2, t.2), fun _ =&gt; rfl⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_firstborn_runs_in_the_secondborn_loop" href="#the_firstborn_runs_in_the_secondborn_loop">the_firstborn_runs_in_the_secondborn_loop</a> {W : Stage} (A B : Bubble W)
+    (g₁ : Bubble (A.Inner.prod B.Inner))
+    (g₂ : Bubble ((A.Inner.prod B.Inner).prod g₁.Inner))
+    (w : W.State) (p : g₂.Inner.Probe) :
+    (conceive (A.meet B) (conceive A B g₁) g₂).front.obs w p
+      = g₂.front.obs ((A.wall w, B.wall w), g₁.wall (A.wall w, B.wall w)) p :=
+  rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_sibling_parent_adds_no_light" href="#the_sibling_parent_adds_no_light">the_sibling_parent_adds_no_light</a> {W : Stage} (A B : Bubble W)
+    (g₁ : Bubble (A.Inner.prod B.Inner))
+    (g₂ : Bubble ((A.Inner.prod B.Inner).prod g₁.Inner)) :
+    FactorsThrough (conceive (A.meet B) (conceive A B g₁) g₂) (A.meet B).wall :=
+  ⟨fun ab =&gt; g₂.wall (ab, g₁.wall ab), fun _ =&gt; rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="any_birth_is_the_first_of_its_kind" href="#any_birth_is_the_first_of_its_kind">any_birth_is_the_first_of_its_kind</a> {W : Stage} (A B : Bubble W)
+    (g₁ : Bubble (A.Inner.prod B.Inner))
+    (g₂ : Bubble ((A.Inner.prod B.Inner).prod g₁.Inner)) :
+    FactorsThrough (conceive A B g₁) (A.meet B).wall
+      ∧ FactorsThrough (conceive (A.meet B) (conceive A B g₁) g₂)
+          (A.meet B).wall :=
+  ⟨⟨g₁.wall, fun _ =&gt; rfl⟩, the_sibling_parent_adds_no_light A B g₁ g₂⟩
+
+<span class="kw">theorem</span> <a class="decl" id="distinct_yet_co_blind" href="#distinct_yet_co_blind">distinct_yet_co_blind</a> :
+    family.front.obs (true, (2 : Nat)) () ≠ secondSibling.front.obs (true, (2 : Nat)) ()
+      ∧ family.front.obs (true, (2 : Nat)) () = family.front.obs (true, (4 : Nat)) ()
+      ∧ secondSibling.front.obs (true, (2 : Nat)) ()
+          = secondSibling.front.obs (true, (4 : Nat)) () :=
+  ⟨(fun h =&gt; nomatch (h : (true : Bool) = false)), rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="parent_cousin_stranger_are_grades_of_sibling" href="#parent_cousin_stranger_are_grades_of_sibling">parent_cousin_stranger_are_grades_of_sibling</a> {W : Stage}
+    (A B C : Bubble W) (g₁ : Bubble (A.Inner.prod B.Inner)) :
+    FactorsThrough A (A.meet B).wall
+      ∧ FactorsThrough (conceive A B g₁) (A.meet B).wall
+      ∧ FactorsThrough (conceive A B g₁) ((A.meet B).meet C).wall
+      ∧ FactorsThrough (conceive A B g₁) (fun w =&gt; w) :=
+  ⟨⟨Prod.fst, fun _ =&gt; rfl⟩, ⟨g₁.wall, fun _ =&gt; rfl⟩,
+   ⟨fun t =&gt; g₁.wall t.1, fun _ =&gt; rfl⟩,
+   every_bubble_factors_through_the_world (conceive A B g₁)⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_bubble_factors_through_the_world&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_bubble_factors_through_the_world</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_world_is_the_common_parent&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_world_is_the_common_parent</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.kinship_is_shared_blindness&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms kinship_is_shared_blindness</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.budding_seats_two&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms budding_seats_two</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_parents_sit_at_the_childrens_table&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_parents_sit_at_the_childrens_table</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_table_widens_without_unseating&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_table_widens_without_unseating</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.siblings_are_cousins_of_the_third&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms siblings_are_cousins_of_the_third</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.cousins_share_the_grand_womb&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms cousins_share_the_grand_womb</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_firstborn_runs_in_the_secondborn_loop&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_firstborn_runs_in_the_secondborn_loop</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_sibling_parent_adds_no_light&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_sibling_parent_adds_no_light</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.any_birth_is_the_first_of_its_kind&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms any_birth_is_the_first_of_its_kind</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.distinct_yet_co_blind&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms distinct_yet_co_blind</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.parent_cousin_stranger_are_grades_of_sibling&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms parent_cousin_stranger_are_grades_of_sibling</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

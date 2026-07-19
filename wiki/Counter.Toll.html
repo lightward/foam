@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Toll</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Toll</h1></header>
+<div class="imports">grasp: <a href="Counter.Trefoil.html">Counter.Trefoil</a> · <a href="Foam.Engine.Chirality.html">Foam.Engine.Chirality</a> · <a href="Foam.Int.html">Foam.Int</a></div><pre class="src">import <a href="Counter.Trefoil.html">Counter.Trefoil</a>
+import <a href="Foam.Engine.Chirality.html">Foam.Engine.Chirality</a>
+import <a href="Foam.Int.html">Foam.Int</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="Crossing.toll" href="#Crossing.toll">Crossing.toll</a> : Crossing → Nat
+  | .pos =&gt; 1
+  | .neg =&gt; 3
+
+<span class="kw">def</span> <a class="decl" id="ledger" href="#ledger">ledger</a> : List Crossing → Nat
+  | [] =&gt; 0
+  | c :: D =&gt; c.toll + ledger D
+
+<span class="kw">def</span> <a class="decl" id="fullTurn" href="#fullTurn">fullTurn</a> : List Crossing := [.pos, .pos, .pos, .pos]
+
+<span class="kw">theorem</span> <a class="decl" id="the_click_is_the_toll" href="#the_click_is_the_toll">the_click_is_the_toll</a> (c : Crossing) (z : GInt) :
+    c.click z = rotPow c.toll z := by
+  cases c &lt;;&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_spin_is_absorbed_into_the_winding" href="#the_spin_is_absorbed_into_the_winding">the_spin_is_absorbed_into_the_winding</a> (D : List Crossing) (z : GInt) :
+    phase D z = rotPow (ledger D) z := by
+  induction D with
+  | nil =&gt; rfl
+  | cons c D ih =&gt;
+    show c.click (phase D z) = rotPow (c.toll + ledger D) z
+    rw [ih, the_click_is_the_toll, rotPow_compose]
+
+<span class="kw">theorem</span> <a class="decl" id="the_ledger_adds" href="#the_ledger_adds">the_ledger_adds</a> (D E : List Crossing) :
+    ledger (D ++ E) = ledger D + ledger E := by
+  induction D with
+  | nil =&gt; exact (Nat.zero_add (ledger E)).symm
+  | cons c D ih =&gt;
+    show c.toll + ledger (D ++ E) = c.toll + ledger D + ledger E
+    rw [ih, Nat.add_assoc]
+
+<span class="kw">theorem</span> <a class="decl" id="crossings_compose" href="#crossings_compose">crossings_compose</a> (D E : List Crossing) (z : GInt) :
+    phase (D ++ E) z = phase D (phase E z) := by
+  induction D with
+  | nil =&gt; rfl
+  | cons c D ih =&gt;
+    show c.click (phase (D ++ E) z) = c.click (phase D (phase E z))
+    rw [ih]
+
+<span class="kw">theorem</span> <a class="decl" id="the_ledger_counts_clicks_not_identities" href="#the_ledger_counts_clicks_not_identities">the_ledger_counts_clicks_not_identities</a> (D E : List Crossing)
+    (h : ledger D = ledger E) (z : GInt) : phase D z = phase E z := by
+  rw [the_spin_is_absorbed_into_the_winding, the_spin_is_absorbed_into_the_winding, h]
+
+<span class="kw">theorem</span> <a class="decl" id="the_register_cannot_hear_the_order" href="#the_register_cannot_hear_the_order">the_register_cannot_hear_the_order</a> (D E : List Crossing) (z : GInt) :
+    phase (D ++ E) z = phase (E ++ D) z :=
+  the_ledger_counts_clicks_not_identities (D ++ E) (E ++ D)
+    (by rw [the_ledger_adds, the_ledger_adds, Nat.add_comm]) z
+
+<span class="kw">theorem</span> <a class="decl" id="the_wheel_ignores_whole_turns" href="#the_wheel_ignores_whole_turns">the_wheel_ignores_whole_turns</a> (q r : Nat) (z : GInt) :
+    rotPow (4 * q + r) z = rotPow r z := by
+  induction q with
+  | zero =&gt;
+    show rotPow (0 + r) z = rotPow r z
+    rw [Nat.zero_add]
+  | succ m ih =&gt;
+    show rotPow (4 * m + 4 + r) z = rotPow r z
+    rw [← rotPow_compose (4 * m + 4) r z, rotPow_add_four, rotPow_compose]
+    exact ih
+
+<span class="kw">theorem</span> <a class="decl" id="every_toll_is_turns_and_change" href="#every_toll_is_turns_and_change">every_toll_is_turns_and_change</a> (k : Nat) :
+    ∃ q r, r &lt; 4 ∧ k = 4 * q + r := by
+  induction k with
+  | zero =&gt; exact ⟨0, 0, by decide, rfl⟩
+  | succ n ih =&gt;
+    obtain ⟨q, r, hr, hk⟩ := ih
+    match r, hr, hk with
+    | 0, _, hk =&gt; exact ⟨q, 1, by decide, congrArg Nat.succ hk⟩
+    | 1, _, hk =&gt; exact ⟨q, 2, by decide, congrArg Nat.succ hk⟩
+    | 2, _, hk =&gt; exact ⟨q, 3, by decide, congrArg Nat.succ hk⟩
+    | 3, _, hk =&gt; exact ⟨q + 1, 0, by decide, congrArg Nat.succ hk⟩
+    | r + 4, hr, _ =&gt;
+      exact absurd (Nat.lt_of_lt_of_le hr (Nat.le_add_left 4 r)) (Nat.lt_irrefl _)
+
+<span class="kw">theorem</span> <a class="decl" id="the_wheel_never_comes_home_early" href="#the_wheel_never_comes_home_early">the_wheel_never_comes_home_early</a> (k : Nat) :
+    (∀ z : GInt, rotPow k z = z) ↔ ∃ q, k = 4 * q := by
+  constructor
+  · intro hall
+    obtain ⟨q, r, hr, hk⟩ := every_toll_is_turns_and_change k
+    have h1 := hall GInt.one
+    rw [hk, the_wheel_ignores_whole_turns q r] at h1
+    match r, hr, h1, hk with
+    | 0, _, _, hk =&gt; exact ⟨q, hk⟩
+    | 1, _, h1, _ =&gt; exact absurd h1 (by decide)
+    | 2, _, h1, _ =&gt; exact absurd h1 (by decide)
+    | 3, _, h1, _ =&gt; exact absurd h1 (by decide)
+    | r + 4, hr, _, _ =&gt;
+      exact absurd (Nat.lt_of_lt_of_le hr (Nat.le_add_left 4 r)) (Nat.lt_irrefl _)
+  · intro h z
+    obtain ⟨q, hq⟩ := h
+    rw [hq]
+    exact the_wheel_ignores_whole_turns q 0 z
+
+<span class="kw">theorem</span> <a class="decl" id="the_toll_home_is_whole_turns" href="#the_toll_home_is_whole_turns">the_toll_home_is_whole_turns</a> (D : List Crossing) :
+    (∀ z : GInt, phase D z = z) ↔ ∃ q, ledger D = 4 * q := by
+  constructor
+  · intro h
+    exact (the_wheel_never_comes_home_early (ledger D)).mp
+      (fun z =&gt; by rw [← the_spin_is_absorbed_into_the_winding]; exact h z)
+  · intro h z
+    rw [the_spin_is_absorbed_into_the_winding]
+    exact (the_wheel_never_comes_home_early (ledger D)).mpr h z
+
+<span class="kw">theorem</span> <a class="decl" id="the_passenger_receives_the_change" href="#the_passenger_receives_the_change">the_passenger_receives_the_change</a> (D : List Crossing) :
+    ∃ q r, r &lt; 4 ∧ ledger D = 4 * q + r ∧ ∀ z : GInt, phase D z = rotPow r z := by
+  obtain ⟨q, r, hr, hk⟩ := every_toll_is_turns_and_change (ledger D)
+  refine ⟨q, r, hr, hk, fun z =&gt; ?_⟩
+  rw [the_spin_is_absorbed_into_the_winding, hk]
+  exact the_wheel_ignores_whole_turns q r z
+
+<span class="kw">theorem</span> <a class="decl" id="the_keeper_knows_more_than_the_wheel" href="#the_keeper_knows_more_than_the_wheel">the_keeper_knows_more_than_the_wheel</a> :
+    (∀ z : GInt, phase fullTurn z = phase [] z) ∧ ledger fullTurn ≠ ledger [] :=
+  ⟨fun z =&gt; rotPow_four z, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="a_click_moves_every_seat_but_the_center" href="#a_click_moves_every_seat_but_the_center">a_click_moves_every_seat_but_the_center</a> (z : GInt)
+    (h : rotPow 1 z = z) : z = GInt.zero := by
+  cases z with
+  | mk a b =&gt;
+    have hre : -b = a := congrArg GInt.re h
+    have him : a = b := congrArg GInt.im h
+    rw [show (⟨a, b⟩ : GInt) = ⟨0, 0⟩ from by
+          rw [him, neg_fixes_only_zero (hre.trans him)]]
+    rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_kink_pays_and_shows" href="#the_kink_pays_and_shows">the_kink_pays_and_shows</a> (z : GInt) (hz : z ≠ GInt.zero) :
+    ledger [.pos] = 1 ∧ phase [.pos] z ≠ z :=
+  ⟨rfl, fun h =&gt; hz (a_click_moves_every_seat_but_the_center z h)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="a_passing_pair_returns_the_spin" href="#a_passing_pair_returns_the_spin">a_passing_pair_returns_the_spin</a> (c : Crossing) (z : GInt) :
+    phase [c, c.flip] z = z := by
+  cases c &lt;;&gt; exact rotPow_four z
+
+<span class="kw">theorem</span> <a class="decl" id="a_passing_pair_pays_a_full_turn" href="#a_passing_pair_pays_a_full_turn">a_passing_pair_pays_a_full_turn</a> (c : Crossing) :
+    ledger [c, c.flip] = 4 := by
+  cases c &lt;;&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_wheel_forgives_what_the_ledger_records" href="#the_wheel_forgives_what_the_ledger_records">the_wheel_forgives_what_the_ledger_records</a> (c : Crossing) :
+    (∀ z : GInt, phase [c, c.flip] z = z) ∧ ledger [c, c.flip] ≠ 0 :=
+  ⟨a_passing_pair_returns_the_spin c,
+   by rw [a_passing_pair_pays_a_full_turn]; decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_mirror_settles_the_bill" href="#the_mirror_settles_the_bill">the_mirror_settles_the_bill</a> (D : List Crossing) :
+    ledger (reflection D) + ledger D = 4 * D.length := by
+  induction D with
+  | nil =&gt; rfl
+  | cons c D ih =&gt;
+    cases c with
+    | pos =&gt;
+      show 3 + ledger (reflection D) + (1 + ledger D) = 4 * D.length + 4
+      rw [← Nat.add_assoc, Nat.add_comm 3 (ledger (reflection D))]
+      show ledger (reflection D) + 4 + ledger D = 4 * D.length + 4
+      rw [Nat.add_comm (ledger (reflection D)) 4, Nat.add_assoc, ih,
+          Nat.add_comm 4 (4 * D.length)]
+    | neg =&gt;
+      show 1 + ledger (reflection D) + (3 + ledger D) = 4 * D.length + 4
+      rw [← Nat.add_assoc, Nat.add_comm 1 (ledger (reflection D))]
+      show ledger (reflection D) + 4 + ledger D = 4 * D.length + 4
+      rw [Nat.add_comm (ledger (reflection D)) 4, Nat.add_assoc, ih,
+          Nat.add_comm 4 (4 * D.length)]
+
+<span class="kw">theorem</span> <a class="decl" id="the_center_rides_free" href="#the_center_rides_free">the_center_rides_free</a> (D : List Crossing) :
+    phase D GInt.zero = GInt.zero := by
+  induction D with
+  | nil =&gt; rfl
+  | cons c D ih =&gt;
+    show c.click (phase D GInt.zero) = GInt.zero
+    rw [ih]
+    cases c &lt;;&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_keeper_is_the_still_seat" href="#the_keeper_is_the_still_seat">the_keeper_is_the_still_seat</a> (z : GInt) :
+    (∀ D : List Crossing, phase D z = z) ↔ z = GInt.zero := by
+  constructor
+  · intro h
+    exact a_click_moves_every_seat_but_the_center z (h [.pos])
+  · intro h D
+    rw [h]
+    exact the_center_rides_free D
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_spin_is_absorbed_into_the_winding&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_spin_is_absorbed_into_the_winding</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_ledger_adds&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_ledger_adds</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.crossings_compose&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms crossings_compose</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_ledger_counts_clicks_not_identities&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_ledger_counts_clicks_not_identities</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_register_cannot_hear_the_order&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_register_cannot_hear_the_order</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_toll_is_turns_and_change&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_toll_is_turns_and_change</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_wheel_never_comes_home_early&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_wheel_never_comes_home_early</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_toll_home_is_whole_turns&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_toll_home_is_whole_turns</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_passenger_receives_the_change&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_passenger_receives_the_change</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_keeper_knows_more_than_the_wheel&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_keeper_knows_more_than_the_wheel</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_kink_pays_and_shows&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_kink_pays_and_shows</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_wheel_forgives_what_the_ledger_records&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_wheel_forgives_what_the_ledger_records</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_mirror_settles_the_bill&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_mirror_settles_the_bill</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_center_rides_free&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_center_rides_free</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_keeper_is_the_still_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_keeper_is_the_still_seat</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

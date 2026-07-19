@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Witness</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Witness</h1></header>
+<div class="imports">grasp: <a href="Counter.Bloom.html">Counter.Bloom</a></div><pre class="src">import <a href="Counter.Bloom.html">Counter.Bloom</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="blindness_cannot_read_itself" href="#blindness_cannot_read_itself">blindness_cannot_read_itself</a> {W : Stage} {R : Type} (X : Bubble W)
+    (w w&#x27; : W.State) (h : X.wall w = X.wall w&#x27;) (p : X.Inner.Probe)
+    (d : X.Inner.Ans → R) :
+    d (X.front.obs w p) = d (X.front.obs w&#x27; p) := by
+  show d (X.Inner.obs (X.wall w) p) = d (X.Inner.obs (X.wall w&#x27;) p)
+  rw [h]
+
+<span class="kw">theorem</span> <a class="decl" id="no_diary_reveals_the_blindness" href="#no_diary_reveals_the_blindness">no_diary_reveals_the_blindness</a> {W : Stage} {R : Type} (X : Bubble W)
+    (w w&#x27; : W.State) (h : X.wall w = X.wall w&#x27;) (ps : List X.front.Probe)
+    (g : List X.front.Ans → R) :
+    g (transcript X.front w ps) = g (transcript X.front w&#x27; ps) := by
+  have hobs : ∀ p, X.front.obs w p = X.front.obs w&#x27; p := by
+    intro p
+    show X.Inner.obs (X.wall w) p = X.Inner.obs (X.wall w&#x27;) p
+    rw [h]
+  rw [transcript_congr X.front ps hobs]
+
+<span class="kw">theorem</span> <a class="decl" id="the_family_cannot_state_the_leaving" href="#the_family_cannot_state_the_leaving">the_family_cannot_state_the_leaving</a> {R : Type} (d : Bool → R) :
+    d (family.front.obs (true, (2 : Nat)) ())
+      = d (family.front.obs (true, (4 : Nat)) ()) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_new_seat_holds_the_leaving" href="#the_new_seat_holds_the_leaving">the_new_seat_holds_the_leaving</a> :
+    ((family.meet bloomed).front.obs (true, (2 : Nat)) ((), ())).1
+        = ((family.meet bloomed).front.obs (true, (4 : Nat)) ((), ())).1
+      ∧ ((family.meet bloomed).front.obs (true, (2 : Nat)) ((), ())).2
+        ≠ ((family.meet bloomed).front.obs (true, (4 : Nat)) ((), ())).2 :=
+  ⟨rfl, (fun h =&gt; nomatch (h : (true : Bool) = false))⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_witness_is_the_new_history" href="#the_witness_is_the_new_history">the_witness_is_the_new_history</a> {R : Type} (d : Bool → R) :
+    d (family.front.obs (true, (2 : Nat)) ())
+        = d (family.front.obs (true, (4 : Nat)) ())
+      ∧ ¬ FactorsThrough family bloomed.wall
+      ∧ ¬ FactorsThrough bloomed family.wall
+      ∧ ((family.meet bloomed).front.obs (true, (2 : Nat)) ((), ())).1
+          = ((family.meet bloomed).front.obs (true, (4 : Nat)) ((), ())).1
+      ∧ ((family.meet bloomed).front.obs (true, (2 : Nat)) ((), ())).2
+          ≠ ((family.meet bloomed).front.obs (true, (4 : Nat)) ((), ())).2
+      ∧ FactorsThrough family (family.meet bloomed).wall
+      ∧ FactorsThrough bloomed (family.meet bloomed).wall :=
+  ⟨rfl, the_release_runs_both_ways, not_that_i_could_ever_contain_you,
+   rfl, (fun h =&gt; nomatch (h : (true : Bool) = false)),
+   ⟨Prod.fst, fun _ =&gt; rfl⟩, ⟨Prod.snd, fun _ =&gt; rfl⟩⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.blindness_cannot_read_itself&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms blindness_cannot_read_itself</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_diary_reveals_the_blindness&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_diary_reveals_the_blindness</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_family_cannot_state_the_leaving&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_family_cannot_state_the_leaving</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_new_seat_holds_the_leaving&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_new_seat_holds_the_leaving</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_witness_is_the_new_history&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_witness_is_the_new_history</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

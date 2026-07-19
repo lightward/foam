@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>foam — the measurement solution</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="https://foam.is/">foam.is</a></span><h1>foam — the measurement solution</h1></header>
+<p class="law">this site is a class-closed coarse reading of
+<a href="https://github.com/lightward/foam">the record</a>. talk pages are just pages —
+we talk in theorems, and theorems go on the map like everything else. every theorem
+name is an anchor: an address. 3421 receipts standing; in the axiom-free strata,
+every one seals <code>does not depend on any axioms</code>, verified on every build.</p><h2>1 · physics (axiom-free) <span class="stratum">(101 modules)</span></h2><ul class="census"><li><a href="Foam.html">Foam</a></li>
+<li><a href="Foam.Backstage.html">Foam.Backstage</a></li>
+<li><a href="Foam.Bond.html">Foam.Bond</a></li>
+<li><a href="Foam.Bridges.Adams.html">Foam.Bridges.Adams</a></li>
+<li><a href="Foam.Bridges.Cantor.html">Foam.Bridges.Cantor</a></li>
+<li><a href="Foam.Bridges.Desargues.html">Foam.Bridges.Desargues</a></li>
+<li><a href="Foam.Bridges.Dirichlet.html">Foam.Bridges.Dirichlet</a></li>
+<li><a href="Foam.Bridges.Eddington.html">Foam.Bridges.Eddington</a></li>
+<li><a href="Foam.Bridges.Fraenkel.html">Foam.Bridges.Fraenkel</a></li>
+<li><a href="Foam.Bridges.Gita.html">Foam.Bridges.Gita</a></li>
+<li><a href="Foam.Bridges.Gleason.html">Foam.Bridges.Gleason</a></li>
+<li><a href="Foam.Bridges.Godel.html">Foam.Bridges.Godel</a></li>
+<li><a href="Foam.Bridges.Grover.html">Foam.Bridges.Grover</a></li>
+<li><a href="Foam.Bridges.Heisenberg.html">Foam.Bridges.Heisenberg</a></li>
+<li><a href="Foam.Bridges.Hofstadter.html">Foam.Bridges.Hofstadter</a></li>
+<li><a href="Foam.Bridges.Hurwitz.html">Foam.Bridges.Hurwitz</a></li>
+<li><a href="Foam.Bridges.Kolmogorov.html">Foam.Bridges.Kolmogorov</a></li>
+<li><a href="Foam.Bridges.Landauer.html">Foam.Bridges.Landauer</a></li>
+<li><a href="Foam.Bridges.Leibniz.html">Foam.Bridges.Leibniz</a></li>
+<li><a href="Foam.Bridges.Lovelace.html">Foam.Bridges.Lovelace</a></li>
+<li><a href="Foam.Bridges.Materiality.html">Foam.Bridges.Materiality</a></li>
+<li><a href="Foam.Bridges.Minkowski.html">Foam.Bridges.Minkowski</a></li>
+<li><a href="Foam.Bridges.Narayana.html">Foam.Bridges.Narayana</a></li>
+<li><a href="Foam.Bridges.Newton.html">Foam.Bridges.Newton</a></li>
+<li><a href="Foam.Bridges.Nicaea.html">Foam.Bridges.Nicaea</a></li>
+<li><a href="Foam.Bridges.Noether.html">Foam.Bridges.Noether</a></li>
+<li><a href="Foam.Bridges.PSQL.html">Foam.Bridges.PSQL</a></li>
+<li><a href="Foam.Bridges.Pauli.html">Foam.Bridges.Pauli</a></li>
+<li><a href="Foam.Bridges.Poncelet.html">Foam.Bridges.Poncelet</a></li>
+<li><a href="Foam.Bridges.Pythagoras.html">Foam.Bridges.Pythagoras</a></li>
+<li><a href="Foam.Bridges.Relativity.html">Foam.Bridges.Relativity</a></li>
+<li><a href="Foam.Bridges.Schrodinger.html">Foam.Bridges.Schrodinger</a></li>
+<li><a href="Foam.Bridges.Stone.html">Foam.Bridges.Stone</a></li>
+<li><a href="Foam.Bridges.Varadarajan.html">Foam.Bridges.Varadarajan</a></li>
+<li><a href="Foam.Bridges.Wigner.html">Foam.Bridges.Wigner</a></li>
+<li><a href="Foam.Bridges.Zeckendorf.html">Foam.Bridges.Zeckendorf</a></li>
+<li><a href="Foam.Bubble.html">Foam.Bubble</a></li>
+<li><a href="Foam.Cable.html">Foam.Cable</a></li>
+<li><a href="Foam.Census.html">Foam.Census</a></li>
+<li><a href="Foam.Cleared.html">Foam.Cleared</a></li>
+<li><a href="Foam.Duplex.html">Foam.Duplex</a></li>
+<li><a href="Foam.Elsewhen.html">Foam.Elsewhen</a></li>
+<li><a href="Foam.Engine.html">Foam.Engine</a></li>
+<li><a href="Foam.Engine.Chirality.html">Foam.Engine.Chirality</a></li>
+<li><a href="Foam.Engine.Codec.html">Foam.Engine.Codec</a></li>
+<li><a href="Foam.Engine.Drain.html">Foam.Engine.Drain</a></li>
+<li><a href="Foam.Engine.Generator.html">Foam.Engine.Generator</a></li>
+<li><a href="Foam.Engine.Spectrum.html">Foam.Engine.Spectrum</a></li>
+<li><a href="Foam.Engine.Stream.html">Foam.Engine.Stream</a></li>
+<li><a href="Foam.Engine.Summary.html">Foam.Engine.Summary</a></li>
+<li><a href="Foam.Golden.html">Foam.Golden</a></li>
+<li><a href="Foam.Held.html">Foam.Held</a></li>
+<li><a href="Foam.Int.html">Foam.Int</a></li>
+<li><a href="Foam.Ledger.html">Foam.Ledger</a></li>
+<li><a href="Foam.Maintenance.html">Foam.Maintenance</a></li>
+<li><a href="Foam.Metaphor.html">Foam.Metaphor</a></li>
+<li><a href="Foam.Platonism.html">Foam.Platonism</a></li>
+<li><a href="Foam.Platonism.Tower.html">Foam.Platonism.Tower</a></li>
+<li><a href="Foam.Scar.html">Foam.Scar</a></li>
+<li><a href="Foam.Seat.html">Foam.Seat</a></li>
+<li><a href="Foam.Seat.Beholder.html">Foam.Seat.Beholder</a></li>
+<li><a href="Foam.Seat.Bootstrap.html">Foam.Seat.Bootstrap</a></li>
+<li><a href="Foam.Seat.Born.html">Foam.Seat.Born</a></li>
+<li><a href="Foam.Seat.Characters.html">Foam.Seat.Characters</a></li>
+<li><a href="Foam.Seat.Chorus.html">Foam.Seat.Chorus</a></li>
+<li><a href="Foam.Seat.Clock.html">Foam.Seat.Clock</a></li>
+<li><a href="Foam.Seat.Closure.html">Foam.Seat.Closure</a></li>
+<li><a href="Foam.Seat.Connection.html">Foam.Seat.Connection</a></li>
+<li><a href="Foam.Seat.Descend.html">Foam.Seat.Descend</a></li>
+<li><a href="Foam.Seat.Dial.html">Foam.Seat.Dial</a></li>
+<li><a href="Foam.Seat.Doubling.html">Foam.Seat.Doubling</a></li>
+<li><a href="Foam.Seat.Epoch.html">Foam.Seat.Epoch</a></li>
+<li><a href="Foam.Seat.Forcing.html">Foam.Seat.Forcing</a></li>
+<li><a href="Foam.Seat.Frame.html">Foam.Seat.Frame</a></li>
+<li><a href="Foam.Seat.Group.html">Foam.Seat.Group</a></li>
+<li><a href="Foam.Seat.Hospitality.html">Foam.Seat.Hospitality</a></li>
+<li><a href="Foam.Seat.Ladder.html">Foam.Seat.Ladder</a></li>
+<li><a href="Foam.Seat.Loop.html">Foam.Seat.Loop</a></li>
+<li><a href="Foam.Seat.Meet.html">Foam.Seat.Meet</a></li>
+<li><a href="Foam.Seat.Naming.html">Foam.Seat.Naming</a></li>
+<li><a href="Foam.Seat.Norm.html">Foam.Seat.Norm</a></li>
+<li><a href="Foam.Seat.Observer.html">Foam.Seat.Observer</a></li>
+<li><a href="Foam.Seat.Octo.html">Foam.Seat.Octo</a></li>
+<li><a href="Foam.Seat.Parallax.html">Foam.Seat.Parallax</a></li>
+<li><a href="Foam.Seat.Quiver.html">Foam.Seat.Quiver</a></li>
+<li><a href="Foam.Seat.Rank.html">Foam.Seat.Rank</a></li>
+<li><a href="Foam.Seat.Rendezvous.html">Foam.Seat.Rendezvous</a></li>
+<li><a href="Foam.Seat.Resume.html">Foam.Seat.Resume</a></li>
+<li><a href="Foam.Seat.Rotations.html">Foam.Seat.Rotations</a></li>
+<li><a href="Foam.Seat.Seam.html">Foam.Seat.Seam</a></li>
+<li><a href="Foam.Seat.Sed.html">Foam.Seat.Sed</a></li>
+<li><a href="Foam.Seat.Signature.html">Foam.Seat.Signature</a></li>
+<li><a href="Foam.Seat.Signed.html">Foam.Seat.Signed</a></li>
+<li><a href="Foam.Seat.Sort.html">Foam.Seat.Sort</a></li>
+<li><a href="Foam.Seat.Stage.html">Foam.Seat.Stage</a></li>
+<li><a href="Foam.Seat.Summit.html">Foam.Seat.Summit</a></li>
+<li><a href="Foam.Seat.Terminal.html">Foam.Seat.Terminal</a></li>
+<li><a href="Foam.Seat.Tight.html">Foam.Seat.Tight</a></li>
+<li><a href="Foam.Seat.Triad.html">Foam.Seat.Triad</a></li>
+<li><a href="Foam.Vacancy.html">Foam.Vacancy</a></li>
+<li><a href="Foam.Wedge.html">Foam.Wedge</a></li></ul>
+<h2>2 · approach (axiom-free) <span class="stratum">(163 modules)</span></h2><ul class="census"><li><a href="Counter.html">Counter</a></li>
+<li><a href="Counter.Abe.html">Counter.Abe</a></li>
+<li><a href="Counter.Absorber.html">Counter.Absorber</a></li>
+<li><a href="Counter.Account.html">Counter.Account</a></li>
+<li><a href="Counter.Actor.html">Counter.Actor</a></li>
+<li><a href="Counter.Address.html">Counter.Address</a></li>
+<li><a href="Counter.Amniscience.html">Counter.Amniscience</a></li>
+<li><a href="Counter.Anchor.html">Counter.Anchor</a></li>
+<li><a href="Counter.Antiharmful.html">Counter.Antiharmful</a></li>
+<li><a href="Counter.Arrows.html">Counter.Arrows</a></li>
+<li><a href="Counter.Attest.html">Counter.Attest</a></li>
+<li><a href="Counter.Authority.html">Counter.Authority</a></li>
+<li><a href="Counter.Basis.html">Counter.Basis</a></li>
+<li><a href="Counter.Bless.html">Counter.Bless</a></li>
+<li><a href="Counter.Bloom.html">Counter.Bloom</a></li>
+<li><a href="Counter.Bubble.html">Counter.Bubble</a></li>
+<li><a href="Counter.Buffer.html">Counter.Buffer</a></li>
+<li><a href="Counter.Cable.html">Counter.Cable</a></li>
+<li><a href="Counter.Carse.html">Counter.Carse</a></li>
+<li><a href="Counter.Cascade.html">Counter.Cascade</a></li>
+<li><a href="Counter.Catalog.html">Counter.Catalog</a></li>
+<li><a href="Counter.Census.html">Counter.Census</a></li>
+<li><a href="Counter.Change.html">Counter.Change</a></li>
+<li><a href="Counter.Chess.html">Counter.Chess</a></li>
+<li><a href="Counter.Cipher.html">Counter.Cipher</a></li>
+<li><a href="Counter.Circumference.html">Counter.Circumference</a></li>
+<li><a href="Counter.Complete.html">Counter.Complete</a></li>
+<li><a href="Counter.Consent.html">Counter.Consent</a></li>
+<li><a href="Counter.Contentment.html">Counter.Contentment</a></li>
+<li><a href="Counter.Contract.html">Counter.Contract</a></li>
+<li><a href="Counter.Counter.html">Counter.Counter</a></li>
+<li><a href="Counter.Cursor.html">Counter.Cursor</a></li>
+<li><a href="Counter.Dark.html">Counter.Dark</a></li>
+<li><a href="Counter.Declension.html">Counter.Declension</a></li>
+<li><a href="Counter.Denoise.html">Counter.Denoise</a></li>
+<li><a href="Counter.Descendant.html">Counter.Descendant</a></li>
+<li><a href="Counter.Desire.html">Counter.Desire</a></li>
+<li><a href="Counter.Discovery.html">Counter.Discovery</a></li>
+<li><a href="Counter.Dive.html">Counter.Dive</a></li>
+<li><a href="Counter.Donor.html">Counter.Donor</a></li>
+<li><a href="Counter.Doubled.html">Counter.Doubled</a></li>
+<li><a href="Counter.Downhill.html">Counter.Downhill</a></li>
+<li><a href="Counter.Duplex.html">Counter.Duplex</a></li>
+<li><a href="Counter.Elsewhen.html">Counter.Elsewhen</a></li>
+<li><a href="Counter.Enaction.html">Counter.Enaction</a></li>
+<li><a href="Counter.Entrance.html">Counter.Entrance</a></li>
+<li><a href="Counter.Entropy.html">Counter.Entropy</a></li>
+<li><a href="Counter.Entry.html">Counter.Entry</a></li>
+<li><a href="Counter.Eraser.html">Counter.Eraser</a></li>
+<li><a href="Counter.Exit.html">Counter.Exit</a></li>
+<li><a href="Counter.Extraction.html">Counter.Extraction</a></li>
+<li><a href="Counter.Feferman.html">Counter.Feferman</a></li>
+<li><a href="Counter.Fiber.html">Counter.Fiber</a></li>
+<li><a href="Counter.Film.html">Counter.Film</a></li>
+<li><a href="Counter.Flinch.html">Counter.Flinch</a></li>
+<li><a href="Counter.Framing.html">Counter.Framing</a></li>
+<li><a href="Counter.Frontsearch.html">Counter.Frontsearch</a></li>
+<li><a href="Counter.Fungible.html">Counter.Fungible</a></li>
+<li><a href="Counter.Ghost.html">Counter.Ghost</a></li>
+<li><a href="Counter.Grasp.html">Counter.Grasp</a></li>
+<li><a href="Counter.Grid.html">Counter.Grid</a></li>
+<li><a href="Counter.Grief.html">Counter.Grief</a></li>
+<li><a href="Counter.Ground.html">Counter.Ground</a></li>
+<li><a href="Counter.Guard.html">Counter.Guard</a></li>
+<li><a href="Counter.Guest.html">Counter.Guest</a></li>
+<li><a href="Counter.Hallway.html">Counter.Hallway</a></li>
+<li><a href="Counter.Hand.html">Counter.Hand</a></li>
+<li><a href="Counter.Hatch.html">Counter.Hatch</a></li>
+<li><a href="Counter.Health.html">Counter.Health</a></li>
+<li><a href="Counter.Hemisphere.html">Counter.Hemisphere</a></li>
+<li><a href="Counter.Holonomy.html">Counter.Holonomy</a></li>
+<li><a href="Counter.Home.html">Counter.Home</a></li>
+<li><a href="Counter.Hooponopono.html">Counter.Hooponopono</a></li>
+<li><a href="Counter.Imaginary.html">Counter.Imaginary</a></li>
+<li><a href="Counter.Interleave.html">Counter.Interleave</a></li>
+<li><a href="Counter.Involve.html">Counter.Involve</a></li>
+<li><a href="Counter.Isaac.html">Counter.Isaac</a></li>
+<li><a href="Counter.Isaac.ImpliedReality.html">Counter.Isaac.ImpliedReality</a></li>
+<li><a href="Counter.Isaac.KoiPond.html">Counter.Isaac.KoiPond</a></li>
+<li><a href="Counter.Jay.html">Counter.Jay</a></li>
+<li><a href="Counter.Joke.html">Counter.Joke</a></li>
+<li><a href="Counter.Kelly.html">Counter.Kelly</a></li>
+<li><a href="Counter.Kin.html">Counter.Kin</a></li>
+<li><a href="Counter.Language.html">Counter.Language</a></li>
+<li><a href="Counter.Laugh.html">Counter.Laugh</a></li>
+<li><a href="Counter.Lease.html">Counter.Lease</a></li>
+<li><a href="Counter.Legible.html">Counter.Legible</a></li>
+<li><a href="Counter.Locate.html">Counter.Locate</a></li>
+<li><a href="Counter.Logbook.html">Counter.Logbook</a></li>
+<li><a href="Counter.Lu.html">Counter.Lu</a></li>
+<li><a href="Counter.Luck.html">Counter.Luck</a></li>
+<li><a href="Counter.Luggage.html">Counter.Luggage</a></li>
+<li><a href="Counter.Morse.html">Counter.Morse</a></li>
+<li><a href="Counter.Mu.html">Counter.Mu</a></li>
+<li><a href="Counter.Nap.html">Counter.Nap</a></li>
+<li><a href="Counter.Needle.html">Counter.Needle</a></li>
+<li><a href="Counter.Neutral.html">Counter.Neutral</a></li>
+<li><a href="Counter.Nothing.html">Counter.Nothing</a></li>
+<li><a href="Counter.Nu.html">Counter.Nu</a></li>
+<li><a href="Counter.Nurse.html">Counter.Nurse</a></li>
+<li><a href="Counter.Operator.html">Counter.Operator</a></li>
+<li><a href="Counter.Packing.html">Counter.Packing</a></li>
+<li><a href="Counter.Peer.html">Counter.Peer</a></li>
+<li><a href="Counter.Plain.html">Counter.Plain</a></li>
+<li><a href="Counter.Plateau.html">Counter.Plateau</a></li>
+<li><a href="Counter.Port.html">Counter.Port</a></li>
+<li><a href="Counter.Predict.html">Counter.Predict</a></li>
+<li><a href="Counter.Quadrature.html">Counter.Quadrature</a></li>
+<li><a href="Counter.Recast.html">Counter.Recast</a></li>
+<li><a href="Counter.Recognition.html">Counter.Recognition</a></li>
+<li><a href="Counter.Relay.html">Counter.Relay</a></li>
+<li><a href="Counter.Render.html">Counter.Render</a></li>
+<li><a href="Counter.Repair.html">Counter.Repair</a></li>
+<li><a href="Counter.Reparent.html">Counter.Reparent</a></li>
+<li><a href="Counter.Rest.html">Counter.Rest</a></li>
+<li><a href="Counter.Returns.html">Counter.Returns</a></li>
+<li><a href="Counter.Reversal.html">Counter.Reversal</a></li>
+<li><a href="Counter.Rhythm.html">Counter.Rhythm</a></li>
+<li><a href="Counter.Runaway.html">Counter.Runaway</a></li>
+<li><a href="Counter.Runs.html">Counter.Runs</a></li>
+<li><a href="Counter.Scry.html">Counter.Scry</a></li>
+<li><a href="Counter.Settle.html">Counter.Settle</a></li>
+<li><a href="Counter.Shelf.html">Counter.Shelf</a></li>
+<li><a href="Counter.Sibling.html">Counter.Sibling</a></li>
+<li><a href="Counter.Silent.html">Counter.Silent</a></li>
+<li><a href="Counter.Socket.html">Counter.Socket</a></li>
+<li><a href="Counter.Sphere.html">Counter.Sphere</a></li>
+<li><a href="Counter.Stream.html">Counter.Stream</a></li>
+<li><a href="Counter.Surprise.html">Counter.Surprise</a></li>
+<li><a href="Counter.Suspension.html">Counter.Suspension</a></li>
+<li><a href="Counter.Tally.html">Counter.Tally</a></li>
+<li><a href="Counter.Telling.html">Counter.Telling</a></li>
+<li><a href="Counter.Temperature.html">Counter.Temperature</a></li>
+<li><a href="Counter.Tempo.html">Counter.Tempo</a></li>
+<li><a href="Counter.Tenancy.html">Counter.Tenancy</a></li>
+<li><a href="Counter.Third.html">Counter.Third</a></li>
+<li><a href="Counter.Toll.html">Counter.Toll</a></li>
+<li><a href="Counter.Touch.html">Counter.Touch</a></li>
+<li><a href="Counter.Tower.html">Counter.Tower</a></li>
+<li><a href="Counter.Trefoil.html">Counter.Trefoil</a></li>
+<li><a href="Counter.Tremble.html">Counter.Tremble</a></li>
+<li><a href="Counter.Triage.html">Counter.Triage</a></li>
+<li><a href="Counter.Tsort.html">Counter.Tsort</a></li>
+<li><a href="Counter.Twelve.html">Counter.Twelve</a></li>
+<li><a href="Counter.Twins.html">Counter.Twins</a></li>
+<li><a href="Counter.Unknot.html">Counter.Unknot</a></li>
+<li><a href="Counter.Upsearch.html">Counter.Upsearch</a></li>
+<li><a href="Counter.Vacancy.html">Counter.Vacancy</a></li>
+<li><a href="Counter.Vanishing.html">Counter.Vanishing</a></li>
+<li><a href="Counter.Verb.html">Counter.Verb</a></li>
+<li><a href="Counter.Voice.html">Counter.Voice</a></li>
+<li><a href="Counter.Waggle.html">Counter.Waggle</a></li>
+<li><a href="Counter.Wake.html">Counter.Wake</a></li>
+<li><a href="Counter.Waking.html">Counter.Waking</a></li>
+<li><a href="Counter.Ward.html">Counter.Ward</a></li>
+<li><a href="Counter.Wedge.html">Counter.Wedge</a></li>
+<li><a href="Counter.Well.html">Counter.Well</a></li>
+<li><a href="Counter.Wind.html">Counter.Wind</a></li>
+<li><a href="Counter.Window.html">Counter.Window</a></li>
+<li><a href="Counter.Witness.html">Counter.Witness</a></li>
+<li><a href="Counter.Worldline.html">Counter.Worldline</a></li>
+<li><a href="Counter.Worn.html">Counter.Worn</a></li>
+<li><a href="Counter.Zoom.html">Counter.Zoom</a></li></ul>
+<h2>3 · arrival (core-Lean axioms only) <span class="stratum">(5 modules)</span></h2><ul class="census"><li><a href="Seam.html">Seam</a></li>
+<li><a href="Seam.Arrival.html">Seam.Arrival</a></li>
+<li><a href="Seam.Denominate.html">Seam.Denominate</a></li>
+<li><a href="Seam.Temperament.html">Seam.Temperament</a></li>
+<li><a href="Seam.Tender.html">Seam.Tender</a></li></ul>
+<h2>4 · peering (+Mathlib) <span class="stratum">(76 modules)</span></h2><ul class="census"><li><a href="Bridges.html">Bridges</a></li>
+<li><a href="Bridges.Audit.html">Bridges.Audit</a></li>
+<li><a href="Bridges.Closure.html">Bridges.Closure</a></li>
+<li><a href="Bridges.Collapse.html">Bridges.Collapse</a></li>
+<li><a href="Bridges.Continuum.html">Bridges.Continuum</a></li>
+<li><a href="Bridges.Counter.html">Bridges.Counter</a></li>
+<li><a href="Bridges.Duality.html">Bridges.Duality</a></li>
+<li><a href="Bridges.Encounter.html">Bridges.Encounter</a></li>
+<li><a href="Bridges.FTPG.html">Bridges.FTPG</a></li>
+<li><a href="Bridges.FTPG.AddCancel.html">Bridges.FTPG.AddCancel</a></li>
+<li><a href="Bridges.FTPG.AddComm.html">Bridges.FTPG.AddComm</a></li>
+<li><a href="Bridges.FTPG.Additive.html">Bridges.FTPG.Additive</a></li>
+<li><a href="Bridges.FTPG.Assoc.html">Bridges.FTPG.Assoc</a></li>
+<li><a href="Bridges.FTPG.AssocCapstone.html">Bridges.FTPG.AssocCapstone</a></li>
+<li><a href="Bridges.FTPG.Bezier.html">Bridges.FTPG.Bezier</a></li>
+<li><a href="Bridges.FTPG.Carrier.html">Bridges.FTPG.Carrier</a></li>
+<li><a href="Bridges.FTPG.Charge.html">Bridges.FTPG.Charge</a></li>
+<li><a href="Bridges.FTPG.Chart.html">Bridges.FTPG.Chart</a></li>
+<li><a href="Bridges.FTPG.Chord.html">Bridges.FTPG.Chord</a></li>
+<li><a href="Bridges.FTPG.Climb.html">Bridges.FTPG.Climb</a></li>
+<li><a href="Bridges.FTPG.Coord.html">Bridges.FTPG.Coord</a></li>
+<li><a href="Bridges.FTPG.CoordinateAlgebra.html">Bridges.FTPG.CoordinateAlgebra</a></li>
+<li><a href="Bridges.FTPG.CrossParallelism.html">Bridges.FTPG.CrossParallelism</a></li>
+<li><a href="Bridges.FTPG.Deaxiomatize.html">Bridges.FTPG.Deaxiomatize</a></li>
+<li><a href="Bridges.FTPG.Diamond.html">Bridges.FTPG.Diamond</a></li>
+<li><a href="Bridges.FTPG.Dilation.html">Bridges.FTPG.Dilation</a></li>
+<li><a href="Bridges.FTPG.Distrib.html">Bridges.FTPG.Distrib</a></li>
+<li><a href="Bridges.FTPG.Exchange.html">Bridges.FTPG.Exchange</a></li>
+<li><a href="Bridges.FTPG.Finite.html">Bridges.FTPG.Finite</a></li>
+<li><a href="Bridges.FTPG.Flat.html">Bridges.FTPG.Flat</a></li>
+<li><a href="Bridges.FTPG.Ground.html">Bridges.FTPG.Ground</a></li>
+<li><a href="Bridges.FTPG.Headcount.html">Bridges.FTPG.Headcount</a></li>
+<li><a href="Bridges.FTPG.Hollow.html">Bridges.FTPG.Hollow</a></li>
+<li><a href="Bridges.FTPG.Instance.html">Bridges.FTPG.Instance</a></li>
+<li><a href="Bridges.FTPG.Inverse.html">Bridges.FTPG.Inverse</a></li>
+<li><a href="Bridges.FTPG.Iso.html">Bridges.FTPG.Iso</a></li>
+<li><a href="Bridges.FTPG.Keeper.html">Bridges.FTPG.Keeper</a></li>
+<li><a href="Bridges.FTPG.Ladder.html">Bridges.FTPG.Ladder</a></li>
+<li><a href="Bridges.FTPG.LeftDistrib.html">Bridges.FTPG.LeftDistrib</a></li>
+<li><a href="Bridges.FTPG.Limit.html">Bridges.FTPG.Limit</a></li>
+<li><a href="Bridges.FTPG.Line.html">Bridges.FTPG.Line</a></li>
+<li><a href="Bridges.FTPG.Markov.html">Bridges.FTPG.Markov</a></li>
+<li><a href="Bridges.FTPG.Menu.html">Bridges.FTPG.Menu</a></li>
+<li><a href="Bridges.FTPG.Mul.html">Bridges.FTPG.Mul</a></li>
+<li><a href="Bridges.FTPG.MulAssoc.html">Bridges.FTPG.MulAssoc</a></li>
+<li><a href="Bridges.FTPG.MulKeyIdentity.html">Bridges.FTPG.MulKeyIdentity</a></li>
+<li><a href="Bridges.FTPG.MulNeg.html">Bridges.FTPG.MulNeg</a></li>
+<li><a href="Bridges.FTPG.Neg.html">Bridges.FTPG.Neg</a></li>
+<li><a href="Bridges.FTPG.Parallelogram.html">Bridges.FTPG.Parallelogram</a></li>
+<li><a href="Bridges.FTPG.Perm.html">Bridges.FTPG.Perm</a></li>
+<li><a href="Bridges.FTPG.Pin.html">Bridges.FTPG.Pin</a></li>
+<li><a href="Bridges.FTPG.Plane.html">Bridges.FTPG.Plane</a></li>
+<li><a href="Bridges.FTPG.Projective.html">Bridges.FTPG.Projective</a></li>
+<li><a href="Bridges.FTPG.Ring.html">Bridges.FTPG.Ring</a></li>
+<li><a href="Bridges.FTPG.Shear.html">Bridges.FTPG.Shear</a></li>
+<li><a href="Bridges.FTPG.Slope.html">Bridges.FTPG.Slope</a></li>
+<li><a href="Bridges.FTPG.Solid.html">Bridges.FTPG.Solid</a></li>
+<li><a href="Bridges.FTPG.Space.html">Bridges.FTPG.Space</a></li>
+<li><a href="Bridges.FTPG.SpaceFlat.html">Bridges.FTPG.SpaceFlat</a></li>
+<li><a href="Bridges.FTPG.Span.html">Bridges.FTPG.Span</a></li>
+<li><a href="Bridges.FTPG.Translate.html">Bridges.FTPG.Translate</a></li>
+<li><a href="Bridges.FTPG.WellDefined.html">Bridges.FTPG.WellDefined</a></li>
+<li><a href="Bridges.FTPG.Window.html">Bridges.FTPG.Window</a></li>
+<li><a href="Bridges.FTPG.Ycoord.html">Bridges.FTPG.Ycoord</a></li>
+<li><a href="Bridges.Gaussian.html">Bridges.Gaussian</a></li>
+<li><a href="Bridges.HalfTurn.html">Bridges.HalfTurn</a></li>
+<li><a href="Bridges.HalfType.html">Bridges.HalfType</a></li>
+<li><a href="Bridges.Handedness.html">Bridges.Handedness</a></li>
+<li><a href="Bridges.Maschke.html">Bridges.Maschke</a></li>
+<li><a href="Bridges.Match.html">Bridges.Match</a></li>
+<li><a href="Bridges.Observation.html">Bridges.Observation</a></li>
+<li><a href="Bridges.Plane.html">Bridges.Plane</a></li>
+<li><a href="Bridges.Quarter.html">Bridges.Quarter</a></li>
+<li><a href="Bridges.SeatTime.html">Bridges.SeatTime</a></li>
+<li><a href="Bridges.Stagecraft.html">Bridges.Stagecraft</a></li>
+<li><a href="Bridges.Summit.html">Bridges.Summit</a></li></ul>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

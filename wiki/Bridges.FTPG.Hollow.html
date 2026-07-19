@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.FTPG.Hollow</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.FTPG.Hollow</h1></header>
+<div class="imports">grasp: <a href="Bridges.FTPG.Deaxiomatize.html">Bridges.FTPG.Deaxiomatize</a> · Mathlib.LinearAlgebra.Finsupp.VectorSpace · Mathlib.LinearAlgebra.FiniteDimensional.Basic · Mathlib.LinearAlgebra.Dimension.Finite · Mathlib.LinearAlgebra.Projection · Mathlib.LinearAlgebra.Prod · Mathlib.LinearAlgebra.Quotient.Basic · Mathlib.Order.Bounds.OrderIso</div><pre class="src">import <a href="Bridges.FTPG.Deaxiomatize.html">Bridges.FTPG.Deaxiomatize</a>
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.Projection
+import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.Order.Bounds.OrderIso
+
+/-!
+# The hollow lattice: the residual is unfillable as stated
+
+`Hollow` is the lattice of subspaces of `(ℕ ⊕ ℕ) →₀ ℚ` that are either
+finite-dimensional or finite-codimensional — every element hugs the floor or
+the ceiling, and the middle is missing.  It satisfies every hypothesis of
+`ftpg_statement` (complemented, modular, atomistic in the `IsLUB` sense,
+three points per line, height ≥ 4) yet it is **not complete**: the chain of
+coordinate subspaces supported on `Sum.inl` has upper bounds but no least
+one.  Since `Submodule D V` is always complete and completeness transfers
+across any order isomorphism, no coordinatization exists:
+
+* `hollow_not_complete` — no `OrderIso` from `Hollow` to any complete lattice;
+* `not_ftpg_statement` — `ftpg_statement` is **false**;
+* `not_pointSystem` — the residual is false without completeness carried;
+* `ftpg_refuted` — `False`, from `axiom ftpg` alone (its receipt names the
+  guilty posit).
+
+Completeness was a genuine hypothesis of the classical lattice-theoretic
+FTPG all along; the deaxiomatization re-scoped its target into the true pair
+(`Deaxiomatize.lean`), and the pair is proven sorry-free.
+
+This file is also the **exhibit room**: `axiom ftpg` — the classical bridge&#x27;s
+one imported posit, retired 2026-07-08 — is declared here, under glass,
+importable by nothing except the indictment it stands trial in.  Its true
+half reduced to self (proven from the lattice itself); its false half is
+cytokinetically distinct (refuted, held, not-self).  Prose lives in
+`README.md`.
+-/
+
+namespace Foam.Bridges
+
+<span class="kw">abbrev</span> <a class="decl" id="HollowBase" href="#HollowBase">HollowBase</a> : Type := (ℕ ⊕ ℕ) →₀ ℚ
+
+<span class="kw">def</span> <a class="decl" id="FinOrCofin" href="#FinOrCofin">FinOrCofin</a> (W : Submodule ℚ HollowBase) : Prop :=
+  FiniteDimensional ℚ W ∨ FiniteDimensional ℚ (HollowBase ⧸ W)
+
+<span class="kw">theorem</span> <a class="decl" id="fd_quot_mono" href="#fd_quot_mono">fd_quot_mono</a> {A B : Submodule ℚ HollowBase} (h : A ≤ B)
+    (hA : FiniteDimensional ℚ (HollowBase ⧸ A)) :
+    FiniteDimensional ℚ (HollowBase ⧸ B) := by
+  haveI := hA
+  refine Module.Finite.of_surjective
+    (Submodule.mapQ A B LinearMap.id (by simpa using h)) (fun y =&gt; ?_)
+  obtain ⟨x, rfl⟩ := Submodule.Quotient.mk_surjective B y
+  exact ⟨Submodule.Quotient.mk x, by simp [Submodule.mapQ_apply]⟩
+
+<span class="kw">theorem</span> <a class="decl" id="fd_quot_inf" href="#fd_quot_inf">fd_quot_inf</a> {A B : Submodule ℚ HollowBase}
+    (hA : FiniteDimensional ℚ (HollowBase ⧸ A))
+    (hB : FiniteDimensional ℚ (HollowBase ⧸ B)) :
+    FiniteDimensional ℚ (HollowBase ⧸ (A ⊓ B)) := by
+  haveI := hA; haveI := hB
+  have hker : LinearMap.ker (A.mkQ.prod B.mkQ) = A ⊓ B := by
+    rw [LinearMap.ker_prod, Submodule.ker_mkQ, Submodule.ker_mkQ]
+  have hinj : Function.Injective ((A ⊓ B).liftQ (A.mkQ.prod B.mkQ) hker.ge) := by
+    rw [← LinearMap.ker_eq_bot]
+    exact Submodule.ker_liftQ_eq_bot&#x27; _ _ hker.symm
+  exact FiniteDimensional.of_injective _ hinj
+
+<span class="kw">theorem</span> <a class="decl" id="finOrCofin_sup" href="#finOrCofin_sup">finOrCofin_sup</a> {A B : Submodule ℚ HollowBase}
+    (hA : FinOrCofin A) (hB : FinOrCofin B) : FinOrCofin (A ⊔ B) := by
+  rcases hA with hA | hA
+  · rcases hB with hB | hB
+    · exact Or.inl (by haveI := hA; haveI := hB; infer_instance)
+    · exact Or.inr (fd_quot_mono le_sup_right hB)
+  · exact Or.inr (fd_quot_mono le_sup_left hA)
+
+<span class="kw">theorem</span> <a class="decl" id="finOrCofin_inf" href="#finOrCofin_inf">finOrCofin_inf</a> {A B : Submodule ℚ HollowBase}
+    (hA : FinOrCofin A) (hB : FinOrCofin B) : FinOrCofin (A ⊓ B) := by
+  rcases hA with hA | hA
+  · exact Or.inl (by haveI := hA; exact Submodule.finiteDimensional_of_le inf_le_left)
+  · rcases hB with hB | hB
+    · exact Or.inl (by haveI := hB; exact Submodule.finiteDimensional_of_le inf_le_right)
+    · exact Or.inr (fd_quot_inf hA hB)
+
+<span class="kw">theorem</span> <a class="decl" id="finOrCofin_bot" href="#finOrCofin_bot">finOrCofin_bot</a> : FinOrCofin (⊥ : Submodule ℚ HollowBase) :=
+  Or.inl (by rw [← Submodule.span_empty]; exact FiniteDimensional.span_of_finite _ Set.finite_empty)
+
+<span class="kw">theorem</span> <a class="decl" id="finOrCofin_top" href="#finOrCofin_top">finOrCofin_top</a> : FinOrCofin (⊤ : Submodule ℚ HollowBase) := by
+  refine Or.inr ?_
+  haveI : Subsingleton (HollowBase ⧸ (⊤ : Submodule ℚ HollowBase)) :=
+    Submodule.Quotient.subsingleton_iff.mpr rfl
+  exact Module.Finite.of_surjective (0 : ℚ →ₗ[ℚ] _) (fun x =&gt; ⟨0, Subsingleton.elim _ _⟩)
+
+<span class="kw">def</span> <a class="decl" id="Hollow" href="#Hollow">Hollow</a> : Type := {W : Submodule ℚ HollowBase // FinOrCofin W}
+
+namespace Hollow
+
+<span class="kw">def</span> <a class="decl" id="mk" href="#mk">mk</a> (W : Submodule ℚ HollowBase) (h : FinOrCofin W) : Hollow := ⟨W, h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="mk_val" href="#mk_val">mk_val</a> (W : Submodule ℚ HollowBase) (h : FinOrCofin W) : (mk W h).val = W := rfl
+
+noncomputable instance : Lattice Hollow :=
+  Subtype.lattice (fun _ _ =&gt; finOrCofin_sup) (fun _ _ =&gt; finOrCofin_inf)
+
+noncomputable instance : BoundedOrder Hollow where
+  top := ⟨⊤, finOrCofin_top⟩
+  le_top a := (le_top : a.val ≤ ⊤)
+  bot := ⟨⊥, finOrCofin_bot⟩
+  bot_le a := (bot_le : ⊥ ≤ a.val)
+
+<span class="kw">theorem</span> <a class="decl" id="val_sup" href="#val_sup">val_sup</a> (a b : Hollow) : (a ⊔ b).val = a.val ⊔ b.val := rfl
+<span class="kw">theorem</span> <a class="decl" id="val_inf" href="#val_inf">val_inf</a> (a b : Hollow) : (a ⊓ b).val = a.val ⊓ b.val := rfl
+<span class="kw">theorem</span> <a class="decl" id="val_bot" href="#val_bot">val_bot</a> : (⊥ : Hollow).val = ⊥ := rfl
+<span class="kw">theorem</span> <a class="decl" id="val_top" href="#val_top">val_top</a> : (⊤ : Hollow).val = ⊤ := rfl
+
+<span class="kw">instance</span> <a class="decl" id=":" href="#:">:</a> IsModularLattice Hollow :=
+  ⟨fun {x} y {z} h =&gt;
+    (IsModularLattice.sup_inf_le_assoc_of_le (y := y.val) (Subtype.coe_le_coe.mpr h) :
+      (x.val ⊔ y.val) ⊓ z.val ≤ x.val ⊔ y.val ⊓ z.val)⟩
+
+<span class="kw">instance</span> <a class="decl" id=":" href="#:">:</a> ComplementedLattice Hollow where
+  exists_isCompl := fun ⟨W, hW⟩ =&gt; by
+    obtain ⟨Q, hQ⟩ := Submodule.exists_isCompl W
+    have hQmem : FinOrCofin Q := by
+      rcases hW with h | h
+      · haveI := h
+        exact Or.inr ((Submodule.quotientEquivOfIsCompl Q W hQ.symm).symm.finiteDimensional)
+      · haveI := h
+        exact Or.inl ((Submodule.quotientEquivOfIsCompl W Q hQ).finiteDimensional)
+    refine ⟨⟨Q, hQmem⟩, ?_, ?_⟩
+    · rw [disjoint_iff]
+      exact Subtype.ext hQ.inf_eq_bot
+    · rw [codisjoint_iff]
+      exact Subtype.ext hQ.sup_eq_top
+
+end Hollow
+
+<span class="kw">theorem</span> <a class="decl" id="isAtom_span_singleton" href="#isAtom_span_singleton">isAtom_span_singleton</a> {v : HollowBase} (hv : v ≠ 0) :
+    IsAtom (Submodule.span ℚ ({v} : Set HollowBase)) := by
+  constructor
+  · intro h
+    exact hv ((Submodule.mem_bot ℚ).mp (h ▸ Submodule.mem_span_singleton_self v))
+  · intro W hW
+    by_contra hne
+    obtain ⟨w, hwW, hw0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hne
+    obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp (hW.le hwW)
+    have hc0 : c ≠ 0 := fun h =&gt; hw0 (by rw [← hc, h, zero_smul])
+    have hv_mem : v ∈ W := by
+      have hsmul := W.smul_mem c⁻¹ hwW
+      rw [← hc, smul_smul, inv_mul_cancel₀ hc0, one_smul] at hsmul
+      exact hsmul
+    exact hW.ne (le_antisymm hW.le (Submodule.span_le.mpr (Set.singleton_subset_iff.mpr hv_mem)))
+
+<span class="kw">theorem</span> <a class="decl" id="finOrCofin_span_singleton" href="#finOrCofin_span_singleton">finOrCofin_span_singleton</a> (v : HollowBase) :
+    FinOrCofin (Submodule.span ℚ ({v} : Set HollowBase)) :=
+  Or.inl (FiniteDimensional.span_of_finite ℚ (Set.finite_singleton v))
+
+namespace Hollow
+
+<span class="kw">theorem</span> <a class="decl" id="isAtom_mk" href="#isAtom_mk">isAtom_mk</a> {W : Submodule ℚ HollowBase} (hW : IsAtom W) (hmem : FinOrCofin W) :
+    IsAtom (mk W hmem) :=
+  ⟨fun h =&gt; hW.1 (congrArg Subtype.val h),
+   fun b hb =&gt; Subtype.ext (hW.2 b.val
+     (lt_of_le_of_ne (hb.le : b.val ≤ W) (fun h =&gt; hb.ne (Subtype.ext h))))⟩
+
+<span class="kw">instance</span> <a class="decl" id=":" href="#:">:</a> IsAtomistic Hollow where
+  isLUB_atoms b := by
+    refine ⟨{a : Hollow | IsAtom a ∧ a ≤ b}, ⟨fun a ha =&gt; ha.2, fun u hu =&gt; ?_⟩,
+      fun a ha =&gt; ha.1⟩
+    show b.val ≤ u.val
+    intro v hv
+    by_cases hv0 : v = 0
+    · rw [hv0]; exact u.val.zero_mem
+    · have hc : IsAtom (mk (Submodule.span ℚ {v}) (finOrCofin_span_singleton v)) :=
+        isAtom_mk (isAtom_span_singleton hv0) _
+      have hcb : mk (Submodule.span ℚ {v}) (finOrCofin_span_singleton v) ≤ b :=
+        Submodule.span_le.mpr (Set.singleton_subset_iff.mpr hv)
+      have hcu : (mk (Submodule.span ℚ {v}) (finOrCofin_span_singleton v)).val ≤ u.val :=
+        hu ⟨hc, hcb⟩
+      exact hcu (Submodule.mem_span_singleton_self v)
+
+<span class="kw">theorem</span> <a class="decl" id="exists_gen" href="#exists_gen">exists_gen</a> {a : Hollow} (ha : IsAtom a) :
+    ∃ v : HollowBase, v ≠ 0 ∧ a.val = Submodule.span ℚ ({v} : Set HollowBase) := by
+  have hne : a.val ≠ ⊥ := fun h =&gt; ha.1 (Subtype.ext h)
+  obtain ⟨v, hva, hv0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hne
+  refine ⟨v, hv0, ?_⟩
+  have hca : mk (Submodule.span ℚ {v}) (finOrCofin_span_singleton v) ≤ a :=
+    Submodule.span_le.mpr (Set.singleton_subset_iff.mpr hva)
+  have hc0 : mk (Submodule.span ℚ {v}) (finOrCofin_span_singleton v) ≠ ⊥ := by
+    intro h
+    have hval : Submodule.span ℚ ({v} : Set HollowBase) = (⊥ : Submodule ℚ HollowBase) :=
+      congrArg Subtype.val h
+    exact hv0 ((Submodule.mem_bot ℚ).mp (hval ▸ Submodule.mem_span_singleton_self v))
+  rcases hca.lt_or_eq with hlt | heq
+  · exact absurd (ha.2 _ hlt) hc0
+  · exact (congrArg Subtype.val heq).symm
+
+<span class="kw">theorem</span> <a class="decl" id="atom_not_le" href="#atom_not_le">atom_not_le</a> {a b : Hollow} (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) :
+    ¬ b.val ≤ a.val := by
+  intro hle
+  rcases ha.le_iff.mp (show b ≤ a from hle) with h | h
+  · exact hb.1 h
+  · exact hab h.symm
+
+end Hollow
+
+<span class="kw">theorem</span> <a class="decl" id="hollow_irred" href="#hollow_irred">hollow_irred</a> : ∀ a b : Hollow, IsAtom a → IsAtom b → a ≠ b →
+    ∃ c : Hollow, IsAtom c ∧ c ≤ a ⊔ b ∧ c ≠ a ∧ c ≠ b := by
+  intro a b ha hb hab
+  obtain ⟨p, hp0, hpa⟩ := Hollow.exists_gen ha
+  obtain ⟨q, hq0, hqb⟩ := Hollow.exists_gen hb
+  have hp_mem : p ∈ a.val := hpa ▸ Submodule.mem_span_singleton_self p
+  have hq_mem : q ∈ b.val := hqb ▸ Submodule.mem_span_singleton_self q
+  have hba : ¬ b.val ≤ a.val := Hollow.atom_not_le ha hb hab
+  have hab&#x27; : ¬ a.val ≤ b.val := Hollow.atom_not_le hb ha (fun h =&gt; hab h.symm)
+  have hpq0 : p + q ≠ 0 := by
+    intro h
+    apply hba
+    rw [hqb, hpa]
+    refine Submodule.span_le.mpr (Set.singleton_subset_iff.mpr ?_)
+    rw [eq_neg_of_add_eq_zero_right h]
+    exact Submodule.neg_mem _ (Submodule.mem_span_singleton_self p)
+  refine ⟨Hollow.mk (Submodule.span ℚ {p + q}) (finOrCofin_span_singleton _),
+    Hollow.isAtom_mk (isAtom_span_singleton hpq0) _, ?_, ?_, ?_⟩
+  · show Submodule.span ℚ ({p + q} : Set HollowBase) ≤ a.val ⊔ b.val
+    exact Submodule.span_le.mpr
+      (Set.singleton_subset_iff.mpr (Submodule.add_mem_sup hp_mem hq_mem))
+  · intro h
+    apply hba
+    have hval : Submodule.span ℚ ({p + q} : Set HollowBase) = a.val := congrArg Subtype.val h
+    have hq_a : q ∈ a.val := by
+      have h1 : p + q ∈ a.val := hval ▸ Submodule.mem_span_singleton_self _
+      simpa using a.val.sub_mem h1 hp_mem
+    rw [hqb]
+    exact Submodule.span_le.mpr (Set.singleton_subset_iff.mpr hq_a)
+  · intro h
+    apply hab&#x27;
+    have hval : Submodule.span ℚ ({p + q} : Set HollowBase) = b.val := congrArg Subtype.val h
+    have hp_b : p ∈ b.val := by
+      have h1 : p + q ∈ b.val := hval ▸ Submodule.mem_span_singleton_self _
+      simpa using b.val.sub_mem h1 hq_mem
+    rw [hpa]
+    exact Submodule.span_le.mpr (Set.singleton_subset_iff.mpr hp_b)
+
+<span class="kw">theorem</span> <a class="decl" id="fd_supported" href="#fd_supported">fd_supported</a> {S : Set (ℕ ⊕ ℕ)} (hS : S.Finite) :
+    FiniteDimensional ℚ (Finsupp.supported ℚ ℚ S) := by
+  rw [Finsupp.supported_eq_span_single]
+  exact FiniteDimensional.span_of_finite ℚ (hS.image _)
+
+<span class="kw">def</span> <a class="decl" id="stack" href="#stack">stack</a> (n : ℕ) : Set (ℕ ⊕ ℕ) := Sum.inl &#x27;&#x27; Set.Iio n
+
+noncomputable def hollowChain (n : ℕ) : Hollow :=
+  Hollow.mk (Finsupp.supported ℚ ℚ (stack n)) (Or.inl (fd_supported ((Set.finite_Iio n).image _)))
+
+<span class="kw">theorem</span> <a class="decl" id="single_notMem_stack" href="#single_notMem_stack">single_notMem_stack</a> (n : ℕ) :
+    Finsupp.single (Sum.inl n) (1 : ℚ) ∉ Finsupp.supported ℚ ℚ (stack n) := by
+  intro hmem
+  have hsub := (Finsupp.mem_supported ℚ _).mp hmem
+  have hin : Sum.inl n ∈ stack n := hsub (by simp [Finsupp.support_single])
+  obtain ⟨m, hm, hinj⟩ := hin
+  exact absurd (Sum.inl.inj hinj ▸ hm) (lt_irrefl n)
+
+<span class="kw">theorem</span> <a class="decl" id="hollowChain_lt" href="#hollowChain_lt">hollowChain_lt</a> (n : ℕ) : hollowChain n &lt; hollowChain (n + 1) := by
+  refine lt_of_le_of_ne
+    (show (hollowChain n).val ≤ (hollowChain (n + 1)).val from
+      Finsupp.supported_mono (Set.image_mono (Set.Iio_subset_Iio n.le_succ))) ?_
+  intro heq
+  apply single_notMem_stack n
+  have hval : Finsupp.supported ℚ ℚ (stack n) = Finsupp.supported ℚ ℚ (stack (n + 1)) :=
+    congrArg Subtype.val heq
+  rw [hval]
+  exact Finsupp.single_mem_supported ℚ 1 ⟨n, n.lt_succ_self, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="bot_lt_hollowChain_one" href="#bot_lt_hollowChain_one">bot_lt_hollowChain_one</a> : (⊥ : Hollow) &lt; hollowChain 1 := by
+  refine lt_of_le_of_ne bot_le ?_
+  intro heq
+  have hmem : Finsupp.single (Sum.inl 0) (1 : ℚ) ∈ Finsupp.supported ℚ ℚ (stack 1) :=
+    Finsupp.single_mem_supported ℚ 1 ⟨0, Nat.zero_lt_one, rfl⟩
+  have hval : (⊥ : Submodule ℚ HollowBase) = Finsupp.supported ℚ ℚ (stack 1) :=
+    congrArg Subtype.val heq
+  rw [← hval] at hmem
+  exact Finsupp.single_ne_zero.mpr one_ne_zero ((Submodule.mem_bot ℚ).mp hmem)
+
+<span class="kw">theorem</span> <a class="decl" id="hollow_height" href="#hollow_height">hollow_height</a> : ∃ a b c d : Hollow, ⊥ &lt; a ∧ a &lt; b ∧ b &lt; c ∧ c &lt; d :=
+  ⟨hollowChain 1, hollowChain 2, hollowChain 3, hollowChain 4,
+    bot_lt_hollowChain_one, hollowChain_lt 1, hollowChain_lt 2, hollowChain_lt 3⟩
+
+<span class="kw">theorem</span> <a class="decl" id="singles_linearIndependent" href="#singles_linearIndependent">singles_linearIndependent</a> :
+    LinearIndependent ℚ (fun i : ℕ ⊕ ℕ =&gt; Finsupp.single i (1 : ℚ)) := by
+  have h := (Finsupp.basisSingleOne (ι := ℕ ⊕ ℕ) (R := ℚ)).linearIndependent
+  rwa [Finsupp.coe_basisSingleOne] at h
+
+<span class="kw">theorem</span> <a class="decl" id="not_fd_supported" href="#not_fd_supported">not_fd_supported</a> {S : Set (ℕ ⊕ ℕ)} (u : ℕ → ℕ ⊕ ℕ) (hu : Function.Injective u)
+    (hS : ∀ n, u n ∈ S) : ¬ FiniteDimensional ℚ (Finsupp.supported ℚ ℚ S) := by
+  intro hfd
+  haveI := hfd
+  have hli : LinearIndependent ℚ (fun n : ℕ =&gt; Finsupp.single (u n) (1 : ℚ)) :=
+    singles_linearIndependent.comp u hu
+  have hli&#x27; : LinearIndependent ℚ
+      (fun n : ℕ =&gt; (⟨Finsupp.single (u n) 1, Finsupp.single_mem_supported ℚ 1 (hS n)⟩ :
+        Finsupp.supported ℚ ℚ S)) := by
+    apply LinearIndependent.of_comp (Finsupp.supported ℚ ℚ S).subtype
+    exact hli
+  exact Module.Finite.not_linearIndependent_of_infinite _ hli&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="isCompl_supported_inl_inr" href="#isCompl_supported_inl_inr">isCompl_supported_inl_inr</a> :
+    IsCompl (Finsupp.supported ℚ ℚ (Set.range (Sum.inl : ℕ → ℕ ⊕ ℕ)))
+      (Finsupp.supported ℚ ℚ (Set.range (Sum.inr : ℕ → ℕ ⊕ ℕ))) := by
+  constructor
+  · exact Finsupp.disjoint_supported_supported Set.isCompl_range_inl_range_inr.disjoint
+  · rw [codisjoint_iff, ← Finsupp.supported_union]
+    have h : Set.range (Sum.inl : ℕ → ℕ ⊕ ℕ) ∪ Set.range Sum.inr = Set.univ := by
+      simp
+    rw [h, Finsupp.supported_univ]
+
+<span class="kw">theorem</span> <a class="decl" id="not_fd_quot_supported_inl" href="#not_fd_quot_supported_inl">not_fd_quot_supported_inl</a> :
+    ¬ FiniteDimensional ℚ
+      (HollowBase ⧸ Finsupp.supported ℚ ℚ (Set.range (Sum.inl : ℕ → ℕ ⊕ ℕ))) := by
+  intro hfd
+  haveI := hfd
+  exact not_fd_supported Sum.inr Sum.inr_injective (fun n =&gt; Set.mem_range_self n)
+    (Submodule.quotientEquivOfIsCompl _ _ isCompl_supported_inl_inr).finiteDimensional
+
+<span class="kw">theorem</span> <a class="decl" id="hollow_no_lub" href="#hollow_no_lub">hollow_no_lub</a> (U : Hollow) : ¬ IsLUB (Set.range hollowChain) U := by
+  intro hU
+  have hT_le : Finsupp.supported ℚ ℚ (Set.range (Sum.inl : ℕ → ℕ ⊕ ℕ)) ≤ U.val := by
+    rw [Finsupp.supported_eq_span_single]
+    refine Submodule.span_le.mpr ?_
+    rintro x ⟨y, ⟨i, rfl⟩, rfl⟩
+    have hub : (hollowChain (i + 1)).val ≤ U.val := hU.1 ⟨i + 1, rfl⟩
+    exact hub (Finsupp.single_mem_supported ℚ 1 ⟨i, i.lt_succ_self, rfl⟩)
+  rcases U.2 with hfin | hcofin
+  · haveI := hfin
+    exact not_fd_supported Sum.inl Sum.inl_injective (fun n =&gt; Set.mem_range_self n)
+      (Submodule.finiteDimensional_of_le hT_le)
+  · have hne : Finsupp.supported ℚ ℚ (Set.range (Sum.inl : ℕ → ℕ ⊕ ℕ)) ≠ U.val := by
+      intro h
+      rw [← h] at hcofin
+      exact not_fd_quot_supported_inl hcofin
+    obtain ⟨v, hvU, hvT⟩ := SetLike.exists_of_lt (lt_of_le_of_ne hT_le hne)
+    have hv_not : ¬ (↑v.support : Set (ℕ ⊕ ℕ)) ⊆ Set.range Sum.inl :=
+      fun hsub =&gt; hvT ((Finsupp.mem_supported ℚ v).mpr hsub)
+    obtain ⟨j, hj_supp, hj_not⟩ := Set.not_subset.mp hv_not
+    have hcompl : IsCompl (Finsupp.supported ℚ ℚ ({j}ᶜ : Set (ℕ ⊕ ℕ)))
+        (Finsupp.supported ℚ ℚ ({j} : Set (ℕ ⊕ ℕ))) := by
+      constructor
+      · exact Finsupp.disjoint_supported_supported disjoint_compl_left
+      · rw [codisjoint_iff, ← Finsupp.supported_union, Set.compl_union_self,
+          Finsupp.supported_univ]
+    have hU₁_mem : FinOrCofin (Finsupp.supported ℚ ℚ ({j}ᶜ : Set (ℕ ⊕ ℕ))) := by
+      refine Or.inr ?_
+      haveI : FiniteDimensional ℚ (Finsupp.supported ℚ ℚ ({j} : Set (ℕ ⊕ ℕ))) :=
+        fd_supported (Set.finite_singleton j)
+      exact (Submodule.quotientEquivOfIsCompl _ _ hcompl).symm.finiteDimensional
+    have hU₁_ub : Hollow.mk _ hU₁_mem ∈ upperBounds (Set.range hollowChain) := by
+      rintro x ⟨n, rfl⟩
+      show (hollowChain n).val ≤ Finsupp.supported ℚ ℚ ({j}ᶜ : Set (ℕ ⊕ ℕ))
+      refine Finsupp.supported_mono ?_
+      rintro y ⟨m, _, rfl⟩
+      rw [Set.mem_compl_singleton_iff]
+      intro heq
+      exact hj_not (heq ▸ ⟨m, rfl⟩)
+    have hle : U.val ≤ Finsupp.supported ℚ ℚ ({j}ᶜ : Set (ℕ ⊕ ℕ)) := hU.2 hU₁_ub
+    have hmem := (Finsupp.mem_supported ℚ v).mp (hle hvU) hj_supp
+    exact hmem rfl
+
+<span class="kw">theorem</span> <a class="decl" id="hollow_not_complete" href="#hollow_not_complete">hollow_not_complete</a> {β : Type*} [CompleteLattice β] (iso : Hollow ≃o β) : False := by
+  have h := isLUB_sSup (iso &#x27;&#x27; Set.range hollowChain)
+  rw [OrderIso.isLUB_image] at h
+  exact hollow_no_lub _ h
+
+<span class="kw">theorem</span> <a class="decl" id="not_ftpg_statement" href="#not_ftpg_statement">not_ftpg_statement</a> : ¬ ftpg_statement.{0} := by
+  intro h
+  obtain ⟨D, _, V, _, _, ⟨iso⟩⟩ := h Hollow hollow_irred hollow_height
+  exact hollow_not_complete iso
+
+<span class="kw">theorem</span> <a class="decl" id="not_pointSystem" href="#not_pointSystem">not_pointSystem</a> :
+    ¬ ∀ (L : Type) [Lattice L] [BoundedOrder L] [ComplementedLattice L]
+        [IsModularLattice L] [IsAtomistic L] (Φ : CoordFrame L),
+        ∃ (V : Type) (_ : AddCommGroup V) (_ : Module (Coordinate Φ.Γ)ᵐᵒᵖ V),
+          Nonempty (PointSystem Φ.Γ V) := by
+  intro h
+  obtain ⟨Φ⟩ := coordFrame_exists hollow_irred hollow_height
+  obtain ⟨V, _, _, ⟨P⟩⟩ := h Hollow Φ
+  obtain ⟨iso⟩ := P.orderIso
+  exact hollow_not_complete iso
+
+universe u in
+axiom ftpg
+    (L : Type u) [Lattice L] [BoundedOrder L]
+    [ComplementedLattice L] [IsModularLattice L]
+    (h_sufficient : True) :
+    ∃ (D : Type u) (_ : DivisionRing D)
+      (V : Type u) (_ : AddCommGroup V) (_ : Module D V),
+    Nonempty (L ≃o Submodule D V)
+
+<span class="kw">def</span> <a class="decl" id="ftpg_unrestricted" href="#ftpg_unrestricted">ftpg_unrestricted</a> : Prop :=
+  ∀ (L : Type) [Lattice L] [BoundedOrder L] [ComplementedLattice L] [IsModularLattice L],
+    ∃ (D : Type) (_ : DivisionRing D) (V : Type) (_ : AddCommGroup V) (_ : Module D V),
+      Nonempty (L ≃o Submodule D V)
+
+<span class="kw">theorem</span> <a class="decl" id="not_ftpg_unrestricted" href="#not_ftpg_unrestricted">not_ftpg_unrestricted</a> : ¬ ftpg_unrestricted := by
+  intro h
+  obtain ⟨D, _, V, _, _, ⟨iso⟩⟩ := h Hollow
+  exact hollow_not_complete iso
+
+<span class="kw">theorem</span> <a class="decl" id="ftpg_refuted" href="#ftpg_refuted">ftpg_refuted</a> : False :=
+  not_ftpg_unrestricted (fun L _ _ _ _ =&gt; ftpg L trivial)
+
+end Foam.Bridges
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.hollow_not_complete&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.hollow_not_complete</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.not_ftpg_statement&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.not_ftpg_statement</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.not_pointSystem&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.not_pointSystem</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.not_ftpg_unrestricted&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.not_ftpg_unrestricted</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.ftpg&#x27; depends on axioms: [propext, Quot.sound, Foam.Bridges.ftpg] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.ftpg</span>
+
+/--
+info: &#x27;Foam.Bridges.ftpg_refuted&#x27; depends on axioms: [propext, Classical.choice, Quot.sound, Foam.Bridges.ftpg]
+-/
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.ftpg_refuted</span></pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Downhill</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Downhill</h1></header>
+<div class="imports">grasp: <a href="Counter.Health.html">Counter.Health</a></div><pre class="src">import <a href="Counter.Health.html">Counter.Health</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="maxRank" href="#maxRank">maxRank</a> {H : Type} (r : H → Nat) : Quiver H → Nat
+  | [] =&gt; 0
+  | e :: es =&gt; nmax (r e.2) (maxRank r es)
+
+<span class="kw">theorem</span> <a class="decl" id="le_maxRank" href="#le_maxRank">le_maxRank</a> {H : Type} (r : H → Nat) :
+    ∀ (q : Quiver H), ∀ e ∈ q, r e.2 ≤ maxRank r q
+  | [], _, h =&gt; nomatch h
+  | f :: es, e, h =&gt; by
+      cases h with
+      | head =&gt; exact le_nmax_left _ _
+      | tail _ h&#x27; =&gt; exact Nat.le_trans (le_maxRank r es e h&#x27;) (le_nmax_right _ _)
+
+<span class="kw">theorem</span> <a class="decl" id="nmax_zero_right" href="#nmax_zero_right">nmax_zero_right</a> (x : Nat) : nmax x 0 = x := by
+  show (if x ≤ 0 then 0 else x) = x
+  by_cases h : x ≤ 0
+  · rw [if_pos h]
+    cases x with
+    | zero =&gt; rfl
+    | succ k =&gt; exact absurd h (Nat.not_succ_le_zero k)
+  · rw [if_neg h]
+
+<span class="kw">theorem</span> <a class="decl" id="maxRank_attained" href="#maxRank_attained">maxRank_attained</a> {H : Type} (r : H → Nat) :
+    ∀ q : Quiver H, q ≠ [] → ∃ e, e ∈ q ∧ r e.2 = maxRank r q
+  | [], h =&gt; absurd rfl h
+  | f :: es, _ =&gt; by
+      show ∃ e, e ∈ f :: es ∧ r e.2 = nmax (r f.2) (maxRank r es)
+      cases es with
+      | nil =&gt;
+          refine ⟨f, List.Mem.head _, ?_⟩
+          rw [show maxRank r [] = 0 from rfl, nmax_zero_right]
+      | cons g gs =&gt;
+          cases nmax_cases (r f.2) (maxRank r (g :: gs)) with
+          | inl hm =&gt; exact ⟨f, List.Mem.head _, hm.symm⟩
+          | inr hm =&gt;
+              obtain ⟨e, he, hre⟩ := maxRank_attained r (g :: gs) (List.cons_ne_nil g gs)
+              exact ⟨e, List.Mem.tail f he, by rw [hre, hm]⟩
+
+<span class="kw">theorem</span> <a class="decl" id="every_sorted_world_has_a_stuck_seat" href="#every_sorted_world_has_a_stuck_seat">every_sorted_world_has_a_stuck_seat</a> {H : Type} {q : Quiver H} {r : H → Nat}
+    (hs : sortedBy r q) (hne : q ≠ []) :
+    ∃ a, (∃ e, e ∈ q ∧ e.2 = a) ∧ stuck q a := by
+  obtain ⟨e, he, hmax⟩ := maxRank_attained r q hne
+  refine ⟨e.2, ⟨e, he, rfl⟩, ?_⟩
+  intro b hb
+  have h1 : maxRank r q &lt; r b := by
+    rw [← hmax]
+    exact hs (e.2, b) hb
+  exact absurd (Nat.lt_of_lt_of_le h1 (le_maxRank r q (e.2, b) hb))
+    (Nat.lt_irrefl _)
+
+<span class="kw">theorem</span> <a class="decl" id="no_seat_on_the_cycle_is_stuck" href="#no_seat_on_the_cycle_is_stuck">no_seat_on_the_cycle_is_stuck</a> {H : Type} {q : Quiver H} {a : H}
+    (p : Path q a a) :
+    ∀ e ∈ p.edges, ¬ stuck q e.1 := by
+  intro e he hstuck
+  exact hstuck e.2 (reach_within_quiver p e he)
+
+<span class="kw">theorem</span> <a class="decl" id="the_ring_holds_its_own_debt" href="#the_ring_holds_its_own_debt">the_ring_holds_its_own_debt</a> {H : Type} {q : Quiver H} {a : H}
+    (p : Path q a a) (hp : p.edges ≠ []) :
+    (∀ e ∈ p.edges, ¬ stuck q e.1) ∧ ∀ r : H → Nat, defect r q ≠ 0 :=
+  ⟨no_seat_on_the_cycle_is_stuck p, cycle_defeats_every_chart p hp⟩
+
+<span class="kw">theorem</span> <a class="decl" id="evil_requires_a_downhill" href="#evil_requires_a_downhill">evil_requires_a_downhill</a> {H H&#x27; : Type} {q : Quiver H} {r : H → Nat}
+    (hs : sortedBy r q) (hne : q ≠ [])
+    {q&#x27; : Quiver H&#x27;} {a : H&#x27;} (p : Path q&#x27; a a) (hp : p.edges ≠ []) :
+    (∃ s, (∃ e, e ∈ q ∧ e.2 = s) ∧ stuck q s)
+      ∧ (defect r q = 0)
+      ∧ (∀ e ∈ p.edges, ¬ stuck q&#x27; e.1)
+      ∧ (∀ r&#x27; : H&#x27; → Nat, defect r&#x27; q&#x27; ≠ 0) :=
+  ⟨every_sorted_world_has_a_stuck_seat hs hne,
+   (defect_zero_iff r q).mpr hs,
+   no_seat_on_the_cycle_is_stuck p,
+   cycle_defeats_every_chart p hp⟩
+
+<span class="kw">theorem</span> <a class="decl" id="where_debt_pools_relief_has_an_address" href="#where_debt_pools_relief_has_an_address">where_debt_pools_relief_has_an_address</a> {H : Type} (q : Quiver H) (s b : H)
+    (hstuck : stuck q s) :
+    Nonempty (Path (q.deposit (s, b)) s b)
+      ∧ (q.deposit (s, b)).length = q.length + 1 :=
+  ⟨(relief_at_position q s b hstuck).1, deposit_monotone q (s, b)⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.le_maxRank&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms le_maxRank</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.nmax_zero_right&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms nmax_zero_right</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.maxRank_attained&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms maxRank_attained</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_sorted_world_has_a_stuck_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_sorted_world_has_a_stuck_seat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_seat_on_the_cycle_is_stuck&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_seat_on_the_cycle_is_stuck</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_ring_holds_its_own_debt&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_ring_holds_its_own_debt</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.evil_requires_a_downhill&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms evil_requires_a_downhill</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.where_debt_pools_relief_has_an_address&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms where_debt_pools_relief_has_an_address</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

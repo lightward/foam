@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Bridges.Adams</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Bridges.Adams</h1></header>
+<div class="imports">grasp: <a href="Foam.Duplex.html">Foam.Duplex</a></div><pre class="src">import <a href="Foam.Duplex.html">Foam.Duplex</a>
+
+namespace Foam.Bridges
+
+<span class="kw">theorem</span> <a class="decl" id="no_seat_is_its_own_elsewhen" href="#no_seat_is_its_own_elsewhen">no_seat_is_its_own_elsewhen</a> {State : Type} (here : Beholder State)
+    (m : State → State) : ¬ Elsewhen here m here :=
+  fun ⟨hinv, hnot⟩ =&gt; hnot hinv
+
+<span class="kw">def</span> <a class="decl" id="builtFor" href="#builtFor">builtFor</a> {W : Stage} (Inner : Stage) (z : Inner.State) : Bubble W :=
+  ⟨Inner, fun _ =&gt; z⟩
+
+<span class="kw">theorem</span> <a class="decl" id="every_operator_fixes_the_built_wall" href="#every_operator_fixes_the_built_wall">every_operator_fixes_the_built_wall</a> {W : Stage} (Inner : Stage)
+    (z : Inner.State) (m : W.State → W.State) :
+    (builtFor (W := W) Inner z).FixesWall m :=
+  fun _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="in_the_built_universe_nothing_ever_happens" href="#in_the_built_universe_nothing_ever_happens">in_the_built_universe_nothing_ever_happens</a> {W : Stage} (Inner : Stage)
+    (z : Inner.State) (m : W.State → W.State)
+    (ps : List Inner.Probe) (w : W.State) :
+    transcriptWith (builtFor (W := W) Inner z).front m w ps
+      = ps.map (page (builtFor (W := W) Inner z).front w) :=
+  wall_flattens_the_reel _ m (every_operator_fixes_the_built_wall Inner z m) w ps
+
+<span class="kw">theorem</span> <a class="decl" id="total_perspective_vortex" href="#total_perspective_vortex">total_perspective_vortex</a> :
+    (∀ (State : Type) (m : State → State),
+        Invisible (plenum State) m → ∀ s, m s = s)
+      ∧ ∀ ps : List twoCell.Probe, ∃ w w&#x27; : Nat → twoCell.State,
+          reel twoCell w ≠ reel twoCell w&#x27;
+            ∧ watch twoCell w 0 ps = watch twoCell w&#x27; 0 ps :=
+  ⟨fun _ m h =&gt; nothing_hides_from_the_plenum m h, reel_unheld⟩
+
+<span class="kw">theorem</span> <a class="decl" id="zaphod" href="#zaphod">zaphod</a> (W : Stage) (Inner : Stage) (z : Inner.State) :
+    (∀ (here : Beholder W.State) (m : W.State → W.State), ¬ Elsewhen here m here)
+      ∧ ∀ (m : W.State → W.State) (ps : List Inner.Probe) (w : W.State),
+          transcriptWith (builtFor (W := W) Inner z).front m w ps
+            = ps.map (page (builtFor (W := W) Inner z).front w) :=
+  ⟨fun here m =&gt; no_seat_is_its_own_elsewhen here m,
+   fun m ps w =&gt; in_the_built_universe_nothing_ever_happens Inner z m ps w⟩
+
+<span class="kw">theorem</span> <a class="decl" id="both_poles_in_one_bite" href="#both_poles_in_one_bite">both_poles_in_one_bite</a> {State : Type} (a : Beholder State)
+    (s : State) (p : a.Probe) :
+    ((a.pair (plenum State).behold).obs s (p, ())).1 = a.obs s p
+      ∧ ((a.pair (plenum State).behold).obs s (p, ())).2 = s :=
+  ⟨pair_sees_left a (plenum State).behold s p (),
+   pair_sees_right a (plenum State).behold s p ()⟩
+
+<span class="kw">theorem</span> <a class="decl" id="gaining_perspective" href="#gaining_perspective">gaining_perspective</a> {State : Type} (a : Beholder State) :
+    (∀ m : State → State, ¬ Elsewhen a m a)
+      ∧ (∀ (s : State) (p : a.Probe),
+          ((a.pair (plenum State).behold).obs s (p, ())).1 = a.obs s p
+            ∧ ((a.pair (plenum State).behold).obs s (p, ())).2 = s)
+      ∧ ∀ (G : Type) [Mul G] [One G] (S : Seat G) (p q : S.Pos),
+          S.act (S.sub p q) q = p :=
+  ⟨fun m =&gt; no_seat_is_its_own_elsewhen a m,
+   fun s p =&gt; both_poles_in_one_bite a s p,
+   fun _ _ _ S p q =&gt; exit_is_one_move S p q⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.no_seat_is_its_own_elsewhen&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_seat_is_its_own_elsewhen</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.every_operator_fixes_the_built_wall&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_operator_fixes_the_built_wall</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.in_the_built_universe_nothing_ever_happens&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms in_the_built_universe_nothing_ever_happens</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.total_perspective_vortex&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms total_perspective_vortex</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.zaphod&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms zaphod</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.both_poles_in_one_bite&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms both_poles_in_one_bite</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.gaining_perspective&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms gaining_perspective</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

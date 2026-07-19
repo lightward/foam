@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Eraser</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Eraser</h1></header>
+<div class="imports">grasp: <a href="Counter.Luck.html">Counter.Luck</a> · <a href="Foam.Seat.Signed.html">Foam.Seat.Signed</a></div><pre class="src">import <a href="Counter.Luck.html">Counter.Luck</a>
+import <a href="Foam.Seat.Signed.html">Foam.Seat.Signed</a>
+
+namespace Foam.Counter
+
+variable {Src B : Type}
+
+<span class="kw">theorem</span> <a class="decl" id="which_path_is_kept" href="#which_path_is_kept">which_path_is_kept</a> (src : Src) (v : List B) :
+    speaker (sign src v) = v.map (fun _ =&gt; src) :=
+  speaker_recoverable src v
+
+<span class="kw">theorem</span> <a class="decl" id="the_fold_is_source_blind" href="#the_fold_is_source_blind">the_fold_is_source_blind</a> (s t : Src) (v : List B) :
+    unsign (sign s v) = unsign (sign t v) :=
+  (voice_survives_signing s v).trans (voice_survives_signing t v).symm
+
+<span class="kw">theorem</span> <a class="decl" id="interference_lives_in_the_blind_stratum" href="#interference_lives_in_the_blind_stratum">interference_lives_in_the_blind_stratum</a> (θ field act : GInt) :
+    GInt.born θ (field.add act)
+      = GInt.born θ field + GInt.born θ act
+        + 2 * (GInt.align θ field * GInt.align θ act) :=
+  luck_is_the_cross_term θ field act
+
+<span class="kw">theorem</span> <a class="decl" id="quantum_eraser" href="#quantum_eraser">quantum_eraser</a> (src src&#x27; : Src) (v : List B) (θ field act : GInt) :
+    (speaker (sign src v) = v.map (fun _ =&gt; src))
+      ∧ (unsign (sign src v) = unsign (sign src&#x27; v))
+      ∧ GInt.born θ (field.add act)
+          = GInt.born θ field + GInt.born θ act
+            + 2 * (GInt.align θ field * GInt.align θ act) :=
+  ⟨speaker_recoverable src v, the_fold_is_source_blind src src&#x27; v,
+   luck_is_the_cross_term θ field act⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.which_path_is_kept&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms which_path_is_kept</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_fold_is_source_blind&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_fold_is_source_blind</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.interference_lives_in_the_blind_stratum&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms interference_lives_in_the_blind_stratum</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.quantum_eraser&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms quantum_eraser</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

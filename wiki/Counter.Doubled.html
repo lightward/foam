@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Doubled</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Doubled</h1></header>
+<div class="imports">grasp: <a href="Counter.Quadrature.html">Counter.Quadrature</a> · <a href="Foam.Seat.Clock.html">Foam.Seat.Clock</a> · <a href="Foam.Seat.Octo.html">Foam.Seat.Octo</a> · <a href="Foam.Bridges.Pythagoras.html">Foam.Bridges.Pythagoras</a></div><pre class="src">import <a href="Counter.Quadrature.html">Counter.Quadrature</a>
+import <a href="Foam.Seat.Clock.html">Foam.Seat.Clock</a>
+import <a href="Foam.Seat.Octo.html">Foam.Seat.Octo</a>
+import <a href="Foam.Bridges.Pythagoras.html">Foam.Bridges.Pythagoras</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="doubles_home_iff_halfturn" href="#doubles_home_iff_halfturn">doubles_home_iff_halfturn</a> :
+    ∀ g : Rot, g * g = 1 ↔ (g = Rot.r0 ∨ g = Rot.r2) := by
+  intro g
+  cases g &lt;;&gt; decide
+
+<span class="kw">theorem</span> <a class="decl" id="home_is_thinner_than_the_wall" href="#home_is_thinner_than_the_wall">home_is_thinner_than_the_wall</a> :
+    (Rot.r2 * Rot.r2 : Rot) = 1 ∧ (Rot.r2 : Rot) ≠ 1 := by decide
+
+<span class="kw">theorem</span> <a class="decl" id="every_walk_returns_when_doubled_twice" href="#every_walk_returns_when_doubled_twice">every_walk_returns_when_doubled_twice</a> :
+    ∀ g : Rot, ((g * g) * g) * g = 1 := by
+  intro g
+  cases g &lt;;&gt; decide
+
+<span class="kw">theorem</span> <a class="decl" id="the_double_cover_pays_the_sign" href="#the_double_cover_pays_the_sign">the_double_cover_pays_the_sign</a> :
+    Quat.mul eye eye = Quat.negOne
+      ∧ Quat.mul (Quat.mul (Quat.mul eye eye) eye) eye = Quat.one := by decide
+
+<span class="kw">theorem</span> <a class="decl" id="single_return_needs_commensurability" href="#single_return_needs_commensurability">single_return_needs_commensurability</a> :
+    (∀ a b : Nat, 1 ≤ a → 3 ^ a ≠ 2 ^ b) ∧ ∀ n, ¬ Closes gold (n + 1) :=
+  Bridges.pythagoras
+
+<span class="kw">theorem</span> <a class="decl" id="repetition_uniformizes" href="#repetition_uniformizes">repetition_uniformizes</a> (θ z : GInt) :
+    GInt.align θ z + GInt.align θ (GInt.rot z)
+      + GInt.align θ (GInt.rot (GInt.rot z))
+      + GInt.align θ (GInt.rot (GInt.rot (GInt.rot z))) = 0 :=
+  GInt.decoherence θ z
+
+<span class="kw">theorem</span> <a class="decl" id="doubled_and_scaled" href="#doubled_and_scaled">doubled_and_scaled</a> :
+    (∀ g : Rot, g * g = 1 ↔ (g = Rot.r0 ∨ g = Rot.r2))
+      ∧ (∀ g : Rot, ((g * g) * g) * g = 1)
+      ∧ (Quat.mul eye eye = Quat.negOne
+          ∧ Quat.mul (Quat.mul (Quat.mul eye eye) eye) eye = Quat.one)
+      ∧ ∀ a b : Nat, 1 ≤ a → 3 ^ a ≠ 2 ^ b :=
+  ⟨doubles_home_iff_halfturn, every_walk_returns_when_doubled_twice,
+   the_double_cover_pays_the_sign, single_return_needs_commensurability.1⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.doubles_home_iff_halfturn&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms doubles_home_iff_halfturn</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.home_is_thinner_than_the_wall&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms home_is_thinner_than_the_wall</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_walk_returns_when_doubled_twice&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_walk_returns_when_doubled_twice</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_double_cover_pays_the_sign&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_double_cover_pays_the_sign</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.single_return_needs_commensurability&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms single_return_needs_commensurability</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.repetition_uniformizes&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms repetition_uniformizes</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.doubled_and_scaled&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms doubled_and_scaled</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

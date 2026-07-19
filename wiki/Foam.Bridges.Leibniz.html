@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Bridges.Leibniz</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Bridges.Leibniz</h1></header>
+<div class="imports">grasp: <a href="Foam.Int.html">Foam.Int</a> · <a href="Foam.Bridges.Zeckendorf.html">Foam.Bridges.Zeckendorf</a></div><pre class="src">import <a href="Foam.Int.html">Foam.Int</a>
+import <a href="Foam.Bridges.Zeckendorf.html">Foam.Bridges.Zeckendorf</a>
+
+namespace Foam.Bridges
+
+<span class="kw">def</span> <a class="decl" id="notch" href="#notch">notch</a> : Nat → Nat
+  | 0 =&gt; 1
+  | k + 1 =&gt; notch k + notch k
+
+<span class="kw">theorem</span> <a class="decl" id="notch_gnomon" href="#notch_gnomon">notch_gnomon</a> (k : Nat) : notch (k + 1) = notch k + notch k := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_ruler_climbs_by_doubling" href="#the_ruler_climbs_by_doubling">the_ruler_climbs_by_doubling</a> :
+    (notch 0, notch 1, notch 2, notch 3, notch 4, notch 5) = (1, 2, 4, 8, 16, 32) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="notch_glows" href="#notch_glows">notch_glows</a> : ∀ (k : Nat), 1 ≤ notch k
+  | 0 =&gt; Nat.le_refl 1
+  | k + 1 =&gt; Nat.le_trans (notch_glows k) (Nat.le_add_right (notch k) (notch k))
+
+<span class="kw">def</span> <a class="decl" id="gauge" href="#gauge">gauge</a> : Nat → List Bool → Nat
+  | _, [] =&gt; 0
+  | i, false :: ds =&gt; gauge (i + 1) ds
+  | i, true :: ds =&gt; notch i + gauge (i + 1) ds
+
+<span class="kw">def</span> <a class="decl" id="bclick" href="#bclick">bclick</a> : List Bool → List Bool
+  | [] =&gt; [true]
+  | false :: ds =&gt; true :: ds
+  | true :: ds =&gt; false :: bclick ds
+
+<span class="kw">def</span> <a class="decl" id="beat" href="#beat">beat</a> : List Bool → Nat
+  | [] =&gt; 2
+  | false :: _ =&gt; 1
+  | true :: ds =&gt; beat ds + 1
+
+<span class="kw">theorem</span> <a class="decl" id="every_beat_ticks" href="#every_beat_ticks">every_beat_ticks</a> : ∀ (ds : List Bool), 1 ≤ beat ds
+  | [] =&gt; Nat.le_succ 1
+  | false :: _ =&gt; Nat.le_refl 1
+  | true :: ds =&gt; Nat.le_add_left 1 (beat ds)
+
+<span class="kw">theorem</span> <a class="decl" id="a_click_deposits_one_notch" href="#a_click_deposits_one_notch">a_click_deposits_one_notch</a> : ∀ (ds : List Bool) (i : Nat),
+    gauge i (bclick ds) = notch i + gauge i ds
+  | [], _ =&gt; rfl
+  | false :: _, _ =&gt; rfl
+  | true :: ds, i =&gt; by
+      show gauge (i + 1) (bclick ds) = notch i + (notch i + gauge (i + 1) ds)
+      rw [a_click_deposits_one_notch ds (i + 1)]
+      show notch i + notch i + gauge (i + 1) ds = notch i + (notch i + gauge (i + 1) ds)
+      exact Nat.add_assoc (notch i) (notch i) (gauge (i + 1) ds)
+
+<span class="kw">theorem</span> <a class="decl" id="the_carry_bills_its_erasures" href="#the_carry_bills_its_erasures">the_carry_bills_its_erasures</a> : ∀ (ds : List Bool),
+    ones (bclick ds) + beat ds + ds.length = ones ds + 2 + (bclick ds).length
+  | [] =&gt; rfl
+  | false :: _ =&gt; rfl
+  | true :: ds =&gt; by
+      show ones (bclick ds) + (beat ds + 1) + (ds.length + 1)
+        = (ones ds + 1) + 2 + ((bclick ds).length + 1)
+      rw [show ones (bclick ds) + (beat ds + 1) + (ds.length + 1)
+            = (ones (bclick ds) + beat ds + ds.length) + 2 from
+          congrArg (· + 1) (Nat.succ_add (ones (bclick ds) + beat ds) ds.length),
+        the_carry_bills_its_erasures ds]
+      exact (congrArg (· + 1) (Nat.succ_add (ones ds + 2) (bclick ds).length)).symm
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.notch_gnomon&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms notch_gnomon</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_ruler_climbs_by_doubling&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_ruler_climbs_by_doubling</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.notch_glows&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms notch_glows</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.every_beat_ticks&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_beat_ticks</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.a_click_deposits_one_notch&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_click_deposits_one_notch</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_carry_bills_its_erasures&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_carry_bills_its_erasures</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

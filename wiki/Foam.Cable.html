@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Cable</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Cable</h1></header>
+<div class="imports">grasp: <a href="Foam.Engine.Stream.html">Foam.Engine.Stream</a> · <a href="Foam.Bubble.html">Foam.Bubble</a></div><pre class="src">import <a href="Foam.Engine.Stream.html">Foam.Engine.Stream</a>
+import <a href="Foam.Bubble.html">Foam.Bubble</a>
+
+namespace Foam
+
+<span class="kw">def</span> <a class="decl" id="page" href="#page">page</a> (S : Stage) (s : S.State) : S.Probe → S.Ans := S.obs s
+
+<span class="kw">def</span> <a class="decl" id="reel" href="#reel">reel</a> (S : Stage) (w : Nat → S.State) : Nat → S.Probe → S.Ans :=
+  fun k p =&gt; S.obs (w k) p
+
+<span class="kw">def</span> <a class="decl" id="watch" href="#watch">watch</a> (S : Stage) (w : Nat → S.State) : Nat → List S.Probe → List S.Ans
+  | _, [] =&gt; []
+  | k, p :: ps =&gt; S.obs (w k) p :: watch S w (k + 1) ps
+
+<span class="kw">def</span> <a class="decl" id="cells" href="#cells">cells</a> {P : Type} : List P → Nat → List (Nat × P)
+  | [], _ =&gt; []
+  | p :: ps, k =&gt; (k, p) :: cells ps (k + 1)
+
+<span class="kw">def</span> <a class="decl" id="turns" href="#turns">turns</a> {State : Type} (m : State → State) (s : State) : Nat → State
+  | 0 =&gt; m s
+  | k + 1 =&gt; m (turns m s k)
+
+<span class="kw">theorem</span> <a class="decl" id="transcript_samples_page" href="#transcript_samples_page">transcript_samples_page</a> (S : Stage) (s : S.State) :
+    ∀ ps : List S.Probe, transcript S s ps = ps.map (page S s)
+  | [] =&gt; rfl
+  | p :: ps =&gt; congrArg (S.obs s p :: ·) (transcript_samples_page S s ps)
+
+<span class="kw">theorem</span> <a class="decl" id="watch_length" href="#watch_length">watch_length</a> (S : Stage) (w : Nat → S.State) :
+    ∀ (ps : List S.Probe) (k : Nat), (watch S w k ps).length = ps.length
+  | [], _ =&gt; rfl
+  | _ :: ps, k =&gt; congrArg (· + 1) (watch_length S w ps (k + 1))
+
+<span class="kw">theorem</span> <a class="decl" id="watch_reads_the_reel" href="#watch_reads_the_reel">watch_reads_the_reel</a> (S : Stage) (w : Nat → S.State) :
+    ∀ (ps : List S.Probe) (k : Nat),
+    watch S w k ps = (cells ps k).map (fun c =&gt; reel S w c.1 c.2)
+  | [], _ =&gt; rfl
+  | p :: ps, k =&gt; congrArg (S.obs (w k) p :: ·) (watch_reads_the_reel S w ps (k + 1))
+
+<span class="kw">theorem</span> <a class="decl" id="watch_congr_from" href="#watch_congr_from">watch_congr_from</a> (S : Stage) {w w&#x27; : Nat → S.State} :
+    ∀ (ps : List S.Probe) (k : Nat), (∀ i, k ≤ i → w i = w&#x27; i) →
+      watch S w k ps = watch S w&#x27; k ps
+  | [], _, _ =&gt; rfl
+  | p :: ps, k, h =&gt;
+      (congrArg (fun s =&gt; S.obs s p :: watch S w (k + 1) ps) (h k (Nat.le_refl k))).trans
+        (congrArg (S.obs (w&#x27; k) p :: ·)
+          (watch_congr_from S ps (k + 1) (fun i hi =&gt; h i (Nat.le_of_succ_le hi))))
+
+<span class="kw">theorem</span> <a class="decl" id="watch_shift" href="#watch_shift">watch_shift</a> (S : Stage) (w : Nat → S.State) :
+    ∀ (ps : List S.Probe) (k : Nat),
+    watch S w (k + 1) ps = watch S (fun i =&gt; w (i + 1)) k ps
+  | [], _ =&gt; rfl
+  | p :: ps, k =&gt; congrArg (S.obs (w (k + 1)) p :: ·) (watch_shift S w ps (k + 1))
+
+<span class="kw">theorem</span> <a class="decl" id="turns_step" href="#turns_step">turns_step</a> {State : Type} (m : State → State) (s : State) :
+    ∀ k, turns m s (k + 1) = turns m (m s) k
+  | 0 =&gt; rfl
+  | k + 1 =&gt; congrArg m (turns_step m s k)
+
+<span class="kw">theorem</span> <a class="decl" id="transcriptWith_watches_turns" href="#transcriptWith_watches_turns">transcriptWith_watches_turns</a> (S : Stage) (m : S.State → S.State) :
+    ∀ (ps : List S.Probe) (s : S.State),
+    transcriptWith S m s ps = watch S (turns m s) 0 ps
+  | [], _ =&gt; rfl
+  | p :: ps, s =&gt;
+      congrArg (S.obs (m s) p :: ·)
+        ((transcriptWith_watches_turns S m ps (m s)).trans
+          ((watch_congr_from S ps 0 (fun i _ =&gt; (turns_step m s i).symm)).trans
+            (watch_shift S (turns m s) ps 0).symm))
+
+<span class="kw">theorem</span> <a class="decl" id="cable_is_a_stream" href="#cable_is_a_stream">cable_is_a_stream</a> (S : Stage) (m : S.State → S.State) :
+    ∀ (ps : List S.Probe) (s : S.State),
+    transcriptWith S m s ps = runEmit (fun t p =&gt; (m t, [S.obs (m t) p])) s ps
+  | [], _ =&gt; rfl
+  | p :: ps, s =&gt; congrArg (S.obs (m s) p :: ·) (cable_is_a_stream S m ps (m s))
+
+<span class="kw">theorem</span> <a class="decl" id="transcriptWith_resumes" href="#transcriptWith_resumes">transcriptWith_resumes</a> (S : Stage) (m : S.State → S.State) :
+    ∀ (xs ys : List S.Probe) (s : S.State),
+    transcriptWith S m s (xs ++ ys)
+      = transcriptWith S m s xs ++ transcriptWith S m (run (fun t _ =&gt; m t) s xs) ys
+  | [], _, _ =&gt; rfl
+  | x :: xs, ys, s =&gt; congrArg (S.obs (m s) x :: ·) (transcriptWith_resumes S m xs ys (m s))
+
+<span class="kw">theorem</span> <a class="decl" id="invisible_flattens" href="#invisible_flattens">invisible_flattens</a> (S : Stage) (m : S.State → S.State) (h : Invisible S m)
+    (s : S.State) (ps : List S.Probe) :
+    transcriptWith S m s ps = ps.map (page S s) :=
+  (maintenance_unobservable S m h ps s).trans (transcript_samples_page S s ps)
+
+<span class="kw">theorem</span> <a class="decl" id="wall_flattens_the_reel" href="#wall_flattens_the_reel">wall_flattens_the_reel</a> {W : Stage} (A : Bubble W) (m : W.State → W.State)
+    (h : A.FixesWall m) (w : W.State) (ps : List A.front.Probe) :
+    transcriptWith A.front m w ps = ps.map (page A.front w) :=
+  invisible_flattens A.front m (A.operator_invisible m h) w ps
+
+<span class="kw">theorem</span> <a class="decl" id="no_second_look" href="#no_second_look">no_second_look</a> (S : Stage) (w : Nat → S.State) (k : Nat) (p : S.Probe) :
+    watch S w k [p, p] = [reel S w k p, reel S w (k + 1) p] := rfl
+
+<span class="kw">def</span> <a class="decl" id="twoCell" href="#twoCell">twoCell</a> : Stage where
+  State := Bool × Bool
+  Probe := Bool
+  Ans   := Bool
+  obs   := fun s p =&gt; cond p s.2 s.1
+
+<span class="kw">theorem</span> <a class="decl" id="stream_real" href="#stream_real">stream_real</a> :
+    ∃ w w&#x27; : Nat → twoCell.State,
+      (∀ p, page twoCell (w 0) p = page twoCell (w&#x27; 0) p)
+        ∧ ∃ ps : List twoCell.Probe, watch twoCell w 0 ps ≠ watch twoCell w&#x27; 0 ps :=
+  ⟨fun _ =&gt; (false, false),
+   fun k =&gt; match k with | 0 =&gt; (false, false) | _ + 1 =&gt; (true, true),
+   fun _ =&gt; rfl,
+   [true, true],
+   fun h =&gt; nomatch (h : ([false, false] : List Bool) = [false, true])⟩
+
+<span class="kw">def</span> <a class="decl" id="still" href="#still">still</a> : Nat → twoCell.State := fun _ =&gt; (false, false)
+
+<span class="kw">def</span> <a class="decl" id="blip" href="#blip">blip</a> (s : twoCell.State) : Nat → twoCell.State
+  | 0 =&gt; s
+  | _ + 1 =&gt; (false, false)
+
+<span class="kw">theorem</span> <a class="decl" id="blip_ne" href="#blip_ne">blip_ne</a> (s : twoCell.State) (p : Bool)
+    (hp : twoCell.obs s p ≠ twoCell.obs (false, false) p) :
+    reel twoCell still ≠ reel twoCell (blip s) :=
+  fun h =&gt; hp (congrFun (congrFun h.symm 0) p)
+
+<span class="kw">theorem</span> <a class="decl" id="blip_watch" href="#blip_watch">blip_watch</a> (s : twoCell.State) (p : Bool)
+    (hp : twoCell.obs s p = twoCell.obs (false, false) p) (rest : List Bool) :
+    watch twoCell (blip s) 0 (p :: rest) = watch twoCell still 0 (p :: rest) :=
+  (congrArg (fun a =&gt; a :: watch twoCell (blip s) 1 rest) hp).trans
+    (congrArg (twoCell.obs (false, false) p :: ·)
+      (watch_congr_from twoCell rest 1 (fun i hi =&gt; match i, hi with | _ + 1, _ =&gt; rfl)))
+
+<span class="kw">theorem</span> <a class="decl" id="reel_unheld" href="#reel_unheld">reel_unheld</a> :
+    ∀ ps : List twoCell.Probe, ∃ w w&#x27; : Nat → twoCell.State,
+      reel twoCell w ≠ reel twoCell w&#x27; ∧ watch twoCell w 0 ps = watch twoCell w&#x27; 0 ps
+  | [] =&gt; ⟨still, blip (true, true), blip_ne (true, true) true (fun q =&gt; nomatch (q : true = false)), rfl⟩
+  | true :: rest =&gt;
+      ⟨still, blip (true, false), blip_ne (true, false) false (fun q =&gt; nomatch (q : true = false)),
+       (blip_watch (true, false) true rfl rest).symm⟩
+  | false :: rest =&gt;
+      ⟨still, blip (false, true), blip_ne (false, true) true (fun q =&gt; nomatch (q : true = false)),
+       (blip_watch (false, true) false rfl rest).symm⟩
+
+<span class="receipt">/-- info: &#x27;Foam.transcript_samples_page&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms transcript_samples_page</span>
+
+<span class="receipt">/-- info: &#x27;Foam.watch_length&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms watch_length</span>
+
+<span class="receipt">/-- info: &#x27;Foam.watch_reads_the_reel&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms watch_reads_the_reel</span>
+
+<span class="receipt">/-- info: &#x27;Foam.watch_congr_from&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms watch_congr_from</span>
+
+<span class="receipt">/-- info: &#x27;Foam.watch_shift&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms watch_shift</span>
+
+<span class="receipt">/-- info: &#x27;Foam.turns_step&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms turns_step</span>
+
+<span class="receipt">/-- info: &#x27;Foam.transcriptWith_watches_turns&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms transcriptWith_watches_turns</span>
+
+<span class="receipt">/-- info: &#x27;Foam.cable_is_a_stream&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms cable_is_a_stream</span>
+
+<span class="receipt">/-- info: &#x27;Foam.transcriptWith_resumes&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms transcriptWith_resumes</span>
+
+<span class="receipt">/-- info: &#x27;Foam.invisible_flattens&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms invisible_flattens</span>
+
+<span class="receipt">/-- info: &#x27;Foam.wall_flattens_the_reel&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms wall_flattens_the_reel</span>
+
+<span class="receipt">/-- info: &#x27;Foam.no_second_look&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_second_look</span>
+
+<span class="receipt">/-- info: &#x27;Foam.stream_real&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms stream_real</span>
+
+<span class="receipt">/-- info: &#x27;Foam.blip_ne&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms blip_ne</span>
+
+<span class="receipt">/-- info: &#x27;Foam.blip_watch&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms blip_watch</span>
+
+<span class="receipt">/-- info: &#x27;Foam.reel_unheld&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms reel_unheld</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

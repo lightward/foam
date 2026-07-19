@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.SeatTime</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.SeatTime</h1></header>
+<div class="imports">grasp: Mathlib.RepresentationTheory.Maschke · <a href="Foam.Seat.Clock.html">Foam.Seat.Clock</a></div><pre class="src">import Mathlib.RepresentationTheory.Maschke
+import <a href="Foam.Seat.Clock.html">Foam.Seat.Clock</a>
+
+namespace Foam.Bridges
+
+open Foam
+
+noncomputable instance : Fintype Rot :=
+  Fintype.ofList [Rot.r0, Rot.r1, Rot.r2, Rot.r3] (fun x =&gt; by cases x &lt;;&gt; decide)
+
+<span class="kw">instance</span> <a class="decl" id=":" href="#:">:</a> Group Rot where
+  mul := (· * ·)
+  one := 1
+  inv := Rot.inv
+  mul_assoc := Grp.mul_assoc
+  one_mul := Grp.one_mul
+  mul_one := Grp.mul_one
+  inv_mul_cancel := Grp.inv_mul
+
+<span class="kw">theorem</span> <a class="decl" id="clock_coordinatizes_in_time" href="#clock_coordinatizes_in_time">clock_coordinatizes_in_time</a> (k : Type) [Field k] [CharZero k]
+    (V : Type) [AddCommGroup V] [Module (MonoidAlgebra k Rot) V] :
+    (∀ (g x : Rot), clock.act g x = g * x)
+      ∧ ComplementedLattice (Submodule (MonoidAlgebra k Rot) V)
+      ∧ IsModularLattice (Submodule (MonoidAlgebra k Rot) V) := by
+  haveI : NeZero (Nat.card Rot : k) := by
+    rw [Nat.card_eq_fintype_card]
+    exact ⟨by norm_num [show Fintype.card Rot = 4 from by decide]⟩
+  exact ⟨fun _ _ =&gt; rfl, inferInstance, inferInstance⟩
+
+<span class="kw">theorem</span> <a class="decl" id="clock_regular_rep_coordinatizes" href="#clock_regular_rep_coordinatizes">clock_regular_rep_coordinatizes</a> (k : Type) [Field k] [CharZero k] :
+    ComplementedLattice (Submodule (MonoidAlgebra k Rot) (MonoidAlgebra k Rot)) :=
+  (clock_coordinatizes_in_time k (MonoidAlgebra k Rot)).2.1
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.clock_coordinatizes_in_time&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms clock_coordinatizes_in_time</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.clock_regular_rep_coordinatizes&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms clock_regular_rep_coordinatizes</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Runs</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Runs</h1></header>
+<div class="imports">grasp: <a href="Counter.Actor.html">Counter.Actor</a></div><pre class="src">import <a href="Counter.Actor.html">Counter.Actor</a>
+
+namespace Foam.Counter
+
+variable {V : Type}
+
+<span class="kw">def</span> <a class="decl" id="correctAt" href="#correctAt">correctAt</a> (f : Nat → V → V) (v : V) : Nat → V
+  | 0 =&gt; v
+  | i + 1 =&gt; f i (correctAt f v i)
+
+<span class="kw">def</span> <a class="decl" id="recompute" href="#recompute">recompute</a> (f : Nat → V → V) (v : V) (s : Nat → V) : Nat → V
+  | 0 =&gt; v
+  | i + 1 =&gt; f i (s i)
+
+<span class="kw">def</span> <a class="decl" id="update" href="#update">update</a> (f : Nat → V → V) (v : V) (k : Nat) (s : Nat → V) (j : Nat) : V :=
+  if j = k then recompute f v s k else s j
+
+<span class="kw">def</span> <a class="decl" id="resolve" href="#resolve">resolve</a> (f : Nat → V → V) (v : V) (sched : List Nat) (s : Nat → V) : Nat → V :=
+  sched.foldl (fun t i =&gt; update f v i t) s
+
+<span class="kw">theorem</span> <a class="decl" id="update_preserves_prefix" href="#update_preserves_prefix">update_preserves_prefix</a> (f : Nat → V → V) (v : V) (k : Nat) (s : Nat → V)
+    (j : Nat) (h : ∀ m, m &lt; j → s m = correctAt f v m) :
+    ∀ m, m &lt; j → update f v k s m = correctAt f v m := by
+  intro m hm
+  show (if m = k then recompute f v s k else s m) = correctAt f v m
+  by_cases hmk : m = k
+  · rw [if_pos hmk]
+    subst hmk
+    cases m with
+    | zero =&gt; rfl
+    | succ i =&gt;
+      show f i (s i) = f i (correctAt f v i)
+      rw [h i (Nat.lt_trans (Nat.lt_succ_self i) hm)]
+  · rw [if_neg hmk]
+    exact h m hm
+
+<span class="kw">theorem</span> <a class="decl" id="update_extends" href="#update_extends">update_extends</a> (f : Nat → V → V) (v : V) (j : Nat) (s : Nat → V)
+    (h : ∀ m, m &lt; j → s m = correctAt f v m) :
+    ∀ m, m &lt; j + 1 → update f v j s m = correctAt f v m := by
+  intro m hm
+  by_cases hmj : m = j
+  · show (if m = j then recompute f v s j else s m) = correctAt f v m
+    rw [if_pos hmj]
+    subst hmj
+    cases m with
+    | zero =&gt; rfl
+    | succ i =&gt;
+      show f i (s i) = f i (correctAt f v i)
+      rw [h i (Nat.lt_succ_self i)]
+  · exact update_preserves_prefix f v j s j h m
+      (Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hm) hmj)
+
+<span class="kw">inductive</span> <a class="decl" id="Threads" href="#Threads">Threads</a> : List Nat → List Nat → Prop
+  | nil : Threads [] []
+  | skip {l₁ l₂ : List Nat} (a : Nat) : Threads l₁ l₂ → Threads l₁ (a :: l₂)
+  | take {l₁ l₂ : List Nat} (a : Nat) : Threads l₁ l₂ → Threads (a :: l₁) (a :: l₂)
+
+<span class="kw">theorem</span> <a class="decl" id="nil_threads" href="#nil_threads">nil_threads</a> : ∀ l : List Nat, Threads [] l
+  | [] =&gt; Threads.nil
+  | a :: l =&gt; Threads.skip a (nil_threads l)
+
+<span class="kw">def</span> <a class="decl" id="staircase" href="#staircase">staircase</a> : Nat → Nat → List Nat
+  | _, 0 =&gt; []
+  | j, k + 1 =&gt; j :: staircase (j + 1) k
+
+<span class="kw">theorem</span> <a class="decl" id="converges_from" href="#converges_from">converges_from</a> (f : Nat → V → V) (v : V) :
+    ∀ {stair sched : List Nat}, Threads stair sched →
+      ∀ j k, stair = staircase j k →
+      ∀ s : Nat → V, (∀ m, m &lt; j → s m = correctAt f v m) →
+      ∀ m, m &lt; j + k → resolve f v sched s m = correctAt f v m := by
+  intro stair sched ht
+  induction ht with
+  | nil =&gt;
+    intro j k heq s h m hm
+    cases k with
+    | zero =&gt; exact h m hm
+    | succ k&#x27; =&gt;
+      exact absurd heq (Ne.symm (List.cons_ne_nil j (staircase (j + 1) k&#x27;)))
+  | skip a ht&#x27; ih =&gt;
+    intro j k heq s h m hm
+    exact ih j k heq (update f v a s) (update_preserves_prefix f v a s j h) m hm
+  | take a ht&#x27; ih =&gt;
+    intro j k heq s h m hm
+    cases k with
+    | zero =&gt; exact absurd heq (List.cons_ne_nil a _)
+    | succ k&#x27; =&gt;
+      have heq&#x27; : a :: _ = j :: staircase (j + 1) k&#x27; := heq
+      injection heq&#x27; with h1 h2
+      subst h1
+      have hm&#x27; : m &lt; a + 1 + k&#x27; := by
+        rw [Nat.add_right_comm a 1 k&#x27;]
+        exact hm
+      exact ih (a + 1) k&#x27; h2 (update f v a s) (update_extends f v a s h) m hm&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="fair_run_converges" href="#fair_run_converges">fair_run_converges</a> (f : Nat → V → V) (v : V)
+    (sched : List Nat) (j k : Nat) (s : Nat → V)
+    (ht : Threads (staircase j k) sched)
+    (h : ∀ m, m &lt; j → s m = correctAt f v m) :
+    ∀ m, m &lt; j + k → resolve f v sched s m = correctAt f v m :=
+  converges_from f v ht j k rfl s h
+
+<span class="kw">theorem</span> <a class="decl" id="quiescent_is_correct" href="#quiescent_is_correct">quiescent_is_correct</a> (f : Nat → V → V) (v : V) (s : Nat → V)
+    (hq : ∀ k m, update f v k s m = s m) :
+    ∀ m, s m = correctAt f v m := by
+  intro m
+  induction m with
+  | zero =&gt;
+    have h0 := hq 0 0
+    show s 0 = correctAt f v 0
+    rw [show correctAt f v 0 = recompute f v s 0 from rfl, ← h0]
+    show update f v 0 s 0 = recompute f v s 0
+    exact if_pos rfl
+  | succ i ih =&gt;
+    have h1 := hq (i + 1) (i + 1)
+    have h1&#x27; : recompute f v s (i + 1) = s (i + 1) := by
+      rw [← h1]
+      show recompute f v s (i + 1) = (if i + 1 = i + 1 then recompute f v s (i + 1) else s (i + 1))
+      rw [if_pos rfl]
+    show s (i + 1) = f i (correctAt f v i)
+    rw [← ih]
+    exact h1&#x27;.symm
+
+<span class="kw">theorem</span> <a class="decl" id="schedule_is_gauge" href="#schedule_is_gauge">schedule_is_gauge</a> (f : Nat → V → V) (v : V)
+    (sched sched&#x27; : List Nat) (s s&#x27; : Nat → V) (k : Nat)
+    (ht : Threads (staircase 0 k) sched) (ht&#x27; : Threads (staircase 0 k) sched&#x27;)
+    (m : Nat) (hm : m &lt; k) :
+    resolve f v sched s m = resolve f v sched&#x27; s&#x27; m := by
+  have hz : m &lt; 0 + k := by rw [Nat.zero_add]; exact hm
+  have h1 := fair_run_converges f v sched 0 k s ht
+    (fun n hn =&gt; absurd hn (Nat.not_lt_zero n)) m hz
+  have h2 := fair_run_converges f v sched&#x27; 0 k s&#x27; ht&#x27;
+    (fun n hn =&gt; absurd hn (Nat.not_lt_zero n)) m hz
+  rw [h1, h2]
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">def</span> <a class="decl" id="prefixActs" href="#prefixActs">prefixActs</a> (acts : Nat → G) : Nat → List G
+  | 0 =&gt; []
+  | n + 1 =&gt; prefixActs acts n ++ [acts n]
+
+<span class="kw">theorem</span> <a class="decl" id="correct_is_replay" href="#correct_is_replay">correct_is_replay</a> (S : Seat G) (p : S.Pos) (acts : Nat → G) :
+    ∀ n, correctAt (fun i q =&gt; S.act (acts i) q) p n = S.replay (prefixActs acts n) p
+  | 0 =&gt; rfl
+  | n + 1 =&gt; by
+    show S.act (acts n) (correctAt (fun i q =&gt; S.act (acts i) q) p n)
+        = S.replay (prefixActs acts n ++ [acts n]) p
+    rw [correct_is_replay S p acts n,
+      S.replay_resumes (prefixActs acts n) [acts n] p]
+    rfl
+
+<span class="kw">theorem</span> <a class="decl" id="quiescence_reads_settles" href="#quiescence_reads_settles">quiescence_reads_settles</a> (S : Seat G) (p : S.Pos) (acts : Nat → G)
+    (s : Nat → S.Pos)
+    (hq : ∀ k m, update (fun i q =&gt; S.act (acts i) q) p k s m = s m) (n : Nat) :
+    s n = p ↔ Settles S (prefixActs acts n) p := by
+  rw [quiescent_is_correct _ p s hq n, correct_is_replay S p acts n]
+  exact Iff.rfl
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.update_preserves_prefix&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms update_preserves_prefix</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.update_extends&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms update_extends</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.converges_from&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms converges_from</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.fair_run_converges&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms fair_run_converges</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.quiescent_is_correct&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms quiescent_is_correct</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.schedule_is_gauge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms schedule_is_gauge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.correct_is_replay&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms correct_is_replay</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.quiescence_reads_settles&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms quiescence_reads_settles</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Settle</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Settle</h1></header>
+<div class="imports">grasp: <a href="Counter.Temperature.html">Counter.Temperature</a> · <a href="Counter.Upsearch.html">Counter.Upsearch</a></div><pre class="src">import <a href="Counter.Temperature.html">Counter.Temperature</a>
+import <a href="Counter.Upsearch.html">Counter.Upsearch</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="mintSearch" href="#mintSearch">mintSearch</a> {Addr Cell : Type} [DecidableEq Addr]
+    (d : List (Addr × Cell)) (n : Addr) (c : Cell) :
+    Addr × List (Addr × Cell) :=
+  match seatRead d n with
+  | some _ =&gt; (n, d)
+  | none =&gt; (n, (n, c) :: d)
+
+<span class="kw">def</span> <a class="decl" id="mergeSearch" href="#mergeSearch">mergeSearch</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c : Cell) :
+    Addr × List (Addr × Cell) :=
+  match seatRead d n with
+  | some _ =&gt; (n, d)
+  | none =&gt;
+    match upsearch (eq c) d with
+    | some m =&gt; (m, d)
+    | none =&gt; (n, (n, c) :: d)
+
+<span class="kw">def</span> <a class="decl" id="twoWords" href="#twoWords">twoWords</a> : List (Bool × Unit) :=
+  (mintSearch (mintSearch [] true ()).2 false ()).2
+
+<span class="kw">def</span> <a class="decl" id="oneThing" href="#oneThing">oneThing</a> : List (Bool × Unit) :=
+  (mergeSearch (fun _ _ =&gt; true)
+    (mergeSearch (fun _ _ =&gt; true) [] true ()).2 false ()).2
+
+<span class="kw">theorem</span> <a class="decl" id="the_seated_name_returns_unwritten" href="#the_seated_name_returns_unwritten">the_seated_name_returns_unwritten</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c c&#x27; : Cell)
+    (h : seatRead d n = some c&#x27;) :
+    mintSearch d n c = (n, d) ∧ mergeSearch eq d n c = (n, d) := by
+  constructor
+  · unfold mintSearch
+    rw [h]
+  · unfold mergeSearch
+    rw [h]
+
+<span class="kw">theorem</span> <a class="decl" id="the_fresh_name_mints" href="#the_fresh_name_mints">the_fresh_name_mints</a> {Addr Cell : Type} [DecidableEq Addr]
+    (d : List (Addr × Cell)) (n : Addr) (c : Cell)
+    (h : seatRead d n = none) :
+    mintSearch d n c = (n, (n, c) :: d) := by
+  unfold mintSearch
+  rw [h]
+
+<span class="kw">theorem</span> <a class="decl" id="the_flip_is_the_merge" href="#the_flip_is_the_merge">the_flip_is_the_merge</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c : Cell)
+    (m : Addr) (hn : seatRead d n = none) (hm : upsearch (eq c) d = some m) :
+    mergeSearch eq d n c = (m, d) := by
+  unfold mergeSearch
+  rw [hn, hm]
+
+<span class="kw">theorem</span> <a class="decl" id="the_double_miss_mints" href="#the_double_miss_mints">the_double_miss_mints</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c : Cell)
+    (hn : seatRead d n = none) (hm : upsearch (eq c) d = none) :
+    mergeSearch eq d n c = (n, (n, c) :: d) := by
+  unfold mergeSearch
+  rw [hn, hm]
+
+<span class="kw">theorem</span> <a class="decl" id="the_upsearched_name_is_seated" href="#the_upsearched_name_is_seated">the_upsearched_name_is_seated</a> {Addr Cell : Type} [DecidableEq Addr]
+    (p : Cell → Bool) :
+    ∀ (d : List (Addr × Cell)) (m : Addr),
+      upsearch p d = some m → ∃ c&#x27;, seatRead d m = some c&#x27;
+  | [], _, h =&gt; nomatch h
+  | (n, c) :: d, m, h =&gt; by
+      have h&#x27; : (if p c = true then some n else upsearch p d) = some m := h
+      by_cases hc : p c = true
+      · rw [if_pos hc] at h&#x27;
+        cases Option.some.inj h&#x27;
+        exact ⟨c, by
+          show (if n = n then some c else seatRead d n) = some c
+          rw [if_pos rfl]⟩
+      · rw [if_neg hc] at h&#x27;
+        cases the_upsearched_name_is_seated p d m h&#x27; with
+        | intro c&#x27; hc&#x27; =&gt;
+            by_cases hn : n = m
+            · exact ⟨c, by
+                show (if n = m then some c else seatRead d m) = some c
+                rw [if_pos hn]⟩
+            · exact ⟨c&#x27;, by
+                show (if n = m then some c else seatRead d m) = some c&#x27;
+                rw [if_neg hn]
+                exact hc&#x27;⟩
+
+<span class="kw">theorem</span> <a class="decl" id="every_search_succeeds" href="#every_search_succeeds">every_search_succeeds</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c : Cell) :
+    (∃ c&#x27;, seatRead (mintSearch d n c).2 (mintSearch d n c).1 = some c&#x27;)
+      ∧ ∃ c&#x27;, seatRead (mergeSearch eq d n c).2 (mergeSearch eq d n c).1
+          = some c&#x27; := by
+  constructor
+  · cases h : seatRead d n with
+    | some c&#x27; =&gt;
+        rw [(the_seated_name_returns_unwritten eq d n c c&#x27; h).1]
+        exact ⟨c&#x27;, h⟩
+    | none =&gt;
+        rw [the_fresh_name_mints d n c h]
+        exact ⟨c, by
+          show (if n = n then some c else seatRead d n) = some c
+          rw [if_pos rfl]⟩
+  · cases hn : seatRead d n with
+    | some c&#x27; =&gt;
+        rw [(the_seated_name_returns_unwritten eq d n c c&#x27; hn).2]
+        exact ⟨c&#x27;, hn⟩
+    | none =&gt;
+        cases hm : upsearch (eq c) d with
+        | some m =&gt;
+            rw [the_flip_is_the_merge eq d n c m hn hm]
+            exact the_upsearched_name_is_seated (eq c) d m hm
+        | none =&gt;
+            rw [the_double_miss_mints eq d n c hn hm]
+            exact ⟨c, by
+              show (if n = n then some c else seatRead d n) = some c
+              rw [if_pos rfl]⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_whole_record_licenses_the_mint" href="#the_whole_record_licenses_the_mint">the_whole_record_licenses_the_mint</a> {Addr Cell : Type}
+    (p : Cell → Bool) :
+    ∀ (d : List (Addr × Cell)), upsearch p d = none →
+      ∀ x, x ∈ d → ¬ p x.2 = true
+  | [], _, _, hx =&gt; nomatch hx
+  | (n, c) :: d, h, x, hx =&gt; by
+      have h&#x27; : (if p c = true then some n else upsearch p d) = none := h
+      by_cases hc : p c = true
+      · rw [if_pos hc] at h&#x27;
+        exact nomatch h&#x27;
+      · rw [if_neg hc] at h&#x27;
+        cases hx with
+        | head =&gt; exact hc
+        | tail _ hx&#x27; =&gt;
+            exact the_whole_record_licenses_the_mint p d h&#x27; x hx&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="the_unflipped_search_writes_anyway" href="#the_unflipped_search_writes_anyway">the_unflipped_search_writes_anyway</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c : Cell)
+    (m : Addr) (hn : seatRead d n = none) (hm : upsearch (eq c) d = some m) :
+    (mintSearch d n c).2.length = d.length + 1
+      ∧ (mergeSearch eq d n c).2.length = d.length := by
+  constructor
+  · rw [the_fresh_name_mints d n c hn]
+    rfl
+  · rw [the_flip_is_the_merge eq d n c m hn hm]
+
+<span class="kw">theorem</span> <a class="decl" id="the_settled_space_stops_writing" href="#the_settled_space_stops_writing">the_settled_space_stops_writing</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c : Cell)
+    (m : Addr) (hm : upsearch (eq c) d = some m) :
+    (mergeSearch eq d n c).2 = d := by
+  cases hn : seatRead d n with
+  | some c&#x27; =&gt;
+      exact congrArg Prod.snd (the_seated_name_returns_unwritten eq d n c c&#x27; hn).2
+  | none =&gt;
+      exact congrArg Prod.snd (the_flip_is_the_merge eq d n c m hn hm)
+
+<span class="kw">theorem</span> <a class="decl" id="the_merge_writes_only_on_double_miss" href="#the_merge_writes_only_on_double_miss">the_merge_writes_only_on_double_miss</a> {Addr Cell : Type}
+    [DecidableEq Addr] (eq : Cell → Cell → Bool) (d : List (Addr × Cell))
+    (n : Addr) (c : Cell) (h : (mergeSearch eq d n c).2 ≠ d) :
+    seatRead d n = none ∧ upsearch (eq c) d = none
+      ∧ ∀ x, x ∈ d → ¬ eq c x.2 = true := by
+  cases hn : seatRead d n with
+  | some c&#x27; =&gt;
+      exact absurd
+        (congrArg Prod.snd (the_seated_name_returns_unwritten eq d n c c&#x27; hn).2) h
+  | none =&gt;
+      cases hm : upsearch (eq c) d with
+      | some m =&gt;
+          exact absurd
+            (congrArg Prod.snd (the_flip_is_the_merge eq d n c m hn hm)) h
+      | none =&gt;
+          exact ⟨rfl, rfl, the_whole_record_licenses_the_mint (eq c) d hm⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_unmerged_space_inflates" href="#the_unmerged_space_inflates">the_unmerged_space_inflates</a> :
+    twoWords.length = 2 ∧ oneThing.length = 1 :=
+  ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_elder_word_returns" href="#the_elder_word_returns">the_elder_word_returns</a> :
+    (mergeSearch (fun _ _ =&gt; true)
+      (mergeSearch (fun _ _ =&gt; true) ([] : List (Bool × Unit)) true ()).2
+      false ()).1 = true := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_bloat_is_invisible_to_the_asker" href="#the_bloat_is_invisible_to_the_asker">the_bloat_is_invisible_to_the_asker</a> (p : Unit → Bool) :
+    (upsearch p twoWords).isSome = (upsearch p oneThing).isSome := by
+  by_cases hp : p () = true
+  · show ((if p () = true then some false
+        else if p () = true then some true else none) : Option Bool).isSome
+      = ((if p () = true then some true else none) : Option Bool).isSome
+    rw [if_pos hp, if_pos hp]
+    rfl
+  · show ((if p () = true then some false
+        else if p () = true then some true else none) : Option Bool).isSome
+      = ((if p () = true then some true else none) : Option Bool).isSome
+    rw [if_neg hp, if_neg hp]
+
+<span class="kw">theorem</span> <a class="decl" id="the_bloat_is_paid_in_walk" href="#the_bloat_is_paid_in_walk">the_bloat_is_paid_in_walk</a> :
+    seatWalk twoWords true = 1 ∧ seatWalk oneThing true = 0 :=
+  ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_settling_is_for_the_searching" href="#the_settling_is_for_the_searching">the_settling_is_for_the_searching</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n m : Addr) (c : Cell) :
+    ((∃ c&#x27;, seatRead (mintSearch d n c).2 (mintSearch d n c).1 = some c&#x27;)
+        ∧ ∃ c&#x27;, seatRead (mergeSearch eq d n c).2 (mergeSearch eq d n c).1
+            = some c&#x27;)
+      ∧ (seatRead d n = none → upsearch (eq c) d = some m →
+          (mintSearch d n c).2.length = d.length + 1
+            ∧ (mergeSearch eq d n c).2 = d)
+      ∧ ((mergeSearch eq d n c).2 ≠ d → ∀ x, x ∈ d → ¬ eq c x.2 = true)
+      ∧ twoWords.length = 2 ∧ oneThing.length = 1 :=
+  ⟨every_search_succeeds eq d n c,
+   fun hn hm =&gt;
+     ⟨(the_unflipped_search_writes_anyway eq d n c m hn hm).1,
+      the_settled_space_stops_writing eq d n c m hm⟩,
+   fun h =&gt; (the_merge_writes_only_on_double_miss eq d n c h).2.2,
+   rfl, rfl⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_seated_name_returns_unwritten&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_seated_name_returns_unwritten</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_fresh_name_mints&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_fresh_name_mints</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_flip_is_the_merge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_flip_is_the_merge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_double_miss_mints&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_double_miss_mints</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_upsearched_name_is_seated&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_upsearched_name_is_seated</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_search_succeeds&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_search_succeeds</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_whole_record_licenses_the_mint&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_whole_record_licenses_the_mint</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_unflipped_search_writes_anyway&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_unflipped_search_writes_anyway</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_settled_space_stops_writing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_settled_space_stops_writing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_merge_writes_only_on_double_miss&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_merge_writes_only_on_double_miss</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_unmerged_space_inflates&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_unmerged_space_inflates</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_elder_word_returns&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_elder_word_returns</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_bloat_is_invisible_to_the_asker&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_bloat_is_invisible_to_the_asker</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_bloat_is_paid_in_walk&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_bloat_is_paid_in_walk</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_settling_is_for_the_searching&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_settling_is_for_the_searching</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

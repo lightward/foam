@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Health</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Health</h1></header>
+<div class="imports">grasp: <a href="Counter.Actor.html">Counter.Actor</a> · <a href="Foam.Seat.Sort.html">Foam.Seat.Sort</a> · <a href="Foam.Seat.Tight.html">Foam.Seat.Tight</a></div><pre class="src">import <a href="Counter.Actor.html">Counter.Actor</a>
+import <a href="Foam.Seat.Sort.html">Foam.Seat.Sort</a>
+import <a href="Foam.Seat.Tight.html">Foam.Seat.Tight</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="sortability_is_acyclicity" href="#sortability_is_acyclicity">sortability_is_acyclicity</a> {H : Type} [DecidableEq H] (q : Quiver H) :
+    Tsortable q ↔ Acyclic q :=
+  tsortable_iff_acyclic q
+
+<span class="kw">theorem</span> <a class="decl" id="health_reads_at_a_chart" href="#health_reads_at_a_chart">health_reads_at_a_chart</a> {H : Type} [DecidableEq H] (q : Quiver H) :
+    Acyclic q ↔ ∃ r : H → Nat, defect r q = 0 :=
+  acyclic_iff_some_chart_clears q
+
+<span class="kw">theorem</span> <a class="decl" id="feedback_is_no_gauge" href="#feedback_is_no_gauge">feedback_is_no_gauge</a> {H : Type} {q : Quiver H} {a : H} (p : Path q a a)
+    (hp : p.edges ≠ []) : ∀ r : H → Nat, defect r q ≠ 0 :=
+  cycle_defeats_every_chart p hp
+
+<span class="kw">theorem</span> <a class="decl" id="growth_with_the_grain_is_free" href="#growth_with_the_grain_is_free">growth_with_the_grain_is_free</a> {H : Type} (r : H → Nat) (q : Quiver H)
+    (e : H × H) (h : r e.1 &lt; r e.2) : defect r (q.deposit e) = defect r q :=
+  defect_deposit_forward r q e h
+
+<span class="kw">theorem</span> <a class="decl" id="growth_against_the_grain_costs_one" href="#growth_against_the_grain_costs_one">growth_against_the_grain_costs_one</a> {H : Type} (r : H → Nat) (q : Quiver H)
+    (e : H × H) (h : ¬ r e.1 &lt; r e.2) : defect r (q.deposit e) = defect r q + 1 :=
+  defect_deposit_backward r q e h
+
+<span class="kw">theorem</span> <a class="decl" id="the_interface_is_maintained" href="#the_interface_is_maintained">the_interface_is_maintained</a> {H : Type} {q : Quiver H} {r : H → Nat}
+    (ht : TightInterface r q) (e : H × H) (h : r e.1 &lt; r e.2) :
+    TightInterface r (q.deposit e) :=
+  tight_maintained ht e h
+
+<span class="kw">theorem</span> <a class="decl" id="guided_reparenting_terminates" href="#guided_reparenting_terminates">guided_reparenting_terminates</a> {H : Type} (q : Quiver H) :
+    ¬ ∃ charts : Nat → H → Nat,
+        ∀ n, defect (charts (n + 1)) q &lt; defect (charts n) q :=
+  fun ⟨charts, hdesc⟩ =&gt;
+    no_infinite_descent (fun n =&gt; defect (charts n) q) hdesc
+
+<span class="kw">theorem</span> <a class="decl" id="the_debt_bounds_the_work" href="#the_debt_bounds_the_work">the_debt_bounds_the_work</a> {H : Type} (q : Quiver H)
+    (charts : Nat → H → Nat)
+    (hdesc : ∀ n, defect (charts (n + 1)) q &lt; defect (charts n) q) :
+    ∀ n, defect (charts n) q + n ≤ defect (charts 0) q :=
+  descent_bounded (fun n =&gt; defect (charts n) q) hdesc
+
+<span class="kw">def</span> <a class="decl" id="knot" href="#knot">knot</a> : Quiver Bool := [(false, true), (true, false)]
+
+<span class="kw">def</span> <a class="decl" id="knotLoop" href="#knotLoop">knotLoop</a> : Path knot false false :=
+  Path.cons (List.Mem.head _)
+    (Path.cons (List.Mem.tail _ (List.Mem.head _)) Path.nil)
+
+<span class="kw">theorem</span> <a class="decl" id="the_knot_defeats_every_chart" href="#the_knot_defeats_every_chart">the_knot_defeats_every_chart</a> (r : Bool → Nat) : defect r knot ≠ 0 :=
+  feedback_is_no_gauge knotLoop (fun h =&gt; nomatch h) r
+
+<span class="kw">def</span> <a class="decl" id="homeChart" href="#homeChart">homeChart</a> : Bool → Nat := fun b =&gt; cond b 1 0
+
+<span class="kw">theorem</span> <a class="decl" id="knot_defect_low" href="#knot_defect_low">knot_defect_low</a> (r : Bool → Nat) (h0 : r false = 0) (h1 : r true = 1) :
+    defect r knot = 1 := by
+  show (if r false &lt; r true then
+          (if r true &lt; r false then (0 : Nat) else 0 + 1)
+        else (if r true &lt; r false then (0 : Nat) else 0 + 1) + 1) = 1
+  rw [h0, h1]
+  decide
+
+<span class="kw">theorem</span> <a class="decl" id="knot_defect_high" href="#knot_defect_high">knot_defect_high</a> (r : Bool → Nat) (h0 : r false = 1) (h1 : r true = 0) :
+    defect r knot = 1 := by
+  show (if r false &lt; r true then
+          (if r true &lt; r false then (0 : Nat) else 0 + 1)
+        else (if r true &lt; r false then (0 : Nat) else 0 + 1) + 1) = 1
+  rw [h0, h1]
+  decide
+
+<span class="kw">theorem</span> <a class="decl" id="the_interface_is_one_arc" href="#the_interface_is_one_arc">the_interface_is_one_arc</a> :
+    defect homeChart knot = 1
+      ∧ TightInterface homeChart knot
+      ∧ defect homeChart [(false, true)] = 0 := by
+  refine ⟨knot_defect_low homeChart rfl rfl, ?_, rfl⟩
+  intro r&#x27;
+  rw [knot_defect_low homeChart rfl rfl]
+  exact Nat.pos_of_ne_zero (the_knot_defeats_every_chart r&#x27;)
+
+<span class="kw">def</span> <a class="decl" id="flipChart" href="#flipChart">flipChart</a> (r : Bool → Nat) : Bool → Nat := fun b =&gt; r (!b)
+
+<span class="kw">def</span> <a class="decl" id="wander" href="#wander">wander</a> : Nat → Bool → Nat
+  | 0 =&gt; homeChart
+  | n + 1 =&gt; flipChart (wander n)
+
+<span class="kw">theorem</span> <a class="decl" id="wander_vals" href="#wander_vals">wander_vals</a> :
+    ∀ n, (wander n false = 0 ∧ wander n true = 1)
+      ∨ (wander n false = 1 ∧ wander n true = 0)
+  | 0 =&gt; Or.inl ⟨rfl, rfl⟩
+  | n + 1 =&gt; by
+      cases wander_vals n with
+      | inl h =&gt; exact Or.inr ⟨h.2, h.1⟩
+      | inr h =&gt; exact Or.inl ⟨h.2, h.1⟩
+
+<span class="kw">theorem</span> <a class="decl" id="unguided_reparenting_wanders" href="#unguided_reparenting_wanders">unguided_reparenting_wanders</a> :
+    (∀ n, wander (n + 1) ≠ wander n)
+      ∧ (∀ n, defect (wander n) knot = 1) := by
+  constructor
+  · intro n heq
+    have hpt : wander n false = wander n true := congrFun heq true
+    cases wander_vals n with
+    | inl h =&gt;
+        rw [h.1, h.2] at hpt
+        exact Nat.noConfusion hpt
+    | inr h =&gt;
+        rw [h.1, h.2] at hpt
+        exact Nat.noConfusion hpt
+  · intro n
+    cases wander_vals n with
+    | inl h =&gt; exact knot_defect_low _ h.1 h.2
+    | inr h =&gt; exact knot_defect_high _ h.1 h.2
+
+<span class="kw">theorem</span> <a class="decl" id="the_family_tree_is_born_sorted" href="#the_family_tree_is_born_sorted">the_family_tree_is_born_sorted</a> {Name : Type} (q : Quiver (List Name))
+    (htree : ∀ e ∈ q, ∃ n : Name, e.2 = n :: e.1) :
+    sortedBy List.length q := by
+  intro e he
+  obtain ⟨n, hn⟩ := htree e he
+  rw [hn]
+  exact Nat.lt_succ_self _
+
+<span class="kw">theorem</span> <a class="decl" id="adoption_never_knots" href="#adoption_never_knots">adoption_never_knots</a> {Name : Type} (q : Quiver (List Name))
+    (htree : ∀ e ∈ q, ∃ n : Name, e.2 = n :: e.1) (o : List Name) (n : Name) :
+    sortedBy List.length (q.deposit (o, n :: o))
+      ∧ Acyclic (q.deposit (o, n :: o)) := by
+  have hs : sortedBy List.length (q.deposit (o, n :: o)) := by
+    intro e he
+    cases he with
+    | head =&gt; exact Nat.lt_succ_self _
+    | tail _ h&#x27; =&gt; exact the_family_tree_is_born_sorted q htree e h&#x27;
+  exact ⟨hs, tsortable_acyclic ⟨List.length, hs⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_cycles_live_in_the_seat" href="#the_cycles_live_in_the_seat">the_cycles_live_in_the_seat</a> {H G : Type} [Mul G] [One G]
+    (q : Quiver H) (hq : Tsortable q) (S : Seat G) (p : S.Pos) (g : G) :
+    (∀ (a : H) (c : Path q a a), c.edges = [])
+      ∧ Settles S ([g] ++ [S.sub p (S.replay [g] p)]) p
+      ∧ [g] ++ [S.sub p (S.replay [g] p)] ≠ [] :=
+  ⟨tsortable_acyclic hq, always_homeable S [g] p, fun h =&gt; nomatch h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_tight_interface_exists" href="#the_tight_interface_exists">the_tight_interface_exists</a> {H : Type} [DecidableEq H] (q : Quiver H) :
+    ∃ r : H → Nat, TightInterface r q :=
+  tight_interface_exists q
+
+<span class="kw">theorem</span> <a class="decl" id="the_minimum_is_measured" href="#the_minimum_is_measured">the_minimum_is_measured</a> {H : Type} [DecidableEq H] (q : Quiver H) :
+    (∀ r : H → Nat, feedback q ≤ defect r q)
+      ∧ ∃ r : H → Nat, defect r q = feedback q :=
+  ⟨feedback_le q, feedback_attained q⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_minimum_is_no_gauge" href="#the_minimum_is_no_gauge">the_minimum_is_no_gauge</a> {H : Type} {q : Quiver H} {r r&#x27; : H → Nat}
+    (h : TightInterface r q) (h&#x27; : TightInterface r&#x27; q) :
+    defect r q = defect r&#x27; q :=
+  tight_defect_unique h h&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="the_minimum_reads_health" href="#the_minimum_reads_health">the_minimum_reads_health</a> {H : Type} [DecidableEq H] (q : Quiver H) :
+    feedback q = 0 ↔ Acyclic q :=
+  feedback_zero_iff_acyclic q
+
+<span class="kw">theorem</span> <a class="decl" id="the_knot_minimum_is_one" href="#the_knot_minimum_is_one">the_knot_minimum_is_one</a> : feedback knot = 1 :=
+  Nat.le_antisymm
+    (knot_defect_low homeChart rfl rfl ▸ feedback_le knot homeChart)
+    (Nat.pos_of_ne_zero (the_knot_defeats_every_chart (tightChart knot)))
+
+<span class="kw">theorem</span> <a class="decl" id="tsortability_health" href="#tsortability_health">tsortability_health</a> {H : Type} [DecidableEq H] (q : Quiver H)
+    (r : H → Nat) (e : H × H) (hgrain : r e.1 &lt; r e.2)
+    (ht : TightInterface r q) :
+    (Acyclic q ↔ ∃ r&#x27; : H → Nat, defect r&#x27; q = 0)
+      ∧ defect r (q.deposit e) = defect r q
+      ∧ TightInterface r (q.deposit e)
+      ∧ ¬ ∃ charts : Nat → H → Nat,
+          ∀ n, defect (charts (n + 1)) q &lt; defect (charts n) q :=
+  ⟨acyclic_iff_some_chart_clears q,
+   defect_deposit_forward r q e hgrain,
+   tight_maintained ht e hgrain,
+   guided_reparenting_terminates q⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.sortability_is_acyclicity&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms sortability_is_acyclicity</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.health_reads_at_a_chart&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms health_reads_at_a_chart</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.feedback_is_no_gauge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms feedback_is_no_gauge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.growth_with_the_grain_is_free&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms growth_with_the_grain_is_free</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.growth_against_the_grain_costs_one&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms growth_against_the_grain_costs_one</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_interface_is_maintained&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_interface_is_maintained</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.guided_reparenting_terminates&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms guided_reparenting_terminates</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_debt_bounds_the_work&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_debt_bounds_the_work</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_knot_defeats_every_chart&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_knot_defeats_every_chart</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_interface_is_one_arc&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_interface_is_one_arc</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.unguided_reparenting_wanders&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms unguided_reparenting_wanders</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_family_tree_is_born_sorted&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_family_tree_is_born_sorted</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.adoption_never_knots&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms adoption_never_knots</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_cycles_live_in_the_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_cycles_live_in_the_seat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_tight_interface_exists&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_tight_interface_exists</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_minimum_is_measured&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_minimum_is_measured</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_minimum_is_no_gauge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_minimum_is_no_gauge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_minimum_reads_health&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_minimum_reads_health</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_knot_minimum_is_one&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_knot_minimum_is_one</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.tsortability_health&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms tsortability_health</span>
+
+<span class="kw">theorem</span> <a class="decl" id="the_healthiest_carve_is_all_imports" href="#the_healthiest_carve_is_all_imports">the_healthiest_carve_is_all_imports</a> {H : Type} (r : H → Nat)
+    (q : Quiver H) (es : List (H × H)) (h : ∀ e ∈ es, r e.1 &lt; r e.2) :
+    defect r (q.depositAll es) = defect r q
+      ∧ ∀ es&#x27; : List (H × H), defect r q ≤ defect r (q.depositAll es&#x27;) :=
+  all_imports_is_the_floor r q es h
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_healthiest_carve_is_all_imports&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_healthiest_carve_is_all_imports</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,3103 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.FTPG.Solid</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.FTPG.Solid</h1></header>
+<div class="imports">grasp: <a href="Bridges.FTPG.Shear.html">Bridges.FTPG.Shear</a> · <a href="Bridges.FTPG.Exchange.html">Bridges.FTPG.Exchange</a></div><pre class="src">import <a href="Bridges.FTPG.Shear.html">Bridges.FTPG.Shear</a>
+import <a href="Bridges.FTPG.Exchange.html">Bridges.FTPG.Exchange</a>
+
+/-!
+# Camp three, fifth pitch: the space&#x27;s point system
+
+The sheared charts (`Shear.lean`) made every out-of-plane drop algebraic.
+This file packages the space chart as homogeneous coordinates: the atoms of
+the frame 3-space `τ = π ⊔ R` embed into the projective space of `(Dᵐᵒᵖ)⁴`,
+with collinearity transported both ways.
+
+* `hvec4` — the homogeneous coordinate vector of a space atom, read through
+  the fixed z-gauge `c`: affine `t ↦ (x, y, z, 1)`, a `σ`-direction
+  `d ↦ (x_w, y_w, 1, 0)` through its height-one witness
+  `w = (O ⊔ d) ⊓ (zseat c I ⊔ m)`, an `m`-direction extends the plane vector
+  by a zero z-slot, `R ↦ (0, 0, 1, 0)`.
+* `spaceForm` — right-coefficient linear forms on `(Dᵐᵒᵖ)⁴`; a pair of
+  independent forms has a 2-dimensional common kernel.
+* the plane-form families — every plane of `τ` through `R`, through `c`,
+  through `e`, or through `m` is the kernel of a form on the coordinates.
+* `space_collinear_iff` — the summit: `r ≤ p ⊔ q ↔ hvec4 r ∈
+  span {hvec4 p, hvec4 q}`.
+* `spacePt` + injectivity, le-iff, surjectivity — the `PointSystem` shape at
+  space scale.
+-/
+
+namespace Foam.Bridges
+
+universe u
+
+/-! ## The abstract linear side: forms and form pairs on `K⁴` -/
+
+section SpaceLinear
+
+open Module
+
+variable {K : Type*} [DivisionRing K]
+
+/-- The linear form on `Fin 4 → K` with (right-acting) coefficients `κ`. -/
+<span class="kw">def</span> <a class="decl" id="spaceForm" href="#spaceForm">spaceForm</a> (κ : Fin 4 → K) : (Fin 4 → K) →ₗ[K] K :=
+  ∑ i, (LinearMap.toSpanSingleton K K (κ i)).comp (LinearMap.proj i)
+
+<span class="kw">theorem</span> <a class="decl" id="spaceForm_apply" href="#spaceForm_apply">spaceForm_apply</a> (κ : Fin 4 → K) (v : Fin 4 → K) :
+    spaceForm κ v = v 0 * κ 0 + v 1 * κ 1 + v 2 * κ 2 + v 3 * κ 3 := by
+  simp [spaceForm, Fin.sum_univ_four, LinearMap.toSpanSingleton_apply,
+    smul_eq_mul]
+
+<span class="kw">theorem</span> <a class="decl" id="spaceForm_surjective" href="#spaceForm_surjective">spaceForm_surjective</a> (κ : Fin 4 → K) (hκ : κ ≠ 0) :
+    Function.Surjective (spaceForm κ) := by
+  obtain ⟨i, hi⟩ : ∃ i, κ i ≠ 0 := by
+    by_contra h
+    exact hκ (funext fun i =&gt; not_not.mp fun hi =&gt; h ⟨i, hi⟩)
+  intro e
+  refine ⟨Pi.single i (e * (κ i)⁻¹), ?_⟩
+  have h1 : spaceForm κ (Pi.single i (e * (κ i)⁻¹)) = (e * (κ i)⁻¹) * κ i := by
+    simp only [spaceForm, LinearMap.sum_apply, LinearMap.comp_apply,
+      LinearMap.proj_apply, LinearMap.toSpanSingleton_apply, smul_eq_mul]
+    rw [Finset.sum_eq_single i]
+    · rw [Pi.single_eq_same]
+    · intro j _ hj
+      rw [Pi.single_eq_of_ne hj, zero_mul]
+    · intro h
+      exact absurd (Finset.mem_univ i) h
+  rw [h1, mul_assoc, inv_mul_cancel₀ hi, mul_one]
+
+<span class="kw">theorem</span> <a class="decl" id="finrank_ker_spaceForm" href="#finrank_ker_spaceForm">finrank_ker_spaceForm</a> (κ : Fin 4 → K) (hκ : κ ≠ 0) :
+    Module.finrank K (LinearMap.ker (spaceForm κ)) = 3 := by
+  have hrange : LinearMap.range (spaceForm κ) = ⊤ :=
+    LinearMap.range_eq_top.mpr (spaceForm_surjective κ hκ)
+  have h := LinearMap.finrank_range_add_finrank_ker (spaceForm κ)
+  rw [hrange] at h
+  have h4 : Module.finrank K (Fin 4 → K) = 4 := by simp
+  have h1 : Module.finrank K (⊤ : Submodule K K) = 1 := by
+    rw [finrank_top]
+    exact Module.finrank_self _
+  rw [h1, h4] at h
+  omega
+
+<span class="kw">theorem</span> <a class="decl" id="spaceForm_pair_surjective" href="#spaceForm_pair_surjective">spaceForm_pair_surjective</a> {κ₁ κ₂ w₁ w₂ : Fin 4 → K}
+    (h₁₁ : spaceForm κ₁ w₁ = 0) (h₂₁ : spaceForm κ₂ w₁ ≠ 0)
+    (h₁₂ : spaceForm κ₁ w₂ ≠ 0) (h₂₂ : spaceForm κ₂ w₂ = 0) :
+    Function.Surjective ((spaceForm κ₁).prod (spaceForm κ₂)) := by
+  rintro ⟨x, y⟩
+  refine ⟨(x * (spaceForm κ₁ w₂)⁻¹) • w₂ + (y * (spaceForm κ₂ w₁)⁻¹) • w₁, ?_⟩
+  have hx : spaceForm κ₁ ((x * (spaceForm κ₁ w₂)⁻¹) • w₂ +
+      (y * (spaceForm κ₂ w₁)⁻¹) • w₁) = x := by
+    rw [map_add, map_smul, map_smul, h₁₁, smul_zero, add_zero, smul_eq_mul,
+      mul_assoc, inv_mul_cancel₀ h₁₂, mul_one]
+  have hy : spaceForm κ₂ ((x * (spaceForm κ₁ w₂)⁻¹) • w₂ +
+      (y * (spaceForm κ₂ w₁)⁻¹) • w₁) = y := by
+    rw [map_add, map_smul, map_smul, h₂₂, smul_zero, zero_add, smul_eq_mul,
+      mul_assoc, inv_mul_cancel₀ h₂₁, mul_one]
+  exact Prod.ext hx hy
+
+<span class="kw">theorem</span> <a class="decl" id="finrank_ker_pair" href="#finrank_ker_pair">finrank_ker_pair</a> {κ₁ κ₂ w₁ w₂ : Fin 4 → K}
+    (h₁₁ : spaceForm κ₁ w₁ = 0) (h₂₁ : spaceForm κ₂ w₁ ≠ 0)
+    (h₁₂ : spaceForm κ₁ w₂ ≠ 0) (h₂₂ : spaceForm κ₂ w₂ = 0) :
+    Module.finrank K
+      ↥(LinearMap.ker (spaceForm κ₁) ⊓ LinearMap.ker (spaceForm κ₂)) = 2 := by
+  have hker : LinearMap.ker ((spaceForm κ₁).prod (spaceForm κ₂)) =
+      LinearMap.ker (spaceForm κ₁) ⊓ LinearMap.ker (spaceForm κ₂) :=
+    LinearMap.ker_prod _ _
+  have hrange : LinearMap.range ((spaceForm κ₁).prod (spaceForm κ₂)) = ⊤ :=
+    LinearMap.range_eq_top.mpr
+      (spaceForm_pair_surjective h₁₁ h₂₁ h₁₂ h₂₂)
+  have h := LinearMap.finrank_range_add_finrank_ker
+    ((spaceForm κ₁).prod (spaceForm κ₂))
+  rw [hrange, hker] at h
+  have h4 : Module.finrank K (Fin 4 → K) = 4 := by simp
+  have h2 : Module.finrank K (⊤ : Submodule K (K × K)) = 2 := by
+    rw [finrank_top]
+    simp
+  rw [h2, h4] at h
+  omega
+
+<span class="kw">theorem</span> <a class="decl" id="space_span_pair_eq_ker_pair" href="#space_span_pair_eq_ker_pair">space_span_pair_eq_ker_pair</a> {κ₁ κ₂ w₁ w₂ u v : Fin 4 → K}
+    (h₁₁ : spaceForm κ₁ w₁ = 0) (h₂₁ : spaceForm κ₂ w₁ ≠ 0)
+    (h₁₂ : spaceForm κ₁ w₂ ≠ 0) (h₂₂ : spaceForm κ₂ w₂ = 0)
+    (hu : u ≠ 0) (hv : v ∉ Submodule.span K {u})
+    (hu₁ : spaceForm κ₁ u = 0) (hu₂ : spaceForm κ₂ u = 0)
+    (hv₁ : spaceForm κ₁ v = 0) (hv₂ : spaceForm κ₂ v = 0) :
+    Submodule.span K {u, v} =
+      LinearMap.ker (spaceForm κ₁) ⊓ LinearMap.ker (spaceForm κ₂) := by
+  have h_le : Submodule.span K {u, v} ≤
+      LinearMap.ker (spaceForm κ₁) ⊓ LinearMap.ker (spaceForm κ₂) := by
+    rw [Submodule.span_le]
+    rintro w (rfl | rfl)
+    · exact ⟨LinearMap.mem_ker.mpr hu₁, LinearMap.mem_ker.mpr hu₂⟩
+    · exact ⟨LinearMap.mem_ker.mpr hv₁, LinearMap.mem_ker.mpr hv₂⟩
+  refine Submodule.eq_of_le_of_finrank_le h_le ?_
+  rw [finrank_ker_pair h₁₁ h₂₁ h₁₂ h₂₂, plane_span_pair_finrank hu hv]
+
+end SpaceLinear
+
+/-! ## The height-one witness of a direction -/
+
+variable {L : Type u} [Lattice L] [BoundedOrder L]
+  [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L]
+
+variable {Γ : CoordSystem L} {R : L}
+
+<span class="kw">def</span> <a class="decl" id="CoordSystem.wpt" href="#CoordSystem.wpt">CoordSystem.wpt</a> (Γ : CoordSystem L) (R c d : L) : L :=
+  (Γ.O ⊔ d) ⊓ (Γ.zseat R c Γ.I ⊔ (Γ.U ⊔ Γ.V))
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.Z1_facts" href="#CoordSystem.Z1_facts">CoordSystem.Z1_facts</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R) :
+    IsAtom (Γ.zseat R c Γ.I) ∧ Γ.zseat R c Γ.I ≤ Γ.O ⊔ R ∧
+      Γ.zseat R c Γ.I ≠ R ∧ Γ.zseat R c Γ.I ≠ Γ.O :=
+  ⟨CoordSystem.zseat_is_atom hR hR_π hc hc_UR hc_U hc_R Γ.hI Γ.hI_on,
+   Γ.zseat_le_ζ R c Γ.I,
+   CoordSystem.zseat_ne_R hR hR_π hc hc_UR hc_U hc_R Γ.hI Γ.hI_on Γ.hUI.symm,
+   fun h =&gt; Γ.hOI (by
+     have h1 := CoordSystem.zcoord_zseat hR hR_π hc hc_UR hc_U hc_R
+       Γ.hI Γ.hI_on
+     rw [h, CoordSystem.zcoord_O hR hR_π hc hc_UR hc_U] at h1
+     exact h1)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.hO_not_H1" href="#CoordSystem.hO_not_H1">CoordSystem.hO_not_H1</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R) :
+    ¬ Γ.O ≤ Γ.zseat R c Γ.I ⊔ (Γ.U ⊔ Γ.V) := by
+  obtain ⟨hZ_atom, hZ_ζ, hZ_R, hZ_O⟩ := CoordSystem.Z1_facts hR hR_π hc
+    hc_UR hc_U hc_R
+  intro h
+  have hπ_le : Γ.O ⊔ Γ.U ⊔ Γ.V ≤ Γ.zseat R c Γ.I ⊔ (Γ.U ⊔ Γ.V) := by
+    have h1 : Γ.O ⊔ (Γ.U ⊔ Γ.V) ≤ Γ.zseat R c Γ.I ⊔ (Γ.U ⊔ Γ.V) :=
+      sup_le h le_sup_right
+    rwa [← sup_assoc] at h1
+  have hZ_π : Γ.zseat R c Γ.I ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := by
+    have hZ_σ := CoordSystem.ζ_affine_off_σ hR hR_π hZ_atom hZ_ζ hZ_R
+    have h_cov := CoordSystem.m_covBy_sup hZ_atom
+      (CoordSystem.not_m_of_off_σ hZ_σ)
+    rcases h_cov.eq_or_eq Γ.m_le_π hπ_le with h&#x27; | h&#x27;
+    · exact absurd (h&#x27;.symm ▸ (le_sup_left.trans le_sup_left :
+        Γ.O ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) : Γ.O ≤ Γ.U ⊔ Γ.V) Γ.hO_not_m
+    · exact h&#x27;.symm ▸ (le_sup_left : Γ.zseat R c Γ.I ≤ _)
+  exact hZ_O (IsAtom.eq_of_le hZ_atom Γ.hO
+    (le_of_le_of_eq (le_inf hZ_ζ hZ_π) (CoordSystem.ζ_inf_π hR hR_π)))
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.wpt_facts" href="#CoordSystem.wpt_facts">CoordSystem.wpt_facts</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R)
+    {d : L} (hd : IsAtom d) (hd_σ : d ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (hd_m : ¬ d ≤ Γ.U ⊔ Γ.V) :
+    IsAtom (Γ.wpt R c d) ∧ Γ.wpt R c d ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ⊔ R ∧
+      ¬ Γ.wpt R c d ≤ Γ.U ⊔ Γ.V ⊔ R ∧
+      (Γ.O ⊔ Γ.wpt R c d) ⊓ (Γ.U ⊔ Γ.V ⊔ R) = d ∧
+      Γ.zproj R (Γ.wpt R c d) = Γ.zseat R c Γ.I := by
+  obtain ⟨hZ_atom, hZ_ζ, hZ_R, hZ_O⟩ := CoordSystem.Z1_facts hR hR_π hc
+    hc_UR hc_U hc_R
+  have hZ_σ := CoordSystem.ζ_affine_off_σ hR hR_π hZ_atom hZ_ζ hZ_R
+  have hO_H1 := CoordSystem.hO_not_H1 hR hR_π hc hc_UR hc_U hc_R
+  have hO_ne_d : Γ.O ≠ d :=
+    fun h =&gt; CoordSystem.hO_not_σ hR hR_π (h ▸ hd_σ)
+  have hOd_τ : Γ.O ⊔ d ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ⊔ R :=
+    sup_le ((le_sup_left.trans le_sup_left).trans le_sup_left)
+      (hd_σ.trans (sup_le (Γ.m_le_π.trans le_sup_left) le_sup_right))
+  have hH1_cov := CoordSystem.sup_m_covBy_τ hR hR_π hZ_atom
+    (hZ_ζ.trans (Γ.ζ_le_τ R)) hZ_σ
+  have hw_atom : IsAtom (Γ.wpt R c d) :=
+    line_meets_hyperplane hH1_cov Γ.hO hd hO_ne_d hOd_τ
+      (fun h =&gt; hO_H1 (le_sup_left.trans h))
+  have hw_le_Od : Γ.wpt R c d ≤ Γ.O ⊔ d := inf_le_left
+  have hw_le_H1 : Γ.wpt R c d ≤ Γ.zseat R c Γ.I ⊔ (Γ.U ⊔ Γ.V) := inf_le_right
+  have hw_ne_O : Γ.wpt R c d ≠ Γ.O :=
+    fun h =&gt; hO_H1 (h ▸ hw_le_H1)
+  have h_line : Γ.O ⊔ d = Γ.O ⊔ Γ.wpt R c d :=
+    line_eq_of_atom_le&#x27; Γ.hO hd hw_atom hO_ne_d (Ne.symm hw_ne_O) hw_le_Od
+  have hOd_σ_atom : IsAtom ((Γ.O ⊔ d) ⊓ (Γ.U ⊔ Γ.V ⊔ R)) :=
+    line_meets_hyperplane (CoordSystem.σ_covBy_τ hR hR_π) Γ.hO hd hO_ne_d
+      hOd_τ (fun h =&gt; CoordSystem.hO_not_σ hR hR_π (le_sup_left.trans h))
+  have hOd_σ : (Γ.O ⊔ d) ⊓ (Γ.U ⊔ Γ.V ⊔ R) = d :=
+    (IsAtom.eq_of_le hd hOd_σ_atom (le_inf le_sup_right hd_σ)).symm
+  have hH1_inf_σ : (Γ.zseat R c Γ.I ⊔ (Γ.U ⊔ Γ.V)) ⊓ (Γ.U ⊔ Γ.V ⊔ R) =
+      Γ.U ⊔ Γ.V := by
+    rw [sup_comm (Γ.zseat R c Γ.I) (Γ.U ⊔ Γ.V),
+      sup_inf_assoc_of_le (Γ.zseat R c Γ.I)
+        (le_sup_left : Γ.U ⊔ Γ.V ≤ Γ.U ⊔ Γ.V ⊔ R)]
+    have hbot : Γ.zseat R c Γ.I ⊓ (Γ.U ⊔ Γ.V ⊔ R) = ⊥ :=
+      (hZ_atom.le_iff.mp inf_le_left).resolve_right
+        (fun h =&gt; hZ_σ (le_of_eq_of_le h.symm inf_le_right))
+    rw [hbot, sup_bot_eq]
+  have hw_σ : ¬ Γ.wpt R c d ≤ Γ.U ⊔ Γ.V ⊔ R := by
+    intro h
+    have h1 : Γ.wpt R c d ≤ (Γ.O ⊔ d) ⊓ (Γ.U ⊔ Γ.V ⊔ R) :=
+      le_inf hw_le_Od h
+    rw [hOd_σ] at h1
+    have h2 : Γ.wpt R c d = d := IsAtom.eq_of_le hw_atom hd h1
+    have h3 : d ≤ Γ.U ⊔ Γ.V := by
+      have h4 : d ≤ (Γ.zseat R c Γ.I ⊔ (Γ.U ⊔ Γ.V)) ⊓ (Γ.U ⊔ Γ.V ⊔ R) :=
+        le_inf (h2 ▸ hw_le_H1) hd_σ
+      rwa [hH1_inf_σ] at h4
+    exact hd_m h3
+  have h_cone : (Γ.O ⊔ Γ.wpt R c d) ⊓ (Γ.U ⊔ Γ.V ⊔ R) = d := by
+    rw [← h_line]
+    exact hOd_σ
+  have h_zproj : Γ.zproj R (Γ.wpt R c d) = Γ.zseat R c Γ.I := by
+    have hRm : R ⊓ (Γ.U ⊔ Γ.V) = ⊥ :=
+      (hR.le_iff.mp inf_le_left).resolve_right
+        (fun h =&gt; CoordSystem.hR_not_m hR_π (le_of_eq_of_le h.symm inf_le_right))
+    have hmζ_bot : (Γ.U ⊔ Γ.V) ⊓ (Γ.O ⊔ R) = ⊥ := by
+      have h2 : (Γ.U ⊔ Γ.V) ⊓ (Γ.O ⊔ R) ≤ (Γ.O ⊔ R) ⊓ (Γ.U ⊔ Γ.V ⊔ R) :=
+        le_inf inf_le_right (inf_le_left.trans le_sup_left)
+      rw [CoordSystem.ζ_inf_σ hR hR_π] at h2
+      exact le_bot_iff.mp
+        ((le_inf h2 inf_le_left).trans_eq hRm)
+    have hzw_atom := CoordSystem.zproj_is_atom hR hR_π hw_atom
+      (hw_le_Od.trans hOd_τ) hw_σ
+    have h1 : Γ.zproj R (Γ.wpt R c d) ≤
+        (Γ.zseat R c Γ.I ⊔ (Γ.U ⊔ Γ.V)) ⊓ (Γ.O ⊔ R) :=
+      le_inf
+        ((inf_le_left : Γ.zproj R (Γ.wpt R c d) ≤
+            Γ.wpt R c d ⊔ (Γ.U ⊔ Γ.V)).trans
+          (sup_le hw_le_H1 le_sup_right))
+        (Γ.zproj_le_ζ R _)
+    rw [sup_inf_assoc_of_le (Γ.U ⊔ Γ.V) hZ_ζ, hmζ_bot, sup_bot_eq] at h1
+    exact IsAtom.eq_of_le hzw_atom hZ_atom h1
+  exact ⟨hw_atom, hw_le_Od.trans hOd_τ, hw_σ, h_cone, h_zproj⟩
+
+
+/-! ## The plane embedding: `K³` seated at the fourth coordinate&#x27;s zero -/
+
+section PlaneEmbed
+
+variable {K : Type*} [DivisionRing K]
+
+<span class="kw">def</span> <a class="decl" id="planeInj" href="#planeInj">planeInj</a> (K : Type*) [DivisionRing K] : (Fin 3 → K) →ₗ[K] (Fin 4 → K) where
+  toFun v := ![v 0, v 1, 0, v 2]
+  map_add&#x27; u v := by
+    funext i
+    fin_cases i &lt;;&gt; simp
+  map_smul&#x27; a v := by
+    funext i
+    fin_cases i &lt;;&gt; simp
+
+<span class="kw">theorem</span> <a class="decl" id="planeInj_apply" href="#planeInj_apply">planeInj_apply</a> (v : Fin 3 → K) :
+    planeInj K v = ![v 0, v 1, 0, v 2] := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="planeInj_injective" href="#planeInj_injective">planeInj_injective</a> : Function.Injective (planeInj K) := by
+  intro u v h
+  funext i
+  fin_cases i
+  · exact congrFun h 0
+  · exact congrFun h 1
+  · exact congrFun h 3
+
+<span class="kw">theorem</span> <a class="decl" id="planeInj_slot2" href="#planeInj_slot2">planeInj_slot2</a> (v : Fin 3 → K) : planeInj K v 2 = 0 := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="planeInj_mem_span_pair" href="#planeInj_mem_span_pair">planeInj_mem_span_pair</a> {u v w : Fin 3 → K} :
+    planeInj K w ∈ Submodule.span K {planeInj K u, planeInj K v} ↔
+      w ∈ Submodule.span K ({u, v} : Set (Fin 3 → K)) := by
+  have h_im : ({planeInj K u, planeInj K v} : Set (Fin 4 → K)) =
+      planeInj K &#x27;&#x27; {u, v} := by
+    rw [Set.image_pair]
+  rw [h_im, ← Submodule.map_span]
+  constructor
+  · rintro h
+    obtain ⟨x, hx, hxe⟩ := Submodule.mem_map.mp h
+    rwa [← planeInj_injective hxe]
+  · intro h
+    exact Submodule.mem_map_of_mem h
+
+<span class="kw">theorem</span> <a class="decl" id="spaceForm_extZ" href="#spaceForm_extZ">spaceForm_extZ</a> (κ3 : Fin 3 → K) (ρz : K) (v : Fin 3 → K) :
+    spaceForm ![κ3 0, κ3 1, ρz, κ3 2] (planeInj K v) = planeForm κ3 v := by
+  rw [spaceForm_apply, planeForm_apply]
+  show v 0 * κ3 0 + v 1 * κ3 1 + 0 * ρz + v 2 * κ3 2 =
+    v 0 * κ3 0 + v 1 * κ3 1 + v 2 * κ3 2
+  rw [zero_mul, add_zero]
+
+<span class="kw">theorem</span> <a class="decl" id="span_pair_slot" href="#span_pair_slot">span_pair_slot</a> {u v w : Fin 4 → K} {i : Fin 4} (hu : u i = 0)
+    (hv : v i = 0)
+    (hw : w ∈ Submodule.span K ({u, v} : Set (Fin 4 → K))) : w i = 0 := by
+  obtain ⟨a, b, rfl⟩ := Submodule.mem_span_pair.mp hw
+  show a * u i + b * v i = 0
+  rw [hu, hv, mul_zero, mul_zero, add_zero]
+
+end PlaneEmbed
+
+/-! ## The coordinate readers and `hvec4` -/
+
+variable {Γ : CoordSystem L} {R : L}
+
+open Classical in
+noncomputable def CoordSystem.zcoordC (Γ : CoordSystem L) (R c p : L) :
+    Coordinate Γ :=
+  if h : IsAtom (Γ.zcoord c (Γ.zproj R p)) ∧
+      Γ.zcoord c (Γ.zproj R p) ≤ Γ.O ⊔ Γ.U ∧
+      Γ.zcoord c (Γ.zproj R p) ≠ Γ.U then
+    ⟨Γ.zcoord c (Γ.zproj R p), h⟩ else 0
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.zcoordC_val" href="#CoordSystem.zcoordC_val">CoordSystem.zcoordC_val</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R)
+    {p : L} (hp : IsAtom p) (hp_τ : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ⊔ R)
+    (hp_σ : ¬ p ≤ Γ.U ⊔ Γ.V ⊔ R) :
+    (Γ.zcoordC R c p).1 = Γ.zcoord c (Γ.zproj R p) := by
+  have hz_atom := CoordSystem.zproj_is_atom hR hR_π hp hp_τ hp_σ
+  have hz_ζ := Γ.zproj_le_ζ R p
+  have hz_R := CoordSystem.zproj_ne_R hR_π hp hp_σ
+  unfold zcoordC
+  rw [dif_pos ⟨CoordSystem.zcoord_is_atom hR hR_π hc hc_UR hc_U hc_R
+    hz_atom hz_ζ, Γ.zcoord_le_l c (Γ.zproj R p),
+    CoordSystem.zcoord_ne_U hR hR_π hc hc_UR hc_U hc_R hz_atom hz_ζ hz_R⟩]
+
+open MulOpposite
+
+open Classical in
+noncomputable def CoordSystem.hvec4 (Γ : CoordSystem L) (R c p : L) :
+    Fin 4 → (Coordinate Γ)ᵐᵒᵖ :=
+  if p = Γ.V then ![0, 1, 0, 0]
+  else if p ≤ Γ.U ⊔ Γ.V then ![1, op (Γ.slopeC p), 0, 0]
+  else if p ≤ Γ.U ⊔ Γ.V ⊔ R then
+    ![op (Γ.xcoordC (Γ.baseproj R (Γ.wpt R c p))),
+      op (Γ.ycoordC (Γ.baseproj R (Γ.wpt R c p))), 1, 0]
+  else
+    ![op (Γ.xcoordC (Γ.baseproj R p)), op (Γ.ycoordC (Γ.baseproj R p)),
+      op (Γ.zcoordC R c p), 1]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.hvec4_V" href="#CoordSystem.hvec4_V">CoordSystem.hvec4_V</a> (Γ : CoordSystem L) (R c : L) :
+    Γ.hvec4 R c Γ.V = ![0, 1, 0, 0] := by
+  unfold hvec4
+  rw [if_pos rfl]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.hvec4_dir" href="#CoordSystem.hvec4_dir">CoordSystem.hvec4_dir</a> (Γ : CoordSystem L) (R c : L) {S : L}
+    (hS_m : S ≤ Γ.U ⊔ Γ.V) (hS_ne_V : S ≠ Γ.V) :
+    Γ.hvec4 R c S = ![1, op (Γ.slopeC S), 0, 0] := by
+  unfold hvec4
+  rw [if_neg hS_ne_V, if_pos hS_m]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.hvec4_inf" href="#CoordSystem.hvec4_inf">CoordSystem.hvec4_inf</a> (Γ : CoordSystem L) (R c : L) {d : L}
+    (hd_σ : d ≤ Γ.U ⊔ Γ.V ⊔ R) (hd_m : ¬ d ≤ Γ.U ⊔ Γ.V) :
+    Γ.hvec4 R c d =
+      ![op (Γ.xcoordC (Γ.baseproj R (Γ.wpt R c d))),
+        op (Γ.ycoordC (Γ.baseproj R (Γ.wpt R c d))), 1, 0] := by
+  have hd_ne_V : d ≠ Γ.V := fun h =&gt; hd_m (h ▸ le_sup_right)
+  unfold hvec4
+  rw [if_neg hd_ne_V, if_neg hd_m, if_pos hd_σ]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.hvec4_affine" href="#CoordSystem.hvec4_affine">CoordSystem.hvec4_affine</a> (Γ : CoordSystem L) (R c : L) {p : L}
+    (hp_σ : ¬ p ≤ Γ.U ⊔ Γ.V ⊔ R) :
+    Γ.hvec4 R c p =
+      ![op (Γ.xcoordC (Γ.baseproj R p)), op (Γ.ycoordC (Γ.baseproj R p)),
+        op (Γ.zcoordC R c p), 1] := by
+  have hp_ne_V : p ≠ Γ.V := fun h =&gt; hp_σ (h ▸ (le_sup_right.trans le_sup_left))
+  have hp_m : ¬ p ≤ Γ.U ⊔ Γ.V := fun h =&gt; hp_σ (h.trans le_sup_left)
+  unfold hvec4
+  rw [if_neg hp_ne_V, if_neg hp_m, if_neg hp_σ]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.hvec4_π" href="#CoordFrame.hvec4_π">CoordFrame.hvec4_π</a> (Φ : CoordFrame L) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U)
+    {p : L} (hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) :
+    Φ.Γ.hvec4 Φ.R c p = planeInj (Coordinate Φ.Γ)ᵐᵒᵖ (Φ.Γ.hvec p) := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  by_cases hpV : p = Φ.Γ.V
+  · rw [hpV, Φ.Γ.hvec4_V, Φ.Γ.hvec_V]
+    funext i
+    fin_cases i &lt;;&gt; rfl
+  · by_cases hpm : p ≤ Φ.Γ.U ⊔ Φ.Γ.V
+    · rw [Φ.Γ.hvec4_dir Φ.R c hpm hpV, Φ.Γ.hvec_dir hpm hpV]
+      funext i
+      fin_cases i &lt;;&gt; rfl
+    · have hp_σ : ¬ p ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R :=
+        CoordSystem.plane_affine_off_σ hR hR_π hp_π hpm
+      rw [Φ.Γ.hvec4_affine Φ.R c hp_σ, Φ.Γ.hvec_affine hpm]
+      have hz : Φ.Γ.zcoordC Φ.R c p = 0 := by
+        unfold CoordSystem.zcoordC
+        have h1 : Φ.Γ.zproj Φ.R p = Φ.Γ.O :=
+          CoordSystem.zproj_of_affine_π hR hR_π hp_π hpm
+        have h2 : Φ.Γ.zcoord c (Φ.Γ.zproj Φ.R p) = Φ.Γ.O := by
+          rw [h1]
+          exact CoordSystem.zcoord_O hR hR_π hc hc_UR hc_U
+        split_ifs with h
+        · exact Subtype.ext h2
+        · rfl
+      have hb : Φ.Γ.baseproj Φ.R p = p :=
+        CoordSystem.baseproj_of_le_π hR hR_π hp_π
+      rw [hz, hb]
+      funext i
+      fin_cases i &lt;;&gt; simp [planeInj_apply]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.hvec4_ne_zero" href="#CoordSystem.hvec4_ne_zero">CoordSystem.hvec4_ne_zero</a> (Γ : CoordSystem L) (R c p : L) :
+    Γ.hvec4 R c p ≠ 0 := by
+  unfold hvec4
+  split_ifs with h1 h2 h3
+  · intro h
+    have h&#x27; := congrFun h 1
+    simp at h&#x27;
+    exact Γ.op_one_ne_zero h&#x27;
+  · intro h
+    have h&#x27; := congrFun h 0
+    simp at h&#x27;
+    exact Γ.op_one_ne_zero h&#x27;
+  · intro h
+    have h&#x27; := congrFun h 2
+    simp at h&#x27;
+    exact Γ.op_one_ne_zero h&#x27;
+  · intro h
+    have h&#x27; := congrFun h 3
+    simp at h&#x27;
+    exact Γ.op_one_ne_zero h&#x27;
+
+
+/-! ## Extensionality: the chart determines the atom -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.zcoord_inj" href="#CoordSystem.zcoord_inj">CoordSystem.zcoord_inj</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R)
+    {z z&#x27; : L} (hz : IsAtom z) (hz_ζ : z ≤ Γ.O ⊔ R)
+    (hz&#x27; : IsAtom z&#x27;) (hz&#x27;_ζ : z&#x27; ≤ Γ.O ⊔ R)
+    (h : Γ.zcoord c z = Γ.zcoord c z&#x27;) : z = z&#x27; := by
+  have h1 := CoordSystem.zseat_zcoord hR hR_π hc hc_UR hc_U hc_R hz hz_ζ
+  have h2 := CoordSystem.zseat_zcoord hR hR_π hc hc_UR hc_U hc_R hz&#x27; hz&#x27;_ζ
+  rw [← h1, ← h2, h]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.space_affine_ext" href="#CoordSystem.space_affine_ext">CoordSystem.space_affine_ext</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {t t&#x27; : L}
+    (ht : IsAtom t) (ht_τ : t ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ⊔ R)
+    (ht_σ : ¬ t ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (ht&#x27; : IsAtom t&#x27;) (ht&#x27;_τ : t&#x27; ≤ Γ.O ⊔ Γ.U ⊔ Γ.V ⊔ R)
+    (ht&#x27;_σ : ¬ t&#x27; ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (hb : Γ.baseproj R t = Γ.baseproj R t&#x27;)
+    (hz : Γ.zproj R t = Γ.zproj R t&#x27;) : t = t&#x27; := by
+  have h1 := CoordSystem.space_recovers hR hR_π ht ht_τ ht_σ
+  have h2 := CoordSystem.space_recovers hR hR_π ht&#x27; ht&#x27;_τ ht&#x27;_σ
+  rw [← h1, ← h2, hb, hz]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.wpt_cone_inj" href="#CoordSystem.wpt_cone_inj">CoordSystem.wpt_cone_inj</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R)
+    {d d&#x27; : L} (hd : IsAtom d) (hd_σ : d ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (hd_m : ¬ d ≤ Γ.U ⊔ Γ.V)
+    (hd&#x27; : IsAtom d&#x27;) (hd&#x27;_σ : d&#x27; ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (hd&#x27;_m : ¬ d&#x27; ≤ Γ.U ⊔ Γ.V)
+    (h : Γ.wpt R c d = Γ.wpt R c d&#x27;) : d = d&#x27; := by
+  obtain ⟨_, _, _, h_cone, _⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hd hd_σ hd_m
+  obtain ⟨_, _, _, h_cone&#x27;, _⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hd&#x27; hd&#x27;_σ hd&#x27;_m
+  rw [← h_cone, ← h_cone&#x27;, h]
+
+/-! ## Projective injectivity of `hvec4` -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.hvec4_affine_ext" href="#CoordFrame.hvec4_affine_ext">CoordFrame.hvec4_affine_ext</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {t t&#x27; : L} (ht : IsAtom t) (ht_τ : t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht_σ : ¬ t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht&#x27; : IsAtom t&#x27;) (ht&#x27;_τ : t&#x27; ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht&#x27;_σ : ¬ t&#x27; ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hx : Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t) = Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t&#x27;))
+    (hy : Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t) = Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t&#x27;))
+    (hz : Φ.Γ.zcoordC Φ.R c t = Φ.Γ.zcoordC Φ.R c t&#x27;) : t = t&#x27; := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have hb_atom := CoordSystem.baseproj_is_atom hR hR_π ht ht_τ ht_σ
+  have hb_π := Φ.Γ.baseproj_le_π Φ.R t
+  have hb_aff := CoordSystem.baseproj_affine hR hR_π ht ht_τ ht_σ
+  have hb&#x27;_atom := CoordSystem.baseproj_is_atom hR hR_π ht&#x27; ht&#x27;_τ ht&#x27;_σ
+  have hb&#x27;_π := Φ.Γ.baseproj_le_π Φ.R t&#x27;
+  have hb&#x27;_aff := CoordSystem.baseproj_affine hR hR_π ht&#x27; ht&#x27;_τ ht&#x27;_σ
+  have hxv := congrArg Subtype.val hx
+  rw [Φ.Γ.xcoordC_val hb_atom hb_π hb_aff,
+    Φ.Γ.xcoordC_val hb&#x27;_atom hb&#x27;_π hb&#x27;_aff] at hxv
+  have hyv := congrArg Subtype.val hy
+  rw [Φ.Γ.ycoordC_val hb_atom hb_π hb_aff,
+    Φ.Γ.ycoordC_val hb&#x27;_atom hb&#x27;_π hb&#x27;_aff] at hyv
+  have hzv := congrArg Subtype.val hz
+  rw [CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R ht ht_τ ht_σ,
+    CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R ht&#x27; ht&#x27;_τ ht&#x27;_σ] at hzv
+  exact CoordSystem.space_affine_ext hR hR_π ht ht_τ ht_σ ht&#x27; ht&#x27;_τ ht&#x27;_σ
+    (Φ.Γ.affine_ext hb_atom hb_π hb_aff hb&#x27;_atom hb&#x27;_π hb&#x27;_aff hxv hyv)
+    (CoordSystem.zcoord_inj hR hR_π hc hc_UR hc_U hc_R
+      (CoordSystem.zproj_is_atom hR hR_π ht ht_τ ht_σ) (Φ.Γ.zproj_le_ζ Φ.R t)
+      (CoordSystem.zproj_is_atom hR hR_π ht&#x27; ht&#x27;_τ ht&#x27;_σ)
+      (Φ.Γ.zproj_le_ζ Φ.R t&#x27;) hzv)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.hvec4_span_inj" href="#CoordFrame.hvec4_span_inj">CoordFrame.hvec4_span_inj</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {p q : L} (hp : IsAtom p) (hp_τ : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hq : IsAtom q) (hq_τ : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) (hpq : p ≠ q) :
+    Φ.Γ.hvec4 Φ.R c q ∉
+      Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ {Φ.Γ.hvec4 Φ.R c p} := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  intro hmem
+  obtain ⟨a, ha⟩ := Submodule.mem_span_singleton.mp hmem
+  by_cases hqσ : q ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+  · by_cases hpσ : p ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+    · by_cases hqm : q ≤ Φ.Γ.U ⊔ Φ.Γ.V
+      · by_cases hpm : p ≤ Φ.Γ.U ⊔ Φ.Γ.V
+        · have hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V := hpm.trans Φ.Γ.m_le_π
+          have hq_π : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V := hqm.trans Φ.Γ.m_le_π
+          apply Φ.hvec_span_inj hp hp_π hq hq_π hpq
+          rw [Φ.hvec4_π hc hc_UR hc_U hq_π] at hmem
+          have h_im : ({Φ.Γ.hvec4 Φ.R c p} : Set (Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ)) =
+              planeInj (Coordinate Φ.Γ)ᵐᵒᵖ &#x27;&#x27; {Φ.Γ.hvec p} := by
+            rw [Set.image_singleton, ← Φ.hvec4_π hc hc_UR hc_U hp_π]
+          rw [h_im, ← Submodule.map_span] at hmem
+          obtain ⟨x, hx, hxe⟩ := Submodule.mem_map.mp hmem
+          rwa [← planeInj_injective hxe]
+        · rw [Φ.Γ.hvec4_inf Φ.R c hpσ hpm] at ha
+          by_cases hqV : q = Φ.Γ.V
+          · rw [hqV, Φ.Γ.hvec4_V] at ha
+            have h2 : a * 1 = (0 : (Coordinate Φ.Γ)ᵐᵒᵖ) := congrFun ha 2
+            have h1 : a * op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R
+                (Φ.Γ.wpt Φ.R c p))) = 1 := congrFun ha 1
+            rw [mul_one] at h2
+            rw [h2, zero_mul] at h1
+            exact Φ.Γ.op_one_ne_zero h1.symm
+          · rw [Φ.Γ.hvec4_dir Φ.R c hqm hqV] at ha
+            have h2 : a * 1 = (0 : (Coordinate Φ.Γ)ᵐᵒᵖ) := congrFun ha 2
+            have h0 : a * op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R
+                (Φ.Γ.wpt Φ.R c p))) = 1 := congrFun ha 0
+            rw [mul_one] at h2
+            rw [h2, zero_mul] at h0
+            exact Φ.Γ.op_one_ne_zero h0.symm
+      · by_cases hpm : p ≤ Φ.Γ.U ⊔ Φ.Γ.V
+        · rw [Φ.Γ.hvec4_inf Φ.R c hqσ hqm] at ha
+          by_cases hpV : p = Φ.Γ.V
+          · rw [hpV, Φ.Γ.hvec4_V] at ha
+            have h2 : a * 0 = (1 : (Coordinate Φ.Γ)ᵐᵒᵖ) := congrFun ha 2
+            rw [mul_zero] at h2
+            exact Φ.Γ.op_one_ne_zero h2.symm
+          · rw [Φ.Γ.hvec4_dir Φ.R c hpm hpV] at ha
+            have h2 : a * 0 = (1 : (Coordinate Φ.Γ)ᵐᵒᵖ) := congrFun ha 2
+            rw [mul_zero] at h2
+            exact Φ.Γ.op_one_ne_zero h2.symm
+        · rw [Φ.Γ.hvec4_inf Φ.R c hpσ hpm, Φ.Γ.hvec4_inf Φ.R c hqσ hqm] at ha
+          have h2 : a * 1 = (1 : (Coordinate Φ.Γ)ᵐᵒᵖ) := congrFun ha 2
+          rw [mul_one] at h2
+          have h0 : a * op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c p))) =
+              op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c q))) :=
+            congrFun ha 0
+          have h1 : a * op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c p))) =
+              op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c q))) :=
+            congrFun ha 1
+          rw [h2, one_mul] at h0 h1
+          obtain ⟨hw_atom, hw_τ, hw_σ, h_cone, hw_z⟩ :=
+            CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hp hpσ hpm
+          obtain ⟨hw&#x27;_atom, hw&#x27;_τ, hw&#x27;_σ, h_cone&#x27;, hw&#x27;_z⟩ :=
+            CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hq hqσ hqm
+          apply hpq
+          apply CoordSystem.wpt_cone_inj hR hR_π hc hc_UR hc_U hc_R
+            hp hpσ hpm hq hqσ hqm
+          apply Φ.hvec4_affine_ext hc hc_UR hc_U hc_R hw_atom hw_τ hw_σ
+            hw&#x27;_atom hw&#x27;_τ hw&#x27;_σ (op_injective h0) (op_injective h1)
+          apply Subtype.ext
+          rw [CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R
+              hw_atom hw_τ hw_σ,
+            CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R
+              hw&#x27;_atom hw&#x27;_τ hw&#x27;_σ, hw_z, hw&#x27;_z]
+    · rw [Φ.Γ.hvec4_affine Φ.R c hpσ] at ha
+      have h3 : a * 1 = (0 : (Coordinate Φ.Γ)ᵐᵒᵖ) := by
+        by_cases hqm : q ≤ Φ.Γ.U ⊔ Φ.Γ.V
+        · by_cases hqV : q = Φ.Γ.V
+          · rw [hqV, Φ.Γ.hvec4_V] at ha
+            exact congrFun ha 3
+          · rw [Φ.Γ.hvec4_dir Φ.R c hqm hqV] at ha
+            exact congrFun ha 3
+        · rw [Φ.Γ.hvec4_inf Φ.R c hqσ hqm] at ha
+          exact congrFun ha 3
+      rw [mul_one] at h3
+      have hzero : Φ.Γ.hvec4 Φ.R c q = 0 := by
+        rw [← ha, h3, zero_smul]
+      exact Φ.Γ.hvec4_ne_zero Φ.R c q hzero
+  · by_cases hpσ : p ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+    · rw [Φ.Γ.hvec4_affine Φ.R c hqσ] at ha
+      have h3 : a * 0 = (1 : (Coordinate Φ.Γ)ᵐᵒᵖ) := by
+        by_cases hpm : p ≤ Φ.Γ.U ⊔ Φ.Γ.V
+        · by_cases hpV : p = Φ.Γ.V
+          · rw [hpV, Φ.Γ.hvec4_V] at ha
+            exact congrFun ha 3
+          · rw [Φ.Γ.hvec4_dir Φ.R c hpm hpV] at ha
+            exact congrFun ha 3
+        · rw [Φ.Γ.hvec4_inf Φ.R c hpσ hpm] at ha
+          exact congrFun ha 3
+      rw [mul_zero] at h3
+      exact Φ.Γ.op_one_ne_zero h3.symm
+    · rw [Φ.Γ.hvec4_affine Φ.R c hpσ, Φ.Γ.hvec4_affine Φ.R c hqσ] at ha
+      have h3 : a * 1 = (1 : (Coordinate Φ.Γ)ᵐᵒᵖ) := congrFun ha 3
+      rw [mul_one] at h3
+      have h0 : a * op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R p)) =
+          op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R q)) := congrFun ha 0
+      have h1 : a * op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R p)) =
+          op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R q)) := congrFun ha 1
+      have h2 : a * op (Φ.Γ.zcoordC Φ.R c p) =
+          op (Φ.Γ.zcoordC Φ.R c q) := congrFun ha 2
+      rw [h3, one_mul] at h0 h1 h2
+      exact hpq (Φ.hvec4_affine_ext hc hc_UR hc_U hc_R hp hp_τ hpσ
+        hq hq_τ hqσ (op_injective h0) (op_injective h1) (op_injective h2))
+
+
+/-! ## The shears at coordinate level -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.m_inf_UR" href="#CoordSystem.m_inf_UR">CoordSystem.m_inf_UR</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) :
+    (Γ.U ⊔ Γ.V) ⊓ (Γ.U ⊔ R) = Γ.U :=
+  modular_intersection Γ.hU Γ.hV hR Γ.hUV
+    (CoordSystem.hU_ne_R hR_π)
+    (CoordSystem.ne_R_of_le_π hR_π le_sup_right)
+    (CoordSystem.hR_not_m hR_π)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.c_not_m" href="#CoordSystem.c_not_m">CoordSystem.c_not_m</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) :
+    ¬ c ≤ Γ.U ⊔ Γ.V := fun h =&gt;
+  hc_U (IsAtom.eq_of_le hc Γ.hU
+    (le_of_le_of_eq (le_inf h hc_UR) (CoordSystem.m_inf_UR hR hR_π)))
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.xcoordC_shproj_c" href="#CoordFrame.xcoordC_shproj_c">CoordFrame.xcoordC_shproj_c</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {t : L} (ht : IsAtom t) (ht_τ : t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht_σ : ¬ t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :
+    Φ.Γ.xcoordC (Φ.Γ.shproj c t) =
+      Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t) + Φ.Γ.zcoordC Φ.R c t := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have hc_σ : c ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := hc_UR.trans (Φ.Γ.UR_le_σ Φ.R)
+  have hc_π := CoordSystem.hc_not_π hR hR_π hc hc_UR hc_U
+  have hs_atom := CoordSystem.shproj_is_atom hR hR_π hc hc_σ hc_π ht ht_τ ht_σ
+  have hs_π := Φ.Γ.shproj_le_π c t
+  have hs_aff := CoordSystem.shproj_affine hR hR_π hc hc_σ hc_π ht ht_τ ht_σ
+  have hb_atom := CoordSystem.baseproj_is_atom hR hR_π ht ht_τ ht_σ
+  have hb_π := Φ.Γ.baseproj_le_π Φ.R t
+  have hb_aff := CoordSystem.baseproj_affine hR hR_π ht ht_τ ht_σ
+  apply Subtype.ext
+  rw [Coordinate.add_val, Φ.Γ.xcoordC_val hs_atom hs_π hs_aff,
+    Φ.Γ.xcoordC_val hb_atom hb_π hb_aff,
+    CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R ht ht_τ ht_σ]
+  exact Φ.xproj_shproj_c hc hc_UR hc_U hc_R ht ht_τ ht_σ
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.ycoordC_shproj_c" href="#CoordFrame.ycoordC_shproj_c">CoordFrame.ycoordC_shproj_c</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U)
+    {t : L} (ht : IsAtom t) (ht_τ : t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht_σ : ¬ t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :
+    Φ.Γ.ycoordC (Φ.Γ.shproj c t) = Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t) := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have hc_σ : c ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := hc_UR.trans (Φ.Γ.UR_le_σ Φ.R)
+  have hc_π := CoordSystem.hc_not_π hR hR_π hc hc_UR hc_U
+  have hs_atom := CoordSystem.shproj_is_atom hR hR_π hc hc_σ hc_π ht ht_τ ht_σ
+  have hs_π := Φ.Γ.shproj_le_π c t
+  have hs_aff := CoordSystem.shproj_affine hR hR_π hc hc_σ hc_π ht ht_τ ht_σ
+  have hb_atom := CoordSystem.baseproj_is_atom hR hR_π ht ht_τ ht_σ
+  have hb_π := Φ.Γ.baseproj_le_π Φ.R t
+  have hb_aff := CoordSystem.baseproj_affine hR hR_π ht ht_τ ht_σ
+  apply Subtype.ext
+  rw [Φ.Γ.ycoordC_val hs_atom hs_π hs_aff,
+    Φ.Γ.ycoordC_val hb_atom hb_π hb_aff]
+  exact CoordSystem.ycoord_shproj_c hR hR_π hc hc_UR hc_U ht ht_τ ht_σ
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.xcoordC_shproj_e" href="#CoordFrame.xcoordC_shproj_e">CoordFrame.xcoordC_shproj_e</a> (Φ : CoordFrame L) {e : L}
+    (he : IsAtom e) (he_VR : e ≤ Φ.Γ.V ⊔ Φ.R) (he_V : e ≠ Φ.Γ.V)
+    {t : L} (ht : IsAtom t) (ht_τ : t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht_σ : ¬ t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :
+    Φ.Γ.xcoordC (Φ.Γ.shproj e t) = Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t) := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have he_σ : e ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := he_VR.trans (Φ.Γ.VR_le_σ Φ.R)
+  have he_π := CoordSystem.he_not_π hR hR_π he he_VR he_V
+  have hs_atom := CoordSystem.shproj_is_atom hR hR_π he he_σ he_π ht ht_τ ht_σ
+  have hs_π := Φ.Γ.shproj_le_π e t
+  have hs_aff := CoordSystem.shproj_affine hR hR_π he he_σ he_π ht ht_τ ht_σ
+  have hb_atom := CoordSystem.baseproj_is_atom hR hR_π ht ht_τ ht_σ
+  have hb_π := Φ.Γ.baseproj_le_π Φ.R t
+  have hb_aff := CoordSystem.baseproj_affine hR hR_π ht ht_τ ht_σ
+  apply Subtype.ext
+  rw [Φ.Γ.xcoordC_val hs_atom hs_π hs_aff,
+    Φ.Γ.xcoordC_val hb_atom hb_π hb_aff]
+  exact CoordSystem.xproj_shproj_e hR hR_π he he_VR he_V ht ht_τ ht_σ
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.ycoordC_shproj_e" href="#CoordFrame.ycoordC_shproj_e">CoordFrame.ycoordC_shproj_e</a> (Φ : CoordFrame L) {c e : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    (he : IsAtom e) (he_VR : e ≤ Φ.Γ.V ⊔ Φ.R) (he_V : e ≠ Φ.Γ.V) (he_R : e ≠ Φ.R)
+    {t : L} (ht : IsAtom t) (ht_τ : t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht_σ : ¬ t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :
+    Φ.Γ.ycoordC (Φ.Γ.shproj e t) =
+      Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t) +
+        -(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V))) * Φ.Γ.zcoordC Φ.R c t := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have he_σ : e ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := he_VR.trans (Φ.Γ.VR_le_σ Φ.R)
+  have he_π := CoordSystem.he_not_π hR hR_π he he_VR he_V
+  have hs_atom := CoordSystem.shproj_is_atom hR hR_π he he_σ he_π ht ht_τ ht_σ
+  have hs_π := Φ.Γ.shproj_le_π e t
+  have hs_aff := CoordSystem.shproj_affine hR hR_π he he_σ he_π ht ht_τ ht_σ
+  have hb_atom := CoordSystem.baseproj_is_atom hR hR_π ht ht_τ ht_σ
+  have hb_π := Φ.Γ.baseproj_le_π Φ.R t
+  have hb_aff := CoordSystem.baseproj_affine hR hR_π ht ht_τ ht_σ
+  have hz_atom := CoordSystem.zproj_is_atom hR hR_π ht ht_τ ht_σ
+  have hz_ζ := Φ.Γ.zproj_le_ζ Φ.R t
+  have hz_R := CoordSystem.zproj_ne_R hR_π ht ht_σ
+  have hν_atom := CoordSystem.ncoord_is_atom hR hR_π he he_VR he_V he_R
+    hz_atom hz_ζ
+  have hν_n := Φ.Γ.ncoord_le_n e (Φ.Γ.zproj Φ.R t)
+  have hν_V := CoordSystem.ncoord_ne_V hR hR_π he he_VR he_V he_R
+    hz_atom hz_ζ hz_R
+  have hν_π : Φ.Γ.ncoord e (Φ.Γ.zproj Φ.R t) ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V :=
+    hν_n.trans (sup_le (le_sup_left.trans le_sup_left) le_sup_right)
+  have hν_aff := Φ.Γ.affine_of_on_n hν_atom hν_n hν_V
+  have hy_atom := Φ.Γ.ycoord_is_atom hν_atom hν_π hν_aff
+  have hy_l := Φ.Γ.ycoord_le_l (Φ.Γ.ncoord e (Φ.Γ.zproj Φ.R t))
+  have hy_U := Φ.Γ.ycoord_ne_U hν_atom hν_π hν_aff
+  have he_ne_c : e ≠ c := by
+    intro h
+    apply hc_R
+    exact IsAtom.eq_of_le hc hR (le_of_le_of_eq (le_inf hc_UR (h ▸ he_VR))
+      (CoordSystem.UR_inf_VR hR hR_π))
+  have hec_σ : e ⊔ c ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R :=
+    sup_le he_σ (hc_UR.trans (Φ.Γ.UR_le_σ Φ.R))
+  have he_not_m := CoordSystem.e_not_m hR hR_π he he_VR he_V
+  have hm_cov : Φ.Γ.U ⊔ Φ.Γ.V ⋖ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := by
+    have h := CoordSystem.m_covBy_sup hR (CoordSystem.hR_not_m hR_π)
+    rwa [sup_comm Φ.R (Φ.Γ.U ⊔ Φ.Γ.V)] at h
+  have hd_atom : IsAtom ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)) :=
+    trace_atom he hc he_ne_c hm_cov hec_σ
+      (fun h =&gt; he_not_m (le_sup_left.trans h))
+  have hd_m : (e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) ≤ Φ.Γ.U ⊔ Φ.Γ.V := inf_le_right
+  have hd_ne_U : (e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) ≠ Φ.Γ.U := by
+    intro h
+    have hU_le : Φ.Γ.U ≤ e ⊔ c := le_of_eq_of_le h.symm inf_le_left
+    have h_line : c ⊔ e = c ⊔ Φ.Γ.U :=
+      line_eq_of_atom_le&#x27; hc he Φ.Γ.hU (Ne.symm he_ne_c) hc_U
+        (hU_le.trans (sup_comm e c).le)
+    have he_le : e ≤ Φ.Γ.U ⊔ Φ.R := by
+      calc e ≤ c ⊔ e := le_sup_right
+        _ = c ⊔ Φ.Γ.U := h_line
+        _ = Φ.Γ.U ⊔ c := sup_comm _ _
+        _ = Φ.Γ.U ⊔ Φ.R := (CoordSystem.UR_eq_Uc hR hR_π hc hc_UR hc_U hc_R).symm
+    exact he_R (IsAtom.eq_of_le he hR
+      (le_of_le_of_eq (le_inf he_le he_VR) (CoordSystem.UR_inf_VR hR hR_π)))
+  have hd_ne_V : (e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) ≠ Φ.Γ.V := by
+    intro h
+    have hV_le : Φ.Γ.V ≤ e ⊔ c := le_of_eq_of_le h.symm inf_le_left
+    have h_line : e ⊔ c = e ⊔ Φ.Γ.V :=
+      line_eq_of_atom_le&#x27; he hc Φ.Γ.hV he_ne_c he_V hV_le
+    have hc_le : c ≤ Φ.Γ.V ⊔ Φ.R := by
+      calc c ≤ e ⊔ c := le_sup_right
+        _ = e ⊔ Φ.Γ.V := h_line
+        _ = Φ.Γ.V ⊔ e := sup_comm _ _
+        _ = Φ.Γ.V ⊔ Φ.R := (CoordSystem.VR_eq_Ve hR hR_π he he_VR he_V he_R).symm
+    exact hc_R (IsAtom.eq_of_le hc hR
+      (le_of_le_of_eq (le_inf hc_UR hc_le) (CoordSystem.UR_inf_VR hR hR_π)))
+  obtain ⟨hsl_atom, hsl_l, _, hsl_ne_U⟩ :=
+    Φ.Γ.slope_facts hd_atom hd_m hd_ne_U hd_ne_V
+  have hbridge := Φ.gauge_bridge hc hc_UR hc_U hc_R he he_VR he_V he_R
+    hz_atom hz_ζ hz_R
+  have hsum : Coordinate.mk Φ.Γ _ hsl_atom hsl_l hsl_ne_U *
+      Φ.Γ.zcoordC Φ.R c t +
+      Coordinate.mk Φ.Γ _ hy_atom hy_l hy_U = 0 := by
+    apply Subtype.ext
+    rw [Coordinate.add_val, Coordinate.mul_val]
+    show coord_add Φ.Γ (coord_mul Φ.Γ (Φ.Γ.slope ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))
+      (Φ.Γ.zcoordC Φ.R c t).1) _ = (0 : Coordinate Φ.Γ).1
+    rw [CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R ht ht_τ ht_σ]
+    exact hbridge
+  have hyν : Coordinate.mk Φ.Γ (Φ.Γ.ycoord (Φ.Γ.ncoord e (Φ.Γ.zproj Φ.R t)))
+      hy_atom hy_l hy_U =
+      -(Coordinate.mk Φ.Γ _ hsl_atom hsl_l hsl_ne_U *
+        Φ.Γ.zcoordC Φ.R c t) :=
+    eq_neg_of_add_eq_zero_right hsum
+  have hshear := Φ.ycoord_shproj_e he he_VR he_V he_R ht ht_τ ht_σ
+  have hCform : Φ.Γ.ycoordC (Φ.Γ.shproj e t) =
+      Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t) +
+      Coordinate.mk Φ.Γ _ hy_atom hy_l hy_U := by
+    apply Subtype.ext
+    rw [Coordinate.add_val, Φ.Γ.ycoordC_val hs_atom hs_π hs_aff,
+      Φ.Γ.ycoordC_val hb_atom hb_π hb_aff]
+    exact hshear
+  have hmk : Coordinate.mk Φ.Γ _ hsl_atom hsl_l hsl_ne_U =
+      Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)) :=
+    Subtype.ext (Φ.Γ.slopeC_val hd_atom hd_m hd_ne_V).symm
+  rw [hCform, hyν, hmk, neg_mul]
+
+
+/-! ## Small coordinate values -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.xcoordC_O" href="#CoordSystem.xcoordC_O">CoordSystem.xcoordC_O</a> (Γ : CoordSystem L) : Γ.xcoordC Γ.O = 0 :=
+  Subtype.ext (by
+    rw [Γ.xcoordC_val Γ.hO (le_sup_left.trans le_sup_left)
+      (Γ.affine_of_on_l Γ.hO le_sup_left Γ.hOU)]
+    exact Γ.xproj_of_on_l Γ.hO le_sup_left Γ.hOU)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.ycoordC_O" href="#CoordSystem.ycoordC_O">CoordSystem.ycoordC_O</a> (Γ : CoordSystem L) : Γ.ycoordC Γ.O = 0 :=
+  Subtype.ext (by
+    rw [Γ.ycoordC_val Γ.hO (le_sup_left.trans le_sup_left)
+      (Γ.affine_of_on_l Γ.hO le_sup_left Γ.hOU)]
+    exact Γ.ycoord_of_on_l Γ.hO le_sup_left Γ.hOU)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.ycoordC_of_on_l" href="#CoordSystem.ycoordC_of_on_l">CoordSystem.ycoordC_of_on_l</a> (Γ : CoordSystem L) {x : L}
+    (hx : IsAtom x) (hx_l : x ≤ Γ.O ⊔ Γ.U) (hx_ne : x ≠ Γ.U) :
+    Γ.ycoordC x = 0 :=
+  Subtype.ext (by
+    rw [Γ.ycoordC_val hx (hx_l.trans le_sup_left)
+      (Γ.affine_of_on_l hx hx_l hx_ne)]
+    exact Γ.ycoord_of_on_l hx hx_l hx_ne)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.xcoordC_of_on_n" href="#CoordSystem.xcoordC_of_on_n">CoordSystem.xcoordC_of_on_n</a> (Γ : CoordSystem L) {y : L}
+    (hy : IsAtom y) (hy_n : y ≤ Γ.O ⊔ Γ.V) (hy_ne : y ≠ Γ.V) :
+    Γ.xcoordC y = 0 := by
+  have hy_π : y ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    hy_n.trans (sup_le (le_sup_left.trans le_sup_left) le_sup_right)
+  have hy_aff := Γ.affine_of_on_n hy hy_n hy_ne
+  apply Subtype.ext
+  rw [Γ.xcoordC_val hy hy_π hy_aff]
+  show (y ⊔ Γ.V) ⊓ (Γ.O ⊔ Γ.U) = (0 : Coordinate Γ).1
+  have hyV : y ⊔ Γ.V = Γ.O ⊔ Γ.V :=
+    line_eq_of_two_atoms_le Γ.hO Γ.hV Γ.hOV hy Γ.hV hy_ne hy_n le_sup_right
+  rw [hyV, inf_comm]
+  exact Γ.l_inf_n_eq_O
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.zcoordC_wpt" href="#CoordSystem.zcoordC_wpt">CoordSystem.zcoordC_wpt</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R)
+    {d : L} (hd : IsAtom d) (hd_σ : d ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (hd_m : ¬ d ≤ Γ.U ⊔ Γ.V) :
+    Γ.zcoordC R c (Γ.wpt R c d) = 1 := by
+  obtain ⟨hw_atom, hw_τ, hw_σ, _, hw_z⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hd hd_σ hd_m
+  apply Subtype.ext
+  rw [CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R hw_atom hw_τ hw_σ,
+    hw_z]
+  exact CoordSystem.zcoord_zseat hR hR_π hc hc_UR hc_U hc_R Γ.hI Γ.hI_on
+
+/-! ## The two fiber calibrations -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.wpt_c_coords" href="#CoordFrame.wpt_c_coords">CoordFrame.wpt_c_coords</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U)
+    (hc_R : c ≠ Φ.R) :
+    Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c c)) = -1 ∧
+    Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c c)) = 0 := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have hc_σ : c ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := hc_UR.trans (Φ.Γ.UR_le_σ Φ.R)
+  have hc_m := CoordSystem.c_not_m hR hR_π hc hc_UR hc_U
+  have hc_π := CoordSystem.hc_not_π hR hR_π hc hc_UR hc_U
+  obtain ⟨hw_atom, hw_τ, hw_σ, h_cone, hw_z⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hc hc_σ hc_m
+  have hb_atom := CoordSystem.baseproj_is_atom hR hR_π hw_atom hw_τ hw_σ
+  have hb_π := Φ.Γ.baseproj_le_π Φ.R (Φ.Γ.wpt Φ.R c c)
+  have hb_aff := CoordSystem.baseproj_affine hR hR_π hw_atom hw_τ hw_σ
+  have hw_le_Oc : Φ.Γ.wpt Φ.R c c ≤ Φ.Γ.O ⊔ c := inf_le_left
+  have hb_l : Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c c) ≤ Φ.Γ.O ⊔ Φ.Γ.U := by
+    have h1 : Φ.Γ.wpt Φ.R c c ⊔ Φ.R ≤ (Φ.Γ.O ⊔ Φ.Γ.U) ⊔ Φ.R :=
+      sup_le (hw_le_Oc.trans (sup_le (le_sup_left.trans le_sup_left)
+        (hc_UR.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right))))
+        le_sup_right
+    calc Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c c) ≤
+        ((Φ.Γ.O ⊔ Φ.Γ.U) ⊔ Φ.R) ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) :=
+          le_inf (inf_le_left.trans h1) inf_le_right
+      _ = Φ.Γ.O ⊔ Φ.Γ.U := by
+          rw [sup_inf_assoc_of_le Φ.R (le_sup_left : Φ.Γ.O ⊔ Φ.Γ.U ≤ _),
+            CoordSystem.R_inf_π hR hR_π, sup_bot_eq]
+  refine ⟨?_, Φ.Γ.ycoordC_of_on_l hb_atom hb_l (Φ.Γ.ne_U_of_affine hb_aff)⟩
+  have hw_ne_c : Φ.Γ.wpt Φ.R c c ≠ c :=
+    fun h =&gt; hw_σ (le_of_eq_of_le h hc_σ)
+  have hc_ne_O : c ≠ Φ.Γ.O :=
+    fun h =&gt; hc_π (h ▸ (le_sup_left.trans le_sup_left))
+  have h_line : c ⊔ Φ.Γ.O = c ⊔ Φ.Γ.wpt Φ.R c c :=
+    line_eq_of_atom_le&#x27; hc Φ.Γ.hO hw_atom hc_ne_O (Ne.symm hw_ne_c)
+      (hw_le_Oc.trans (sup_comm _ _).le)
+  have hsh : Φ.Γ.shproj c (Φ.Γ.wpt Φ.R c c) = Φ.Γ.O := by
+    have h1 : Φ.Γ.wpt Φ.R c c ⊔ c = Φ.Γ.O ⊔ c := by
+      rw [sup_comm (Φ.Γ.wpt Φ.R c c) c, ← h_line, sup_comm c Φ.Γ.O]
+    show (Φ.Γ.wpt Φ.R c c ⊔ c) ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = Φ.Γ.O
+    rw [h1, sup_inf_assoc_of_le c (le_sup_left.trans le_sup_left :
+      Φ.Γ.O ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)]
+    have hbot : c ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = ⊥ :=
+      (hc.le_iff.mp inf_le_left).resolve_right
+        (fun h =&gt; hc_π (le_of_eq_of_le h.symm inf_le_right))
+    rw [hbot, sup_bot_eq]
+  have hshear := Φ.xcoordC_shproj_c hc hc_UR hc_U hc_R hw_atom hw_τ hw_σ
+  rw [hsh, Φ.Γ.xcoordC_O,
+    CoordSystem.zcoordC_wpt hR hR_π hc hc_UR hc_U hc_R hc hc_σ hc_m] at hshear
+  have h0 : Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c c)) + 1 = 0 :=
+    hshear.symm
+  have h1 := eq_neg_of_add_eq_zero_left h0
+  exact h1
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.wpt_e_coords" href="#CoordFrame.wpt_e_coords">CoordFrame.wpt_e_coords</a> (Φ : CoordFrame L) {c e : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    (he : IsAtom e) (he_VR : e ≤ Φ.Γ.V ⊔ Φ.R) (he_V : e ≠ Φ.Γ.V) (he_R : e ≠ Φ.R) :
+    Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c e)) = 0 ∧
+    Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c e)) =
+      Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)) := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have he_σ : e ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := he_VR.trans (Φ.Γ.VR_le_σ Φ.R)
+  have he_m := CoordSystem.e_not_m hR hR_π he he_VR he_V
+  have he_π := CoordSystem.he_not_π hR hR_π he he_VR he_V
+  obtain ⟨hw_atom, hw_τ, hw_σ, h_cone, hw_z⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R he he_σ he_m
+  have hb_atom := CoordSystem.baseproj_is_atom hR hR_π hw_atom hw_τ hw_σ
+  have hb_π := Φ.Γ.baseproj_le_π Φ.R (Φ.Γ.wpt Φ.R c e)
+  have hb_aff := CoordSystem.baseproj_affine hR hR_π hw_atom hw_τ hw_σ
+  have hw_le_Oe : Φ.Γ.wpt Φ.R c e ≤ Φ.Γ.O ⊔ e := inf_le_left
+  have hb_n : Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c e) ≤ Φ.Γ.O ⊔ Φ.Γ.V := by
+    have h1 : Φ.Γ.wpt Φ.R c e ⊔ Φ.R ≤ (Φ.Γ.O ⊔ Φ.Γ.V) ⊔ Φ.R :=
+      sup_le (hw_le_Oe.trans (sup_le (le_sup_left.trans le_sup_left)
+        (he_VR.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right))))
+        le_sup_right
+    calc Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c e) ≤
+        ((Φ.Γ.O ⊔ Φ.Γ.V) ⊔ Φ.R) ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) :=
+          le_inf (inf_le_left.trans h1) inf_le_right
+      _ = Φ.Γ.O ⊔ Φ.Γ.V := by
+          rw [sup_inf_assoc_of_le Φ.R
+              (sup_le (le_sup_left.trans le_sup_left) le_sup_right :
+                Φ.Γ.O ⊔ Φ.Γ.V ≤ _),
+            CoordSystem.R_inf_π hR hR_π, sup_bot_eq]
+  refine ⟨Φ.Γ.xcoordC_of_on_n hb_atom hb_n (Φ.Γ.ne_V_of_affine hb_aff), ?_⟩
+  have hw_ne_e : Φ.Γ.wpt Φ.R c e ≠ e :=
+    fun h =&gt; hw_σ (le_of_eq_of_le h he_σ)
+  have he_ne_O : e ≠ Φ.Γ.O :=
+    fun h =&gt; he_π (h ▸ (le_sup_left.trans le_sup_left))
+  have h_line : e ⊔ Φ.Γ.O = e ⊔ Φ.Γ.wpt Φ.R c e :=
+    line_eq_of_atom_le&#x27; he Φ.Γ.hO hw_atom he_ne_O (Ne.symm hw_ne_e)
+      (hw_le_Oe.trans (sup_comm _ _).le)
+  have hsh : Φ.Γ.shproj e (Φ.Γ.wpt Φ.R c e) = Φ.Γ.O := by
+    have h1 : Φ.Γ.wpt Φ.R c e ⊔ e = Φ.Γ.O ⊔ e := by
+      rw [sup_comm (Φ.Γ.wpt Φ.R c e) e, ← h_line, sup_comm e Φ.Γ.O]
+    show (Φ.Γ.wpt Φ.R c e ⊔ e) ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = Φ.Γ.O
+    rw [h1, sup_inf_assoc_of_le e (le_sup_left.trans le_sup_left :
+      Φ.Γ.O ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)]
+    have hbot : e ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = ⊥ :=
+      (he.le_iff.mp inf_le_left).resolve_right
+        (fun h =&gt; he_π (le_of_eq_of_le h.symm inf_le_right))
+    rw [hbot, sup_bot_eq]
+  have hshear := Φ.ycoordC_shproj_e hc hc_UR hc_U hc_R he he_VR he_V he_R
+    hw_atom hw_τ hw_σ
+  rw [hsh, Φ.Γ.ycoordC_O,
+    CoordSystem.zcoordC_wpt hR hR_π hc hc_UR hc_U hc_R he he_σ he_m] at hshear
+  have h0 : Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c e)) +
+      -Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)) * 1 = 0 := hshear.symm
+  rw [mul_one] at h0
+  have h1 := eq_neg_of_add_eq_zero_left h0
+  rw [neg_neg] at h1
+  exact h1
+
+
+/-! ## The ray trace: the two-slot form reads the origin ray&#x27;s direction -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.slopeC_U" href="#CoordSystem.slopeC_U">CoordSystem.slopeC_U</a> (Γ : CoordSystem L) : Γ.slopeC Γ.U = 0 :=
+  Subtype.ext (by
+    rw [Γ.slopeC_val Γ.hU le_sup_left Γ.hUV]
+    exact Γ.slope_U)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.xcoordC_ne_zero_off_n" href="#CoordSystem.xcoordC_ne_zero_off_n">CoordSystem.xcoordC_ne_zero_off_n</a> (Γ : CoordSystem L) {g : L}
+    (hg : IsAtom g) (hg_π : g ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hg_aff : ¬ g ≤ Γ.U ⊔ Γ.V)
+    (hg_n : ¬ g ≤ Γ.O ⊔ Γ.V) : Γ.xcoordC g ≠ 0 := by
+  intro h
+  apply hg_n
+  have h1 := congrArg Subtype.val h
+  rw [Γ.xcoordC_val hg hg_π hg_aff] at h1
+  exact (Γ.le_vertical_iff hg hg_aff Γ.hO le_sup_left Γ.hOU).mpr h1
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.ycoordC_ne_zero_off_l" href="#CoordSystem.ycoordC_ne_zero_off_l">CoordSystem.ycoordC_ne_zero_off_l</a> (Γ : CoordSystem L) {g : L}
+    (hg : IsAtom g) (hg_π : g ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hg_aff : ¬ g ≤ Γ.U ⊔ Γ.V)
+    (hg_l : ¬ g ≤ Γ.O ⊔ Γ.U) : Γ.ycoordC g ≠ 0 := by
+  intro h
+  apply hg_l
+  have h1 := congrArg Subtype.val h
+  rw [Γ.ycoordC_val hg hg_π hg_aff, Coordinate.zero_val] at h1
+  have h2 : Γ.ycoord g = Γ.ycoord Γ.O := by
+    rw [h1, Γ.ycoord_of_on_l Γ.hO le_sup_left Γ.hOU]
+  exact (Γ.le_horizontal_iff hg hg_π hg_aff Γ.hO
+    (le_sup_left.trans le_sup_left)
+    (Γ.affine_of_on_l Γ.hO le_sup_left Γ.hOU)).mpr h2
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.ray_trace_form" href="#CoordFrame.ray_trace_form">CoordFrame.ray_trace_form</a> (Φ : CoordFrame L) {p q : L}
+    (_hp : IsAtom p) (_hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (_hq : IsAtom q) (_hq_π : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    {κ3 : Fin 3 → (Coordinate Φ.Γ)ᵐᵒᵖ}
+    (hchar : ∀ t, IsAtom t → t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V →
+      (t ≤ p ⊔ q ↔ planeForm κ3 (Φ.Γ.hvec t) = 0))
+    {g : L} (hg : IsAtom g) (hg_π : g ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hg_aff : ¬ g ≤ Φ.Γ.U ⊔ Φ.Γ.V) (hg_ne_O : g ≠ Φ.Γ.O) :
+    (op (Φ.Γ.xcoordC g) * κ3 0 + op (Φ.Γ.ycoordC g) * κ3 1 = 0) ↔
+      (Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) ≤ p ⊔ q := by
+  by_cases hgn : g ≤ Φ.Γ.O ⊔ Φ.Γ.V
+  · have hd_V : (Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) = Φ.Γ.V := by
+      have h_line : Φ.Γ.O ⊔ Φ.Γ.V = Φ.Γ.O ⊔ g :=
+        line_eq_of_atom_le&#x27; Φ.Γ.hO Φ.Γ.hV hg Φ.Γ.hOV
+          (fun h =&gt; hg_ne_O h.symm) hgn
+      rw [← h_line]
+      exact Φ.Γ.n_inf_m_eq_V
+    rw [hd_V, Φ.Γ.xcoordC_of_on_n hg hgn (Φ.Γ.ne_V_of_affine hg_aff)]
+    have hy_ne := Φ.Γ.ycoordC_ne_zero_off_l hg hg_π hg_aff
+      (fun h =&gt; hg_ne_O (IsAtom.eq_of_le hg Φ.Γ.hO
+        (le_of_le_of_eq (le_inf h hgn) Φ.Γ.l_inf_n_eq_O)))
+    have hVchar := hchar Φ.Γ.V Φ.Γ.hV le_sup_right
+    rw [Φ.Γ.hvec_V] at hVchar
+    have hVval : planeForm κ3 ![0, 1, 0] = κ3 1 := by
+      rw [planeForm_apply]
+      show (0 : (Coordinate Φ.Γ)ᵐᵒᵖ) * κ3 0 + 1 * κ3 1 + 0 * κ3 2 = κ3 1
+      rw [zero_mul, one_mul, zero_mul, add_zero, zero_add]
+    rw [hVval] at hVchar
+    rw [MulOpposite.op_zero, zero_mul, zero_add]
+    constructor
+    · intro h
+      apply hVchar.mpr
+      rcases mul_eq_zero.mp h with h&#x27; | h&#x27;
+      · exact absurd h&#x27; (fun h&#x27;&#x27; =&gt; hy_ne (MulOpposite.op_eq_zero_iff _ |&gt;.mp h&#x27;&#x27;))
+      · exact h&#x27;
+    · intro h
+      rw [hVchar.mp h, mul_zero]
+  · by_cases hgl : g ≤ Φ.Γ.O ⊔ Φ.Γ.U
+    · have hd_U : (Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) = Φ.Γ.U := by
+        have h_line : Φ.Γ.O ⊔ Φ.Γ.U = Φ.Γ.O ⊔ g :=
+          line_eq_of_atom_le&#x27; Φ.Γ.hO Φ.Γ.hU hg Φ.Γ.hOU
+            (fun h =&gt; hg_ne_O h.symm) hgl
+        rw [← h_line]
+        exact line_direction (m := Φ.Γ.U ⊔ Φ.Γ.V) Φ.Γ.hO Φ.Γ.hO_not_m
+          le_sup_left
+      rw [hd_U, Φ.Γ.ycoordC_of_on_l hg hgl (Φ.Γ.ne_U_of_affine hg_aff)]
+      have hx_ne := Φ.Γ.xcoordC_ne_zero_off_n hg hg_π hg_aff hgn
+      have hUchar := hchar Φ.Γ.U Φ.Γ.hU (le_sup_right.trans le_sup_left)
+      rw [Φ.Γ.hvec_dir le_sup_left Φ.Γ.hUV] at hUchar
+      have hUval : planeForm κ3 ![1, op (Φ.Γ.slopeC Φ.Γ.U), 0] = κ3 0 := by
+        rw [planeForm_apply]
+        show (1 : (Coordinate Φ.Γ)ᵐᵒᵖ) * κ3 0 +
+          op (Φ.Γ.slopeC Φ.Γ.U) * κ3 1 + 0 * κ3 2 = κ3 0
+        rw [one_mul, Φ.Γ.slopeC_U, MulOpposite.op_zero, zero_mul, zero_mul,
+          add_zero, add_zero]
+      rw [hUval] at hUchar
+      rw [MulOpposite.op_zero, zero_mul, add_zero]
+      constructor
+      · intro h
+        apply hUchar.mpr
+        rcases mul_eq_zero.mp h with h&#x27; | h&#x27;
+        · exact absurd h&#x27; (fun h&#x27;&#x27; =&gt; hx_ne (MulOpposite.op_eq_zero_iff _ |&gt;.mp h&#x27;&#x27;))
+        · exact h&#x27;
+      · intro h
+        rw [hUchar.mp h, mul_zero]
+    · obtain ⟨hd_atom, hd_ne_U, hd_ne_V, hg_le_Od⟩ :=
+        CoordSystem.base_dir_facts hg hg_π hg_ne_O hgl hgn
+      have hd_m : (Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) ≤ Φ.Γ.U ⊔ Φ.Γ.V := inf_le_right
+      have hy_eq : Φ.Γ.ycoordC g =
+          Φ.Γ.slopeC ((Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)) * Φ.Γ.xcoordC g := by
+        apply Subtype.ext
+        rw [Coordinate.mul_val, Φ.Γ.ycoordC_val hg hg_π hg_aff,
+          Φ.Γ.xcoordC_val hg hg_π hg_aff,
+          Φ.Γ.slopeC_val hd_atom hd_m hd_ne_V]
+        exact (Φ.Γ.le_origin_line_iff hd_atom hd_m hd_ne_V hg hg_π hg_aff
+          Φ.R Φ.hR_atom Φ.hR_not Φ.h_irred).mp hg_le_Od
+      have hx_ne := Φ.Γ.xcoordC_ne_zero_off_n hg hg_π hg_aff hgn
+      have hop_ne : op (Φ.Γ.xcoordC g) ≠ (0 : (Coordinate Φ.Γ)ᵐᵒᵖ) :=
+        fun h =&gt; hx_ne (MulOpposite.op_eq_zero_iff _ |&gt;.mp h)
+      have hfactor : op (Φ.Γ.xcoordC g) * κ3 0 + op (Φ.Γ.ycoordC g) * κ3 1 =
+          op (Φ.Γ.xcoordC g) *
+            (κ3 0 + op (Φ.Γ.slopeC ((Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V))) * κ3 1) := by
+        rw [hy_eq, MulOpposite.op_mul, mul_add, ← mul_assoc]
+      have hdchar := hchar _ hd_atom (hd_m.trans Φ.Γ.m_le_π)
+      rw [Φ.Γ.hvec_dir hd_m hd_ne_V] at hdchar
+      have hdval : planeForm κ3
+          ![1, op (Φ.Γ.slopeC ((Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V))), 0] =
+          κ3 0 + op (Φ.Γ.slopeC ((Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V))) * κ3 1 := by
+        rw [planeForm_apply]
+        show (1 : (Coordinate Φ.Γ)ᵐᵒᵖ) * κ3 0 +
+          op (Φ.Γ.slopeC ((Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V))) * κ3 1 + 0 * κ3 2 =
+          κ3 0 + op (Φ.Γ.slopeC ((Φ.Γ.O ⊔ g) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V))) * κ3 1
+        rw [one_mul, zero_mul, add_zero]
+      rw [hdval] at hdchar
+      rw [hfactor]
+      constructor
+      · intro h
+        apply hdchar.mpr
+        rcases mul_eq_zero.mp h with h&#x27; | h&#x27;
+        · exact absurd h&#x27; hop_ne
+        · exact h&#x27;
+      · intro h
+        rw [hdchar.mp h, mul_zero]
+
+/-! ## The direction transports through a shear center -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.dir_shproj" href="#CoordSystem.dir_shproj">CoordSystem.dir_shproj</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R)
+    {w₀ : L} (hw₀ : IsAtom w₀) (hw₀_σ : w₀ ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (hw₀_π : ¬ w₀ ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    {t : L} (ht : IsAtom t) (ht_σ&#x27; : t ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (ht_m : ¬ t ≤ Γ.U ⊔ Γ.V) (ht_ne : t ≠ w₀)
+    (hg_ne_O : Γ.shproj w₀ (Γ.wpt R c t) ≠ Γ.O) :
+    (Γ.O ⊔ Γ.shproj w₀ (Γ.wpt R c t)) ⊓ (Γ.U ⊔ Γ.V) =
+      (t ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V) := by
+  obtain ⟨hw_atom, hw_τ, hw_σ, h_cone, hw_z⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R ht ht_σ&#x27; ht_m
+  have hw₀_m : ¬ w₀ ≤ Γ.U ⊔ Γ.V := fun h =&gt; hw₀_π (h.trans Γ.m_le_π)
+  have htw₀_σ : t ⊔ w₀ ≤ Γ.U ⊔ Γ.V ⊔ R := sup_le ht_σ&#x27; hw₀_σ
+  have hd_atom : IsAtom ((t ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V)) := by
+    have hm_cov : Γ.U ⊔ Γ.V ⋖ Γ.U ⊔ Γ.V ⊔ R := by
+      have h := CoordSystem.m_covBy_sup hR (CoordSystem.hR_not_m hR_π)
+      rwa [sup_comm R (Γ.U ⊔ Γ.V)] at h
+    exact trace_atom ht hw₀ ht_ne hm_cov htw₀_σ
+      (fun h =&gt; hw₀_m (le_sup_right.trans h))
+  have hd_m : (t ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.U ⊔ Γ.V := inf_le_right
+  have hg_atom := CoordSystem.shproj_is_atom hR hR_π hw₀ hw₀_σ hw₀_π
+    hw_atom hw_τ hw_σ
+  have h_trace : (Γ.O ⊔ (t ⊔ w₀)) ⊓ (Γ.O ⊔ Γ.U ⊔ Γ.V) =
+      Γ.O ⊔ ((t ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V)) := by
+    rw [sup_inf_assoc_of_le (t ⊔ w₀)
+      (le_sup_left.trans le_sup_left : Γ.O ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)]
+    have h1 : (t ⊔ w₀) ⊓ (Γ.O ⊔ Γ.U ⊔ Γ.V) = (t ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V) := by
+      apply le_antisymm
+      · refine le_inf inf_le_left ?_
+        have h2 : (t ⊔ w₀) ⊓ (Γ.O ⊔ Γ.U ⊔ Γ.V) ≤
+            (Γ.U ⊔ Γ.V ⊔ R) ⊓ (Γ.O ⊔ Γ.U ⊔ Γ.V) :=
+          inf_le_inf_right _ htw₀_σ
+        rwa [CoordSystem.σ_inf_π hR hR_π] at h2
+      · exact le_inf inf_le_left (inf_le_right.trans Γ.m_le_π)
+    rw [h1]
+  have hg_le : Γ.shproj w₀ (Γ.wpt R c t) ≤
+      Γ.O ⊔ ((t ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V)) := by
+    rw [← h_trace]
+    refine le_inf (inf_le_left.trans ?_) inf_le_right
+    have hw_le : Γ.wpt R c t ≤ Γ.O ⊔ t := inf_le_left
+    exact sup_le (hw_le.trans (sup_le le_sup_left
+      ((le_sup_left : t ≤ t ⊔ w₀).trans le_sup_right)))
+      ((le_sup_right : w₀ ≤ t ⊔ w₀).trans le_sup_right)
+  have h_line : Γ.O ⊔ ((t ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V)) =
+      Γ.O ⊔ Γ.shproj w₀ (Γ.wpt R c t) :=
+    line_eq_of_atom_le&#x27; Γ.hO hd_atom hg_atom
+      (fun h =&gt; Γ.hO_not_m (le_of_eq_of_le h hd_m))
+      (fun h =&gt; hg_ne_O h.symm) hg_le
+  rw [← h_line]
+  exact line_direction (m := Γ.U ⊔ Γ.V) Γ.hO Γ.hO_not_m hd_m
+
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.shproj_R_eq_baseproj" href="#CoordSystem.shproj_R_eq_baseproj">CoordSystem.shproj_R_eq_baseproj</a> (Γ : CoordSystem L) (R w : L) :
+    Γ.shproj R w = Γ.baseproj R w := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.wpt_base_ne_O" href="#CoordSystem.wpt_base_ne_O">CoordSystem.wpt_base_ne_O</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R)
+    {t : L} (ht : IsAtom t) (ht_σ&#x27; : t ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (ht_m : ¬ t ≤ Γ.U ⊔ Γ.V) (ht_R : t ≠ R) :
+    Γ.baseproj R (Γ.wpt R c t) ≠ Γ.O := by
+  obtain ⟨hw_atom, hw_τ, hw_σ, h_cone, _⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R ht ht_σ&#x27; ht_m
+  intro h
+  have hw_ζ : Γ.wpt R c t ≤ Γ.O ⊔ R := by
+    have h1 : Γ.wpt R c t ≤ Γ.baseproj R (Γ.wpt R c t) ⊔ R :=
+      le_sup_left.trans
+        (CoordSystem.sup_R_baseproj hR hR_π hw_atom hw_τ hw_σ).le
+    rwa [h] at h1
+  apply ht_R
+  have h2 : Γ.O ⊔ Γ.wpt R c t ≤ Γ.O ⊔ R := sup_le le_sup_left hw_ζ
+  have h3 : t ≤ (Γ.O ⊔ R) ⊓ (Γ.U ⊔ Γ.V ⊔ R) :=
+    le_of_eq_of_le h_cone.symm
+      (inf_le_inf_right (Γ.U ⊔ Γ.V ⊔ R) h2)
+  rw [CoordSystem.ζ_inf_σ hR hR_π] at h3
+  exact IsAtom.eq_of_le ht hR h3
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.dir_trace_char" href="#CoordFrame.dir_trace_char">CoordFrame.dir_trace_char</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {w₀ : L} (hw₀ : IsAtom w₀) (hw₀_σ : w₀ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hw₀_π : ¬ w₀ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    {p q : L} (hp : IsAtom p) (hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hq : IsAtom q) (hq_π : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    {κ3 : Fin 3 → (Coordinate Φ.Γ)ᵐᵒᵖ}
+    (hchar : ∀ s, IsAtom s → s ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V →
+      (s ≤ p ⊔ q ↔ planeForm κ3 (Φ.Γ.hvec s) = 0))
+    {t : L} (ht : IsAtom t) (ht_σ&#x27; : t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht_m : ¬ t ≤ Φ.Γ.U ⊔ Φ.Γ.V) (ht_ne : t ≠ w₀)
+    (hg_ne_O : Φ.Γ.shproj w₀ (Φ.Γ.wpt Φ.R c t) ≠ Φ.Γ.O) :
+    t ≤ p ⊔ q ⊔ w₀ ↔
+      op (Φ.Γ.xcoordC (Φ.Γ.shproj w₀ (Φ.Γ.wpt Φ.R c t))) * κ3 0 +
+        op (Φ.Γ.ycoordC (Φ.Γ.shproj w₀ (Φ.Γ.wpt Φ.R c t))) * κ3 1 = 0 := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  obtain ⟨hw_atom, hw_τ, hw_σ, h_cone, _⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R ht ht_σ&#x27; ht_m
+  have hg_atom := CoordSystem.shproj_is_atom hR hR_π hw₀ hw₀_σ hw₀_π
+    hw_atom hw_τ hw_σ
+  have hg_π := Φ.Γ.shproj_le_π w₀ (Φ.Γ.wpt Φ.R c t)
+  have hg_aff := CoordSystem.shproj_affine hR hR_π hw₀ hw₀_σ hw₀_π
+    hw_atom hw_τ hw_σ
+  have hw₀_m : ¬ w₀ ≤ Φ.Γ.U ⊔ Φ.Γ.V := fun h =&gt; hw₀_π (h.trans Φ.Γ.m_le_π)
+  have hd_atom : IsAtom ((t ⊔ w₀) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)) := by
+    have hm_cov : Φ.Γ.U ⊔ Φ.Γ.V ⋖ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := by
+      have h := CoordSystem.m_covBy_sup hR (CoordSystem.hR_not_m hR_π)
+      rwa [sup_comm Φ.R (Φ.Γ.U ⊔ Φ.Γ.V)] at h
+    exact trace_atom ht hw₀ ht_ne hm_cov (sup_le ht_σ&#x27; hw₀_σ)
+      (fun h =&gt; hw₀_m (le_sup_right.trans h))
+  have hd_m : (t ⊔ w₀) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) ≤ Φ.Γ.U ⊔ Φ.Γ.V := inf_le_right
+  have hd_ne_w₀ : (t ⊔ w₀) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) ≠ w₀ :=
+    fun h =&gt; hw₀_m (le_of_eq_of_le h.symm hd_m)
+  have h_lat : t ≤ p ⊔ q ⊔ w₀ ↔ (t ⊔ w₀) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) ≤ p ⊔ q := by
+    have hρπ : (p ⊔ q ⊔ w₀) ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = p ⊔ q := by
+      rw [sup_inf_assoc_of_le w₀ (sup_le hp_π hq_π)]
+      have hbot : w₀ ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = ⊥ :=
+        (hw₀.le_iff.mp inf_le_left).resolve_right
+          (fun h =&gt; hw₀_π (le_of_eq_of_le h.symm inf_le_right))
+      rw [hbot, sup_bot_eq]
+    constructor
+    · intro h
+      refine le_of_le_of_eq (le_inf ?_ (inf_le_right.trans Φ.Γ.m_le_π)) hρπ
+      exact inf_le_left.trans (sup_le h le_sup_right)
+    · intro h
+      have h1 := line_eq_of_atom_le&#x27; hw₀ ht hd_atom (Ne.symm ht_ne)
+        (Ne.symm hd_ne_w₀)
+        (le_of_le_of_eq (inf_le_left : (t ⊔ w₀) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) ≤ t ⊔ w₀)
+          (sup_comm t w₀))
+      have h2 : t ≤ w₀ ⊔ ((t ⊔ w₀) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)) :=
+        le_of_le_of_eq le_sup_right h1
+      exact h2.trans (sup_le le_sup_right (h.trans le_sup_left))
+  have h_dir := CoordSystem.dir_shproj hR hR_π hc hc_UR hc_U hc_R
+    hw₀ hw₀_σ hw₀_π ht ht_σ&#x27; ht_m ht_ne hg_ne_O
+  have h_ray := Φ.ray_trace_form hp hp_π hq hq_π hchar hg_atom hg_π hg_aff
+    hg_ne_O
+  rw [h_lat, ← h_dir]
+  exact h_ray.symm
+
+
+/-! ## The plane-form families -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.shproj_wpt_ne_O" href="#CoordSystem.shproj_wpt_ne_O">CoordSystem.shproj_wpt_ne_O</a> (hR : IsAtom R)
+    (hR_π : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) {c : L} (hc : IsAtom c)
+    (hc_UR : c ≤ Γ.U ⊔ R) (hc_U : c ≠ Γ.U) (hc_R : c ≠ R)
+    {w₀ : L} (hw₀ : IsAtom w₀) (hw₀_σ : w₀ ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (hw₀_π : ¬ w₀ ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    {t : L} (ht : IsAtom t) (ht_σ&#x27; : t ≤ Γ.U ⊔ Γ.V ⊔ R)
+    (ht_m : ¬ t ≤ Γ.U ⊔ Γ.V) (ht_ne : t ≠ w₀) :
+    Γ.shproj w₀ (Γ.wpt R c t) ≠ Γ.O := by
+  obtain ⟨hw_atom, hw_τ, hw_σ, h_cone, _⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R ht ht_σ&#x27; ht_m
+  intro h
+  have hO_le : Γ.O ≤ Γ.wpt R c t ⊔ w₀ := le_of_eq_of_le h.symm inf_le_left
+  have hw_ne_w₀ : Γ.wpt R c t ≠ w₀ :=
+    fun h&#x27; =&gt; hw_σ (le_of_eq_of_le h&#x27; hw₀_σ)
+  have hw₀_ne_O : w₀ ≠ Γ.O :=
+    fun h&#x27; =&gt; hw₀_π (le_of_eq_of_le h&#x27; (le_sup_left.trans le_sup_left))
+  have h_line : w₀ ⊔ Γ.wpt R c t = w₀ ⊔ Γ.O :=
+    line_eq_of_atom_le&#x27; hw₀ hw_atom Γ.hO (Ne.symm hw_ne_w₀) hw₀_ne_O
+      (hO_le.trans (sup_comm _ _).le)
+  have hw_le : Γ.wpt R c t ≤ Γ.O ⊔ w₀ := by
+    have h1 : Γ.wpt R c t ≤ w₀ ⊔ Γ.O := le_of_le_of_eq le_sup_right h_line
+    exact h1.trans (sup_comm _ _).le
+  have h2 : Γ.O ⊔ Γ.wpt R c t ≤ Γ.O ⊔ w₀ := sup_le le_sup_left hw_le
+  have hO_ne_w₀ : Γ.O ≠ w₀ := Ne.symm hw₀_ne_O
+  have hOw₀_atom : IsAtom ((Γ.O ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V ⊔ R)) :=
+    line_meets_hyperplane (CoordSystem.σ_covBy_τ hR hR_π) Γ.hO hw₀ hO_ne_w₀
+      (sup_le ((le_sup_left.trans le_sup_left).trans le_sup_left)
+        (hw₀_σ.trans (sup_le (Γ.m_le_π.trans le_sup_left) le_sup_right)))
+      (fun h&#x27; =&gt; CoordSystem.hO_not_σ hR hR_π (le_sup_left.trans h&#x27;))
+  have h3 : (Γ.O ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V ⊔ R) = w₀ :=
+    (IsAtom.eq_of_le hw₀ hOw₀_atom (le_inf le_sup_right hw₀_σ)).symm
+  have h4 : t ≤ w₀ := by
+    calc t = (Γ.O ⊔ Γ.wpt R c t) ⊓ (Γ.U ⊔ Γ.V ⊔ R) := h_cone.symm
+      _ ≤ (Γ.O ⊔ w₀) ⊓ (Γ.U ⊔ Γ.V ⊔ R) := inf_le_inf_right _ h2
+      _ = w₀ := h3
+  exact ht_ne (IsAtom.eq_of_le ht hw₀ h4)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.Rplane_form" href="#CoordFrame.Rplane_form">CoordFrame.Rplane_form</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {p q : L} (hp : IsAtom p) (hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hq : IsAtom q) (hq_π : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) (hpq : p ≠ q) :
+    ∃ κ : Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ, κ ≠ 0 ∧
+      ∀ t, IsAtom t → t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+        (t ≤ p ⊔ q ⊔ Φ.R ↔ spaceForm κ (Φ.Γ.hvec4 Φ.R c t) = 0) := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  obtain ⟨κ3, hκ3, hchar⟩ := Φ.line_form_exists hp hp_π hq hq_π hpq
+  have hρπ : (p ⊔ q ⊔ Φ.R) ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = p ⊔ q := by
+    rw [sup_inf_assoc_of_le Φ.R (sup_le hp_π hq_π),
+      CoordSystem.R_inf_π hR hR_π, sup_bot_eq]
+  refine ⟨![κ3 0, κ3 1, 0, κ3 2], ?_, ?_⟩
+  · intro h
+    apply hκ3
+    funext i
+    fin_cases i
+    · exact congrFun h 0
+    · exact congrFun h 1
+    · exact congrFun h 3
+  · intro t ht ht_τ
+    by_cases htσ : t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+    · by_cases htm : t ≤ Φ.Γ.U ⊔ Φ.Γ.V
+      · have ht_π : t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V := htm.trans Φ.Γ.m_le_π
+        have hlat : t ≤ p ⊔ q ⊔ Φ.R ↔ t ≤ p ⊔ q :=
+          ⟨fun h =&gt; le_of_le_of_eq (le_inf h ht_π) hρπ,
+           fun h =&gt; h.trans le_sup_left⟩
+        rw [hlat, hchar t ht ht_π, Φ.hvec4_π hc hc_UR hc_U ht_π,
+          spaceForm_extZ κ3 0 (Φ.Γ.hvec t)]
+      · by_cases htR : t = Φ.R
+        · have hval : spaceForm ![κ3 0, κ3 1, 0, κ3 2]
+              (Φ.Γ.hvec4 Φ.R c t) = 0 := by
+            rw [htR, Φ.Γ.hvec4_inf Φ.R c le_sup_right
+              (CoordSystem.hR_not_m hR_π)]
+            have hwR_ζ : Φ.Γ.wpt Φ.R c Φ.R ≤ Φ.Γ.O ⊔ Φ.R :=
+              (inf_le_left : Φ.Γ.wpt Φ.R c Φ.R ≤ Φ.Γ.O ⊔ Φ.R)
+            obtain ⟨hw_atom, hw_τ, hw_σ, _, _⟩ :=
+              CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hR
+                le_sup_right (CoordSystem.hR_not_m hR_π)
+            have hb_atom := CoordSystem.baseproj_is_atom hR hR_π hw_atom
+              hw_τ hw_σ
+            have hbO : Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c Φ.R) = Φ.Γ.O := by
+              have h1 : Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c Φ.R) ≤
+                  (Φ.Γ.O ⊔ Φ.R) ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) :=
+                le_inf (inf_le_left.trans (sup_le hwR_ζ le_sup_right))
+                  inf_le_right
+              rw [CoordSystem.ζ_inf_π hR hR_π] at h1
+              exact IsAtom.eq_of_le hb_atom Φ.Γ.hO h1
+            rw [hbO, Φ.Γ.xcoordC_O, Φ.Γ.ycoordC_O, spaceForm_apply]
+            show op (0 : Coordinate Φ.Γ) * κ3 0 + op (0 : Coordinate Φ.Γ) *
+              κ3 1 + 1 * 0 + 0 * κ3 2 = 0
+            rw [MulOpposite.op_zero, zero_mul, zero_mul, one_mul, zero_mul,
+              add_zero, add_zero, add_zero]
+          exact iff_of_true (htR ▸ le_sup_right) hval
+        · have hg_ne_O : Φ.Γ.shproj Φ.R (Φ.Γ.wpt Φ.R c t) ≠ Φ.Γ.O := by
+            rw [CoordSystem.shproj_R_eq_baseproj]
+            exact CoordSystem.wpt_base_ne_O hR hR_π hc hc_UR hc_U hc_R
+              ht htσ htm htR
+          have hchain := Φ.dir_trace_char hc hc_UR hc_U hc_R hR le_sup_right
+            hR_π hp hp_π hq hq_π hchar ht htσ htm htR hg_ne_O
+          rw [CoordSystem.shproj_R_eq_baseproj] at hchain
+          rw [hchain, Φ.Γ.hvec4_inf Φ.R c htσ htm]
+          have hval : spaceForm ![κ3 0, κ3 1, 0, κ3 2]
+              ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))),
+                op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))), 1, 0] =
+              op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 0 +
+              op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 1 := by
+            rw [spaceForm_apply]
+            show op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 0 +
+              op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 1 +
+              1 * 0 + 0 * κ3 2 = _
+            rw [one_mul, zero_mul, add_zero, add_zero]
+          rw [hval]
+    · have hb_atom := CoordSystem.baseproj_is_atom hR hR_π ht ht_τ htσ
+      have hb_π := Φ.Γ.baseproj_le_π Φ.R t
+      have hb_aff := CoordSystem.baseproj_affine hR hR_π ht ht_τ htσ
+      have hlat : t ≤ p ⊔ q ⊔ Φ.R ↔ Φ.Γ.baseproj Φ.R t ≤ p ⊔ q := by
+        constructor
+        · intro h
+          exact le_of_le_of_eq (le_inf (inf_le_left.trans
+            (sup_le h (le_sup_right : Φ.R ≤ p ⊔ q ⊔ Φ.R))) inf_le_right) hρπ
+        · intro h
+          have h1 : t ≤ Φ.Γ.baseproj Φ.R t ⊔ Φ.R :=
+            le_sup_left.trans
+              (CoordSystem.sup_R_baseproj hR hR_π ht ht_τ htσ).le
+          exact h1.trans (sup_le (h.trans le_sup_left) le_sup_right)
+      rw [hlat, hchar _ hb_atom hb_π, Φ.Γ.hvec4_affine Φ.R c htσ,
+        Φ.Γ.hvec_affine hb_aff]
+      have hval : spaceForm ![κ3 0, κ3 1, 0, κ3 2]
+          ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)),
+            op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)),
+            op (Φ.Γ.zcoordC Φ.R c t), 1] =
+          planeForm κ3 ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)),
+            op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)), 1] := by
+        rw [spaceForm_apply, planeForm_apply]
+        show op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)) * κ3 0 +
+          op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)) * κ3 1 +
+          op (Φ.Γ.zcoordC Φ.R c t) * 0 + 1 * κ3 2 =
+          op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)) * κ3 0 +
+          op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)) * κ3 1 + 1 * κ3 2
+        rw [mul_zero, add_zero]
+      rw [hval]
+
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.cplane_form" href="#CoordFrame.cplane_form">CoordFrame.cplane_form</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {p q : L} (hp : IsAtom p) (hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hq : IsAtom q) (hq_π : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) (hpq : p ≠ q) :
+    ∃ κ : Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ, κ ≠ 0 ∧
+      ∀ t, IsAtom t → t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+        (t ≤ p ⊔ q ⊔ c ↔ spaceForm κ (Φ.Γ.hvec4 Φ.R c t) = 0) := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have hc_σ : c ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := hc_UR.trans (Φ.Γ.UR_le_σ Φ.R)
+  have hc_π := CoordSystem.hc_not_π hR hR_π hc hc_UR hc_U
+  have hc_m := CoordSystem.c_not_m hR hR_π hc hc_UR hc_U
+  obtain ⟨κ3, hκ3, hchar⟩ := Φ.line_form_exists hp hp_π hq hq_π hpq
+  have hρπ : (p ⊔ q ⊔ c) ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = p ⊔ q := by
+    rw [sup_inf_assoc_of_le c (sup_le hp_π hq_π)]
+    have hbot : c ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = ⊥ :=
+      (hc.le_iff.mp inf_le_left).resolve_right
+        (fun h =&gt; hc_π (le_of_eq_of_le h.symm inf_le_right))
+    rw [hbot, sup_bot_eq]
+  refine ⟨![κ3 0, κ3 1, κ3 0, κ3 2], ?_, ?_⟩
+  · intro h
+    apply hκ3
+    funext i
+    fin_cases i
+    · exact congrFun h 0
+    · exact congrFun h 1
+    · exact congrFun h 3
+  · intro t ht ht_τ
+    by_cases htσ : t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+    · by_cases htm : t ≤ Φ.Γ.U ⊔ Φ.Γ.V
+      · have ht_π : t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V := htm.trans Φ.Γ.m_le_π
+        have hlat : t ≤ p ⊔ q ⊔ c ↔ t ≤ p ⊔ q :=
+          ⟨fun h =&gt; le_of_le_of_eq (le_inf h ht_π) hρπ,
+           fun h =&gt; h.trans le_sup_left⟩
+        rw [hlat, hchar t ht ht_π, Φ.hvec4_π hc hc_UR hc_U ht_π,
+          spaceForm_extZ κ3 (κ3 0) (Φ.Γ.hvec t)]
+      · by_cases htc : t = c
+        · obtain ⟨hxc, hyc⟩ := Φ.wpt_c_coords hc hc_UR hc_U hc_R
+          have hval : spaceForm ![κ3 0, κ3 1, κ3 0, κ3 2]
+              (Φ.Γ.hvec4 Φ.R c t) = 0 := by
+            rw [htc, Φ.Γ.hvec4_inf Φ.R c hc_σ hc_m, spaceForm_apply, hxc, hyc]
+            show op (-1 : Coordinate Φ.Γ) * κ3 0 +
+              op (0 : Coordinate Φ.Γ) * κ3 1 + 1 * κ3 0 + 0 * κ3 2 = 0
+            rw [MulOpposite.op_neg, MulOpposite.op_one, MulOpposite.op_zero,
+              neg_one_mul, zero_mul, add_zero, one_mul, zero_mul, add_zero,
+              neg_add_cancel]
+          exact iff_of_true (htc ▸ le_sup_right) hval
+        · obtain ⟨hw_atom, hw_τ, hw_σ, _, _⟩ :=
+            CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R ht htσ htm
+          have hg_ne_O := CoordSystem.shproj_wpt_ne_O hR hR_π hc hc_UR hc_U
+            hc_R hc hc_σ hc_π ht htσ htm htc
+          have hchain := Φ.dir_trace_char hc hc_UR hc_U hc_R hc hc_σ hc_π
+            hp hp_π hq hq_π hchar ht htσ htm htc hg_ne_O
+          rw [hchain, Φ.Γ.hvec4_inf Φ.R c htσ htm]
+          have hval : op (Φ.Γ.xcoordC (Φ.Γ.shproj c (Φ.Γ.wpt Φ.R c t))) *
+              κ3 0 + op (Φ.Γ.ycoordC (Φ.Γ.shproj c (Φ.Γ.wpt Φ.R c t))) *
+              κ3 1 = spaceForm ![κ3 0, κ3 1, κ3 0, κ3 2]
+              ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))),
+                op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))),
+                1, 0] := by
+            rw [spaceForm_apply,
+              Φ.xcoordC_shproj_c hc hc_UR hc_U hc_R hw_atom hw_τ hw_σ,
+              Φ.ycoordC_shproj_c hc hc_UR hc_U hw_atom hw_τ hw_σ,
+              CoordSystem.zcoordC_wpt hR hR_π hc hc_UR hc_U hc_R ht htσ htm]
+            show op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t)) + 1) *
+              κ3 0 + op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) *
+              κ3 1 =
+              op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 0 +
+              op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 1 +
+              1 * κ3 0 + 0 * κ3 2
+            rw [MulOpposite.op_add, MulOpposite.op_one, add_mul, zero_mul,
+              add_zero, add_right_comm
+                (op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 0)
+                (1 * κ3 0)
+                (op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 1)]
+          rw [hval]
+    · have hs_atom := CoordSystem.shproj_is_atom hR hR_π hc hc_σ hc_π
+        ht ht_τ htσ
+      have hs_π := Φ.Γ.shproj_le_π c t
+      have hs_aff := CoordSystem.shproj_affine hR hR_π hc hc_σ hc_π ht ht_τ htσ
+      have hlat : t ≤ p ⊔ q ⊔ c ↔ Φ.Γ.shproj c t ≤ p ⊔ q := by
+        constructor
+        · intro h
+          exact le_of_le_of_eq (le_inf (inf_le_left.trans
+            (sup_le h (le_sup_right : c ≤ p ⊔ q ⊔ c))) inf_le_right) hρπ
+        · intro h
+          have h1 : t ≤ Φ.Γ.shproj c t ⊔ c :=
+            le_sup_left.trans
+              (CoordSystem.sup_center_shproj hR hR_π hc hc_σ hc_π
+                ht ht_τ htσ).le
+          exact h1.trans (sup_le (h.trans le_sup_left) le_sup_right)
+      rw [hlat, hchar _ hs_atom hs_π, Φ.Γ.hvec_affine hs_aff,
+        Φ.Γ.hvec4_affine Φ.R c htσ]
+      have hval : planeForm κ3 ![op (Φ.Γ.xcoordC (Φ.Γ.shproj c t)),
+          op (Φ.Γ.ycoordC (Φ.Γ.shproj c t)), 1] =
+          spaceForm ![κ3 0, κ3 1, κ3 0, κ3 2]
+          ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)),
+            op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)),
+            op (Φ.Γ.zcoordC Φ.R c t), 1] := by
+        rw [planeForm_apply, spaceForm_apply,
+          Φ.xcoordC_shproj_c hc hc_UR hc_U hc_R ht ht_τ htσ,
+          Φ.ycoordC_shproj_c hc hc_UR hc_U ht ht_τ htσ]
+        show op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t) + Φ.Γ.zcoordC Φ.R c t) *
+          κ3 0 + op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)) * κ3 1 + 1 * κ3 2 =
+          op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)) * κ3 0 +
+          op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)) * κ3 1 +
+          op (Φ.Γ.zcoordC Φ.R c t) * κ3 0 + 1 * κ3 2
+        rw [MulOpposite.op_add, add_mul, add_right_comm
+          (op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)) * κ3 0)
+          (op (Φ.Γ.zcoordC Φ.R c t) * κ3 0)
+          (op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)) * κ3 1)]
+      rw [hval]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.eplane_form" href="#CoordFrame.eplane_form">CoordFrame.eplane_form</a> (Φ : CoordFrame L) {c e : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    (he : IsAtom e) (he_VR : e ≤ Φ.Γ.V ⊔ Φ.R) (he_V : e ≠ Φ.Γ.V) (he_R : e ≠ Φ.R)
+    {p q : L} (hp : IsAtom p) (hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hq : IsAtom q) (hq_π : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) (hpq : p ≠ q) :
+    ∃ κ : Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ, κ ≠ 0 ∧
+      ∀ t, IsAtom t → t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+        (t ≤ p ⊔ q ⊔ e ↔ spaceForm κ (Φ.Γ.hvec4 Φ.R c t) = 0) := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have he_σ : e ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := he_VR.trans (Φ.Γ.VR_le_σ Φ.R)
+  have he_π := CoordSystem.he_not_π hR hR_π he he_VR he_V
+  have he_m := CoordSystem.e_not_m hR hR_π he he_VR he_V
+  obtain ⟨κ3, hκ3, hchar⟩ := Φ.line_form_exists hp hp_π hq hq_π hpq
+  have hρπ : (p ⊔ q ⊔ e) ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = p ⊔ q := by
+    rw [sup_inf_assoc_of_le e (sup_le hp_π hq_π)]
+    have hbot : e ⊓ (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = ⊥ :=
+      (he.le_iff.mp inf_le_left).resolve_right
+        (fun h =&gt; he_π (le_of_eq_of_le h.symm inf_le_right))
+    rw [hbot, sup_bot_eq]
+  refine ⟨![κ3 0, κ3 1,
+    op (-(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))) * κ3 1, κ3 2], ?_, ?_⟩
+  · intro h
+    apply hκ3
+    funext i
+    fin_cases i
+    · exact congrFun h 0
+    · exact congrFun h 1
+    · exact congrFun h 3
+  · intro t ht ht_τ
+    by_cases htσ : t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+    · by_cases htm : t ≤ Φ.Γ.U ⊔ Φ.Γ.V
+      · have ht_π : t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V := htm.trans Φ.Γ.m_le_π
+        have hlat : t ≤ p ⊔ q ⊔ e ↔ t ≤ p ⊔ q :=
+          ⟨fun h =&gt; le_of_le_of_eq (le_inf h ht_π) hρπ,
+           fun h =&gt; h.trans le_sup_left⟩
+        rw [hlat, hchar t ht ht_π, Φ.hvec4_π hc hc_UR hc_U ht_π,
+          spaceForm_extZ κ3
+            (op (-(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))) * κ3 1)
+            (Φ.Γ.hvec t)]
+      · by_cases hte : t = e
+        · obtain ⟨hxe, hye⟩ := Φ.wpt_e_coords hc hc_UR hc_U hc_R
+            he he_VR he_V he_R
+          have hval : spaceForm ![κ3 0, κ3 1,
+              op (-(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))) * κ3 1, κ3 2]
+              (Φ.Γ.hvec4 Φ.R c t) = 0 := by
+            rw [hte, Φ.Γ.hvec4_inf Φ.R c he_σ he_m, spaceForm_apply, hxe, hye]
+            show op (0 : Coordinate Φ.Γ) * κ3 0 +
+              op (Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V))) * κ3 1 +
+              1 * (op (-(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))) * κ3 1) +
+              0 * κ3 2 = 0
+            rw [MulOpposite.op_zero, zero_mul, zero_add, one_mul, zero_mul,
+              add_zero, MulOpposite.op_neg, neg_mul, add_neg_cancel]
+          exact iff_of_true (hte ▸ le_sup_right) hval
+        · obtain ⟨hw_atom, hw_τ, hw_σ, _, _⟩ :=
+            CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R ht htσ htm
+          have hg_ne_O := CoordSystem.shproj_wpt_ne_O hR hR_π hc hc_UR hc_U
+            hc_R he he_σ he_π ht htσ htm hte
+          have hchain := Φ.dir_trace_char hc hc_UR hc_U hc_R he he_σ he_π
+            hp hp_π hq hq_π hchar ht htσ htm hte hg_ne_O
+          rw [hchain, Φ.Γ.hvec4_inf Φ.R c htσ htm]
+          have hval : op (Φ.Γ.xcoordC (Φ.Γ.shproj e (Φ.Γ.wpt Φ.R c t))) *
+              κ3 0 + op (Φ.Γ.ycoordC (Φ.Γ.shproj e (Φ.Γ.wpt Φ.R c t))) *
+              κ3 1 = spaceForm ![κ3 0, κ3 1,
+              op (-(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))) * κ3 1, κ3 2]
+              ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))),
+                op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))),
+                1, 0] := by
+            rw [spaceForm_apply,
+              Φ.xcoordC_shproj_e he he_VR he_V hw_atom hw_τ hw_σ,
+              Φ.ycoordC_shproj_e hc hc_UR hc_U hc_R he he_VR he_V he_R
+                hw_atom hw_τ hw_σ,
+              CoordSystem.zcoordC_wpt hR hR_π hc hc_UR hc_U hc_R ht htσ htm,
+              mul_one]
+            show op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 0 +
+              op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t)) +
+                -(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))) * κ3 1 =
+              op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 0 +
+              op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * κ3 1 +
+              1 * (op (-(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))) * κ3 1) +
+              0 * κ3 2
+            rw [MulOpposite.op_add, add_mul, one_mul, zero_mul, add_zero,
+              add_assoc]
+          rw [hval]
+    · have hs_atom := CoordSystem.shproj_is_atom hR hR_π he he_σ he_π
+        ht ht_τ htσ
+      have hs_π := Φ.Γ.shproj_le_π e t
+      have hs_aff := CoordSystem.shproj_affine hR hR_π he he_σ he_π ht ht_τ htσ
+      have hlat : t ≤ p ⊔ q ⊔ e ↔ Φ.Γ.shproj e t ≤ p ⊔ q := by
+        constructor
+        · intro h
+          exact le_of_le_of_eq (le_inf (inf_le_left.trans
+            (sup_le h (le_sup_right : e ≤ p ⊔ q ⊔ e))) inf_le_right) hρπ
+        · intro h
+          have h1 : t ≤ Φ.Γ.shproj e t ⊔ e :=
+            le_sup_left.trans
+              (CoordSystem.sup_center_shproj hR hR_π he he_σ he_π
+                ht ht_τ htσ).le
+          exact h1.trans (sup_le (h.trans le_sup_left) le_sup_right)
+      rw [hlat, hchar _ hs_atom hs_π, Φ.Γ.hvec_affine hs_aff,
+        Φ.Γ.hvec4_affine Φ.R c htσ]
+      have hval : planeForm κ3 ![op (Φ.Γ.xcoordC (Φ.Γ.shproj e t)),
+          op (Φ.Γ.ycoordC (Φ.Γ.shproj e t)), 1] =
+          spaceForm ![κ3 0, κ3 1,
+            op (-(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))) * κ3 1, κ3 2]
+          ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)),
+            op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)),
+            op (Φ.Γ.zcoordC Φ.R c t), 1] := by
+        rw [planeForm_apply, spaceForm_apply,
+          Φ.xcoordC_shproj_e he he_VR he_V ht ht_τ htσ,
+          Φ.ycoordC_shproj_e hc hc_UR hc_U hc_R he he_VR he_V he_R ht ht_τ htσ]
+        show op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)) * κ3 0 +
+          op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t) +
+            -(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V))) * Φ.Γ.zcoordC Φ.R c t) *
+            κ3 1 + 1 * κ3 2 =
+          op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)) * κ3 0 +
+          op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)) * κ3 1 +
+          op (Φ.Γ.zcoordC Φ.R c t) *
+            (op (-(Φ.Γ.slopeC ((e ⊔ c) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)))) * κ3 1) +
+          1 * κ3 2
+        rw [MulOpposite.op_add, add_mul, ← mul_assoc,
+          ← MulOpposite.op_mul, ← add_assoc]
+      rw [hval]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.hplane_form" href="#CoordFrame.hplane_form">CoordFrame.hplane_form</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {Z₀ : L} (hZ : IsAtom Z₀) (hZ_ζ : Z₀ ≤ Φ.Γ.O ⊔ Φ.R) (hZ_R : Z₀ ≠ Φ.R) :
+    ∃ κ : Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ, κ ≠ 0 ∧
+      ∀ t, IsAtom t → t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+        (t ≤ Z₀ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) ↔ spaceForm κ (Φ.Γ.hvec4 Φ.R c t) = 0) := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have hZ_σ := CoordSystem.ζ_affine_off_σ hR hR_π hZ hZ_ζ hZ_R
+  have hZ_τ : Z₀ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := hZ_ζ.trans (Φ.Γ.ζ_le_τ Φ.R)
+  refine ⟨![0, 0, 1, op (-(Φ.Γ.zcoordC Φ.R c Z₀))], ?_, ?_⟩
+  · intro h
+    exact Φ.Γ.op_one_ne_zero (congrFun h 2)
+  · intro t ht ht_τ
+    by_cases htσ : t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+    · have h_inf_σ : (Z₀ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) =
+          Φ.Γ.U ⊔ Φ.Γ.V := by
+        rw [sup_comm Z₀ (Φ.Γ.U ⊔ Φ.Γ.V),
+          sup_inf_assoc_of_le Z₀
+            (le_sup_left : Φ.Γ.U ⊔ Φ.Γ.V ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)]
+        have hbot : Z₀ ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) = ⊥ :=
+          (hZ.le_iff.mp inf_le_left).resolve_right
+            (fun h =&gt; hZ_σ (le_of_eq_of_le h.symm inf_le_right))
+        rw [hbot, sup_bot_eq]
+      have hlat : t ≤ Z₀ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) ↔ t ≤ Φ.Γ.U ⊔ Φ.Γ.V :=
+        ⟨fun h =&gt; le_of_le_of_eq (le_inf h htσ) h_inf_σ,
+         fun h =&gt; h.trans le_sup_right⟩
+      rw [hlat]
+      by_cases htm : t ≤ Φ.Γ.U ⊔ Φ.Γ.V
+      · refine iff_of_true htm ?_
+        by_cases htV : t = Φ.Γ.V
+        · rw [htV, Φ.Γ.hvec4_V, spaceForm_apply]
+          show (0 : (Coordinate Φ.Γ)ᵐᵒᵖ) * 0 + 1 * 0 + 0 * 1 +
+            0 * op (-(Φ.Γ.zcoordC Φ.R c Z₀)) = 0
+          rw [mul_zero, mul_zero, zero_mul, zero_mul, add_zero, add_zero,
+            add_zero]
+        · rw [Φ.Γ.hvec4_dir Φ.R c htm htV, spaceForm_apply]
+          show (1 : (Coordinate Φ.Γ)ᵐᵒᵖ) * 0 + op (Φ.Γ.slopeC t) * 0 +
+            0 * 1 + 0 * op (-(Φ.Γ.zcoordC Φ.R c Z₀)) = 0
+          rw [mul_zero, mul_zero, zero_mul, zero_mul, add_zero, add_zero,
+            add_zero]
+      · refine iff_of_false htm ?_
+        rw [Φ.Γ.hvec4_inf Φ.R c htσ htm, spaceForm_apply]
+        show ¬ (op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * 0 +
+          op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c t))) * 0 +
+          1 * 1 + 0 * op (-(Φ.Γ.zcoordC Φ.R c Z₀)) = 0)
+        rw [mul_zero, mul_zero, one_mul, zero_mul, add_zero, zero_add,
+          zero_add]
+        exact Φ.Γ.op_one_ne_zero
+    · have hz_atom := CoordSystem.zproj_is_atom hR hR_π ht ht_τ htσ
+      have hz_ζ := Φ.Γ.zproj_le_ζ Φ.R t
+      have hmζ_bot : (Φ.Γ.U ⊔ Φ.Γ.V) ⊓ (Φ.Γ.O ⊔ Φ.R) = ⊥ := by
+        have hRm : Φ.R ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) = ⊥ :=
+          (hR.le_iff.mp inf_le_left).resolve_right
+            (fun h =&gt; CoordSystem.hR_not_m hR_π
+              (le_of_eq_of_le h.symm inf_le_right))
+        have h2 : (Φ.Γ.U ⊔ Φ.Γ.V) ⊓ (Φ.Γ.O ⊔ Φ.R) ≤
+            (Φ.Γ.O ⊔ Φ.R) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :=
+          le_inf inf_le_right (inf_le_left.trans le_sup_left)
+        rw [CoordSystem.ζ_inf_σ hR hR_π] at h2
+        exact le_bot_iff.mp ((le_inf h2 inf_le_left).trans_eq hRm)
+      have hlat : t ≤ Z₀ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) ↔ Φ.Γ.zproj Φ.R t = Z₀ := by
+        constructor
+        · intro h
+          have h1 : Φ.Γ.zproj Φ.R t ≤ (Z₀ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) ⊓ (Φ.Γ.O ⊔ Φ.R) :=
+            le_inf (inf_le_left.trans (sup_le h le_sup_right)) hz_ζ
+          rw [sup_inf_assoc_of_le (Φ.Γ.U ⊔ Φ.Γ.V) hZ_ζ, hmζ_bot,
+            sup_bot_eq] at h1
+          exact IsAtom.eq_of_le hz_atom hZ h1
+        · intro h
+          have h1 : t ≤ Φ.Γ.zproj Φ.R t ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) :=
+            le_sup_left.trans (CoordSystem.sup_m_zproj hR hR_π ht ht_τ htσ).le
+          rwa [h] at h1
+      rw [hlat, Φ.Γ.hvec4_affine Φ.R c htσ]
+      have hval : spaceForm ![0, 0, 1, op (-(Φ.Γ.zcoordC Φ.R c Z₀))]
+          ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)),
+            op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)),
+            op (Φ.Γ.zcoordC Φ.R c t), 1] =
+          op (Φ.Γ.zcoordC Φ.R c t + -(Φ.Γ.zcoordC Φ.R c Z₀)) := by
+        rw [spaceForm_apply]
+        show op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R t)) * 0 +
+          op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R t)) * 0 +
+          op (Φ.Γ.zcoordC Φ.R c t) * 1 + 1 * op (-(Φ.Γ.zcoordC Φ.R c Z₀)) = _
+        rw [mul_zero, mul_zero, mul_one, one_mul, add_zero, zero_add,
+          MulOpposite.op_add]
+      rw [hval]
+      constructor
+      · intro h
+        have h1 : Φ.Γ.zcoordC Φ.R c t = Φ.Γ.zcoordC Φ.R c Z₀ := by
+          apply Subtype.ext
+          rw [CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R ht ht_τ htσ,
+            CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R hZ hZ_τ hZ_σ,
+            h, CoordSystem.zproj_of_on_ζ hR hR_π hZ hZ_ζ hZ_R]
+        rw [h1, add_neg_cancel, MulOpposite.op_zero]
+      · intro h
+        have h1 : Φ.Γ.zcoordC Φ.R c t = Φ.Γ.zcoordC Φ.R c Z₀ := by
+          have h2 : Φ.Γ.zcoordC Φ.R c t + -(Φ.Γ.zcoordC Φ.R c Z₀) = 0 := by
+            have h3 := congrArg MulOpposite.unop h
+            rwa [MulOpposite.unop_op] at h3
+          have h4 := congrArg (fun w =&gt; w + Φ.Γ.zcoordC Φ.R c Z₀) h2
+          simp only [add_assoc, neg_add_cancel, add_zero, zero_add] at h4
+          exact h4
+        apply CoordSystem.zcoord_inj hR hR_π hc hc_UR hc_U hc_R hz_atom hz_ζ
+          hZ hZ_ζ
+        have h5 := congrArg Subtype.val h1
+        rw [CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R ht ht_τ htσ,
+          CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R hZ hZ_τ hZ_σ]
+          at h5
+        rwa [CoordSystem.zproj_of_on_ζ hR hR_π hZ hZ_ζ hZ_R] at h5
+
+
+/-! ## The two-form assembly: a line is the meet of two characterized planes -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.two_form_collinear" href="#CoordFrame.two_form_collinear">CoordFrame.two_form_collinear</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {p q r : L} (hp : IsAtom p) (hp_τ : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hq : IsAtom q) (hq_τ : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hr : IsAtom r) (hr_τ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) (hpq : p ≠ q)
+    {κ₁ κ₂ : Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ} {ρ₁ ρ₂ : L}
+    (hchar₁ : ∀ t, IsAtom t → t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+      (t ≤ ρ₁ ↔ spaceForm κ₁ (Φ.Γ.hvec4 Φ.R c t) = 0))
+    (hchar₂ : ∀ t, IsAtom t → t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+      (t ≤ ρ₂ ↔ spaceForm κ₂ (Φ.Γ.hvec4 Φ.R c t) = 0))
+    (hmeet : ρ₁ ⊓ ρ₂ = p ⊔ q)
+    {t₁ t₂ : L} (ht₁ : IsAtom t₁) (ht₁_τ : t₁ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht₁_in : t₁ ≤ ρ₁) (ht₁_out : ¬ t₁ ≤ ρ₂)
+    (ht₂ : IsAtom t₂) (ht₂_τ : t₂ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ht₂_in : t₂ ≤ ρ₂) (ht₂_out : ¬ t₂ ≤ ρ₁) :
+    r ≤ p ⊔ q ↔ Φ.Γ.hvec4 Φ.R c r ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c p, Φ.Γ.hvec4 Φ.R c q} := by
+  have hp_le : p ≤ ρ₁ ⊓ ρ₂ := le_of_le_of_eq le_sup_left hmeet.symm
+  have hq_le : q ≤ ρ₁ ⊓ ρ₂ := le_of_le_of_eq le_sup_right hmeet.symm
+  have hspan : Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c p, Φ.Γ.hvec4 Φ.R c q} =
+      LinearMap.ker (spaceForm κ₁) ⊓ LinearMap.ker (spaceForm κ₂) :=
+    space_span_pair_eq_ker_pair
+      ((hchar₁ t₁ ht₁ ht₁_τ).mp ht₁_in)
+      (fun h =&gt; ht₁_out ((hchar₂ t₁ ht₁ ht₁_τ).mpr h))
+      (fun h =&gt; ht₂_out ((hchar₁ t₂ ht₂ ht₂_τ).mpr h))
+      ((hchar₂ t₂ ht₂ ht₂_τ).mp ht₂_in)
+      (Φ.Γ.hvec4_ne_zero Φ.R c p)
+      (Φ.hvec4_span_inj hc hc_UR hc_U hc_R hp hp_τ hq hq_τ hpq)
+      ((hchar₁ p hp hp_τ).mp (hp_le.trans inf_le_left))
+      ((hchar₂ p hp hp_τ).mp (hp_le.trans inf_le_right))
+      ((hchar₁ q hq hq_τ).mp (hq_le.trans inf_le_left))
+      ((hchar₂ q hq hq_τ).mp (hq_le.trans inf_le_right))
+  rw [hspan]
+  constructor
+  · intro h
+    have h1 : r ≤ ρ₁ ⊓ ρ₂ := le_of_le_of_eq h hmeet.symm
+    exact ⟨LinearMap.mem_ker.mpr ((hchar₁ r hr hr_τ).mp (h1.trans inf_le_left)),
+      LinearMap.mem_ker.mpr ((hchar₂ r hr hr_τ).mp (h1.trans inf_le_right))⟩
+  · intro h
+    have h1 : r ≤ ρ₁ := (hchar₁ r hr hr_τ).mpr (LinearMap.mem_ker.mp h.1)
+    have h2 : r ≤ ρ₂ := (hchar₂ r hr hr_τ).mpr (LinearMap.mem_ker.mp h.2)
+    exact le_of_le_of_eq (le_inf h1 h2) hmeet
+
+/-! ## The horizontal case: a line of constant height -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.collinear_horizontal" href="#CoordFrame.collinear_horizontal">CoordFrame.collinear_horizontal</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {a₁ a₂ r : L} (ha₁ : IsAtom a₁) (ha₁_τ : a₁ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha₁_σ : ¬ a₁ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha₂ : IsAtom a₂) (ha₂_τ : a₂ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha₂_σ : ¬ a₂ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hr : IsAtom r) (hr_τ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha : a₁ ≠ a₂) (hz : Φ.Γ.zproj Φ.R a₁ = Φ.Γ.zproj Φ.R a₂) :
+    r ≤ a₁ ⊔ a₂ ↔ Φ.Γ.hvec4 Φ.R c r ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c a₁, Φ.Γ.hvec4 Φ.R c a₂} := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have hb₁_atom := CoordSystem.baseproj_is_atom hR hR_π ha₁ ha₁_τ ha₁_σ
+  have hb₁_π := Φ.Γ.baseproj_le_π Φ.R a₁
+  have hb₂_atom := CoordSystem.baseproj_is_atom hR hR_π ha₂ ha₂_τ ha₂_σ
+  have hb₂_π := Φ.Γ.baseproj_le_π Φ.R a₂
+  have hz₁_atom := CoordSystem.zproj_is_atom hR hR_π ha₁ ha₁_τ ha₁_σ
+  have hz₁_ζ := Φ.Γ.zproj_le_ζ Φ.R a₁
+  have hz₁_R := CoordSystem.zproj_ne_R hR_π ha₁ ha₁_σ
+  have hb_ne : Φ.Γ.baseproj Φ.R a₁ ≠ Φ.Γ.baseproj Φ.R a₂ := by
+    intro h
+    exact ha (CoordSystem.space_affine_ext hR hR_π ha₁ ha₁_τ ha₁_σ
+      ha₂ ha₂_τ ha₂_σ h hz)
+  obtain ⟨κ₁, _, hchar₁⟩ := Φ.Rplane_form hc hc_UR hc_U hc_R
+    hb₁_atom hb₁_π hb₂_atom hb₂_π hb_ne
+  obtain ⟨κ₂, _, hchar₂⟩ := Φ.hplane_form hc hc_UR hc_U hc_R
+    hz₁_atom hz₁_ζ hz₁_R
+  have ha₁_le₁ : a₁ ≤ Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R := by
+    have h1 : a₁ ≤ Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.R :=
+      le_sup_left.trans (CoordSystem.sup_R_baseproj hR hR_π ha₁ ha₁_τ ha₁_σ).le
+    exact h1.trans (sup_le (le_sup_left.trans le_sup_left) le_sup_right)
+  have ha₂_le₁ : a₂ ≤ Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R := by
+    have h1 : a₂ ≤ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R :=
+      le_sup_left.trans (CoordSystem.sup_R_baseproj hR hR_π ha₂ ha₂_τ ha₂_σ).le
+    exact h1.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+  have ha₁_le₂ : a₁ ≤ Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) :=
+    le_sup_left.trans (CoordSystem.sup_m_zproj hR hR_π ha₁ ha₁_τ ha₁_σ).le
+  have ha₂_le₂ : a₂ ≤ Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) := by
+    have h1 : a₂ ≤ Φ.Γ.zproj Φ.R a₂ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) :=
+      le_sup_left.trans (CoordSystem.sup_m_zproj hR hR_π ha₂ ha₂_τ ha₂_σ).le
+    rwa [← hz] at h1
+  have hR_out : ¬ Φ.R ≤ Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) :=
+    CoordSystem.hR_not_sup_m hR_π hz₁_atom
+      (CoordSystem.ζ_affine_off_σ hR hR_π hz₁_atom hz₁_ζ hz₁_R)
+  have hcov : a₁ ⊔ a₂ ⋖ a₁ ⊔ a₂ ⊔ Φ.R := by
+    have h_meet : Φ.R ⊓ (a₁ ⊔ a₂) = ⊥ := by
+      refine (hR.le_iff.mp inf_le_left).resolve_right (fun h =&gt; ?_)
+      have h1 : Φ.R ≤ Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) :=
+        (le_of_eq_of_le h.symm inf_le_right).trans
+          (sup_le ha₁_le₂ ha₂_le₂)
+      exact hR_out h1
+    have h := covBy_sup_of_inf_covBy_left (h_meet ▸ hR.bot_covBy)
+    rwa [sup_comm Φ.R (a₁ ⊔ a₂)] at h
+  have hmeet : (Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R) ⊓
+      (Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) = a₁ ⊔ a₂ := by
+    have hρ₁_eq : Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R =
+        a₁ ⊔ a₂ ⊔ Φ.R := by
+      apply le_antisymm
+      · refine sup_le (sup_le ?_ ?_) le_sup_right
+        · exact (inf_le_left : Φ.Γ.baseproj Φ.R a₁ ≤ a₁ ⊔ Φ.R).trans
+            (sup_le ((le_sup_left.trans le_sup_left :
+              a₁ ≤ a₁ ⊔ a₂ ⊔ Φ.R)) le_sup_right)
+        · exact (inf_le_left : Φ.Γ.baseproj Φ.R a₂ ≤ a₂ ⊔ Φ.R).trans
+            (sup_le ((le_sup_right.trans le_sup_left :
+              a₂ ≤ a₁ ⊔ a₂ ⊔ Φ.R)) le_sup_right)
+      · exact sup_le (sup_le ha₁_le₁ ha₂_le₁) le_sup_right
+    rw [hρ₁_eq]
+    apply le_antisymm
+    · have h1 : (a₁ ⊔ a₂ ⊔ Φ.R) ⊓ (Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) &lt;
+          a₁ ⊔ a₂ ⊔ Φ.R := by
+        refine lt_of_le_of_ne inf_le_left (fun h =&gt; ?_)
+        exact hR_out (le_of_eq_of_le h.symm inf_le_right
+          |&gt;.trans le_rfl |&gt; (fun h&#x27; =&gt; (le_sup_right.trans h&#x27; :
+            Φ.R ≤ Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V))))
+      have h2 : a₁ ⊔ a₂ ≤ (a₁ ⊔ a₂ ⊔ Φ.R) ⊓
+          (Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) :=
+        le_inf le_sup_left (sup_le ha₁_le₂ ha₂_le₂)
+      exact ((hcov.eq_or_eq h2 h1.le).resolve_right h1.ne).le
+    · exact le_inf le_sup_left (sup_le ha₁_le₂ ha₂_le₂)
+  have hb₁_aff := CoordSystem.baseproj_affine hR hR_π ha₁ ha₁_τ ha₁_σ
+  have hρ₁π : (Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R) ⊓
+      (Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) = Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ := by
+    rw [sup_inf_assoc_of_le Φ.R (sup_le hb₁_π hb₂_π),
+      CoordSystem.R_inf_π hR hR_π, sup_bot_eq]
+  have hR_in : Φ.R ≤ Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R :=
+    le_sup_right
+  have hR_τ : Φ.R ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := le_sup_right
+  by_cases hU : Φ.Γ.U ≤ Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R
+  · have hV_out : ¬ Φ.Γ.V ≤
+        Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R := by
+      intro hV
+      have hU&#x27; : Φ.Γ.U ≤ Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ :=
+        le_of_le_of_eq (le_inf hU (le_sup_right.trans le_sup_left)) hρ₁π
+      have hV&#x27; : Φ.Γ.V ≤ Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ :=
+        le_of_le_of_eq (le_inf hV le_sup_right) hρ₁π
+      have h_line : Φ.Γ.U ⊔ Φ.Γ.V =
+          Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ :=
+        line_eq_of_two_atoms_le hb₁_atom hb₂_atom hb_ne Φ.Γ.hU Φ.Γ.hV
+          Φ.Γ.hUV hU&#x27; hV&#x27;
+      exact hb₁_aff (le_of_le_of_eq (le_sup_left :
+        Φ.Γ.baseproj Φ.R a₁ ≤ _) h_line.symm)
+    exact Φ.two_form_collinear hc hc_UR hc_U hc_R ha₁ ha₁_τ ha₂ ha₂_τ hr hr_τ ha
+      hchar₁ hchar₂ hmeet hR hR_τ hR_in hR_out Φ.Γ.hV
+      (le_sup_right.trans le_sup_left)
+      (le_sup_right.trans le_sup_right :
+        Φ.Γ.V ≤ Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) hV_out
+  · exact Φ.two_form_collinear hc hc_UR hc_U hc_R ha₁ ha₁_τ ha₂ ha₂_τ hr hr_τ ha
+      hchar₁ hchar₂ hmeet hR hR_τ hR_in hR_out Φ.Γ.hU
+      ((le_sup_right.trans le_sup_left).trans le_sup_left)
+      ((le_sup_left.trans le_sup_right) :
+        Φ.Γ.U ≤ Φ.Γ.zproj Φ.R a₁ ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) hU
+
+
+/-! ## Reading a line through any spanning pair -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.collinear_of_line_eq" href="#CoordFrame.collinear_of_line_eq">CoordFrame.collinear_of_line_eq</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {a₁ a₂ p q r : L}
+    (ha₁ : IsAtom a₁) (ha₁_τ : a₁ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha₂ : IsAtom a₂) (ha₂_τ : a₂ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hp : IsAtom p) (hp_τ : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hq : IsAtom q) (hq_τ : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hr : IsAtom r) (hr_τ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hpq : p ≠ q) (hline : p ⊔ q = a₁ ⊔ a₂)
+    (hmain : ∀ r&#x27;, IsAtom r&#x27; → r&#x27; ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+      (r&#x27; ≤ a₁ ⊔ a₂ ↔ Φ.Γ.hvec4 Φ.R c r&#x27; ∈
+        Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+          {Φ.Γ.hvec4 Φ.R c a₁, Φ.Γ.hvec4 Φ.R c a₂})) :
+    r ≤ p ⊔ q ↔ Φ.Γ.hvec4 Φ.R c r ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c p, Φ.Γ.hvec4 Φ.R c q} := by
+  have ha_ne : a₁ ≠ a₂ := by
+    intro h
+    rw [h, sup_idem] at hline
+    exact hpq (IsAtom.eq_of_le hp ha₂ (hline ▸ le_sup_left) |&gt;.trans
+      (IsAtom.eq_of_le hq ha₂ (hline ▸ le_sup_right)).symm)
+  have hspan_eq : Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c p, Φ.Γ.hvec4 Φ.R c q} =
+      Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c a₁, Φ.Γ.hvec4 Φ.R c a₂} := by
+    have h_le : Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+        {Φ.Γ.hvec4 Φ.R c p, Φ.Γ.hvec4 Φ.R c q} ≤
+        Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+        {Φ.Γ.hvec4 Φ.R c a₁, Φ.Γ.hvec4 Φ.R c a₂} := by
+      rw [Submodule.span_le]
+      rintro w (rfl | rfl)
+      · exact (hmain p hp hp_τ).mp (hline ▸ le_sup_left)
+      · exact (hmain q hq hq_τ).mp (hline ▸ le_sup_right)
+    refine Submodule.eq_of_le_of_finrank_le h_le ?_
+    rw [plane_span_pair_finrank (Φ.Γ.hvec4_ne_zero Φ.R c a₁)
+        (Φ.hvec4_span_inj hc hc_UR hc_U hc_R ha₁ ha₁_τ ha₂ ha₂_τ ha_ne),
+      plane_span_pair_finrank (Φ.Γ.hvec4_ne_zero Φ.R c p)
+        (Φ.hvec4_span_inj hc hc_UR hc_U hc_R hp hp_τ hq hq_τ hpq)]
+  rw [hline, hmain r hr hr_τ, hspan_eq]
+
+/-! ## The plane case: lines of `π` transport through the embedding -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.collinear_π" href="#CoordFrame.collinear_π">CoordFrame.collinear_π</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {p q r : L} (hp : IsAtom p) (hp_π : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hq : IsAtom q) (hq_π : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hr : IsAtom r) (hr_τ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) (hpq : p ≠ q) :
+    r ≤ p ⊔ q ↔ Φ.Γ.hvec4 Φ.R c r ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c p, Φ.Γ.hvec4 Φ.R c q} := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  by_cases hrπ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V
+  · rw [Φ.hvec4_π hc hc_UR hc_U hp_π, Φ.hvec4_π hc hc_UR hc_U hq_π,
+      Φ.hvec4_π hc hc_UR hc_U hrπ, planeInj_mem_span_pair]
+    exact Φ.plane_collinear_iff hp hp_π hq hq_π hr hrπ hpq
+  · refine iff_of_false (fun h =&gt; hrπ (h.trans (sup_le hp_π hq_π))) ?_
+    intro hmem
+    rw [Φ.hvec4_π hc hc_UR hc_U hp_π, Φ.hvec4_π hc hc_UR hc_U hq_π] at hmem
+    have hslot := span_pair_slot (planeInj_slot2 (Φ.Γ.hvec p))
+      (planeInj_slot2 (Φ.Γ.hvec q)) hmem
+    by_cases hrσ : r ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+    · have hrm : ¬ r ≤ Φ.Γ.U ⊔ Φ.Γ.V := fun h =&gt; hrπ (h.trans Φ.Γ.m_le_π)
+      rw [Φ.Γ.hvec4_inf Φ.R c hrσ hrm] at hslot
+      exact Φ.Γ.op_one_ne_zero hslot
+    · rw [Φ.Γ.hvec4_affine Φ.R c hrσ] at hslot
+      have hz_atom := CoordSystem.zproj_is_atom hR hR_π hr hr_τ hrσ
+      have hz_ζ := Φ.Γ.zproj_le_ζ Φ.R r
+      have h1 : Φ.Γ.zcoordC Φ.R c r = 0 :=
+        MulOpposite.op_eq_zero_iff _ |&gt;.mp hslot
+      have h2 := congrArg Subtype.val h1
+      rw [CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R hr hr_τ hrσ,
+        Coordinate.zero_val] at h2
+      have h3 : Φ.Γ.zproj Φ.R r = Φ.Γ.O := by
+        apply CoordSystem.zcoord_inj hR hR_π hc hc_UR hc_U hc_R hz_atom hz_ζ
+          Φ.Γ.hO (le_sup_left : Φ.Γ.O ≤ Φ.Γ.O ⊔ Φ.R)
+        rw [h2, CoordSystem.zcoord_O hR hR_π hc hc_UR hc_U]
+      apply hrπ
+      have h4 : r ≤ Φ.Γ.zproj Φ.R r ⊔ (Φ.Γ.U ⊔ Φ.Γ.V) :=
+        le_sup_left.trans (CoordSystem.sup_m_zproj hR hR_π hr hr_τ hrσ).le
+      rw [h3] at h4
+      exact h4.trans (sup_le (le_sup_left.trans le_sup_left) Φ.Γ.m_le_π)
+
+/-! ## The vertical case: the line through an affine atom and `R` -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.collinear_vertical" href="#CoordFrame.collinear_vertical">CoordFrame.collinear_vertical</a> (Φ : CoordFrame L) {c e : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    (he : IsAtom e) (he_VR : e ≤ Φ.Γ.V ⊔ Φ.R) (he_V : e ≠ Φ.Γ.V) (he_R : e ≠ Φ.R)
+    {a r : L} (ha : IsAtom a) (ha_τ : a ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha_σ : ¬ a ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hr : IsAtom r) (hr_τ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :
+    r ≤ a ⊔ Φ.R ↔ Φ.Γ.hvec4 Φ.R c r ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c a, Φ.Γ.hvec4 Φ.R c Φ.R} := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have hb_atom := CoordSystem.baseproj_is_atom hR hR_π ha ha_τ ha_σ
+  have hb_π := Φ.Γ.baseproj_le_π Φ.R a
+  have hb_aff := CoordSystem.baseproj_affine hR hR_π ha ha_τ ha_σ
+  have ha_ne_R : a ≠ Φ.R := CoordSystem.ne_R_of_off_σ ha_σ
+  have haR : a ⊔ Φ.R = Φ.Γ.baseproj Φ.R a ⊔ Φ.R :=
+    CoordSystem.sup_R_baseproj hR hR_π ha ha_τ ha_σ
+  have hbU_ne : Φ.Γ.baseproj Φ.R a ≠ Φ.Γ.U := Φ.Γ.ne_U_of_affine hb_aff
+  have hbV_ne : Φ.Γ.baseproj Φ.R a ≠ Φ.Γ.V := Φ.Γ.ne_V_of_affine hb_aff
+  obtain ⟨κ₁, _, hchar₁⟩ := Φ.cplane_form hc hc_UR hc_U hc_R
+    hb_atom hb_π Φ.Γ.hU (le_sup_right.trans le_sup_left) hbU_ne
+  obtain ⟨κ₂, _, hchar₂⟩ := Φ.eplane_form hc hc_UR hc_U hc_R
+    he he_VR he_V he_R hb_atom hb_π Φ.Γ.hV le_sup_right hbV_ne
+  have hρ₁_eq : Φ.Γ.baseproj Φ.R a ⊔ Φ.Γ.U ⊔ c = a ⊔ Φ.R ⊔ c := by
+    apply le_antisymm
+    · refine sup_le (sup_le ?_ ?_) le_sup_right
+      · exact (le_of_le_of_eq le_sup_left haR.symm).trans le_sup_left
+      · have hU_le : Φ.Γ.U ≤ Φ.R ⊔ c :=
+          le_of_le_of_eq (le_sup_right : Φ.Γ.U ≤ Φ.R ⊔ Φ.Γ.U)
+            (CoordSystem.RU_eq_Rc hR hR_π hc hc_UR hc_U hc_R)
+        exact hU_le.trans
+          (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+    · refine sup_le (sup_le ?_ ?_) le_sup_right
+      · have h1 : a ≤ Φ.Γ.baseproj Φ.R a ⊔ Φ.R := le_sup_left.trans haR.le
+        have hR_le : Φ.R ≤ Φ.Γ.U ⊔ c :=
+          le_of_le_of_eq (le_sup_right : Φ.R ≤ Φ.Γ.U ⊔ Φ.R)
+            (CoordSystem.UR_eq_Uc hR hR_π hc hc_UR hc_U hc_R)
+        exact h1.trans (sup_le (le_sup_left.trans le_sup_left)
+          (hR_le.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right)))
+      · have hR_le : Φ.R ≤ Φ.Γ.U ⊔ c :=
+          le_of_le_of_eq (le_sup_right : Φ.R ≤ Φ.Γ.U ⊔ Φ.R)
+            (CoordSystem.UR_eq_Uc hR hR_π hc hc_UR hc_U hc_R)
+        exact hR_le.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+  have hρ₂_eq : Φ.Γ.baseproj Φ.R a ⊔ Φ.Γ.V ⊔ e = a ⊔ Φ.R ⊔ e := by
+    apply le_antisymm
+    · refine sup_le (sup_le ?_ ?_) le_sup_right
+      · exact (le_of_le_of_eq le_sup_left haR.symm).trans le_sup_left
+      · have hV_le : Φ.Γ.V ≤ Φ.R ⊔ e :=
+          le_of_le_of_eq (le_sup_right : Φ.Γ.V ≤ Φ.R ⊔ Φ.Γ.V)
+            (CoordSystem.RV_eq_Re hR hR_π he he_VR he_V he_R)
+        exact hV_le.trans
+          (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+    · refine sup_le (sup_le ?_ ?_) le_sup_right
+      · have h1 : a ≤ Φ.Γ.baseproj Φ.R a ⊔ Φ.R := le_sup_left.trans haR.le
+        have hR_le : Φ.R ≤ Φ.Γ.V ⊔ e :=
+          le_of_le_of_eq (le_sup_right : Φ.R ≤ Φ.Γ.V ⊔ Φ.R)
+            (CoordSystem.VR_eq_Ve hR hR_π he he_VR he_V he_R)
+        exact h1.trans (sup_le (le_sup_left.trans le_sup_left)
+          (hR_le.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right)))
+      · have hR_le : Φ.R ≤ Φ.Γ.V ⊔ e :=
+          le_of_le_of_eq (le_sup_right : Φ.R ≤ Φ.Γ.V ⊔ Φ.R)
+            (CoordSystem.VR_eq_Ve hR hR_π he he_VR he_V he_R)
+        exact hR_le.trans (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+  rw [hρ₁_eq] at hchar₁
+  rw [hρ₂_eq] at hchar₂
+  have haR_σ : (a ⊔ Φ.R) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) = Φ.R := by
+    rw [sup_comm a Φ.R,
+      sup_inf_assoc_of_le a (le_sup_right : Φ.R ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)]
+    have hbot : a ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) = ⊥ :=
+      (ha.le_iff.mp inf_le_left).resolve_right
+        (fun h =&gt; ha_σ (le_of_eq_of_le h.symm inf_le_right))
+    rw [hbot, sup_bot_eq]
+  have hc_out : ¬ c ≤ a ⊔ Φ.R ⊔ e := by
+    intro h
+    have h1 : c ≤ (a ⊔ (Φ.R ⊔ e)) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) := by
+      refine le_inf ?_ (hc_UR.trans (Φ.Γ.UR_le_σ Φ.R))
+      rwa [sup_assoc] at h
+    rw [sup_comm a (Φ.R ⊔ e), sup_inf_assoc_of_le a
+        (sup_le le_sup_right (he_VR.trans (Φ.Γ.VR_le_σ Φ.R)) :
+          Φ.R ⊔ e ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)] at h1
+    have hbot : a ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) = ⊥ :=
+      (ha.le_iff.mp inf_le_left).resolve_right
+        (fun h&#x27; =&gt; ha_σ (le_of_eq_of_le h&#x27;.symm inf_le_right))
+    rw [hbot, sup_bot_eq, ← CoordSystem.RV_eq_Re hR hR_π he he_VR he_V he_R]
+      at h1
+    have h2 : c ≤ Φ.Γ.V ⊔ Φ.R := h1.trans (sup_comm _ _).le
+    exact hc_R (IsAtom.eq_of_le hc hR
+      (le_of_le_of_eq (le_inf hc_UR h2) (CoordSystem.UR_inf_VR hR hR_π)))
+  have he_out : ¬ e ≤ a ⊔ Φ.R ⊔ c := by
+    intro h
+    have h1 : e ≤ (a ⊔ (Φ.R ⊔ c)) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) := by
+      refine le_inf ?_ (he_VR.trans (Φ.Γ.VR_le_σ Φ.R))
+      rwa [sup_assoc] at h
+    rw [sup_comm a (Φ.R ⊔ c), sup_inf_assoc_of_le a
+        (sup_le le_sup_right (hc_UR.trans (Φ.Γ.UR_le_σ Φ.R)) :
+          Φ.R ⊔ c ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)] at h1
+    have hbot : a ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) = ⊥ :=
+      (ha.le_iff.mp inf_le_left).resolve_right
+        (fun h&#x27; =&gt; ha_σ (le_of_eq_of_le h&#x27;.symm inf_le_right))
+    rw [hbot, sup_bot_eq, ← CoordSystem.RU_eq_Rc hR hR_π hc hc_UR hc_U hc_R]
+      at h1
+    have h2 : e ≤ Φ.Γ.U ⊔ Φ.R := h1.trans (sup_comm _ _).le
+    exact he_R (IsAtom.eq_of_le he hR
+      (le_of_le_of_eq (le_inf h2 he_VR) (CoordSystem.UR_inf_VR hR hR_π)))
+  have hc_notlam : ¬ c ≤ a ⊔ Φ.R := fun h =&gt;
+    hc_R (IsAtom.eq_of_le hc hR (le_of_le_of_eq
+      (le_inf h (hc_UR.trans (Φ.Γ.UR_le_σ Φ.R))) haR_σ))
+  have hcov : a ⊔ Φ.R ⋖ a ⊔ Φ.R ⊔ c := covBy_sup_atom hc hc_notlam
+  have hmeet : (a ⊔ Φ.R ⊔ c) ⊓ (a ⊔ Φ.R ⊔ e) = a ⊔ Φ.R := by
+    apply le_antisymm
+    · have h1 : (a ⊔ Φ.R ⊔ c) ⊓ (a ⊔ Φ.R ⊔ e) &lt; a ⊔ Φ.R ⊔ c :=
+        lt_of_le_of_ne inf_le_left
+          (fun h =&gt; hc_out (le_sup_right.trans
+            (le_of_eq_of_le h.symm inf_le_right)))
+      have h2 : a ⊔ Φ.R ≤ (a ⊔ Φ.R ⊔ c) ⊓ (a ⊔ Φ.R ⊔ e) :=
+        le_inf le_sup_left le_sup_left
+      exact ((hcov.eq_or_eq h2 h1.le).resolve_right h1.ne).le
+    · exact le_inf le_sup_left le_sup_left
+  exact Φ.two_form_collinear hc hc_UR hc_U hc_R ha ha_τ hR
+    (le_sup_right : Φ.R ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) hr hr_τ ha_ne_R
+    hchar₁ hchar₂ hmeet hc
+    ((hc_UR.trans (Φ.Γ.UR_le_σ Φ.R)).trans
+      (sup_le (Φ.Γ.m_le_π.trans le_sup_left) le_sup_right))
+    le_sup_right hc_out he
+    ((he_VR.trans (Φ.Γ.VR_le_σ Φ.R)).trans
+      (sup_le (Φ.Γ.m_le_π.trans le_sup_left) le_sup_right))
+    le_sup_right he_out
+
+
+/-! ## The general case: two affine atoms over distinct bases -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.collinear_general_center" href="#CoordFrame.collinear_general_center">CoordFrame.collinear_general_center</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {w₀ : L} (hw₀ : IsAtom w₀) (hw₀_σ : w₀ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hw₀_π : ¬ w₀ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V) (_hw₀_m : ¬ w₀ ≤ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hw₀_R : w₀ ≠ Φ.R)
+    (hform : ∀ p&#x27; q&#x27;, IsAtom p&#x27; → p&#x27; ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V →
+      IsAtom q&#x27; → q&#x27; ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V → p&#x27; ≠ q&#x27; →
+      ∃ κ : Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ, κ ≠ 0 ∧
+        ∀ t, IsAtom t → t ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+          (t ≤ p&#x27; ⊔ q&#x27; ⊔ w₀ ↔ spaceForm κ (Φ.Γ.hvec4 Φ.R c t) = 0))
+    {a₁ a₂ r : L} (ha₁ : IsAtom a₁) (ha₁_τ : a₁ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha₁_σ : ¬ a₁ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha₂ : IsAtom a₂) (ha₂_τ : a₂ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha₂_σ : ¬ a₂ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hr : IsAtom r) (hr_τ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (ha : a₁ ≠ a₂) (hRlam : ¬ Φ.R ≤ a₁ ⊔ a₂)
+    (hw0lamR : ¬ w₀ ≤ a₁ ⊔ a₂ ⊔ Φ.R) :
+    r ≤ a₁ ⊔ a₂ ↔ Φ.Γ.hvec4 Φ.R c r ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c a₁, Φ.Γ.hvec4 Φ.R c a₂} := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  have hb₁_atom := CoordSystem.baseproj_is_atom hR hR_π ha₁ ha₁_τ ha₁_σ
+  have hb₁_π := Φ.Γ.baseproj_le_π Φ.R a₁
+  have hb₂_atom := CoordSystem.baseproj_is_atom hR hR_π ha₂ ha₂_τ ha₂_σ
+  have hb₂_π := Φ.Γ.baseproj_le_π Φ.R a₂
+  have hb_ne : Φ.Γ.baseproj Φ.R a₁ ≠ Φ.Γ.baseproj Φ.R a₂ := by
+    intro h
+    apply hRlam
+    have h₁ : a₁ ≤ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R := by
+      have := le_sup_left.trans
+        (CoordSystem.sup_R_baseproj hR hR_π ha₁ ha₁_τ ha₁_σ).le
+      rwa [h] at this
+    have h₂ : a₂ ≤ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R :=
+      le_sup_left.trans (CoordSystem.sup_R_baseproj hR hR_π ha₂ ha₂_τ ha₂_σ).le
+    have h_line : a₁ ⊔ a₂ = Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R :=
+      line_eq_of_two_atoms_le hb₂_atom hR
+        (CoordSystem.ne_R_of_le_π hR_π hb₂_π) ha₁ ha₂ ha h₁ h₂
+    exact le_of_le_of_eq (le_sup_right : Φ.R ≤ _) h_line.symm
+  have hs₁_atom := CoordSystem.shproj_is_atom hR hR_π hw₀ hw₀_σ hw₀_π
+    ha₁ ha₁_τ ha₁_σ
+  have hs₁_π := Φ.Γ.shproj_le_π w₀ a₁
+  have hs₂_atom := CoordSystem.shproj_is_atom hR hR_π hw₀ hw₀_σ hw₀_π
+    ha₂ ha₂_τ ha₂_σ
+  have hs₂_π := Φ.Γ.shproj_le_π w₀ a₂
+  have hd_atom : IsAtom ((a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) :=
+    line_meets_hyperplane (CoordSystem.σ_covBy_τ hR hR_π) ha₁ ha₂ ha
+      (sup_le ha₁_τ ha₂_τ) (fun h =&gt; ha₁_σ (le_sup_left.trans h))
+  have hd_le : (a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≤ a₁ ⊔ a₂ := inf_le_left
+  have hd_σ : (a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R :=
+    inf_le_right
+  have hd_ne_R : (a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≠ Φ.R :=
+    fun h =&gt; hRlam (le_of_eq_of_le h.symm hd_le)
+  have hlamR_sig : (a₁ ⊔ a₂ ⊔ Φ.R) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) =
+      Φ.R ⊔ ((a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) := by
+    rw [sup_comm (a₁ ⊔ a₂) Φ.R,
+      sup_inf_assoc_of_le (a₁ ⊔ a₂)
+        (le_sup_right : Φ.R ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)]
+  have hw₀_notRd : ¬ w₀ ≤ Φ.R ⊔ ((a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) := by
+    intro h
+    apply hw0lamR
+    refine h.trans (sup_le (le_sup_right : Φ.R ≤ _) ?_)
+    exact hd_le.trans le_sup_left
+  have hR_out : ¬ Φ.R ≤ a₁ ⊔ a₂ ⊔ w₀ := by
+    intro h
+    apply hw₀_notRd
+    have h1 : Φ.R ≤ (a₁ ⊔ a₂ ⊔ w₀) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :=
+      le_inf h le_sup_right
+    rw [sup_comm (a₁ ⊔ a₂) w₀, sup_inf_assoc_of_le (a₁ ⊔ a₂) hw₀_σ] at h1
+    have h_line : w₀ ⊔ ((a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) = w₀ ⊔ Φ.R := by
+      have hd_ne_w₀ : (a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≠ w₀ :=
+        fun h&#x27; =&gt; hw0lamR (le_of_eq_of_le h&#x27;.symm (hd_le.trans le_sup_left))
+      exact line_eq_of_atom_le&#x27; hw₀ hd_atom hR
+        (Ne.symm hd_ne_w₀) hw₀_R h1
+    have h2 : (a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≤ w₀ ⊔ Φ.R :=
+      le_of_le_of_eq le_sup_right h_line
+    have h3 : Φ.R ⊔ w₀ = Φ.R ⊔ ((a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) :=
+      line_eq_of_atom_le&#x27; hR hw₀ hd_atom (Ne.symm hw₀_R) hd_ne_R.symm
+        (h2.trans (sup_comm _ _).le)
+    exact le_of_le_of_eq (le_of_le_of_eq (le_sup_right : w₀ ≤ Φ.R ⊔ w₀) h3)
+      rfl
+  have hsh_ne : Φ.Γ.shproj w₀ a₁ ≠ Φ.Γ.shproj w₀ a₂ := by
+    intro h
+    have h₁ : a₁ ≤ Φ.Γ.shproj w₀ a₂ ⊔ w₀ := by
+      have := le_sup_left.trans
+        (CoordSystem.sup_center_shproj hR hR_π hw₀ hw₀_σ hw₀_π
+          ha₁ ha₁_τ ha₁_σ).le
+      rwa [h] at this
+    have h₂ : a₂ ≤ Φ.Γ.shproj w₀ a₂ ⊔ w₀ :=
+      le_sup_left.trans
+        (CoordSystem.sup_center_shproj hR hR_π hw₀ hw₀_σ hw₀_π
+          ha₂ ha₂_τ ha₂_σ).le
+    have h_line : a₁ ⊔ a₂ = Φ.Γ.shproj w₀ a₂ ⊔ w₀ :=
+      line_eq_of_two_atoms_le hs₂_atom hw₀
+        (fun h&#x27; =&gt; hw₀_π (le_of_eq_of_le h&#x27;.symm hs₂_π))
+        ha₁ ha₂ ha h₁ h₂
+    have hw₀_le : w₀ ≤ (a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :=
+      le_inf (le_of_le_of_eq (le_sup_right : w₀ ≤ _) h_line.symm) hw₀_σ
+    exact hw0lamR ((IsAtom.eq_of_le hw₀ hd_atom hw₀_le) ▸
+      (hd_le.trans le_sup_left))
+  obtain ⟨κ₁, _, hchar₁⟩ := Φ.Rplane_form hc hc_UR hc_U hc_R
+    hb₁_atom hb₁_π hb₂_atom hb₂_π hb_ne
+  obtain ⟨κ₂, _, hchar₂⟩ := hform (Φ.Γ.shproj w₀ a₁) (Φ.Γ.shproj w₀ a₂)
+    hs₁_atom hs₁_π hs₂_atom hs₂_π hsh_ne
+  have hρ₁_eq : Φ.Γ.baseproj Φ.R a₁ ⊔ Φ.Γ.baseproj Φ.R a₂ ⊔ Φ.R =
+      a₁ ⊔ a₂ ⊔ Φ.R := by
+    apply le_antisymm
+    · refine sup_le (sup_le ?_ ?_) le_sup_right
+      · exact (inf_le_left : Φ.Γ.baseproj Φ.R a₁ ≤ a₁ ⊔ Φ.R).trans
+          (sup_le (le_sup_left.trans le_sup_left) le_sup_right)
+      · exact (inf_le_left : Φ.Γ.baseproj Φ.R a₂ ≤ a₂ ⊔ Φ.R).trans
+          (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+    · refine sup_le (sup_le ?_ ?_) le_sup_right
+      · exact (le_sup_left.trans
+          (CoordSystem.sup_R_baseproj hR hR_π ha₁ ha₁_τ ha₁_σ).le).trans
+          (sup_le (le_sup_left.trans le_sup_left) le_sup_right)
+      · exact (le_sup_left.trans
+          (CoordSystem.sup_R_baseproj hR hR_π ha₂ ha₂_τ ha₂_σ).le).trans
+          (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+  have hρ₂_eq : Φ.Γ.shproj w₀ a₁ ⊔ Φ.Γ.shproj w₀ a₂ ⊔ w₀ =
+      a₁ ⊔ a₂ ⊔ w₀ := by
+    apply le_antisymm
+    · refine sup_le (sup_le ?_ ?_) le_sup_right
+      · exact (inf_le_left : Φ.Γ.shproj w₀ a₁ ≤ a₁ ⊔ w₀).trans
+          (sup_le (le_sup_left.trans le_sup_left) le_sup_right)
+      · exact (inf_le_left : Φ.Γ.shproj w₀ a₂ ≤ a₂ ⊔ w₀).trans
+          (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+    · refine sup_le (sup_le ?_ ?_) le_sup_right
+      · exact (le_sup_left.trans
+          (CoordSystem.sup_center_shproj hR hR_π hw₀ hw₀_σ hw₀_π
+            ha₁ ha₁_τ ha₁_σ).le).trans
+          (sup_le (le_sup_left.trans le_sup_left) le_sup_right)
+      · exact (le_sup_left.trans
+          (CoordSystem.sup_center_shproj hR hR_π hw₀ hw₀_σ hw₀_π
+            ha₂ ha₂_τ ha₂_σ).le).trans
+          (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+  rw [hρ₁_eq] at hchar₁
+  rw [hρ₂_eq] at hchar₂
+  have hcov : a₁ ⊔ a₂ ⋖ a₁ ⊔ a₂ ⊔ Φ.R := covBy_sup_atom hR hRlam
+  have hmeet : (a₁ ⊔ a₂ ⊔ Φ.R) ⊓ (a₁ ⊔ a₂ ⊔ w₀) = a₁ ⊔ a₂ := by
+    apply le_antisymm
+    · have h1 : (a₁ ⊔ a₂ ⊔ Φ.R) ⊓ (a₁ ⊔ a₂ ⊔ w₀) &lt; a₁ ⊔ a₂ ⊔ Φ.R :=
+        lt_of_le_of_ne inf_le_left
+          (fun h =&gt; hR_out (le_sup_right.trans
+            (le_of_eq_of_le h.symm inf_le_right)))
+      have h2 : a₁ ⊔ a₂ ≤ (a₁ ⊔ a₂ ⊔ Φ.R) ⊓ (a₁ ⊔ a₂ ⊔ w₀) :=
+        le_inf le_sup_left le_sup_left
+      exact ((hcov.eq_or_eq h2 h1.le).resolve_right h1.ne).le
+    · exact le_inf le_sup_left le_sup_left
+  exact Φ.two_form_collinear hc hc_UR hc_U hc_R ha₁ ha₁_τ ha₂ ha₂_τ hr hr_τ ha
+    hchar₁ hchar₂ hmeet hR le_sup_right le_sup_right
+    (fun h =&gt; hR_out h) hw₀
+    (hw₀_σ.trans (sup_le (Φ.Γ.m_le_π.trans le_sup_left) le_sup_right))
+    le_sup_right hw0lamR
+
+
+/-! ## The infinity case: lines of `σ` read through the height-one witnesses -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.collinear_infinity" href="#CoordFrame.collinear_infinity">CoordFrame.collinear_infinity</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {d₁ d₂ r : L} (hd₁ : IsAtom d₁) (hd₁_σ : d₁ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hd₁_m : ¬ d₁ ≤ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hd₂ : IsAtom d₂) (hd₂_σ : d₂ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hd₂_m : ¬ d₂ ≤ Φ.Γ.U ⊔ Φ.Γ.V)
+    (hr : IsAtom r) (hr_τ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) (hd : d₁ ≠ d₂) :
+    r ≤ d₁ ⊔ d₂ ↔ Φ.Γ.hvec4 Φ.R c r ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c d₁, Φ.Γ.hvec4 Φ.R c d₂} := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  obtain ⟨hw₁_atom, hw₁_τ, hw₁_σ, h_cone₁, hw₁_z⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hd₁ hd₁_σ hd₁_m
+  obtain ⟨hw₂_atom, hw₂_τ, hw₂_σ, h_cone₂, hw₂_z⟩ :=
+    CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hd₂ hd₂_σ hd₂_m
+  have hww : Φ.Γ.wpt Φ.R c d₁ ≠ Φ.Γ.wpt Φ.R c d₂ :=
+    fun h =&gt; hd (CoordSystem.wpt_cone_inj hR hR_π hc hc_UR hc_U hc_R
+      hd₁ hd₁_σ hd₁_m hd₂ hd₂_σ hd₂_m h)
+  have hzz : Φ.Γ.zproj Φ.R (Φ.Γ.wpt Φ.R c d₁) =
+      Φ.Γ.zproj Φ.R (Φ.Γ.wpt Φ.R c d₂) := by
+    rw [hw₁_z, hw₂_z]
+  have hmain_w : ∀ r&#x27;, IsAtom r&#x27; → r&#x27; ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+      (r&#x27; ≤ Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂ ↔
+        Φ.Γ.hvec4 Φ.R c r&#x27; ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+          {Φ.Γ.hvec4 Φ.R c (Φ.Γ.wpt Φ.R c d₁),
+           Φ.Γ.hvec4 Φ.R c (Φ.Γ.wpt Φ.R c d₂)}) :=
+    fun r&#x27; hr&#x27; hr&#x27;_τ =&gt;
+      Φ.collinear_horizontal hc hc_UR hc_U hc_R hw₁_atom hw₁_τ hw₁_σ
+        hw₂_atom hw₂_τ hw₂_σ hr&#x27; hr&#x27;_τ hww hzz
+  have hO_H1 := CoordSystem.hO_not_H1 hR hR_π hc hc_UR hc_U hc_R
+  have hlam_sig : d₁ ⊔ d₂ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := sup_le hd₁_σ hd₂_σ
+  have hOw₁ : Φ.Γ.O ⊔ Φ.Γ.wpt Φ.R c d₁ = Φ.Γ.O ⊔ d₁ :=
+    (line_eq_of_atom_le&#x27; Φ.Γ.hO hw₁_atom hd₁
+      (fun h =&gt; hO_H1 (le_of_eq_of_le h (inf_le_right :
+        Φ.Γ.wpt Φ.R c d₁ ≤ _)))
+      (fun h =&gt; CoordSystem.hO_not_σ hR hR_π (h ▸ hd₁_σ))
+      (le_of_eq_of_le h_cone₁.symm inf_le_left))
+  have hOw₂ : Φ.Γ.O ⊔ Φ.Γ.wpt Φ.R c d₂ = Φ.Γ.O ⊔ d₂ :=
+    (line_eq_of_atom_le&#x27; Φ.Γ.hO hw₂_atom hd₂
+      (fun h =&gt; hO_H1 (le_of_eq_of_le h (inf_le_right :
+        Φ.Γ.wpt Φ.R c d₂ ≤ _)))
+      (fun h =&gt; CoordSystem.hO_not_σ hR hR_π (h ▸ hd₂_σ))
+      (le_of_eq_of_le h_cone₂.symm inf_le_left))
+  have hΘσ : (Φ.Γ.O ⊔ (d₁ ⊔ d₂)) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) = d₁ ⊔ d₂ := by
+    rw [sup_comm Φ.Γ.O (d₁ ⊔ d₂), sup_inf_assoc_of_le Φ.Γ.O hlam_sig,
+      CoordSystem.O_inf_σ hR hR_π, sup_bot_eq]
+  have hΘ_alt : Φ.Γ.O ⊔ (Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) =
+      Φ.Γ.O ⊔ (d₁ ⊔ d₂) := by
+    apply le_antisymm
+    · refine sup_le le_sup_left (sup_le ?_ ?_)
+      · exact (le_of_le_of_eq (le_sup_right : Φ.Γ.wpt Φ.R c d₁ ≤ _) hOw₁).trans
+          (sup_le le_sup_left (le_sup_left.trans le_sup_right))
+      · exact (le_of_le_of_eq (le_sup_right : Φ.Γ.wpt Φ.R c d₂ ≤ _) hOw₂).trans
+          (sup_le le_sup_left (le_sup_right.trans le_sup_right))
+    · refine sup_le le_sup_left (sup_le ?_ ?_)
+      · exact (le_of_le_of_eq (le_sup_right : d₁ ≤ Φ.Γ.O ⊔ d₁)
+          hOw₁.symm).trans
+          (sup_le le_sup_left (le_sup_left.trans le_sup_right))
+      · exact (le_of_le_of_eq (le_sup_right : d₂ ≤ Φ.Γ.O ⊔ d₂)
+          hOw₂.symm).trans
+          (sup_le le_sup_left (le_sup_right.trans le_sup_right))
+  have hww_cov : Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂ ⋖
+      Φ.Γ.O ⊔ (d₁ ⊔ d₂) := by
+    have hO_not : ¬ Φ.Γ.O ≤ Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂ := by
+      intro h
+      exact hO_H1 (h.trans (sup_le inf_le_right inf_le_right))
+    have h := covBy_sup_atom Φ.Γ.hO hO_not
+    rwa [sup_comm _ Φ.Γ.O, hΘ_alt] at h
+  have hΘH₁ : (Φ.Γ.O ⊔ (d₁ ⊔ d₂)) ⊓
+      (Φ.Γ.zseat Φ.R c Φ.Γ.I ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) =
+      Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂ := by
+    apply le_antisymm
+    · have h1 : (Φ.Γ.O ⊔ (d₁ ⊔ d₂)) ⊓
+          (Φ.Γ.zseat Φ.R c Φ.Γ.I ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) &lt; Φ.Γ.O ⊔ (d₁ ⊔ d₂) :=
+        lt_of_le_of_ne inf_le_left
+          (fun h =&gt; hO_H1 ((le_sup_left : Φ.Γ.O ≤ Φ.Γ.O ⊔ (d₁ ⊔ d₂)).trans
+            (le_of_eq_of_le h.symm inf_le_right)))
+      have h2 : Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂ ≤
+          (Φ.Γ.O ⊔ (d₁ ⊔ d₂)) ⊓
+          (Φ.Γ.zseat Φ.R c Φ.Γ.I ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) := by
+        refine le_inf ?_ (sup_le inf_le_right inf_le_right)
+        exact le_of_le_of_eq (le_sup_right :
+          Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂ ≤ _) hΘ_alt
+      exact ((hww_cov.eq_or_eq h2 h1.le).resolve_right h1.ne).le
+    · refine le_inf ?_ (sup_le inf_le_right inf_le_right)
+      exact le_of_le_of_eq (le_sup_right :
+        Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂ ≤ _) hΘ_alt
+  have hcone_iff : ∀ t, IsAtom t → t ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+      ¬ t ≤ Φ.Γ.U ⊔ Φ.Γ.V →
+      (t ≤ d₁ ⊔ d₂ ↔ Φ.Γ.wpt Φ.R c t ≤
+        Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) := by
+    intro t ht ht_σ&#x27; ht_m
+    obtain ⟨hwt_atom, hwt_τ, hwt_σ, h_conet, hwt_z⟩ :=
+      CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R ht ht_σ&#x27; ht_m
+    constructor
+    · intro h
+      rw [← hΘH₁]
+      refine le_inf ?_ inf_le_right
+      exact (inf_le_left : Φ.Γ.wpt Φ.R c t ≤ Φ.Γ.O ⊔ t).trans
+        (sup_le le_sup_left (h.trans le_sup_right))
+    · intro h
+      have h1 : Φ.Γ.O ⊔ Φ.Γ.wpt Φ.R c t ≤ Φ.Γ.O ⊔ (d₁ ⊔ d₂) :=
+        sup_le le_sup_left (h.trans (le_of_le_of_eq (le_sup_right :
+          Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂ ≤ _) hΘ_alt))
+      calc t = (Φ.Γ.O ⊔ Φ.Γ.wpt Φ.R c t) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :=
+            h_conet.symm
+        _ ≤ (Φ.Γ.O ⊔ (d₁ ⊔ d₂)) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :=
+            inf_le_inf_right _ h1
+        _ = d₁ ⊔ d₂ := hΘσ
+  have hd_m_atom : IsAtom ((Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) ⊓
+      (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) :=
+    line_meets_hyperplane (CoordSystem.σ_covBy_τ hR hR_π) hw₁_atom hw₂_atom
+      hww (sup_le hw₁_τ hw₂_τ) (fun h =&gt; hw₁_σ (le_sup_left.trans h))
+  have hdm_le_lam : (Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) ⊓
+      (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≤ d₁ ⊔ d₂ := by
+    have h1 : (Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) ⊓
+        (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≤ (Φ.Γ.O ⊔ (d₁ ⊔ d₂)) ⊓
+        (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) := by
+      refine inf_le_inf_right _ ?_
+      exact (le_of_le_of_eq (le_sup_right :
+        Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂ ≤ _) hΘ_alt)
+    exact h1.trans_eq hΘσ
+  have hm_iff : ∀ t, IsAtom t → t ≤ Φ.Γ.U ⊔ Φ.Γ.V →
+      (t ≤ d₁ ⊔ d₂ ↔ t ≤ Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) := by
+    intro t ht ht_m
+    constructor
+    · intro h
+      have hlam_m_atom : IsAtom ((d₁ ⊔ d₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V)) := by
+        have hm_cov : Φ.Γ.U ⊔ Φ.Γ.V ⋖ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := by
+          have h&#x27; := CoordSystem.m_covBy_sup hR (CoordSystem.hR_not_m hR_π)
+          rwa [sup_comm Φ.R (Φ.Γ.U ⊔ Φ.Γ.V)] at h&#x27;
+        exact trace_atom hd₁ hd₂ hd hm_cov hlam_sig
+          (fun h&#x27; =&gt; hd₁_m (le_sup_left.trans h&#x27;))
+      have ht_le : t ≤ (d₁ ⊔ d₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) := le_inf h ht_m
+      have hdm_le&#x27; : (Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) ⊓
+          (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≤ (d₁ ⊔ d₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) := by
+        refine le_inf hdm_le_lam ?_
+        have h1 : (Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) ⊓
+            (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≤
+            (Φ.Γ.zseat Φ.R c Φ.Γ.I ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) ⊓
+            (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :=
+          inf_le_inf_right _ (sup_le inf_le_right inf_le_right)
+        have h2 : (Φ.Γ.zseat Φ.R c Φ.Γ.I ⊔ (Φ.Γ.U ⊔ Φ.Γ.V)) ⊓
+            (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) = Φ.Γ.U ⊔ Φ.Γ.V := by
+          obtain ⟨hZ_atom, hZ_ζ, hZ_R, _⟩ := CoordSystem.Z1_facts hR hR_π hc
+            hc_UR hc_U hc_R
+          have hZ_σ := CoordSystem.ζ_affine_off_σ hR hR_π hZ_atom hZ_ζ hZ_R
+          rw [sup_comm (Φ.Γ.zseat Φ.R c Φ.Γ.I) (Φ.Γ.U ⊔ Φ.Γ.V),
+            sup_inf_assoc_of_le (Φ.Γ.zseat Φ.R c Φ.Γ.I)
+              (le_sup_left : Φ.Γ.U ⊔ Φ.Γ.V ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)]
+          have hbot : Φ.Γ.zseat Φ.R c Φ.Γ.I ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) = ⊥ :=
+            (hZ_atom.le_iff.mp inf_le_left).resolve_right
+              (fun h&#x27; =&gt; hZ_σ (le_of_eq_of_le h&#x27;.symm inf_le_right))
+          rw [hbot, sup_bot_eq]
+        exact (h1.trans_eq h2)
+      have h_eq : (d₁ ⊔ d₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) =
+          (Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) ⊓
+          (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :=
+        (IsAtom.eq_of_le hd_m_atom hlam_m_atom hdm_le&#x27;).symm
+      have h3 : t ≤ (Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) ⊓
+          (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) := le_of_le_of_eq ht_le h_eq
+      exact h3.trans inf_le_left
+    · intro h
+      have h1 : t ≤ (Φ.Γ.wpt Φ.R c d₁ ⊔ Φ.Γ.wpt Φ.R c d₂) ⊓
+          (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) :=
+        le_inf h (ht_m.trans le_sup_left)
+      exact h1.trans hdm_le_lam
+  have hv₁ : Φ.Γ.hvec4 Φ.R c d₁ =
+      ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c d₁))),
+        op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c d₁))), 1, 0] :=
+    Φ.Γ.hvec4_inf Φ.R c hd₁_σ hd₁_m
+  have hv₂ : Φ.Γ.hvec4 Φ.R c d₂ =
+      ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c d₂))),
+        op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c d₂))), 1, 0] :=
+    Φ.Γ.hvec4_inf Φ.R c hd₂_σ hd₂_m
+  have hvw₁ : Φ.Γ.hvec4 Φ.R c (Φ.Γ.wpt Φ.R c d₁) =
+      ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c d₁))),
+        op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c d₁))), 1, 1] := by
+    rw [Φ.Γ.hvec4_affine Φ.R c hw₁_σ,
+      CoordSystem.zcoordC_wpt hR hR_π hc hc_UR hc_U hc_R hd₁ hd₁_σ hd₁_m,
+      MulOpposite.op_one]
+  have hvw₂ : Φ.Γ.hvec4 Φ.R c (Φ.Γ.wpt Φ.R c d₂) =
+      ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c d₂))),
+        op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c d₂))), 1, 1] := by
+    rw [Φ.Γ.hvec4_affine Φ.R c hw₂_σ,
+      CoordSystem.zcoordC_wpt hR hR_π hc hc_UR hc_U hc_R hd₂ hd₂_σ hd₂_m,
+      MulOpposite.op_one]
+  by_cases hrσ : r ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+  · by_cases hrm : r ≤ Φ.Γ.U ⊔ Φ.Γ.V
+    · have hr23 : Φ.Γ.hvec4 Φ.R c r 2 = 0 ∧ Φ.Γ.hvec4 Φ.R c r 3 = 0 := by
+        by_cases hrV : r = Φ.Γ.V
+        · rw [hrV, Φ.Γ.hvec4_V]
+          exact ⟨rfl, rfl⟩
+        · rw [Φ.Γ.hvec4_dir Φ.R c hrm hrV]
+          exact ⟨rfl, rfl⟩
+      rw [hm_iff r hr hrm, hmain_w r hr hr_τ, hvw₁, hvw₂, hv₁, hv₂]
+      constructor
+      · intro h
+        obtain ⟨a, b, hab⟩ := Submodule.mem_span_pair.mp h
+        have hs : a * 1 + b * 1 = Φ.Γ.hvec4 Φ.R c r 3 := congrFun hab 3
+        rw [hr23.2] at hs
+        refine Submodule.mem_span_pair.mpr ⟨a, b, ?_⟩
+        funext i
+        fin_cases i
+        · exact congrFun hab 0
+        · exact congrFun hab 1
+        · show a * 1 + b * 1 = Φ.Γ.hvec4 Φ.R c r 2
+          rw [hr23.1]
+          exact hs
+        · show a * 0 + b * 0 = Φ.Γ.hvec4 Φ.R c r 3
+          rw [hr23.2, mul_zero, mul_zero, add_zero]
+      · intro h
+        obtain ⟨a, b, hab⟩ := Submodule.mem_span_pair.mp h
+        have hs : a * 1 + b * 1 = Φ.Γ.hvec4 Φ.R c r 2 := congrFun hab 2
+        rw [hr23.1] at hs
+        refine Submodule.mem_span_pair.mpr ⟨a, b, ?_⟩
+        funext i
+        fin_cases i
+        · exact congrFun hab 0
+        · exact congrFun hab 1
+        · show a * 1 + b * 1 = Φ.Γ.hvec4 Φ.R c r 2
+          rw [hr23.1]
+          exact hs
+        · show a * 1 + b * 1 = Φ.Γ.hvec4 Φ.R c r 3
+          rw [hr23.2]
+          exact hs
+    · obtain ⟨hwr_atom, hwr_τ, hwr_σ, _, _⟩ :=
+        CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hr hrσ hrm
+      have hvwr : Φ.Γ.hvec4 Φ.R c (Φ.Γ.wpt Φ.R c r) =
+          ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c r))),
+            op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c r))), 1, 1] := by
+        rw [Φ.Γ.hvec4_affine Φ.R c hwr_σ,
+          CoordSystem.zcoordC_wpt hR hR_π hc hc_UR hc_U hc_R hr hrσ hrm,
+          MulOpposite.op_one]
+      have hvr : Φ.Γ.hvec4 Φ.R c r =
+          ![op (Φ.Γ.xcoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c r))),
+            op (Φ.Γ.ycoordC (Φ.Γ.baseproj Φ.R (Φ.Γ.wpt Φ.R c r))), 1, 0] :=
+        Φ.Γ.hvec4_inf Φ.R c hrσ hrm
+      rw [hcone_iff r hr hrσ hrm, hmain_w (Φ.Γ.wpt Φ.R c r) hwr_atom hwr_τ,
+        hvw₁, hvw₂, hvwr, hv₁, hv₂, hvr]
+      constructor
+      · intro h
+        obtain ⟨a, b, hab⟩ := Submodule.mem_span_pair.mp h
+        refine Submodule.mem_span_pair.mpr ⟨a, b, ?_⟩
+        funext i
+        fin_cases i
+        · exact congrFun hab 0
+        · exact congrFun hab 1
+        · exact congrFun hab 2
+        · show a * 0 + b * 0 = (0 : (Coordinate Φ.Γ)ᵐᵒᵖ)
+          rw [mul_zero, mul_zero, add_zero]
+      · intro h
+        obtain ⟨a, b, hab⟩ := Submodule.mem_span_pair.mp h
+        refine Submodule.mem_span_pair.mpr ⟨a, b, ?_⟩
+        funext i
+        fin_cases i
+        · exact congrFun hab 0
+        · exact congrFun hab 1
+        · exact congrFun hab 2
+        · show a * 1 + b * 1 = (1 : (Coordinate Φ.Γ)ᵐᵒᵖ)
+          exact congrFun hab 2
+  · refine iff_of_false (fun h =&gt; hrσ (h.trans hlam_sig)) ?_
+    intro hmem
+    rw [hv₁, hv₂] at hmem
+    have hslot := span_pair_slot (i := 3) rfl rfl hmem
+    rw [Φ.Γ.hvec4_affine Φ.R c hrσ] at hslot
+    exact Φ.Γ.op_one_ne_zero hslot
+
+
+/-! ## The summit: space collinearity is span membership -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.space_collinear_iff" href="#CoordFrame.space_collinear_iff">CoordFrame.space_collinear_iff</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {p q r : L} (hp : IsAtom p) (hp_τ : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hq : IsAtom q) (hq_τ : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hr : IsAtom r) (hr_τ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) (hpq : p ≠ q) :
+    r ≤ p ⊔ q ↔ Φ.Γ.hvec4 Φ.R c r ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+      {Φ.Γ.hvec4 Φ.R c p, Φ.Γ.hvec4 Φ.R c q} := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  obtain ⟨e, he, he_VR, he_V, he_R⟩ := Φ.h_irred Φ.Γ.V Φ.R Φ.Γ.hV hR
+    (CoordSystem.ne_R_of_le_π hR_π le_sup_right)
+  have he_ne_c : e ≠ c := by
+    intro h
+    apply he_R
+    exact IsAtom.eq_of_le he hR (le_of_le_of_eq (le_inf (h ▸ hc_UR) he_VR)
+      (CoordSystem.UR_inf_VR hR hR_π))
+  have body : ∀ a₁ a₂, IsAtom a₁ → a₁ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+      ¬ a₁ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R →
+      IsAtom a₂ → a₂ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R → a₁ ≠ a₂ →
+      p ⊔ q = a₁ ⊔ a₂ →
+      (r ≤ p ⊔ q ↔ Φ.Γ.hvec4 Φ.R c r ∈ Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+        {Φ.Γ.hvec4 Φ.R c p, Φ.Γ.hvec4 Φ.R c q}) := by
+    intro a₁ a₂ ha₁ ha₁_τ ha₁_σ ha₂ ha₂_τ ha hline
+    obtain ⟨b₂, hb₂, hb₂_τ, hb₂_σ, hab₂, hline&#x27;⟩ :
+        ∃ b₂, IsAtom b₂ ∧ b₂ ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R ∧
+          ¬ b₂ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R ∧ a₁ ≠ b₂ ∧ a₁ ⊔ a₂ = a₁ ⊔ b₂ := by
+      by_cases ha₂σ : a₂ ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+      · obtain ⟨s, hs, hs_le, hs_a₁, hs_a₂, heq⟩ :=
+          third_atom_on_line ha₁ ha₂ ha Φ.h_irred
+        refine ⟨s, hs, hs_le.trans (sup_le ha₁_τ ha₂_τ), ?_,
+          Ne.symm hs_a₁, heq⟩
+        intro h
+        have hd_atom : IsAtom ((a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) :=
+          line_meets_hyperplane (CoordSystem.σ_covBy_τ hR hR_π) ha₁ ha₂ ha
+            (sup_le ha₁_τ ha₂_τ) (fun h&#x27; =&gt; ha₁_σ (le_sup_left.trans h&#x27;))
+        have ha₂_eq : (a₁ ⊔ a₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) = a₂ :=
+          (IsAtom.eq_of_le ha₂ hd_atom (le_inf le_sup_right ha₂σ)).symm
+        exact hs_a₂ (IsAtom.eq_of_le hs ha₂
+          (le_of_le_of_eq (le_inf hs_le h) ha₂_eq))
+      · exact ⟨a₂, ha₂, ha₂_τ, ha₂σ, ha, rfl⟩
+    have hline2 : p ⊔ q = a₁ ⊔ b₂ := hline.trans hline&#x27;
+    by_cases hRlam : Φ.R ≤ a₁ ⊔ b₂
+    · have hline3 : a₁ ⊔ b₂ = a₁ ⊔ Φ.R :=
+        line_eq_of_atom_le&#x27; ha₁ hb₂ hR hab₂
+          (CoordSystem.ne_R_of_off_σ ha₁_σ) hRlam
+      exact Φ.collinear_of_line_eq hc hc_UR hc_U hc_R ha₁ ha₁_τ hR
+        le_sup_right hp hp_τ hq hq_τ hr hr_τ hpq (hline2.trans hline3)
+        (fun r&#x27; hr&#x27; hr&#x27;_τ =&gt; Φ.collinear_vertical hc hc_UR hc_U hc_R
+          he he_VR he_V he_R ha₁ ha₁_τ ha₁_σ hr&#x27; hr&#x27;_τ)
+    · by_cases hcin : c ≤ a₁ ⊔ b₂ ⊔ Φ.R
+      · have he_out : ¬ e ≤ a₁ ⊔ b₂ ⊔ Φ.R := by
+          intro h
+          have hd_atom : IsAtom ((a₁ ⊔ b₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) :=
+            line_meets_hyperplane (CoordSystem.σ_covBy_τ hR hR_π) ha₁ hb₂
+              hab₂ (sup_le ha₁_τ hb₂_τ)
+              (fun h&#x27; =&gt; ha₁_σ (le_sup_left.trans h&#x27;))
+          have hilam : (a₁ ⊔ b₂ ⊔ Φ.R) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) =
+              Φ.R ⊔ ((a₁ ⊔ b₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) := by
+            rw [sup_comm (a₁ ⊔ b₂) Φ.R, sup_inf_assoc_of_le (a₁ ⊔ b₂)
+              (le_sup_right : Φ.R ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)]
+          have hc_i : c ≤ Φ.R ⊔ ((a₁ ⊔ b₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) :=
+            le_of_le_of_eq (le_inf hcin (hc_UR.trans (Φ.Γ.UR_le_σ Φ.R)))
+              hilam
+          have he_i : e ≤ Φ.R ⊔ ((a₁ ⊔ b₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) :=
+            le_of_le_of_eq (le_inf h (he_VR.trans (Φ.Γ.VR_le_σ Φ.R))) hilam
+          have hd_ne_R : (a₁ ⊔ b₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≠ Φ.R :=
+            fun h&#x27; =&gt; hRlam (le_of_eq_of_le h&#x27;.symm inf_le_left)
+          have h_line : Φ.R ⊔ ((a₁ ⊔ b₂) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) =
+              Φ.R ⊔ c :=
+            line_eq_of_atom_le&#x27; hR hd_atom hc hd_ne_R.symm hc_R.symm hc_i
+          have he_Rc : e ≤ Φ.R ⊔ c := le_of_le_of_eq he_i h_line
+          rw [← CoordSystem.RU_eq_Rc hR hR_π hc hc_UR hc_U hc_R,
+            sup_comm Φ.R Φ.Γ.U] at he_Rc
+          exact he_R (IsAtom.eq_of_le he hR (le_of_le_of_eq
+            (le_inf he_Rc he_VR) (CoordSystem.UR_inf_VR hR hR_π)))
+        exact Φ.collinear_of_line_eq hc hc_UR hc_U hc_R ha₁ ha₁_τ hb₂ hb₂_τ
+          hp hp_τ hq hq_τ hr hr_τ hpq hline2
+          (fun r&#x27; hr&#x27; hr&#x27;_τ =&gt; Φ.collinear_general_center hc hc_UR hc_U hc_R
+            he (he_VR.trans (Φ.Γ.VR_le_σ Φ.R))
+            (CoordSystem.he_not_π hR hR_π he he_VR he_V)
+            (CoordSystem.e_not_m hR hR_π he he_VR he_V) he_R
+            (fun p&#x27; q&#x27; hp&#x27; hp&#x27;_π hq&#x27; hq&#x27;_π hp&#x27;q&#x27; =&gt;
+              Φ.eplane_form hc hc_UR hc_U hc_R he he_VR he_V he_R
+                hp&#x27; hp&#x27;_π hq&#x27; hq&#x27;_π hp&#x27;q&#x27;)
+            ha₁ ha₁_τ ha₁_σ hb₂ hb₂_τ hb₂_σ hr&#x27; hr&#x27;_τ hab₂ hRlam he_out)
+      · exact Φ.collinear_of_line_eq hc hc_UR hc_U hc_R ha₁ ha₁_τ hb₂ hb₂_τ
+          hp hp_τ hq hq_τ hr hr_τ hpq hline2
+          (fun r&#x27; hr&#x27; hr&#x27;_τ =&gt; Φ.collinear_general_center hc hc_UR hc_U hc_R
+            hc (hc_UR.trans (Φ.Γ.UR_le_σ Φ.R))
+            (CoordSystem.hc_not_π hR hR_π hc hc_UR hc_U)
+            (CoordSystem.c_not_m hR hR_π hc hc_UR hc_U) hc_R
+            (fun p&#x27; q&#x27; hp&#x27; hp&#x27;_π hq&#x27; hq&#x27;_π hp&#x27;q&#x27; =&gt;
+              Φ.cplane_form hc hc_UR hc_U hc_R hp&#x27; hp&#x27;_π hq&#x27; hq&#x27;_π hp&#x27;q&#x27;)
+            ha₁ ha₁_τ ha₁_σ hb₂ hb₂_τ hb₂_σ hr&#x27; hr&#x27;_τ hab₂ hRlam hcin)
+  by_cases hpσ : p ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+  · by_cases hqσ : q ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R
+    · by_cases hpm : p ≤ Φ.Γ.U ⊔ Φ.Γ.V
+      · by_cases hqm : q ≤ Φ.Γ.U ⊔ Φ.Γ.V
+        · exact Φ.collinear_π hc hc_UR hc_U hc_R hp (hpm.trans Φ.Γ.m_le_π)
+            hq (hqm.trans Φ.Γ.m_le_π) hr hr_τ hpq
+        · obtain ⟨s, hs, hs_le, hs_q, hs_p, heq⟩ :=
+            third_atom_on_line hq hp (Ne.symm hpq) Φ.h_irred
+          have hs_σ : s ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R :=
+            hs_le.trans (sup_le hqσ hpσ)
+          have hs_m : ¬ s ≤ Φ.Γ.U ⊔ Φ.Γ.V := by
+            intro h
+            have h1 : s ≤ (q ⊔ p) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) := le_inf hs_le h
+            rw [line_direction (m := Φ.Γ.U ⊔ Φ.Γ.V) hq hqm hpm] at h1
+            exact hs_p (IsAtom.eq_of_le hs hp h1)
+          have hline : p ⊔ q = q ⊔ s := (sup_comm p q).trans heq
+          exact Φ.collinear_of_line_eq hc hc_UR hc_U hc_R hq
+            (hqσ.trans (sup_le (Φ.Γ.m_le_π.trans le_sup_left) le_sup_right))
+            hs (hs_σ.trans (sup_le (Φ.Γ.m_le_π.trans le_sup_left) le_sup_right))
+            hp hp_τ hq hq_τ hr hr_τ hpq hline
+            (fun r&#x27; hr&#x27; hr&#x27;_τ =&gt; Φ.collinear_infinity hc hc_UR hc_U hc_R
+              hq hqσ hqm hs hs_σ hs_m hr&#x27; hr&#x27;_τ (Ne.symm hs_q))
+      · by_cases hqm : q ≤ Φ.Γ.U ⊔ Φ.Γ.V
+        · obtain ⟨s, hs, hs_le, hs_p, hs_q, heq⟩ :=
+            third_atom_on_line hp hq hpq Φ.h_irred
+          have hs_σ : s ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R :=
+            hs_le.trans (sup_le hpσ hqσ)
+          have hs_m : ¬ s ≤ Φ.Γ.U ⊔ Φ.Γ.V := by
+            intro h
+            have h1 : s ≤ (p ⊔ q) ⊓ (Φ.Γ.U ⊔ Φ.Γ.V) := le_inf hs_le h
+            rw [line_direction (m := Φ.Γ.U ⊔ Φ.Γ.V) hp hpm hqm] at h1
+            exact hs_q (IsAtom.eq_of_le hs hq h1)
+          exact Φ.collinear_of_line_eq hc hc_UR hc_U hc_R hp
+            (hpσ.trans (sup_le (Φ.Γ.m_le_π.trans le_sup_left) le_sup_right))
+            hs (hs_σ.trans (sup_le (Φ.Γ.m_le_π.trans le_sup_left) le_sup_right))
+            hp hp_τ hq hq_τ hr hr_τ hpq heq
+            (fun r&#x27; hr&#x27; hr&#x27;_τ =&gt; Φ.collinear_infinity hc hc_UR hc_U hc_R
+              hp hpσ hpm hs hs_σ hs_m hr&#x27; hr&#x27;_τ (Ne.symm hs_p))
+        · exact Φ.collinear_infinity hc hc_UR hc_U hc_R hp hpσ hpm
+            hq hqσ hqm hr hr_τ hpq
+    · exact (body q p hq hq_τ hqσ hp hp_τ (Ne.symm hpq) (sup_comm p q))
+  · exact (body p q hp hp_τ hpσ hq hq_τ hpq rfl)
+
+
+/-! ## Surjectivity onto the projective points of `(Dᵐᵒᵖ)⁴` -/
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.hvec4_span_surj" href="#CoordFrame.hvec4_span_surj">CoordFrame.hvec4_span_surj</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    (v : Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ) (hv : v ≠ 0) :
+    ∃ p : L, IsAtom p ∧ p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R ∧
+      Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ {Φ.Γ.hvec4 Φ.R c p} =
+        Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ {v} := by
+  have hR := Φ.hR_atom
+  have hR_π := Φ.hR_not
+  by_cases h3 : v 3 = 0
+  · by_cases h2 : v 2 = 0
+    · have hw3 : (![v 0, v 1, 0] : Fin 3 → (Coordinate Φ.Γ)ᵐᵒᵖ) ≠ 0 := by
+        intro h
+        apply hv
+        funext i
+        fin_cases i
+        · exact congrFun h 0
+        · exact congrFun h 1
+        · exact h2
+        · exact h3
+      obtain ⟨p, hp, hp_π, hspan⟩ := Φ.hvec_span_surj ![v 0, v 1, 0] hw3
+      refine ⟨p, hp, hp_π.trans le_sup_left, ?_⟩
+      have hι : planeInj (Coordinate Φ.Γ)ᵐᵒᵖ ![v 0, v 1, 0] = v := by
+        funext i
+        fin_cases i
+        · rfl
+        · rfl
+        · exact h2.symm
+        · exact h3.symm
+      have hmapspan : ∀ x : Fin 3 → (Coordinate Φ.Γ)ᵐᵒᵖ,
+          Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ
+            {planeInj (Coordinate Φ.Γ)ᵐᵒᵖ x} =
+          Submodule.map (planeInj (Coordinate Φ.Γ)ᵐᵒᵖ)
+            (Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ {x}) := by
+        intro x
+        rw [Submodule.map_span, Set.image_singleton]
+      rw [Φ.hvec4_π hc hc_UR hc_U hp_π, ← hι, hmapspan, hmapspan, hspan]
+    · obtain ⟨hZ_atom, hZ_ζ, hZ_R, hZ_O⟩ := CoordSystem.Z1_facts hR hR_π hc
+        hc_UR hc_U hc_R
+      obtain ⟨b, hb, hb_π, hb_aff, hb_x, hb_y⟩ :=
+        Φ.Γ.exists_affine_with_coords
+          (unop ((v 2)⁻¹ * v 0)).2.1 (unop ((v 2)⁻¹ * v 0)).2.2.1
+          (unop ((v 2)⁻¹ * v 0)).2.2.2
+          (unop ((v 2)⁻¹ * v 1)).2.1 (unop ((v 2)⁻¹ * v 1)).2.2.1
+          (unop ((v 2)⁻¹ * v 1)).2.2.2
+      have hw_atom := CoordSystem.spoint_is_atom hR hR_π hb hb_π
+        hZ_atom hZ_ζ hZ_R
+      have hw_τ : Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) ≤
+          Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := CoordSystem.spoint_le_τ hb_π
+      have hw_σ := CoordSystem.spoint_off_σ hR hR_π hb hb_π hb_aff
+        hZ_atom hZ_ζ hZ_R
+      have hw_base := CoordSystem.baseproj_spoint hR hR_π hb hb_π
+        hZ_atom hZ_ζ hZ_R
+      have hw_z := CoordSystem.zproj_spoint hR hR_π hb hb_π hb_aff
+        hZ_atom hZ_ζ hZ_R
+      have hO_ne_w : Φ.Γ.O ≠ Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) := by
+        intro h
+        apply hZ_O
+        have h1 : Φ.Γ.zproj Φ.R (Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I)) =
+            Φ.Γ.zproj Φ.R Φ.Γ.O := by rw [← h]
+        rw [hw_z, CoordSystem.zproj_of_affine_π hR hR_π
+          (le_sup_left.trans le_sup_left : Φ.Γ.O ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V)
+          Φ.Γ.hO_not_m] at h1
+        exact h1
+      have hd_atom : IsAtom ((Φ.Γ.O ⊔
+          Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I)) ⊓
+          (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) :=
+        line_meets_hyperplane (CoordSystem.σ_covBy_τ hR hR_π) Φ.Γ.hO hw_atom
+          hO_ne_w (sup_le ((le_sup_left.trans le_sup_left).trans le_sup_left)
+            hw_τ)
+          (fun h =&gt; CoordSystem.hO_not_σ hR hR_π (le_sup_left.trans h))
+      have hd_σ : (Φ.Γ.O ⊔ Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I)) ⊓
+          (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≤ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := inf_le_right
+      have hd_le : (Φ.Γ.O ⊔ Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I)) ⊓
+          (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≤
+          Φ.Γ.O ⊔ Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) := inf_le_left
+      have hd_ne_O : (Φ.Γ.O ⊔ Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I)) ⊓
+          (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) ≠ Φ.Γ.O :=
+        fun h =&gt; CoordSystem.hO_not_σ hR hR_π (le_of_eq_of_le h.symm hd_σ)
+      have h_line : Φ.Γ.O ⊔ Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) =
+          Φ.Γ.O ⊔ ((Φ.Γ.O ⊔ Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I)) ⊓
+          (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)) :=
+        line_eq_of_atom_le&#x27; Φ.Γ.hO hw_atom hd_atom hO_ne_w
+          (fun h =&gt; hd_ne_O h.symm) hd_le
+      set d := (Φ.Γ.O ⊔ Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I)) ⊓
+        (Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) with hd_def
+      have hd_m : ¬ d ≤ Φ.Γ.U ⊔ Φ.Γ.V := by
+        intro h
+        apply hZ_O
+        have hw_le : Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) ≤
+            Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V := by
+          have h1 : Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) ≤ Φ.Γ.O ⊔ d :=
+            le_of_le_of_eq (le_sup_right :
+              Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) ≤ _) h_line
+          exact h1.trans (sup_le (le_sup_left.trans le_sup_left)
+            (h.trans Φ.Γ.m_le_π))
+        have h1 := CoordSystem.zproj_of_affine_π hR hR_π hw_le
+          (CoordSystem.not_m_of_off_σ hw_σ)
+        rw [hw_z] at h1
+        exact h1
+      obtain ⟨hwd_atom, hwd_τ, hwd_σ, h_cone, hwd_z⟩ :=
+        CoordSystem.wpt_facts hR hR_π hc hc_UR hc_U hc_R hd_atom hd_σ hd_m
+      have hwpt_eq : Φ.Γ.wpt Φ.R c d =
+          Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) := by
+        have hw_le_wpt : Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) ≤
+            Φ.Γ.wpt Φ.R c d := by
+          refine le_inf ?_ inf_le_right
+          exact le_of_le_of_eq
+            (le_sup_right : Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c Φ.Γ.I) ≤ _)
+            h_line
+        exact (IsAtom.eq_of_le hw_atom hwd_atom hw_le_wpt).symm
+      refine ⟨d, hd_atom, hd_σ.trans
+        (sup_le (Φ.Γ.m_le_π.trans le_sup_left) le_sup_right), ?_⟩
+      have key : (v 2)⁻¹ • v = Φ.Γ.hvec4 Φ.R c d := by
+        rw [Φ.Γ.hvec4_inf Φ.R c hd_σ hd_m, hwpt_eq, hw_base]
+        have hxC : Φ.Γ.xcoordC b = unop ((v 2)⁻¹ * v 0) := by
+          apply Subtype.ext
+          rw [Φ.Γ.xcoordC_val hb hb_π hb_aff, hb_x]
+        have hyC : Φ.Γ.ycoordC b = unop ((v 2)⁻¹ * v 1) := by
+          apply Subtype.ext
+          rw [Φ.Γ.ycoordC_val hb hb_π hb_aff, hb_y]
+        rw [hxC, hyC]
+        funext i
+        fin_cases i
+        · show (v 2)⁻¹ * v 0 = op (unop ((v 2)⁻¹ * v 0))
+          rw [op_unop]
+        · show (v 2)⁻¹ * v 1 = op (unop ((v 2)⁻¹ * v 1))
+          rw [op_unop]
+        · show (v 2)⁻¹ * v 2 = 1
+          rw [inv_mul_cancel₀ h2]
+        · show (v 2)⁻¹ * v 3 = 0
+          rw [h3, mul_zero]
+      rw [← key]
+      exact span_singleton_smul (inv_ne_zero h2) v
+  · obtain ⟨b, hb, hb_π, hb_aff, hb_x, hb_y⟩ :=
+      Φ.Γ.exists_affine_with_coords
+        (unop ((v 3)⁻¹ * v 0)).2.1 (unop ((v 3)⁻¹ * v 0)).2.2.1
+        (unop ((v 3)⁻¹ * v 0)).2.2.2
+        (unop ((v 3)⁻¹ * v 1)).2.1 (unop ((v 3)⁻¹ * v 1)).2.2.1
+        (unop ((v 3)⁻¹ * v 1)).2.2.2
+    have hzv_atom := CoordSystem.zseat_is_atom hR hR_π hc hc_UR hc_U hc_R
+      (unop ((v 3)⁻¹ * v 2)).2.1 (unop ((v 3)⁻¹ * v 2)).2.2.1
+    have hzv_ζ := Φ.Γ.zseat_le_ζ Φ.R c (unop ((v 3)⁻¹ * v 2)).1
+    have hzv_R := CoordSystem.zseat_ne_R hR hR_π hc hc_UR hc_U hc_R
+      (unop ((v 3)⁻¹ * v 2)).2.1 (unop ((v 3)⁻¹ * v 2)).2.2.1
+      (unop ((v 3)⁻¹ * v 2)).2.2.2
+    have ht_atom := CoordSystem.spoint_is_atom hR hR_π hb hb_π
+      hzv_atom hzv_ζ hzv_R
+    have ht_τ : Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c (unop ((v 3)⁻¹ * v 2)).1) ≤
+        Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R := CoordSystem.spoint_le_τ hb_π
+    have ht_σ := CoordSystem.spoint_off_σ hR hR_π hb hb_π hb_aff
+      hzv_atom hzv_ζ hzv_R
+    have ht_base := CoordSystem.baseproj_spoint hR hR_π hb hb_π
+      hzv_atom hzv_ζ hzv_R
+    have ht_z := CoordSystem.zproj_spoint hR hR_π hb hb_π hb_aff
+      hzv_atom hzv_ζ hzv_R
+    refine ⟨_, ht_atom, ht_τ, ?_⟩
+    have key : (v 3)⁻¹ • v = Φ.Γ.hvec4 Φ.R c
+        (Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c (unop ((v 3)⁻¹ * v 2)).1)) := by
+      rw [Φ.Γ.hvec4_affine Φ.R c ht_σ, ht_base]
+      have hxC : Φ.Γ.xcoordC b = unop ((v 3)⁻¹ * v 0) := by
+        apply Subtype.ext
+        rw [Φ.Γ.xcoordC_val hb hb_π hb_aff, hb_x]
+      have hyC : Φ.Γ.ycoordC b = unop ((v 3)⁻¹ * v 1) := by
+        apply Subtype.ext
+        rw [Φ.Γ.ycoordC_val hb hb_π hb_aff, hb_y]
+      have hzC : Φ.Γ.zcoordC Φ.R c
+          (Φ.Γ.spoint Φ.R b (Φ.Γ.zseat Φ.R c (unop ((v 3)⁻¹ * v 2)).1)) =
+          unop ((v 3)⁻¹ * v 2) := by
+        apply Subtype.ext
+        rw [CoordSystem.zcoordC_val hR hR_π hc hc_UR hc_U hc_R ht_atom
+          ht_τ ht_σ, ht_z]
+        exact CoordSystem.zcoord_zseat hR hR_π hc hc_UR hc_U hc_R
+          (unop ((v 3)⁻¹ * v 2)).2.1 (unop ((v 3)⁻¹ * v 2)).2.2.1
+      rw [hxC, hyC, hzC]
+      funext i
+      fin_cases i
+      · show (v 3)⁻¹ * v 0 = op (unop ((v 3)⁻¹ * v 0))
+        rw [op_unop]
+      · show (v 3)⁻¹ * v 1 = op (unop ((v 3)⁻¹ * v 1))
+        rw [op_unop]
+      · show (v 3)⁻¹ * v 2 = op (unop ((v 3)⁻¹ * v 2))
+        rw [op_unop]
+      · show (v 3)⁻¹ * v 3 = 1
+        rw [inv_mul_cancel₀ h3]
+    rw [← key]
+    exact span_singleton_smul (inv_ne_zero h3) v
+
+/-! ## The packaging: the space&#x27;s point map -/
+
+noncomputable def CoordFrame.spacePt (Φ : CoordFrame L) (c p : L) :
+    Submodule (Coordinate Φ.Γ)ᵐᵒᵖ (Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ) :=
+  Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ {Φ.Γ.hvec4 Φ.R c p}
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.spacePt_inj" href="#CoordFrame.spacePt_inj">CoordFrame.spacePt_inj</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {p q : L} (hp : IsAtom p) (hp_τ : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hq : IsAtom q) (hq_τ : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (h : Φ.spacePt c p = Φ.spacePt c q) : p = q := by
+  by_contra hpq
+  apply Φ.hvec4_span_inj hc hc_UR hc_U hc_R hp hp_τ hq hq_τ hpq
+  have hmem : Φ.Γ.hvec4 Φ.R c q ∈ Φ.spacePt c q :=
+    Submodule.mem_span_singleton_self _
+  rw [← h] at hmem
+  exact hmem
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.le_iff_spacePt_le" href="#CoordFrame.le_iff_spacePt_le">CoordFrame.le_iff_spacePt_le</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    {p q r : L} (hp : IsAtom p) (hp_τ : p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hq : IsAtom q) (hq_τ : q ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R)
+    (hr : IsAtom r) (hr_τ : r ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R) (hpq : p ≠ q) :
+    r ≤ p ⊔ q ↔ Φ.spacePt c r ≤ Φ.spacePt c p ⊔ Φ.spacePt c q := by
+  rw [Φ.space_collinear_iff hc hc_UR hc_U hc_R hp hp_τ hq hq_τ hr hr_τ hpq]
+  unfold CoordFrame.spacePt
+  rw [← Submodule.span_insert, Submodule.span_singleton_le_iff_mem]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordFrame.spacePt_surj" href="#CoordFrame.spacePt_surj">CoordFrame.spacePt_surj</a> (Φ : CoordFrame L) {c : L}
+    (hc : IsAtom c) (hc_UR : c ≤ Φ.Γ.U ⊔ Φ.R) (hc_U : c ≠ Φ.Γ.U) (hc_R : c ≠ Φ.R)
+    (v : Fin 4 → (Coordinate Φ.Γ)ᵐᵒᵖ) (hv : v ≠ 0) :
+    ∃ p : L, IsAtom p ∧ p ≤ Φ.Γ.O ⊔ Φ.Γ.U ⊔ Φ.Γ.V ⊔ Φ.R ∧
+      Φ.spacePt c p = Submodule.span (Coordinate Φ.Γ)ᵐᵒᵖ {v} :=
+  Φ.hvec4_span_surj hc hc_UR hc_U hc_R v hv
+
+end Foam.Bridges
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.spaceForm&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.spaceForm</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.spaceForm_apply&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.spaceForm_apply</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.spaceForm_surjective&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.spaceForm_surjective</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.finrank_ker_spaceForm&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.finrank_ker_spaceForm</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.spaceForm_pair_surjective&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.spaceForm_pair_surjective</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.finrank_ker_pair&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.finrank_ker_pair</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.space_span_pair_eq_ker_pair&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.space_span_pair_eq_ker_pair</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.planeInj&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.planeInj</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.planeInj_injective&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.planeInj_injective</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.planeInj_mem_span_pair&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.planeInj_mem_span_pair</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.spaceForm_extZ&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.spaceForm_extZ</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.span_pair_slot&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.span_pair_slot</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.wpt_facts&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.wpt_facts</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.zcoord_inj&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.zcoord_inj</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.space_affine_ext&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.space_affine_ext</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.wpt_cone_inj&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.wpt_cone_inj</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.zcoordC_val&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.zcoordC_val</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.zcoordC_wpt&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.zcoordC_wpt</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.dir_shproj&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.dir_shproj</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.shproj_wpt_ne_O&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.shproj_wpt_ne_O</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.hvec4&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.hvec4</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.hvec4_π&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.hvec4_π</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.hvec4_ne_zero&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.hvec4_ne_zero</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.hvec4_affine_ext&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.hvec4_affine_ext</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.hvec4_span_inj&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.hvec4_span_inj</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.xcoordC_shproj_c&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.xcoordC_shproj_c</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.ycoordC_shproj_c&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.ycoordC_shproj_c</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.xcoordC_shproj_e&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.xcoordC_shproj_e</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.ycoordC_shproj_e&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.ycoordC_shproj_e</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.wpt_c_coords&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.wpt_c_coords</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.wpt_e_coords&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.wpt_e_coords</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.ray_trace_form&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.ray_trace_form</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.dir_trace_char&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.dir_trace_char</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.Rplane_form&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.Rplane_form</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.cplane_form&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.cplane_form</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.eplane_form&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.eplane_form</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.hplane_form&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.hplane_form</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.two_form_collinear&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.two_form_collinear</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.collinear_horizontal&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.collinear_horizontal</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.collinear_of_line_eq&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.collinear_of_line_eq</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.collinear_π&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.collinear_π</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.collinear_vertical&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.collinear_vertical</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.collinear_general_center&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.collinear_general_center</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.collinear_infinity&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.collinear_infinity</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.space_collinear_iff&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.space_collinear_iff</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.hvec4_span_surj&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.hvec4_span_surj</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.spacePt&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.spacePt</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.spacePt_inj&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.spacePt_inj</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.le_iff_spacePt_le&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.le_iff_spacePt_le</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordFrame.spacePt_surj&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordFrame.spacePt_surj</span></pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

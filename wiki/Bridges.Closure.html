@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.Closure</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.Closure</h1></header>
+<div class="imports">grasp: Mathlib.LinearAlgebra.Matrix.Trace · Mathlib.Data.Matrix.Mul</div><pre class="src">import Mathlib.LinearAlgebra.Matrix.Trace
+import Mathlib.Data.Matrix.Mul
+
+namespace Foam.Bridges
+
+open Matrix
+
+variable {n : Type*} [Fintype n] [DecidableEq n]
+
+<span class="kw">theorem</span> <a class="decl" id="conjugation_preserves_idempotent" href="#conjugation_preserves_idempotent">conjugation_preserves_idempotent</a>
+    {R : Type*} [CommRing R]
+    (P U Uinv : Matrix n n R)
+    (hP : P * P = P)
+    (_hUinv : U * Uinv = 1) (hUinv&#x27; : Uinv * U = 1) :
+    (U * P * Uinv) * (U * P * Uinv) = U * P * Uinv := by
+  calc (U * P * Uinv) * (U * P * Uinv)
+      = U * P * (Uinv * U) * P * Uinv := by simp only [Matrix.mul_assoc]
+    _ = U * P * 1 * P * Uinv := by rw [hUinv&#x27;]
+    _ = U * P * P * Uinv := by rw [Matrix.mul_one]
+    _ = U * (P * P) * Uinv := by simp only [Matrix.mul_assoc]
+    _ = U * P * Uinv := by rw [hP]
+
+<span class="kw">theorem</span> <a class="decl" id="orthogonal_conjugation_preserves_symmetric" href="#orthogonal_conjugation_preserves_symmetric">orthogonal_conjugation_preserves_symmetric</a>
+    {R : Type*} [CommRing R]
+    (P U : Matrix n n R)
+    (hP_symm : Pᵀ = P)
+    (_hU_orth : Uᵀ * U = 1) :
+    (U * P * Uᵀ)ᵀ = U * P * Uᵀ := by
+  rw [transpose_mul, transpose_mul, transpose_transpose, hP_symm, Matrix.mul_assoc]
+
+<span class="kw">theorem</span> <a class="decl" id="observation_preserved_by_dynamics" href="#observation_preserved_by_dynamics">observation_preserved_by_dynamics</a>
+    {R : Type*} [CommRing R]
+    (P U : Matrix n n R)
+    (hP_idem : P * P = P)
+    (hP_symm : Pᵀ = P)
+    (hU_orth : Uᵀ * U = 1)
+    (hU_orth&#x27; : U * Uᵀ = 1) :
+    (U * P * Uᵀ) * (U * P * Uᵀ) = U * P * Uᵀ ∧
+      (U * P * Uᵀ)ᵀ = U * P * Uᵀ :=
+  ⟨conjugation_preserves_idempotent P U Uᵀ hP_idem hU_orth&#x27; hU_orth,
+   orthogonal_conjugation_preserves_symmetric P U hP_symm hU_orth⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.conjugation_preserves_idempotent&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms conjugation_preserves_idempotent</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.observation_preserved_by_dynamics&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms observation_preserved_by_dynamics</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

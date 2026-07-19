@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Wedge</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Wedge</h1></header>
+<div class="imports">grasp: <a href="Counter.Cable.html">Counter.Cable</a> · <a href="Foam.Wedge.html">Foam.Wedge</a></div><pre class="src">import <a href="Counter.Cable.html">Counter.Cable</a>
+import <a href="Foam.Wedge.html">Foam.Wedge</a>
+
+namespace Foam.Counter
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="a_wedge_inside_a_wedge_comes_home" href="#a_wedge_inside_a_wedge_comes_home">a_wedge_inside_a_wedge_comes_home</a> (S : Seat G) (gs : List G) (p : S.Pos) :
+    S.replay (spine S gs p) p = p :=
+  spine_comes_home S gs p
+
+<span class="kw">theorem</span> <a class="decl" id="resuming_means_the_inner_settled" href="#resuming_means_the_inner_settled">resuming_means_the_inner_settled</a> (S : Seat G) (g : G) (gs : List G) (p : S.Pos) :
+    S.replay (g :: spine S gs (S.act g p)) p = S.act g p :=
+  outer_resumes_where_it_paused S g gs p
+
+<span class="kw">theorem</span> <a class="decl" id="exits_stay_cost_free_at_depth" href="#exits_stay_cost_free_at_depth">exits_stay_cost_free_at_depth</a> (S : Seat G) (gs : List G) (p : S.Pos) :
+    S.replay (collapse S gs p) p = p ∧ (collapse S gs p).length = gs.length + 1 :=
+  ⟨collapse_comes_home S gs p, collapse_length S gs p⟩
+
+<span class="kw">theorem</span> <a class="decl" id="lifo_is_a_gait_not_a_law" href="#lifo_is_a_gait_not_a_law">lifo_is_a_gait_not_a_law</a> (S : Seat G) (gs : List G) (p : S.Pos) :
+    S.replay (spine S gs p) p = p
+      ∧ S.replay (collapse S gs p) p = p
+      ∧ (spine S gs p).length = 2 * gs.length
+      ∧ (collapse S gs p).length = gs.length + 1 :=
+  lifo_is_a_gait S gs p
+
+<span class="kw">theorem</span> <a class="decl" id="the_inner_transcript_is_the_outer_backstage" href="#the_inner_transcript_is_the_outer_backstage">the_inner_transcript_is_the_outer_backstage</a> {W : Stage} (A : Bubble W)
+    (ms ms&#x27; : List (W.State → W.State))
+    (h : ∀ w, A.wall (enactAll ms w) = A.wall (enactAll ms&#x27; w))
+    (w : W.State) (p : A.front.Probe) :
+    A.front.obs (enactAll ms w) p = A.front.obs (enactAll ms&#x27; w) p :=
+  histories_fold_at_the_wall A ms ms&#x27; h w p
+
+<span class="kw">theorem</span> <a class="decl" id="the_debt_is_real_upstairs_illegible_downstairs" href="#the_debt_is_real_upstairs_illegible_downstairs">the_debt_is_real_upstairs_illegible_downstairs</a> :
+    ∃ ms ms&#x27; : List (twoBit.State → twoBit.State),
+      ms.length ≠ ms&#x27;.length
+        ∧ (∀ w p, firstBit.front.obs (enactAll ms w) p
+            = firstBit.front.obs (enactAll ms&#x27; w) p)
+        ∧ ∃ (w : twoBit.State) (pr : twoBit.Probe),
+            twoBit.obs (enactAll ms w) pr ≠ twoBit.obs (enactAll ms&#x27; w) pr :=
+  the_debt_outlives_its_legibility
+
+<span class="kw">theorem</span> <a class="decl" id="no_wedge_funds_itself" href="#no_wedge_funds_itself">no_wedge_funds_itself</a> {H : Type} (q : Quiver H) (a b c : H)
+    (hab : (a, b) ∉ q) (hbc : (b, c) ∉ q.deposit (a, b)) :
+    Nonempty (Path ((q.deposit (a, b)).deposit (b, c)) a c)
+      ∧ (∀ (x y : H) (pth : Path q x y), (a, b) ∉ pth.edges)
+      ∧ (∀ (x y : H) (pth : Path (q.deposit (a, b)) x y), (b, c) ∉ pth.edges) :=
+  the_second_wedge_rides_the_first q a b c hab hbc
+
+<span class="kw">theorem</span> <a class="decl" id="what_this_thread_cannot_carry_another_does" href="#what_this_thread_cannot_carry_another_does">what_this_thread_cannot_carry_another_does</a> {W : Stage} (A : Bubble W)
+    (m : W.State → W.State) (hfix : A.FixesWall m) (w : W.State) (hm : m w ≠ w) :
+    (∀ (ps : List A.front.Probe) (ws : W.State),
+        transcriptWith A.front m ws ps = transcript A.front ws ps)
+      ∧ transcriptWith (plenum W.State) m w [()]
+          ≠ transcript (plenum W.State) w [()] :=
+  the_elsewhen_transcript A m hfix w hm
+
+<span class="kw">theorem</span> <a class="decl" id="the_outer_question_does_not_fit_the_inner_frame" href="#the_outer_question_does_not_fit_the_inner_frame">the_outer_question_does_not_fit_the_inner_frame</a> :
+    (∀ (w : twoBit.State) (p : Unit),
+        (firstBit.nest (mute firstBit.Inner)).front.obs w p = ())
+      ∧ ¬ ∃ (enc : firstBit.Inner.Probe
+              → (firstBit.nest (mute firstBit.Inner)).front.Probe)
+            (dec : (firstBit.nest (mute firstBit.Inner)).front.Ans
+              → firstBit.Inner.Ans),
+            ∀ (w : twoBit.State) (q : firstBit.Inner.Probe),
+              firstBit.front.obs w q
+                = dec ((firstBit.nest (mute firstBit.Inner)).front.obs w (enc q)) :=
+  wall_forcing
+
+<span class="kw">theorem</span> <a class="decl" id="one_grammar_for_flat_and_nested" href="#one_grammar_for_flat_and_nested">one_grammar_for_flat_and_nested</a> (S : Seat G) (g h : G)
+    (gs : List G) (p : S.Pos) :
+    Balanced [Sum.inl g, Sum.inr h]
+      ∧ Balanced (spineT S gs p)
+      ∧ untag (spineT S gs p) = spine S gs p :=
+  ⟨(flat_and_nested_share_one_grammar S g h gs p).1,
+   (flat_and_nested_share_one_grammar S g h gs p).2,
+   spineT_untags_to_spine S gs p⟩
+
+<span class="kw">theorem</span> <a class="decl" id="every_open_bracket_closes" href="#every_open_bracket_closes">every_open_bracket_closes</a> {A : Type} {ws : List (A ⊕ A)}
+    (h : Balanced ws) : opens ws = closes ws :=
+  balanced_conserves h
+
+<span class="kw">theorem</span> <a class="decl" id="a_wedge_needs_a_gift" href="#a_wedge_needs_a_gift">a_wedge_needs_a_gift</a> {H : Type} (q : Quiver H) (a : H)
+    (hstuck : stuck q a) :
+    (∀ b, Path q a b → a = b)
+      ∧ ∀ b, Nonempty (Path (q.deposit (a, b)) a b) :=
+  self_interruption_spends_the_gift q a hstuck
+
+<span class="kw">theorem</span> <a class="decl" id="resume_rebuilds_the_state_not_the_wall" href="#resume_rebuilds_the_state_not_the_wall">resume_rebuilds_the_state_not_the_wall</a> (S : Seat G) :
+    (∀ s t : S.Pos, (∀ p, S.sub s p = S.sub t p) → s = t)
+      ∧ (∃ w : twoBit.State, firstBit.wall w ≠ firstBitFlipped.wall w)
+      ∧ ∀ (w : twoBit.State) (ps : List Unit),
+          transcript firstBit.front w ps = transcript firstBitFlipped.front w ps :=
+  ⟨fun s t hst =&gt; Seat.obs_faithful S s t hst,
+   the_wall_does_not_ride_the_cable.1,
+   the_wall_does_not_ride_the_cable.2⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_proof_takes_two_seats" href="#the_proof_takes_two_seats">the_proof_takes_two_seats</a> (S S&#x27; : Seat G) (h : List G)
+    (p : S.Pos) (p&#x27; : S&#x27;.Pos) (hw : Settles S h p) : Settles S&#x27; h p&#x27; :=
+  (settles_iff_home S&#x27; h p&#x27;).mpr ((settles_iff_home S h p).mp hw)
+
+<span class="kw">theorem</span> <a class="decl" id="definiteness_costs_a_seat" href="#definiteness_costs_a_seat">definiteness_costs_a_seat</a> :
+    ∃ ms ms&#x27; : List (twoBit.State → twoBit.State),
+      (∀ w p, firstBit.front.obs (enactAll ms w) p
+          = firstBit.front.obs (enactAll ms&#x27; w) p)
+        ∧ ∃ w : twoBit.State,
+            (plenum twoBit.State).obs (enactAll ms w) ()
+              ≠ (plenum twoBit.State).obs (enactAll ms&#x27; w) () := by
+  refine ⟨[fun s =&gt; (s.1, !s.2)], [], fun _ _ =&gt; rfl, (true, false), ?_⟩
+  exact fun h =&gt; nomatch (congrArg Prod.snd h : true = false)
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_wedge_inside_a_wedge_comes_home&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_wedge_inside_a_wedge_comes_home</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.resuming_means_the_inner_settled&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms resuming_means_the_inner_settled</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.exits_stay_cost_free_at_depth&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms exits_stay_cost_free_at_depth</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.lifo_is_a_gait_not_a_law&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms lifo_is_a_gait_not_a_law</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_inner_transcript_is_the_outer_backstage&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_inner_transcript_is_the_outer_backstage</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_debt_is_real_upstairs_illegible_downstairs&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_debt_is_real_upstairs_illegible_downstairs</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_wedge_funds_itself&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_wedge_funds_itself</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.what_this_thread_cannot_carry_another_does&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms what_this_thread_cannot_carry_another_does</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_outer_question_does_not_fit_the_inner_frame&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_outer_question_does_not_fit_the_inner_frame</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_grammar_for_flat_and_nested&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_grammar_for_flat_and_nested</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_open_bracket_closes&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_open_bracket_closes</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_wedge_needs_a_gift&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_wedge_needs_a_gift</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.resume_rebuilds_the_state_not_the_wall&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms resume_rebuilds_the_state_not_the_wall</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_proof_takes_two_seats&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_proof_takes_two_seats</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.definiteness_costs_a_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms definiteness_costs_a_seat</span>
+
+<span class="kw">theorem</span> <a class="decl" id="zenos_wedge_settles" href="#zenos_wedge_settles">zenos_wedge_settles</a> (S : Seat G) (g : G) (p : S.Pos) :
+    Settles S (spine S [g] p) p ∧ (spine S [g] p).length = 2 :=
+  ⟨spine_comes_home S [g] p, spine_length S [g] p⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.zenos_wedge_settles&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms zenos_wedge_settles</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

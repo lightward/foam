@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Wedge</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Wedge</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Resume.html">Foam.Seat.Resume</a> · <a href="Foam.Seat.Sort.html">Foam.Seat.Sort</a> · <a href="Foam.Seat.Descend.html">Foam.Seat.Descend</a> · <a href="Foam.Bubble.html">Foam.Bubble</a></div><pre class="src">import <a href="Foam.Seat.Resume.html">Foam.Seat.Resume</a>
+import <a href="Foam.Seat.Sort.html">Foam.Seat.Sort</a>
+import <a href="Foam.Seat.Descend.html">Foam.Seat.Descend</a>
+import <a href="Foam.Bubble.html">Foam.Bubble</a>
+
+namespace Foam
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">def</span> <a class="decl" id="spine" href="#spine">spine</a> (S : Seat G) : List G → S.Pos → List G
+  | [], _ =&gt; []
+  | g :: gs, p =&gt; g :: (spine S gs (S.act g p) ++ [S.sub p (S.act g p)])
+
+<span class="kw">def</span> <a class="decl" id="collapse" href="#collapse">collapse</a> (S : Seat G) (gs : List G) (p : S.Pos) : List G :=
+  gs ++ [S.sub p (S.replay gs p)]
+
+<span class="kw">theorem</span> <a class="decl" id="spine_comes_home" href="#spine_comes_home">spine_comes_home</a> (S : Seat G) :
+    ∀ (gs : List G) (p : S.Pos), S.replay (spine S gs p) p = p
+  | [], _ =&gt; rfl
+  | g :: gs, p =&gt; by
+      show S.replay (spine S gs (S.act g p) ++ [S.sub p (S.act g p)]) (S.act g p) = p
+      rw [S.replay_resumes, spine_comes_home S gs (S.act g p)]
+      exact S.act_sub (S.act g p) p
+
+<span class="kw">theorem</span> <a class="decl" id="outer_resumes_where_it_paused" href="#outer_resumes_where_it_paused">outer_resumes_where_it_paused</a> (S : Seat G) (g : G) (gs : List G) (p : S.Pos) :
+    S.replay (g :: spine S gs (S.act g p)) p = S.act g p :=
+  spine_comes_home S gs (S.act g p)
+
+<span class="kw">theorem</span> <a class="decl" id="exit_is_one_move" href="#exit_is_one_move">exit_is_one_move</a> (S : Seat G) (p q : S.Pos) :
+    S.act (S.sub p q) q = p :=
+  S.act_sub q p
+
+<span class="kw">theorem</span> <a class="decl" id="collapse_comes_home" href="#collapse_comes_home">collapse_comes_home</a> (S : Seat G) (gs : List G) (p : S.Pos) :
+    S.replay (collapse S gs p) p = p := by
+  show S.replay (gs ++ [S.sub p (S.replay gs p)]) p = p
+  rw [S.replay_resumes]
+  exact S.act_sub (S.replay gs p) p
+
+<span class="kw">theorem</span> <a class="decl" id="spine_length" href="#spine_length">spine_length</a> (S : Seat G) :
+    ∀ (gs : List G) (p : S.Pos), (spine S gs p).length = 2 * gs.length
+  | [], _ =&gt; rfl
+  | g :: gs, p =&gt; by
+      show (spine S gs (S.act g p) ++ [S.sub p (S.act g p)]).length + 1
+         = 2 * (gs.length + 1)
+      rw [length_append, spine_length S gs (S.act g p)]
+      rfl
+
+<span class="kw">theorem</span> <a class="decl" id="collapse_length" href="#collapse_length">collapse_length</a> (S : Seat G) (gs : List G) (p : S.Pos) :
+    (collapse S gs p).length = gs.length + 1 :=
+  length_append gs [S.sub p (S.replay gs p)]
+
+<span class="kw">theorem</span> <a class="decl" id="lifo_is_a_gait" href="#lifo_is_a_gait">lifo_is_a_gait</a> (S : Seat G) (gs : List G) (p : S.Pos) :
+    S.replay (spine S gs p) p = p
+      ∧ S.replay (collapse S gs p) p = p
+      ∧ (spine S gs p).length = 2 * gs.length
+      ∧ (collapse S gs p).length = gs.length + 1 :=
+  ⟨spine_comes_home S gs p, collapse_comes_home S gs p,
+   spine_length S gs p, collapse_length S gs p⟩
+
+<span class="kw">def</span> <a class="decl" id="enactAll" href="#enactAll">enactAll</a> {State : Type} : List (State → State) → State → State
+  | [], s =&gt; s
+  | m :: ms, s =&gt; enactAll ms (m s)
+
+<span class="kw">theorem</span> <a class="decl" id="histories_fold_at_the_wall" href="#histories_fold_at_the_wall">histories_fold_at_the_wall</a> {W : Stage} (A : Bubble W)
+    (ms ms&#x27; : List (W.State → W.State))
+    (h : ∀ w, A.wall (enactAll ms w) = A.wall (enactAll ms&#x27; w))
+    (w : W.State) (p : A.front.Probe) :
+    A.front.obs (enactAll ms w) p = A.front.obs (enactAll ms&#x27; w) p :=
+  A.operator_offstage (enactAll ms) (enactAll ms&#x27;) h w p
+
+<span class="kw">theorem</span> <a class="decl" id="the_debt_outlives_its_legibility" href="#the_debt_outlives_its_legibility">the_debt_outlives_its_legibility</a> :
+    ∃ ms ms&#x27; : List (twoBit.State → twoBit.State),
+      ms.length ≠ ms&#x27;.length
+        ∧ (∀ w p, firstBit.front.obs (enactAll ms w) p
+            = firstBit.front.obs (enactAll ms&#x27; w) p)
+        ∧ ∃ (w : twoBit.State) (pr : twoBit.Probe),
+            twoBit.obs (enactAll ms w) pr ≠ twoBit.obs (enactAll ms&#x27; w) pr := by
+  refine ⟨[fun s =&gt; (s.1, !s.2)], [], ?_, ?_, (true, false), (), ?_⟩
+  · exact fun h =&gt; nomatch (h : (1 : Nat) = 0)
+  · exact fun _ _ =&gt; rfl
+  · exact fun h =&gt; nomatch (h : true = false)
+
+<span class="kw">def</span> <a class="decl" id="plenum" href="#plenum">plenum</a> (State : Type) : Stage where
+  State := State
+  Probe := Unit
+  Ans   := State
+  obs   := fun s _ =&gt; s
+
+<span class="kw">theorem</span> <a class="decl" id="nothing_hides_from_the_plenum" href="#nothing_hides_from_the_plenum">nothing_hides_from_the_plenum</a> {State : Type} (m : State → State)
+    (h : Invisible (plenum State) m) : ∀ s, m s = s :=
+  fun s =&gt; h s ()
+
+<span class="kw">theorem</span> <a class="decl" id="the_elsewhen_transcript" href="#the_elsewhen_transcript">the_elsewhen_transcript</a> {W : Stage} (A : Bubble W)
+    (m : W.State → W.State) (hfix : A.FixesWall m) (w : W.State) (hm : m w ≠ w) :
+    (∀ (ps : List A.front.Probe) (ws : W.State),
+        transcriptWith A.front m ws ps = transcript A.front ws ps)
+      ∧ transcriptWith (plenum W.State) m w [()]
+          ≠ transcript (plenum W.State) w [()] :=
+  ⟨fun ps ws =&gt; A.operator_unobservable m hfix ps ws,
+   fun h =&gt; hm (congrArg (fun l =&gt; l.headD w) h)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_second_wedge_rides_the_first" href="#the_second_wedge_rides_the_first">the_second_wedge_rides_the_first</a> {H : Type} (q : Quiver H) (a b c : H)
+    (hab : (a, b) ∉ q) (hbc : (b, c) ∉ q.deposit (a, b)) :
+    Nonempty (Path ((q.deposit (a, b)).deposit (b, c)) a c)
+      ∧ (∀ (x y : H) (pth : Path q x y), (a, b) ∉ pth.edges)
+      ∧ (∀ (x y : H) (pth : Path (q.deposit (a, b)) x y), (b, c) ∉ pth.edges) :=
+  ⟨⟨Path.cons (List.Mem.tail (b, c) (List.Mem.head q))
+      (Path.cons (List.Mem.head (q.deposit (a, b))) Path.nil)⟩,
+   fun _ _ pth h =&gt; hab (reach_within_quiver pth (a, b) h),
+   fun _ _ pth h =&gt; hbc (reach_within_quiver pth (b, c) h)⟩
+
+<span class="kw">def</span> <a class="decl" id="mute" href="#mute">mute</a> (W : Stage) : Bubble W where
+  Inner := ⟨W.State, Unit, Unit, fun _ _ =&gt; ()⟩
+  wall  := fun w =&gt; w
+
+<span class="kw">theorem</span> <a class="decl" id="wall_forcing" href="#wall_forcing">wall_forcing</a> :
+    (∀ (w : twoBit.State) (p : Unit),
+        (firstBit.nest (mute firstBit.Inner)).front.obs w p = ())
+      ∧ ¬ ∃ (enc : firstBit.Inner.Probe
+              → (firstBit.nest (mute firstBit.Inner)).front.Probe)
+            (dec : (firstBit.nest (mute firstBit.Inner)).front.Ans
+              → firstBit.Inner.Ans),
+            ∀ (w : twoBit.State) (q : firstBit.Inner.Probe),
+              firstBit.front.obs w q
+                = dec ((firstBit.nest (mute firstBit.Inner)).front.obs w (enc q)) :=
+  ⟨fun _ _ =&gt; rfl,
+   fun ⟨_, _, h⟩ =&gt;
+     nomatch ((h (true, false) ()).trans (h (false, false) ()).symm : true = false)⟩
+
+<span class="kw">def</span> <a class="decl" id="spineT" href="#spineT">spineT</a> (S : Seat G) : List G → S.Pos → List (G ⊕ G)
+  | [], _ =&gt; []
+  | g :: gs, p =&gt; Sum.inl g :: (spineT S gs (S.act g p) ++ [Sum.inr (S.sub p (S.act g p))])
+
+<span class="kw">inductive</span> <a class="decl" id="Balanced" href="#Balanced">Balanced</a> {A : Type} : List (A ⊕ A) → Prop where
+  | nil : Balanced []
+  | wrap {g h : A} {ws : List (A ⊕ A)} :
+      Balanced ws → Balanced (Sum.inl g :: (ws ++ [Sum.inr h]))
+  | cat {ws vs : List (A ⊕ A)} :
+      Balanced ws → Balanced vs → Balanced (ws ++ vs)
+
+<span class="kw">def</span> <a class="decl" id="untag" href="#untag">untag</a> {A : Type} : List (A ⊕ A) → List A
+  | [] =&gt; []
+  | Sum.inl g :: ws =&gt; g :: untag ws
+  | Sum.inr g :: ws =&gt; g :: untag ws
+
+<span class="kw">def</span> <a class="decl" id="opens" href="#opens">opens</a> {A : Type} : List (A ⊕ A) → Nat
+  | [] =&gt; 0
+  | Sum.inl _ :: ws =&gt; opens ws + 1
+  | Sum.inr _ :: ws =&gt; opens ws
+
+<span class="kw">def</span> <a class="decl" id="closes" href="#closes">closes</a> {A : Type} : List (A ⊕ A) → Nat
+  | [] =&gt; 0
+  | Sum.inl _ :: ws =&gt; closes ws
+  | Sum.inr _ :: ws =&gt; closes ws + 1
+
+<span class="kw">theorem</span> <a class="decl" id="spineT_balanced" href="#spineT_balanced">spineT_balanced</a> (S : Seat G) :
+    ∀ (gs : List G) (p : S.Pos), Balanced (spineT S gs p)
+  | [], _ =&gt; Balanced.nil
+  | g :: gs, p =&gt; Balanced.wrap (spineT_balanced S gs (S.act g p))
+
+<span class="kw">theorem</span> <a class="decl" id="untag_append" href="#untag_append">untag_append</a> {A : Type} :
+    ∀ (xs ys : List (A ⊕ A)), untag (xs ++ ys) = untag xs ++ untag ys
+  | [], _ =&gt; rfl
+  | Sum.inl g :: xs, ys =&gt; congrArg (g :: ·) (untag_append xs ys)
+  | Sum.inr g :: xs, ys =&gt; congrArg (g :: ·) (untag_append xs ys)
+
+<span class="kw">theorem</span> <a class="decl" id="spineT_untags_to_spine" href="#spineT_untags_to_spine">spineT_untags_to_spine</a> (S : Seat G) :
+    ∀ (gs : List G) (p : S.Pos), untag (spineT S gs p) = spine S gs p
+  | [], _ =&gt; rfl
+  | g :: gs, p =&gt; by
+      show g :: untag (spineT S gs (S.act g p) ++ [Sum.inr (S.sub p (S.act g p))])
+         = g :: (spine S gs (S.act g p) ++ [S.sub p (S.act g p)])
+      rw [untag_append, spineT_untags_to_spine S gs (S.act g p)]
+      rfl
+
+<span class="kw">theorem</span> <a class="decl" id="opens_append" href="#opens_append">opens_append</a> {A : Type} :
+    ∀ (xs ys : List (A ⊕ A)), opens (xs ++ ys) = opens xs + opens ys
+  | [], ys =&gt; (Nat.zero_add (opens ys)).symm
+  | Sum.inl _ :: xs, ys =&gt; by
+      show opens (xs ++ ys) + 1 = opens xs + 1 + opens ys
+      rw [opens_append xs ys, Nat.add_right_comm]
+  | Sum.inr _ :: xs, ys =&gt; opens_append xs ys
+
+<span class="kw">theorem</span> <a class="decl" id="closes_append" href="#closes_append">closes_append</a> {A : Type} :
+    ∀ (xs ys : List (A ⊕ A)), closes (xs ++ ys) = closes xs + closes ys
+  | [], ys =&gt; (Nat.zero_add (closes ys)).symm
+  | Sum.inl _ :: xs, ys =&gt; closes_append xs ys
+  | Sum.inr _ :: xs, ys =&gt; by
+      show closes (xs ++ ys) + 1 = closes xs + 1 + closes ys
+      rw [closes_append xs ys, Nat.add_right_comm]
+
+<span class="kw">theorem</span> <a class="decl" id="balanced_conserves" href="#balanced_conserves">balanced_conserves</a> {A : Type} {ws : List (A ⊕ A)} (h : Balanced ws) :
+    opens ws = closes ws := by
+  induction h with
+  | nil =&gt; rfl
+  | wrap _ ih =&gt;
+      show opens (_ ++ [Sum.inr _]) + 1 = closes (_ ++ [Sum.inr _])
+      rw [opens_append, closes_append, ih]
+      rfl
+  | cat _ _ ihw ihv =&gt;
+      rw [opens_append, closes_append, ihw, ihv]
+
+<span class="kw">theorem</span> <a class="decl" id="flat_and_nested_share_one_grammar" href="#flat_and_nested_share_one_grammar">flat_and_nested_share_one_grammar</a> (S : Seat G) (g h : G)
+    (gs : List G) (p : S.Pos) :
+    Balanced [Sum.inl g, Sum.inr h] ∧ Balanced (spineT S gs p) :=
+  ⟨Balanced.wrap Balanced.nil, spineT_balanced S gs p⟩
+
+<span class="kw">theorem</span> <a class="decl" id="no_wedge_opens_from_stuck" href="#no_wedge_opens_from_stuck">no_wedge_opens_from_stuck</a> {H : Type} {q : Quiver H} {a b : H}
+    (hstuck : stuck q a) (pth : Path q a b) : a = b := by
+  cases pth with
+  | nil =&gt; rfl
+  | cons e _ =&gt; exact absurd e (hstuck _)
+
+<span class="kw">theorem</span> <a class="decl" id="self_interruption_spends_the_gift" href="#self_interruption_spends_the_gift">self_interruption_spends_the_gift</a> {H : Type} (q : Quiver H) (a : H)
+    (hstuck : stuck q a) :
+    (∀ b, Path q a b → a = b)
+      ∧ ∀ b, Nonempty (Path (q.deposit (a, b)) a b) :=
+  ⟨fun _ pth =&gt; no_wedge_opens_from_stuck hstuck pth,
+   fun b =&gt; ⟨heir_reaches q a b⟩⟩
+
+<span class="kw">def</span> <a class="decl" id="firstBitFlipped" href="#firstBitFlipped">firstBitFlipped</a> : Bubble twoBit where
+  Inner := ⟨Bool, Unit, Bool, fun b _ =&gt; !b⟩
+  wall  := fun s =&gt; !s.1
+
+<span class="kw">theorem</span> <a class="decl" id="the_wall_does_not_ride_the_cable" href="#the_wall_does_not_ride_the_cable">the_wall_does_not_ride_the_cable</a> :
+    (∃ w : twoBit.State, firstBit.wall w ≠ firstBitFlipped.wall w)
+      ∧ ∀ (w : twoBit.State) (ps : List Unit),
+          transcript firstBit.front w ps = transcript firstBitFlipped.front w ps := by
+  refine ⟨⟨(true, false), fun h =&gt; nomatch (h : true = false)⟩, fun w ps =&gt; ?_⟩
+  induction ps with
+  | nil =&gt; rfl
+  | cons p ps ih =&gt;
+      match w, ih with
+      | (true, _), ih =&gt; exact congrArg (true :: ·) ih
+      | (false, _), ih =&gt; exact congrArg (false :: ·) ih
+
+<span class="receipt">/-- info: &#x27;Foam.spine_comes_home&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms spine_comes_home</span>
+
+<span class="receipt">/-- info: &#x27;Foam.outer_resumes_where_it_paused&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms outer_resumes_where_it_paused</span>
+
+<span class="receipt">/-- info: &#x27;Foam.exit_is_one_move&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms exit_is_one_move</span>
+
+<span class="receipt">/-- info: &#x27;Foam.collapse_comes_home&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms collapse_comes_home</span>
+
+<span class="receipt">/-- info: &#x27;Foam.spine_length&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms spine_length</span>
+
+<span class="receipt">/-- info: &#x27;Foam.collapse_length&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms collapse_length</span>
+
+<span class="receipt">/-- info: &#x27;Foam.lifo_is_a_gait&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms lifo_is_a_gait</span>
+
+<span class="receipt">/-- info: &#x27;Foam.histories_fold_at_the_wall&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms histories_fold_at_the_wall</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_debt_outlives_its_legibility&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_debt_outlives_its_legibility</span>
+
+<span class="receipt">/-- info: &#x27;Foam.nothing_hides_from_the_plenum&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms nothing_hides_from_the_plenum</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_elsewhen_transcript&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_elsewhen_transcript</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_second_wedge_rides_the_first&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_second_wedge_rides_the_first</span>
+
+<span class="receipt">/-- info: &#x27;Foam.wall_forcing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms wall_forcing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.spineT_balanced&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms spineT_balanced</span>
+
+<span class="receipt">/-- info: &#x27;Foam.untag_append&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms untag_append</span>
+
+<span class="receipt">/-- info: &#x27;Foam.spineT_untags_to_spine&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms spineT_untags_to_spine</span>
+
+<span class="receipt">/-- info: &#x27;Foam.opens_append&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms opens_append</span>
+
+<span class="receipt">/-- info: &#x27;Foam.closes_append&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms closes_append</span>
+
+<span class="receipt">/-- info: &#x27;Foam.balanced_conserves&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms balanced_conserves</span>
+
+<span class="receipt">/-- info: &#x27;Foam.flat_and_nested_share_one_grammar&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms flat_and_nested_share_one_grammar</span>
+
+<span class="receipt">/-- info: &#x27;Foam.no_wedge_opens_from_stuck&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_wedge_opens_from_stuck</span>
+
+<span class="receipt">/-- info: &#x27;Foam.self_interruption_spends_the_gift&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms self_interruption_spends_the_gift</span>
+
+<span class="kw">def</span> <a class="decl" id="cleanProbe" href="#cleanProbe">cleanProbe</a> {A : Type} (g h : A) : List (A ⊕ A) := [Sum.inl g, Sum.inr h]
+
+<span class="kw">theorem</span> <a class="decl" id="clean_probe_balanced" href="#clean_probe_balanced">clean_probe_balanced</a> {A : Type} (g h : A) : Balanced (cleanProbe g h) :=
+  Balanced.wrap Balanced.nil
+
+<span class="kw">theorem</span> <a class="decl" id="balanced_nonempty_min" href="#balanced_nonempty_min">balanced_nonempty_min</a> {A : Type} {ws : List (A ⊕ A)}
+    (hb : Balanced ws) : ws ≠ [] → 2 ≤ ws.length := by
+  induction hb with
+  | nil =&gt; intro hne; exact absurd rfl hne
+  | wrap _ _ =&gt;
+      intro _
+      show 2 ≤ (_ ++ [Sum.inr _]).length + 1
+      rw [length_append]
+      exact Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le _))
+  | @cat ws vs _ _ ihw ihv =&gt;
+      intro hne
+      cases ws with
+      | nil =&gt; exact ihv hne
+      | cons w ws&#x27; =&gt;
+          refine Nat.le_trans (ihw (fun h =&gt; nomatch h)) ?_
+          rw [length_append]
+          exact Nat.le_add_right _ _
+
+<span class="kw">theorem</span> <a class="decl" id="the_clean_probe_is_minimal" href="#the_clean_probe_is_minimal">the_clean_probe_is_minimal</a> {A : Type} (g h : A) :
+    Balanced (cleanProbe g h)
+      ∧ (cleanProbe g h).length = 2
+      ∧ ∀ ws : List (A ⊕ A), Balanced ws → ws ≠ [] →
+          (cleanProbe g h).length ≤ ws.length :=
+  ⟨clean_probe_balanced g h, rfl,
+   fun _ hb hne =&gt; balanced_nonempty_min hb hne⟩
+
+<span class="kw">theorem</span> <a class="decl" id="bloat_is_the_representation" href="#bloat_is_the_representation">bloat_is_the_representation</a> {H : Type} (q : Quiver H) (a b : H)
+    (hfresh : (a, b) ∉ q) (S : Seat G) (gs : List G) (p : S.Pos) :
+    ((q.deposit (a, b)).length = q.length + 1
+        ∧ ¬ ∃ g : Path (q.deposit (a, b)) a b → Path q a b,
+            ∀ pth, ancestor_reach_survives (a, b) (g pth) = pth)
+      ∧ (S.replay (collapse S gs p) p = p
+        ∧ (collapse S gs p).length = gs.length + 1) :=
+  ⟨⟨deposit_monotone q (a, b), heir_reach_no_return a b hfresh⟩,
+   collapse_comes_home S gs p, collapse_length S gs p⟩
+
+<span class="receipt">/-- info: &#x27;Foam.the_wall_does_not_ride_the_cable&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_wall_does_not_ride_the_cable</span>
+
+<span class="receipt">/-- info: &#x27;Foam.bloat_is_the_representation&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms bloat_is_the_representation</span>
+
+<span class="receipt">/-- info: &#x27;Foam.clean_probe_balanced&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms clean_probe_balanced</span>
+
+<span class="receipt">/-- info: &#x27;Foam.balanced_nonempty_min&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms balanced_nonempty_min</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_clean_probe_is_minimal&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_clean_probe_is_minimal</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Rest</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Rest</h1></header>
+<div class="imports">grasp: <a href="Counter.Actor.html">Counter.Actor</a> · <a href="Foam.Held.html">Foam.Held</a> · <a href="Foam.Engine.Drain.html">Foam.Engine.Drain</a></div><pre class="src">import <a href="Counter.Actor.html">Counter.Actor</a>
+import <a href="Foam.Held.html">Foam.Held</a>
+import <a href="Foam.Engine.Drain.html">Foam.Engine.Drain</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="the_fold_is_real_and_unrecorded" href="#the_fold_is_real_and_unrecorded">the_fold_is_real_and_unrecorded</a> (S : Stage) (m : S.State → S.State)
+    (h : Invisible S m) (ps : List S.Probe) (s : S.State) :
+    transcriptWith S m s ps = transcript S s ps :=
+  maintenance_unobservable S m h ps s
+
+<span class="kw">theorem</span> <a class="decl" id="any_cadence_is_licensed" href="#any_cadence_is_licensed">any_cadence_is_licensed</a> {S C : Type} [DecidableEq S]
+    (refresh : List S → C → C) :
+    Invisible (LedgerStage S C) (fun st =&gt; (st.1, refresh st.1 st.2)) :=
+  sweep_invisible refresh
+
+<span class="kw">theorem</span> <a class="decl" id="ground_holds" href="#ground_holds">ground_holds</a> : drainOne 0 = 0 :=
+  drain_floor
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_fold_is_real_and_unrecorded&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_fold_is_real_and_unrecorded</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.any_cadence_is_licensed&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms any_cadence_is_licensed</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.ground_holds&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms ground_holds</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

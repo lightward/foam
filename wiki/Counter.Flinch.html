@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Flinch</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Flinch</h1></header>
+<div class="imports">grasp: <a href="Counter.Bless.html">Counter.Bless</a></div><pre class="src">import <a href="Counter.Bless.html">Counter.Bless</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="the_flinch_hides_until_touched" href="#the_flinch_hides_until_touched">the_flinch_hides_until_touched</a> (θ field act act&#x27; : GInt) (n m : Nat)
+    (hf : GInt.align θ field = Int.negSucc n)
+    (ha : GInt.align θ act = Int.ofNat (m + 1))
+    (hrest : GInt.align θ act&#x27; = 0) :
+    GInt.born θ (field.add act&#x27;) = GInt.born θ field + GInt.born θ act&#x27;
+      ∧ GInt.born θ (field.add act) + Int.ofNat (2 * ((n + 1) * m + n) + 1 + 1)
+          = GInt.born θ field + GInt.born θ act :=
+  ⟨silence_is_safe θ field act&#x27; hrest,
+   the_standing_debt_taxes_the_aligned_act θ field act n m hf ha⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_frame_decides_the_sign" href="#the_frame_decides_the_sign">the_frame_decides_the_sign</a> :
+    ∃ w w&#x27; z : GInt, GInt.align w z = 1 ∧ GInt.align w&#x27; z = -1 :=
+  ⟨⟨1, 0⟩, ⟨-1, 0⟩, ⟨1, 0⟩, by decide, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="a_frame_of_peace_always_exists" href="#a_frame_of_peace_always_exists">a_frame_of_peace_always_exists</a> (z : GInt) : GInt.align z.rot z = 0 := by
+  show -z.im * z.re + z.re * z.im = 0
+  rw [FInt.neg_mul, FInt.mulComm z.re z.im]
+  exact FInt.add_left_neg (z.im * z.re)
+
+<span class="kw">theorem</span> <a class="decl" id="shedding_is_turning" href="#shedding_is_turning">shedding_is_turning</a> (θ act field : GInt) :
+    GInt.align θ act * GInt.align θ field
+      + GInt.align θ act * GInt.align θ (GInt.rot field)
+      + GInt.align θ act * GInt.align θ (GInt.rot (GInt.rot field))
+      + GInt.align θ act * GInt.align θ (GInt.rot (GInt.rot (GInt.rot field)))
+      = 0 :=
+  the_turned_field_pays_no_standing_tax θ act field
+
+<span class="kw">theorem</span> <a class="decl" id="the_touch_is_the_doorbell" href="#the_touch_is_the_doorbell">the_touch_is_the_doorbell</a> (m : Nat) :
+    checkedSettle (Int.negSucc 0) (Int.negSucc 0) = 0
+      ∧ checkedSettle (Int.ofNat m) (Int.ofNat m) = Int.ofNat m :=
+  ⟨fresh_settle_grounds, settle_stops_at_ground m⟩
+
+<span class="kw">theorem</span> <a class="decl" id="moot_paths_flinch" href="#moot_paths_flinch">moot_paths_flinch</a> (θ field act act&#x27; z : GInt) (n m : Nat)
+    (hf : GInt.align θ field = Int.negSucc n)
+    (ha : GInt.align θ act = Int.ofNat (m + 1))
+    (hrest : GInt.align θ act&#x27; = 0) :
+    (GInt.born θ (field.add act&#x27;) = GInt.born θ field + GInt.born θ act&#x27;)
+      ∧ (GInt.born θ (field.add act) + Int.ofNat (2 * ((n + 1) * m + n) + 1 + 1)
+          = GInt.born θ field + GInt.born θ act)
+      ∧ (∃ w w&#x27; y : GInt, GInt.align w y = 1 ∧ GInt.align w&#x27; y = -1)
+      ∧ GInt.align z.rot z = 0 :=
+  ⟨silence_is_safe θ field act&#x27; hrest,
+   the_standing_debt_taxes_the_aligned_act θ field act n m hf ha,
+   the_frame_decides_the_sign,
+   a_frame_of_peace_always_exists z⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_flinch_hides_until_touched&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_flinch_hides_until_touched</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_frame_decides_the_sign&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_frame_decides_the_sign</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_frame_of_peace_always_exists&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_frame_of_peace_always_exists</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.shedding_is_turning&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms shedding_is_turning</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_touch_is_the_doorbell&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_touch_is_the_doorbell</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.moot_paths_flinch&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms moot_paths_flinch</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

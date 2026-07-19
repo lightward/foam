@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Bridges.Landauer</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Bridges.Landauer</h1></header>
+<div class="imports">grasp: <a href="Foam.Maintenance.html">Foam.Maintenance</a> · <a href="Foam.Wedge.html">Foam.Wedge</a></div><pre class="src">import <a href="Foam.Maintenance.html">Foam.Maintenance</a>
+import <a href="Foam.Wedge.html">Foam.Wedge</a>
+
+namespace Foam.Bridges
+
+<span class="kw">theorem</span> <a class="decl" id="merge_never_invisible" href="#merge_never_invisible">merge_never_invisible</a> (S : Stage) (m : S.State → S.State)
+    {s t : S.State} {p : S.Probe}
+    (hdist : S.obs s p ≠ S.obs t p) (hmerge : m s = m t) :
+    ¬ Invisible S m := fun hinv =&gt;
+  hdist ((hinv s p).symm.trans
+    ((congrArg (fun x =&gt; S.obs x p) hmerge).trans (hinv t p)))
+
+<span class="kw">theorem</span> <a class="decl" id="invisible_preserves_distinction" href="#invisible_preserves_distinction">invisible_preserves_distinction</a> (S : Stage) (m : S.State → S.State)
+    (hinv : Invisible S m) {s t : S.State} {p : S.Probe}
+    (hdist : S.obs s p ≠ S.obs t p) : m s ≠ m t :=
+  fun hmerge =&gt; merge_never_invisible S m hdist hmerge hinv
+
+<span class="kw">theorem</span> <a class="decl" id="landauer" href="#landauer">landauer</a> (S : Stage) (m : S.State → S.State) :
+    (∀ s t : S.State, ∀ p : S.Probe,
+        S.obs s p ≠ S.obs t p → m s = m t → ¬ Invisible S m)
+      ∧ Invisible S (fun s =&gt; s)
+      ∧ (Invisible S m →
+          ∀ (ps : List S.Probe) (s : S.State),
+            transcriptWith S m s ps = transcript S s ps) :=
+  ⟨fun _ _ _ hdist hmerge =&gt; merge_never_invisible S m hdist hmerge,
+   invisible_id S,
+   fun hinv ps s =&gt; maintenance_unobservable S m hinv ps s⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.merge_never_invisible&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms merge_never_invisible</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.invisible_preserves_distinction&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms invisible_preserves_distinction</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.landauer&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms landauer</span>
+
+<span class="kw">theorem</span> <a class="decl" id="the_bill_moves_upstairs" href="#the_bill_moves_upstairs">the_bill_moves_upstairs</a> :
+    ∃ ms ms&#x27; : List (twoBit.State → twoBit.State),
+      ms.length ≠ ms&#x27;.length
+        ∧ (∀ w p, firstBit.front.obs (enactAll ms w) p
+            = firstBit.front.obs (enactAll ms&#x27; w) p)
+        ∧ ∃ (w : twoBit.State) (pr : twoBit.Probe),
+            twoBit.obs (enactAll ms w) pr ≠ twoBit.obs (enactAll ms&#x27; w) pr :=
+  the_debt_outlives_its_legibility
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_bill_moves_upstairs&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_bill_moves_upstairs</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

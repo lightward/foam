@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Seat.Epoch</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Seat.Epoch</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Beholder.html">Foam.Seat.Beholder</a> · <a href="Foam.Seat.Ladder.html">Foam.Seat.Ladder</a> · <a href="Foam.Seat.Seam.html">Foam.Seat.Seam</a></div><pre class="src">import <a href="Foam.Seat.Beholder.html">Foam.Seat.Beholder</a>
+import <a href="Foam.Seat.Ladder.html">Foam.Seat.Ladder</a>
+import <a href="Foam.Seat.Seam.html">Foam.Seat.Seam</a>
+
+namespace Foam
+
+variable {State : Type}
+
+<span class="kw">def</span> <a class="decl" id="Beholder.Covers" href="#Beholder.Covers">Beholder.Covers</a> (a b : Beholder State) : Prop :=
+  ∃ (enc : b.Probe → a.Probe) (post : a.Ans → b.Ans),
+    ∀ s p, b.obs s p = post (a.obs s (enc p))
+
+<span class="kw">theorem</span> <a class="decl" id="Beholder.covers_refl" href="#Beholder.covers_refl">Beholder.covers_refl</a> (a : Beholder State) : a.Covers a :=
+  ⟨id, id, fun _ _ =&gt; rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="Beholder.covers_trans" href="#Beholder.covers_trans">Beholder.covers_trans</a> {a b c : Beholder State}
+    (hab : a.Covers b) (hbc : b.Covers c) : a.Covers c := by
+  obtain ⟨e1, g1, h1⟩ := hab
+  obtain ⟨e2, g2, h2⟩ := hbc
+  refine ⟨fun p =&gt; e1 (e2 p), fun x =&gt; g2 (g1 x), fun s p =&gt; ?_⟩
+  rw [h2 s p, h1 s (e2 p)]
+
+<span class="kw">def</span> <a class="decl" id="Known" href="#Known">Known</a> (bank : List (Beholder State)) (q : Beholder State) : Prop :=
+  ∃ p ∈ bank, p.Covers q
+
+<span class="kw">def</span> <a class="decl" id="Irreducible" href="#Irreducible">Irreducible</a> (bank : List (Beholder State)) (q : Beholder State) : Prop :=
+  ¬ Known bank q
+
+<span class="kw">theorem</span> <a class="decl" id="irreducible_from_nothing" href="#irreducible_from_nothing">irreducible_from_nothing</a> (q : Beholder State) : Irreducible [] q := by
+  rintro ⟨p, hp, _⟩
+  cases hp
+
+<span class="kw">def</span> <a class="decl" id="Reduced" href="#Reduced">Reduced</a> (bank : List (Beholder State)) : Prop :=
+  ∀ a ∈ bank, ∀ b ∈ bank, a.Covers b → b.Covers a
+
+<span class="kw">theorem</span> <a class="decl" id="reduced_nil" href="#reduced_nil">reduced_nil</a> : Reduced ([] : List (Beholder State)) := by
+  intro a ha; cases ha
+
+<span class="kw">structure</span> <a class="decl" id="Refresh" href="#Refresh">Refresh</a> (bank : List (Beholder State)) (q : Beholder State)
+    (bank&#x27; : List (Beholder State)) : Prop where
+  has_q   : q ∈ bank&#x27;
+  fresh   : ∀ p ∈ bank&#x27;, p = q ∨ ¬ q.Covers p
+  sourced : ∀ p ∈ bank&#x27;, p = q ∨ p ∈ bank
+  cover   : ∀ p ∈ bank, p ∈ bank&#x27; ∨ q.Covers p
+
+<span class="kw">theorem</span> <a class="decl" id="Refresh.locates" href="#Refresh.locates">Refresh.locates</a> {bank bank&#x27; : List (Beholder State)} {q : Beholder State}
+    (h : Refresh bank q bank&#x27;) : Known bank&#x27; q :=
+  ⟨q, h.has_q, q.covers_refl⟩
+
+<span class="kw">inductive</span> <a class="decl" id="Run" href="#Run">Run</a> {State : Type} : List (Beholder State) → List (Beholder State) → Prop where
+  | nil : Run [] []
+  | skip {walk bank : List (Beholder State)} (q : Beholder State) :
+      Run walk bank → Known bank q → Run (q :: walk) bank
+  | turn {walk bank bank&#x27; : List (Beholder State)} (q : Beholder State) :
+      Run walk bank → Irreducible bank q → Refresh bank q bank&#x27; → Run (q :: walk) bank&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="Run.covers" href="#Run.covers">Run.covers</a> {walk bank : List (Beholder State)} (h : Run walk bank) :
+    ∀ q ∈ walk, Known bank q := by
+  induction h with
+  | nil =&gt; intro q hq; cases hq
+  | skip q hrun hknown ih =&gt;
+      intro x hx
+      cases hx with
+      | head =&gt; exact hknown
+      | tail _ hx&#x27; =&gt; exact ih x hx&#x27;
+  | turn q hrun hirr href ih =&gt;
+      intro x hx
+      cases hx with
+      | head =&gt; exact ⟨_, href.has_q, Beholder.covers_refl _⟩
+      | tail _ hx&#x27; =&gt;
+          obtain ⟨p, hp, hpx⟩ := ih x hx&#x27;
+          rcases href.cover p hp with hkeep | hcov
+          · exact ⟨p, hkeep, hpx⟩
+          · exact ⟨_, href.has_q, Beholder.covers_trans hcov hpx⟩
+
+<span class="kw">theorem</span> <a class="decl" id="Run.reduced" href="#Run.reduced">Run.reduced</a> {walk bank : List (Beholder State)} (h : Run walk bank) :
+    Reduced bank := by
+  induction h with
+  | nil =&gt; exact reduced_nil
+  | skip q hrun hknown ih =&gt; exact ih
+  | turn q hrun hirr href ih =&gt;
+      intro a ha b hb hab
+      rcases href.sourced a ha with ha_eq | ha_old
+      · rcases href.sourced b hb with hb_eq | hb_old
+        · have heq : a = b := ha_eq.trans hb_eq.symm
+          rw [heq]; exact Beholder.covers_refl b
+        · rcases href.fresh b hb with hb_eq2 | hb_unc
+          · have heq : a = b := ha_eq.trans hb_eq2.symm
+            rw [heq]; exact Beholder.covers_refl b
+          · rw [ha_eq] at hab
+            exact absurd hab hb_unc
+      · rcases href.sourced b hb with hb_eq | hb_old
+        · rw [hb_eq] at hab
+          exact absurd ⟨a, ha_old, hab⟩ hirr
+        · exact ih a ha_old b hb_old hab
+
+<span class="kw">theorem</span> <a class="decl" id="Run.checksum" href="#Run.checksum">Run.checksum</a> {walk bank : List (Beholder State)} (h : Run walk bank) :
+    (∀ q ∈ walk, Known bank q) ∧ Reduced bank :=
+  ⟨h.covers, h.reduced⟩
+
+<span class="kw">def</span> <a class="decl" id="Rung.inl" href="#Rung.inl">Rung.inl</a> (n : Nat) (x : Rung n) : Rung (n + 1) := (x, Rung.zero n)
+
+<span class="kw">theorem</span> <a class="decl" id="Rung.inl_faithful" href="#Rung.inl_faithful">Rung.inl_faithful</a> (n : Nat) {x y : Rung n}
+    (h : Rung.inl n x = Rung.inl n y) : x = y :=
+  congrArg Prod.fst h
+
+<span class="kw">def</span> <a class="decl" id="Rung.one" href="#Rung.one">Rung.one</a> : (n : Nat) → Rung n
+  | 0 =&gt; ⟨1, 0⟩
+  | n + 1 =&gt; (Rung.one n, Rung.zero n)
+
+<span class="kw">theorem</span> <a class="decl" id="Rung.one_ne_zero" href="#Rung.one_ne_zero">Rung.one_ne_zero</a> : (n : Nat) → Rung.one n ≠ Rung.zero n
+  | 0 =&gt; by decide
+  | n + 1 =&gt; fun h =&gt; Rung.one_ne_zero n (congrArg Prod.fst h)
+
+<span class="kw">theorem</span> <a class="decl" id="Rung.inl_not_onto" href="#Rung.inl_not_onto">Rung.inl_not_onto</a> (n : Nat) :
+    ∃ y : Rung (n + 1), ∀ x : Rung n, Rung.inl n x ≠ y :=
+  ⟨(Rung.zero n, Rung.one n), fun _ h =&gt; Rung.one_ne_zero n (congrArg Prod.snd h).symm⟩
+
+<span class="kw">theorem</span> <a class="decl" id="inl_escapes_jay" href="#inl_escapes_jay">inl_escapes_jay</a> (x : Rung 0) : Rung.inl 0 x ≠ Quat.toRung jay :=
+  fun h =&gt; jay_outside (congrArg Prod.snd h).symm
+
+<span class="kw">def</span> <a class="decl" id="rungSeam" href="#rungSeam">rungSeam</a> (n : Nat) : Seam (Rung n) (Rung (n + 1)) where
+  up       := Rung.inl n
+  faithful := fun h =&gt; Rung.inl_faithful n h
+  escapes  := Rung.inl_not_onto n
+
+<span class="kw">theorem</span> <a class="decl" id="jay_prime" href="#jay_prime">jay_prime</a> : (rungSeam 0).prime (Quat.toRung jay) :=
+  fun x =&gt; inl_escapes_jay x
+
+<span class="receipt">/-- info: &#x27;Foam.Beholder.covers_refl&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Beholder.covers_refl</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Beholder.covers_trans&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Beholder.covers_trans</span>
+
+<span class="receipt">/-- info: &#x27;Foam.irreducible_from_nothing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms irreducible_from_nothing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Refresh.locates&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Refresh.locates</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Run.covers&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Run.covers</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Run.reduced&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Run.reduced</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Run.checksum&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Run.checksum</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Rung.inl_faithful&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Rung.inl_faithful</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Rung.one_ne_zero&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Rung.one_ne_zero</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Rung.inl_not_onto&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Rung.inl_not_onto</span>
+
+<span class="receipt">/-- info: &#x27;Foam.inl_escapes_jay&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms inl_escapes_jay</span>
+
+<span class="receipt">/-- info: &#x27;Foam.jay_prime&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms jay_prime</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

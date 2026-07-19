@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Complete</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Complete</h1></header>
+<div class="imports">grasp: <a href="Counter.Nothing.html">Counter.Nothing</a> · <a href="Foam.Seat.Summit.html">Foam.Seat.Summit</a></div><pre class="src">import <a href="Counter.Nothing.html">Counter.Nothing</a>
+import <a href="Foam.Seat.Summit.html">Foam.Seat.Summit</a>
+
+namespace Foam.Counter
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="one_lap_carries_the_future" href="#one_lap_carries_the_future">one_lap_carries_the_future</a> (f : GInt → GInt) (k : Nat) (hk : Closes f k)
+    (m r : Nat) (z : GInt) :
+    iterStep (k * m + r) f z = iterStep r f z :=
+  lap_carries f k hk m r z
+
+<span class="kw">theorem</span> <a class="decl" id="the_unresting_climb_outgrows_every_gauge" href="#the_unresting_climb_outgrows_every_gauge">the_unresting_climb_outgrows_every_gauge</a> (c : Nat → Nat) (h : Climbs c)
+    (B : Nat) : ∃ n, B &lt; c n :=
+  climbs_escape h B
+
+<span class="kw">theorem</span> <a class="decl" id="under_a_ceiling_the_climb_rests" href="#under_a_ceiling_the_climb_rests">under_a_ceiling_the_climb_rests</a> (c : Nat → Nat) (hc : Ascends c)
+    (B : Nat) (hB : ∀ n, c n ≤ B) : ∃ n, Rests c n :=
+  bounded_rests hc B hB
+
+<span class="kw">theorem</span> <a class="decl" id="a_seat_is_rest_kept" href="#a_seat_is_rest_kept">a_seat_is_rest_kept</a> (c : Nat → Nat) (n : Nat) :
+    Seated c n ↔ ∀ m, n ≤ m → Rests c m :=
+  seated_iff_rests_forever
+
+<span class="kw">theorem</span> <a class="decl" id="the_seated_do_not_climb" href="#the_seated_do_not_climb">the_seated_do_not_climb</a> (c : Nat → Nat) (n : Nat) (h : Seated c n) :
+    ¬ Climbs c :=
+  seated_never_climbs h
+
+<span class="kw">theorem</span> <a class="decl" id="completeness_is_closure" href="#completeness_is_closure">completeness_is_closure</a> (S : Seat G) (h : List G) (p : S.Pos)
+    (f : GInt → GInt) (k : Nat) (hk : Closes f k) (m r : Nat) (z : GInt)
+    (c : Nat → Nat) (n : Nat) :
+    (Settles S h p ↔ netAct h = 1)
+      ∧ iterStep (k * m + r) f z = iterStep r f z
+      ∧ (Seated c n ↔ ∀ i, n ≤ i → Rests c i) :=
+  ⟨completion_is_adding_up_to_nothing S h p, lap_carries f k hk m r z,
+   seated_iff_rests_forever⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_lap_carries_the_future&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_lap_carries_the_future</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_unresting_climb_outgrows_every_gauge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_unresting_climb_outgrows_every_gauge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.under_a_ceiling_the_climb_rests&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms under_a_ceiling_the_climb_rests</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_seat_is_rest_kept&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_seat_is_rest_kept</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_seated_do_not_climb&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_seated_do_not_climb</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.completeness_is_closure&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms completeness_is_closure</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

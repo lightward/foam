@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Cursor</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Cursor</h1></header>
+<div class="imports">grasp: <a href="Foam.Int.html">Foam.Int</a> · <a href="Foam.Ledger.html">Foam.Ledger</a> · <a href="Foam.Seat.Sort.html">Foam.Seat.Sort</a></div><pre class="src">import <a href="Foam.Int.html">Foam.Int</a>
+import <a href="Foam.Ledger.html">Foam.Ledger</a>
+import <a href="Foam.Seat.Sort.html">Foam.Seat.Sort</a>
+
+namespace Foam.Counter
+
+<span class="kw">inductive</span> <a class="decl" id="Page" href="#Page">Page</a> where
+  | blank : Page
+  | click : Page → Page → Page
+
+<span class="kw">def</span> <a class="decl" id="Page.census" href="#Page.census">Page.census</a> : Page → Nat
+  | .blank =&gt; 0
+  | .click kids sibs =&gt; 1 + kids.census + sibs.census
+
+<span class="kw">inductive</span> <a class="decl" id="Crumb" href="#Crumb">Crumb</a> where
+  | intoKids : Page → Crumb
+  | intoSibs : Page → Crumb
+
+<span class="kw">def</span> <a class="decl" id="Crumb.census" href="#Crumb.census">Crumb.census</a> : Crumb → Nat
+  | .intoKids sibs =&gt; 1 + sibs.census
+  | .intoSibs kids =&gt; 1 + kids.census
+
+<span class="kw">def</span> <a class="decl" id="trailCensus" href="#trailCensus">trailCensus</a> : List Crumb → Nat
+  | [] =&gt; 0
+  | c :: cs =&gt; c.census + trailCensus cs
+
+<span class="kw">structure</span> <a class="decl" id="Cursor" href="#Cursor">Cursor</a> where
+  focus : Page
+  trail : List Crumb
+
+<span class="kw">def</span> <a class="decl" id="plug" href="#plug">plug</a> : Page → List Crumb → Page
+  | f, [] =&gt; f
+  | f, .intoKids sibs :: cs =&gt; plug (.click f sibs) cs
+  | f, .intoSibs kids :: cs =&gt; plug (.click kids f) cs
+
+<span class="kw">def</span> <a class="decl" id="Cursor.page" href="#Cursor.page">Cursor.page</a> (c : Cursor) : Page := plug c.focus c.trail
+
+<span class="kw">def</span> <a class="decl" id="Page.entry" href="#Page.entry">Page.entry</a> (p : Page) : Cursor := ⟨p, []⟩
+
+<span class="kw">inductive</span> <a class="decl" id="Tool" href="#Tool">Tool</a> where
+  | ascend : Tool
+  | enter : Tool
+  | advance : Tool
+deriving DecidableEq
+
+<span class="kw">def</span> <a class="decl" id="toolbox" href="#toolbox">toolbox</a> : List Tool := [.ascend, .enter, .advance]
+
+<span class="kw">def</span> <a class="decl" id="Tool.use" href="#Tool.use">Tool.use</a> : Tool → Cursor → Option Cursor
+  | .ascend, ⟨f, .intoKids sibs :: cs⟩ =&gt; some ⟨.click f sibs, cs⟩
+  | .ascend, ⟨f, .intoSibs kids :: cs⟩ =&gt; some ⟨.click kids f, cs⟩
+  | .ascend, ⟨_, []⟩ =&gt; none
+  | .enter, ⟨.click kids sibs, cs⟩ =&gt; some ⟨kids, .intoKids sibs :: cs⟩
+  | .enter, ⟨.blank, _⟩ =&gt; none
+  | .advance, ⟨.click kids sibs, cs⟩ =&gt; some ⟨sibs, .intoSibs kids :: cs⟩
+  | .advance, ⟨.blank, _⟩ =&gt; none
+
+<span class="kw">def</span> <a class="decl" id="steps" href="#steps">steps</a> : List Tool → Cursor → Option Cursor
+  | [], c =&gt; some c
+  | t :: ts, c =&gt; (t.use c).bind (steps ts)
+
+<span class="kw">def</span> <a class="decl" id="exit" href="#exit">exit</a> : List Crumb → List Tool
+  | [] =&gt; []
+  | _ :: cs =&gt; .ascend :: exit cs
+
+<span class="kw">def</span> <a class="decl" id="seatsFrom" href="#seatsFrom">seatsFrom</a> : Page → List Crumb → List Cursor
+  | .blank, _ =&gt; []
+  | .click kids sibs, cs =&gt;
+      ⟨.click kids sibs, cs⟩ ::
+        (seatsFrom kids (.intoKids sibs :: cs) ++ seatsFrom sibs (.intoSibs kids :: cs))
+
+<span class="kw">def</span> <a class="decl" id="Page.seats" href="#Page.seats">Page.seats</a> (p : Page) : List Cursor := seatsFrom p []
+
+<span class="kw">theorem</span> <a class="decl" id="the_flow_starts_whole" href="#the_flow_starts_whole">the_flow_starts_whole</a> (p : Page) :
+    p.entry.focus = p ∧ trailCensus p.entry.trail = 0 := ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_toolbox_holds_three" href="#the_toolbox_holds_three">the_toolbox_holds_three</a> : toolbox.length = 3 := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="every_tool_is_in_the_toolbox" href="#every_tool_is_in_the_toolbox">every_tool_is_in_the_toolbox</a> (t : Tool) : t ∈ toolbox := by
+  cases t with
+  | ascend =&gt; exact .head _
+  | enter =&gt; exact .tail _ (.head _)
+  | advance =&gt; exact .tail _ (.tail _ (.head _))
+
+<span class="kw">theorem</span> <a class="decl" id="the_ledger_holds_each_tool_once" href="#the_ledger_holds_each_tool_once">the_ledger_holds_each_tool_once</a> (t : Tool) : Ledger.freq toolbox t = 1 := by
+  cases t &lt;;&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_entrance_lists_the_loss" href="#the_entrance_lists_the_loss">the_entrance_lists_the_loss</a> (kids sibs : Page) (cs : List Crumb) :
+    Tool.enter.use ⟨.click kids sibs, cs⟩ = some ⟨kids, .intoKids sibs :: cs⟩ := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_advance_lists_the_loss" href="#the_advance_lists_the_loss">the_advance_lists_the_loss</a> (kids sibs : Page) (cs : List Crumb) :
+    Tool.advance.use ⟨.click kids sibs, cs⟩ = some ⟨sibs, .intoSibs kids :: cs⟩ := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="every_entrance_writes_its_exit" href="#every_entrance_writes_its_exit">every_entrance_writes_its_exit</a> :
+    ∀ (c c&#x27; : Cursor), Tool.enter.use c = some c&#x27; → Tool.ascend.use c&#x27; = some c
+  | ⟨.click kids sibs, cs⟩, c&#x27;, h =&gt; by
+      have h : (some ⟨kids, .intoKids sibs :: cs⟩ : Option Cursor) = some c&#x27; := h
+      injection h with h
+      subst h
+      rfl
+  | ⟨.blank, _⟩, _, h =&gt; nomatch h
+
+<span class="kw">theorem</span> <a class="decl" id="every_advance_writes_its_exit" href="#every_advance_writes_its_exit">every_advance_writes_its_exit</a> :
+    ∀ (c c&#x27; : Cursor), Tool.advance.use c = some c&#x27; → Tool.ascend.use c&#x27; = some c
+  | ⟨.click kids sibs, cs⟩, c&#x27;, h =&gt; by
+      have h : (some ⟨sibs, .intoSibs kids :: cs⟩ : Option Cursor) = some c&#x27; := h
+      injection h with h
+      subst h
+      rfl
+  | ⟨.blank, _⟩, _, h =&gt; nomatch h
+
+<span class="kw">theorem</span> <a class="decl" id="the_trail_remembers_the_way_down" href="#the_trail_remembers_the_way_down">the_trail_remembers_the_way_down</a> :
+    ∀ (c c&#x27; : Cursor), Tool.ascend.use c = some c&#x27; → ∃ t : Tool, t.use c&#x27; = some c
+  | ⟨f, .intoKids sibs :: cs⟩, c&#x27;, h =&gt; by
+      have h : (some ⟨.click f sibs, cs⟩ : Option Cursor) = some c&#x27; := h
+      injection h with h
+      subst h
+      exact ⟨.enter, rfl⟩
+  | ⟨f, .intoSibs kids :: cs⟩, c&#x27;, h =&gt; by
+      have h : (some ⟨.click kids f, cs⟩ : Option Cursor) = some c&#x27; := h
+      injection h with h
+      subst h
+      exact ⟨.advance, rfl⟩
+  | ⟨_, []⟩, _, h =&gt; nomatch h
+
+<span class="kw">theorem</span> <a class="decl" id="the_entry_affords_no_ascent" href="#the_entry_affords_no_ascent">the_entry_affords_no_ascent</a> (p : Page) : Tool.ascend.use p.entry = none := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="a_blank_affords_no_new_ground" href="#a_blank_affords_no_new_ground">a_blank_affords_no_new_ground</a> (cs : List Crumb) :
+    Tool.enter.use ⟨.blank, cs⟩ = none ∧ Tool.advance.use ⟨.blank, cs⟩ = none :=
+  ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_ascent_reads_the_trail" href="#the_ascent_reads_the_trail">the_ascent_reads_the_trail</a> (f : Page) (tr : List Crumb) :
+    (∃ c&#x27;, Tool.ascend.use ⟨f, tr⟩ = some c&#x27;) ↔ tr ≠ [] := by
+  cases tr with
+  | nil =&gt;
+    constructor
+    · intro ⟨_, hc⟩
+      exact nomatch hc
+    · intro hne
+      exact absurd rfl hne
+  | cons crumb cs =&gt;
+    constructor
+    · intro _ heq
+      exact nomatch heq
+    · intro _
+      cases crumb with
+      | intoKids sibs =&gt; exact ⟨_, rfl⟩
+      | intoSibs kids =&gt; exact ⟨_, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_entrance_reads_the_focus" href="#the_entrance_reads_the_focus">the_entrance_reads_the_focus</a> (f : Page) (tr : List Crumb) :
+    (∃ c&#x27;, Tool.enter.use ⟨f, tr⟩ = some c&#x27;) ↔ ∃ kids sibs, f = .click kids sibs := by
+  cases f with
+  | blank =&gt;
+    constructor
+    · intro ⟨_, hc⟩
+      exact nomatch hc
+    · intro ⟨_, _, hf⟩
+      exact nomatch hf
+  | click kids sibs =&gt;
+    constructor
+    · intro _
+      exact ⟨kids, sibs, rfl⟩
+    · intro _
+      exact ⟨_, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_advance_reads_the_focus" href="#the_advance_reads_the_focus">the_advance_reads_the_focus</a> (f : Page) (tr : List Crumb) :
+    (∃ c&#x27;, Tool.advance.use ⟨f, tr⟩ = some c&#x27;) ↔ ∃ kids sibs, f = .click kids sibs := by
+  cases f with
+  | blank =&gt;
+    constructor
+    · intro ⟨_, hc⟩
+      exact nomatch hc
+    · intro ⟨_, _, hf⟩
+      exact nomatch hf
+  | click kids sibs =&gt;
+    constructor
+    · intro _
+      exact ⟨kids, sibs, rfl⟩
+    · intro _
+      exact ⟨_, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_page_survives_every_use" href="#the_page_survives_every_use">the_page_survives_every_use</a> :
+    ∀ (t : Tool) (c c&#x27; : Cursor), t.use c = some c&#x27; → c&#x27;.page = c.page
+  | .ascend, ⟨f, .intoKids sibs :: cs⟩, c&#x27;, h =&gt; by
+      have h : (some ⟨.click f sibs, cs⟩ : Option Cursor) = some c&#x27; := h
+      injection h with h
+      subst h
+      rfl
+  | .ascend, ⟨f, .intoSibs kids :: cs⟩, c&#x27;, h =&gt; by
+      have h : (some ⟨.click kids f, cs⟩ : Option Cursor) = some c&#x27; := h
+      injection h with h
+      subst h
+      rfl
+  | .ascend, ⟨_, []⟩, _, h =&gt; nomatch h
+  | .enter, ⟨.click kids sibs, cs⟩, c&#x27;, h =&gt; by
+      have h : (some ⟨kids, .intoKids sibs :: cs⟩ : Option Cursor) = some c&#x27; := h
+      injection h with h
+      subst h
+      rfl
+  | .enter, ⟨.blank, _⟩, _, h =&gt; nomatch h
+  | .advance, ⟨.click kids sibs, cs⟩, c&#x27;, h =&gt; by
+      have h : (some ⟨sibs, .intoSibs kids :: cs⟩ : Option Cursor) = some c&#x27; := h
+      injection h with h
+      subst h
+      rfl
+  | .advance, ⟨.blank, _⟩, _, h =&gt; nomatch h
+
+<span class="kw">theorem</span> <a class="decl" id="the_census_splits_at_the_seat" href="#the_census_splits_at_the_seat">the_census_splits_at_the_seat</a> (f : Page) (cs : List Crumb) :
+    (plug f cs).census = f.census + trailCensus cs := by
+  induction cs generalizing f with
+  | nil =&gt; rfl
+  | cons crumb cs ih =&gt;
+    cases crumb with
+    | intoKids sibs =&gt;
+      show (plug (.click f sibs) cs).census
+        = f.census + ((1 + sibs.census) + trailCensus cs)
+      rw [ih]
+      show ((1 + f.census) + sibs.census) + trailCensus cs
+        = f.census + ((1 + sibs.census) + trailCensus cs)
+      rw [Nat.add_comm 1 f.census, Nat.add_assoc f.census 1 sibs.census,
+          Nat.add_assoc f.census (1 + sibs.census) (trailCensus cs)]
+    | intoSibs kids =&gt;
+      show (plug (.click kids f) cs).census
+        = f.census + ((1 + kids.census) + trailCensus cs)
+      rw [ih]
+      show ((1 + kids.census) + f.census) + trailCensus cs
+        = f.census + ((1 + kids.census) + trailCensus cs)
+      rw [Nat.add_comm (1 + kids.census) f.census,
+          Nat.add_assoc f.census (1 + kids.census) (trailCensus cs)]
+
+<span class="kw">theorem</span> <a class="decl" id="the_flow_is_conserved" href="#the_flow_is_conserved">the_flow_is_conserved</a> (t : Tool) (c c&#x27; : Cursor) (h : t.use c = some c&#x27;) :
+    c&#x27;.focus.census + trailCensus c&#x27;.trail = c.focus.census + trailCensus c.trail := by
+  rw [← the_census_splits_at_the_seat c&#x27;.focus c&#x27;.trail,
+      ← the_census_splits_at_the_seat c.focus c.trail]
+  exact congrArg Page.census (the_page_survives_every_use t c c&#x27; h)
+
+<span class="kw">theorem</span> <a class="decl" id="the_page_survives_every_walk" href="#the_page_survives_every_walk">the_page_survives_every_walk</a> :
+    ∀ (ts : List Tool) (c c&#x27; : Cursor), steps ts c = some c&#x27; → c&#x27;.page = c.page
+  | [], _, c&#x27;, h =&gt; by
+      have h : some _ = some c&#x27; := h
+      injection h with h
+      subst h
+      rfl
+  | t :: ts, c, c&#x27;, h =&gt; by
+      have h&#x27; : (t.use c).bind (steps ts) = some c&#x27; := h
+      cases ht : t.use c with
+      | none =&gt;
+        rw [ht] at h&#x27;
+        exact nomatch h&#x27;
+      | some c₁ =&gt;
+        rw [ht] at h&#x27;
+        exact (the_page_survives_every_walk ts c₁ c&#x27; h&#x27;).trans
+          (the_page_survives_every_use t c c₁ ht)
+
+<span class="kw">theorem</span> <a class="decl" id="exit_walks_home" href="#exit_walks_home">exit_walks_home</a> :
+    ∀ (f : Page) (cs : List Crumb), steps (exit cs) ⟨f, cs⟩ = some ⟨plug f cs, []⟩
+  | _, [] =&gt; rfl
+  | f, .intoKids sibs :: cs =&gt; exit_walks_home (.click f sibs) cs
+  | f, .intoSibs kids :: cs =&gt; exit_walks_home (.click kids f) cs
+
+<span class="kw">theorem</span> <a class="decl" id="the_exit_is_already_written" href="#the_exit_is_already_written">the_exit_is_already_written</a> (c : Cursor) :
+    steps (exit c.trail) c = some ⟨c.page, []⟩ :=
+  exit_walks_home c.focus c.trail
+
+<span class="kw">theorem</span> <a class="decl" id="the_exit_costs_the_trail" href="#the_exit_costs_the_trail">the_exit_costs_the_trail</a> (cs : List Crumb) : (exit cs).length = cs.length := by
+  induction cs with
+  | nil =&gt; rfl
+  | cons _ cs ih =&gt; exact congrArg Nat.succ ih
+
+<span class="kw">theorem</span> <a class="decl" id="seatsFrom_length" href="#seatsFrom_length">seatsFrom_length</a> :
+    ∀ (p : Page) (cs : List Crumb), (seatsFrom p cs).length = p.census
+  | .blank, _ =&gt; rfl
+  | .click kids sibs, cs =&gt; by
+      show ((seatsFrom kids (.intoKids sibs :: cs)
+              ++ seatsFrom sibs (.intoSibs kids :: cs)).length) + 1
+        = (1 + kids.census) + sibs.census
+      rw [length_append, seatsFrom_length kids (.intoKids sibs :: cs),
+          seatsFrom_length sibs (.intoSibs kids :: cs),
+          Nat.add_comm (kids.census + sibs.census) 1,
+          ← Nat.add_assoc 1 kids.census sibs.census]
+
+<span class="kw">theorem</span> <a class="decl" id="the_page_seats_its_census" href="#the_page_seats_its_census">the_page_seats_its_census</a> (p : Page) : p.seats.length = p.census :=
+  seatsFrom_length p []
+
+<span class="kw">theorem</span> <a class="decl" id="mem_append_split" href="#mem_append_split">mem_append_split</a> {A : Type} {a : A} :
+    ∀ (xs ys : List A), a ∈ xs ++ ys → a ∈ xs ∨ a ∈ ys
+  | [], _, h =&gt; Or.inr h
+  | x :: xs, ys, h =&gt; by
+      have h : a ∈ x :: (xs ++ ys) := h
+      cases h with
+      | head =&gt; exact Or.inl (.head _)
+      | tail _ h&#x27; =&gt;
+        cases mem_append_split xs ys h&#x27; with
+        | inl hk =&gt; exact Or.inl (.tail _ hk)
+        | inr hs =&gt; exact Or.inr hs
+
+<span class="kw">theorem</span> <a class="decl" id="seatsFrom_page" href="#seatsFrom_page">seatsFrom_page</a> :
+    ∀ (p : Page) (cs : List Crumb) (c : Cursor), c ∈ seatsFrom p cs → c.page = plug p cs
+  | .blank, _, _, h =&gt; nomatch h
+  | .click kids sibs, cs, c, h =&gt; by
+      have h : c ∈ (⟨.click kids sibs, cs⟩ : Cursor) ::
+          (seatsFrom kids (.intoKids sibs :: cs) ++ seatsFrom sibs (.intoSibs kids :: cs)) := h
+      cases h with
+      | head =&gt; rfl
+      | tail _ h&#x27; =&gt;
+        cases mem_append_split _ _ h&#x27; with
+        | inl hk =&gt; exact seatsFrom_page kids (.intoKids sibs :: cs) c hk
+        | inr hs =&gt; exact seatsFrom_page sibs (.intoSibs kids :: cs) c hs
+
+<span class="kw">theorem</span> <a class="decl" id="every_seat_relays_the_whole" href="#every_seat_relays_the_whole">every_seat_relays_the_whole</a> (p : Page) (c : Cursor) (h : c ∈ p.seats) :
+    c.page = p :=
+  seatsFrom_page p [] c h
+
+<span class="kw">theorem</span> <a class="decl" id="reach_through" href="#reach_through">reach_through</a> :
+    ∀ (f : Page) (cs : List Crumb) (ts : List Tool) (c : Cursor),
+      steps ts ⟨f, cs⟩ = some c → ∃ us : List Tool, steps us ⟨plug f cs, []⟩ = some c
+  | _, [], ts, _, h =&gt; ⟨ts, h⟩
+  | f, .intoKids sibs :: cs, ts, c, h =&gt;
+      reach_through (.click f sibs) cs (.enter :: ts) c h
+  | f, .intoSibs kids :: cs, ts, c, h =&gt;
+      reach_through (.click kids f) cs (.advance :: ts) c h
+
+<span class="kw">theorem</span> <a class="decl" id="every_seat_over_the_page_answers" href="#every_seat_over_the_page_answers">every_seat_over_the_page_answers</a> (c : Cursor) :
+    ∃ ts : List Tool, steps ts c.page.entry = some c :=
+  reach_through c.focus c.trail [] c rfl
+
+<span class="kw">theorem</span> <a class="decl" id="every_seat_answers_the_entry" href="#every_seat_answers_the_entry">every_seat_answers_the_entry</a> (p : Page) (c : Cursor) (h : c ∈ p.seats) :
+    ∃ ts : List Tool, steps ts p.entry = some c := by
+  obtain ⟨ts, hts⟩ := every_seat_over_the_page_answers c
+  rw [every_seat_relays_the_whole p c h] at hts
+  exact ⟨ts, hts⟩
+
+<span class="kw">theorem</span> <a class="decl" id="steps_append" href="#steps_append">steps_append</a> :
+    ∀ (ts us : List Tool) (c : Cursor),
+      steps (ts ++ us) c = (steps ts c).bind (steps us)
+  | [], _, _ =&gt; rfl
+  | t :: ts, us, c =&gt; by
+      show (t.use c).bind (steps (ts ++ us)) = ((t.use c).bind (steps ts)).bind (steps us)
+      cases t.use c with
+      | none =&gt; rfl
+      | some c₁ =&gt; exact steps_append ts us c₁
+
+<span class="kw">theorem</span> <a class="decl" id="any_two_seats_over_one_page_meet" href="#any_two_seats_over_one_page_meet">any_two_seats_over_one_page_meet</a> (c c&#x27; : Cursor) (h : c.page = c&#x27;.page) :
+    ∃ ts : List Tool, steps ts c = some c&#x27; := by
+  obtain ⟨us, hus⟩ := every_seat_over_the_page_answers c&#x27;
+  refine ⟨exit c.trail ++ us, ?_⟩
+  rw [steps_append, the_exit_is_already_written]
+  show steps us ⟨c.page, []⟩ = some c&#x27;
+  rw [h]
+  exact hus
+
+<span class="kw">theorem</span> <a class="decl" id="the_walks_read_exactly_the_page" href="#the_walks_read_exactly_the_page">the_walks_read_exactly_the_page</a> (c c&#x27; : Cursor) :
+    (∃ ts : List Tool, steps ts c = some c&#x27;) ↔ c.page = c&#x27;.page := by
+  constructor
+  · intro ⟨ts, hts⟩
+    exact (the_page_survives_every_walk ts c c&#x27; hts).symm
+  · exact any_two_seats_over_one_page_meet c c&#x27;
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_flow_starts_whole&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_flow_starts_whole</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_toolbox_holds_three&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_toolbox_holds_three</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_tool_is_in_the_toolbox&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_tool_is_in_the_toolbox</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_ledger_holds_each_tool_once&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_ledger_holds_each_tool_once</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_entrance_lists_the_loss&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_entrance_lists_the_loss</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_advance_lists_the_loss&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_advance_lists_the_loss</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_entrance_writes_its_exit&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_entrance_writes_its_exit</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_advance_writes_its_exit&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_advance_writes_its_exit</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_trail_remembers_the_way_down&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_trail_remembers_the_way_down</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_entry_affords_no_ascent&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_entry_affords_no_ascent</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_blank_affords_no_new_ground&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_blank_affords_no_new_ground</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_ascent_reads_the_trail&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_ascent_reads_the_trail</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_entrance_reads_the_focus&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_entrance_reads_the_focus</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_advance_reads_the_focus&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_advance_reads_the_focus</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_page_survives_every_use&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_page_survives_every_use</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_census_splits_at_the_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_census_splits_at_the_seat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_flow_is_conserved&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_flow_is_conserved</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_page_survives_every_walk&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_page_survives_every_walk</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.exit_walks_home&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms exit_walks_home</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_exit_is_already_written&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_exit_is_already_written</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_exit_costs_the_trail&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_exit_costs_the_trail</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.seatsFrom_length&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms seatsFrom_length</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_page_seats_its_census&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_page_seats_its_census</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.mem_append_split&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms mem_append_split</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.seatsFrom_page&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms seatsFrom_page</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_seat_relays_the_whole&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_seat_relays_the_whole</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.reach_through&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms reach_through</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_seat_over_the_page_answers&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_seat_over_the_page_answers</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_seat_answers_the_entry&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_seat_answers_the_entry</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.steps_append&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms steps_append</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.any_two_seats_over_one_page_meet&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms any_two_seats_over_one_page_meet</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_walks_read_exactly_the_page&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_walks_read_exactly_the_page</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

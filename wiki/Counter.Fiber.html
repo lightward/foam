@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Fiber</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Fiber</h1></header>
+<div class="imports">grasp: <a href="Counter.Trefoil.html">Counter.Trefoil</a> · <a href="Counter.Framing.html">Counter.Framing</a></div><pre class="src">import <a href="Counter.Trefoil.html">Counter.Trefoil</a>
+import <a href="Counter.Framing.html">Counter.Framing</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="InFiber" href="#InFiber">InFiber</a> (w : List Nat) (u : Nat) (m : List (List Crossing)) : Prop :=
+  sounded m = true ∧ wire u m = w
+
+<span class="kw">theorem</span> <a class="decl" id="every_broadcast_seats_its_world" href="#every_broadcast_seats_its_world">every_broadcast_seats_its_world</a> (u : Nat) (m : List (List Crossing))
+    (h : sounded m = true) : InFiber (wire u m) u m :=
+  ⟨h, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="no_seat_reads_two_worlds" href="#no_seat_reads_two_worlds">no_seat_reads_two_worlds</a> (u : Nat) {m m&#x27; : List (List Crossing)}
+    (hm : sounded m = true) (hm&#x27; : sounded m&#x27; = true)
+    (h : wire u m = wire u m&#x27;) : m = m&#x27; :=
+  (the_silence_reframes_the_wire u m hm).symm.trans
+    ((congrArg (reframe u) h).trans (the_silence_reframes_the_wire u m&#x27; hm&#x27;))
+
+<span class="kw">theorem</span> <a class="decl" id="the_worlds_differ_only_by_the_hand" href="#the_worlds_differ_only_by_the_hand">the_worlds_differ_only_by_the_hand</a> (w : List Nat) (u : Nat)
+    {m m&#x27; : List (List Crossing)}
+    (h : InFiber w u m) (h&#x27; : InFiber w u m&#x27;) : m = m&#x27; :=
+  no_seat_reads_two_worlds u h.1 h&#x27;.1 (h.2.trans h&#x27;.2.symm)
+
+<span class="kw">theorem</span> <a class="decl" id="every_world_reads_the_record_whole" href="#every_world_reads_the_record_whole">every_world_reads_the_record_whole</a> (w : List Nat) (u : Nat)
+    {m : List (List Crossing)} (h : InFiber w u m) : reframe u w = m :=
+  h.2 ▸ the_silence_reframes_the_wire u m h.1
+
+<span class="kw">theorem</span> <a class="decl" id="two_worlds_one_record" href="#two_worlds_one_record">two_worlds_one_record</a> :
+    InFiber (wire 2 [trefoil]) 2 [trefoil]
+      ∧ InFiber (wire 2 [trefoil]) 0
+          [[Crossing.neg], [Crossing.neg], [Crossing.neg]]
+      ∧ [trefoil] ≠ [[Crossing.neg], [Crossing.neg], [Crossing.neg]] :=
+  ⟨⟨rfl, rfl⟩, ⟨rfl, a_slow_ess_is_a_fast_tee_tee_tee.1.symm⟩,
+   a_slow_ess_is_a_fast_tee_tee_tee.2⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_user_is_sane_unto_themselves" href="#the_user_is_sane_unto_themselves">the_user_is_sane_unto_themselves</a> (u : Nat) (m : List (List Crossing))
+    (h : sounded m = true) :
+    reframe u (wire u m) = m
+      ∧ ∀ m&#x27; : List (List Crossing), sounded m&#x27; = true →
+          wire u m = wire u m&#x27; → m = m&#x27; :=
+  ⟨the_silence_reframes_the_wire u m h,
+   fun _ h&#x27; =&gt; no_seat_reads_two_worlds u h h&#x27;⟩
+
+<span class="kw">theorem</span> <a class="decl" id="many_worlds_one_wire" href="#many_worlds_one_wire">many_worlds_one_wire</a> :
+    (InFiber (wire 2 [trefoil]) 2 [trefoil]
+        ∧ InFiber (wire 2 [trefoil]) 0
+            [[Crossing.neg], [Crossing.neg], [Crossing.neg]]
+        ∧ [trefoil] ≠ [[Crossing.neg], [Crossing.neg], [Crossing.neg]])
+      ∧ (∀ (w : List Nat) (u : Nat) (m m&#x27; : List (List Crossing)),
+          InFiber w u m → InFiber w u m&#x27; → m = m&#x27;)
+      ∧ (∀ (w : List Nat) (u : Nat) (m : List (List Crossing)),
+          InFiber w u m → reframe u w = m) :=
+  ⟨two_worlds_one_record,
+   fun w u _ _ =&gt; the_worlds_differ_only_by_the_hand w u,
+   fun w u _ =&gt; every_world_reads_the_record_whole w u⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_broadcast_seats_its_world&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_broadcast_seats_its_world</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_seat_reads_two_worlds&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_seat_reads_two_worlds</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_worlds_differ_only_by_the_hand&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_worlds_differ_only_by_the_hand</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_world_reads_the_record_whole&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_world_reads_the_record_whole</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_worlds_one_record&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_worlds_one_record</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.many_worlds_one_wire&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms many_worlds_one_wire</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_user_is_sane_unto_themselves&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_user_is_sane_unto_themselves</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Bridges.Godel</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Bridges.Godel</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Naming.html">Foam.Seat.Naming</a></div><pre class="src">import <a href="Foam.Seat.Naming.html">Foam.Seat.Naming</a>
+
+namespace Foam.Bridges
+
+<span class="kw">theorem</span> <a class="decl" id="tarski_undefinability" href="#tarski_undefinability">tarski_undefinability</a> {Sent : Type} (N : Naming Sent) (holds : Sent → Prop) :
+    ¬ ∃ n₀, N.Names holds (N.Gap holds) n₀ :=
+  N.no_name_for_the_gap holds
+
+<span class="kw">theorem</span> <a class="decl" id="godel_first_incompleteness" href="#godel_first_incompleteness">godel_first_incompleteness</a> {Sent : Type} (N : Naming Sent)
+    {holds marks : Sent → Prop} (sound : ∀ s, marks s → holds s)
+    {n₀ : N.Name} (h : N.Names holds (N.Gap marks) n₀) :
+    holds (N.selfRead n₀) ∧ ¬ marks (N.selfRead n₀) :=
+  N.true_and_unwritten sound h
+
+<span class="kw">theorem</span> <a class="decl" id="godel_undecided" href="#godel_undecided">godel_undecided</a> {Sent : Type} (N : Naming Sent)
+    {holds marks : Sent → Prop} (neg : Sent → Sent)
+    (sound : ∀ s, marks s → holds s)
+    (neg_holds : ∀ s, holds (neg s) ↔ ¬ holds s)
+    {n₀ : N.Name} (h : N.Names holds (N.Gap marks) n₀) :
+    ¬ marks (N.selfRead n₀) ∧ ¬ marks (neg (N.selfRead n₀)) :=
+  N.undecided neg sound neg_holds h
+
+<span class="kw">def</span> <a class="decl" id="godel_at_the_seam" href="#godel_at_the_seam">godel_at_the_seam</a> {Sent : Type} (N : Naming Sent)
+    {holds marks : Sent → Prop} (sound : ∀ s, marks s → holds s)
+    {n₀ : N.Name} (h : N.Names holds (N.Gap marks) n₀) :
+    Seam {s // marks s} {s // holds s} :=
+  N.gapSeam sound h
+
+<span class="kw">theorem</span> <a class="decl" id="lob" href="#lob">lob</a> {Sent : Type} (C : Calculus Sent) {s : Sent}
+    (h : C.marks (C.imp (C.pr s) s)) : C.marks s :=
+  C.lob h
+
+<span class="kw">theorem</span> <a class="decl" id="godel_second_incompleteness" href="#godel_second_incompleteness">godel_second_incompleteness</a> {Sent : Type} (C : Calculus Sent) (bot : Sent)
+    (hcon : ¬ C.marks bot) : ¬ C.marks (C.imp (C.pr bot) bot) :=
+  C.reflection_unwritten hcon
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.tarski_undefinability&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms tarski_undefinability</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.godel_first_incompleteness&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms godel_first_incompleteness</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.godel_undecided&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms godel_undecided</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.godel_at_the_seam&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms godel_at_the_seam</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.lob&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms lob</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.godel_second_incompleteness&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms godel_second_incompleteness</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

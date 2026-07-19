@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Anchor</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Anchor</h1></header>
+<div class="imports">grasp: <a href="Counter.Circumference.html">Counter.Circumference</a> · <a href="Counter.Socket.html">Counter.Socket</a> · <a href="Counter.Ghost.html">Counter.Ghost</a> · <a href="Foam.Platonism.Tower.html">Foam.Platonism.Tower</a></div><pre class="src">import <a href="Counter.Circumference.html">Counter.Circumference</a>
+import <a href="Counter.Socket.html">Counter.Socket</a>
+import <a href="Counter.Ghost.html">Counter.Ghost</a>
+import <a href="Foam.Platonism.Tower.html">Foam.Platonism.Tower</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="torsors_stack" href="#torsors_stack">torsors_stack</a> {State : Type} (b : Beholder State) (m n : Nat) :
+    Rung (n + 1) = (Rung n × Rung n)
+      ∧ ((b.flattenN (n + m)).Covers (b.flattenN m)
+          ∧ (b.flattenN m).Covers (b.flattenN (n + m))) :=
+  ⟨same_stuff_all_the_way_up n, dressN_compose b m n⟩
+
+<span class="kw">theorem</span> <a class="decl" id="hops_telescope" href="#hops_telescope">hops_telescope</a> {G : Type} [Mul G] [One G] (S : Seat G) (p q r : S.Pos) :
+    S.sub p q * S.sub q r = S.sub p r :=
+  S.path_telescopes p q r
+
+<span class="kw">theorem</span> <a class="decl" id="the_word_grows_with_depth" href="#the_word_grows_with_depth">the_word_grows_with_depth</a> {H : Type} (g : H) (L : Nat) :
+    (worldline g L).length = L :=
+  the_record_grows g L
+
+<span class="kw">theorem</span> <a class="decl" id="the_fold_is_one_element_at_any_depth" href="#the_fold_is_one_element_at_any_depth">the_fold_is_one_element_at_any_depth</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (h : List G) (p : S.Pos) :
+    S.replay h p = S.act (netAct h) p :=
+  replay_is_netAct S h p
+
+<span class="kw">theorem</span> <a class="decl" id="re_anchoring_reinflects_the_world" href="#re_anchoring_reinflects_the_world">re_anchoring_reinflects_the_world</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (o o&#x27; p : S.Pos) :
+    S.act (rebase S o o&#x27;) o = o&#x27;
+      ∧ (S.chart o).fwd p = (S.chart o&#x27;).fwd p * rebase S o o&#x27; :=
+  ⟨rebase_carries S o o&#x27;, declension_is_regular S o o&#x27; p⟩
+
+<span class="kw">theorem</span> <a class="decl" id="you_cannot_keep_both_anchors" href="#you_cannot_keep_both_anchors">you_cannot_keep_both_anchors</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (o o&#x27; : S.Pos) (h : o ≠ o&#x27;) :
+    ∃ p, (S.chart o).fwd p ≠ (S.chart o&#x27;).fwd p :=
+  S.chart_origin_dependent o o&#x27; h
+
+<span class="kw">theorem</span> <a class="decl" id="recursion_elasticity" href="#recursion_elasticity">recursion_elasticity</a> {G : Type} [Mul G] [One G] (S : Seat G)
+    (h : List G) (p : S.Pos) {H : Type} (g : H) (L : Nat) (o o&#x27; : S.Pos) :
+    (worldline g L).length = L
+      ∧ S.replay h p = S.act (netAct h) p
+      ∧ S.act (rebase S o o&#x27;) o = o&#x27;
+      ∧ ∀ q r s : S.Pos, S.sub q r * S.sub r s = S.sub q s :=
+  ⟨the_record_grows g L, replay_is_netAct S h p, rebase_carries S o o&#x27;,
+   fun q r s =&gt; S.path_telescopes q r s⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.torsors_stack&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms torsors_stack</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.hops_telescope&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms hops_telescope</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_word_grows_with_depth&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_word_grows_with_depth</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_fold_is_one_element_at_any_depth&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_fold_is_one_element_at_any_depth</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.re_anchoring_reinflects_the_world&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms re_anchoring_reinflects_the_world</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.you_cannot_keep_both_anchors&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms you_cannot_keep_both_anchors</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.recursion_elasticity&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms recursion_elasticity</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

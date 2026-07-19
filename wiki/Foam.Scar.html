@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Scar</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Scar</h1></header>
+<div class="imports">grasp: <a href="Foam.Int.html">Foam.Int</a></div><pre class="src">import <a href="Foam.Int.html">Foam.Int</a>
+
+namespace Foam
+
+<span class="kw">theorem</span> <a class="decl" id="ofNat_succ_sub_one" href="#ofNat_succ_sub_one">ofNat_succ_sub_one</a> (n : Nat) : Int.ofNat (n + 1) - 1 = Int.ofNat n := by
+  show (Int.ofNat n + 1) - 1 = Int.ofNat n
+  exact FInt.add_sub_cancel_right (Int.ofNat n) 1
+
+<span class="kw">def</span> <a class="decl" id="isPos" href="#isPos">isPos</a> : Int → Bool
+  | Int.ofNat 0 =&gt; false
+  | Int.ofNat (_ + 1) =&gt; true
+  | Int.negSucc _ =&gt; false
+
+<span class="kw">def</span> <a class="decl" id="checkedDrain" href="#checkedDrain">checkedDrain</a> (obs bal : Int) : Int :=
+  match isPos obs with
+  | true =&gt; bal - 1
+  | false =&gt; bal
+
+<span class="kw">theorem</span> <a class="decl" id="stale_escapes_floor" href="#stale_escapes_floor">stale_escapes_floor</a> : checkedDrain 1 (checkedDrain 1 1) = -1 := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="stale_lands_at_ground" href="#stale_lands_at_ground">stale_lands_at_ground</a> : checkedDrain 2 (checkedDrain 2 2) = 0 := rfl
+
+<span class="kw">def</span> <a class="decl" id="grounded" href="#grounded">grounded</a> (b : Int) : Prop := ∃ m : Nat, b = Int.ofNat m
+
+<span class="kw">theorem</span> <a class="decl" id="stale_safe_off_margin" href="#stale_safe_off_margin">stale_safe_off_margin</a> (m : Nat) :
+    grounded (checkedDrain (Int.ofNat (m + 2))
+      (checkedDrain (Int.ofNat (m + 2)) (Int.ofNat (m + 2)))) := by
+  refine ⟨m, ?_⟩
+  have h1 : checkedDrain (Int.ofNat (m + 2)) (Int.ofNat (m + 2)) = Int.ofNat (m + 1) :=
+    ofNat_succ_sub_one (m + 1)
+  rw [h1]
+  exact ofNat_succ_sub_one m
+
+<span class="kw">theorem</span> <a class="decl" id="fresh_holds_floor" href="#fresh_holds_floor">fresh_holds_floor</a> (bal : Int) (h : grounded bal) :
+    grounded (checkedDrain bal bal) := by
+  obtain ⟨m, rfl⟩ := h
+  cases m with
+  | zero =&gt; exact ⟨0, rfl⟩
+  | succ k =&gt; exact ⟨k, ofNat_succ_sub_one k⟩
+
+<span class="kw">def</span> <a class="decl" id="drainSeq" href="#drainSeq">drainSeq</a> : Nat → Int → Int
+  | 0, bal =&gt; bal
+  | k + 1, bal =&gt; drainSeq k (checkedDrain bal bal)
+
+<span class="kw">theorem</span> <a class="decl" id="drainSeq_holds_floor" href="#drainSeq_holds_floor">drainSeq_holds_floor</a> (k : Nat) (bal : Int) (h : grounded bal) :
+    grounded (drainSeq k bal) := by
+  induction k generalizing bal with
+  | zero =&gt; exact h
+  | succ n ih =&gt; exact ih (checkedDrain bal bal) (fresh_holds_floor bal h)
+
+<span class="kw">theorem</span> <a class="decl" id="scar_outside_carrier" href="#scar_outside_carrier">scar_outside_carrier</a> : ∀ m : Nat, (Int.ofNat m) ≠ (-1 : Int) := by
+  intro m h
+  exact Int.noConfusion h
+
+<span class="kw">theorem</span> <a class="decl" id="scar_repair" href="#scar_repair">scar_repair</a> : (-1 : Int) + 1 = 0 := rfl
+
+<span class="kw">def</span> <a class="decl" id="debt" href="#debt">debt</a> : Int → Nat
+  | Int.ofNat _ =&gt; 0
+  | Int.negSucc k =&gt; k + 1
+
+<span class="kw">theorem</span> <a class="decl" id="debt_zero_iff_grounded" href="#debt_zero_iff_grounded">debt_zero_iff_grounded</a> (b : Int) : debt b = 0 ↔ grounded b := by
+  cases b with
+  | ofNat m =&gt; exact ⟨fun _ =&gt; ⟨m, rfl⟩, fun _ =&gt; rfl⟩
+  | negSucc k =&gt;
+    constructor
+    · intro h; exact Nat.noConfusion h
+    · intro h; obtain ⟨m, hm⟩ := h; exact Int.noConfusion hm
+
+<span class="kw">theorem</span> <a class="decl" id="scar_stable" href="#scar_stable">scar_stable</a> (k : Nat) :
+    checkedDrain (Int.negSucc k) (Int.negSucc k) = Int.negSucc k := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="promise_kept" href="#promise_kept">promise_kept</a> (k : Nat) :
+    Int.negSucc k + Int.ofNat (debt (Int.negSucc k)) = 0 := by
+  show Int.subNatNat (k + 1) (k + 1) = 0
+  unfold Int.subNatNat
+  rw [Nat.sub_self]
+  rfl
+
+<span class="kw">def</span> <a class="decl" id="isNeg" href="#isNeg">isNeg</a> : Int → Bool
+  | Int.ofNat _ =&gt; false
+  | Int.negSucc _ =&gt; true
+
+<span class="kw">def</span> <a class="decl" id="checkedSettle" href="#checkedSettle">checkedSettle</a> (obs bal : Int) : Int :=
+  match isNeg obs with
+  | true =&gt; bal + 1
+  | false =&gt; bal
+
+<span class="kw">theorem</span> <a class="decl" id="settle_stops_at_ground" href="#settle_stops_at_ground">settle_stops_at_ground</a> (m : Nat) :
+    checkedSettle (Int.ofNat m) (Int.ofNat m) = Int.ofNat m := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="fresh_settle_steps" href="#fresh_settle_steps">fresh_settle_steps</a> (k : Nat) :
+    checkedSettle (Int.negSucc (k + 1)) (Int.negSucc (k + 1)) = Int.negSucc k := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="fresh_settle_grounds" href="#fresh_settle_grounds">fresh_settle_grounds</a> :
+    checkedSettle (Int.negSucc 0) (Int.negSucc 0) = 0 := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="stale_settle_passes_ground" href="#stale_settle_passes_ground">stale_settle_passes_ground</a> :
+    checkedSettle (-1) (checkedSettle (-1) (-1)) = 1 := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="phantom_invisible" href="#phantom_invisible">phantom_invisible</a> :
+    grounded (checkedSettle (-1) (checkedSettle (-1) (-1))) := ⟨1, rfl⟩
+
+<span class="receipt">/-- info: &#x27;Foam.stale_escapes_floor&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms stale_escapes_floor</span>
+
+<span class="receipt">/-- info: &#x27;Foam.stale_safe_off_margin&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms stale_safe_off_margin</span>
+
+<span class="receipt">/-- info: &#x27;Foam.fresh_holds_floor&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms fresh_holds_floor</span>
+
+<span class="receipt">/-- info: &#x27;Foam.drainSeq_holds_floor&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms drainSeq_holds_floor</span>
+
+<span class="receipt">/-- info: &#x27;Foam.scar_outside_carrier&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms scar_outside_carrier</span>
+
+<span class="receipt">/-- info: &#x27;Foam.scar_repair&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms scar_repair</span>
+
+<span class="receipt">/-- info: &#x27;Foam.debt_zero_iff_grounded&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms debt_zero_iff_grounded</span>
+
+<span class="receipt">/-- info: &#x27;Foam.promise_kept&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms promise_kept</span>
+
+<span class="receipt">/-- info: &#x27;Foam.phantom_invisible&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms phantom_invisible</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

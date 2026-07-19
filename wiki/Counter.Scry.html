@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Scry</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Scry</h1></header>
+<div class="imports">grasp: <a href="Counter.Logbook.html">Counter.Logbook</a> · <a href="Counter.Needle.html">Counter.Needle</a> · <a href="Counter.Address.html">Counter.Address</a></div><pre class="src">import <a href="Counter.Logbook.html">Counter.Logbook</a>
+import <a href="Counter.Needle.html">Counter.Needle</a>
+import <a href="Counter.Address.html">Counter.Address</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="scry" href="#scry">scry</a> {K : Type} [DecidableEq K] (board : List (K × Bool)) (k : K) :
+    Bool :=
+  match seatRead board k with
+  | none =&gt; true
+  | some true =&gt; false
+  | some false =&gt; false
+
+<span class="kw">def</span> <a class="decl" id="scryList" href="#scryList">scryList</a> {K : Type} [DecidableEq K] (board : List (K × Bool)) :
+    List K → List K
+  | [] =&gt; []
+  | k :: ks =&gt; match seatRead board k with
+    | none =&gt; k :: scryList board ks
+    | some true =&gt; scryList board ks
+    | some false =&gt; scryList board ks
+
+<span class="kw">def</span> <a class="decl" id="skyline" href="#skyline">skyline</a> : List (Nat × Bool) → Nat
+  | [] =&gt; 0
+  | (k, _) :: rest =&gt; k + skyline rest
+
+<span class="kw">def</span> <a class="decl" id="Resolved" href="#Resolved">Resolved</a> {K : Type} [DecidableEq K] (board : List (K × Bool)) : Prop :=
+  ∀ k : K, ¬ seatRead board k = none
+
+<span class="kw">theorem</span> <a class="decl" id="the_scry_answers_any_arrival" href="#the_scry_answers_any_arrival">the_scry_answers_any_arrival</a> {K : Type} [DecidableEq K]
+    (board : List (K × Bool)) (k : K) :
+    scry board k = true ↔ seatRead board k = none := by
+  unfold scry
+  cases hs : seatRead board k with
+  | none =&gt; exact ⟨(fun _ =&gt; rfl), (fun _ =&gt; rfl)⟩
+  | some w =&gt;
+    cases w &lt;;&gt; exact ⟨(fun h =&gt; nomatch h), (fun h =&gt; nomatch h)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="a_vacancy_needs_no_stance" href="#a_vacancy_needs_no_stance">a_vacancy_needs_no_stance</a> {K : Type} [DecidableEq K]
+    (board : List (K × Bool)) (k : K) (b : Bool) :
+    scry board k = true ↔ tilt board k b = Tilt.vacancy :=
+  (the_scry_answers_any_arrival board k).trans
+    (vacancy_is_unclaimed_ground board k b).symm
+
+<span class="kw">theorem</span> <a class="decl" id="the_scry_reads_the_roster" href="#the_scry_reads_the_roster">the_scry_reads_the_roster</a> {K : Type} [DecidableEq K]
+    (board : List (K × Bool)) :
+    ∀ (ks : List K) (k : K),
+      k ∈ scryList board ks ↔ (k ∈ ks ∧ seatRead board k = none)
+  | [], k =&gt; ⟨(fun h =&gt; nomatch h), (fun h =&gt; nomatch h.1)⟩
+  | k&#x27; :: ks, k =&gt; by
+      unfold scryList
+      cases hs : seatRead board k&#x27; with
+      | none =&gt;
+        constructor
+        · intro h
+          cases h with
+          | head =&gt; exact ⟨List.Mem.head ks, hs⟩
+          | tail _ h&#x27; =&gt;
+            have ih := (the_scry_reads_the_roster board ks k).mp h&#x27;
+            exact ⟨List.Mem.tail k&#x27; ih.1, ih.2⟩
+        · intro h
+          cases h.1 with
+          | head =&gt; exact List.Mem.head _
+          | tail _ hin =&gt;
+            exact List.Mem.tail k&#x27;
+              ((the_scry_reads_the_roster board ks k).mpr ⟨hin, h.2⟩)
+      | some w =&gt;
+        cases w &lt;;&gt;
+          exact ⟨(fun h =&gt;
+              ⟨List.Mem.tail k&#x27; ((the_scry_reads_the_roster board ks k).mp h).1,
+               ((the_scry_reads_the_roster board ks k).mp h).2⟩),
+            (fun h =&gt; by
+              cases h.1 with
+              | head =&gt; exact absurd (hs.symm.trans h.2) (fun hx =&gt; nomatch hx)
+              | tail _ hin =&gt;
+                exact (the_scry_reads_the_roster board ks k).mpr ⟨hin, h.2⟩)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="a_page_sits_under_the_skyline" href="#a_page_sits_under_the_skyline">a_page_sits_under_the_skyline</a> :
+    ∀ (board : List (Nat × Bool)) (p : Nat × Bool), p ∈ board →
+      p.1 ≤ skyline board
+  | (n, c) :: rest, p, hp =&gt; by
+      cases hp with
+      | head =&gt; exact Nat.le_add_right n (skyline rest)
+      | tail _ hp&#x27; =&gt;
+        exact Nat.le_trans (a_page_sits_under_the_skyline rest p hp&#x27;)
+          (Nat.le_add_left (skyline rest) n)
+
+<span class="kw">theorem</span> <a class="decl" id="the_dark_never_runs_out" href="#the_dark_never_runs_out">the_dark_never_runs_out</a> (board : List (Nat × Bool)) :
+    ∃ k : Nat, seatRead board k = none := by
+  cases hs : seatRead board (skyline board + 1) with
+  | none =&gt; exact ⟨skyline board + 1, hs⟩
+  | some c =&gt;
+    exact absurd
+      (a_page_sits_under_the_skyline board (skyline board + 1, c)
+        (a_reading_names_a_page board (skyline board + 1) c hs))
+      (Nat.not_succ_le_self (skyline board))
+
+<span class="kw">theorem</span> <a class="decl" id="no_board_resolves_an_open_world" href="#no_board_resolves_an_open_world">no_board_resolves_an_open_world</a> (board : List (Nat × Bool)) :
+    ¬ Resolved board :=
+  fun hr =&gt; match the_dark_never_runs_out board with
+    | ⟨k, hk⟩ =&gt; hr k hk
+
+<span class="kw">theorem</span> <a class="decl" id="a_claimed_ground_absorbs_the_quiet_step" href="#a_claimed_ground_absorbs_the_quiet_step">a_claimed_ground_absorbs_the_quiet_step</a> {K : Type} [DecidableEq K]
+    (board : List (K × Bool)) (k : K) (b : Bool)
+    (hq : tilt board k b ≠ Tilt.friction) (hc : ¬ seatRead board k = none) :
+    ∀ k&#x27; : K, seatRead (land board k b) k&#x27; = seatRead board k&#x27; := by
+  intro k&#x27;
+  by_cases hk : k = k&#x27;
+  · rw [← hk]
+    cases ht : tilt board k b with
+    | friction =&gt; exact absurd ht hq
+    | completion =&gt; exact relief_rewrites_nothing board k b ht
+    | vacancy =&gt;
+      exact absurd ((vacancy_is_unclaimed_ground board k b).mp ht) hc
+  · exact the_landing_stays_in_its_lane board k k&#x27; hk b
+
+<span class="kw">theorem</span> <a class="decl" id="reps_change_nothing_once_resolved" href="#reps_change_nothing_once_resolved">reps_change_nothing_once_resolved</a> {K : Type} [DecidableEq K]
+    (board : List (K × Bool)) (hr : Resolved board) (k : K) (b : Bool)
+    (hq : tilt board k b ≠ Tilt.friction) :
+    ∀ k&#x27; : K, seatRead (land board k b) k&#x27; = seatRead board k&#x27; :=
+  a_claimed_ground_absorbs_the_quiet_step board k b hq (hr k)
+
+<span class="kw">theorem</span> <a class="decl" id="what_changes_was_dark" href="#what_changes_was_dark">what_changes_was_dark</a> {K : Type} [DecidableEq K]
+    (board : List (K × Bool)) (k : K) (b : Bool) (k&#x27; : K)
+    (hq : tilt board k b ≠ Tilt.friction)
+    (hch : ¬ seatRead (land board k b) k&#x27; = seatRead board k&#x27;) :
+    k = k&#x27; ∧ seatRead board k&#x27; = none := by
+  by_cases hk : k = k&#x27;
+  · refine ⟨hk, ?_⟩
+    cases ht : tilt board k b with
+    | friction =&gt; exact absurd ht hq
+    | completion =&gt;
+      exact absurd
+        (by rw [← hk]; exact relief_rewrites_nothing board k b ht) hch
+    | vacancy =&gt;
+      rw [← hk]
+      exact (vacancy_is_unclaimed_ground board k b).mp ht
+  · exact absurd (the_landing_stays_in_its_lane board k k&#x27; hk b) hch
+
+<span class="kw">theorem</span> <a class="decl" id="a_holding_series_stops_learning_once_resolved" href="#a_holding_series_stops_learning_once_resolved">a_holding_series_stops_learning_once_resolved</a> {K : Type}
+    [DecidableEq K] (board : List (K × Bool)) (hr : Resolved board)
+    (k : K) (b : Bool) (hh : Holding (land board k b)) :
+    ∀ k&#x27; : K, seatRead (land board k b) k&#x27; = seatRead board k&#x27; :=
+  reps_change_nothing_once_resolved board hr k b hh.1
+
+<span class="kw">theorem</span> <a class="decl" id="scrying_the_vacancy_list" href="#scrying_the_vacancy_list">scrying_the_vacancy_list</a> {K : Type} [DecidableEq K]
+    (board : List (K × Bool)) (k : K) (b : Bool) (ks : List K)
+    (nboard : List (Nat × Bool)) :
+    (scry board k = true ↔ seatRead board k = none)
+      ∧ (scry board k = true ↔ tilt board k b = Tilt.vacancy)
+      ∧ (k ∈ scryList board ks ↔ (k ∈ ks ∧ seatRead board k = none))
+      ∧ (Resolved board → tilt board k b ≠ Tilt.friction →
+          ∀ k&#x27; : K, seatRead (land board k b) k&#x27; = seatRead board k&#x27;)
+      ∧ (∃ n : Nat, seatRead nboard n = none)
+      ∧ ¬ Resolved nboard :=
+  ⟨the_scry_answers_any_arrival board k,
+   a_vacancy_needs_no_stance board k b,
+   the_scry_reads_the_roster board ks k,
+   (fun hr hq =&gt; reps_change_nothing_once_resolved board hr k b hq),
+   the_dark_never_runs_out nboard,
+   no_board_resolves_an_open_world nboard⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_loop_re_ups_at_the_dark_edge" href="#the_loop_re_ups_at_the_dark_edge">the_loop_re_ups_at_the_dark_edge</a> (board : List (Nat × Bool))
+    (b : Bool) :
+    ∃ k : Nat, tilt board k b = Tilt.vacancy
+      ∧ seatRead (land board k b) k = some b
+      ∧ (logbook (land board k b)).length = board.length + 1 := by
+  cases the_dark_never_runs_out board with
+  | intro k hk =&gt;
+    exact ⟨k, (vacancy_is_unclaimed_ground board k b).mpr hk,
+      the_landing_is_readable board k b,
+      (every_page_has_a_reading (land board k b) :
+        (logbook (land board k b)).length = board.length + 1)⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_scry_answers_any_arrival&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_scry_answers_any_arrival</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_vacancy_needs_no_stance&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_vacancy_needs_no_stance</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_scry_reads_the_roster&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_scry_reads_the_roster</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_page_sits_under_the_skyline&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_page_sits_under_the_skyline</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_dark_never_runs_out&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_dark_never_runs_out</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_board_resolves_an_open_world&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_board_resolves_an_open_world</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_claimed_ground_absorbs_the_quiet_step&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_claimed_ground_absorbs_the_quiet_step</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.reps_change_nothing_once_resolved&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms reps_change_nothing_once_resolved</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.what_changes_was_dark&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms what_changes_was_dark</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_holding_series_stops_learning_once_resolved&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_holding_series_stops_learning_once_resolved</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_loop_re_ups_at_the_dark_edge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_loop_re_ups_at_the_dark_edge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.scrying_the_vacancy_list&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms scrying_the_vacancy_list</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

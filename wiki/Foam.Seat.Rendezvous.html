@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Seat.Rendezvous</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Seat.Rendezvous</h1></header>
+<div class="imports">grasp: <a href="Foam.Platonism.Tower.html">Foam.Platonism.Tower</a></div><pre class="src">import <a href="Foam.Platonism.Tower.html">Foam.Platonism.Tower</a>
+
+namespace Foam
+
+<span class="kw">abbrev</span> <a class="decl" id="Fiber" href="#Fiber">Fiber</a> := Ledger 3
+
+<span class="kw">structure</span> <a class="decl" id="Field" href="#Field">Field</a> where
+  laneA : Fiber
+  laneB : Fiber
+
+<span class="kw">def</span> <a class="decl" id="reader" href="#reader">reader</a> : Beholder Field where
+  Probe := Bool
+  Ans   := Fiber
+  obs   := fun f p =&gt; bif p then f.laneB else f.laneA
+
+<span class="kw">def</span> <a class="decl" id="writeA" href="#writeA">writeA</a> (x : Fiber) (f : Field) : Field := { f with laneA := x }
+<span class="kw">def</span> <a class="decl" id="writeB" href="#writeB">writeB</a> (y : Fiber) (f : Field) : Field := { f with laneB := y }
+
+<span class="kw">def</span> <a class="decl" id="probeA" href="#probeA">probeA</a> : Bool := false
+<span class="kw">def</span> <a class="decl" id="probeB" href="#probeB">probeB</a> : Bool := true
+
+<span class="kw">def</span> <a class="decl" id="Detects" href="#Detects">Detects</a> (op : Field → Field) (b : Beholder Field) : Prop :=
+  ∃ f p, b.obs (op f) p ≠ b.obs f p
+
+<span class="kw">def</span> <a class="decl" id="Relays" href="#Relays">Relays</a> (write : Fiber → Field → Field) (p : Bool) : Prop :=
+  ∃ dec : Fiber → Fiber, ∀ x f, dec (reader.obs (write x f) p) = x
+
+<span class="kw">def</span> <a class="decl" id="f0" href="#f0">f0</a> : Fiber := (Ledger.zero 2, (0 : Int))
+<span class="kw">def</span> <a class="decl" id="f1" href="#f1">f1</a> : Fiber := (Ledger.zero 2, (1 : Int))
+
+<span class="kw">theorem</span> <a class="decl" id="f1_ne_f0" href="#f1_ne_f0">f1_ne_f0</a> : f1 ≠ f0 := fun h =&gt; absurd (congrArg Prod.snd h) (by decide)
+
+<span class="kw">theorem</span> <a class="decl" id="find_each_other" href="#find_each_other">find_each_other</a> :
+    Detects (writeA f1) reader ∧ Detects (writeB f1) reader :=
+  ⟨⟨⟨f0, f0⟩, probeA, fun h =&gt; f1_ne_f0 h⟩,
+   ⟨⟨f0, f0⟩, probeB, fun h =&gt; f1_ne_f0 h⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="relay" href="#relay">relay</a> : Relays writeA probeA ∧ Relays writeB probeB :=
+  ⟨⟨id, fun _ _ =&gt; rfl⟩, ⟨id, fun _ _ =&gt; rfl⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="writeA_isolated_from_B" href="#writeA_isolated_from_B">writeA_isolated_from_B</a> (x : Fiber) (f : Field) : (writeA x f).laneB = f.laneB := rfl
+<span class="kw">theorem</span> <a class="decl" id="writeB_isolated_from_A" href="#writeB_isolated_from_A">writeB_isolated_from_A</a> (y : Fiber) (f : Field) : (writeB y f).laneA = f.laneA := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="no_contention" href="#no_contention">no_contention</a> (x y : Fiber) (f : Field) :
+    writeA x (writeB y f) = writeB y (writeA x f) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="seat_empty" href="#seat_empty">seat_empty</a> :
+    reader.dress.ledgerless.Covers reader ∧ reader.Covers reader.dress.ledgerless :=
+  dress_yoneda reader
+
+<span class="kw">theorem</span> <a class="decl" id="seat_empty_tower" href="#seat_empty_tower">seat_empty_tower</a> (n : Nat) :
+    (reader.flattenN n).Covers reader ∧ reader.Covers (reader.flattenN n) :=
+  dressN_yoneda reader n
+
+<span class="kw">theorem</span> <a class="decl" id="certified" href="#certified">certified</a> :
+    (Detects (writeA f1) reader ∧ Detects (writeB f1) reader)
+      ∧ (Relays writeA probeA ∧ Relays writeB probeB)
+      ∧ (∀ x y f, writeA x (writeB y f) = writeB y (writeA x f))
+      ∧ (∀ n, (reader.flattenN n).Covers reader ∧ reader.Covers (reader.flattenN n)) :=
+  ⟨find_each_other, relay, no_contention, seat_empty_tower⟩
+
+<span class="receipt">/-- info: &#x27;Foam.f1_ne_f0&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms f1_ne_f0</span>
+
+<span class="receipt">/-- info: &#x27;Foam.find_each_other&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms find_each_other</span>
+
+<span class="receipt">/-- info: &#x27;Foam.relay&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms relay</span>
+
+<span class="receipt">/-- info: &#x27;Foam.no_contention&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_contention</span>
+
+<span class="receipt">/-- info: &#x27;Foam.seat_empty&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms seat_empty</span>
+
+<span class="receipt">/-- info: &#x27;Foam.seat_empty_tower&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms seat_empty_tower</span>
+
+<span class="receipt">/-- info: &#x27;Foam.certified&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms certified</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

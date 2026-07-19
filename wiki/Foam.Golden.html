@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Golden</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Golden</h1></header>
+<div class="imports">grasp: <a href="Foam.Int.html">Foam.Int</a></div><pre class="src">import <a href="Foam.Int.html">Foam.Int</a>
+
+namespace Foam
+
+<span class="kw">def</span> <a class="decl" id="fib" href="#fib">fib</a> : Nat → Int
+  | 0 =&gt; 0
+  | 1 =&gt; 1
+  | (n + 2) =&gt; fib (n + 1) + fib n
+
+<span class="kw">theorem</span> <a class="decl" id="fib_gnomon" href="#fib_gnomon">fib_gnomon</a> (n : Nat) : fib (n + 2) = fib (n + 1) + fib n := rfl
+
+<span class="kw">def</span> <a class="decl" id="altSign" href="#altSign">altSign</a> : Nat → Int
+  | 0 =&gt; 1
+  | (n + 1) =&gt; -(altSign n)
+
+<span class="kw">theorem</span> <a class="decl" id="fib_cassini" href="#fib_cassini">fib_cassini</a> (n : Nat) :
+    fib (n + 1) * fib (n + 1) - fib (n + 2) * fib n = altSign n := by
+  induction n with
+  | zero =&gt; decide
+  | succ k ih =&gt;
+      have hsum : fib (k + 2) = fib (k + 1) + fib k := rfl
+      have hdiff : fib (k + 2) - fib (k + 1) = fib k := by
+        rw [hsum, FInt.addComm, FInt.add_sub_cancel_right]
+      show fib (k + 2) * fib (k + 2) - fib (k + 3) * fib (k + 1) = altSign (k + 1)
+      rw [show fib (k + 3) = fib (k + 2) + fib (k + 1) from rfl, FInt.add_mul,
+          show altSign (k + 1) = -(altSign k) from rfl, ← ih, FInt.neg_sub,
+          ← FInt.sub_sub, ← FInt.mul_sub, hdiff]
+
+<span class="receipt">/-- info: &#x27;Foam.fib_gnomon&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms fib_gnomon</span>
+
+<span class="receipt">/-- info: &#x27;Foam.fib_cassini&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms fib_cassini</span>
+
+<span class="kw">theorem</span> <a class="decl" id="altSign_pm" href="#altSign_pm">altSign_pm</a> (n : Nat) : altSign n = 1 ∨ altSign n = -1 := by
+  induction n with
+  | zero =&gt; exact Or.inl rfl
+  | succ k ih =&gt;
+    show -(altSign k) = 1 ∨ -(altSign k) = -1
+    rcases ih with h | h
+    · rw [h]; exact Or.inr (by decide)
+    · rw [h]; exact Or.inl (by decide)
+
+<span class="kw">theorem</span> <a class="decl" id="cassini_never_cleared" href="#cassini_never_cleared">cassini_never_cleared</a> (n : Nat) : altSign n ≠ 0 := by
+  rcases altSign_pm n with h | h &lt;;&gt; rw [h] &lt;;&gt; decide
+
+<span class="kw">theorem</span> <a class="decl" id="golden_defect_never_clears" href="#golden_defect_never_clears">golden_defect_never_clears</a> (n : Nat) :
+    fib (n + 1) * fib (n + 1) - fib (n + 2) * fib n ≠ 0 := by
+  rw [fib_cassini n]; exact cassini_never_cleared n
+
+<span class="kw">theorem</span> <a class="decl" id="fib_ofNat" href="#fib_ofNat">fib_ofNat</a> : ∀ n, ∃ k, fib n = Int.ofNat k
+  | 0 =&gt; ⟨0, rfl⟩
+  | 1 =&gt; ⟨1, rfl⟩
+  | (n + 2) =&gt; by
+    obtain ⟨a, ha⟩ := fib_ofNat (n + 1)
+    obtain ⟨b, hb⟩ := fib_ofNat n
+    refine ⟨a + b, ?_⟩
+    show fib (n + 1) + fib n = Int.ofNat (a + b)
+    rw [ha, hb]; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="fib_succ_pos" href="#fib_succ_pos">fib_succ_pos</a> : ∀ n, ∃ k, fib (n + 1) = Int.ofNat (k + 1)
+  | 0 =&gt; ⟨0, rfl⟩
+  | (n + 1) =&gt; by
+    obtain ⟨a, ha⟩ := fib_succ_pos n
+    obtain ⟨b, hb⟩ := fib_ofNat n
+    refine ⟨a + b, ?_⟩
+    show fib (n + 1) + fib n = Int.ofNat (a + b + 1)
+    rw [ha, hb]
+    exact congrArg Int.ofNat (Nat.add_right_comm a 1 b)
+
+<span class="kw">theorem</span> <a class="decl" id="fib_succ_ne_zero" href="#fib_succ_ne_zero">fib_succ_ne_zero</a> (n : Nat) : fib (n + 1) ≠ 0 := by
+  obtain ⟨k, hk⟩ := fib_succ_pos n
+  rw [hk]; intro h; exact Nat.noConfusion (Int.ofNat.inj h)
+
+<span class="kw">def</span> <a class="decl" id="Nphi" href="#Nphi">Nphi</a> (x y : Int) : Int := x * x + x * y - y * y
+
+<span class="kw">theorem</span> <a class="decl" id="golden_unit" href="#golden_unit">golden_unit</a> (n : Nat) : Nphi (fib n) (fib (n + 1)) = -(altSign n) := by
+  have hc : fib (n + 1) * fib (n + 1) - (fib (n + 1) + fib n) * fib n = altSign n :=
+    fib_cassini n
+  show fib n * fib n + fib n * fib (n + 1) - fib (n + 1) * fib (n + 1) = -(altSign n)
+  rw [← hc, FInt.add_mul, FInt.mulComm (fib (n + 1)) (fib n), FInt.neg_sub,
+    FInt.addComm (fib n * fib (n + 1)) (fib n * fib n)]
+
+<span class="kw">theorem</span> <a class="decl" id="golden_unit_ne_zero" href="#golden_unit_ne_zero">golden_unit_ne_zero</a> (n : Nat) : Nphi (fib n) (fib (n + 1)) ≠ 0 := by
+  rw [golden_unit]
+  rcases altSign_pm n with h | h &lt;;&gt; rw [h] &lt;;&gt; decide
+
+<span class="receipt">/-- info: &#x27;Foam.altSign_pm&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms altSign_pm</span>
+
+<span class="receipt">/-- info: &#x27;Foam.cassini_never_cleared&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms cassini_never_cleared</span>
+
+<span class="receipt">/-- info: &#x27;Foam.golden_defect_never_clears&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms golden_defect_never_clears</span>
+
+<span class="receipt">/-- info: &#x27;Foam.golden_unit&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms golden_unit</span>
+
+<span class="receipt">/-- info: &#x27;Foam.golden_unit_ne_zero&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms golden_unit_ne_zero</span>
+
+<span class="receipt">/-- info: &#x27;Foam.fib_ofNat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms fib_ofNat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.fib_succ_ne_zero&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms fib_succ_ne_zero</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

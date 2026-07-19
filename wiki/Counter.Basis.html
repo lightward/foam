@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Basis</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Basis</h1></header>
+<div class="imports">grasp: <a href="Counter.Laugh.html">Counter.Laugh</a></div><pre class="src">import <a href="Counter.Laugh.html">Counter.Laugh</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="bubbleOfHom" href="#bubbleOfHom">bubbleOfHom</a> {S T : Stage} (f : StageHom S T) : Bubble S where
+  Inner := T
+  wall  := f.onState
+
+<span class="kw">def</span> <a class="decl" id="renderOf" href="#renderOf">renderOf</a> {W : Stage} {R : Type} (A : Bubble W) (p : A.Inner.Probe)
+    (l : A.Inner.Ans → R) : Render W R where
+  seat  := A
+  probe := p
+  lens  := l
+
+<span class="kw">def</span> <a class="decl" id="naked" href="#naked">naked</a> (W : Stage) : Bubble W where
+  Inner := W
+  wall  := fun w =&gt; w
+
+<span class="kw">theorem</span> <a class="decl" id="a_bubble_is_its_own_punchline" href="#a_bubble_is_its_own_punchline">a_bubble_is_its_own_punchline</a> {W : Stage} (A : Bubble W) :
+    (bubbleOfHom (punchline A)).Inner = A.Inner
+      ∧ (bubbleOfHom (punchline A)).wall = A.wall :=
+  ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="a_bubble_renders" href="#a_bubble_renders">a_bubble_renders</a> {W : Stage} {R : Type} (A : Bubble W)
+    (p : A.Inner.Probe) (l : A.Inner.Ans → R) (w : W.State) :
+    (renderOf A p l).read w = l (A.front.obs w p) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="a_render_is_a_seated_cell" href="#a_render_is_a_seated_cell">a_render_is_a_seated_cell</a> {W : Stage} {R : Type} (v : Render W R) :
+    renderOf v.seat v.probe v.lens = v := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="a_bubble_is_arrow_and_render" href="#a_bubble_is_arrow_and_render">a_bubble_is_arrow_and_render</a> {W : Stage} {R : Type} (A : Bubble W)
+    (p : A.Inner.Probe) (l : A.Inner.Ans → R) (w : W.State) :
+    (bubbleOfHom (punchline A)).wall = A.wall
+      ∧ (punchline A).onState = A.wall
+      ∧ (renderOf A p l).read w = l (A.front.obs w p) :=
+  ⟨rfl, rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_spec_reduces" href="#the_spec_reduces">the_spec_reduces</a> {W : Stage} (S : Stage) (A : Bubble W)
+    {R : Type} (v : Render W R) :
+    S.behold.toStage = S
+      ∧ (bubbleOfHom (punchline A)).wall = A.wall
+      ∧ renderOf v.seat v.probe v.lens = v :=
+  ⟨rfl, rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="no_wall_no_backstage" href="#no_wall_no_backstage">no_wall_no_backstage</a> {W : Stage} (m : W.State → W.State)
+    (h : (naked W).FixesWall m) : ∀ w, m w = w :=
+  h
+
+<span class="kw">theorem</span> <a class="decl" id="the_wall_is_the_slack" href="#the_wall_is_the_slack">the_wall_is_the_slack</a> {W : Stage} (A : Bubble W)
+    (m : W.State → W.State) (h : A.FixesWall m)
+    (ps : List A.front.Probe) (w : W.State) :
+    transcriptWith A.front m w ps = transcript A.front w ps :=
+  A.operator_unobservable m h ps w
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_bubble_is_its_own_punchline&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_bubble_is_its_own_punchline</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_bubble_renders&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_bubble_renders</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_render_is_a_seated_cell&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_render_is_a_seated_cell</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_bubble_is_arrow_and_render&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_bubble_is_arrow_and_render</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_spec_reduces&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_spec_reduces</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_wall_no_backstage&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_wall_no_backstage</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_wall_is_the_slack&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_wall_is_the_slack</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

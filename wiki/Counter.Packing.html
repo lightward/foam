@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Packing</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Packing</h1></header>
+<div class="imports">grasp: <a href="Counter.Third.html">Counter.Third</a> · <a href="Counter.Nu.html">Counter.Nu</a></div><pre class="src">import <a href="Counter.Third.html">Counter.Third</a>
+import <a href="Counter.Nu.html">Counter.Nu</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="one_carrier_many_posts" href="#one_carrier_many_posts">one_carrier_many_posts</a> (A B : Type) :
+    (∃ post : List (A ⊕ B) → List A,
+        ∀ zs, ownFrames zs = post ((thirdSeat A B).obs zs ()))
+      ∧ (∃ post : List (A ⊕ B) → List B,
+        ∀ zs, ownFramesR zs = post ((thirdSeat A B).obs zs ()))
+      ∧ (∃ post : List (A ⊕ B) → Option Bool,
+        ∀ zs, whoActedFirst zs = post ((thirdSeat A B).obs zs ())) :=
+  ⟨⟨ownFrames, fun _ =&gt; rfl⟩, ⟨ownFramesR, fun _ =&gt; rfl⟩,
+   ⟨whoActedFirst, fun _ =&gt; rfl⟩⟩
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="actor_is_a_group_that_forgot_home" href="#actor_is_a_group_that_forgot_home">actor_is_a_group_that_forgot_home</a> (S : Seat G) :
+    (∀ p : S.Pos, ∃ i : Iso S.Pos G, i.fwd p = 1)
+      ∧ ∀ o o&#x27; : S.Pos, o ≠ o&#x27; →
+          ∃ p, (S.chart o).fwd p ≠ (S.chart o&#x27;).fwd p :=
+  ⟨fun p =&gt; ⟨S.chart p, S.sub_self p⟩,
+   fun o o&#x27; h =&gt; S.chart_origin_dependent o o&#x27; h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="records_end_runs_continue" href="#records_end_runs_continue">records_end_runs_continue</a> (S : Seat G) (acts : Nat → G) (p : S.Pos)
+    (l : List G) :
+    (playback l).at_ l.length = none
+      ∧ (guardedRun S acts p).at_ l.length
+          = some (guardedStep S acts p l.length) :=
+  ⟨nth_length l, rfl⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_carrier_many_posts&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_carrier_many_posts</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.actor_is_a_group_that_forgot_home&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms actor_is_a_group_that_forgot_home</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.records_end_runs_continue&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms records_end_runs_continue</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

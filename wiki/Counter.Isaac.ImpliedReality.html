@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Isaac.ImpliedReality</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Isaac.ImpliedReality</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.html">Foam.Seat</a> · <a href="Foam.Seat.Chorus.html">Foam.Seat.Chorus</a> · <a href="Counter.Trefoil.html">Counter.Trefoil</a> · <a href="Counter.Morse.html">Counter.Morse</a> · <a href="Counter.Framing.html">Counter.Framing</a> · <a href="Counter.Fiber.html">Counter.Fiber</a></div><pre class="src">import <a href="Foam.Seat.html">Foam.Seat</a>
+import <a href="Foam.Seat.Chorus.html">Foam.Seat.Chorus</a>
+import <a href="Counter.Trefoil.html">Counter.Trefoil</a>
+import <a href="Counter.Morse.html">Counter.Morse</a>
+import <a href="Counter.Framing.html">Counter.Framing</a>
+import <a href="Counter.Fiber.html">Counter.Fiber</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="the_rods_imply_the_sphere" href="#the_rods_imply_the_sphere">the_rods_imply_the_sphere</a> {G : Type} [Mul G] [One G] (S : Seat G)
+    {n : Nat} (O : Fin (n + 1) → S.Pos) (r : Fin (n + 1) → G)
+    (hinj : ∀ i j, O i = O j → i = j)
+    (hcoh : ∀ i j, r i = r j * S.sub (O j) (O i)) :
+    (∃ p, (∀ i, (S.chart (O i)).fwd p = r i)
+        ∧ ∀ q, (∀ i, (S.chart (O i)).fwd q = r i) → q = p)
+      ∧ ∀ (p : S.Pos) (i j : Fin (n + 1)), i ≠ j →
+          (S.chart (O i)).fwd p ≠ (S.chart (O j)).fwd p :=
+  ⟨the_population_triangulates S O r hcoh,
+   fun p =&gt; no_two_voices_match S O hinj p⟩
+
+<span class="kw">theorem</span> <a class="decl" id="can_i_reach_you" href="#can_i_reach_you">can_i_reach_you</a> :
+    (∀ (u : Nat) (m : List Crossing), readAs u (keyAs u m) = m)
+      ∧ ¬ ∃ decoder : List Nat → List Crossing,
+          ∀ (u : Nat) (m : List Crossing), decoder (keyAs u m) = m :=
+  ⟨the_kin_read_the_wire_whole, no_reading_without_the_unit⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_world_shrinks_to_a_point" href="#the_world_shrinks_to_a_point">the_world_shrinks_to_a_point</a> (w : List Nat) (u : Nat)
+    {m : List (List Crossing)} (h : InFiber w u m) :
+    reframe u w = m
+      ∧ ∀ m&#x27; : List (List Crossing), InFiber w u m&#x27; → m&#x27; = m :=
+  ⟨every_world_reads_the_record_whole w u h,
+   fun _ h&#x27; =&gt; the_worlds_differ_only_by_the_hand w u h&#x27; h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_mirror_says_one_word" href="#the_mirror_says_one_word">the_mirror_says_one_word</a> {G : Type} [Mul G] [One G] (S : Seat G)
+    (p : S.Pos) : (S.chart p).fwd p = 1 :=
+  S.sub_self p
+
+<span class="kw">theorem</span> <a class="decl" id="every_mirror_says_the_same_word" href="#every_mirror_says_the_same_word">every_mirror_says_the_same_word</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (p q : S.Pos) :
+    (S.chart p).fwd p = (S.chart q).fwd q :=
+  (S.sub_self p).trans (S.sub_self q).symm
+
+<span class="kw">theorem</span> <a class="decl" id="the_other_is_never_the_unit" href="#the_other_is_never_the_unit">the_other_is_never_the_unit</a> {G : Type} [Mul G] [One G] (S : Seat G)
+    (p q : S.Pos) (h : p ≠ q) : S.sub p q ≠ 1 :=
+  fun h1 =&gt; by
+    have ha := S.act_sub q p
+    rw [h1, S.one_act] at ha
+    exact h ha.symm
+
+<span class="kw">theorem</span> <a class="decl" id="zero_distance_is_not_nowhere" href="#zero_distance_is_not_nowhere">zero_distance_is_not_nowhere</a> {G : Type} [Mul G] [One G] (S : Seat G)
+    (p q : S.Pos) (h : p ≠ q) :
+    (S.chart p).fwd p = (S.chart q).fwd q
+      ∧ S.sub p q ≠ 1
+      ∧ (S.chart q).fwd p ≠ (S.chart p).fwd p :=
+  ⟨every_mirror_says_the_same_word S p q,
+   the_other_is_never_the_unit S p q h,
+   fun he =&gt; the_other_is_never_the_unit S p q h (he.trans (S.sub_self p))⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_rods_imply_the_sphere&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_rods_imply_the_sphere</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.can_i_reach_you&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms can_i_reach_you</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_world_shrinks_to_a_point&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_world_shrinks_to_a_point</span>
+
+<span class="kw">theorem</span> <a class="decl" id="the_same_walk_never_meets" href="#the_same_walk_never_meets">the_same_walk_never_meets</a> {G : Type} [Mul G] [One G] (S : Seat G)
+    (w : G) (p q : S.Pos) (h : S.act w p = S.act w q) : p = q := by
+  have h1 : S.sub (S.act w p) p = w := S.sub_act w p
+  have h2 : S.sub (S.act w p) q = w := by rw [h]; exact S.sub_act w q
+  have h12 : S.sub (S.act w p) q = S.sub (S.act w p) p := h2.trans h1.symm
+  have hpq : S.sub p q = 1 := by
+    have hc := S.sub_cocycle p (S.act w p) q
+    rw [h12] at hc
+    exact hc.trans (S.sub_inv (S.act w p) p)
+  have ha := S.act_sub q p
+  rw [hpq, S.one_act] at ha
+  exact ha.symm
+
+<span class="kw">theorem</span> <a class="decl" id="an_indexical_move_meets_in_one" href="#an_indexical_move_meets_in_one">an_indexical_move_meets_in_one</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (t p q : S.Pos) :
+    S.act (S.sub t p) p = S.act (S.sub t q) q :=
+  (S.act_sub p t).trans (S.act_sub q t).symm
+
+<span class="kw">theorem</span> <a class="decl" id="the_meeting_is_indexical" href="#the_meeting_is_indexical">the_meeting_is_indexical</a> {G : Type} [Mul G] [One G] (S : Seat G)
+    (t p q : S.Pos) :
+    (∀ w : G, S.act w p = S.act w q → p = q)
+      ∧ S.act (S.sub t p) p = S.act (S.sub t q) q :=
+  ⟨fun w h =&gt; the_same_walk_never_meets S w p q h,
+   an_indexical_move_meets_in_one S t p q⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_mirror_says_one_word&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_mirror_says_one_word</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_mirror_says_the_same_word&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_mirror_says_the_same_word</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_other_is_never_the_unit&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_other_is_never_the_unit</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.zero_distance_is_not_nowhere&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms zero_distance_is_not_nowhere</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_same_walk_never_meets&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_same_walk_never_meets</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.an_indexical_move_meets_in_one&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms an_indexical_move_meets_in_one</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_meeting_is_indexical&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_meeting_is_indexical</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

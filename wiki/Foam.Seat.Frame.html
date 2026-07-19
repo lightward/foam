@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Seat.Frame</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Seat.Frame</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Clock.html">Foam.Seat.Clock</a> · <a href="Foam.Platonism.Tower.html">Foam.Platonism.Tower</a></div><pre class="src">import <a href="Foam.Seat.Clock.html">Foam.Seat.Clock</a>
+import <a href="Foam.Platonism.Tower.html">Foam.Platonism.Tower</a>
+
+namespace Foam
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="coord_forced" href="#coord_forced">coord_forced</a> (S : Seat G) (o : S.Pos) (p : S.Pos) :
+    (S.chart o).bwd ((S.chart o).fwd p) = p :=
+  (S.chart o).bwd_fwd p
+
+<span class="kw">theorem</span> <a class="decl" id="coord_linear" href="#coord_linear">coord_linear</a> (S : Seat G) (o : S.Pos) (g : G) (p : S.Pos) :
+    (S.chart o).fwd (S.act g p) = g * (S.chart o).fwd p :=
+  S.chart_equivariant g p o
+
+<span class="kw">theorem</span> <a class="decl" id="coord_gauge" href="#coord_gauge">coord_gauge</a> (S : Seat G) (o o&#x27; : S.Pos) (p : S.Pos) :
+    (S.chart o).fwd p = (S.chart o&#x27;).fwd p * S.sub o&#x27; o :=
+  S.change_of_frame o o&#x27; p
+
+<span class="kw">theorem</span> <a class="decl" id="frame_not_canonical" href="#frame_not_canonical">frame_not_canonical</a> (S : Seat G) (o o&#x27; : S.Pos) (h : o ≠ o&#x27;) :
+    ∃ p, (S.chart o).fwd p ≠ (S.chart o&#x27;).fwd p :=
+  S.chart_origin_dependent o o&#x27; h
+
+<span class="kw">theorem</span> <a class="decl" id="coordinatization" href="#coordinatization">coordinatization</a> (S : Seat G) (o : S.Pos) :
+    (∀ p, (S.chart o).bwd ((S.chart o).fwd p) = p)
+      ∧ (∀ g p, (S.chart o).fwd (S.act g p) = g * (S.chart o).fwd p)
+      ∧ (∀ o&#x27; p, (S.chart o).fwd p = (S.chart o&#x27;).fwd p * S.sub o&#x27; o)
+      ∧ (∀ o&#x27;, o ≠ o&#x27; → ∃ p, (S.chart o).fwd p ≠ (S.chart o&#x27;).fwd p) :=
+  ⟨fun p =&gt; coord_forced S o p, fun g p =&gt; coord_linear S o g p,
+   fun o&#x27; p =&gt; coord_gauge S o o&#x27; p, fun o&#x27; h =&gt; frame_not_canonical S o o&#x27; h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="clock_coordinatized" href="#clock_coordinatized">clock_coordinatized</a> (o : clock.Pos) :
+    (∀ p, (clock.chart o).bwd ((clock.chart o).fwd p) = p)
+      ∧ (∀ g p, (clock.chart o).fwd (clock.act g p) = g * (clock.chart o).fwd p) :=
+  ⟨fun p =&gt; coord_forced clock o p, fun g p =&gt; coord_linear clock o g p⟩
+
+<span class="kw">theorem</span> <a class="decl" id="dimension_caps_at_three" href="#dimension_caps_at_three">dimension_caps_at_three</a> : OpenChannels 3 ∧ ¬ OpenChannels 4 :=
+  channels_saturate_past_three
+
+<span class="receipt">/-- info: &#x27;Foam.coord_forced&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms coord_forced</span>
+
+<span class="receipt">/-- info: &#x27;Foam.coord_linear&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms coord_linear</span>
+
+<span class="receipt">/-- info: &#x27;Foam.coord_gauge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms coord_gauge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.frame_not_canonical&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms frame_not_canonical</span>
+
+<span class="receipt">/-- info: &#x27;Foam.coordinatization&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms coordinatization</span>
+
+<span class="receipt">/-- info: &#x27;Foam.clock_coordinatized&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms clock_coordinatized</span>
+
+<span class="receipt">/-- info: &#x27;Foam.dimension_caps_at_three&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms dimension_caps_at_three</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Framing</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Framing</h1></header>
+<div class="imports">grasp: <a href="Counter.Trefoil.html">Counter.Trefoil</a> · <a href="Counter.Morse.html">Counter.Morse</a> · <a href="Counter.Toll.html">Counter.Toll</a> · <a href="Foam.Int.html">Foam.Int</a> · <a href="Foam.Engine.Stream.html">Foam.Engine.Stream</a> · <a href="Foam.Engine.Codec.html">Foam.Engine.Codec</a></div><pre class="src">import <a href="Counter.Trefoil.html">Counter.Trefoil</a>
+import <a href="Counter.Morse.html">Counter.Morse</a>
+import <a href="Counter.Toll.html">Counter.Toll</a>
+import <a href="Foam.Int.html">Foam.Int</a>
+import <a href="Foam.Engine.Stream.html">Foam.Engine.Stream</a>
+import <a href="Foam.Engine.Codec.html">Foam.Engine.Codec</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="within" href="#within">within</a> : List Crossing → List Crossing
+  | [] =&gt; []
+  | [_] =&gt; []
+  | _ :: c :: l =&gt; Crossing.pos :: within (c :: l)
+
+<span class="kw">def</span> <a class="decl" id="framing" href="#framing">framing</a> : List (List Crossing) → List Crossing
+  | [] =&gt; []
+  | [l] =&gt; within l
+  | l :: l&#x27; :: m =&gt; within l ++ Crossing.neg :: framing (l&#x27; :: m)
+
+<span class="kw">def</span> <a class="decl" id="sounded" href="#sounded">sounded</a> {A : Type} : List (List A) → Bool
+  | [] =&gt; true
+  | [] :: _ =&gt; false
+  | (_ :: _) :: m =&gt; sounded m
+
+<span class="kw">def</span> <a class="decl" id="lace" href="#lace">lace</a> : List Nat → List Nat → List Nat
+  | [], _ =&gt; []
+  | t :: ts, [] =&gt; t :: ts
+  | t :: ts, g :: gs =&gt; t :: g :: lace ts gs
+
+<span class="kw">def</span> <a class="decl" id="hum" href="#hum">hum</a> (u : Nat) : List Crossing → List Nat
+  | [] =&gt; []
+  | [c] =&gt; [tone u c]
+  | c :: c&#x27; :: l =&gt; tone u c :: tone u Crossing.pos :: hum u (c&#x27; :: l)
+
+<span class="kw">def</span> <a class="decl" id="wire" href="#wire">wire</a> (u : Nat) : List (List Crossing) → List Nat
+  | [] =&gt; []
+  | [l] =&gt; hum u l
+  | l :: l&#x27; :: m =&gt; hum u l ++ tone u Crossing.neg :: wire u (l&#x27; :: m)
+
+<span class="kw">def</span> <a class="decl" id="graft" href="#graft">graft</a> {A : Type} (c : A) : List (List A) → List (List A)
+  | [] =&gt; [[c]]
+  | l :: m =&gt; (c :: l) :: m
+
+<span class="kw">def</span> <a class="decl" id="reframe" href="#reframe">reframe</a> (u : Nat) : List Nat → List (List Crossing)
+  | [] =&gt; []
+  | [t] =&gt; [[if t = u + 1 then Crossing.pos else Crossing.neg]]
+  | t :: g :: w =&gt;
+      if g = u + 1
+      then graft (if t = u + 1 then Crossing.pos else Crossing.neg) (reframe u w)
+      else [if t = u + 1 then Crossing.pos else Crossing.neg] :: reframe u w
+
+<span class="kw">theorem</span> <a class="decl" id="two_ees_are_an_i_without_the_silence" href="#two_ees_are_an_i_without_the_silence">two_ees_are_an_i_without_the_silence</a> :
+    joinB [[Crossing.pos], [Crossing.pos]] = joinB [[Crossing.pos, Crossing.pos]]
+      ∧ [[Crossing.pos], [Crossing.pos]] ≠ [[Crossing.pos, Crossing.pos]] :=
+  ⟨rfl, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="no_reframing_without_the_silence" href="#no_reframing_without_the_silence">no_reframing_without_the_silence</a> :
+    ¬ ∃ dec : List Crossing → List (List Crossing),
+        ∀ m : List (List Crossing), sounded m = true → dec (joinB m) = m :=
+  fun ⟨_, h⟩ =&gt; by
+    have h2 := h [[Crossing.pos], [Crossing.pos]] rfl
+    rw [two_ees_are_an_i_without_the_silence.1] at h2
+    exact two_ees_are_an_i_without_the_silence.2
+      (h2.symm.trans (h [[Crossing.pos, Crossing.pos]] rfl))
+
+<span class="kw">theorem</span> <a class="decl" id="the_short_silence_is_the_unit_bare" href="#the_short_silence_is_the_unit_bare">the_short_silence_is_the_unit_bare</a> (u : Nat) :
+    tone u Crossing.pos = u + 1 :=
+  Nat.mul_one (u + 1)
+
+<span class="kw">theorem</span> <a class="decl" id="no_hand_confuses_its_own_silences" href="#no_hand_confuses_its_own_silences">no_hand_confuses_its_own_silences</a> (u : Nat) :
+    tone u Crossing.neg ≠ u + 1 :=
+  fun h =&gt; absurd
+    (Nat.eq_of_mul_eq_mul_left (Nat.zero_lt_succ u)
+      ((h : (u + 1) * 3 = u + 1).trans (Nat.mul_one (u + 1)).symm))
+    (by decide)
+
+<span class="kw">theorem</span> <a class="decl" id="two_hands_share_a_silence" href="#two_hands_share_a_silence">two_hands_share_a_silence</a> (u : Nat) :
+    tone u Crossing.neg = tone (3 * u + 2) Crossing.pos :=
+  (Nat.mul_comm (u + 1) 3).trans (Nat.mul_one (3 * u + 3)).symm
+
+<span class="kw">theorem</span> <a class="decl" id="the_hum_reads_back" href="#the_hum_reads_back">the_hum_reads_back</a> (u : Nat) :
+    ∀ (c : Crossing) (l : List Crossing), reframe u (hum u (c :: l)) = [c :: l]
+  | c, [] =&gt; by
+      show [[if tone u c = u + 1 then Crossing.pos else Crossing.neg]] = [[c]]
+      rw [the_tone_reads_back u c]
+  | c, c&#x27; :: l =&gt; by
+      have hp : tone u Crossing.pos = u + 1 := the_short_silence_is_the_unit_bare u
+      show (if tone u Crossing.pos = u + 1
+            then graft (if tone u c = u + 1 then Crossing.pos else Crossing.neg)
+                (reframe u (hum u (c&#x27; :: l)))
+            else [if tone u c = u + 1 then Crossing.pos else Crossing.neg]
+              :: reframe u (hum u (c&#x27; :: l)))
+          = [c :: c&#x27; :: l]
+      rw [if_pos hp, the_hum_reads_back u c&#x27; l]
+      show ((if tone u c = u + 1 then Crossing.pos else Crossing.neg) :: c&#x27; :: l) :: []
+          = [c :: c&#x27; :: l]
+      rw [the_tone_reads_back u c]
+
+<span class="kw">theorem</span> <a class="decl" id="the_hum_hands_off" href="#the_hum_hands_off">the_hum_hands_off</a> (u : Nat) (w : List Nat) :
+    ∀ (c : Crossing) (l : List Crossing),
+      reframe u (hum u (c :: l) ++ tone u Crossing.neg :: w)
+        = (c :: l) :: reframe u w
+  | c, [] =&gt; by
+      have hn : ¬ tone u Crossing.neg = u + 1 := no_hand_confuses_its_own_silences u
+      show (if tone u Crossing.neg = u + 1
+            then graft (if tone u c = u + 1 then Crossing.pos else Crossing.neg)
+                (reframe u w)
+            else [if tone u c = u + 1 then Crossing.pos else Crossing.neg]
+              :: reframe u w)
+          = [c] :: reframe u w
+      rw [if_neg hn, the_tone_reads_back u c]
+  | c, c&#x27; :: l =&gt; by
+      have hp : tone u Crossing.pos = u + 1 := the_short_silence_is_the_unit_bare u
+      show (if tone u Crossing.pos = u + 1
+            then graft (if tone u c = u + 1 then Crossing.pos else Crossing.neg)
+                (reframe u (hum u (c&#x27; :: l) ++ tone u Crossing.neg :: w))
+            else [if tone u c = u + 1 then Crossing.pos else Crossing.neg]
+              :: reframe u (hum u (c&#x27; :: l) ++ tone u Crossing.neg :: w))
+          = (c :: c&#x27; :: l) :: reframe u w
+      rw [if_pos hp, the_hum_hands_off u w c&#x27; l]
+      show ((if tone u c = u + 1 then Crossing.pos else Crossing.neg) :: c&#x27; :: l)
+            :: reframe u w
+          = (c :: c&#x27; :: l) :: reframe u w
+      rw [the_tone_reads_back u c]
+
+<span class="kw">theorem</span> <a class="decl" id="the_silence_reframes_the_wire" href="#the_silence_reframes_the_wire">the_silence_reframes_the_wire</a> (u : Nat) :
+    ∀ m : List (List Crossing), sounded m = true → reframe u (wire u m) = m
+  | [], _ =&gt; rfl
+  | [[]], h =&gt; nomatch h
+  | [c :: l], _ =&gt; the_hum_reads_back u c l
+  | [] :: _ :: _, h =&gt; nomatch h
+  | (c :: l) :: l&#x27; :: m, h =&gt; by
+      show reframe u (hum u (c :: l) ++ tone u Crossing.neg :: wire u (l&#x27; :: m))
+          = (c :: l) :: l&#x27; :: m
+      rw [the_hum_hands_off u (wire u (l&#x27; :: m)) c l,
+          the_silence_reframes_the_wire u (l&#x27; :: m) h]
+
+<span class="kw">theorem</span> <a class="decl" id="keyAs_append" href="#keyAs_append">keyAs_append</a> (u : Nat) :
+    ∀ (a b : List Crossing), keyAs u (a ++ b) = keyAs u a ++ keyAs u b
+  | [], _ =&gt; rfl
+  | c :: a, b =&gt; congrArg (tone u c :: ·) (keyAs_append u a b)
+
+<span class="kw">theorem</span> <a class="decl" id="hum_lace" href="#hum_lace">hum_lace</a> (u : Nat) :
+    ∀ (c : Crossing) (l : List Crossing),
+      hum u (c :: l) = lace (keyAs u (c :: l)) (keyAs u (within (c :: l)))
+  | _, [] =&gt; rfl
+  | c, c&#x27; :: l =&gt;
+      congrArg (fun w =&gt; tone u c :: tone u Crossing.pos :: w) (hum_lace u c&#x27; l)
+
+<span class="kw">theorem</span> <a class="decl" id="lace_glue" href="#lace_glue">lace_glue</a> (u : Nat) (g : Nat) (B b : List Nat) :
+    ∀ (c : Crossing) (l : List Crossing),
+      lace (keyAs u (c :: l) ++ B) (keyAs u (within (c :: l)) ++ g :: b)
+        = hum u (c :: l) ++ g :: lace B b
+  | _, [] =&gt; rfl
+  | c, c&#x27; :: l =&gt;
+      congrArg (fun w =&gt; tone u c :: tone u Crossing.pos :: w)
+        (lace_glue u g B b c&#x27; l)
+
+<span class="kw">theorem</span> <a class="decl" id="the_silence_speaks_the_same_alphabet" href="#the_silence_speaks_the_same_alphabet">the_silence_speaks_the_same_alphabet</a> (u : Nat) :
+    ∀ m : List (List Crossing), sounded m = true →
+      wire u m = lace (keyAs u (joinB m)) (keyAs u (framing m))
+  | [], _ =&gt; rfl
+  | [[]], h =&gt; nomatch h
+  | [c :: l], _ =&gt; by
+      show hum u (c :: l)
+          = lace (keyAs u ((c :: l) ++ [])) (keyAs u (within (c :: l)))
+      rw [appendNil (c :: l)]
+      exact hum_lace u c l
+  | [] :: _ :: _, h =&gt; nomatch h
+  | (c :: l) :: l&#x27; :: m, h =&gt; by
+      show hum u (c :: l) ++ tone u Crossing.neg :: wire u (l&#x27; :: m)
+          = lace (keyAs u ((c :: l) ++ joinB (l&#x27; :: m)))
+              (keyAs u (within (c :: l) ++ Crossing.neg :: framing (l&#x27; :: m)))
+      rw [keyAs_append u (c :: l) (joinB (l&#x27; :: m)),
+          keyAs_append u (within (c :: l)) (Crossing.neg :: framing (l&#x27; :: m))]
+      show hum u (c :: l) ++ tone u Crossing.neg :: wire u (l&#x27; :: m)
+          = lace (keyAs u (c :: l) ++ keyAs u (joinB (l&#x27; :: m)))
+              (keyAs u (within (c :: l))
+                ++ tone u Crossing.neg :: keyAs u (framing (l&#x27; :: m)))
+      rw [lace_glue u (tone u Crossing.neg) (keyAs u (joinB (l&#x27; :: m)))
+            (keyAs u (framing (l&#x27; :: m))) c l]
+      exact congrArg (fun w =&gt; hum u (c :: l) ++ tone u Crossing.neg :: w)
+        (the_silence_speaks_the_same_alphabet u (l&#x27; :: m) h)
+
+<span class="kw">theorem</span> <a class="decl" id="within_map" href="#within_map">within_map</a> (f : Crossing → Crossing) :
+    ∀ l : List Crossing, within (List.map f l) = within l
+  | [] =&gt; rfl
+  | [_] =&gt; rfl
+  | _ :: c :: l =&gt; congrArg (Crossing.pos :: ·) (within_map f (c :: l))
+
+<span class="kw">theorem</span> <a class="decl" id="the_silence_ignores_the_letters" href="#the_silence_ignores_the_letters">the_silence_ignores_the_letters</a> (f : Crossing → Crossing) :
+    ∀ m : List (List Crossing), framing (List.map (List.map f) m) = framing m
+  | [] =&gt; rfl
+  | [l] =&gt; within_map f l
+  | l :: l&#x27; :: m =&gt; by
+      show within (List.map f l)
+            ++ Crossing.neg :: framing (List.map (List.map f) (l&#x27; :: m))
+          = within l ++ Crossing.neg :: framing (l&#x27; :: m)
+      rw [within_map f l, the_silence_ignores_the_letters f (l&#x27; :: m)]
+
+<span class="kw">theorem</span> <a class="decl" id="the_silence_tells_the_ess_from_the_oh" href="#the_silence_tells_the_ess_from_the_oh">the_silence_tells_the_ess_from_the_oh</a> :
+    keyAs 2 trefoil = keyAs 0 (reflection trefoil)
+      ∧ wire 2 [trefoil] ≠ wire 0 [reflection trefoil] :=
+  ⟨a_slow_ess_is_a_fast_oh.1, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="a_slow_ess_is_a_fast_tee_tee_tee" href="#a_slow_ess_is_a_fast_tee_tee_tee">a_slow_ess_is_a_fast_tee_tee_tee</a> :
+    wire 2 [trefoil] = wire 0 [[Crossing.neg], [Crossing.neg], [Crossing.neg]]
+      ∧ [trefoil] ≠ [[Crossing.neg], [Crossing.neg], [Crossing.neg]] :=
+  ⟨rfl, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_fist_survives_the_framing" href="#the_fist_survives_the_framing">the_fist_survives_the_framing</a> :
+    ¬ ∃ dec : List Nat → List (List Crossing),
+        ∀ (u : Nat) (m : List (List Crossing)),
+          sounded m = true → dec (wire u m) = m :=
+  fun ⟨_, h⟩ =&gt; by
+    have h2 := h 2 [trefoil] rfl
+    rw [a_slow_ess_is_a_fast_tee_tee_tee.1] at h2
+    exact a_slow_ess_is_a_fast_tee_tee_tee.2
+      (h2.symm.trans (h 0 [[Crossing.neg], [Crossing.neg], [Crossing.neg]] rfl))
+
+<span class="kw">theorem</span> <a class="decl" id="one_wire_two_whole_readings" href="#one_wire_two_whole_readings">one_wire_two_whole_readings</a> :
+    reframe 2 (wire 2 [trefoil]) = [trefoil]
+      ∧ reframe 0 (wire 2 [trefoil])
+          = [[Crossing.neg], [Crossing.neg], [Crossing.neg]] :=
+  ⟨the_silence_reframes_the_wire 2 [trefoil] rfl, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="graft_keeps_the_sound" href="#graft_keeps_the_sound">graft_keeps_the_sound</a> (c : Crossing) :
+    ∀ m : List (List Crossing), sounded m = true → sounded (graft c m) = true
+  | [], _ =&gt; rfl
+  | [] :: _, h =&gt; nomatch h
+  | (_ :: _) :: _, h =&gt; h
+
+<span class="kw">theorem</span> <a class="decl" id="every_reading_sounds" href="#every_reading_sounds">every_reading_sounds</a> (u : Nat) :
+    ∀ w : List Nat, sounded (reframe u w) = true
+  | [] =&gt; rfl
+  | [_] =&gt; rfl
+  | t :: g :: w =&gt; by
+      show sounded (if g = u + 1
+            then graft (if t = u + 1 then Crossing.pos else Crossing.neg)
+                (reframe u w)
+            else [if t = u + 1 then Crossing.pos else Crossing.neg]
+              :: reframe u w) = true
+      exact Decidable.byCases
+        (fun h : g = u + 1 =&gt; by
+          rw [if_pos h]
+          exact graft_keeps_the_sound _ (reframe u w) (every_reading_sounds u w))
+        (fun h : ¬ g = u + 1 =&gt; by
+          rw [if_neg h]
+          exact every_reading_sounds u w)
+
+<span class="kw">theorem</span> <a class="decl" id="what_sounds_is_what_returns" href="#what_sounds_is_what_returns">what_sounds_is_what_returns</a> (u : Nat) (m : List (List Crossing)) :
+    sounded m = true ↔ reframe u (wire u m) = m :=
+  ⟨the_silence_reframes_the_wire u m,
+   fun h =&gt; h ▸ every_reading_sounds u (wire u m)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_word_gap_is_a_composite_silence" href="#the_word_gap_is_a_composite_silence">the_word_gap_is_a_composite_silence</a> :
+    (∀ c : Crossing, c.toll ≠ 7)
+      ∧ ledger [Crossing.neg, Crossing.pos, Crossing.neg] = 7 :=
+  ⟨fun c =&gt; by cases c &lt;;&gt; decide, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_silence_is_half_the_message" href="#the_silence_is_half_the_message">the_silence_is_half_the_message</a> (u : Nat) (m : List (List Crossing))
+    (h : sounded m = true) :
+    reframe u (wire u m) = m
+      ∧ wire u m = lace (keyAs u (joinB m)) (keyAs u (framing m))
+      ∧ wire 2 [trefoil] ≠ wire 0 [reflection trefoil]
+      ∧ wire 2 [trefoil] = wire 0 [[Crossing.neg], [Crossing.neg], [Crossing.neg]] :=
+  ⟨the_silence_reframes_the_wire u m h, the_silence_speaks_the_same_alphabet u m h,
+   the_silence_tells_the_ess_from_the_oh.2, a_slow_ess_is_a_fast_tee_tee_tee.1⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_ees_are_an_i_without_the_silence&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_ees_are_an_i_without_the_silence</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_reframing_without_the_silence&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_reframing_without_the_silence</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_short_silence_is_the_unit_bare&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_short_silence_is_the_unit_bare</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_hand_confuses_its_own_silences&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_hand_confuses_its_own_silences</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_hands_share_a_silence&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_hands_share_a_silence</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_hum_reads_back&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_hum_reads_back</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_hum_hands_off&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_hum_hands_off</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_silence_reframes_the_wire&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_silence_reframes_the_wire</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.keyAs_append&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms keyAs_append</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.hum_lace&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms hum_lace</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.lace_glue&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms lace_glue</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_silence_speaks_the_same_alphabet&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_silence_speaks_the_same_alphabet</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.within_map&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms within_map</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_silence_ignores_the_letters&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_silence_ignores_the_letters</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_silence_tells_the_ess_from_the_oh&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_silence_tells_the_ess_from_the_oh</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_slow_ess_is_a_fast_tee_tee_tee&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_slow_ess_is_a_fast_tee_tee_tee</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_fist_survives_the_framing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_fist_survives_the_framing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_wire_two_whole_readings&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_wire_two_whole_readings</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.graft_keeps_the_sound&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms graft_keeps_the_sound</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_reading_sounds&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_reading_sounds</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.what_sounds_is_what_returns&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms what_sounds_is_what_returns</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_word_gap_is_a_composite_silence&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_word_gap_is_a_composite_silence</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_silence_is_half_the_message&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_silence_is_half_the_message</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

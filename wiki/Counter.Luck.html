@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Luck</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Luck</h1></header>
+<div class="imports">grasp: <a href="Counter.Actor.html">Counter.Actor</a> · <a href="Foam.Seat.Born.html">Foam.Seat.Born</a></div><pre class="src">import <a href="Counter.Actor.html">Counter.Actor</a>
+import <a href="Foam.Seat.Born.html">Foam.Seat.Born</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="luck_is_the_cross_term" href="#luck_is_the_cross_term">luck_is_the_cross_term</a> (θ field act : GInt) :
+    GInt.born θ (field.add act)
+      = GInt.born θ field + GInt.born θ act
+        + 2 * (GInt.align θ field * GInt.align θ act) :=
+  GInt.born_superpose θ field act
+
+<span class="kw">theorem</span> <a class="decl" id="boost_exceeds_the_input" href="#boost_exceeds_the_input">boost_exceeds_the_input</a> :
+    ∃ θ field act : GInt,
+      GInt.born θ (field.add act) - GInt.born θ field &gt; GInt.born θ act :=
+  ⟨⟨1, 0⟩, ⟨3, 0⟩, ⟨1, 0⟩, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="against_the_grain_costs" href="#against_the_grain_costs">against_the_grain_costs</a> :
+    ∃ θ field act : GInt,
+      GInt.born θ (field.add act) - GInt.born θ field &lt; GInt.born θ act :=
+  ⟨⟨1, 0⟩, ⟨-3, 0⟩, ⟨1, 0⟩, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="fortune_not_in_your_record" href="#fortune_not_in_your_record">fortune_not_in_your_record</a> :
+    ∃ act θ field field&#x27; : GInt,
+      field ≠ field&#x27;
+        ∧ GInt.born θ (field.add act) - GInt.born θ field
+            ≠ GInt.born θ (field&#x27;.add act) - GInt.born θ field&#x27; :=
+  ⟨⟨1, 0⟩, ⟨1, 0⟩, ⟨3, 0⟩, ⟨0, 0⟩, by decide, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="luck_is_timing" href="#luck_is_timing">luck_is_timing</a> (θ field act : GInt) :
+    GInt.align θ field * GInt.align θ act
+      + GInt.align θ field * GInt.align θ (GInt.rot act)
+      + GInt.align θ field * GInt.align θ (GInt.rot (GInt.rot act))
+      + GInt.align θ field * GInt.align θ (GInt.rot (GInt.rot (GInt.rot act)))
+      = 0 := by
+  rw [← FInt.mul_add, ← FInt.mul_add, ← FInt.mul_add, GInt.decoherence θ act,
+    FInt.mul_zero]
+
+<span class="kw">theorem</span> <a class="decl" id="about_you_geometrically" href="#about_you_geometrically">about_you_geometrically</a> {G : Type} [Mul G] [One G] (S : Seat G)
+    (o o&#x27; : S.Pos) (h : o ≠ o&#x27;) :
+    (S.chart o).fwd o = 1 ∧ ∃ p, (S.chart o).fwd p ≠ (S.chart o&#x27;).fwd p :=
+  ⟨S.sub_self o, S.chart_origin_dependent o o&#x27; h⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.luck_is_the_cross_term&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms luck_is_the_cross_term</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.boost_exceeds_the_input&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms boost_exceeds_the_input</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.against_the_grain_costs&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms against_the_grain_costs</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.fortune_not_in_your_record&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms fortune_not_in_your_record</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.luck_is_timing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms luck_is_timing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.about_you_geometrically&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms about_you_geometrically</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

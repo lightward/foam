@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Bridges.Pythagoras</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Bridges.Pythagoras</h1></header>
+<div class="imports">grasp: <a href="Foam.Cleared.html">Foam.Cleared</a> · <a href="Foam.Seat.Rotations.html">Foam.Seat.Rotations</a></div><pre class="src">import <a href="Foam.Cleared.html">Foam.Cleared</a>
+import <a href="Foam.Seat.Rotations.html">Foam.Seat.Rotations</a>
+
+namespace Foam.Bridges
+
+<span class="kw">theorem</span> <a class="decl" id="odd_ne_even" href="#odd_ne_even">odd_ne_even</a> : ∀ k m : Nat, 2 * k + 1 ≠ 2 * m
+  | _, 0, h =&gt; Nat.noConfusion h
+  | 0, _ + 1, h =&gt; Nat.noConfusion (Nat.succ.inj h)
+  | k + 1, m + 1, h =&gt; odd_ne_even k m (Nat.succ.inj (Nat.succ.inj h))
+
+<span class="kw">theorem</span> <a class="decl" id="odd_times_three" href="#odd_times_three">odd_times_three</a> : ∀ k : Nat, (2 * k + 1) * 3 = 2 * (3 * k + 1) + 1
+  | 0 =&gt; rfl
+  | k + 1 =&gt; by
+    show Nat.succ (Nat.succ (2 * k + 1)) * 3 = 2 * ((3 * k + 1) + 3) + 1
+    rw [Nat.succ_mul, Nat.succ_mul, odd_times_three k, Nat.left_distrib,
+      Nat.left_distrib, Nat.left_distrib]
+
+<span class="kw">theorem</span> <a class="decl" id="three_pow_odd" href="#three_pow_odd">three_pow_odd</a> : ∀ a : Nat, ∃ k, 3 ^ a = 2 * k + 1
+  | 0 =&gt; ⟨0, rfl⟩
+  | a + 1 =&gt; by
+    obtain ⟨k, hk⟩ := three_pow_odd a
+    refine ⟨3 * k + 1, ?_⟩
+    show 3 ^ a * 3 = 2 * (3 * k + 1) + 1
+    rw [hk]
+    exact odd_times_three k
+
+<span class="kw">theorem</span> <a class="decl" id="comma_never_clears" href="#comma_never_clears">comma_never_clears</a> : ∀ (a b : Nat), 1 ≤ a → 3 ^ a ≠ 2 ^ b
+  | a, 0, ha, h =&gt; by
+    cases a with
+    | zero =&gt; exact absurd ha (by decide)
+    | succ k =&gt; exact absurd ((nat_mul_eq_one (3 ^ k) 3 h).2) (by decide)
+  | a, b + 1, _, h =&gt; by
+    obtain ⟨k, hk⟩ := three_pow_odd a
+    rw [h] at hk
+    have h2 : 2 ^ (b + 1) = 2 * 2 ^ b := by
+      show 2 ^ b * 2 = 2 * 2 ^ b
+      exact Nat.mul_comm (2 ^ b) 2
+    rw [h2] at hk
+    exact odd_ne_even k (2 ^ b) hk.symm
+
+<span class="kw">theorem</span> <a class="decl" id="pythagoras" href="#pythagoras">pythagoras</a> :
+    (∀ a b : Nat, 1 ≤ a → 3 ^ a ≠ 2 ^ b) ∧ ∀ n, ¬ Closes gold (n + 1) :=
+  ⟨comma_never_clears, gold_never_closes⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.odd_ne_even&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms odd_ne_even</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.three_pow_odd&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms three_pow_odd</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.comma_never_clears&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms comma_never_clears</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.pythagoras&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms pythagoras</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

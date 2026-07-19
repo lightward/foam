@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.FTPG.Line</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.FTPG.Line</h1></header>
+<div class="imports">grasp: <a href="Bridges.FTPG.Translate.html">Bridges.FTPG.Translate</a> · <a href="Bridges.FTPG.MulAssoc.html">Bridges.FTPG.MulAssoc</a> · <a href="Bridges.FTPG.Inverse.html">Bridges.FTPG.Inverse</a></div><pre class="src">import <a href="Bridges.FTPG.Translate.html">Bridges.FTPG.Translate</a>
+import <a href="Bridges.FTPG.MulAssoc.html">Bridges.FTPG.MulAssoc</a>
+import <a href="Bridges.FTPG.Inverse.html">Bridges.FTPG.Inverse</a>
+
+/-!
+# The line equation — camp two of the `pointSystem_exists` ascent, sixth pitch
+
+The assembly: a non-vertical line is the graph of its slope and intercept.
+For a direction `S` on `m` (`S ≠ V`), an intercept seat `B` on the y-axis
+`n = O ⊔ V` (`B ≠ V`), and any affine atom `p` of the frame plane:
+
+  `p ≤ B ⊔ S  ↔  ycoord p = coord_add (coord_mul (slope S) (xproj p)) (ycoord B)`
+  (`le_line_iff`).
+
+Route, model-verified over `PG(2,q)` for `q ∈ {2,3,4,5,7}` (all 336 frames
+of `PG(2,2)` exhaustively, family spreads elsewhere, every branch fact
+checked in place — `probe_final.py`) before carving:
+
+* the off-`l` forward engine (`ycoord_of_le_line_aux`) decomposes
+  `p = pg O B q` over the origin-line seat `q := (xproj p ⊔ V) ⊓ (O ⊔ S)`
+  and routes by blockage:
+  - vector `B` in general position → `ycoord_translate` directly (T1);
+  - vector `q` in general position → the base swap `pg O B q = pg O q B`
+    (definitional at base `O`) + `ycoord_translate` + `coord_add_comm` (T2);
+  - `B ≤ O ⊔ C` (the diagonal is the y-axis, `E = V`) → the
+    horizontal-offset tower on the `q`-vector with `x_h := (B ⊔ S) ⊓ l`,
+    the line&#x27;s own intercept — every discharge collapses onto the fiber
+    contradiction `x_h ≠ xproj p` (T3);
+  - `E ≤ ycoord B ⊔ B` with `q ≤ O ⊔ C` → the tower on the `B`-vector with
+    `x_h := I` (or `x_h := xproj p` when `ycoord B = I`) — the dodges close
+    against `E ≤ ycoord B ⊔ B` itself (T4);
+  - the residual crossing (`E ≤ ycoord B ⊔ B` and `E ≤ ycoord q ⊔ q`, `q`
+    off the diagonal) is VACUOUS, by `anti_transport`: the anti-diagonal
+    pencil is `E`-uniform — one `desargues_planar` with center `O` off the
+    axis `m`, triangles `(b, diagseat b, yseat b)` / `(t, diagseat t,
+    yseat t)`, the rays `l`, `O ⊔ C`, `n` through `O` definitionally, the
+    side-pairs meeting at `E_I` and `U` definitionally;
+* the tower itself (`ycoord_translate_offset`) needs no coherence pass:
+  ONE standing `cross_parallelism (O, z; A, X)` makes the target and the
+  shifted translate co-horizontal, and `ycoord_eq_of_sup_U` reads the
+  ordinate across;
+* the intercept (`line_intercept`): the equation determines the crossing
+  algebraically (`p&#x27; := a⁻¹ · (−b)`, standing total algebra), the proven
+  off-`l` rows force `(B ⊔ S) ⊓ (p&#x27; ⊔ V)` onto `l`, and the fibers
+  collapse;
+* the converse: chart injectivity on the fiber `(B ⊔ S) ⊓ (xproj p ⊔ V)`.
+-/
+
+namespace Foam.Bridges
+
+universe u
+
+variable {L : Type u} [Lattice L] [BoundedOrder L]
+  [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L]
+
+variable {Γ : CoordSystem L}
+
+omit [BoundedOrder L] [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L] in
+<span class="kw">theorem</span> <a class="decl" id="parallelogram_completion_base_swap" href="#parallelogram_completion_base_swap">parallelogram_completion_base_swap</a> (P Q R m : L) :
+    parallelogram_completion P Q R m = parallelogram_completion P R Q m :=
+  inf_comm _ _
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.ycoord_ne_O" href="#CoordSystem.ycoord_ne_O">CoordSystem.ycoord_ne_O</a> {p : L} (hp : IsAtom p)
+    (hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp_not_m : ¬ p ≤ Γ.U ⊔ Γ.V)
+    (hp_not_l : ¬ p ≤ Γ.O ⊔ Γ.U) : Γ.ycoord p ≠ Γ.O := by
+  intro h
+  have hyO : Γ.ycoord Γ.O = Γ.O := Γ.ycoord_of_on_l Γ.hO le_sup_left Γ.hOU
+  have h_supU : p ⊔ Γ.U = Γ.O ⊔ Γ.U :=
+    Γ.sup_U_eq_of_ycoord_eq hp hp_π hp_not_m Γ.hO (le_sup_left.trans le_sup_left)
+      Γ.hO_not_m (h.trans hyO.symm)
+  exact hp_not_l (le_sup_left.trans h_supU.le)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.le_l_of_ycoord_eq_O" href="#CoordSystem.le_l_of_ycoord_eq_O">CoordSystem.le_l_of_ycoord_eq_O</a> {p : L} (hp : IsAtom p)
+    (hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp_not_m : ¬ p ≤ Γ.U ⊔ Γ.V)
+    (h : Γ.ycoord p = Γ.O) : p ≤ Γ.O ⊔ Γ.U := by
+  by_contra hp_not_l
+  exact Γ.ycoord_ne_O hp hp_π hp_not_m hp_not_l h
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.l_inf_sup_V" href="#CoordSystem.l_inf_sup_V">CoordSystem.l_inf_sup_V</a> {x : L} (hx : IsAtom x)
+    (hx_l : x ≤ Γ.O ⊔ Γ.U) (hx_ne_U : x ≠ Γ.U) :
+    (x ⊔ Γ.V) ⊓ (Γ.O ⊔ Γ.U) = x := by
+  have hx_aff : ¬ x ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hx hx_l hx_ne_U
+  rw [show Γ.O ⊔ Γ.U = x ⊔ Γ.U from by
+    rw [sup_comm Γ.O Γ.U, sup_comm x Γ.U]
+    exact line_eq_of_atom_le&#x27; Γ.hU Γ.hO hx Γ.hOU.symm hx_ne_U.symm
+      (by rwa [sup_comm] at hx_l)]
+  exact modular_intersection hx Γ.hV Γ.hU (Γ.ne_V_of_affine hx_aff)
+    (Γ.ne_U_of_affine hx_aff) Γ.hUV.symm (Γ.U_not_le_sup_V hx hx_aff)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.eq_V_of_le_vertical_of_le_n" href="#CoordSystem.eq_V_of_le_vertical_of_le_n">CoordSystem.eq_V_of_le_vertical_of_le_n</a> {x w : L} (hx : IsAtom x)
+    (hx_l : x ≤ Γ.O ⊔ Γ.U) (hx_ne_O : x ≠ Γ.O)
+    (hw : IsAtom w) (hw_le : w ≤ x ⊔ Γ.V) (hw_n : w ≤ Γ.O ⊔ Γ.V) : w = Γ.V := by
+  have hx_ne_V : x ≠ Γ.V := fun h =&gt; Γ.hV_off (h ▸ hx_l)
+  have hx_not_n : ¬ x ≤ Γ.O ⊔ Γ.V := fun h =&gt; hx_ne_O
+    (IsAtom.eq_of_le hx Γ.hO (le_of_le_of_eq (le_inf hx_l h) Γ.l_inf_n_eq_O))
+  have hO_not : ¬ Γ.O ≤ Γ.V ⊔ x := by
+    intro h
+    have h_line : Γ.V ⊔ x = Γ.V ⊔ Γ.O :=
+      line_eq_of_atom_le&#x27; Γ.hV hx Γ.hO hx_ne_V.symm Γ.hOV.symm h
+    exact hx_not_n (by
+      calc x ≤ Γ.V ⊔ x := le_sup_right
+        _ = Γ.V ⊔ Γ.O := h_line
+        _ = Γ.O ⊔ Γ.V := sup_comm _ _)
+  have h1 : (x ⊔ Γ.V) ⊓ (Γ.O ⊔ Γ.V) = Γ.V := by
+    rw [sup_comm x Γ.V, sup_comm Γ.O Γ.V]
+    exact modular_intersection Γ.hV hx Γ.hO hx_ne_V.symm Γ.hOV.symm hx_ne_O hO_not
+  exact IsAtom.eq_of_le hw Γ.hV (le_of_le_of_eq (le_inf hw_le hw_n) h1)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.shift_le_sup_U" href="#CoordSystem.shift_le_sup_U">CoordSystem.shift_le_sup_U</a> {x_h : L} (hxh : IsAtom x_h)
+    (hxh_l : x_h ≤ Γ.O ⊔ Γ.U) (hxh_ne_O : x_h ≠ Γ.O) (A : L) :
+    parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ≤ A ⊔ Γ.U := by
+  show (A ⊔ (x_h ⊔ Γ.O) ⊓ (Γ.U ⊔ Γ.V)) ⊓ (Γ.O ⊔ (x_h ⊔ A) ⊓ (Γ.U ⊔ Γ.V)) ≤ A ⊔ Γ.U
+  rw [sup_comm x_h Γ.O, Γ.sup_O_eq_l hxh hxh_l hxh_ne_O, Γ.l_inf_m_eq_U]
+  exact inf_le_left
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.shift_atom" href="#CoordSystem.shift_atom">CoordSystem.shift_atom</a> {A x_h : L} (hA : IsAtom A)
+    (hA_π : A ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hA_not_m : ¬ A ≤ Γ.U ⊔ Γ.V)
+    (hA_not_l : ¬ A ≤ Γ.O ⊔ Γ.U)
+    (hxh : IsAtom x_h) (hxh_l : x_h ≤ Γ.O ⊔ Γ.U) (hxh_ne_O : x_h ≠ Γ.O)
+    (hxh_ne_U : x_h ≠ Γ.U) :
+    IsAtom (parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V)) := by
+  have hxh_ne_A : x_h ≠ A := fun hh =&gt; hA_not_l (hh ▸ hxh_l)
+  have hO_ne_A : Γ.O ≠ A := fun hh =&gt; hA_not_l (hh ▸ le_sup_left)
+  have hxh_not_m : ¬ x_h ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hxh hxh_l hxh_ne_U
+  have hA_not_line : ¬ A ≤ x_h ⊔ Γ.O := by
+    rw [sup_comm x_h Γ.O, Γ.sup_O_eq_l hxh hxh_l hxh_ne_O]
+    exact hA_not_l
+  exact parallelogram_completion_atom hxh Γ.hO hA hxh_ne_O hxh_ne_A hO_ne_A
+    (hxh_l.trans le_sup_left) (le_sup_left.trans le_sup_left) hA_π
+    Γ.m_le_π Γ.m_covBy_π
+    (fun x hx hxm =&gt; line_covers_its_atoms Γ.hU Γ.hV Γ.hUV hx hxm)
+    hxh_not_m Γ.hO_not_m hA_not_m hA_not_line
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.shift_ne" href="#CoordSystem.shift_ne">CoordSystem.shift_ne</a> {A x_h : L} (hA : IsAtom A)
+    (hA_π : A ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hA_not_m : ¬ A ≤ Γ.U ⊔ Γ.V)
+    (hA_not_l : ¬ A ≤ Γ.O ⊔ Γ.U)
+    (hxh : IsAtom x_h) (hxh_l : x_h ≤ Γ.O ⊔ Γ.U) (hxh_ne_O : x_h ≠ Γ.O)
+    (hxh_ne_U : x_h ≠ Γ.U) :
+    parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ≠ A := by
+  intro h
+  have hxh_ne_A : x_h ≠ A := fun hh =&gt; hA_not_l (hh ▸ hxh_l)
+  have hO_ne_A : Γ.O ≠ A := fun hh =&gt; hA_not_l (hh ▸ le_sup_left)
+  have hxh_not_m : ¬ x_h ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hxh hxh_l hxh_ne_U
+  have he&#x27;_atom : IsAtom ((x_h ⊔ A) ⊓ (Γ.U ⊔ Γ.V)) :=
+    line_meets_m_at_atom hxh hA hxh_ne_A
+      (sup_le (hxh_l.trans le_sup_left) hA_π) Γ.m_le_π Γ.m_covBy_π hxh_not_m
+  set e&#x27; := (x_h ⊔ A) ⊓ (Γ.U ⊔ Γ.V) with he&#x27;_def
+  have hA_le : A ≤ Γ.O ⊔ e&#x27; := by
+    have h2 : parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ≤ Γ.O ⊔ e&#x27; := by
+      show (A ⊔ (x_h ⊔ Γ.O) ⊓ (Γ.U ⊔ Γ.V)) ⊓ (Γ.O ⊔ e&#x27;) ≤ Γ.O ⊔ e&#x27;
+      exact inf_le_right
+    exact h ▸ h2
+  have hO_ne_e&#x27; : Γ.O ≠ e&#x27; :=
+    fun hh =&gt; Γ.hO_not_m (hh ▸ (inf_le_right : e&#x27; ≤ Γ.U ⊔ Γ.V))
+  have h_line : Γ.O ⊔ e&#x27; = Γ.O ⊔ A :=
+    line_eq_of_atom_le&#x27; Γ.hO he&#x27;_atom hA hO_ne_e&#x27; hO_ne_A hA_le
+  have he&#x27;_le_OA : e&#x27; ≤ Γ.O ⊔ A := h_line ▸ (le_sup_right : e&#x27; ≤ Γ.O ⊔ e&#x27;)
+  have hA_ne_e&#x27; : A ≠ e&#x27; :=
+    fun hh =&gt; hA_not_m (hh ▸ (inf_le_right : e&#x27; ≤ Γ.U ⊔ Γ.V))
+  have h_line2 : A ⊔ x_h = A ⊔ e&#x27; :=
+    line_eq_of_atom_le&#x27; hA hxh he&#x27;_atom hxh_ne_A.symm hA_ne_e&#x27;
+      (le_of_le_of_eq (inf_le_left : e&#x27; ≤ x_h ⊔ A) (sup_comm x_h A))
+  have h_line3 : A ⊔ Γ.O = A ⊔ e&#x27; :=
+    line_eq_of_atom_le&#x27; hA Γ.hO he&#x27;_atom hO_ne_A.symm hA_ne_e&#x27;
+      (by rwa [sup_comm] at he&#x27;_le_OA)
+  have hxh_le : x_h ≤ A ⊔ Γ.O := by
+    calc x_h ≤ A ⊔ x_h := le_sup_right
+      _ = A ⊔ e&#x27; := h_line2
+      _ = A ⊔ Γ.O := h_line3.symm
+  have hU_not_OA : ¬ Γ.U ≤ Γ.O ⊔ A := by
+    intro hh
+    have h_line4 : Γ.O ⊔ A = Γ.O ⊔ Γ.U :=
+      line_eq_of_atom_le&#x27; Γ.hO hA Γ.hU hO_ne_A Γ.hOU hh
+    exact hA_not_l (h_line4 ▸ le_sup_right)
+  have hA_ne_U : A ≠ Γ.U := Γ.ne_U_of_affine hA_not_m
+  have h_inf : (Γ.O ⊔ A) ⊓ (Γ.O ⊔ Γ.U) = Γ.O :=
+    modular_intersection Γ.hO hA Γ.hU hO_ne_A Γ.hOU hA_ne_U hU_not_OA
+  exact hxh_ne_O (IsAtom.eq_of_le hxh Γ.hO (le_of_le_of_eq
+    (le_inf (by rwa [sup_comm] at hxh_le) hxh_l) h_inf))
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.shift_not_m" href="#CoordSystem.shift_not_m">CoordSystem.shift_not_m</a> {A x_h : L} (hA : IsAtom A)
+    (hA_π : A ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hA_not_m : ¬ A ≤ Γ.U ⊔ Γ.V)
+    (hA_not_l : ¬ A ≤ Γ.O ⊔ Γ.U)
+    (hxh : IsAtom x_h) (hxh_l : x_h ≤ Γ.O ⊔ Γ.U) (hxh_ne_O : x_h ≠ Γ.O)
+    (hxh_ne_U : x_h ≠ Γ.U) :
+    ¬ parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ≤ Γ.U ⊔ Γ.V := by
+  intro h
+  have hX_atom := Γ.shift_atom hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hX_le_AU := Γ.shift_le_sup_U hxh hxh_l hxh_ne_O A
+  have hX_le_U : parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ≤ Γ.U :=
+    le_of_le_of_eq (le_inf hX_le_AU h)
+      (line_direction hA hA_not_m (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+  have hX_eq_U : parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) = Γ.U :=
+    IsAtom.eq_of_le hX_atom Γ.hU hX_le_U
+  have hxh_ne_A : x_h ≠ A := fun hh =&gt; hA_not_l (hh ▸ hxh_l)
+  have hxh_not_m : ¬ x_h ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hxh hxh_l hxh_ne_U
+  have he&#x27;_atom : IsAtom ((x_h ⊔ A) ⊓ (Γ.U ⊔ Γ.V)) :=
+    line_meets_m_at_atom hxh hA hxh_ne_A
+      (sup_le (hxh_l.trans le_sup_left) hA_π) Γ.m_le_π Γ.m_covBy_π hxh_not_m
+  set e&#x27; := (x_h ⊔ A) ⊓ (Γ.U ⊔ Γ.V) with he&#x27;_def
+  have hU_le : Γ.U ≤ Γ.O ⊔ e&#x27; := by
+    have h2 : parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ≤ Γ.O ⊔ e&#x27; := by
+      show (A ⊔ (x_h ⊔ Γ.O) ⊓ (Γ.U ⊔ Γ.V)) ⊓ (Γ.O ⊔ e&#x27;) ≤ Γ.O ⊔ e&#x27;
+      exact inf_le_right
+    exact hX_eq_U ▸ h2
+  have hU_le_e&#x27; : Γ.U ≤ e&#x27; :=
+    le_of_le_of_eq (le_inf hU_le (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+      (line_direction Γ.hO Γ.hO_not_m (inf_le_right : e&#x27; ≤ Γ.U ⊔ Γ.V))
+  have hU_eq_e&#x27; : Γ.U = e&#x27; := IsAtom.eq_of_le Γ.hU he&#x27;_atom hU_le_e&#x27;
+  have hU_le_xhA : Γ.U ≤ x_h ⊔ A := hU_eq_e&#x27; ▸ (inf_le_left : e&#x27; ≤ x_h ⊔ A)
+  have h_line : x_h ⊔ A = x_h ⊔ Γ.U :=
+    line_eq_of_atom_le&#x27; hxh hA Γ.hU hxh_ne_A hxh_ne_U hU_le_xhA
+  exact hA_not_l (by
+    calc A ≤ x_h ⊔ A := le_sup_right
+      _ = x_h ⊔ Γ.U := h_line
+      _ ≤ Γ.O ⊔ Γ.U := sup_le hxh_l le_sup_right)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.shift_sup_U" href="#CoordSystem.shift_sup_U">CoordSystem.shift_sup_U</a> {A x_h : L} (hA : IsAtom A)
+    (hA_π : A ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hA_not_m : ¬ A ≤ Γ.U ⊔ Γ.V)
+    (hA_not_l : ¬ A ≤ Γ.O ⊔ Γ.U)
+    (hxh : IsAtom x_h) (hxh_l : x_h ≤ Γ.O ⊔ Γ.U) (hxh_ne_O : x_h ≠ Γ.O)
+    (hxh_ne_U : x_h ≠ Γ.U) :
+    parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ⊔ Γ.U = A ⊔ Γ.U := by
+  have hX_atom := Γ.shift_atom hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hX_not_m := Γ.shift_not_m hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hX_le_AU := Γ.shift_le_sup_U hxh hxh_l hxh_ne_O A
+  have hU_ne_X : Γ.U ≠ parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) :=
+    fun hh =&gt; hX_not_m (hh ▸ (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+  have hA_ne_U : A ≠ Γ.U := Γ.ne_U_of_affine hA_not_m
+  have h_line : Γ.U ⊔ A = Γ.U ⊔ parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) :=
+    line_eq_of_atom_le&#x27; Γ.hU hA hX_atom hA_ne_U.symm hU_ne_X
+      (le_of_le_of_eq hX_le_AU (sup_comm A Γ.U))
+  rw [sup_comm _ Γ.U, sup_comm A Γ.U]
+  exact h_line.symm
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.shift_ycoord" href="#CoordSystem.shift_ycoord">CoordSystem.shift_ycoord</a> {A x_h : L} (hA : IsAtom A)
+    (hA_π : A ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hA_not_m : ¬ A ≤ Γ.U ⊔ Γ.V)
+    (hA_not_l : ¬ A ≤ Γ.O ⊔ Γ.U)
+    (hxh : IsAtom x_h) (hxh_l : x_h ≤ Γ.O ⊔ Γ.U) (hxh_ne_O : x_h ≠ Γ.O)
+    (hxh_ne_U : x_h ≠ Γ.U) :
+    Γ.ycoord (parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V)) = Γ.ycoord A :=
+  Γ.ycoord_eq_of_sup_U
+    (Γ.shift_sup_U hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U)
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.shift_not_l" href="#CoordSystem.shift_not_l">CoordSystem.shift_not_l</a> {A x_h : L} (hA : IsAtom A)
+    (hA_π : A ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hA_not_m : ¬ A ≤ Γ.U ⊔ Γ.V)
+    (hA_not_l : ¬ A ≤ Γ.O ⊔ Γ.U)
+    (hxh : IsAtom x_h) (hxh_l : x_h ≤ Γ.O ⊔ Γ.U) (hxh_ne_O : x_h ≠ Γ.O)
+    (hxh_ne_U : x_h ≠ Γ.U) :
+    ¬ parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ≤ Γ.O ⊔ Γ.U := by
+  intro h
+  have hX_atom := Γ.shift_atom hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hX_not_m := Γ.shift_not_m hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hX_ne_U : parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ≠ Γ.U :=
+    Γ.ne_U_of_affine hX_not_m
+  have h1 : Γ.ycoord (parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V)) = Γ.O :=
+    Γ.ycoord_of_on_l hX_atom h hX_ne_U
+  rw [Γ.shift_ycoord hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U] at h1
+  exact Γ.ycoord_ne_O hA hA_π hA_not_m hA_not_l h1
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.ycoord_translate_offset" href="#CoordSystem.ycoord_translate_offset">CoordSystem.ycoord_translate_offset</a> (Γ : CoordSystem L) {A z x_h : L}
+    (hA : IsAtom A) (hA_π : A ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hA_not_m : ¬ A ≤ Γ.U ⊔ Γ.V)
+    (hA_not_l : ¬ A ≤ Γ.O ⊔ Γ.U)
+    (hz : IsAtom z) (hz_π : z ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hz_not_m : ¬ z ≤ Γ.U ⊔ Γ.V)
+    (hz_not_l : ¬ z ≤ Γ.O ⊔ Γ.U)
+    (hz_not_ray : ¬ z ≤ Γ.O ⊔ A)
+    (hxh : IsAtom x_h) (hxh_l : x_h ≤ Γ.O ⊔ Γ.U) (hxh_ne_O : x_h ≠ Γ.O)
+    (hxh_ne_U : x_h ≠ Γ.U)
+    (hG1X : ¬ parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) ≤ Γ.O ⊔ Γ.C)
+    (hG3X : ¬ Γ.E ≤ Γ.ycoord A ⊔ parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V))
+    (hz_not_rayX : ¬ z ≤ Γ.O ⊔ parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V))
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    Γ.ycoord (parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V)) =
+      coord_add Γ (Γ.ycoord z) (Γ.ycoord A) := by
+  have hm_line : ∀ x, IsAtom x → x ≤ Γ.U ⊔ Γ.V → x ⋖ Γ.U ⊔ Γ.V :=
+    fun x hx hxm =&gt; line_covers_its_atoms Γ.hU Γ.hV Γ.hUV hx hxm
+  have hO_le_π : Γ.O ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := le_sup_left.trans le_sup_left
+  have hO_ne_A : Γ.O ≠ A := fun h =&gt; hA_not_l (h ▸ le_sup_left)
+  have hO_ne_z : Γ.O ≠ z := fun h =&gt; hz_not_l (h ▸ le_sup_left)
+  have hA_ne_z : A ≠ z := fun h =&gt; hz_not_ray (h.symm.le.trans le_sup_right)
+  set X := parallelogram_completion x_h Γ.O A (Γ.U ⊔ Γ.V) with hX_def
+  have hX_atom : IsAtom X :=
+    Γ.shift_atom hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hX_not_m : ¬ X ≤ Γ.U ⊔ Γ.V :=
+    Γ.shift_not_m hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hX_not_l : ¬ X ≤ Γ.O ⊔ Γ.U :=
+    Γ.shift_not_l hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hX_ne_A : X ≠ A :=
+    Γ.shift_ne hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hyX : Γ.ycoord X = Γ.ycoord A :=
+    Γ.shift_ycoord hA hA_π hA_not_m hA_not_l hxh hxh_l hxh_ne_O hxh_ne_U
+  have hX_le_AU : X ≤ A ⊔ Γ.U := Γ.shift_le_sup_U hxh hxh_l hxh_ne_O A
+  have hX_π : X ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    hX_le_AU.trans (sup_le hA_π (le_sup_right.trans le_sup_left))
+  have hO_ne_X : Γ.O ≠ X := fun h =&gt; hX_not_l (h ▸ le_sup_left)
+  have hz_ne_X : z ≠ X := fun h =&gt; hz_not_rayX (h.le.trans le_sup_right)
+  have hX_not_Oz : ¬ X ≤ Γ.O ⊔ z := by
+    intro h
+    have h_line : Γ.O ⊔ z = Γ.O ⊔ X :=
+      line_eq_of_atom_le&#x27; Γ.hO hz hX_atom hO_ne_z hO_ne_X h
+    exact hz_not_rayX (h_line ▸ (le_sup_right : z ≤ Γ.O ⊔ z))
+  have hA_not_Oz : ¬ A ≤ Γ.O ⊔ z := by
+    intro h
+    have h_line : Γ.O ⊔ z = Γ.O ⊔ A :=
+      line_eq_of_atom_le&#x27; Γ.hO hz hA hO_ne_z hO_ne_A h
+    exact hz_not_ray (h_line ▸ (le_sup_right : z ≤ Γ.O ⊔ z))
+  have hX_not_OA : ¬ X ≤ Γ.O ⊔ A := by
+    intro h
+    have hU_not_OA : ¬ Γ.U ≤ Γ.O ⊔ A := by
+      intro hh
+      have h_line : Γ.O ⊔ A = Γ.O ⊔ Γ.U :=
+        line_eq_of_atom_le&#x27; Γ.hO hA Γ.hU hO_ne_A Γ.hOU hh
+      exact hA_not_l (h_line ▸ le_sup_right)
+    have h_inf : (A ⊔ Γ.O) ⊓ (A ⊔ Γ.U) = A :=
+      modular_intersection hA Γ.hO Γ.hU hO_ne_A.symm
+        (Γ.ne_U_of_affine hA_not_m) Γ.hOU
+        (fun hh =&gt; hU_not_OA (le_of_le_of_eq hh (sup_comm A Γ.O)))
+    exact hX_ne_A (IsAtom.eq_of_le hX_atom hA (le_of_le_of_eq
+      (le_inf (le_of_le_of_eq h (sup_comm Γ.O A)) hX_le_AU) h_inf))
+  have h_TRANS := Γ.ycoord_translate hX_atom hX_π hX_not_m hX_not_l
+    hz hz_π hz_not_m hz_not_l hz_not_rayX hG1X
+    (by rw [hyX]; exact hG3X) R hR hR_not h_irred
+  have h_span : Γ.O ⊔ A ⊔ X = Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    span_plane Γ Γ.hO hA hX_atom hO_ne_A hO_le_π hA_π hX_π Γ.hO_not_m hX_not_OA
+  have hz_ne_pstar : z ≠ parallelogram_completion Γ.O z A (Γ.U ⊔ Γ.V) := by
+    intro h
+    have hez_atom : IsAtom ((Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V)) :=
+      line_meets_m_at_atom Γ.hO hz hO_ne_z (sup_le hO_le_π hz_π) Γ.m_le_π
+        Γ.m_covBy_π Γ.hO_not_m
+    have hz_le : z ≤ A ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) := by
+      have h2 : parallelogram_completion Γ.O z A (Γ.U ⊔ Γ.V) ≤
+          A ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) := by
+        show (A ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V)) ⊓
+          (z ⊔ (Γ.O ⊔ A) ⊓ (Γ.U ⊔ Γ.V)) ≤ A ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V)
+        exact inf_le_left
+      exact h.le.trans h2
+    have hez_ne_z : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ≠ z :=
+      fun hh =&gt; hz_not_m (hh ▸ (inf_le_right : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.U ⊔ Γ.V))
+    have hez_ne_A : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ≠ A :=
+      fun hh =&gt; hA_not_m (hh ▸ (inf_le_right : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.U ⊔ Γ.V))
+    have h_line : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ⊔ A =
+        (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ⊔ z :=
+      line_eq_of_atom_le&#x27; hez_atom hA hz hez_ne_A hez_ne_z
+        (le_of_le_of_eq hz_le (sup_comm A _))
+    have hA_le : A ≤ Γ.O ⊔ z := by
+      calc A ≤ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ⊔ A := le_sup_right
+        _ = (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ⊔ z := h_line
+        _ ≤ Γ.O ⊔ z := sup_le inf_le_left (le_sup_right : z ≤ Γ.O ⊔ z)
+    exact hA_not_Oz hA_le
+  have hz_ne_z1 : z ≠ parallelogram_completion Γ.O z X (Γ.U ⊔ Γ.V) := by
+    intro h
+    have hez_atom : IsAtom ((Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V)) :=
+      line_meets_m_at_atom Γ.hO hz hO_ne_z (sup_le hO_le_π hz_π) Γ.m_le_π
+        Γ.m_covBy_π Γ.hO_not_m
+    have hz_le : z ≤ X ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) := by
+      have h2 : parallelogram_completion Γ.O z X (Γ.U ⊔ Γ.V) ≤
+          X ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) := by
+        show (X ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V)) ⊓
+          (z ⊔ (Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V)) ≤ X ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V)
+        exact inf_le_left
+      exact h.le.trans h2
+    have hez_ne_z : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ≠ z :=
+      fun hh =&gt; hz_not_m (hh ▸ (inf_le_right : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.U ⊔ Γ.V))
+    have hez_ne_X : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ≠ X :=
+      fun hh =&gt; hX_not_m (hh ▸ (inf_le_right : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ≤ Γ.U ⊔ Γ.V))
+    have h_line : (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ⊔ X =
+        (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ⊔ z :=
+      line_eq_of_atom_le&#x27; hez_atom hX_atom hz hez_ne_X hez_ne_z
+        (le_of_le_of_eq hz_le (sup_comm X _))
+    have hX_le : X ≤ Γ.O ⊔ z := by
+      calc X ≤ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ⊔ X := le_sup_right
+        _ = (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V) ⊔ z := h_line
+        _ ≤ Γ.O ⊔ z := sup_le inf_le_left (le_sup_right : z ≤ Γ.O ⊔ z)
+    exact hX_not_Oz hX_le
+  have hpstar_ne_z1 : parallelogram_completion Γ.O z A (Γ.U ⊔ Γ.V) ≠
+      parallelogram_completion Γ.O z X (Γ.U ⊔ Γ.V) := by
+    intro h
+    have hrc_A : parallelogram_completion z Γ.O
+        (parallelogram_completion Γ.O z A (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) = A :=
+      reverse_completion Γ.hO hz hA hO_ne_z hO_ne_A hA_ne_z.symm hO_le_π hz_π
+        hA_π Γ.m_le_π Γ.m_covBy_π hm_line Γ.hO_not_m hz_not_m hA_not_m hA_not_Oz
+    have hrc_X : parallelogram_completion z Γ.O
+        (parallelogram_completion Γ.O z X (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) = X :=
+      reverse_completion Γ.hO hz hX_atom hO_ne_z hO_ne_X hz_ne_X hO_le_π
+        hz_π hX_π Γ.m_le_π Γ.m_covBy_π hm_line Γ.hO_not_m hz_not_m hX_not_m
+        hX_not_Oz
+    exact hX_ne_A (by
+      calc X = parallelogram_completion z Γ.O
+            (parallelogram_completion Γ.O z X (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) := hrc_X.symm
+        _ = parallelogram_completion z Γ.O
+            (parallelogram_completion Γ.O z A (Γ.U ⊔ Γ.V)) (Γ.U ⊔ Γ.V) := by rw [h]
+        _ = A := hrc_A)
+  have hcp := cross_parallelism Γ.hO hz hA hX_atom hO_ne_z hO_ne_A hO_ne_X
+    hX_ne_A.symm hz_ne_pstar hz_ne_z1 hpstar_ne_z1
+    hO_le_π hz_π hA_π hX_π Γ.m_le_π Γ.m_covBy_π hm_line
+    Γ.hO_not_m hz_not_m hA_not_m hX_not_m
+    hA_not_Oz hX_not_Oz hX_not_OA h_span
+    R hR hR_not h_irred
+  have hA_sup_X : A ⊔ X = A ⊔ Γ.U :=
+    (line_eq_of_atom_le&#x27; hA Γ.hU hX_atom (Γ.ne_U_of_affine hA_not_m)
+      hX_ne_A.symm hX_le_AU).symm
+  have hAX_inf_m : (A ⊔ X) ⊓ (Γ.U ⊔ Γ.V) = Γ.U := by
+    rw [hA_sup_X]
+    exact line_direction hA hA_not_m (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)
+  rw [hAX_inf_m] at hcp
+  rw [← parallelogram_completion_base_swap Γ.O A z (Γ.U ⊔ Γ.V),
+    ← parallelogram_completion_base_swap Γ.O X z (Γ.U ⊔ Γ.V)] at hcp
+  have hU_le : Γ.U ≤ parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V) ⊔
+      parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V) :=
+    (le_of_eq hcp).trans inf_le_left
+  have hpstar_ne_z1&#x27; : parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V) ≠
+      parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V) := by
+    rw [parallelogram_completion_base_swap Γ.O A z (Γ.U ⊔ Γ.V),
+      parallelogram_completion_base_swap Γ.O X z (Γ.U ⊔ Γ.V)]
+    exact hpstar_ne_z1
+  have hpstar_atom : IsAtom (parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V)) :=
+    parallelogram_completion_atom Γ.hO hA hz hO_ne_A hO_ne_z hA_ne_z hO_le_π
+      hA_π hz_π Γ.m_le_π Γ.m_covBy_π hm_line Γ.hO_not_m hA_not_m hz_not_m
+      hz_not_ray
+  have hz1_atom : IsAtom (parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V)) :=
+    parallelogram_completion_atom Γ.hO hX_atom hz hO_ne_X hO_ne_z hz_ne_X.symm
+      hO_le_π hX_π hz_π Γ.m_le_π Γ.m_covBy_π hm_line Γ.hO_not_m hX_not_m
+      hz_not_m hz_not_rayX
+  have hpstar_ne_U : parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V) ≠ Γ.U := by
+    intro h
+    have heA_atom : IsAtom ((Γ.O ⊔ A) ⊓ (Γ.U ⊔ Γ.V)) :=
+      line_meets_m_at_atom Γ.hO hA hO_ne_A (sup_le hO_le_π hA_π) Γ.m_le_π
+        Γ.m_covBy_π Γ.hO_not_m
+    have hU_le_zeA : Γ.U ≤ z ⊔ (Γ.O ⊔ A) ⊓ (Γ.U ⊔ Γ.V) := by
+      have h2 : parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V) ≤
+          z ⊔ (Γ.O ⊔ A) ⊓ (Γ.U ⊔ Γ.V) := by
+        show (z ⊔ (Γ.O ⊔ A) ⊓ (Γ.U ⊔ Γ.V)) ⊓
+          (A ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V)) ≤ z ⊔ (Γ.O ⊔ A) ⊓ (Γ.U ⊔ Γ.V)
+        exact inf_le_left
+      exact h.ge.trans h2
+    have hU_le_eA : Γ.U ≤ (Γ.O ⊔ A) ⊓ (Γ.U ⊔ Γ.V) :=
+      le_of_le_of_eq (le_inf hU_le_zeA (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+        (line_direction hz hz_not_m (inf_le_right : _ ≤ Γ.U ⊔ Γ.V))
+    have hU_eq : Γ.U = (Γ.O ⊔ A) ⊓ (Γ.U ⊔ Γ.V) :=
+      IsAtom.eq_of_le Γ.hU heA_atom hU_le_eA
+    have hU_le_OA : Γ.U ≤ Γ.O ⊔ A := hU_eq ▸ (inf_le_left : _ ≤ Γ.O ⊔ A)
+    have h_line : Γ.O ⊔ A = Γ.O ⊔ Γ.U :=
+      line_eq_of_atom_le&#x27; Γ.hO hA Γ.hU hO_ne_A Γ.hOU hU_le_OA
+    exact hA_not_l (h_line ▸ le_sup_right)
+  have hz1_ne_U : parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V) ≠ Γ.U := by
+    intro h
+    have heX_atom : IsAtom ((Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V)) :=
+      line_meets_m_at_atom Γ.hO hX_atom hO_ne_X (sup_le hO_le_π hX_π) Γ.m_le_π
+        Γ.m_covBy_π Γ.hO_not_m
+    have hU_le_zeX : Γ.U ≤ z ⊔ (Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V) := by
+      have h2 : parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V) ≤
+          z ⊔ (Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V) := by
+        show (z ⊔ (Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V)) ⊓
+          (X ⊔ (Γ.O ⊔ z) ⊓ (Γ.U ⊔ Γ.V)) ≤ z ⊔ (Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V)
+        exact inf_le_left
+      exact h.ge.trans h2
+    have hU_le_eX : Γ.U ≤ (Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V) :=
+      le_of_le_of_eq (le_inf hU_le_zeX (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+        (line_direction hz hz_not_m (inf_le_right : _ ≤ Γ.U ⊔ Γ.V))
+    have hU_eq : Γ.U = (Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V) :=
+      IsAtom.eq_of_le Γ.hU heX_atom hU_le_eX
+    have hU_le_OX : Γ.U ≤ Γ.O ⊔ X := hU_eq ▸ (inf_le_left : _ ≤ Γ.O ⊔ X)
+    have h_line : Γ.O ⊔ X = Γ.O ⊔ Γ.U :=
+      line_eq_of_atom_le&#x27; Γ.hO hX_atom Γ.hU hO_ne_X Γ.hOU hU_le_OX
+    exact hX_not_l (h_line ▸ le_sup_right)
+  have h_line1 : parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V) ⊔
+      parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V) =
+      parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V) ⊔ Γ.U :=
+    line_eq_of_atom_le&#x27; hpstar_atom hz1_atom Γ.hU hpstar_ne_z1&#x27; hpstar_ne_U hU_le
+  have hz1_le : parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V) ≤
+      parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V) ⊔ Γ.U :=
+    h_line1 ▸ (le_sup_right : _ ≤ _ ⊔ parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V))
+  have h_supU : parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V) ⊔ Γ.U =
+      parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V) ⊔ Γ.U := by
+    rw [sup_comm _ Γ.U, sup_comm (parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V)) Γ.U]
+    exact line_eq_of_atom_le&#x27; Γ.hU hpstar_atom hz1_atom hpstar_ne_U.symm
+      hz1_ne_U.symm (le_of_le_of_eq hz1_le (sup_comm _ Γ.U))
+  calc Γ.ycoord (parallelogram_completion Γ.O A z (Γ.U ⊔ Γ.V))
+      = Γ.ycoord (parallelogram_completion Γ.O X z (Γ.U ⊔ Γ.V)) :=
+        Γ.ycoord_eq_of_sup_U h_supU
+    _ = coord_add Γ (Γ.ycoord z) (Γ.ycoord X) := h_TRANS
+    _ = coord_add Γ (Γ.ycoord z) (Γ.ycoord A) := by rw [hyX]
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.anti_transport" href="#CoordSystem.anti_transport">CoordSystem.anti_transport</a> (Γ : CoordSystem L) {b t : L}
+    (hb : IsAtom b) (hb_l : b ≤ Γ.O ⊔ Γ.U) (hb_ne_O : b ≠ Γ.O) (hb_ne_U : b ≠ Γ.U)
+    (ht : IsAtom t) (ht_l : t ≤ Γ.O ⊔ Γ.U) (ht_ne_O : t ≠ Γ.O) (ht_ne_U : t ≠ Γ.U)
+    (hbt : b ≠ t)
+    (h_diag_ne_n : Γ.O ⊔ Γ.C ≠ Γ.O ⊔ Γ.V)
+    (h_anti : Γ.E ≤ b ⊔ Γ.yseat b)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    Γ.E ≤ t ⊔ Γ.yseat t := by
+  have hb_not_m : ¬ b ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hb hb_l hb_ne_U
+  have ht_not_m : ¬ t ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l ht ht_l ht_ne_U
+  have hb_ne_EI : b ≠ Γ.E_I := fun h =&gt; Γ.hE_I_not_l (h ▸ hb_l)
+  have ht_ne_EI : t ≠ Γ.E_I := fun h =&gt; Γ.hE_I_not_l (h ▸ ht_l)
+  have hb_ne_E : b ≠ Γ.E := fun h =&gt; Γ.hE_not_l (h ▸ hb_l)
+  have hb_le_π : b ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hb_l.trans le_sup_left
+  have ht_le_π : t ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := ht_l.trans le_sup_left
+  have hn_le_π : Γ.O ⊔ Γ.V ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    sup_le (le_sup_left.trans le_sup_left) le_sup_right
+  have hOEI_inf_l : (Γ.O ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U) = Γ.O := by
+    refine modular_intersection Γ.hO Γ.hE_I_atom Γ.hU Γ.hO_ne_E_I Γ.hOU
+      Γ.hE_I_ne_U ?_
+    intro h
+    have h_line : Γ.O ⊔ Γ.E_I = Γ.O ⊔ Γ.U :=
+      line_eq_of_atom_le&#x27; Γ.hO Γ.hE_I_atom Γ.hU Γ.hO_ne_E_I Γ.hOU h
+    exact Γ.hE_I_not_l (h_line ▸ (le_sup_right : Γ.E_I ≤ Γ.O ⊔ Γ.E_I))
+  have h_diag_inf_n : (Γ.O ⊔ Γ.C) ⊓ (Γ.O ⊔ Γ.V) = Γ.O := by
+    refine modular_intersection Γ.hO Γ.hC Γ.hV Γ.hOC Γ.hOV
+      (fun h =&gt; Γ.hC_not_m (h ▸ (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V))) ?_
+    intro h
+    exact h_diag_ne_n (line_eq_of_atom_le&#x27; Γ.hO Γ.hC Γ.hV Γ.hOC Γ.hOV h)
+  have hdsb_atom : IsAtom (Γ.diagseat b) := Γ.diagseat_is_atom hb hb_l hb_ne_U
+  have hdst_atom : IsAtom (Γ.diagseat t) := Γ.diagseat_is_atom ht ht_l ht_ne_U
+  have hdsb_le_diag : Γ.diagseat b ≤ Γ.O ⊔ Γ.C := inf_le_right
+  have hdst_le_diag : Γ.diagseat t ≤ Γ.O ⊔ Γ.C := inf_le_right
+  have hdsb_le_bEI : Γ.diagseat b ≤ b ⊔ Γ.E_I := inf_le_left
+  have hdst_le_tEI : Γ.diagseat t ≤ t ⊔ Γ.E_I := inf_le_left
+  have hdsb_ne_O : Γ.diagseat b ≠ Γ.O := by
+    intro h
+    have hd := Γ.drop_diagseat hb hb_l
+    rw [show (b ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.C) = Γ.O from h] at hd
+    exact hb_ne_O (hd.symm.trans hOEI_inf_l)
+  have hdst_ne_O : Γ.diagseat t ≠ Γ.O := by
+    intro h
+    have hd := Γ.drop_diagseat ht ht_l
+    rw [show (t ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.C) = Γ.O from h] at hd
+    exact ht_ne_O (hd.symm.trans hOEI_inf_l)
+  have hdsb_ne_U : Γ.diagseat b ≠ Γ.U := fun h =&gt; Γ.hU_not_OC (h ▸ hdsb_le_diag)
+  have hdst_ne_U : Γ.diagseat t ≠ Γ.U := fun h =&gt; Γ.hU_not_OC (h ▸ hdst_le_diag)
+  have hdsb_le_π : Γ.diagseat b ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hdsb_le_diag.trans Γ.OC_le_π
+  have hdst_le_π : Γ.diagseat t ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hdst_le_diag.trans Γ.OC_le_π
+  have hdsb_ne_dst : Γ.diagseat b ≠ Γ.diagseat t := by
+    intro h
+    have h1 := Γ.drop_diagseat hb hb_l
+    have h2 := Γ.drop_diagseat ht ht_l
+    exact hbt (by
+      calc b = ((b ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.C) ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U) := h1.symm
+        _ = ((t ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.C) ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U) := by
+            rw [show (b ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.C) = (t ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.C) from h]
+        _ = t := h2)
+  have hB_atom : IsAtom (Γ.yseat b) := Γ.yseat_is_atom hb hb_l hb_ne_U
+  have hN_atom : IsAtom (Γ.yseat t) := Γ.yseat_is_atom ht ht_l ht_ne_U
+  have hB_n : Γ.yseat b ≤ Γ.O ⊔ Γ.V := Γ.yseat_le_n b
+  have hN_n : Γ.yseat t ≤ Γ.O ⊔ Γ.V := Γ.yseat_le_n t
+  have hB_le_dsbU : Γ.yseat b ≤ Γ.diagseat b ⊔ Γ.U := inf_le_left
+  have hN_le_dstU : Γ.yseat t ≤ Γ.diagseat t ⊔ Γ.U := inf_le_left
+  have hyB : Γ.ycoord (Γ.yseat b) = b := Γ.ycoord_yseat hb hb_l hb_ne_U
+  have hyN : Γ.ycoord (Γ.yseat t) = t := Γ.ycoord_yseat ht ht_l ht_ne_U
+  have hyO : Γ.ycoord Γ.O = Γ.O := Γ.ycoord_of_on_l Γ.hO le_sup_left Γ.hOU
+  have hB_ne_O : Γ.yseat b ≠ Γ.O := fun h =&gt; hb_ne_O (by rw [← hyB, h, hyO])
+  have hN_ne_O : Γ.yseat t ≠ Γ.O := fun h =&gt; ht_ne_O (by rw [← hyN, h, hyO])
+  have hB_ne_N : Γ.yseat b ≠ Γ.yseat t := fun h =&gt; hbt (by rw [← hyB, h, hyN])
+  have hB_le_π : Γ.yseat b ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hB_n.trans hn_le_π
+  have hN_le_π : Γ.yseat t ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hN_n.trans hn_le_π
+  have hb_ne_dsb : b ≠ Γ.diagseat b := by
+    intro h
+    exact hb_ne_O (IsAtom.eq_of_le hb Γ.hO (le_of_le_of_eq
+      (le_inf hb_l (h.le.trans hdsb_le_diag)) Γ.l_inf_OC_eq_O))
+  have ht_ne_dst : t ≠ Γ.diagseat t := by
+    intro h
+    exact ht_ne_O (IsAtom.eq_of_le ht Γ.hO (le_of_le_of_eq
+      (le_inf ht_l (h.le.trans hdst_le_diag)) Γ.l_inf_OC_eq_O))
+  have hb_ne_B : b ≠ Γ.yseat b := by
+    intro h
+    exact hb_ne_O (IsAtom.eq_of_le hb Γ.hO (le_of_le_of_eq
+      (le_inf hb_l (h.le.trans hB_n)) Γ.l_inf_n_eq_O))
+  have ht_ne_N : t ≠ Γ.yseat t := by
+    intro h
+    exact ht_ne_O (IsAtom.eq_of_le ht Γ.hO (le_of_le_of_eq
+      (le_inf ht_l (h.le.trans hN_n)) Γ.l_inf_n_eq_O))
+  have hdsb_ne_B : Γ.diagseat b ≠ Γ.yseat b := by
+    intro h
+    exact hdsb_ne_O (IsAtom.eq_of_le hdsb_atom Γ.hO (le_of_le_of_eq
+      (le_inf hdsb_le_diag (h.le.trans hB_n)) h_diag_inf_n))
+  have hdst_ne_N : Γ.diagseat t ≠ Γ.yseat t := by
+    intro h
+    exact hdst_ne_O (IsAtom.eq_of_le hdst_atom Γ.hO (le_of_le_of_eq
+      (le_inf hdst_le_diag (h.le.trans hN_n)) h_diag_inf_n))
+  have h_bdsb : b ⊔ Γ.E_I = b ⊔ Γ.diagseat b :=
+    line_eq_of_atom_le&#x27; hb Γ.hE_I_atom hdsb_atom hb_ne_EI hb_ne_dsb hdsb_le_bEI
+  have h_tdst : t ⊔ Γ.E_I = t ⊔ Γ.diagseat t :=
+    line_eq_of_atom_le&#x27; ht Γ.hE_I_atom hdst_atom ht_ne_EI ht_ne_dst hdst_le_tEI
+  have h_dsbB : Γ.diagseat b ⊔ Γ.U = Γ.diagseat b ⊔ Γ.yseat b :=
+    line_eq_of_atom_le&#x27; hdsb_atom Γ.hU hB_atom hdsb_ne_U hdsb_ne_B hB_le_dsbU
+  have h_dstN : Γ.diagseat t ⊔ Γ.U = Γ.diagseat t ⊔ Γ.yseat t :=
+    line_eq_of_atom_le&#x27; hdst_atom Γ.hU hN_atom hdst_ne_U hdst_ne_N hN_le_dstU
+  have h_bB : b ⊔ Γ.yseat b = b ⊔ Γ.E :=
+    line_eq_of_atom_le&#x27; hb hB_atom Γ.hE_atom hb_ne_B hb_ne_E h_anti
+  have hU_not_bEI : ¬ Γ.U ≤ b ⊔ Γ.E_I := by
+    intro h
+    have hU_le : Γ.U ≤ Γ.E_I :=
+      le_of_le_of_eq (le_inf h (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+        (line_direction hb hb_not_m Γ.hE_I_on_m)
+    exact Γ.hE_I_ne_U (IsAtom.eq_of_le Γ.hU Γ.hE_I_atom hU_le).symm
+  have hU_not_tEI : ¬ Γ.U ≤ t ⊔ Γ.E_I := by
+    intro h
+    have hU_le : Γ.U ≤ Γ.E_I :=
+      le_of_le_of_eq (le_inf h (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+        (line_direction ht ht_not_m Γ.hE_I_on_m)
+    exact Γ.hE_I_ne_U (IsAtom.eq_of_le Γ.hU Γ.hE_I_atom hU_le).symm
+  have hU_not_bE : ¬ Γ.U ≤ b ⊔ Γ.E := by
+    intro h
+    have hU_le : Γ.U ≤ Γ.E :=
+      le_of_le_of_eq (le_inf h (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+        (line_direction hb hb_not_m Γ.hE_on_m)
+    exact Γ.hEU (IsAtom.eq_of_le Γ.hU Γ.hE_atom hU_le).symm
+  have hl_eq_bU : Γ.O ⊔ Γ.U = b ⊔ Γ.U := by
+    rw [sup_comm Γ.O Γ.U, sup_comm b Γ.U]
+    exact line_eq_of_atom_le&#x27; Γ.hU Γ.hO hb Γ.hOU.symm hb_ne_U.symm
+      (by rwa [sup_comm] at hb_l)
+  have h_bEI_inf_l : (b ⊔ Γ.E_I) ⊓ (Γ.O ⊔ Γ.U) = b := by
+    rw [hl_eq_bU]
+    exact modular_intersection hb Γ.hE_I_atom Γ.hU hb_ne_EI hb_ne_U
+      Γ.hE_I_ne_U hU_not_bEI
+  have h_bE_inf_l : (b ⊔ Γ.E) ⊓ (Γ.O ⊔ Γ.U) = b := by
+    rw [hl_eq_bU]
+    exact modular_intersection hb Γ.hE_atom Γ.hU hb_ne_E hb_ne_U
+      (fun h =&gt; Γ.hE_not_l (h ▸ (le_sup_right : Γ.U ≤ Γ.O ⊔ Γ.U))) hU_not_bE
+  have hO_not_dsbU : ¬ Γ.O ≤ Γ.diagseat b ⊔ Γ.U := by
+    intro hh
+    have h_line : Γ.U ⊔ Γ.diagseat b = Γ.U ⊔ Γ.O :=
+      line_eq_of_atom_le&#x27; Γ.hU hdsb_atom Γ.hO hdsb_ne_U.symm Γ.hOU.symm
+        (by rwa [sup_comm] at hh)
+    have hdsb_le_l : Γ.diagseat b ≤ Γ.O ⊔ Γ.U := by
+      calc Γ.diagseat b ≤ Γ.U ⊔ Γ.diagseat b := le_sup_right
+        _ = Γ.U ⊔ Γ.O := h_line
+        _ = Γ.O ⊔ Γ.U := sup_comm _ _
+    exact hdsb_ne_O (IsAtom.eq_of_le hdsb_atom Γ.hO (le_of_le_of_eq
+      (le_inf hdsb_le_l hdsb_le_diag) Γ.l_inf_OC_eq_O))
+  have h_dsbU_inf_diag : (Γ.diagseat b ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.C) = Γ.diagseat b := by
+    rw [show Γ.O ⊔ Γ.C = Γ.diagseat b ⊔ Γ.O from by
+      rw [sup_comm (Γ.diagseat b) Γ.O]
+      exact (Γ.sup_O_eq_diag hdsb_atom hdsb_le_diag hdsb_ne_O).symm]
+    exact modular_intersection hdsb_atom Γ.hU Γ.hO hdsb_ne_U hdsb_ne_O
+      Γ.hOU.symm hO_not_dsbU
+  have h_sides₁₂ : b ⊔ Γ.diagseat b ≠ t ⊔ Γ.diagseat t := by
+    intro h
+    have ht_le : t ≤ b ⊔ Γ.E_I := by
+      rw [h_bdsb, h, ← h_tdst]
+      exact le_sup_left
+    exact hbt (IsAtom.eq_of_le ht hb (le_of_le_of_eq
+      (le_inf ht_le ht_l) h_bEI_inf_l)).symm
+  have h_sides₁₃ : b ⊔ Γ.yseat b ≠ t ⊔ Γ.yseat t := by
+    intro h
+    have ht_le : t ≤ b ⊔ Γ.E := by
+      rw [← h_bB, h]
+      exact le_sup_left
+    exact hbt (IsAtom.eq_of_le ht hb (le_of_le_of_eq
+      (le_inf ht_le ht_l) h_bE_inf_l)).symm
+  have h_sides₂₃ : Γ.diagseat b ⊔ Γ.yseat b ≠ Γ.diagseat t ⊔ Γ.yseat t := by
+    intro h
+    have hdst_le : Γ.diagseat t ≤ Γ.diagseat b ⊔ Γ.U := by
+      rw [h_dsbB, h, ← h_dstN]
+      exact le_sup_left
+    exact hdsb_ne_dst (IsAtom.eq_of_le hdst_atom hdsb_atom (le_of_le_of_eq
+      (le_inf hdst_le hdst_le_diag) h_dsbU_inf_diag)).symm
+  have h_ray_t : t ≤ Γ.O ⊔ b := by
+    rw [Γ.sup_O_eq_l hb hb_l hb_ne_O]
+    exact ht_l
+  have h_ray_dst : Γ.diagseat t ≤ Γ.O ⊔ Γ.diagseat b := by
+    rw [Γ.sup_O_eq_diag hdsb_atom hdsb_le_diag hdsb_ne_O]
+    exact hdst_le_diag
+  have h_ray_N : Γ.yseat t ≤ Γ.O ⊔ Γ.yseat b := by
+    rw [show Γ.O ⊔ Γ.yseat b = Γ.O ⊔ Γ.V from
+      (line_eq_of_atom_le&#x27; Γ.hO Γ.hV hB_atom Γ.hOV hB_ne_O.symm hB_n).symm]
+    exact hN_n
+  have hB_not_bdsb : ¬ Γ.yseat b ≤ b ⊔ Γ.diagseat b := by
+    intro h
+    have h_line : b ⊔ Γ.E_I = b ⊔ Γ.yseat b :=
+      line_eq_of_atom_le&#x27; hb Γ.hE_I_atom hB_atom hb_ne_EI hb_ne_B
+        (h_bdsb ▸ h)
+    have hEI_le : Γ.E_I ≤ b ⊔ Γ.E := by
+      rw [← h_bB, ← h_line]
+      exact le_sup_right
+    exact Γ.hE_I_ne_E (IsAtom.eq_of_le Γ.hE_I_atom Γ.hE_atom
+      (le_of_le_of_eq (le_inf hEI_le Γ.hE_I_on_m)
+        (line_direction hb hb_not_m Γ.hE_on_m)))
+  have hN_not_tdst : ¬ Γ.yseat t ≤ t ⊔ Γ.diagseat t := by
+    intro h
+    have hN_le_tEI : Γ.yseat t ≤ t ⊔ Γ.E_I := by
+      rw [h_tdst]
+      exact h
+    have h_inf : (t ⊔ Γ.E_I) ⊓ (Γ.diagseat t ⊔ Γ.U) = Γ.diagseat t := by
+      rw [h_tdst, sup_comm t (Γ.diagseat t)]
+      exact modular_intersection hdst_atom ht Γ.hU ht_ne_dst.symm hdst_ne_U
+        ht_ne_U
+        (fun hh =&gt; hU_not_tEI (by
+          rw [h_tdst, sup_comm t (Γ.diagseat t)]
+          exact hh))
+    have hN_le_dst : Γ.yseat t ≤ Γ.diagseat t :=
+      le_of_le_of_eq (le_inf hN_le_tEI hN_le_dstU) h_inf
+    exact hdst_ne_N (IsAtom.eq_of_le hN_atom hdst_atom hN_le_dst).symm
+  have hπA : b ⊔ Γ.diagseat b ⊔ Γ.yseat b = Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    span_plane Γ hb hdsb_atom hB_atom hb_ne_dsb hb_le_π hdsb_le_π hB_le_π
+      hb_not_m hB_not_bdsb
+  have hπB : t ⊔ Γ.diagseat t ⊔ Γ.yseat t = Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    span_plane Γ ht hdst_atom hN_atom ht_ne_dst ht_le_π hdst_le_π hN_le_π
+      ht_not_m hN_not_tdst
+  have h_cov₁₂ : b ⊔ Γ.diagseat b ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V := by
+    have h1 := line_covBy_plane hb Γ.hE_I_atom Γ.hU hb_ne_EI hb_ne_U
+      Γ.hE_I_ne_U hU_not_bEI
+    have h2 : b ⊔ Γ.E_I ⊔ Γ.U = Γ.O ⊔ Γ.U ⊔ Γ.V := by
+      apply le_antisymm
+      · exact sup_le (sup_le hb_le_π (Γ.hE_I_on_m.trans Γ.m_le_π))
+          (le_sup_right.trans le_sup_left)
+      · rw [← Γ.l_sup_E_I_eq_π]
+        refine sup_le (sup_le ?_ le_sup_right) ?_
+        · have hO_le : Γ.O ≤ b ⊔ Γ.U := by
+            rw [← hl_eq_bU]
+            exact le_sup_left
+          exact hO_le.trans (sup_le (le_sup_left.trans le_sup_left) le_sup_right)
+        · exact (le_sup_right : Γ.E_I ≤ b ⊔ Γ.E_I).trans le_sup_left
+    rw [h2] at h1
+    rwa [h_bdsb] at h1
+  have h_cov₁₃ : b ⊔ Γ.yseat b ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V := by
+    have hU_not_bB : ¬ Γ.U ≤ b ⊔ Γ.yseat b := fun h =&gt; hU_not_bE (h_bB ▸ h)
+    have h1 := line_covBy_plane hb hB_atom Γ.hU hb_ne_B hb_ne_U
+      (fun h =&gt; Γ.hU_not_n (h ▸ hB_n)) hU_not_bB
+    have h2 : b ⊔ Γ.yseat b ⊔ Γ.U = Γ.O ⊔ Γ.U ⊔ Γ.V :=
+      span_plane Γ hb hB_atom Γ.hU hb_ne_B hb_le_π hB_le_π
+        (le_sup_right.trans le_sup_left) hb_not_m hU_not_bB
+    rwa [h2] at h1
+  have h_cov₂₃ : Γ.diagseat b ⊔ Γ.yseat b ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V := by
+    have hdsb_ne_V : Γ.diagseat b ≠ Γ.V := by
+      intro h
+      exact h_diag_ne_n (line_eq_of_atom_le&#x27; Γ.hO Γ.hC Γ.hV Γ.hOC Γ.hOV
+        (h ▸ hdsb_le_diag))
+    have hdsb_not_m : ¬ Γ.diagseat b ≤ Γ.U ⊔ Γ.V := by
+      intro h
+      exact Γ.diagseat_ne_E hb hb_l hb_ne_U (IsAtom.eq_of_le hdsb_atom Γ.hE_atom
+        (le_inf hdsb_le_diag h : Γ.diagseat b ≤ Γ.E))
+    have h1 := line_covBy_plane hdsb_atom Γ.hU Γ.hV hdsb_ne_U hdsb_ne_V Γ.hUV
+      (Γ.V_not_le_sup_U hdsb_atom hdsb_not_m)
+    have hmD : (Γ.U ⊔ Γ.V) ⊔ Γ.diagseat b = Γ.O ⊔ Γ.U ⊔ Γ.V := by
+      have h_lt : Γ.U ⊔ Γ.V &lt; (Γ.U ⊔ Γ.V) ⊔ Γ.diagseat b :=
+        lt_of_le_of_ne le_sup_left
+          (fun h =&gt; hdsb_not_m (le_sup_right.trans h.symm.le))
+      exact (Γ.m_covBy_π.eq_or_eq h_lt.le
+        (sup_le Γ.m_le_π hdsb_le_π)).resolve_left (ne_of_gt h_lt)
+    have h2 : Γ.diagseat b ⊔ Γ.U ⊔ Γ.V = Γ.O ⊔ Γ.U ⊔ Γ.V := by
+      apply le_antisymm
+      · exact sup_le (sup_le hdsb_le_π (le_sup_right.trans le_sup_left))
+          le_sup_right
+      · rw [← hmD]
+        exact sup_le (sup_le (le_sup_right.trans le_sup_left) le_sup_right)
+          (le_sup_left.trans le_sup_left)
+    rw [h2] at h1
+    rwa [h_dsbB] at h1
+  obtain ⟨axis, haxis_le, haxis_ne, hM12, hM13, hM23⟩ :=
+    desargues_planar Γ.hO hb hdsb_atom hB_atom ht hdst_atom hN_atom
+      (le_sup_left.trans le_sup_left) hb_le_π hdsb_le_π hB_le_π
+      ht_le_π hdst_le_π hN_le_π
+      h_ray_t h_ray_dst h_ray_N
+      hb_ne_dsb hb_ne_B hdsb_ne_B
+      ht_ne_dst ht_ne_N hdst_ne_N
+      h_sides₁₂ h_sides₁₃ h_sides₂₃
+      hπA hπB
+      hb_ne_O.symm hdsb_ne_O.symm hB_ne_O.symm
+      ht_ne_O.symm hdst_ne_O.symm hN_ne_O.symm
+      hbt hdsb_ne_dst hB_ne_N
+      R hR hR_not h_irred
+      h_cov₁₂ h_cov₁₃ h_cov₂₃
+  have hM12_eq : (b ⊔ Γ.diagseat b) ⊓ (t ⊔ Γ.diagseat t) = Γ.E_I := by
+    have h_not : ¬ t ≤ Γ.E_I ⊔ b := by
+      intro h
+      exact hbt (IsAtom.eq_of_le ht hb (le_of_le_of_eq
+        (le_inf (le_of_le_of_eq h (sup_comm Γ.E_I b)) ht_l) h_bEI_inf_l)).symm
+    rw [← h_bdsb, ← h_tdst, sup_comm b Γ.E_I, sup_comm t Γ.E_I]
+    exact modular_intersection Γ.hE_I_atom hb ht hb_ne_EI.symm ht_ne_EI.symm
+      hbt h_not
+  have hM23_eq : (Γ.diagseat b ⊔ Γ.yseat b) ⊓ (Γ.diagseat t ⊔ Γ.yseat t) = Γ.U := by
+    have h_not : ¬ Γ.diagseat t ≤ Γ.U ⊔ Γ.diagseat b := by
+      intro h
+      exact hdsb_ne_dst (IsAtom.eq_of_le hdst_atom hdsb_atom (le_of_le_of_eq
+        (le_inf (le_of_le_of_eq h (sup_comm Γ.U (Γ.diagseat b))) hdst_le_diag)
+        h_dsbU_inf_diag)).symm
+    rw [← h_dsbB, ← h_dstN, sup_comm (Γ.diagseat b) Γ.U,
+      sup_comm (Γ.diagseat t) Γ.U]
+    exact modular_intersection Γ.hU hdsb_atom hdst_atom hdsb_ne_U.symm
+      hdst_ne_U.symm hdsb_ne_dst h_not
+  rw [hM12_eq] at hM12
+  rw [hM23_eq] at hM23
+  have hm_le_axis : Γ.U ⊔ Γ.V ≤ axis := by
+    rw [show Γ.U ⊔ Γ.V = Γ.U ⊔ Γ.E_I from
+      line_eq_of_atom_le&#x27; Γ.hU Γ.hV Γ.hE_I_atom Γ.hUV Γ.hE_I_ne_U.symm
+        Γ.hE_I_on_m]
+    exact sup_le hM23 hM12
+  have haxis_eq : axis = Γ.U ⊔ Γ.V :=
+    (Γ.m_covBy_π.eq_or_eq hm_le_axis haxis_le).resolve_right haxis_ne
+  have hM13_le_E : (b ⊔ Γ.yseat b) ⊓ (t ⊔ Γ.yseat t) ≤ Γ.E := by
+    have h1 : (b ⊔ Γ.yseat b) ⊓ (t ⊔ Γ.yseat t) ≤ Γ.U ⊔ Γ.V :=
+      haxis_eq ▸ hM13
+    have h2 : (b ⊔ Γ.yseat b) ⊓ (Γ.U ⊔ Γ.V) = Γ.E := by
+      rw [h_bB]
+      exact line_direction hb hb_not_m Γ.hE_on_m
+    exact le_of_le_of_eq (le_inf inf_le_left h1) h2
+  have hM13_ne_bot : (b ⊔ Γ.yseat b) ⊓ (t ⊔ Γ.yseat t) ≠ ⊥ := by
+    refine lines_meet_if_coplanar h_cov₁₃ (sup_le ht_le_π hN_le_π) ?_ ht ?_
+    · intro h
+      have ht_le : t ≤ b ⊔ Γ.E := by
+        rw [← h_bB]
+        exact le_sup_left.trans h
+      exact hbt (IsAtom.eq_of_le ht hb (le_of_le_of_eq
+        (le_inf ht_le ht_l) h_bE_inf_l)).symm
+    · refine lt_of_le_of_ne le_sup_left ?_
+      intro h
+      exact ht_ne_N (IsAtom.eq_of_le hN_atom ht (le_sup_right.trans h.ge)).symm
+  have hM13_eq : (b ⊔ Γ.yseat b) ⊓ (t ⊔ Γ.yseat t) = Γ.E :=
+    (Γ.hE_atom.le_iff.mp hM13_le_E).resolve_left hM13_ne_bot
+  exact hM13_eq.symm.le.trans inf_le_right
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.ycoord_of_le_line_aux" href="#CoordSystem.ycoord_of_le_line_aux">CoordSystem.ycoord_of_le_line_aux</a> (Γ : CoordSystem L) {S B p : L}
+    (hS : IsAtom S) (hS_m : S ≤ Γ.U ⊔ Γ.V) (hS_ne_U : S ≠ Γ.U) (hS_ne_V : S ≠ Γ.V)
+    (hB : IsAtom B) (hB_n : B ≤ Γ.O ⊔ Γ.V) (hB_ne_O : B ≠ Γ.O) (hB_ne_V : B ≠ Γ.V)
+    (hp : IsAtom p) (hp_aff : ¬ p ≤ Γ.U ⊔ Γ.V) (hp_le : p ≤ B ⊔ S)
+    (hp_not_l : ¬ p ≤ Γ.O ⊔ Γ.U) (hx_ne_O : Γ.xproj p ≠ Γ.O)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    Γ.ycoord p = coord_add Γ (coord_mul Γ (Γ.slope S) (Γ.xproj p)) (Γ.ycoord B) := by
+  have hO_le_π : Γ.O ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := le_sup_left.trans le_sup_left
+  have hn_le_π : Γ.O ⊔ Γ.V ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    sup_le hO_le_π le_sup_right
+  have hB_aff : ¬ B ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_n hB hB_n hB_ne_V
+  have hB_π : B ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hB_n.trans hn_le_π
+  have hB_not_l : ¬ B ≤ Γ.O ⊔ Γ.U := fun h =&gt; hB_ne_O
+    (IsAtom.eq_of_le hB Γ.hO (le_of_le_of_eq (le_inf h hB_n) Γ.l_inf_n_eq_O))
+  have hB_ne_U : B ≠ Γ.U := Γ.ne_U_of_affine hB_aff
+  have hB_ne_S : B ≠ S := fun h =&gt; hB_aff (h ▸ hS_m)
+  have hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    hp_le.trans (sup_le hB_π (hS_m.trans Γ.m_le_π))
+  have hO_ne_S : Γ.O ≠ S := fun h =&gt; Γ.hO_not_m (h ▸ hS_m)
+  have hlam_π : B ⊔ S ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := sup_le hB_π (hS_m.trans Γ.m_le_π)
+  have hlam_inf_m : (B ⊔ S) ⊓ (Γ.U ⊔ Γ.V) = S := line_direction hB hB_aff hS_m
+  have hOS_le_π : Γ.O ⊔ S ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    sup_le hO_le_π (hS_m.trans Γ.m_le_π)
+  have hOS_inf_m : (Γ.O ⊔ S) ⊓ (Γ.U ⊔ Γ.V) = S :=
+    line_direction Γ.hO Γ.hO_not_m hS_m
+  have hV_not_lam : ¬ Γ.V ≤ B ⊔ S := by
+    intro h
+    have hV_le : Γ.V ≤ S :=
+      le_of_le_of_eq (le_inf h (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V)) hlam_inf_m
+    exact hS_ne_V (IsAtom.eq_of_le Γ.hV hS hV_le).symm
+  have hO_not_lam : ¬ Γ.O ≤ B ⊔ S := by
+    intro h
+    have h_line : B ⊔ S = B ⊔ Γ.O :=
+      line_eq_of_atom_le&#x27; hB hS Γ.hO hB_ne_S hB_ne_O h
+    have hS_le_n : S ≤ Γ.O ⊔ Γ.V := by
+      calc S ≤ B ⊔ S := le_sup_right
+        _ = B ⊔ Γ.O := h_line
+        _ ≤ Γ.O ⊔ Γ.V := sup_le hB_n le_sup_left
+    have hS_le_V : S ≤ Γ.V :=
+      le_of_le_of_eq (le_inf hS_le_n hS_m) Γ.n_inf_m_eq_V
+    exact hS_ne_V (IsAtom.eq_of_le hS Γ.hV hS_le_V)
+  have hO_sup_B : Γ.O ⊔ B = Γ.O ⊔ Γ.V :=
+    (line_eq_of_atom_le&#x27; Γ.hO Γ.hV hB Γ.hOV hB_ne_O.symm hB_n).symm
+  -- the ordinate of B
+  have hb_atom : IsAtom (Γ.ycoord B) := Γ.ycoord_is_atom hB hB_π hB_aff
+  have hb_l : Γ.ycoord B ≤ Γ.O ⊔ Γ.U := Γ.ycoord_le_l B
+  have hb_ne_U : Γ.ycoord B ≠ Γ.U := Γ.ycoord_ne_U hB hB_π hB_aff
+  have hb_ne_O : Γ.ycoord B ≠ Γ.O := Γ.ycoord_ne_O hB hB_π hB_aff hB_not_l
+  have hb_not_m : ¬ Γ.ycoord B ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hb_atom hb_l hb_ne_U
+  have hb_ne_E : Γ.ycoord B ≠ Γ.E := fun h =&gt; Γ.hE_not_l (h ▸ hb_l)
+  -- the abscissa of p
+  have hx_atom : IsAtom (Γ.xproj p) := Γ.xproj_is_atom hp hp_π hp_aff
+  have hx_l : Γ.xproj p ≤ Γ.O ⊔ Γ.U := Γ.xproj_le_l p
+  have hx_ne_U : Γ.xproj p ≠ Γ.U := Γ.xproj_ne_U hp hp_aff
+  have hx_aff : ¬ Γ.xproj p ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hx_atom hx_l hx_ne_U
+  have hx_ne_V : Γ.xproj p ≠ Γ.V := Γ.ne_V_of_affine hx_aff
+  have hp_le_xV : p ≤ Γ.xproj p ⊔ Γ.V :=
+    le_of_le_of_eq (le_sup_left : p ≤ p ⊔ Γ.V) (Γ.sup_V_xproj hp hp_π hp_aff)
+  have hO_not_xV : ¬ Γ.O ≤ Γ.xproj p ⊔ Γ.V := by
+    intro h
+    exact hx_ne_O (IsAtom.eq_of_le Γ.hO hx_atom (le_of_le_of_eq
+      (le_inf h le_sup_left) (Γ.l_inf_sup_V hx_atom hx_l hx_ne_U))).symm
+  -- the origin-line seat q over the abscissa of p
+  have hxV_cov : Γ.xproj p ⊔ Γ.V ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    Γ.sup_V_covBy_π hx_atom hx_l hx_ne_U
+  have hOS_not_xV : ¬ Γ.O ⊔ S ≤ Γ.xproj p ⊔ Γ.V :=
+    fun h =&gt; hO_not_xV (le_sup_left.trans h)
+  have hS_lt_OS : S &lt; Γ.O ⊔ S := lt_of_le_of_ne le_sup_right
+    (fun h =&gt; hO_ne_S (IsAtom.eq_of_le Γ.hO hS (h ▸ le_sup_left)))
+  have hq_ne_bot : (Γ.xproj p ⊔ Γ.V) ⊓ (Γ.O ⊔ S) ≠ ⊥ :=
+    lines_meet_if_coplanar hxV_cov hOS_le_π hOS_not_xV hS hS_lt_OS
+  have hq_lt : (Γ.xproj p ⊔ Γ.V) ⊓ (Γ.O ⊔ S) &lt; Γ.xproj p ⊔ Γ.V := by
+    apply lt_of_le_of_ne inf_le_left
+    intro h
+    have hV_le_OS : Γ.V ≤ Γ.O ⊔ S := le_sup_right.trans (inf_eq_left.mp h)
+    have hV_le_S : Γ.V ≤ S :=
+      le_of_le_of_eq (le_inf hV_le_OS (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V)) hOS_inf_m
+    exact hS_ne_V (IsAtom.eq_of_le Γ.hV hS hV_le_S).symm
+  have hq_atom : IsAtom ((Γ.xproj p ⊔ Γ.V) ⊓ (Γ.O ⊔ S)) :=
+    line_height_two hx_atom Γ.hV hx_ne_V (bot_lt_iff_ne_bot.mpr hq_ne_bot) hq_lt
+  set q := (Γ.xproj p ⊔ Γ.V) ⊓ (Γ.O ⊔ S) with hq_def
+  have hq_le_xV : q ≤ Γ.xproj p ⊔ Γ.V := inf_le_left
+  have hq_le_OS : q ≤ Γ.O ⊔ S := inf_le_right
+  have hq_π : q ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hq_le_OS.trans hOS_le_π
+  have hq_aff : ¬ q ≤ Γ.U ⊔ Γ.V := by
+    intro h
+    have hq_eq_S : q = S := IsAtom.eq_of_le hq_atom hS
+      (le_of_le_of_eq (le_inf hq_le_OS h) hOS_inf_m)
+    have hS_le_V : S ≤ Γ.V := le_of_le_of_eq
+      (le_inf (hq_eq_S ▸ hq_le_xV) hS_m)
+      (line_direction hx_atom hx_aff (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V))
+    exact hS_ne_V (IsAtom.eq_of_le hS Γ.hV hS_le_V)
+  have hq_ne_O : q ≠ Γ.O := fun h =&gt; hO_not_xV (h ▸ hq_le_xV)
+  have hq_not_l : ¬ q ≤ Γ.O ⊔ Γ.U := by
+    intro h
+    have hU_not_OS : ¬ S ≤ Γ.O ⊔ Γ.U := by
+      intro hh
+      exact hS_ne_U (Γ.atom_on_both_eq_U hS hh hS_m)
+    have h_inf : (Γ.O ⊔ Γ.U) ⊓ (Γ.O ⊔ S) = Γ.O :=
+      modular_intersection Γ.hO Γ.hU hS Γ.hOU hO_ne_S hS_ne_U.symm hU_not_OS
+    exact hq_ne_O (IsAtom.eq_of_le hq_atom Γ.hO (le_of_le_of_eq
+      (le_inf h hq_le_OS) h_inf))
+  have hxq : Γ.xproj q = Γ.xproj p :=
+    (Γ.le_vertical_iff hq_atom hq_aff hx_atom hx_l hx_ne_U).mp hq_le_xV
+  have hO_sup_q : Γ.O ⊔ q = Γ.O ⊔ S :=
+    (line_eq_of_atom_le&#x27; Γ.hO hS hq_atom hO_ne_S hq_ne_O.symm hq_le_OS).symm
+  -- the ordinate of q
+  have hy_atom : IsAtom (Γ.ycoord q) := Γ.ycoord_is_atom hq_atom hq_π hq_aff
+  have hy_l : Γ.ycoord q ≤ Γ.O ⊔ Γ.U := Γ.ycoord_le_l q
+  have hy_ne_U : Γ.ycoord q ≠ Γ.U := Γ.ycoord_ne_U hq_atom hq_π hq_aff
+  have hy_ne_O : Γ.ycoord q ≠ Γ.O := Γ.ycoord_ne_O hq_atom hq_π hq_aff hq_not_l
+  have hy_ne_q : Γ.ycoord q ≠ q := fun h =&gt; hq_not_l (h ▸ hy_l)
+  have hy_ne_E : Γ.ycoord q ≠ Γ.E := fun h =&gt; Γ.hE_not_l (h ▸ hy_l)
+  have hy_not_m : ¬ Γ.ycoord q ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hy_atom hy_l hy_ne_U
+  have hB_not_OS : ¬ B ≤ Γ.O ⊔ S := by
+    intro h
+    have hV_not_OS : ¬ Γ.V ≤ Γ.O ⊔ S := by
+      intro hh
+      have hV_le_S : Γ.V ≤ S := le_of_le_of_eq
+        (le_inf hh (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V)) hOS_inf_m
+      exact hS_ne_V (IsAtom.eq_of_le Γ.hV hS hV_le_S).symm
+    have h_inf : (Γ.O ⊔ S) ⊓ (Γ.O ⊔ Γ.V) = Γ.O :=
+      modular_intersection Γ.hO hS Γ.hV hO_ne_S Γ.hOV
+        (fun hh =&gt; hS_ne_V hh) hV_not_OS
+    exact hB_ne_O (IsAtom.eq_of_le hB Γ.hO (le_of_le_of_eq
+      (le_inf h hB_n) h_inf))
+  have hB_not_Oq : ¬ B ≤ Γ.O ⊔ q := by
+    rw [hO_sup_q]
+    exact hB_not_OS
+  have hq_not_OB : ¬ q ≤ Γ.O ⊔ B := by
+    rw [hO_sup_B]
+    intro h
+    exact Γ.ne_V_of_affine hq_aff
+      (Γ.eq_V_of_le_vertical_of_le_n hx_atom hx_l hx_ne_O hq_atom hq_le_xV h)
+  -- the decomposition p = pg O B q
+  have h_qV_eq_xV : q ⊔ Γ.V = Γ.xproj p ⊔ Γ.V := by
+    rw [sup_comm q Γ.V, sup_comm (Γ.xproj p) Γ.V]
+    exact (line_eq_of_atom_le&#x27; Γ.hV hx_atom hq_atom hx_ne_V.symm
+      (Γ.ne_V_of_affine hq_aff).symm
+      (le_of_le_of_eq hq_le_xV (sup_comm (Γ.xproj p) Γ.V))).symm
+  have h_meet_lt : (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) &lt; B ⊔ S := by
+    apply lt_of_le_of_ne inf_le_right
+    intro h
+    have hS_le : S ≤ Γ.xproj p ⊔ Γ.V := le_sup_right.trans (inf_eq_right.mp h)
+    have hS_le_V : S ≤ Γ.V := le_of_le_of_eq (le_inf hS_le hS_m)
+      (line_direction hx_atom hx_aff (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V))
+    exact hS_ne_V (IsAtom.eq_of_le hS Γ.hV hS_le_V)
+  have h_meet_atom : IsAtom ((Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S)) :=
+    line_height_two hB hS hB_ne_S
+      (lt_of_lt_of_le hp.bot_lt (le_inf hp_le_xV hp_le)) h_meet_lt
+  have hp_eq_meet : p = (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) :=
+    IsAtom.eq_of_le hp h_meet_atom (le_inf hp_le_xV hp_le)
+  have hp_eq : p = parallelogram_completion Γ.O B q (Γ.U ⊔ Γ.V) := by
+    have h_pg : parallelogram_completion Γ.O B q (Γ.U ⊔ Γ.V) =
+        (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) := by
+      show (q ⊔ (Γ.O ⊔ B) ⊓ (Γ.U ⊔ Γ.V)) ⊓ (B ⊔ (Γ.O ⊔ q) ⊓ (Γ.U ⊔ Γ.V)) = _
+      rw [hO_sup_B, Γ.n_inf_m_eq_V, hO_sup_q, hOS_inf_m, h_qV_eq_xV]
+    rw [h_pg]
+    exact hp_eq_meet
+  -- the ordinate of q reads the slope
+  have hy_eq : Γ.ycoord q = coord_mul Γ (Γ.slope S) (Γ.xproj p) := by
+    have h1 := Γ.ycoord_of_le_origin_line hS hS_m hS_ne_V hq_atom hq_aff
+      hq_le_OS R hR hR_not h_irred
+    rwa [hxq] at h1
+  -- it suffices to add the two ordinates
+  suffices h_main : Γ.ycoord p = coord_add Γ (Γ.ycoord q) (Γ.ycoord B) by
+    rw [h_main, hy_eq]
+  -- the two orientation routes
+  have finish_swap : Γ.ycoord (parallelogram_completion Γ.O q B (Γ.U ⊔ Γ.V)) =
+      coord_add Γ (Γ.ycoord B) (Γ.ycoord q) →
+      Γ.ycoord p = coord_add Γ (Γ.ycoord q) (Γ.ycoord B) := by
+    intro h2
+    rw [parallelogram_completion_base_swap Γ.O q B (Γ.U ⊔ Γ.V), ← hp_eq] at h2
+    by_cases hby : Γ.ycoord B = Γ.ycoord q
+    · rw [h2, hby]
+    · rw [h2]
+      exact coord_add_comm Γ (Γ.ycoord B) (Γ.ycoord q) hb_atom hy_atom hb_l hy_l
+        hb_ne_O hy_ne_O hb_ne_U hy_ne_U hby R hR hR_not h_irred
+  have t2 : ¬ q ≤ Γ.O ⊔ Γ.C → ¬ Γ.E ≤ Γ.ycoord q ⊔ q →
+      Γ.ycoord p = coord_add Γ (Γ.ycoord q) (Γ.ycoord B) := by
+    intro hG1q hG3q
+    exact finish_swap (Γ.ycoord_translate hq_atom hq_π hq_aff hq_not_l hB hB_π
+      hB_aff hB_not_l hB_not_Oq hG1q hG3q R hR hR_not h_irred)
+  by_cases hB1 : B ≤ Γ.O ⊔ Γ.C
+  · -- the diagonal is the y-axis
+    have h_diag_n : Γ.O ⊔ Γ.C = Γ.O ⊔ Γ.V := by
+      have h1 : Γ.O ⊔ Γ.C = Γ.O ⊔ B :=
+        line_eq_of_atom_le&#x27; Γ.hO Γ.hC hB Γ.hOC hB_ne_O.symm hB1
+      rw [h1, hO_sup_B]
+    have hE_eq_V : Γ.E = Γ.V := by
+      have h1 : Γ.E = (Γ.O ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) := rfl
+      rw [h1, h_diag_n]
+      exact Γ.n_inf_m_eq_V
+    by_cases hG1q : q ≤ Γ.O ⊔ Γ.C
+    · exact absurd (Γ.eq_V_of_le_vertical_of_le_n hx_atom hx_l hx_ne_O hq_atom
+        hq_le_xV (h_diag_n ▸ hG1q)) (Γ.ne_V_of_affine hq_aff)
+    · by_cases hG3q : Γ.E ≤ Γ.ycoord q ⊔ q
+      · -- the horizontal-offset tower on the q-vector, x_h := the intercept
+        have hq_le_yV : q ≤ Γ.ycoord q ⊔ Γ.V := by
+          have h1 : Γ.ycoord q ⊔ q = Γ.ycoord q ⊔ Γ.E :=
+            line_eq_of_atom_le&#x27; hy_atom hq_atom Γ.hE_atom hy_ne_q hy_ne_E hG3q
+          calc q ≤ Γ.ycoord q ⊔ q := le_sup_right
+            _ = Γ.ycoord q ⊔ Γ.E := h1
+            _ = Γ.ycoord q ⊔ Γ.V := by rw [hE_eq_V]
+        have hlam_not_l : ¬ B ⊔ S ≤ Γ.O ⊔ Γ.U :=
+          fun h =&gt; hB_not_l (le_sup_left.trans h)
+        have hB_lt_lam : B &lt; B ⊔ S := lt_of_le_of_ne le_sup_left
+          (fun h =&gt; hB_ne_S (IsAtom.eq_of_le hS hB (h ▸ le_sup_right)).symm)
+        have hr0_ne_bot : (B ⊔ S) ⊓ (Γ.O ⊔ Γ.U) ≠ ⊥ := by
+          rw [inf_comm]
+          exact lines_meet_if_coplanar Γ.l_covBy_π hlam_π hlam_not_l hB hB_lt_lam
+        have hr0_lt : (B ⊔ S) ⊓ (Γ.O ⊔ Γ.U) &lt; B ⊔ S := by
+          apply lt_of_le_of_ne inf_le_left
+          intro h
+          exact hlam_not_l (inf_eq_left.mp h)
+        have hr0_atom : IsAtom ((B ⊔ S) ⊓ (Γ.O ⊔ Γ.U)) :=
+          line_height_two hB hS hB_ne_S (bot_lt_iff_ne_bot.mpr hr0_ne_bot) hr0_lt
+        set r0 := (B ⊔ S) ⊓ (Γ.O ⊔ Γ.U) with hr0_def
+        have hr0_le_lam : r0 ≤ B ⊔ S := inf_le_left
+        have hr0_l : r0 ≤ Γ.O ⊔ Γ.U := inf_le_right
+        have hr0_ne_O : r0 ≠ Γ.O := fun h =&gt; hO_not_lam (h ▸ hr0_le_lam)
+        have hr0_ne_U : r0 ≠ Γ.U := by
+          intro h
+          have hU_le_S : Γ.U ≤ S := le_of_le_of_eq
+            (le_inf (h ▸ hr0_le_lam) (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)) hlam_inf_m
+          exact hS_ne_U (IsAtom.eq_of_le Γ.hU hS hU_le_S).symm
+        have hr0_ne_x : r0 ≠ Γ.xproj p := by
+          intro h
+          have hx_le_lam : Γ.xproj p ≤ B ⊔ S := h ▸ hr0_le_lam
+          have hx_eq_meet : Γ.xproj p = (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) :=
+            IsAtom.eq_of_le hx_atom h_meet_atom (le_inf le_sup_left hx_le_lam)
+          exact hp_not_l (by rw [hp_eq_meet, ← hx_eq_meet]; exact hx_l)
+        have hX_atom := Γ.shift_atom hq_atom hq_π hq_aff hq_not_l hr0_atom hr0_l
+          hr0_ne_O hr0_ne_U
+        have hX_le_qU := Γ.shift_le_sup_U hr0_atom hr0_l hr0_ne_O q
+        have hX_ne_q := Γ.shift_ne hq_atom hq_π hq_aff hq_not_l hr0_atom hr0_l
+          hr0_ne_O hr0_ne_U
+        have hX_not_l := Γ.shift_not_l hq_atom hq_π hq_aff hq_not_l hr0_atom hr0_l
+          hr0_ne_O hr0_ne_U
+        have hyX := Γ.shift_ycoord hq_atom hq_π hq_aff hq_not_l hr0_atom hr0_l
+          hr0_ne_O hr0_ne_U
+        set X := parallelogram_completion r0 Γ.O q (Γ.U ⊔ Γ.V) with hX_def
+        have hX_ne_O : X ≠ Γ.O := fun h =&gt; hy_ne_O (by
+          rw [← hyX, h, Γ.ycoord_of_on_l Γ.hO le_sup_left Γ.hOU])
+        have hX_not_n : ¬ X ≤ Γ.O ⊔ Γ.V := by
+          intro h
+          have h_rev : parallelogram_completion Γ.O r0 X (Γ.U ⊔ Γ.V) = q := by
+            rw [hX_def]
+            exact reverse_completion hr0_atom Γ.hO hq_atom hr0_ne_O
+              (fun hh =&gt; hq_not_l (hh ▸ hr0_l))
+              hq_ne_O.symm
+              (hr0_l.trans le_sup_left) hO_le_π hq_π Γ.m_le_π Γ.m_covBy_π
+              (fun w hw hwm =&gt; line_covers_its_atoms Γ.hU Γ.hV Γ.hUV hw hwm)
+              (Γ.affine_of_on_l hr0_atom hr0_l hr0_ne_U) Γ.hO_not_m hq_aff
+              (by
+                rw [sup_comm r0 Γ.O, Γ.sup_O_eq_l hr0_atom hr0_l hr0_ne_O]
+                exact hq_not_l)
+          have hO_sup_X : Γ.O ⊔ X = Γ.O ⊔ Γ.V :=
+            (line_eq_of_atom_le&#x27; Γ.hO Γ.hV hX_atom Γ.hOV hX_ne_O.symm h).symm
+          have hq_le_2nd : q ≤ r0 ⊔ (Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V) := by
+            rw [← h_rev]
+            show parallelogram_completion Γ.O r0 X (Γ.U ⊔ Γ.V) ≤ _
+            show (X ⊔ (Γ.O ⊔ r0) ⊓ (Γ.U ⊔ Γ.V)) ⊓
+              (r0 ⊔ (Γ.O ⊔ X) ⊓ (Γ.U ⊔ Γ.V)) ≤ _
+            exact inf_le_right
+          rw [hO_sup_X, Γ.n_inf_m_eq_V] at hq_le_2nd
+          have hxq_eq_r0 : Γ.xproj q = r0 :=
+            (Γ.le_vertical_iff hq_atom hq_aff hr0_atom hr0_l hr0_ne_U).mp
+              hq_le_2nd
+          exact hr0_ne_x (by rw [← hxq_eq_r0, hxq])
+        have hG1X : ¬ X ≤ Γ.O ⊔ Γ.C := by
+          intro h
+          rw [h_diag_n] at h
+          exact hX_not_n h
+        have hG3X : ¬ Γ.E ≤ Γ.ycoord q ⊔ X := by
+          intro h
+          rw [hE_eq_V] at h
+          have h_line : Γ.ycoord q ⊔ X = Γ.ycoord q ⊔ Γ.V :=
+            line_eq_of_atom_le&#x27; hy_atom hX_atom Γ.hV
+              (fun hh =&gt; hX_not_l (hh ▸ hy_l)) (fun hh =&gt; Γ.hV_off (hh ▸ hy_l)) h
+          have hX_le_yV : X ≤ Γ.ycoord q ⊔ Γ.V :=
+            h_line ▸ (le_sup_right : X ≤ Γ.ycoord q ⊔ X)
+          have h_yV_ne_qU : ¬ Γ.U ≤ Γ.ycoord q ⊔ Γ.V := by
+            intro hh
+            have h_line2 : Γ.ycoord q ⊔ Γ.V = Γ.ycoord q ⊔ Γ.U :=
+              line_eq_of_atom_le&#x27; hy_atom Γ.hV Γ.hU
+                (fun h3 =&gt; Γ.hV_off (h3 ▸ hy_l)) hy_ne_U hh
+            exact Γ.hV_off (by
+              calc Γ.V ≤ Γ.ycoord q ⊔ Γ.V := le_sup_right
+                _ = Γ.ycoord q ⊔ Γ.U := h_line2
+                _ ≤ Γ.O ⊔ Γ.U := sup_le hy_l le_sup_right)
+          have h_meet2 : IsAtom ((Γ.ycoord q ⊔ Γ.V) ⊓ (q ⊔ Γ.U)) := by
+            refine line_height_two hy_atom Γ.hV
+              (fun hh =&gt; Γ.hV_off (hh ▸ hy_l))
+              (lt_of_lt_of_le hq_atom.bot_lt (le_inf hq_le_yV le_sup_left)) ?_
+            apply lt_of_le_of_ne inf_le_left
+            intro hh
+            have hV_le_qU : Γ.V ≤ q ⊔ Γ.U :=
+              le_sup_right.trans (inf_eq_left.mp hh)
+            exact Γ.V_not_le_sup_U hq_atom hq_aff hV_le_qU
+          have hq_eq_meet : q = (Γ.ycoord q ⊔ Γ.V) ⊓ (q ⊔ Γ.U) :=
+            IsAtom.eq_of_le hq_atom h_meet2 (le_inf hq_le_yV le_sup_left)
+          have hX_eq_meet : X = (Γ.ycoord q ⊔ Γ.V) ⊓ (q ⊔ Γ.U) :=
+            IsAtom.eq_of_le hX_atom h_meet2 (le_inf hX_le_yV hX_le_qU)
+          exact hX_ne_q (hX_eq_meet.trans hq_eq_meet.symm)
+        have hB_not_OX : ¬ B ≤ Γ.O ⊔ X := by
+          intro h
+          have h_line : Γ.O ⊔ X = Γ.O ⊔ B :=
+            line_eq_of_atom_le&#x27; Γ.hO hX_atom hB hX_ne_O.symm hB_ne_O.symm h
+          exact hX_not_n (by
+            calc X ≤ Γ.O ⊔ X := le_sup_right
+              _ = Γ.O ⊔ B := h_line
+              _ = Γ.O ⊔ Γ.V := hO_sup_B)
+        exact finish_swap (Γ.ycoord_translate_offset hq_atom hq_π hq_aff hq_not_l
+          hB hB_π hB_aff hB_not_l hB_not_Oq hr0_atom hr0_l hr0_ne_O hr0_ne_U
+          hG1X hG3X hB_not_OX R hR hR_not h_irred)
+      · exact t2 hG1q hG3q
+  · by_cases hB3 : Γ.E ≤ Γ.ycoord B ⊔ B
+    · have hB_ne_b : B ≠ Γ.ycoord B := fun h =&gt; hB_not_l (h.le.trans hb_l)
+      have hB_le_bE : B ≤ Γ.ycoord B ⊔ Γ.E := by
+        have h1 : Γ.ycoord B ⊔ B = Γ.ycoord B ⊔ Γ.E :=
+          line_eq_of_atom_le&#x27; hb_atom hB Γ.hE_atom hB_ne_b.symm hb_ne_E hB3
+        exact h1 ▸ (le_sup_right : B ≤ Γ.ycoord B ⊔ B)
+      have h_bE_inf_l : (Γ.ycoord B ⊔ Γ.E) ⊓ (Γ.O ⊔ Γ.U) = Γ.ycoord B := by
+        rw [show Γ.O ⊔ Γ.U = Γ.ycoord B ⊔ Γ.U from by
+          rw [sup_comm Γ.O Γ.U, sup_comm (Γ.ycoord B) Γ.U]
+          exact line_eq_of_atom_le&#x27; Γ.hU Γ.hO hb_atom Γ.hOU.symm hb_ne_U.symm
+            (le_of_le_of_eq hb_l (sup_comm Γ.O Γ.U))]
+        refine modular_intersection hb_atom Γ.hE_atom Γ.hU hb_ne_E hb_ne_U
+          (fun h =&gt; Γ.hE_not_l (h ▸ (le_sup_right : Γ.U ≤ Γ.O ⊔ Γ.U))) ?_
+        intro h
+        have hU_le_E : Γ.U ≤ Γ.E := le_of_le_of_eq
+          (le_inf h (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+          (line_direction hb_atom hb_not_m Γ.hE_on_m)
+        exact Γ.hEU (IsAtom.eq_of_le Γ.hU Γ.hE_atom hU_le_E).symm
+      have h_BU_inf_l : (B ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.U) = Γ.U := by
+        rw [sup_comm B Γ.U, sup_comm Γ.O Γ.U]
+        refine modular_intersection Γ.hU hB Γ.hO hB_ne_U.symm Γ.hOU.symm
+          hB_ne_O ?_
+        intro h
+        have h_line : Γ.U ⊔ B = Γ.U ⊔ Γ.O :=
+          line_eq_of_atom_le&#x27; Γ.hU hB Γ.hO hB_ne_U.symm Γ.hOU.symm h
+        exact hB_not_l (by
+          calc B ≤ Γ.U ⊔ B := le_sup_right
+            _ = Γ.U ⊔ Γ.O := h_line
+            _ = Γ.O ⊔ Γ.U := sup_comm _ _)
+      by_cases hQ1 : q ≤ Γ.O ⊔ Γ.C
+      · -- the horizontal-offset tower on the B-vector, x_h := the abscissa
+        have hO_sup_q_diag : Γ.O ⊔ q = Γ.O ⊔ Γ.C :=
+          Γ.sup_O_eq_diag hq_atom hQ1 hq_ne_O
+        have hS_eq_E : S = Γ.E := by
+          have h1 : S ≤ (Γ.O ⊔ Γ.C) ⊓ (Γ.U ⊔ Γ.V) :=
+            le_inf (by rw [← hO_sup_q_diag, hO_sup_q]; exact le_sup_right) hS_m
+          exact IsAtom.eq_of_le hS Γ.hE_atom h1
+        have hb_le_lam : Γ.ycoord B ≤ B ⊔ S := by
+          have h1 : B ⊔ Γ.ycoord B = B ⊔ Γ.E :=
+            line_eq_of_atom_le&#x27; hB hb_atom Γ.hE_atom hB_ne_b
+              (fun h =&gt; hB_aff (h ▸ Γ.hE_on_m))
+              (le_of_le_of_eq hB3 (sup_comm (Γ.ycoord B) B))
+          calc Γ.ycoord B ≤ B ⊔ Γ.ycoord B := le_sup_right
+            _ = B ⊔ Γ.E := h1
+            _ = B ⊔ S := by rw [hS_eq_E]
+        have hx_ne_b : Γ.xproj p ≠ Γ.ycoord B := by
+          intro h
+          have hb_le_xV : Γ.ycoord B ≤ Γ.xproj p ⊔ Γ.V := h ▸ le_sup_left
+          have hb_eq_meet : Γ.ycoord B = (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) :=
+            IsAtom.eq_of_le hb_atom h_meet_atom (le_inf hb_le_xV hb_le_lam)
+          exact hp_not_l (by rw [hp_eq_meet, ← hb_eq_meet]; exact hb_l)
+        have hX&#x27;_atom := Γ.shift_atom hB hB_π hB_aff hB_not_l hx_atom hx_l
+          hx_ne_O hx_ne_U
+        have hX&#x27;_le_BU := Γ.shift_le_sup_U hx_atom hx_l hx_ne_O B
+        have hX&#x27;_ne_B := Γ.shift_ne hB hB_π hB_aff hB_not_l hx_atom hx_l
+          hx_ne_O hx_ne_U
+        have hX&#x27;_not_l := Γ.shift_not_l hB hB_π hB_aff hB_not_l hx_atom hx_l
+          hx_ne_O hx_ne_U
+        set X&#x27; := parallelogram_completion (Γ.xproj p) Γ.O B (Γ.U ⊔ Γ.V)
+          with hX&#x27;_def
+        have hG1X&#x27; : ¬ X&#x27; ≤ Γ.O ⊔ Γ.C := by
+          intro h
+          have hdB_atom : IsAtom (Γ.diagproj B) :=
+            Γ.diagproj_is_atom hB hB_π hB_ne_U
+          have hX&#x27;_eq_dB : X&#x27; = Γ.diagproj B :=
+            IsAtom.eq_of_le hX&#x27;_atom hdB_atom
+              (le_inf hX&#x27;_le_BU h : X&#x27; ≤ (B ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.C))
+          have hdB_ne_O : Γ.diagproj B ≠ Γ.O := by
+            intro hh
+            have hO_le : Γ.O ≤ B ⊔ Γ.U :=
+              hh ▸ (inf_le_left : Γ.diagproj B ≤ B ⊔ Γ.U)
+            have h_line : Γ.U ⊔ B = Γ.U ⊔ Γ.O :=
+              line_eq_of_atom_le&#x27; Γ.hU hB Γ.hO hB_ne_U.symm Γ.hOU.symm
+                (by rwa [sup_comm] at hO_le)
+            exact hB_not_l (by
+              calc B ≤ Γ.U ⊔ B := le_sup_right
+                _ = Γ.U ⊔ Γ.O := h_line
+                _ = Γ.O ⊔ Γ.U := sup_comm _ _)
+          have hO_sup_dB : Γ.O ⊔ Γ.diagproj B = Γ.O ⊔ Γ.C :=
+            Γ.sup_O_eq_diag hdB_atom inf_le_right hdB_ne_O
+          have h_rev : parallelogram_completion Γ.O (Γ.xproj p) X&#x27; (Γ.U ⊔ Γ.V)
+              = B := by
+            rw [hX&#x27;_def]
+            exact reverse_completion hx_atom Γ.hO hB hx_ne_O
+              (fun hh =&gt; hB_not_l (hh ▸ hx_l))
+              hB_ne_O.symm
+              (hx_l.trans le_sup_left) hO_le_π hB_π Γ.m_le_π Γ.m_covBy_π
+              (fun w hw hwm =&gt; line_covers_its_atoms Γ.hU Γ.hV Γ.hUV hw hwm)
+              hx_aff Γ.hO_not_m hB_aff
+              (by
+                rw [sup_comm (Γ.xproj p) Γ.O, Γ.sup_O_eq_l hx_atom hx_l hx_ne_O]
+                exact hB_not_l)
+          have hB_le_2nd : B ≤ Γ.xproj p ⊔ (Γ.O ⊔ X&#x27;) ⊓ (Γ.U ⊔ Γ.V) := by
+            rw [← h_rev]
+            show (X&#x27; ⊔ (Γ.O ⊔ Γ.xproj p) ⊓ (Γ.U ⊔ Γ.V)) ⊓
+              (Γ.xproj p ⊔ (Γ.O ⊔ X&#x27;) ⊓ (Γ.U ⊔ Γ.V)) ≤ _
+            exact inf_le_right
+          rw [hX&#x27;_eq_dB, hO_sup_dB] at hB_le_2nd
+          have hB_le_xhE : B ≤ Γ.xproj p ⊔ Γ.E := hB_le_2nd
+          have h_xhE_inf_l : (Γ.xproj p ⊔ Γ.E) ⊓ (Γ.O ⊔ Γ.U) = Γ.xproj p := by
+            rw [show Γ.O ⊔ Γ.U = Γ.xproj p ⊔ Γ.U from by
+              rw [sup_comm Γ.O Γ.U, sup_comm (Γ.xproj p) Γ.U]
+              exact line_eq_of_atom_le&#x27; Γ.hU Γ.hO hx_atom Γ.hOU.symm
+                hx_ne_U.symm (le_of_le_of_eq hx_l (sup_comm Γ.O Γ.U))]
+            refine modular_intersection hx_atom Γ.hE_atom Γ.hU
+              (fun h3 =&gt; Γ.hE_not_l (h3 ▸ hx_l)) hx_ne_U
+              (fun h3 =&gt; Γ.hE_not_l (h3 ▸ (le_sup_right : Γ.U ≤ Γ.O ⊔ Γ.U))) ?_
+            intro h3
+            have hU_le_E : Γ.U ≤ Γ.E := le_of_le_of_eq
+              (le_inf h3 (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+              (line_direction hx_atom hx_aff Γ.hE_on_m)
+            exact Γ.hEU (IsAtom.eq_of_le Γ.hU Γ.hE_atom hU_le_E).symm
+          have hb_not_xhE : ¬ Γ.ycoord B ≤ Γ.xproj p ⊔ Γ.E := by
+            intro h3
+            exact hx_ne_b (IsAtom.eq_of_le hb_atom hx_atom (le_of_le_of_eq
+              (le_inf h3 hb_l) h_xhE_inf_l)).symm
+          have h_inf_E : (Γ.E ⊔ Γ.xproj p) ⊓ (Γ.E ⊔ Γ.ycoord B) = Γ.E :=
+            modular_intersection Γ.hE_atom hx_atom hb_atom
+              (fun h3 =&gt; Γ.hE_not_l (h3.symm ▸ hx_l)) hb_ne_E.symm
+              (fun h3 =&gt; hx_ne_b h3) (by
+                intro h3
+                exact hb_not_xhE (le_of_le_of_eq h3 (sup_comm Γ.E (Γ.xproj p))))
+          have hB_le_E : B ≤ Γ.E :=
+            le_of_le_of_eq (le_inf
+              (le_of_le_of_eq hB_le_xhE (sup_comm (Γ.xproj p) Γ.E))
+              (le_of_le_of_eq hB_le_bE (sup_comm (Γ.ycoord B) Γ.E))) h_inf_E
+          exact hB_aff (by
+            rw [IsAtom.eq_of_le hB Γ.hE_atom hB_le_E]
+            exact Γ.hE_on_m)
+        have hG3X&#x27; : ¬ Γ.E ≤ Γ.ycoord B ⊔ X&#x27; := by
+          intro h
+          have h_line : Γ.ycoord B ⊔ X&#x27; = Γ.ycoord B ⊔ Γ.E :=
+            line_eq_of_atom_le&#x27; hb_atom hX&#x27;_atom Γ.hE_atom
+              (fun hh =&gt; hX&#x27;_not_l (hh ▸ hb_l)) hb_ne_E h
+          have hX&#x27;_le_bE : X&#x27; ≤ Γ.ycoord B ⊔ Γ.E :=
+            h_line ▸ (le_sup_right : X&#x27; ≤ Γ.ycoord B ⊔ X&#x27;)
+          have h_meet2 : IsAtom ((Γ.ycoord B ⊔ Γ.E) ⊓ (B ⊔ Γ.U)) := by
+            refine line_height_two hb_atom Γ.hE_atom hb_ne_E
+              (lt_of_lt_of_le hB.bot_lt (le_inf hB_le_bE le_sup_left)) ?_
+            apply lt_of_le_of_ne inf_le_left
+            intro hh
+            have hb_le_BU : Γ.ycoord B ≤ B ⊔ Γ.U :=
+              le_sup_left.trans (inf_eq_left.mp hh)
+            exact hb_ne_U (IsAtom.eq_of_le hb_atom Γ.hU (le_of_le_of_eq
+              (le_inf hb_le_BU hb_l) h_BU_inf_l))
+          exact hX&#x27;_ne_B ((IsAtom.eq_of_le hX&#x27;_atom h_meet2
+            (le_inf hX&#x27;_le_bE hX&#x27;_le_BU)).trans
+            (IsAtom.eq_of_le hB h_meet2 (le_inf hB_le_bE le_sup_left)).symm)
+        have hq_not_OX&#x27; : ¬ q ≤ Γ.O ⊔ X&#x27; := by
+          intro h
+          have hO_ne_X&#x27; : Γ.O ≠ X&#x27; := fun hh =&gt; hX&#x27;_not_l (hh ▸ le_sup_left)
+          have h_line : Γ.O ⊔ X&#x27; = Γ.O ⊔ q :=
+            line_eq_of_atom_le&#x27; Γ.hO hX&#x27;_atom hq_atom hO_ne_X&#x27; hq_ne_O.symm h
+          exact hG1X&#x27; (by
+            calc X&#x27; ≤ Γ.O ⊔ X&#x27; := le_sup_right
+              _ = Γ.O ⊔ q := h_line
+              _ = Γ.O ⊔ Γ.C := hO_sup_q_diag)
+        have h_off := Γ.ycoord_translate_offset hB hB_π hB_aff hB_not_l
+          hq_atom hq_π hq_aff hq_not_l hq_not_OB hx_atom hx_l hx_ne_O hx_ne_U
+          hG1X&#x27; hG3X&#x27; hq_not_OX&#x27; R hR hR_not h_irred
+        rwa [← hp_eq] at h_off
+      · by_cases hQ3 : Γ.E ≤ Γ.ycoord q ⊔ q
+        · -- the vacuous crossing: both anti-ridings force q onto the y-axis
+          exfalso
+          have h_dn : Γ.O ⊔ Γ.C ≠ Γ.O ⊔ Γ.V := by
+            intro h
+            exact hB1 (by rw [h]; exact hB_n)
+          have hE_ne_V : Γ.E ≠ Γ.V := by
+            intro h
+            have hV_le_diag : Γ.V ≤ Γ.O ⊔ Γ.C := h ▸ Γ.hE_le_OC
+            exact h_dn (line_eq_of_atom_le&#x27; Γ.hO Γ.hC Γ.hV Γ.hOC Γ.hOV
+              hV_le_diag)
+          have h_yq_line : Γ.ycoord q ⊔ q = Γ.ycoord q ⊔ Γ.E :=
+            line_eq_of_atom_le&#x27; hy_atom hq_atom Γ.hE_atom hy_ne_q hy_ne_E hQ3
+          have hq_le_yE : q ≤ Γ.ycoord q ⊔ Γ.E :=
+            h_yq_line ▸ (le_sup_right : q ≤ Γ.ycoord q ⊔ q)
+          have h_qU_inf_l : (q ⊔ Γ.U) ⊓ (Γ.O ⊔ Γ.U) = Γ.U := by
+            rw [sup_comm q Γ.U, sup_comm Γ.O Γ.U]
+            refine modular_intersection Γ.hU hq_atom Γ.hO
+              (Γ.ne_U_of_affine hq_aff).symm Γ.hOU.symm hq_ne_O ?_
+            intro h
+            have h_line : Γ.U ⊔ q = Γ.U ⊔ Γ.O :=
+              line_eq_of_atom_le&#x27; Γ.hU hq_atom Γ.hO
+                (Γ.ne_U_of_affine hq_aff).symm Γ.hOU.symm h
+            exact hq_not_l (by
+              calc q ≤ Γ.U ⊔ q := le_sup_right
+                _ = Γ.U ⊔ Γ.O := h_line
+                _ = Γ.O ⊔ Γ.U := sup_comm _ _)
+          have collapse : ∀ W : L, IsAtom W → W ≤ Γ.O ⊔ Γ.V →
+              W ≤ Γ.ycoord q ⊔ Γ.E → Γ.ycoord W = Γ.ycoord q → False := by
+            intro W hW hW_n hW_le_yE hW_y
+            have hW_ne_V : W ≠ Γ.V := by
+              intro h
+              have hV_le_yE : Γ.V ≤ Γ.ycoord q ⊔ Γ.E := h ▸ hW_le_yE
+              have hV_le_E : Γ.V ≤ Γ.E := le_of_le_of_eq
+                (le_inf hV_le_yE (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V))
+                (line_direction hy_atom hy_not_m Γ.hE_on_m)
+              exact hE_ne_V (IsAtom.eq_of_le Γ.hV Γ.hE_atom hV_le_E).symm
+            have hW_aff : ¬ W ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_n hW hW_n hW_ne_V
+            have hW_π : W ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hW_n.trans hn_le_π
+            have h_supU : W ⊔ Γ.U = q ⊔ Γ.U :=
+              Γ.sup_U_eq_of_ycoord_eq hW hW_π hW_aff hq_atom hq_π hq_aff hW_y
+            have h_meet2 : IsAtom ((Γ.ycoord q ⊔ Γ.E) ⊓ (q ⊔ Γ.U)) := by
+              refine line_height_two hy_atom Γ.hE_atom hy_ne_E
+                (lt_of_lt_of_le hq_atom.bot_lt (le_inf hq_le_yE le_sup_left)) ?_
+              apply lt_of_le_of_ne inf_le_left
+              intro hh
+              have hy_le_qU : Γ.ycoord q ≤ q ⊔ Γ.U :=
+                le_sup_left.trans (inf_eq_left.mp hh)
+              exact hy_ne_U (IsAtom.eq_of_le hy_atom Γ.hU (le_of_le_of_eq
+                (le_inf hy_le_qU hy_l) h_qU_inf_l))
+            have hW_le_qU : W ≤ q ⊔ Γ.U :=
+              le_of_le_of_eq (le_sup_left : W ≤ W ⊔ Γ.U) h_supU
+            have hq_eq_W : q = W :=
+              (IsAtom.eq_of_le hq_atom h_meet2
+                (le_inf hq_le_yE le_sup_left)).trans
+              (IsAtom.eq_of_le hW h_meet2 (le_inf hW_le_yE hW_le_qU)).symm
+            exact Γ.ne_V_of_affine hq_aff
+              (Γ.eq_V_of_le_vertical_of_le_n hx_atom hx_l hx_ne_O hq_atom
+                hq_le_xV (hq_eq_W.le.trans hW_n))
+          by_cases hby : Γ.ycoord B = Γ.ycoord q
+          · exact collapse B hB hB_n (by rw [← hby]; exact hB_le_bE) hby
+          · have hB_eq_yseat : Γ.yseat (Γ.ycoord B) = B :=
+              Γ.yseat_ycoord hB hB_n hB_ne_V
+            have h_anti : Γ.E ≤ Γ.ycoord B ⊔ Γ.yseat (Γ.ycoord B) := by
+              rw [hB_eq_yseat]
+              exact hB3
+            have h_tr := Γ.anti_transport hb_atom hb_l hb_ne_O hb_ne_U hy_atom
+              hy_l hy_ne_O hy_ne_U hby h_dn h_anti R hR hR_not h_irred
+            have hN_atom : IsAtom (Γ.yseat (Γ.ycoord q)) :=
+              Γ.yseat_is_atom hy_atom hy_l hy_ne_U
+            have hN_n : Γ.yseat (Γ.ycoord q) ≤ Γ.O ⊔ Γ.V :=
+              Γ.yseat_le_n (Γ.ycoord q)
+            have hyN : Γ.ycoord (Γ.yseat (Γ.ycoord q)) = Γ.ycoord q :=
+              Γ.ycoord_yseat hy_atom hy_l hy_ne_U
+            have hy_ne_N : Γ.ycoord q ≠ Γ.yseat (Γ.ycoord q) := by
+              intro h
+              have hy_le_n : Γ.ycoord q ≤ Γ.O ⊔ Γ.V := h.le.trans hN_n
+              exact hy_ne_O (IsAtom.eq_of_le hy_atom Γ.hO (le_of_le_of_eq
+                (le_inf hy_l hy_le_n) Γ.l_inf_n_eq_O))
+            have hN_le_yE : Γ.yseat (Γ.ycoord q) ≤ Γ.ycoord q ⊔ Γ.E := by
+              have h1 : Γ.ycoord q ⊔ Γ.yseat (Γ.ycoord q) = Γ.ycoord q ⊔ Γ.E :=
+                line_eq_of_atom_le&#x27; hy_atom hN_atom Γ.hE_atom hy_ne_N hy_ne_E
+                  h_tr
+              exact h1 ▸ (le_sup_right : _ ≤ Γ.ycoord q ⊔ Γ.yseat (Γ.ycoord q))
+            exact collapse (Γ.yseat (Γ.ycoord q)) hN_atom hN_n hN_le_yE hyN
+        · exact t2 hQ1 hQ3
+    · have h1 := Γ.ycoord_translate hB hB_π hB_aff hB_not_l hq_atom hq_π
+        hq_aff hq_not_l hq_not_OB hB1 hB3 R hR hR_not h_irred
+      rwa [← hp_eq] at h1
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.slope_facts" href="#CoordSystem.slope_facts">CoordSystem.slope_facts</a> (Γ : CoordSystem L) {S : L} (hS : IsAtom S)
+    (hS_m : S ≤ Γ.U ⊔ Γ.V) (hS_ne_U : S ≠ Γ.U) (hS_ne_V : S ≠ Γ.V) :
+    IsAtom (Γ.slope S) ∧ Γ.slope S ≤ Γ.O ⊔ Γ.U ∧ Γ.slope S ≠ Γ.O ∧
+      Γ.slope S ≠ Γ.U := by
+  have hO_le_π : Γ.O ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := le_sup_left.trans le_sup_left
+  have hO_ne_S : Γ.O ≠ S := fun h =&gt; Γ.hO_not_m (h ▸ hS_m)
+  have hOS_le_π : Γ.O ⊔ S ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    sup_le hO_le_π (hS_m.trans Γ.m_le_π)
+  have hOS_inf_m : (Γ.O ⊔ S) ⊓ (Γ.U ⊔ Γ.V) = S :=
+    line_direction Γ.hO Γ.hO_not_m hS_m
+  have hIV_cov : Γ.I ⊔ Γ.V ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    Γ.sup_V_covBy_π Γ.hI Γ.hI_on Γ.hUI.symm
+  have hOS_not_IV : ¬ Γ.O ⊔ S ≤ Γ.I ⊔ Γ.V := by
+    intro h
+    have hO_le_I : Γ.O ≤ Γ.I := le_of_le_of_eq
+      (le_inf le_sup_left (le_sup_left.trans h)) Γ.l_inf_IV_eq_I
+    exact Γ.hOI (IsAtom.eq_of_le Γ.hO Γ.hI hO_le_I)
+  have hS_lt_OS : S &lt; Γ.O ⊔ S := lt_of_le_of_ne le_sup_right
+    (fun h =&gt; hO_ne_S (IsAtom.eq_of_le Γ.hO hS (h ▸ le_sup_left)))
+  have hM_ne_bot : (Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V) ≠ ⊥ := by
+    rw [inf_comm]
+    exact lines_meet_if_coplanar hIV_cov hOS_le_π hOS_not_IV hS hS_lt_OS
+  have hM_lt : (Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V) &lt; Γ.I ⊔ Γ.V := by
+    apply lt_of_le_of_ne inf_le_right
+    intro h
+    have hV_le_OS : Γ.V ≤ Γ.O ⊔ S := le_sup_right.trans (inf_eq_right.mp h)
+    have hV_le_S : Γ.V ≤ S := le_of_le_of_eq
+      (le_inf hV_le_OS (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V)) hOS_inf_m
+    exact hS_ne_V (IsAtom.eq_of_le Γ.hV hS hV_le_S).symm
+  have hM_atom : IsAtom ((Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V)) :=
+    line_height_two Γ.hI Γ.hV Γ.hI_ne_V (bot_lt_iff_ne_bot.mpr hM_ne_bot) hM_lt
+  have hM_le_IV : (Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V) ≤ Γ.I ⊔ Γ.V := inf_le_right
+  have hM_le_OS : (Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V) ≤ Γ.O ⊔ S := inf_le_left
+  have hM_π : (Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V) ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    hM_le_OS.trans hOS_le_π
+  have hM_aff : ¬ (Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V) ≤ Γ.U ⊔ Γ.V := by
+    intro h
+    have hM_le_V : (Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V) ≤ Γ.V :=
+      le_of_le_of_eq (le_inf hM_le_IV h) Γ.IV_inf_m_eq_V
+    have hV_le_OS : Γ.V ≤ Γ.O ⊔ S :=
+      (IsAtom.eq_of_le hM_atom Γ.hV hM_le_V) ▸ hM_le_OS
+    have hV_le_S : Γ.V ≤ S := le_of_le_of_eq
+      (le_inf hV_le_OS (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V)) hOS_inf_m
+    exact hS_ne_V (IsAtom.eq_of_le Γ.hV hS hV_le_S).symm
+  have hM_not_l : ¬ (Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V) ≤ Γ.O ⊔ Γ.U := by
+    intro h
+    have hM_le_I : (Γ.O ⊔ S) ⊓ (Γ.I ⊔ Γ.V) ≤ Γ.I :=
+      le_of_le_of_eq (le_inf h hM_le_IV) Γ.l_inf_IV_eq_I
+    have hI_le_OS : Γ.I ≤ Γ.O ⊔ S :=
+      (IsAtom.eq_of_le hM_atom Γ.hI hM_le_I) ▸ hM_le_OS
+    have h_line : Γ.O ⊔ S = Γ.O ⊔ Γ.I :=
+      line_eq_of_atom_le&#x27; Γ.hO hS Γ.hI hO_ne_S Γ.hOI hI_le_OS
+    have h_line2 : Γ.O ⊔ Γ.U = Γ.O ⊔ Γ.I :=
+      line_eq_of_atom_le&#x27; Γ.hO Γ.hU Γ.hI Γ.hOU Γ.hOI Γ.hI_on
+    have hS_le_l : S ≤ Γ.O ⊔ Γ.U := by
+      calc S ≤ Γ.O ⊔ S := le_sup_right
+        _ = Γ.O ⊔ Γ.I := h_line
+        _ = Γ.O ⊔ Γ.U := h_line2.symm
+    exact hS_ne_U (Γ.atom_on_both_eq_U hS hS_le_l hS_m)
+  exact ⟨Γ.ycoord_is_atom hM_atom hM_π hM_aff, Γ.ycoord_le_l _,
+    Γ.ycoord_ne_O hM_atom hM_π hM_aff hM_not_l,
+    Γ.ycoord_ne_U hM_atom hM_π hM_aff⟩
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.line_intercept" href="#CoordSystem.line_intercept">CoordSystem.line_intercept</a> (Γ : CoordSystem L) {S B p : L}
+    (hS : IsAtom S) (hS_m : S ≤ Γ.U ⊔ Γ.V) (hS_ne_U : S ≠ Γ.U) (hS_ne_V : S ≠ Γ.V)
+    (hB : IsAtom B) (hB_n : B ≤ Γ.O ⊔ Γ.V) (hB_ne_O : B ≠ Γ.O) (hB_ne_V : B ≠ Γ.V)
+    (hp : IsAtom p) (hp_le : p ≤ B ⊔ S) (hp_l : p ≤ Γ.O ⊔ Γ.U)
+    (P : L) (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I) (hP_ne_O : P ≠ Γ.O)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    coord_add Γ (coord_mul Γ (Γ.slope S) (Γ.xproj p)) (Γ.ycoord B) = Γ.O := by
+  obtain ⟨ha_atom, ha_l, ha_ne_O, ha_ne_U⟩ := Γ.slope_facts hS hS_m hS_ne_U hS_ne_V
+  have hO_le_π : Γ.O ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := le_sup_left.trans le_sup_left
+  have hn_le_π : Γ.O ⊔ Γ.V ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := sup_le hO_le_π le_sup_right
+  have hB_aff : ¬ B ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_n hB hB_n hB_ne_V
+  have hB_π : B ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hB_n.trans hn_le_π
+  have hB_not_l : ¬ B ≤ Γ.O ⊔ Γ.U := fun h =&gt; hB_ne_O
+    (IsAtom.eq_of_le hB Γ.hO (le_of_le_of_eq (le_inf h hB_n) Γ.l_inf_n_eq_O))
+  have hB_ne_S : B ≠ S := fun h =&gt; hB_aff (h ▸ hS_m)
+  have hlam_π : B ⊔ S ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := sup_le hB_π (hS_m.trans Γ.m_le_π)
+  have hlam_inf_m : (B ⊔ S) ⊓ (Γ.U ⊔ Γ.V) = S := line_direction hB hB_aff hS_m
+  have hp_ne_U : p ≠ Γ.U := by
+    intro h
+    have hU_le_S : Γ.U ≤ S := le_of_le_of_eq
+      (le_inf (h ▸ hp_le) (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V)) hlam_inf_m
+    exact hS_ne_U (IsAtom.eq_of_le Γ.hU hS hU_le_S).symm
+  have hp_aff : ¬ p ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hp hp_l hp_ne_U
+  have hb_atom : IsAtom (Γ.ycoord B) := Γ.ycoord_is_atom hB hB_π hB_aff
+  have hb_l : Γ.ycoord B ≤ Γ.O ⊔ Γ.U := Γ.ycoord_le_l B
+  have hb_ne_U : Γ.ycoord B ≠ Γ.U := Γ.ycoord_ne_U hB hB_π hB_aff
+  have hb_ne_O : Γ.ycoord B ≠ Γ.O := Γ.ycoord_ne_O hB hB_π hB_aff hB_not_l
+  have hnb_atom : IsAtom (coord_neg Γ (Γ.ycoord B)) :=
+    coord_neg_atom Γ hb_atom hb_l hb_ne_O hb_ne_U
+  have hnb_l : coord_neg Γ (Γ.ycoord B) ≤ Γ.O ⊔ Γ.U := coord_neg_on_l Γ _
+  have hnb_ne_O : coord_neg Γ (Γ.ycoord B) ≠ Γ.O :=
+    coord_neg_ne_O Γ hb_atom hb_l hb_ne_O hb_ne_U
+  have hnb_ne_U : coord_neg Γ (Γ.ycoord B) ≠ Γ.U :=
+    coord_neg_ne_U Γ hb_atom hb_l hb_ne_O hb_ne_U
+  have hia_atom : IsAtom (coord_inv Γ (Γ.slope S)) :=
+    coord_inv_atom Γ ha_atom ha_l ha_ne_U
+  have hia_l : coord_inv Γ (Γ.slope S) ≤ Γ.O ⊔ Γ.U := coord_inv_on_l Γ _
+  have hia_ne_O : coord_inv Γ (Γ.slope S) ≠ Γ.O :=
+    coord_inv_ne_O Γ ha_atom ha_l ha_ne_U
+  have hia_ne_U : coord_inv Γ (Γ.slope S) ≠ Γ.U :=
+    coord_inv_ne_U Γ ha_atom ha_l ha_ne_O
+  have hp&#x27;_atom : IsAtom (coord_mul Γ (coord_inv Γ (Γ.slope S))
+      (coord_neg Γ (Γ.ycoord B))) :=
+    coord_mul_atom Γ _ _ hia_atom hnb_atom hia_l hnb_l hia_ne_O hnb_ne_O
+      hia_ne_U hnb_ne_U
+  have hp&#x27;_l : coord_mul Γ (coord_inv Γ (Γ.slope S))
+      (coord_neg Γ (Γ.ycoord B)) ≤ Γ.O ⊔ Γ.U := inf_le_right
+  have hp&#x27;_ne_O : coord_mul Γ (coord_inv Γ (Γ.slope S))
+      (coord_neg Γ (Γ.ycoord B)) ≠ Γ.O :=
+    coord_mul_ne_O&#x27; Γ _ _ hia_atom hnb_atom hia_l hnb_l hia_ne_O hnb_ne_O
+      hia_ne_U hnb_ne_U
+  have hp&#x27;_ne_U : coord_mul Γ (coord_inv Γ (Γ.slope S))
+      (coord_neg Γ (Γ.ycoord B)) ≠ Γ.U :=
+    coord_mul_ne_U&#x27; Γ _ _ hia_atom hnb_atom hia_l hnb_l hia_ne_O
+      hia_ne_U hnb_ne_U
+  set p&#x27; := coord_mul Γ (coord_inv Γ (Γ.slope S)) (coord_neg Γ (Γ.ycoord B))
+    with hp&#x27;_def
+  have h_inv : coord_mul Γ (Γ.slope S) (coord_inv Γ (Γ.slope S)) = Γ.I :=
+    coord_mul_right_inv Γ ha_atom ha_l ha_ne_O ha_ne_U
+  have h_ap&#x27; : coord_mul Γ (Γ.slope S) p&#x27; = coord_neg Γ (Γ.ycoord B) := by
+    by_cases haI : Γ.slope S = Γ.I
+    · rw [hp&#x27;_def, haI, coord_inv_I_eq_I,
+        coord_mul_left_one Γ _ hnb_atom hnb_l hnb_ne_U,
+        coord_mul_left_one Γ _ hnb_atom hnb_l hnb_ne_U]
+    · have h_assoc := coord_mul_assoc Γ (Γ.slope S) (coord_inv Γ (Γ.slope S))
+        (coord_neg Γ (Γ.ycoord B)) ha_atom hia_atom hnb_atom ha_l hia_l hnb_l
+        ha_ne_O hia_ne_O hnb_ne_O ha_ne_U hia_ne_U hnb_ne_U haI
+        (by rw [h_inv]; exact Γ.hOI.symm)
+        (by rw [h_inv]; exact Γ.hUI.symm)
+        hp&#x27;_ne_O hp&#x27;_ne_U
+        (by rw [h_inv, coord_mul_left_one Γ _ hnb_atom hnb_l hnb_ne_U]
+            exact hnb_ne_O)
+        (by rw [h_inv, coord_mul_left_one Γ _ hnb_atom hnb_l hnb_ne_U]
+            exact hnb_ne_U)
+        (coord_mul_ne_O&#x27; Γ _ _ ha_atom hp&#x27;_atom ha_l hp&#x27;_l ha_ne_O hp&#x27;_ne_O
+          ha_ne_U hp&#x27;_ne_U)
+        (coord_mul_ne_U&#x27; Γ _ _ ha_atom hp&#x27;_atom ha_l hp&#x27;_l ha_ne_O
+          ha_ne_U hp&#x27;_ne_U)
+        hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I hP_ne_O
+        R hR hR_not h_irred
+      rw [hp&#x27;_def, ← h_assoc, h_inv,
+        coord_mul_left_one Γ _ hnb_atom hnb_l hnb_ne_U]
+  have h_sum : coord_add Γ (coord_neg Γ (Γ.ycoord B)) (Γ.ycoord B) = Γ.O := by
+    by_cases hbnb : Γ.ycoord B = coord_neg Γ (Γ.ycoord B)
+    · have h1 := coord_add_left_neg Γ (Γ.ycoord B) hb_atom hb_l hb_ne_O hb_ne_U
+        R hR hR_not h_irred
+      rwa [← hbnb] at h1 ⊢
+    · exact coord_add_right_neg Γ (Γ.ycoord B) hb_atom hb_l hb_ne_O hb_ne_U
+        hnb_ne_O hnb_ne_U hbnb R hR hR_not h_irred
+  have hp&#x27;V_cov : p&#x27; ⊔ Γ.V ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+    Γ.sup_V_covBy_π hp&#x27;_atom hp&#x27;_l hp&#x27;_ne_U
+  have hp&#x27;_aff : ¬ p&#x27; ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hp&#x27;_atom hp&#x27;_l hp&#x27;_ne_U
+  have hlam_not_p&#x27;V : ¬ B ⊔ S ≤ p&#x27; ⊔ Γ.V := by
+    intro h
+    have hS_le_V : S ≤ Γ.V := le_of_le_of_eq
+      (le_inf (le_sup_right.trans h) hS_m)
+      (line_direction hp&#x27;_atom hp&#x27;_aff (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V))
+    exact hS_ne_V (IsAtom.eq_of_le hS Γ.hV hS_le_V)
+  have hB_lt_lam : B &lt; B ⊔ S := lt_of_le_of_ne le_sup_left
+    (fun h =&gt; hB_ne_S (IsAtom.eq_of_le hS hB (h ▸ le_sup_right)).symm)
+  have hr&#x27;_ne_bot : (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) ≠ ⊥ :=
+    lines_meet_if_coplanar hp&#x27;V_cov hlam_π hlam_not_p&#x27;V hB hB_lt_lam
+  have hr&#x27;_lt : (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) &lt; B ⊔ S := by
+    apply lt_of_le_of_ne inf_le_right
+    intro h
+    exact hlam_not_p&#x27;V (inf_eq_right.mp h)
+  have hr&#x27;_atom : IsAtom ((p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S)) :=
+    line_height_two hB hS hB_ne_S (bot_lt_iff_ne_bot.mpr hr&#x27;_ne_bot) hr&#x27;_lt
+  have hr&#x27;_le_p&#x27;V : (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) ≤ p&#x27; ⊔ Γ.V := inf_le_left
+  have hr&#x27;_le_lam : (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) ≤ B ⊔ S := inf_le_right
+  have hr&#x27;_aff : ¬ (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) ≤ Γ.U ⊔ Γ.V := by
+    intro h
+    have hr&#x27;_eq_S : (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) = S :=
+      IsAtom.eq_of_le hr&#x27;_atom hS
+        (le_of_le_of_eq (le_inf hr&#x27;_le_lam h) hlam_inf_m)
+    have hS_le_V : S ≤ Γ.V := le_of_le_of_eq
+      (le_inf (hr&#x27;_eq_S ▸ hr&#x27;_le_p&#x27;V) hS_m)
+      (line_direction hp&#x27;_atom hp&#x27;_aff (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V))
+    exact hS_ne_V (IsAtom.eq_of_le hS Γ.hV hS_le_V)
+  have hxr&#x27; : Γ.xproj ((p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S)) = p&#x27; :=
+    (Γ.le_vertical_iff hr&#x27;_atom hr&#x27;_aff hp&#x27;_atom hp&#x27;_l hp&#x27;_ne_U).mp hr&#x27;_le_p&#x27;V
+  have hlam_not_l : ¬ B ⊔ S ≤ Γ.O ⊔ Γ.U :=
+    fun h =&gt; hB_not_l (le_sup_left.trans h)
+  by_cases hr&#x27;_l : (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) ≤ Γ.O ⊔ Γ.U
+  · have hm3_ne_bot : (B ⊔ S) ⊓ (Γ.O ⊔ Γ.U) ≠ ⊥ := by
+      rw [inf_comm]
+      exact lines_meet_if_coplanar Γ.l_covBy_π hlam_π hlam_not_l hB hB_lt_lam
+    have hm3_lt : (B ⊔ S) ⊓ (Γ.O ⊔ Γ.U) &lt; B ⊔ S := by
+      apply lt_of_le_of_ne inf_le_left
+      intro h
+      exact hlam_not_l (inf_eq_left.mp h)
+    have hm3_atom : IsAtom ((B ⊔ S) ⊓ (Γ.O ⊔ Γ.U)) :=
+      line_height_two hB hS hB_ne_S (bot_lt_iff_ne_bot.mpr hm3_ne_bot) hm3_lt
+    have hp_eq_m3 : p = (B ⊔ S) ⊓ (Γ.O ⊔ Γ.U) :=
+      IsAtom.eq_of_le hp hm3_atom (le_inf hp_le hp_l)
+    have hr&#x27;_eq_m3 : (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) = (B ⊔ S) ⊓ (Γ.O ⊔ Γ.U) :=
+      IsAtom.eq_of_le hr&#x27;_atom hm3_atom (le_inf hr&#x27;_le_lam hr&#x27;_l)
+    have hp_eq_r&#x27; : p = (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) := hp_eq_m3.trans hr&#x27;_eq_m3.symm
+    have hxp_eq : Γ.xproj p = p&#x27; := by
+      rw [hp_eq_r&#x27;]
+      exact hxr&#x27;
+    rw [hxp_eq, h_ap&#x27;]
+    exact h_sum
+  · have hr&#x27;_π : (p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S) ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+      hr&#x27;_le_lam.trans hlam_π
+    have hxr&#x27;_ne_O : Γ.xproj ((p&#x27; ⊔ Γ.V) ⊓ (B ⊔ S)) ≠ Γ.O := by
+      rw [hxr&#x27;]
+      exact hp&#x27;_ne_O
+    have h_r&#x27; := Γ.ycoord_of_le_line_aux hS hS_m hS_ne_U hS_ne_V hB hB_n
+      hB_ne_O hB_ne_V hr&#x27;_atom hr&#x27;_aff hr&#x27;_le_lam hr&#x27;_l hxr&#x27;_ne_O
+      R hR hR_not h_irred
+    rw [hxr&#x27;, h_ap&#x27;, h_sum] at h_r&#x27;
+    exact absurd (Γ.le_l_of_ycoord_eq_O hr&#x27;_atom hr&#x27;_π hr&#x27;_aff h_r&#x27;) hr&#x27;_l
+
+<span class="kw">theorem</span> <a class="decl" id="CoordSystem.le_line_iff" href="#CoordSystem.le_line_iff">CoordSystem.le_line_iff</a> (Γ : CoordSystem L) {S B p : L}
+    (hS : IsAtom S) (hS_m : S ≤ Γ.U ⊔ Γ.V) (hS_ne_V : S ≠ Γ.V)
+    (hB : IsAtom B) (hB_n : B ≤ Γ.O ⊔ Γ.V) (hB_ne_V : B ≠ Γ.V)
+    (hp : IsAtom p) (hp_π : p ≤ Γ.O ⊔ Γ.U ⊔ Γ.V) (hp_aff : ¬ p ≤ Γ.U ⊔ Γ.V)
+    (P : L) (hP : IsAtom P) (hP_plane : P ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (hP_not_l : ¬ P ≤ Γ.O ⊔ Γ.U) (hP_not_m : ¬ P ≤ Γ.U ⊔ Γ.V)
+    (hP_not_OC : ¬ P ≤ Γ.O ⊔ Γ.C) (hP_ne_I : P ≠ Γ.I) (hP_ne_O : P ≠ Γ.O)
+    (R : L) (hR : IsAtom R) (hR_not : ¬ R ≤ Γ.O ⊔ Γ.U ⊔ Γ.V)
+    (h_irred : ∀ (p q : L), IsAtom p → IsAtom q → p ≠ q →
+      ∃ r : L, IsAtom r ∧ r ≤ p ⊔ q ∧ r ≠ p ∧ r ≠ q) :
+    p ≤ B ⊔ S ↔
+      Γ.ycoord p = coord_add Γ (coord_mul Γ (Γ.slope S) (Γ.xproj p)) (Γ.ycoord B) := by
+  have hO_le_π : Γ.O ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := le_sup_left.trans le_sup_left
+  have hn_le_π : Γ.O ⊔ Γ.V ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := sup_le hO_le_π le_sup_right
+  have hB_aff : ¬ B ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_n hB hB_n hB_ne_V
+  have hB_π : B ≤ Γ.O ⊔ Γ.U ⊔ Γ.V := hB_n.trans hn_le_π
+  have hb_atom : IsAtom (Γ.ycoord B) := Γ.ycoord_is_atom hB hB_π hB_aff
+  have hb_l : Γ.ycoord B ≤ Γ.O ⊔ Γ.U := Γ.ycoord_le_l B
+  have hb_ne_U : Γ.ycoord B ≠ Γ.U := Γ.ycoord_ne_U hB hB_π hB_aff
+  have hx_atom : IsAtom (Γ.xproj p) := Γ.xproj_is_atom hp hp_π hp_aff
+  have hx_l : Γ.xproj p ≤ Γ.O ⊔ Γ.U := Γ.xproj_le_l p
+  have hx_ne_U : Γ.xproj p ≠ Γ.U := Γ.xproj_ne_U hp hp_aff
+  have hx_aff : ¬ Γ.xproj p ≤ Γ.U ⊔ Γ.V := Γ.affine_of_on_l hx_atom hx_l hx_ne_U
+  have hp_le_xV : p ≤ Γ.xproj p ⊔ Γ.V :=
+    le_of_le_of_eq (le_sup_left : p ≤ p ⊔ Γ.V) (Γ.sup_V_xproj hp hp_π hp_aff)
+  have hp_ne_U : p ≠ Γ.U := Γ.ne_U_of_affine hp_aff
+  by_cases hSU : S = Γ.U
+  · subst hSU
+    rw [Γ.slope_U, coord_mul_left_zero Γ (Γ.xproj p) hx_atom hx_l hx_ne_U,
+      coord_add_left_zero Γ (Γ.ycoord B) hb_atom hb_l hb_ne_U]
+    exact Γ.le_horizontal_iff hp hp_π hp_aff hB hB_π hB_aff
+  · obtain ⟨ha_atom, ha_l, ha_ne_O, ha_ne_U⟩ :=
+      Γ.slope_facts hS hS_m hSU hS_ne_V
+    by_cases hBO : B = Γ.O
+    · subst hBO
+      rw [show Γ.ycoord Γ.O = Γ.O from Γ.ycoord_of_on_l Γ.hO le_sup_left Γ.hOU]
+      have h := Γ.le_origin_line_iff hS hS_m hS_ne_V hp hp_π hp_aff R hR
+        hR_not h_irred
+      by_cases hx0 : Γ.xproj p = Γ.O
+      · rw [hx0, coord_mul_right_zero Γ (Γ.slope S) ha_atom ha_l ha_ne_U,
+          coord_add_left_zero Γ Γ.O Γ.hO le_sup_left Γ.hOU]
+        rw [hx0, coord_mul_right_zero Γ (Γ.slope S) ha_atom ha_l ha_ne_U] at h
+        exact h
+      · rw [coord_add_right_zero Γ _ (coord_mul_atom Γ _ _ ha_atom hx_atom
+          ha_l hx_l ha_ne_O hx0 ha_ne_U hx_ne_U) inf_le_right]
+        exact h
+    · have hB_not_l : ¬ B ≤ Γ.O ⊔ Γ.U := fun h =&gt; hBO
+        (IsAtom.eq_of_le hB Γ.hO (le_of_le_of_eq (le_inf h hB_n) Γ.l_inf_n_eq_O))
+      have hb_ne_O : Γ.ycoord B ≠ Γ.O := Γ.ycoord_ne_O hB hB_π hB_aff hB_not_l
+      have hB_ne_S : B ≠ S := fun h =&gt; hB_aff (h ▸ hS_m)
+      have hlam_π : B ⊔ S ≤ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+        sup_le hB_π (hS_m.trans Γ.m_le_π)
+      have hlam_not_l : ¬ B ⊔ S ≤ Γ.O ⊔ Γ.U :=
+        fun h =&gt; hB_not_l (le_sup_left.trans h)
+      have hB_lt_lam : B &lt; B ⊔ S := lt_of_le_of_ne le_sup_left
+        (fun h =&gt; hB_ne_S (IsAtom.eq_of_le hS hB (h ▸ le_sup_right)).symm)
+      have hlam_inf_m : (B ⊔ S) ⊓ (Γ.U ⊔ Γ.V) = S :=
+        line_direction hB hB_aff hS_m
+      constructor
+      · intro hle
+        by_cases hpl : p ≤ Γ.O ⊔ Γ.U
+        · rw [Γ.ycoord_of_on_l hp hpl hp_ne_U]
+          exact (Γ.line_intercept hS hS_m hSU hS_ne_V hB hB_n hBO hB_ne_V hp
+            hle hpl P hP hP_plane hP_not_l hP_not_m hP_not_OC hP_ne_I hP_ne_O
+            R hR hR_not h_irred).symm
+        · by_cases hx0 : Γ.xproj p = Γ.O
+          · have hp_le_n : p ≤ Γ.O ⊔ Γ.V := by
+              rw [← hx0]
+              exact hp_le_xV
+            have hmn_lt : (B ⊔ S) ⊓ (Γ.O ⊔ Γ.V) &lt; B ⊔ S := by
+              apply lt_of_le_of_ne inf_le_left
+              intro h
+              have hS_le_n : S ≤ Γ.O ⊔ Γ.V :=
+                le_sup_right.trans (inf_eq_left.mp h)
+              have hS_le_V : S ≤ Γ.V := le_of_le_of_eq
+                (le_inf hS_le_n hS_m) Γ.n_inf_m_eq_V
+              exact hS_ne_V (IsAtom.eq_of_le hS Γ.hV hS_le_V)
+            have hmn_atom : IsAtom ((B ⊔ S) ⊓ (Γ.O ⊔ Γ.V)) :=
+              line_height_two hB hS hB_ne_S
+                (lt_of_lt_of_le hB.bot_lt (le_inf le_sup_left hB_n)) hmn_lt
+            have hp_eq_B : p = B :=
+              (IsAtom.eq_of_le hp hmn_atom (le_inf hle hp_le_n)).trans
+              (IsAtom.eq_of_le hB hmn_atom (le_inf le_sup_left hB_n)).symm
+            rw [hx0, coord_mul_right_zero Γ (Γ.slope S) ha_atom ha_l ha_ne_U,
+              coord_add_left_zero Γ (Γ.ycoord B) hb_atom hb_l hb_ne_U,
+              hp_eq_B]
+          · exact Γ.ycoord_of_le_line_aux hS hS_m hSU hS_ne_V hB hB_n hBO
+              hB_ne_V hp hp_aff hle hpl hx0 R hR hR_not h_irred
+      · intro heq
+        by_cases hx0 : Γ.xproj p = Γ.O
+        · rw [hx0, coord_mul_right_zero Γ (Γ.slope S) ha_atom ha_l ha_ne_U,
+            coord_add_left_zero Γ (Γ.ycoord B) hb_atom hb_l hb_ne_U] at heq
+          have h_supU : p ⊔ Γ.U = B ⊔ Γ.U :=
+            Γ.sup_U_eq_of_ycoord_eq hp hp_π hp_aff hB hB_π hB_aff heq
+          have hp_le_n : p ≤ Γ.O ⊔ Γ.V := by
+            rw [← hx0]
+            exact hp_le_xV
+          have hBU_ne_n : ¬ Γ.O ⊔ Γ.V ≤ B ⊔ Γ.U := by
+            intro h
+            exact Γ.V_not_le_sup_U hB hB_aff (le_sup_right.trans h)
+          have hmn2_lt : (Γ.O ⊔ Γ.V) ⊓ (B ⊔ Γ.U) &lt; Γ.O ⊔ Γ.V := by
+            apply lt_of_le_of_ne inf_le_left
+            intro h
+            exact hBU_ne_n (inf_eq_left.mp h)
+          have hmn2_atom : IsAtom ((Γ.O ⊔ Γ.V) ⊓ (B ⊔ Γ.U)) :=
+            line_height_two Γ.hO Γ.hV Γ.hOV
+              (lt_of_lt_of_le hB.bot_lt (le_inf hB_n le_sup_left)) hmn2_lt
+          have hp_le_BU : p ≤ B ⊔ Γ.U :=
+            le_of_le_of_eq (le_sup_left : p ≤ p ⊔ Γ.U) h_supU
+          have hp_eq_B : p = B :=
+            (IsAtom.eq_of_le hp hmn2_atom (le_inf hp_le_n hp_le_BU)).trans
+            (IsAtom.eq_of_le hB hmn2_atom (le_inf hB_n le_sup_left)).symm
+          rw [hp_eq_B]
+          exact le_sup_left
+        · have hxV_cov : Γ.xproj p ⊔ Γ.V ⋖ Γ.O ⊔ Γ.U ⊔ Γ.V :=
+            Γ.sup_V_covBy_π hx_atom hx_l hx_ne_U
+          have hlam_not_xV : ¬ B ⊔ S ≤ Γ.xproj p ⊔ Γ.V := by
+            intro h
+            have hS_le_V : S ≤ Γ.V := le_of_le_of_eq
+              (le_inf (le_sup_right.trans h) hS_m)
+              (line_direction hx_atom hx_aff (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V))
+            exact hS_ne_V (IsAtom.eq_of_le hS Γ.hV hS_le_V)
+          have hr_ne_bot : (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) ≠ ⊥ :=
+            lines_meet_if_coplanar hxV_cov hlam_π hlam_not_xV hB hB_lt_lam
+          have hr_lt : (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) &lt; B ⊔ S := by
+            apply lt_of_le_of_ne inf_le_right
+            intro h
+            exact hlam_not_xV (inf_eq_right.mp h)
+          have hr_atom : IsAtom ((Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S)) :=
+            line_height_two hB hS hB_ne_S (bot_lt_iff_ne_bot.mpr hr_ne_bot)
+              hr_lt
+          have hr_le_xV : (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) ≤ Γ.xproj p ⊔ Γ.V :=
+            inf_le_left
+          have hr_le_lam : (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) ≤ B ⊔ S := inf_le_right
+          have hr_aff : ¬ (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) ≤ Γ.U ⊔ Γ.V := by
+            intro h
+            have hr_eq_S : (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) = S :=
+              IsAtom.eq_of_le hr_atom hS
+                (le_of_le_of_eq (le_inf hr_le_lam h) hlam_inf_m)
+            have hS_le_V : S ≤ Γ.V := le_of_le_of_eq
+              (le_inf (hr_eq_S ▸ hr_le_xV) hS_m)
+              (line_direction hx_atom hx_aff (le_sup_right : Γ.V ≤ Γ.U ⊔ Γ.V))
+            exact hS_ne_V (IsAtom.eq_of_le hS Γ.hV hS_le_V)
+          have hxr : Γ.xproj ((Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S)) = Γ.xproj p :=
+            (Γ.le_vertical_iff hr_atom hr_aff hx_atom hx_l hx_ne_U).mp
+              hr_le_xV
+          by_cases hrl : (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) ≤ Γ.O ⊔ Γ.U
+          · have h0 := Γ.line_intercept hS hS_m hSU hS_ne_V hB hB_n hBO hB_ne_V
+              hr_atom hr_le_lam hrl P hP hP_plane hP_not_l hP_not_m hP_not_OC
+              hP_ne_I hP_ne_O R hR hR_not h_irred
+            rw [hxr] at h0
+            rw [h0] at heq
+            have hp_l : p ≤ Γ.O ⊔ Γ.U :=
+              Γ.le_l_of_ycoord_eq_O hp hp_π hp_aff heq
+            have hp_eq_x : p = Γ.xproj p := by
+              have h1 : (Γ.xproj p ⊔ Γ.V) ⊓ (Γ.O ⊔ Γ.U) = Γ.xproj p :=
+                Γ.l_inf_sup_V hx_atom hx_l hx_ne_U
+              exact IsAtom.eq_of_le hp hx_atom
+                (le_of_le_of_eq (le_inf hp_le_xV hp_l) h1)
+            have h2 : Γ.xproj ((Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S)) =
+                (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) :=
+              Γ.xproj_of_on_l hr_atom hrl (by
+                intro hh
+                have hU_le_S : Γ.U ≤ S := le_of_le_of_eq
+                  (le_inf (hh ▸ hr_le_lam) (le_sup_left : Γ.U ≤ Γ.U ⊔ Γ.V))
+                  hlam_inf_m
+                exact hSU (IsAtom.eq_of_le Γ.hU hS hU_le_S).symm)
+            have hx_eq_r : Γ.xproj p = (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) :=
+              hxr.symm.trans h2
+            rw [hp_eq_x, hx_eq_r]
+            exact hr_le_lam
+          · have hxr_ne_O : Γ.xproj ((Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S)) ≠ Γ.O := by
+              rw [hxr]
+              exact hx0
+            have h_r := Γ.ycoord_of_le_line_aux hS hS_m hSU hS_ne_V hB hB_n
+              hBO hB_ne_V hr_atom hr_aff hr_le_lam hrl hxr_ne_O R hR hR_not
+              h_irred
+            rw [hxr] at h_r
+            have h_supU : p ⊔ Γ.U = (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) ⊔ Γ.U :=
+              Γ.sup_U_eq_of_ycoord_eq hp hp_π hp_aff hr_atom
+                (hr_le_lam.trans hlam_π) hr_aff (heq.trans h_r.symm)
+            have hU_not_xV : ¬ Γ.U ≤ Γ.xproj p ⊔ Γ.V :=
+              Γ.U_not_le_sup_V hx_atom hx_aff
+            have hm4_lt : (Γ.xproj p ⊔ Γ.V) ⊓
+                ((Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) ⊔ Γ.U) &lt; Γ.xproj p ⊔ Γ.V := by
+              apply lt_of_le_of_ne inf_le_left
+              intro h
+              exact Γ.V_not_le_sup_U hr_atom hr_aff
+                (le_sup_right.trans (inf_eq_left.mp h))
+            have hm4_atom : IsAtom ((Γ.xproj p ⊔ Γ.V) ⊓
+                ((Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) ⊔ Γ.U)) :=
+              line_height_two hx_atom Γ.hV (Γ.ne_V_of_affine hx_aff)
+                (lt_of_lt_of_le hr_atom.bot_lt
+                  (le_inf hr_le_xV (le_sup_left : _ ≤ _ ⊔ Γ.U))) hm4_lt
+            have hp_eq_r : p = (Γ.xproj p ⊔ Γ.V) ⊓ (B ⊔ S) :=
+              (IsAtom.eq_of_le hp hm4_atom (le_inf hp_le_xV
+                (le_of_le_of_eq (le_sup_left : p ≤ p ⊔ Γ.U) h_supU))).trans
+              (IsAtom.eq_of_le hr_atom hm4_atom (le_inf hr_le_xV
+                (le_sup_left : _ ≤ _ ⊔ Γ.U))).symm
+            rw [hp_eq_r]
+            exact hr_le_lam
+
+end Foam.Bridges
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.parallelogram_completion_base_swap&#x27; depends on axioms: [propext] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.parallelogram_completion_base_swap</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.shift_not_l&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.shift_not_l</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.ycoord_translate_offset&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.ycoord_translate_offset</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.anti_transport&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.anti_transport</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.ycoord_of_le_line_aux&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.ycoord_of_le_line_aux</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.line_intercept&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.line_intercept</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.CoordSystem.le_line_iff&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.CoordSystem.le_line_iff</span></pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

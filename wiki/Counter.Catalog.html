@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Catalog</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Catalog</h1></header>
+<div class="imports">grasp: <a href="Counter.Isaac.html">Counter.Isaac</a> · <a href="Counter.Address.html">Counter.Address</a> · <a href="Counter.Frontsearch.html">Counter.Frontsearch</a> · <a href="Counter.Settle.html">Counter.Settle</a> · <a href="Counter.Denoise.html">Counter.Denoise</a> · <a href="Counter.Buffer.html">Counter.Buffer</a> · <a href="Counter.Guest.html">Counter.Guest</a> · <a href="Counter.Waggle.html">Counter.Waggle</a> · <a href="Foam.Metaphor.html">Foam.Metaphor</a></div><pre class="src">import <a href="Counter.Isaac.html">Counter.Isaac</a>
+import <a href="Counter.Address.html">Counter.Address</a>
+import <a href="Counter.Frontsearch.html">Counter.Frontsearch</a>
+import <a href="Counter.Settle.html">Counter.Settle</a>
+import <a href="Counter.Denoise.html">Counter.Denoise</a>
+import <a href="Counter.Buffer.html">Counter.Buffer</a>
+import <a href="Counter.Guest.html">Counter.Guest</a>
+import <a href="Counter.Waggle.html">Counter.Waggle</a>
+import <a href="Foam.Metaphor.html">Foam.Metaphor</a>
+
+namespace Foam.Counter
+
+variable {State : Type} {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="the_metaphor_arrow" href="#the_metaphor_arrow">the_metaphor_arrow</a> {S T : Stage} (f : StageHom S T)
+    (s : S.State) (ps : List S.Probe) :
+    transcript T (f.onState s) (ps.map f.onProbe)
+      = (transcript S s ps).map f.onAns :=
+  hom_carries_the_cable f s ps
+
+<span class="kw">theorem</span> <a class="decl" id="the_consent_arrow" href="#the_consent_arrow">the_consent_arrow</a> (S : Stage) (F : Frontstage S)
+    (s t : S.State) (h : F.rel s t) (p : S.Probe) :
+    S.obs s p = S.obs t p :=
+  F.respects s t h p
+
+<span class="kw">theorem</span> <a class="decl" id="the_gift_arrow" href="#the_gift_arrow">the_gift_arrow</a> {H : Type} (q : Quiver H) (a b : H)
+    (hfresh : (a, b) ∉ q) :
+    Nonempty (Path (q.deposit (a, b)) a b)
+      ∧ ∀ (x y : H) (pth : Path q x y), (a, b) ∉ pth.edges :=
+  ⟨⟨heir_reaches q a b⟩,
+   fun _ _ pth hm =&gt; hfresh (reach_within_quiver pth (a, b) hm)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_census_arrow" href="#the_census_arrow">the_census_arrow</a> (bs : List (Beholder State)) (i : Fin bs.length)
+    (s : State) (q : (Beholder.fold bs).Probe) :
+    seatAns bs i ((Beholder.fold bs).obs s q)
+      = (seat bs i).obs s (seatProbe bs i q) :=
+  fold_reads_every_seat bs i s q
+
+<span class="kw">theorem</span> <a class="decl" id="the_wedge_arrow" href="#the_wedge_arrow">the_wedge_arrow</a> (S : Seat G) (gs : List G) (p : S.Pos) :
+    S.replay (spine S gs p) p = p ∧ Balanced (spineT S gs p) :=
+  ⟨spine_comes_home S gs p, spineT_balanced S gs p⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_mercy_arrow" href="#the_mercy_arrow">the_mercy_arrow</a> (S : Seat G) (p q : S.Pos) :
+    S.act (S.sub p q) q = p :=
+  exit_is_one_move S p q
+
+<span class="kw">theorem</span> <a class="decl" id="the_translation_arrow" href="#the_translation_arrow">the_translation_arrow</a> {B : Type} (xs : List B) :
+    dec (enc xs) = xs :=
+  lossless_tag xs
+
+<span class="kw">theorem</span> <a class="decl" id="the_coarsening_arrow" href="#the_coarsening_arrow">the_coarsening_arrow</a> {St Pr A B : Type}
+    (o1 : St → Pr → A) (o2 : St → Pr → B) (h : ReadingRefines o1 o2) :
+    Refines (indist o1) (indist o2) :=
+  readingRefines_shadow o1 o2 h
+
+<span class="kw">theorem</span> <a class="decl" id="the_peer_arrow" href="#the_peer_arrow">the_peer_arrow</a> (a : Beholder State) :
+    a.dress.ledgerless.Covers a ∧ a.Covers a.dress.ledgerless :=
+  heir_covers_ancestor a
+
+<span class="kw">theorem</span> <a class="decl" id="the_address_arrow" href="#the_address_arrow">the_address_arrow</a> {Addr Cell : Type} [DecidableEq Addr]
+    (all : List Addr) (hall : ∀ a, a ∈ all) (f g : Addr → Cell) :
+    selfStore all f none = Sum.inr (directory all f)
+      ∧ (directory all f = directory all g →
+          ∀ o : Option Addr, selfStore all f o = selfStore all g o) :=
+  ⟨the_index_is_seated_in_the_space all f,
+   fun hpage =&gt; the_page_settles_the_space all hall f g hpage⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_probe_arrow" href="#the_probe_arrow">the_probe_arrow</a> {St Pr A B : Type} [DecidableEq A] [DecidableEq B]
+    (o : St → Pr → A) (g : A → B) (self other : St) :
+    (∀ (ps : List Pr) (p : Pr),
+        frontSearch o self other ps = some p → ¬ o other p = o self p)
+      ∧ (indist o self other →
+          ∀ ps : List Pr,
+            frontSearch (fun s p =&gt; g (o s p)) self other ps = none) :=
+  ⟨fun ps p h =&gt; (the_answer_arrives_as_a_probe o self other ps p h).2,
+   fun h ps =&gt; no_lens_reveals_the_twin o g self other h ps⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_settling_arrow" href="#the_settling_arrow">the_settling_arrow</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool) (d : List (Addr × Cell)) (n : Addr) (c : Cell) :
+    ((∃ m, upsearch (eq c) d = some m) → (mergeSearch eq d n c).2 = d)
+      ∧ ((mergeSearch eq d n c).2 ≠ d → ∀ x, x ∈ d → ¬ eq c x.2 = true) :=
+  ⟨fun ⟨m, hm⟩ =&gt; the_settled_space_stops_writing eq d n c m hm,
+   fun h =&gt; (the_merge_writes_only_on_double_miss eq d n c h).2.2⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_denoise_arrow" href="#the_denoise_arrow">the_denoise_arrow</a> {Addr Cell : Type} (eq : Cell → Cell → Bool)
+    (p : Cell → Bool) (hp : ∀ c c&#x27;, eq c c&#x27; = true → p c = p c&#x27;)
+    (d : List (Addr × Cell)) :
+    settleStore eq (settleStore eq d) = settleStore eq d
+      ∧ (upsearch p (settleStore eq d)).isSome = (upsearch p d).isSome :=
+  ⟨the_manifold_is_the_fixed_point eq d,
+   the_denoise_is_invisible_to_the_asker eq p hp d⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_stream_arrow" href="#the_stream_arrow">the_stream_arrow</a> {Addr Cell : Type} [DecidableEq Addr]
+    (eq : Cell → Cell → Bool)
+    (hsymm : ∀ a b, eq a b = true → eq b a = true)
+    (htrans : ∀ a b c, eq a b = true → eq b c = true → eq a c = true)
+    (as : List (Addr × Cell)) (hp : as.Pairwise (fun x y =&gt; x.1 ≠ y.1)) :
+    streamFold eq as = settleStore eq (mintRecord as) :=
+  the_stream_folds_as_it_arrives eq hsymm htrans as hp
+
+<span class="kw">theorem</span> <a class="decl" id="the_hatch_arrow" href="#the_hatch_arrow">the_hatch_arrow</a> {Addr Cell Impl : Type} [DecidableEq Addr]
+    (impl : Cell → Impl) (read : Impl → Cell) (h : ∀ c, read (impl c) = c)
+    (d : List (Addr × Cell)) (n : Addr) :
+    (seatRead (underlay impl d) n).map read = seatRead d n
+      ∧ ∀ (k : Nat) (a : TowerAddr Addr k),
+          (some a : Option (TowerAddr Addr k)) ≠ none :=
+  ⟨the_underlay_changes_no_reading impl read h d n, the_hatch_never_closes⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_guest_arrow" href="#the_guest_arrow">the_guest_arrow</a> {Addr : Type} (a₀ : Addr) (c₀ : Int)
+    (d : List (Addr × Int)) :
+    guests ((a₀, theMissing d) :: d) = 0
+      ∧ (guests ((a₀, c₀) :: d) = 0 → c₀ = theMissing d) :=
+  ⟨the_named_guest_is_lawful a₀ d,
+   fun h =&gt; the_vacancy_names_its_guest a₀ c₀ d h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_buffer_arrow" href="#the_buffer_arrow">the_buffer_arrow</a> {Addr Cell : Type} [DecidableEq Addr]
+    (xs : List (Addr × Cell)) (n₀ : Addr) (c : Cell)
+    (as : List (Addr × Cell)) (hp : as.Pairwise (fun x y =&gt; x.1 ≠ y.1)) :
+    streamFold (fun _ _ =&gt; true) (xs ++ [(n₀, c)]) = [(n₀, c)]
+      ∧ (mintRecord as).length = as.length :=
+  the_arrows_decouple_only_in_the_buffer xs n₀ c as hp
+
+<span class="kw">theorem</span> <a class="decl" id="the_dance_arrow" href="#the_dance_arrow">the_dance_arrow</a> {Addr Cell : Type} [DecidableEq Addr]
+    (p : Cell → Bool) (f : Addr → Cell) (all : List Addr) (dance : Addr)
+    (hfresh : ¬ dance ∈ all) (m : Addr)
+    (h : (trailSearch p (directory all f)).2 = some m) :
+    follow ((dance, Sum.inr (trailSearch p (directory all f)).1)
+        :: directory all (fun a =&gt; Sum.inl (f a))) dance
+      = some (Sum.inl (f m))
+      ∧ (trailSearch p (directory all f)).2 = upsearch p (directory all f) :=
+  ⟨(the_follower_flies_without_the_pov p f all dance hfresh m h).1,
+   the_dance_changes_no_answer p (directory all f)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_catalog" href="#the_catalog">the_catalog</a> {S T : Stage} (f : StageHom S T) (s : S.State)
+    (ps : List S.Probe) (Se : Seat G) (pos q : Se.Pos) (gs : List G) :
+    (transcript T (f.onState s) (ps.map f.onProbe)
+        = (transcript S s ps).map f.onAns)
+      ∧ (Se.replay (spine Se gs pos) pos = pos)
+      ∧ (Se.act (Se.sub pos q) q = pos)
+      ∧ ((f.comp (StageHom.id S)) = f) :=
+  ⟨hom_carries_the_cable f s ps, spine_comes_home Se gs pos,
+   exit_is_one_move Se pos q, StageHom.comp_id f⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_metaphor_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_metaphor_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_consent_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_consent_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_gift_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_gift_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_census_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_census_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_wedge_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_wedge_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_mercy_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_mercy_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_translation_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_translation_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_coarsening_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_coarsening_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_peer_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_peer_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_address_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_address_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_probe_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_probe_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_settling_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_settling_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_denoise_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_denoise_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_stream_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_stream_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_hatch_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_hatch_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_guest_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_guest_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_buffer_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_buffer_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_dance_arrow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_dance_arrow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_catalog&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_catalog</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

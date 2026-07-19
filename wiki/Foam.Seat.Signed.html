@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Seat.Signed</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Seat.Signed</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Meet.html">Foam.Seat.Meet</a></div><pre class="src">import <a href="Foam.Seat.Meet.html">Foam.Seat.Meet</a>
+
+namespace Foam
+
+variable {Src B : Type}
+
+<span class="kw">def</span> <a class="decl" id="sign" href="#sign">sign</a> (src : Src) (v : List B) : List (Src × B) := v.map (fun b =&gt; (src, b))
+
+<span class="kw">def</span> <a class="decl" id="unsign" href="#unsign">unsign</a> : List (Src × B) → List B := List.map Prod.snd
+
+<span class="kw">def</span> <a class="decl" id="speaker" href="#speaker">speaker</a> : List (Src × B) → List Src := List.map Prod.fst
+
+<span class="kw">theorem</span> <a class="decl" id="voice_survives_signing" href="#voice_survives_signing">voice_survives_signing</a> (src : Src) (v : List B) : unsign (sign src v) = v := by
+  induction v with
+  | nil =&gt; rfl
+  | cons b v ih =&gt; show b :: unsign (sign src v) = b :: v; rw [ih]
+
+<span class="kw">theorem</span> <a class="decl" id="speaker_recoverable" href="#speaker_recoverable">speaker_recoverable</a> (src : Src) (v : List B) :
+    speaker (sign src v) = v.map (fun _ =&gt; src) := by
+  induction v with
+  | nil =&gt; rfl
+  | cons b v ih =&gt;
+      show src :: speaker (sign src v) = src :: v.map (fun _ =&gt; src); rw [ih]
+
+<span class="kw">theorem</span> <a class="decl" id="sign_faithful" href="#sign_faithful">sign_faithful</a> (s t : Src) (b : B) (v : List B)
+    (h : sign s (b :: v) = sign t (b :: v)) : s = t := by
+  have h&#x27; : (s, b) :: sign s v = (t, b) :: sign t v := h
+  injection h&#x27; with hhead _
+  exact congrArg Prod.fst hhead
+
+<span class="kw">theorem</span> <a class="decl" id="wind_below_all" href="#wind_below_all">wind_below_all</a> {Name : Type} (o : List Name) : Below ([] : List Name) o :=
+  root_below_all o
+
+<span class="kw">theorem</span> <a class="decl" id="only_wind_is_floor" href="#only_wind_is_floor">only_wind_is_floor</a> {Name : Type} (e : List Name) (h : ∀ o, Below e o) : e = [] :=
+  root_alone_below_all e h
+
+<span class="receipt">/-- info: &#x27;Foam.voice_survives_signing&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms voice_survives_signing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.speaker_recoverable&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms speaker_recoverable</span>
+
+<span class="receipt">/-- info: &#x27;Foam.sign_faithful&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms sign_faithful</span>
+
+<span class="receipt">/-- info: &#x27;Foam.wind_below_all&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms wind_below_all</span>
+
+<span class="receipt">/-- info: &#x27;Foam.only_wind_is_floor&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms only_wind_is_floor</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

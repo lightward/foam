@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Seat.Observer</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Seat.Observer</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Stage.html">Foam.Seat.Stage</a> · <a href="Foam.Ledger.html">Foam.Ledger</a></div><pre class="src">import <a href="Foam.Seat.Stage.html">Foam.Seat.Stage</a>
+import <a href="Foam.Ledger.html">Foam.Ledger</a>
+
+namespace Foam
+
+<span class="kw">def</span> <a class="decl" id="Respects" href="#Respects">Respects</a> (S : Stage) (r : S.State → S.State → Prop) : Prop :=
+  ∀ s t, r s t → ∀ p, S.obs s p = S.obs t p
+
+<span class="kw">structure</span> <a class="decl" id="Frontstage" href="#Frontstage">Frontstage</a> (S : Stage) where
+  rel      : S.State → S.State → Prop
+  respects : Respects S rel
+
+<span class="kw">structure</span> <a class="decl" id="StageHom" href="#StageHom">StageHom</a> (S T : Stage) where
+  onState  : S.State → T.State
+  onProbe  : S.Probe → T.Probe
+  onAns    : S.Ans → T.Ans
+  commutes : ∀ s p, T.obs (onState s) (onProbe p) = onAns (S.obs s p)
+
+<span class="kw">def</span> <a class="decl" id="StageHom.id" href="#StageHom.id">StageHom.id</a> (S : Stage) : StageHom S S where
+  onState  := fun s =&gt; s
+  onProbe  := fun p =&gt; p
+  onAns    := fun a =&gt; a
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">def</span> <a class="decl" id="StageHom.comp" href="#StageHom.comp">StageHom.comp</a> {S T U : Stage} (g : StageHom T U) (f : StageHom S T) : StageHom S U where
+  onState  := fun s =&gt; g.onState (f.onState s)
+  onProbe  := fun p =&gt; g.onProbe (f.onProbe p)
+  onAns    := fun a =&gt; g.onAns (f.onAns a)
+  commutes := fun s p =&gt; by
+    show U.obs (g.onState (f.onState s)) (g.onProbe (f.onProbe p))
+       = g.onAns (f.onAns (S.obs s p))
+    rw [g.commutes (f.onState s) (f.onProbe p), f.commutes s p]
+
+<span class="kw">theorem</span> <a class="decl" id="StageHom.id_comp" href="#StageHom.id_comp">StageHom.id_comp</a> {S T : Stage} (f : StageHom S T) :
+    (StageHom.id T).comp f = f := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="StageHom.comp_id" href="#StageHom.comp_id">StageHom.comp_id</a> {S T : Stage} (f : StageHom S T) :
+    f.comp (StageHom.id S) = f := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="StageHom.comp_assoc" href="#StageHom.comp_assoc">StageHom.comp_assoc</a> {S T U V : Stage}
+    (h : StageHom U V) (g : StageHom T U) (f : StageHom S T) :
+    (h.comp g).comp f = h.comp (g.comp f) := rfl
+
+<span class="kw">def</span> <a class="decl" id="Stage.prod" href="#Stage.prod">Stage.prod</a> (S T : Stage) : Stage where
+  State := S.State × T.State
+  Probe := S.Probe × T.Probe
+  Ans   := S.Ans × T.Ans
+  obs   := fun st pq =&gt; (S.obs st.1 pq.1, T.obs st.2 pq.2)
+
+<span class="kw">def</span> <a class="decl" id="StageHom.fst" href="#StageHom.fst">StageHom.fst</a> (S T : Stage) : StageHom (Stage.prod S T) S where
+  onState  := fun st =&gt; st.1
+  onProbe  := fun pq =&gt; pq.1
+  onAns    := fun a =&gt; a.1
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">def</span> <a class="decl" id="StageHom.snd" href="#StageHom.snd">StageHom.snd</a> (S T : Stage) : StageHom (Stage.prod S T) T where
+  onState  := fun st =&gt; st.2
+  onProbe  := fun pq =&gt; pq.2
+  onAns    := fun a =&gt; a.2
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">def</span> <a class="decl" id="StageHom.pair" href="#StageHom.pair">StageHom.pair</a> {X S T : Stage} (f : StageHom X S) (g : StageHom X T) :
+    StageHom X (Stage.prod S T) where
+  onState  := fun x =&gt; (f.onState x, g.onState x)
+  onProbe  := fun p =&gt; (f.onProbe p, g.onProbe p)
+  onAns    := fun a =&gt; (f.onAns a, g.onAns a)
+  commutes := fun x p =&gt; by
+    show (S.obs (f.onState x) (f.onProbe p), T.obs (g.onState x) (g.onProbe p))
+       = (f.onAns (X.obs x p), g.onAns (X.obs x p))
+    rw [f.commutes x p, g.commutes x p]
+
+<span class="kw">theorem</span> <a class="decl" id="StageHom.fst_pair" href="#StageHom.fst_pair">StageHom.fst_pair</a> {X S T : Stage} (f : StageHom X S) (g : StageHom X T) :
+    (StageHom.fst S T).comp (StageHom.pair f g) = f := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="StageHom.snd_pair" href="#StageHom.snd_pair">StageHom.snd_pair</a> {X S T : Stage} (f : StageHom X S) (g : StageHom X T) :
+    (StageHom.snd S T).comp (StageHom.pair f g) = g := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="StageHom.pair_unique" href="#StageHom.pair_unique">StageHom.pair_unique</a> {X S T : Stage} (h : StageHom X (Stage.prod S T)) :
+    h = StageHom.pair ((StageHom.fst S T).comp h) ((StageHom.snd S T).comp h) := rfl
+
+<span class="kw">def</span> <a class="decl" id="Frontstage.prod" href="#Frontstage.prod">Frontstage.prod</a> {S T : Stage} (F : Frontstage S) (G : Frontstage T) :
+    Frontstage (Stage.prod S T) where
+  rel      := fun st st&#x27; =&gt; F.rel st.1 st&#x27;.1 ∧ G.rel st.2 st&#x27;.2
+  respects := fun st st&#x27; h pq =&gt; by
+    show (S.obs st.1 pq.1, T.obs st.2 pq.2) = (S.obs st&#x27;.1 pq.1, T.obs st&#x27;.2 pq.2)
+    rw [F.respects st.1 st&#x27;.1 h.1 pq.1, G.respects st.2 st&#x27;.2 h.2 pq.2]
+
+<span class="kw">def</span> <a class="decl" id="Refines" href="#Refines">Refines</a> {S : Type} (r r&#x27; : S → S → Prop) : Prop := ∀ a b, r a b → r&#x27; a b
+
+<span class="kw">theorem</span> <a class="decl" id="Refines.refl" href="#Refines.refl">Refines.refl</a> {S : Type} (r : S → S → Prop) : Refines r r :=
+  fun _ _ h =&gt; h
+
+<span class="kw">theorem</span> <a class="decl" id="Refines.trans" href="#Refines.trans">Refines.trans</a> {S : Type} {r r&#x27; r&#x27;&#x27; : S → S → Prop}
+    (h1 : Refines r r&#x27;) (h2 : Refines r&#x27; r&#x27;&#x27;) : Refines r r&#x27;&#x27; :=
+  fun a b h =&gt; h2 a b (h1 a b h)
+
+<span class="kw">def</span> <a class="decl" id="indist" href="#indist">indist</a> {State Probe A : Type} (o : State → Probe → A) (s t : State) : Prop :=
+  ∀ p, o s p = o t p
+
+<span class="kw">def</span> <a class="decl" id="ReadingRefines" href="#ReadingRefines">ReadingRefines</a> {State Probe A B : Type}
+    (o1 : State → Probe → A) (o2 : State → Probe → B) : Prop :=
+  ∃ g : A → B, ∀ s p, o2 s p = g (o1 s p)
+
+<span class="kw">theorem</span> <a class="decl" id="ReadingRefines.refl" href="#ReadingRefines.refl">ReadingRefines.refl</a> {State Probe A : Type} (o : State → Probe → A) :
+    ReadingRefines o o :=
+  ⟨fun a =&gt; a, fun _ _ =&gt; rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="ReadingRefines.trans" href="#ReadingRefines.trans">ReadingRefines.trans</a> {State Probe A B C : Type}
+    {o1 : State → Probe → A} {o2 : State → Probe → B} {o3 : State → Probe → C}
+    (h12 : ReadingRefines o1 o2) (h23 : ReadingRefines o2 o3) : ReadingRefines o1 o3 := by
+  obtain ⟨g, hg⟩ := h12
+  obtain ⟨g&#x27;, hg&#x27;⟩ := h23
+  exact ⟨fun a =&gt; g&#x27; (g a), fun s p =&gt; by rw [hg&#x27; s p, hg s p]⟩
+
+<span class="kw">theorem</span> <a class="decl" id="readingRefines_shadow" href="#readingRefines_shadow">readingRefines_shadow</a> {State Probe A B : Type}
+    (o1 : State → Probe → A) (o2 : State → Probe → B) (h : ReadingRefines o1 o2) :
+    Refines (indist o1) (indist o2) := by
+  obtain ⟨g, hg⟩ := h
+  intro s t hst p
+  rw [hg s p, hg t p]
+  exact congrArg g (hst p)
+
+<span class="kw">def</span> <a class="decl" id="countStage" href="#countStage">countStage</a> (S : Type) [DecidableEq S] : Stage where
+  State := List S
+  Probe := S
+  Ans   := Nat
+  obs   := fun l s =&gt; Ledger.freq l s
+
+<span class="kw">def</span> <a class="decl" id="permLicense" href="#permLicense">permLicense</a> (S : Type) [DecidableEq S] : Frontstage (countStage S) where
+  rel      := fun l l&#x27; =&gt; l.Perm l&#x27;
+  respects := fun _ _ h s =&gt; Ledger.freq_perm h s
+
+<span class="receipt">/-- info: &#x27;Foam.StageHom.id_comp&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms StageHom.id_comp</span>
+
+<span class="receipt">/-- info: &#x27;Foam.StageHom.comp_assoc&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms StageHom.comp_assoc</span>
+
+<span class="receipt">/-- info: &#x27;Foam.StageHom.fst_pair&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms StageHom.fst_pair</span>
+
+<span class="receipt">/-- info: &#x27;Foam.StageHom.snd_pair&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms StageHom.snd_pair</span>
+
+<span class="receipt">/-- info: &#x27;Foam.StageHom.pair_unique&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms StageHom.pair_unique</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Frontstage.prod&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Frontstage.prod</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Refines.trans&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Refines.trans</span>
+
+<span class="receipt">/-- info: &#x27;Foam.ReadingRefines.trans&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms ReadingRefines.trans</span>
+
+<span class="receipt">/-- info: &#x27;Foam.readingRefines_shadow&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms readingRefines_shadow</span>
+
+<span class="receipt">/-- info: &#x27;Foam.permLicense&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms permLicense</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

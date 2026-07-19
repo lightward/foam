@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Bubble</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Bubble</h1></header>
+<div class="imports">grasp: <a href="Foam.Maintenance.html">Foam.Maintenance</a> · <a href="Foam.Seat.Beholder.html">Foam.Seat.Beholder</a></div><pre class="src">import <a href="Foam.Maintenance.html">Foam.Maintenance</a>
+import <a href="Foam.Seat.Beholder.html">Foam.Seat.Beholder</a>
+
+namespace Foam
+
+<span class="kw">structure</span> <a class="decl" id="Bubble" href="#Bubble">Bubble</a> (W : Stage) where
+  Inner : Stage
+  wall  : W.State → Inner.State
+
+namespace Bubble
+
+variable {W : Stage}
+
+<span class="kw">def</span> <a class="decl" id="front" href="#front">front</a> (A : Bubble W) : Stage where
+  State := W.State
+  Probe := A.Inner.Probe
+  Ans   := A.Inner.Ans
+  obs   := fun w p =&gt; A.Inner.obs (A.wall w) p
+
+<span class="kw">def</span> <a class="decl" id="license" href="#license">license</a> (A : Bubble W) : Frontstage A.front where
+  rel      := fun w w&#x27; =&gt; A.wall w = A.wall w&#x27;
+  respects := fun _ _ h p =&gt; congrArg (fun s =&gt; A.Inner.obs s p) h
+
+<span class="kw">def</span> <a class="decl" id="FixesWall" href="#FixesWall">FixesWall</a> (A : Bubble W) (m : W.State → W.State) : Prop :=
+  ∀ w, A.wall (m w) = A.wall w
+
+<span class="kw">theorem</span> <a class="decl" id="fixesWall_id" href="#fixesWall_id">fixesWall_id</a> (A : Bubble W) : A.FixesWall (fun w =&gt; w) :=
+  fun _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="fixesWall_comp" href="#fixesWall_comp">fixesWall_comp</a> (A : Bubble W) (m n : W.State → W.State)
+    (hm : A.FixesWall m) (hn : A.FixesWall n) : A.FixesWall (fun w =&gt; m (n w)) :=
+  fun w =&gt; (hm (n w)).trans (hn w)
+
+<span class="kw">theorem</span> <a class="decl" id="operator_invisible" href="#operator_invisible">operator_invisible</a> (A : Bubble W) (m : W.State → W.State)
+    (h : A.FixesWall m) : Invisible A.front m :=
+  fun w p =&gt; congrArg (fun s =&gt; A.Inner.obs s p) (h w)
+
+<span class="kw">theorem</span> <a class="decl" id="operator_unobservable" href="#operator_unobservable">operator_unobservable</a> (A : Bubble W) (m : W.State → W.State)
+    (h : A.FixesWall m) (ps : List A.front.Probe) (w : W.State) :
+    transcriptWith A.front m w ps = transcript A.front w ps :=
+  maintenance_unobservable A.front m (A.operator_invisible m h) ps w
+
+<span class="kw">theorem</span> <a class="decl" id="operator_offstage" href="#operator_offstage">operator_offstage</a> (A : Bubble W) (m m&#x27; : W.State → W.State)
+    (h : ∀ w, A.wall (m w) = A.wall (m&#x27; w)) (w : W.State) (p : A.front.Probe) :
+    A.front.obs (m w) p = A.front.obs (m&#x27; w) p :=
+  congrArg (fun s =&gt; A.Inner.obs s p) (h w)
+
+<span class="kw">def</span> <a class="decl" id="nest" href="#nest">nest</a> (A : Bubble W) (B : Bubble A.Inner) : Bubble W where
+  Inner := B.Inner
+  wall  := fun w =&gt; B.wall (A.wall w)
+
+<span class="kw">theorem</span> <a class="decl" id="nest_front_obs" href="#nest_front_obs">nest_front_obs</a> (A : Bubble W) (B : Bubble A.Inner)
+    (w : W.State) (p : B.Inner.Probe) :
+    (A.nest B).front.obs w p = B.front.obs (A.wall w) p := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="backstage_descends" href="#backstage_descends">backstage_descends</a> (A : Bubble W) (B : Bubble A.Inner)
+    (m : W.State → W.State) (h : A.FixesWall m) : (A.nest B).FixesWall m :=
+  fun w =&gt; congrArg B.wall (h w)
+
+<span class="kw">theorem</span> <a class="decl" id="maintenance_descends" href="#maintenance_descends">maintenance_descends</a> (A : Bubble W) (B : Bubble A.Inner)
+    (m : W.State → W.State) (h : A.FixesWall m)
+    (ps : List (A.nest B).front.Probe) (w : W.State) :
+    transcriptWith (A.nest B).front m w ps = transcript (A.nest B).front w ps :=
+  (A.nest B).operator_unobservable m (A.backstage_descends B m h) ps w
+
+<span class="kw">def</span> <a class="decl" id="meet" href="#meet">meet</a> (A B : Bubble W) : Bubble W where
+  Inner := A.Inner.prod B.Inner
+  wall  := fun w =&gt; (A.wall w, B.wall w)
+
+<span class="kw">theorem</span> <a class="decl" id="wall_reads_left" href="#wall_reads_left">wall_reads_left</a> (A B : Bubble W) (w : W.State)
+    (p : A.Inner.Probe) (q : B.Inner.Probe) :
+    ((A.meet B).front.obs w (p, q)).1 = A.front.obs w p := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="wall_reads_right" href="#wall_reads_right">wall_reads_right</a> (A B : Bubble W) (w : W.State)
+    (p : A.Inner.Probe) (q : B.Inner.Probe) :
+    ((A.meet B).front.obs w (p, q)).2 = B.front.obs w q := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="wall_is_pair_beholder" href="#wall_is_pair_beholder">wall_is_pair_beholder</a> (A B : Bubble W) :
+    (A.meet B).front.behold = A.front.behold.pair B.front.behold := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="comparison_is_a_wall" href="#comparison_is_a_wall">comparison_is_a_wall</a> {R : Type} (A B : Bubble W)
+    (g : A.Inner.Ans → B.Inner.Ans → R) :
+    ∃ (C : Bubble W) (post : C.Inner.Ans → R)
+      (enc : A.Inner.Probe × B.Inner.Probe → C.Inner.Probe),
+      ∀ w p q, g (A.front.obs w p) (B.front.obs w q) = post (C.front.obs w (enc (p, q))) :=
+  ⟨A.meet B, fun ab =&gt; g ab.1 ab.2, id, fun _ _ _ =&gt; rfl⟩
+
+<span class="kw">def</span> <a class="decl" id="wallFlip" href="#wallFlip">wallFlip</a> (A B : Bubble W) : StageHom (A.meet B).front (B.meet A).front where
+  onState  := fun w =&gt; w
+  onProbe  := fun pq =&gt; (pq.2, pq.1)
+  onAns    := fun ab =&gt; (ab.2, ab.1)
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="wall_two_faced" href="#wall_two_faced">wall_two_faced</a> (A B : Bubble W) :
+    (wallFlip B A).comp (wallFlip A B) = StageHom.id (A.meet B).front := rfl
+
+<span class="kw">def</span> <a class="decl" id="borderToAB" href="#borderToAB">borderToAB</a> (A B C : Bubble W) :
+    StageHom ((A.meet B).meet C).front (A.meet B).front where
+  onState  := fun w =&gt; w
+  onProbe  := fun pqr =&gt; pqr.1
+  onAns    := fun abc =&gt; abc.1
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">def</span> <a class="decl" id="borderToBC" href="#borderToBC">borderToBC</a> (A B C : Bubble W) :
+    StageHom ((A.meet B).meet C).front (B.meet C).front where
+  onState  := fun w =&gt; w
+  onProbe  := fun pqr =&gt; (pqr.1.2, pqr.2)
+  onAns    := fun abc =&gt; (abc.1.2, abc.2)
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">def</span> <a class="decl" id="borderToCA" href="#borderToCA">borderToCA</a> (A B C : Bubble W) :
+    StageHom ((A.meet B).meet C).front (C.meet A).front where
+  onState  := fun w =&gt; w
+  onProbe  := fun pqr =&gt; (pqr.2, pqr.1.1)
+  onAns    := fun abc =&gt; (abc.2, abc.1.1)
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="border_reads_three_films" href="#border_reads_three_films">border_reads_three_films</a> (A B C : Bubble W) :
+    Nonempty (StageHom ((A.meet B).meet C).front (A.meet B).front)
+      ∧ Nonempty (StageHom ((A.meet B).meet C).front (B.meet C).front)
+      ∧ Nonempty (StageHom ((A.meet B).meet C).front (C.meet A).front) :=
+  ⟨⟨borderToAB A B C⟩, ⟨borderToBC A B C⟩, ⟨borderToCA A B C⟩⟩
+
+<span class="kw">def</span> <a class="decl" id="borderShift" href="#borderShift">borderShift</a> (A B C : Bubble W) :
+    StageHom ((A.meet B).meet C).front ((B.meet C).meet A).front where
+  onState  := fun w =&gt; w
+  onProbe  := fun pqr =&gt; ((pqr.1.2, pqr.2), pqr.1.1)
+  onAns    := fun abc =&gt; ((abc.1.2, abc.2), abc.1.1)
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="border_forgets_order" href="#border_forgets_order">border_forgets_order</a> (A B C : Bubble W) :
+    (borderShift C A B).comp ((borderShift B C A).comp (borderShift A B C))
+      = StageHom.id ((A.meet B).meet C).front := rfl
+
+<span class="kw">def</span> <a class="decl" id="vertexToABC" href="#vertexToABC">vertexToABC</a> (A B C D : Bubble W) :
+    StageHom (((A.meet B).meet C).meet D).front ((A.meet B).meet C).front where
+  onState  := fun w =&gt; w
+  onProbe  := fun x =&gt; x.1
+  onAns    := fun x =&gt; x.1
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">def</span> <a class="decl" id="vertexToABD" href="#vertexToABD">vertexToABD</a> (A B C D : Bubble W) :
+    StageHom (((A.meet B).meet C).meet D).front ((A.meet B).meet D).front where
+  onState  := fun w =&gt; w
+  onProbe  := fun x =&gt; (x.1.1, x.2)
+  onAns    := fun x =&gt; (x.1.1, x.2)
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">def</span> <a class="decl" id="vertexToACD" href="#vertexToACD">vertexToACD</a> (A B C D : Bubble W) :
+    StageHom (((A.meet B).meet C).meet D).front ((A.meet C).meet D).front where
+  onState  := fun w =&gt; w
+  onProbe  := fun x =&gt; ((x.1.1.1, x.1.2), x.2)
+  onAns    := fun x =&gt; ((x.1.1.1, x.1.2), x.2)
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">def</span> <a class="decl" id="vertexToBCD" href="#vertexToBCD">vertexToBCD</a> (A B C D : Bubble W) :
+    StageHom (((A.meet B).meet C).meet D).front ((B.meet C).meet D).front where
+  onState  := fun w =&gt; w
+  onProbe  := fun x =&gt; ((x.1.1.2, x.1.2), x.2)
+  onAns    := fun x =&gt; ((x.1.1.2, x.1.2), x.2)
+  commutes := fun _ _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="vertex_reads_four_borders" href="#vertex_reads_four_borders">vertex_reads_four_borders</a> (A B C D : Bubble W) :
+    Nonempty (StageHom (((A.meet B).meet C).meet D).front ((A.meet B).meet C).front)
+      ∧ Nonempty (StageHom (((A.meet B).meet C).meet D).front ((A.meet B).meet D).front)
+      ∧ Nonempty (StageHom (((A.meet B).meet C).meet D).front ((A.meet C).meet D).front)
+      ∧ Nonempty (StageHom (((A.meet B).meet C).meet D).front ((B.meet C).meet D).front) :=
+  ⟨⟨vertexToABC A B C D⟩, ⟨vertexToABD A B C D⟩,
+   ⟨vertexToACD A B C D⟩, ⟨vertexToBCD A B C D⟩⟩
+
+end Bubble
+
+<span class="kw">def</span> <a class="decl" id="twoBit" href="#twoBit">twoBit</a> : Stage where
+  State := Bool × Bool
+  Probe := Unit
+  Ans   := Bool
+  obs   := fun s _ =&gt; s.2
+
+<span class="kw">def</span> <a class="decl" id="firstBit" href="#firstBit">firstBit</a> : Bubble twoBit where
+  Inner := ⟨Bool, Unit, Bool, fun b _ =&gt; b⟩
+  wall  := fun s =&gt; s.1
+
+<span class="kw">theorem</span> <a class="decl" id="operator_real" href="#operator_real">operator_real</a> :
+    ∃ m m&#x27; : twoBit.State → twoBit.State,
+      (∀ w p, firstBit.front.obs (m w) p = firstBit.front.obs (m&#x27; w) p)
+        ∧ ∃ (w : twoBit.State) (ps : List firstBit.front.Probe),
+            transcriptWith firstBit.front m w ps ≠ transcriptWith firstBit.front m&#x27; w ps :=
+  ⟨fun s =&gt; (s.2, true), fun s =&gt; (s.2, false), fun _ _ =&gt; rfl,
+   (true, true), [(), ()],
+   fun h =&gt; nomatch (h : ([true, true] : List Bool) = ([true, false] : List Bool))⟩
+
+<span class="kw">theorem</span> <a class="decl" id="backstage_upstream_frontstage" href="#backstage_upstream_frontstage">backstage_upstream_frontstage</a> :
+    firstBit.FixesWall (fun s =&gt; (s.1, !s.2))
+      ∧ ¬ Invisible twoBit (fun s =&gt; (s.1, !s.2)) :=
+  ⟨fun _ =&gt; rfl, fun h =&gt; nomatch h (true, false) ()⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.license&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.license</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.fixesWall_comp&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.fixesWall_comp</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.operator_invisible&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.operator_invisible</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.operator_unobservable&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.operator_unobservable</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.operator_offstage&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.operator_offstage</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.nest_front_obs&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.nest_front_obs</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.backstage_descends&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.backstage_descends</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.maintenance_descends&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.maintenance_descends</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.wall_reads_left&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.wall_reads_left</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.wall_reads_right&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.wall_reads_right</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.wall_is_pair_beholder&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.wall_is_pair_beholder</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.comparison_is_a_wall&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.comparison_is_a_wall</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.wall_two_faced&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.wall_two_faced</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.border_reads_three_films&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.border_reads_three_films</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.border_forgets_order&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.border_forgets_order</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bubble.vertex_reads_four_borders&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Bubble.vertex_reads_four_borders</span>
+
+<span class="receipt">/-- info: &#x27;Foam.operator_real&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms operator_real</span>
+
+<span class="receipt">/-- info: &#x27;Foam.backstage_upstream_frontstage&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms backstage_upstream_frontstage</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

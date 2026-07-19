@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Imaginary</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Imaginary</h1></header>
+<div class="imports">grasp: <a href="Counter.Flinch.html">Counter.Flinch</a> · <a href="Counter.Chess.html">Counter.Chess</a> · <a href="Counter.Authority.html">Counter.Authority</a></div><pre class="src">import <a href="Counter.Flinch.html">Counter.Flinch</a>
+import <a href="Counter.Chess.html">Counter.Chess</a>
+import <a href="Counter.Authority.html">Counter.Authority</a>
+
+namespace Foam.Counter
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="counter_without_blocking" href="#counter_without_blocking">counter_without_blocking</a> :
+    (∀ z : GInt, GInt.align z.rot z = 0)
+      ∧ ∃ z : GInt, z.rot ≠ z ∧ z.rot ≠ GInt.neg z :=
+  ⟨a_frame_of_peace_always_exists, ⟨⟨1, 0⟩, by decide, by decide⟩⟩
+
+<span class="kw">theorem</span> <a class="decl" id="escalation_is_squaring" href="#escalation_is_squaring">escalation_is_squaring</a> (z : GInt) :
+    GInt.rot (GInt.rot z) = GInt.neg z :=
+  GInt.rot_sq z
+
+<span class="kw">theorem</span> <a class="decl" id="the_free_agent_is_never_stuck" href="#the_free_agent_is_never_stuck">the_free_agent_is_never_stuck</a> (S : Seat G) (o o&#x27; : S.Pos) :
+    S.act (rebase S o o&#x27;) o = o&#x27; :=
+  rebase_carries S o o&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="the_named_piece_can_be_stuck" href="#the_named_piece_can_be_stuck">the_named_piece_can_be_stuck</a> {H : Type} (q : Quiver H) (a : H)
+    (hstuck : stuck q a) : ∀ b : H, a ≠ b → ¬ Nonempty (Path q a b) :=
+  mate_has_no_escape q a hstuck
+
+<span class="kw">theorem</span> <a class="decl" id="discovering_i" href="#discovering_i">discovering_i</a> (S : Seat G) (o o&#x27; : S.Pos) {H : Type} (q : Quiver H)
+    (a : H) (hstuck : stuck q a) (z : GInt) :
+    GInt.align z.rot z = 0
+      ∧ GInt.rot (GInt.rot z) = GInt.neg z
+      ∧ S.act (rebase S o o&#x27;) o = o&#x27;
+      ∧ ∀ b : H, a ≠ b → ¬ Nonempty (Path q a b) :=
+  ⟨a_frame_of_peace_always_exists z, GInt.rot_sq z,
+   rebase_carries S o o&#x27;, mate_has_no_escape q a hstuck⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.counter_without_blocking&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms counter_without_blocking</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.escalation_is_squaring&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms escalation_is_squaring</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_free_agent_is_never_stuck&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_free_agent_is_never_stuck</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_named_piece_can_be_stuck&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_named_piece_can_be_stuck</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.discovering_i&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms discovering_i</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

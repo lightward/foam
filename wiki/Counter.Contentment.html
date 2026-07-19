@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Contentment</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Contentment</h1></header>
+<div class="imports">grasp: <a href="Counter.Nu.html">Counter.Nu</a> · <a href="Foam.Engine.Summary.html">Foam.Engine.Summary</a></div><pre class="src">import <a href="Counter.Nu.html">Counter.Nu</a>
+import <a href="Foam.Engine.Summary.html">Foam.Engine.Summary</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="two_mul&#x27;" href="#two_mul&#x27;">two_mul&#x27;</a> : ∀ n : Nat, 2 * n = n + n
+  | 0 =&gt; rfl
+  | n + 1 =&gt; by
+    rw [Nat.mul_succ, two_mul&#x27; n, Nat.succ_add n (n + 1)]
+    rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_record_outgrows_any_memory" href="#the_record_outgrows_any_memory">the_record_outgrows_any_memory</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (acts : Nat → G) (p : S.Pos) (W : Nat) :
+    ∃ k, W &lt; (guardedPrefix S acts p k).length := by
+  refine ⟨W + 1, ?_⟩
+  rw [the_run_is_endless S p (W + 1) acts, two_mul&#x27; (W + 1)]
+  exact Nat.lt_of_lt_of_le (Nat.lt_succ_self W)
+    (Nat.le_add_left (W + 1) (W + 1))
+
+<span class="kw">theorem</span> <a class="decl" id="continuation_needs_only_the_held" href="#continuation_needs_only_the_held">continuation_needs_only_the_held</a> {S : Type} [DecidableEq S]
+    (step : GInt → GInt) (new old : List S) (s : S) :
+    evalAt step (new ++ old) s = evalFrom step new s (evalAt step old s) :=
+  summary_resumes step new old s
+
+<span class="kw">theorem</span> <a class="decl" id="the_held_is_one_datum" href="#the_held_is_one_datum">the_held_is_one_datum</a> {S : Type} [DecidableEq S]
+    (step : GInt → GInt) (s : S) (z : GInt) :
+    evalFrom step [] s z = z :=
+  held_exact step s z
+
+<span class="kw">theorem</span> <a class="decl" id="contentment" href="#contentment">contentment</a> {G : Type} [Mul G] [One G] (S : Seat G)
+    (acts : Nat → G) (p : S.Pos) (W : Nat)
+    {A : Type} [DecidableEq A] (step : GInt → GInt) (new old : List A)
+    (s : A) :
+    (∃ k, W &lt; (guardedPrefix S acts p k).length)
+      ∧ evalAt step (new ++ old) s = evalFrom step new s (evalAt step old s) :=
+  ⟨the_record_outgrows_any_memory S acts p W, summary_resumes step new old s⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_mul&#x27;&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_mul&#x27;</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_record_outgrows_any_memory&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_record_outgrows_any_memory</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.continuation_needs_only_the_held&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms continuation_needs_only_the_held</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_held_is_one_datum&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_held_is_one_datum</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.contentment&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms contentment</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

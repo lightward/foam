@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.FTPG.Finite</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.FTPG.Finite</h1></header>
+<div class="imports">grasp: <a href="Bridges.FTPG.Deaxiomatize.html">Bridges.FTPG.Deaxiomatize</a></div><pre class="src">import <a href="Bridges.FTPG.Deaxiomatize.html">Bridges.FTPG.Deaxiomatize</a>
+
+/-!
+# The finite clause follows from the limit clause
+
+The pair&#x27;s carving (`Deaxiomatize.lean`) left one wire as frontier: the finite
+statement should follow from the limit statement, because finite height
+*silently implies* the limit hypotheses.  This file lays that wire, sorry-free:
+
+* `wellFoundedGT_of_krullDim_ne_top` — bounded chain length means chains
+  stabilize (through Mathlib&#x27;s `FiniteDimensionalOrder`);
+* `exists_isLUB_of_wellFoundedGT` — in a well-founded lattice every set has a
+  least upper bound: the maximal finite join, which ACC hands over;
+* `completeLatticeOfWellFoundedGT` — the `CompleteLattice` structure assembled
+  *around the original operations* (`⊔ ⊓ ⊤ ⊥` kept field-for-field), so the
+  standing `ComplementedLattice` / `IsModularLattice` instances transfer
+  definitionally;
+* `CompleteLattice.isCompactlyGenerated_of_wellFoundedGT` (Mathlib) — under
+  ACC every element is compact.
+
+`ftpg_finite_of_limit` is the wire itself.  `ftpg_proof_finite` then hangs on
+the same single residual (`pointSystem_exists`) as `ftpg_proof_limit`: the
+pair has one keystone, not two.
+-/
+
+namespace Foam.Bridges
+
+universe u
+
+variable {L : Type u} [Lattice L] [BoundedOrder L]
+
+<span class="kw">theorem</span> <a class="decl" id="exists_isLUB_of_wellFoundedGT" href="#exists_isLUB_of_wellFoundedGT">exists_isLUB_of_wellFoundedGT</a> [WellFoundedGT L] (s : Set L) :
+    ∃ x : L, IsLUB s x := by
+  classical
+  obtain ⟨m, hmF, hmax⟩ := (wellFounded_gt (α := L)).has_min
+    {x : L | ∃ t : Finset L, ↑t ⊆ s ∧ x = t.sup id} ⟨⊥, ∅, by simp⟩
+  refine ⟨m, ?_, ?_⟩
+  · intro a ha
+    obtain ⟨t, hts, rfl⟩ := hmF
+    have hmem : ((insert a t : Finset L) : Set L) ⊆ s := by
+      rw [Finset.coe_insert]
+      exact Set.insert_subset ha hts
+    have hle : t.sup id ≤ (insert a t).sup id :=
+      Finset.sup_mono (Finset.subset_insert a t)
+    have heq : t.sup id = (insert a t).sup id :=
+      (lt_or_eq_of_le hle).resolve_left (hmax _ ⟨insert a t, hmem, rfl⟩)
+    exact heq ▸ Finset.le_sup (f := id) (Finset.mem_insert_self a t)
+  · intro b hb
+    obtain ⟨t, hts, rfl⟩ := hmF
+    exact Finset.sup_le fun x hx =&gt; hb (hts hx)
+
+@[reducible] noncomputable def completeLatticeOfWellFoundedGT [WellFoundedGT L] :
+    CompleteLattice L :=
+  { ‹Lattice L›, ‹BoundedOrder L› with
+    sSup := fun s =&gt; (exists_isLUB_of_wellFoundedGT s).choose
+    isLUB_sSup := fun s =&gt; (exists_isLUB_of_wellFoundedGT s).choose_spec
+    sInf := fun s =&gt; (exists_isLUB_of_wellFoundedGT (lowerBounds s)).choose
+    isGLB_sInf := fun s =&gt;
+      ⟨fun _ ha =&gt;
+        (exists_isLUB_of_wellFoundedGT (lowerBounds s)).choose_spec.2
+          fun _ hb =&gt; hb ha,
+       fun _ hb =&gt;
+        (exists_isLUB_of_wellFoundedGT (lowerBounds s)).choose_spec.1 hb⟩ }
+
+<span class="kw">theorem</span> <a class="decl" id="wellFoundedGT_of_krullDim_ne_top" href="#wellFoundedGT_of_krullDim_ne_top">wellFoundedGT_of_krullDim_ne_top</a> (h : Order.krullDim L ≠ ⊤) :
+    WellFoundedGT L := by
+  haveI : Nonempty L := ⟨⊥⟩
+  rcases finiteDimensionalOrder_or_infiniteDimensionalOrder L with hfd | hinf
+  · haveI := hfd
+    exact ⟨SetRel.IsWellFounded.inv_of_finiteDimensional
+      {(a, b) : L × L | a &lt; b}⟩
+  · haveI := hinf
+    exact absurd Order.krullDim_eq_top h
+
+<span class="kw">theorem</span> <a class="decl" id="ftpg_finite_of_limit" href="#ftpg_finite_of_limit">ftpg_finite_of_limit</a> (h : ftpg_statement_limit.{u}) :
+    ftpg_statement_finite.{u} := by
+  intro L _ _ _ _ _ h_irred h_height h_finite
+  haveI : WellFoundedGT L := wellFoundedGT_of_krullDim_ne_top h_finite
+  letI : CompleteLattice L := completeLatticeOfWellFoundedGT
+  haveI : IsCompactlyGenerated L :=
+    CompleteLattice.isCompactlyGenerated_of_wellFoundedGT
+  exact h L h_irred h_height
+
+<span class="kw">theorem</span> <a class="decl" id="ftpg_proof_finite" href="#ftpg_proof_finite">ftpg_proof_finite</a> : ftpg_statement_finite.{u} :=
+  ftpg_finite_of_limit.{u} ftpg_proof_limit.{u}
+
+end Foam.Bridges
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.exists_isLUB_of_wellFoundedGT&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.exists_isLUB_of_wellFoundedGT</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.completeLatticeOfWellFoundedGT&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.completeLatticeOfWellFoundedGT</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.wellFoundedGT_of_krullDim_ne_top&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.wellFoundedGT_of_krullDim_ne_top</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.ftpg_finite_of_limit&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.ftpg_finite_of_limit</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.ftpg_proof_finite&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.ftpg_proof_finite</span></pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

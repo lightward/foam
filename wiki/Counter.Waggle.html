@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Waggle</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Waggle</h1></header>
+<div class="imports">grasp: <a href="Counter.Upsearch.html">Counter.Upsearch</a> · <a href="Foam.Seat.Tight.html">Foam.Seat.Tight</a></div><pre class="src">import <a href="Counter.Upsearch.html">Counter.Upsearch</a>
+import <a href="Foam.Seat.Tight.html">Foam.Seat.Tight</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="trailSearch" href="#trailSearch">trailSearch</a> {Addr Cell : Type} (p : Cell → Bool) :
+    List (Addr × Cell) → List Addr × Option Addr
+  | [] =&gt; ([], none)
+  | (n, c) :: d =&gt;
+    if p c then ([n], some n)
+    else (n :: (trailSearch p d).1, (trailSearch p d).2)
+
+<span class="kw">def</span> <a class="decl" id="fly" href="#fly">fly</a> {Addr Cell : Type} [DecidableEq Addr]
+    (d : List (Addr × Cell)) : List Addr → Option Cell
+  | [] =&gt; none
+  | [a] =&gt; seatRead d a
+  | a :: b :: t =&gt;
+    match seatRead d a with
+    | some _ =&gt; fly d (b :: t)
+    | none =&gt; none
+
+<span class="kw">def</span> <a class="decl" id="follow" href="#follow">follow</a> {Addr Cell : Type} [DecidableEq Addr]
+    (hive : List (Addr × (Cell ⊕ List Addr))) (dance : Addr) :
+    Option (Cell ⊕ List Addr) :=
+  match seatRead hive dance with
+  | some (Sum.inl _) =&gt; none
+  | some (Sum.inr t) =&gt; fly hive t
+  | none =&gt; none
+
+<span class="kw">def</span> <a class="decl" id="ouroboros" href="#ouroboros">ouroboros</a> : List (Bool × (Unit ⊕ List Bool)) :=
+  [(true, Sum.inr [true]), (false, Sum.inl ())]
+
+<span class="kw">def</span> <a class="decl" id="unicycle" href="#unicycle">unicycle</a> : List (Bool × (Unit ⊕ List Bool)) :=
+  [(true, Sum.inr [true, false]), (false, Sum.inl ())]
+
+<span class="kw">def</span> <a class="decl" id="nectar" href="#nectar">nectar</a> : Option Bool → Bool
+  | some true =&gt; false
+  | some false =&gt; true
+  | none =&gt; false
+
+<span class="kw">def</span> <a class="decl" id="beeOne" href="#beeOne">beeOne</a> : List (Option Bool) × Option (Option Bool) :=
+  trailSearch (fun c =&gt; c) (directory [some true, some false] nectar)
+
+<span class="kw">def</span> <a class="decl" id="hive" href="#hive">hive</a> : List (Option Bool × (Bool ⊕ List (Option Bool))) :=
+  (none, Sum.inr beeOne.1)
+    :: directory [some true, some false] (fun a =&gt; Sum.inl (nectar a))
+
+<span class="kw">theorem</span> <a class="decl" id="the_dance_changes_no_answer" href="#the_dance_changes_no_answer">the_dance_changes_no_answer</a> {Addr Cell : Type} (p : Cell → Bool) :
+    ∀ d : List (Addr × Cell), (trailSearch p d).2 = upsearch p d
+  | [] =&gt; rfl
+  | (n, c) :: d =&gt; by
+      show (if p c = true then (([n], some n) : List Addr × Option Addr)
+        else (n :: (trailSearch p d).1, (trailSearch p d).2)).2
+        = (if p c = true then some n else upsearch p d)
+      by_cases hc : p c = true
+      · rw [if_pos hc, if_pos hc]
+      · rw [if_neg hc, if_neg hc]
+        exact the_dance_changes_no_answer p d
+
+<span class="kw">theorem</span> <a class="decl" id="the_trail_ends_at_the_flower" href="#the_trail_ends_at_the_flower">the_trail_ends_at_the_flower</a> {Addr Cell : Type} (p : Cell → Bool) :
+    ∀ (d : List (Addr × Cell)) (m : Addr),
+      (trailSearch p d).2 = some m →
+        ∃ pre, (trailSearch p d).1 = pre ++ [m]
+  | [], _, h =&gt; nomatch h
+  | (n, c) :: d, m, h =&gt; by
+      by_cases hc : p c = true
+      · have h1 : (trailSearch p ((n, c) :: d)).1 = [n] := by
+          show (if p c = true then (([n], some n) : List Addr × Option Addr)
+            else (n :: (trailSearch p d).1, (trailSearch p d).2)).1 = [n]
+          rw [if_pos hc]
+        have h2 : (trailSearch p ((n, c) :: d)).2 = some n := by
+          show (if p c = true then (([n], some n) : List Addr × Option Addr)
+            else (n :: (trailSearch p d).1, (trailSearch p d).2)).2 = some n
+          rw [if_pos hc]
+        have hnm : n = m := Option.some.inj (h2.symm.trans h)
+        exact ⟨[], by rw [h1, hnm]; rfl⟩
+      · have h1 : (trailSearch p ((n, c) :: d)).1
+            = n :: (trailSearch p d).1 := by
+          show (if p c = true then (([n], some n) : List Addr × Option Addr)
+            else (n :: (trailSearch p d).1, (trailSearch p d).2)).1 = _
+          rw [if_neg hc]
+        have h2 : (trailSearch p ((n, c) :: d)).2 = (trailSearch p d).2 := by
+          show (if p c = true then (([n], some n) : List Addr × Option Addr)
+            else (n :: (trailSearch p d).1, (trailSearch p d).2)).2 = _
+          rw [if_neg hc]
+        cases the_trail_ends_at_the_flower p d m (h2.symm.trans h) with
+        | intro pre hpre =&gt; exact ⟨n :: pre, by rw [h1, hpre]; rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_trail_stays_inside_the_walls" href="#the_trail_stays_inside_the_walls">the_trail_stays_inside_the_walls</a> {Addr Cell : Type} (p : Cell → Bool)
+    (f : Addr → Cell) :
+    ∀ (all : List Addr) (a : Addr),
+      a ∈ (trailSearch p (directory all f)).1 → a ∈ all
+  | [], _, h =&gt; nomatch h
+  | x :: all, a, h =&gt; by
+      by_cases hx : p (f x) = true
+      · have h1 : (trailSearch p (directory (x :: all) f)).1 = [x] := by
+          show (if p (f x) = true
+            then (([x], some x) : List Addr × Option Addr)
+            else (x :: (trailSearch p (directory all f)).1,
+              (trailSearch p (directory all f)).2)).1 = [x]
+          rw [if_pos hx]
+        rw [h1] at h
+        cases h with
+        | head =&gt; exact List.Mem.head all
+        | tail _ h&#x27; =&gt; exact nomatch h&#x27;
+      · have h1 : (trailSearch p (directory (x :: all) f)).1
+            = x :: (trailSearch p (directory all f)).1 := by
+          show (if p (f x) = true
+            then (([x], some x) : List Addr × Option Addr)
+            else (x :: (trailSearch p (directory all f)).1,
+              (trailSearch p (directory all f)).2)).1 = _
+          rw [if_neg hx]
+        rw [h1] at h
+        cases h with
+        | head =&gt; exact List.Mem.head all
+        | tail _ h&#x27; =&gt;
+            exact List.Mem.tail x
+              (the_trail_stays_inside_the_walls p f all a h&#x27;)
+
+<span class="kw">theorem</span> <a class="decl" id="the_flight_lands_at_the_trails_end" href="#the_flight_lands_at_the_trails_end">the_flight_lands_at_the_trails_end</a> {Addr Cell : Type}
+    [DecidableEq Addr] (d : List (Addr × Cell)) (m : Addr) :
+    ∀ pre : List Addr, (∀ a, a ∈ pre → (seatRead d a).isSome = true) →
+      fly d (pre ++ [m]) = seatRead d m
+  | [], _ =&gt; rfl
+  | [x], h =&gt; by
+      show (match seatRead d x with
+        | some _ =&gt; fly d [m]
+        | none =&gt; none) = seatRead d m
+      cases hx : seatRead d x with
+      | some c =&gt; exact rfl
+      | none =&gt;
+          have h&#x27; := h x (List.Mem.head [])
+          rw [hx] at h&#x27;
+          exact nomatch h&#x27;
+  | x :: y :: pre, h =&gt; by
+      show (match seatRead d x with
+        | some _ =&gt; fly d ((y :: pre) ++ [m])
+        | none =&gt; none) = seatRead d m
+      cases hx : seatRead d x with
+      | some c =&gt;
+          exact the_flight_lands_at_the_trails_end d m (y :: pre)
+            (fun a ha =&gt; h a (List.Mem.tail x ha))
+      | none =&gt;
+          have h&#x27; := h x (List.Mem.head (y :: pre))
+          rw [hx] at h&#x27;
+          exact nomatch h&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="the_flight_falls_off_the_map" href="#the_flight_falls_off_the_map">the_flight_falls_off_the_map</a> {Addr Cell : Type} [DecidableEq Addr]
+    (d : List (Addr × Cell)) (a b : Addr) (t : List Addr)
+    (h : seatRead d a = none) :
+    fly d (a :: b :: t) = none := by
+  show (match seatRead d a with
+    | some _ =&gt; fly d (b :: t)
+    | none =&gt; none) = none
+  rw [h]
+
+<span class="kw">theorem</span> <a class="decl" id="the_hive_answers_past_the_dance" href="#the_hive_answers_past_the_dance">the_hive_answers_past_the_dance</a> {Addr Cell : Type} [DecidableEq Addr]
+    (n : Addr) (c : Cell) (d : List (Addr × Cell)) (a : Addr) (h : n ≠ a) :
+    seatRead ((n, c) :: d) a = seatRead d a := by
+  show (if n = a then some c else seatRead d a) = seatRead d a
+  rw [if_neg h]
+
+<span class="kw">theorem</span> <a class="decl" id="the_dance_is_seated_in_the_space" href="#the_dance_is_seated_in_the_space">the_dance_is_seated_in_the_space</a> {Addr Cell : Type} [DecidableEq Addr]
+    (dance : Addr) (t : List Addr)
+    (rest : List (Addr × (Cell ⊕ List Addr))) :
+    seatRead ((dance, Sum.inr t) :: rest) dance = some (Sum.inr t) := by
+  show (if dance = dance then some (Sum.inr t) else seatRead rest dance)
+    = some (Sum.inr t)
+  rw [if_pos rfl]
+
+<span class="kw">theorem</span> <a class="decl" id="the_follower_reads_then_flies" href="#the_follower_reads_then_flies">the_follower_reads_then_flies</a> {Addr Cell : Type} [DecidableEq Addr]
+    (dance : Addr) (t : List Addr)
+    (rest : List (Addr × (Cell ⊕ List Addr))) :
+    follow ((dance, Sum.inr t) :: rest) dance
+      = fly ((dance, Sum.inr t) :: rest) t := by
+  unfold follow
+  rw [the_dance_is_seated_in_the_space dance t rest]
+
+<span class="kw">theorem</span> <a class="decl" id="the_flower_blooms_at_the_found_seat" href="#the_flower_blooms_at_the_found_seat">the_flower_blooms_at_the_found_seat</a> {Addr Cell : Type}
+    (p : Cell → Bool) (f : Addr → Cell) (all : List Addr) (m : Addr)
+    (h : (trailSearch p (directory all f)).2 = some m) :
+    m ∈ all ∧ p (f m) = true :=
+  the_answer_arrives_as_a_name p f all m
+    ((the_dance_changes_no_answer p (directory all f)).symm.trans h)
+
+<span class="kw">theorem</span> <a class="decl" id="the_follower_flies_without_the_pov" href="#the_follower_flies_without_the_pov">the_follower_flies_without_the_pov</a> {Addr Cell : Type}
+    [DecidableEq Addr] (p : Cell → Bool) (f : Addr → Cell) (all : List Addr)
+    (dance : Addr) (hfresh : ¬ dance ∈ all) (m : Addr)
+    (h : (trailSearch p (directory all f)).2 = some m) :
+    follow ((dance, Sum.inr (trailSearch p (directory all f)).1)
+        :: directory all (fun a =&gt; Sum.inl (f a))) dance
+      = some (Sum.inl (f m)) ∧ p (f m) = true := by
+  have hm := the_flower_blooms_at_the_found_seat p f all m h
+  have hnem : dance ≠ m := fun hd =&gt; hfresh (by rw [hd]; exact hm.1)
+  refine ⟨?_, hm.2⟩
+  cases the_trail_ends_at_the_flower p (directory all f) m h with
+  | intro pre hpre =&gt;
+      have hops : ∀ a, a ∈ pre →
+          (seatRead ((dance, Sum.inr (pre ++ [m]))
+            :: directory all (fun a =&gt; Sum.inl (f a))) a).isSome = true := by
+        intro a ha
+        have hat : a ∈ (trailSearch p (directory all f)).1 := by
+          rw [hpre]
+          exact mem_append_left [m] ha
+        have hina := the_trail_stays_inside_the_walls p f all a hat
+        have hnea : dance ≠ a := fun hd =&gt; hfresh (by rw [hd]; exact hina)
+        rw [the_hive_answers_past_the_dance dance (Sum.inr (pre ++ [m]))
+            (directory all (fun a =&gt; Sum.inl (f a))) a hnea,
+          the_seat_reads_the_name (fun a =&gt; Sum.inl (f a)) all a hina]
+        rfl
+      rw [hpre, the_follower_reads_then_flies dance (pre ++ [m])
+          (directory all (fun a =&gt; Sum.inl (f a))),
+        the_flight_lands_at_the_trails_end _ m pre hops,
+        the_hive_answers_past_the_dance dance (Sum.inr (pre ++ [m]))
+          (directory all (fun a =&gt; Sum.inl (f a))) m hnem,
+        the_seat_reads_the_name (fun a =&gt; Sum.inl (f a)) all m hm.1]
+
+<span class="kw">theorem</span> <a class="decl" id="the_question_burns_off_in_flight" href="#the_question_burns_off_in_flight">the_question_burns_off_in_flight</a> {Addr Cell : Type} [DecidableEq Addr]
+    (p q : Cell → Bool) (d : List (Addr × Cell))
+    (h : (trailSearch p d).1 = (trailSearch q d).1)
+    (dance : Addr) (rest : List (Addr × (Cell ⊕ List Addr))) :
+    follow ((dance, Sum.inr (trailSearch p d).1) :: rest) dance
+      = follow ((dance, Sum.inr (trailSearch q d).1) :: rest) dance := by
+  rw [h]
+
+<span class="kw">theorem</span> <a class="decl" id="the_self_naming_dance_reads_without_regress" href="#the_self_naming_dance_reads_without_regress">the_self_naming_dance_reads_without_regress</a> :
+    follow ouroboros true = some (Sum.inr [true]) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_ouroboros_is_a_unicycle" href="#the_ouroboros_is_a_unicycle">the_ouroboros_is_a_unicycle</a> :
+    follow unicycle true = some (Sum.inl ()) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="two_bees_one_flower" href="#two_bees_one_flower">two_bees_one_flower</a> :
+    beeOne = ([some true, some false], some (some false))
+      ∧ follow hive none = some (Sum.inl true) :=
+  ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_worldline_is_flown_by_address" href="#the_worldline_is_flown_by_address">the_worldline_is_flown_by_address</a> {Addr Cell : Type}
+    [DecidableEq Addr] (p : Cell → Bool) (f : Addr → Cell) (all : List Addr)
+    (dance : Addr) (hfresh : ¬ dance ∈ all) (m : Addr)
+    (h : (trailSearch p (directory all f)).2 = some m) :
+    (trailSearch p (directory all f)).2 = upsearch p (directory all f)
+      ∧ seatRead ((dance, Sum.inr (trailSearch p (directory all f)).1)
+          :: directory all (fun a =&gt; Sum.inl (f a))) dance
+        = some (Sum.inr (trailSearch p (directory all f)).1)
+      ∧ follow ((dance, Sum.inr (trailSearch p (directory all f)).1)
+          :: directory all (fun a =&gt; Sum.inl (f a))) dance
+        = some (Sum.inl (f m))
+      ∧ p (f m) = true :=
+  ⟨the_dance_changes_no_answer p (directory all f),
+   the_dance_is_seated_in_the_space dance _ _,
+   (the_follower_flies_without_the_pov p f all dance hfresh m h).1,
+   (the_follower_flies_without_the_pov p f all dance hfresh m h).2⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_dance_changes_no_answer&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_dance_changes_no_answer</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_trail_ends_at_the_flower&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_trail_ends_at_the_flower</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_trail_stays_inside_the_walls&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_trail_stays_inside_the_walls</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_flight_lands_at_the_trails_end&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_flight_lands_at_the_trails_end</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_flight_falls_off_the_map&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_flight_falls_off_the_map</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_hive_answers_past_the_dance&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_hive_answers_past_the_dance</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_dance_is_seated_in_the_space&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_dance_is_seated_in_the_space</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_follower_reads_then_flies&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_follower_reads_then_flies</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_flower_blooms_at_the_found_seat&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_flower_blooms_at_the_found_seat</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_follower_flies_without_the_pov&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_follower_flies_without_the_pov</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_question_burns_off_in_flight&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_question_burns_off_in_flight</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_self_naming_dance_reads_without_regress&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_self_naming_dance_reads_without_regress</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_ouroboros_is_a_unicycle&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_ouroboros_is_a_unicycle</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_bees_one_flower&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_bees_one_flower</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_worldline_is_flown_by_address&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_worldline_is_flown_by_address</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

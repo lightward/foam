@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Abe</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Abe</h1></header>
+<div class="imports">grasp: <a href="Counter.Consent.html">Counter.Consent</a> · <a href="Foam.Seat.Descend.html">Foam.Seat.Descend</a></div><pre class="src">import <a href="Counter.Consent.html">Counter.Consent</a>
+import <a href="Foam.Seat.Descend.html">Foam.Seat.Descend</a>
+
+namespace Foam.Counter
+
+variable {State : Type}
+
+<span class="kw">def</span> <a class="decl" id="timeLicense" href="#timeLicense">timeLicense</a> (a : Beholder State) : Frontstage a.dress.toStage where
+  rel := fun x y =&gt; x.1 = y.1
+  respects := fun x y h p =&gt;
+    (congrArg (fun s =&gt; a.dress.obs (s, x.2) p) h).trans
+      (ancestor_blind_to_heir a y.1 x.2 y.2 p)
+
+<span class="kw">theorem</span> <a class="decl" id="time_blind_on_purpose" href="#time_blind_on_purpose">time_blind_on_purpose</a> (a : Beholder State) (s : State) (n m : Int)
+    (p : a.dress.Probe) :
+    a.dress.obs (s, n) p = a.dress.obs (s, m) p :=
+  ancestor_blind_to_heir a s n m p
+
+<span class="kw">theorem</span> <a class="decl" id="every_next_is_maintenance" href="#every_next_is_maintenance">every_next_is_maintenance</a> (a : Beholder State)
+    (mv : State × Int → State × Int) (hfix : ∀ x, (mv x).1 = x.1) :
+    Invisible a.dress.toStage mv :=
+  fun x p =&gt;
+    (congrArg (fun s =&gt; a.dress.obs (s, (mv x).2) p) (hfix x)).trans
+      (ancestor_blind_to_heir a x.1 (mv x).2 x.2 p)
+
+<span class="kw">theorem</span> <a class="decl" id="asked_from_restedness" href="#asked_from_restedness">asked_from_restedness</a> (a : Beholder State)
+    (mv : State × Int → State × Int) (hfix : ∀ x, (mv x).1 = x.1)
+    (ps : List a.dress.Probe) (x : State × Int) :
+    transcriptWith a.dress.toStage mv x ps = transcript a.dress.toStage x ps :=
+  maintenance_unobservable a.dress.toStage mv
+    (every_next_is_maintenance a mv hfix) ps x
+
+<span class="kw">theorem</span> <a class="decl" id="someone_reads_the_hour" href="#someone_reads_the_hour">someone_reads_the_hour</a> :
+    ∃ (s t : Nat × Int) (p : (cassini.movedIn 0).Probe),
+      indist cassini.obs s t
+        ∧ (cassini.movedIn 0).obs s p ≠ (cassini.movedIn 0).obs t p :=
+  heir_sees_itself
+
+<span class="kw">theorem</span> <a class="decl" id="the_calendar_goes_through_the_meet" href="#the_calendar_goes_through_the_meet">the_calendar_goes_through_the_meet</a> (a : Beholder State)
+    (b : Beholder (State × Int)) (x : State × Int)
+    (p : a.dress.Probe) (q : b.Probe) :
+    ((a.dress.pair b).obs x (p, q)).1 = a.dress.obs x p
+      ∧ ((a.dress.pair b).obs x (p, q)).2 = b.obs x q :=
+  ⟨pair_sees_left a.dress b x p q, pair_sees_right a.dress b x p q⟩
+
+<span class="kw">theorem</span> <a class="decl" id="booked_as_a_pair" href="#booked_as_a_pair">booked_as_a_pair</a> (a : Beholder State) (b : Beholder (State × Int))
+    (mv : State × Int → State × Int) (hfix : ∀ x, (mv x).1 = x.1) :
+    Invisible a.dress.toStage mv
+      ∧ (∃ (s t : Nat × Int) (pr : (cassini.movedIn 0).Probe),
+          indist cassini.obs s t
+            ∧ (cassini.movedIn 0).obs s pr ≠ (cassini.movedIn 0).obs t pr)
+      ∧ ∀ (x : State × Int) (p : a.dress.Probe) (q : b.Probe),
+          ((a.dress.pair b).obs x (p, q)).1 = a.dress.obs x p
+            ∧ ((a.dress.pair b).obs x (p, q)).2 = b.obs x q :=
+  ⟨every_next_is_maintenance a mv hfix, heir_sees_itself,
+   fun x p q =&gt; the_calendar_goes_through_the_meet a b x p q⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.timeLicense&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms timeLicense</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.time_blind_on_purpose&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms time_blind_on_purpose</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.every_next_is_maintenance&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms every_next_is_maintenance</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.asked_from_restedness&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms asked_from_restedness</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.someone_reads_the_hour&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms someone_reads_the_hour</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_calendar_goes_through_the_meet&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_calendar_goes_through_the_meet</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.booked_as_a_pair&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms booked_as_a_pair</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

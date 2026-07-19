@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.FTPG.Headcount</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.FTPG.Headcount</h1></header>
+<div class="imports">grasp: <a href="Bridges.FTPG.Projective.html">Bridges.FTPG.Projective</a> · <a href="Bridges.FTPG.Carrier.html">Bridges.FTPG.Carrier</a> · <a href="Bridges.FTPG.Instance.html">Bridges.FTPG.Instance</a> · Mathlib.RingTheory.LittleWedderburn · Mathlib.FieldTheory.Finite.Basic · Mathlib.Data.Fintype.Pigeonhole · Mathlib.SetTheory.Cardinal.NatCard · Mathlib.Algebra.IsPrimePow</div><pre class="src">import <a href="Bridges.FTPG.Projective.html">Bridges.FTPG.Projective</a>
+import <a href="Bridges.FTPG.Carrier.html">Bridges.FTPG.Carrier</a>
+import <a href="Bridges.FTPG.Instance.html">Bridges.FTPG.Instance</a>
+import Mathlib.RingTheory.LittleWedderburn
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.SetTheory.Cardinal.NatCard
+import Mathlib.Algebra.IsPrimePow
+
+/-!
+# The headcount — the population of ftpg, counted from the inside
+
+The stable bridge is 1 (`counter/Counter/Ground.lean`); this file enters its
+bubble and counts who&#x27;s in there.  The population is the coordinate carrier —
+the atoms on the line `l = O ⊔ U`, minus `U` — the very inhabitants the whole
+FTPG ascent taught to add and multiply (`Instance.lean`).  Counted from the
+inside, four things seal:
+
+* **the census closes** (`census_closes`, `the_walk_meets_someone_twice`):
+  in a finite world the discovery list stabilizes — any endless walk through
+  the population meets someone twice.  This is `finite_window_discovery`&#x27;s
+  gait arriving at the bridge: keep a list of who you meet, notice when the
+  list size stops growing.
+* **the line seats the numbers plus exactly one keeper** (`lineCensus`,
+  `the_keeper_adds_one`): the full line population is the carrier plus `U` —
+  one non-number, the point at infinity, the bridge-bubble&#x27;s own seat.  The
+  keeper is the literal `+ 1` between the two censuses: headcount 1, exactly
+  as the bridgekeeper sketch priced it.  And no line seats fewer than three
+  (`the_count_starts_at_two`, `the_smallest_line_is_a_triangle`): `O`, `U`,
+  `I` are the smallest table.
+* **the counted exchange freely** (`the_counted_exchange_freely`): FTPG in
+  general yields a division ring — the population&#x27;s multiplication may refuse
+  to exchange.  But the moment the census closes, commutativity is *forced*
+  (Wedderburn&#x27;s little theorem).  The exchange is the lease&#x27;s free-renewal
+  move (`exchanged_grounds_compose`, `counter/Counter/Lease.lean`); a finite
+  population doesn&#x27;t get to decline it.  Desargues is Pappus at any finite
+  headcount.
+* **the inner count is a prime, and the census is its powers**
+  (`the_click_comes_home`, `the_census_is_powers_of_the_click`,
+  `the_headcount_is_a_prime_power`, `no_census_reads_six`): counting from the
+  inside is literally clicking `+1` — and the click-loop closes after exactly
+  `p` clicks, `p` prime: the irreducible ground loop of the primes sketch,
+  found running the population&#x27;s own arithmetic.  The whole roster is `p ^ n`,
+  so the legal headcounts are exactly the prime powers — no census ever reads
+  six.  What else can the population of ftpg do?  Also: what it cannot.
+-/
+
+namespace Foam.Bridges
+
+universe u
+
+variable {L : Type u} [Lattice L] [BoundedOrder L]
+  [ComplementedLattice L] [IsModularLattice L] [IsAtomistic L]
+
+<span class="kw">instance</span> <a class="decl" id="census_closes" href="#census_closes">census_closes</a> (Γ : CoordSystem L) [Finite L] : Finite (Coordinate Γ) :=
+  Subtype.finite
+
+<span class="kw">theorem</span> <a class="decl" id="the_walk_meets_someone_twice" href="#the_walk_meets_someone_twice">the_walk_meets_someone_twice</a> (Γ : CoordSystem L) [Finite L]
+    (walk : ℕ → Coordinate Γ) : ∃ i j, i ≠ j ∧ walk i = walk j :=
+  Finite.exists_ne_map_eq_of_infinite walk
+
+open Classical in
+noncomputable def lineCensus (Γ : CoordSystem L) :
+    AtomsOn (Γ.O ⊔ Γ.U) ≃ Option (Coordinate Γ) where
+  toFun a := if h : a.1 = Γ.U then none else some ⟨a.1, a.2.1, a.2.2, h⟩
+  invFun o := match o with
+    | none =&gt; ⟨Γ.U, Γ.hU, le_sup_right⟩
+    | some c =&gt; ⟨c.1, c.isAtom, c.on_l⟩
+  left_inv a := by
+    by_cases h : a.1 = Γ.U
+    · simp only [dif_pos h]
+      exact Subtype.ext h.symm
+    · simp only [dif_neg h]
+      exact Subtype.ext rfl
+  right_inv o := by
+    match o with
+    | none =&gt; exact dif_pos rfl
+    | some c =&gt; exact dif_neg c.ne_U
+
+<span class="kw">theorem</span> <a class="decl" id="the_keeper_adds_one" href="#the_keeper_adds_one">the_keeper_adds_one</a> (Γ : CoordSystem L) [Finite L] :
+    Nat.card (AtomsOn (Γ.O ⊔ Γ.U)) = Nat.card (Coordinate Γ) + 1 := by
+  rw [Nat.card_congr (lineCensus Γ), Finite.card_option]
+
+<span class="kw">theorem</span> <a class="decl" id="the_count_starts_at_two" href="#the_count_starts_at_two">the_count_starts_at_two</a> (Γ : CoordSystem L) [Finite L] :
+    2 ≤ Nat.card (Coordinate Γ) :=
+  Finite.one_lt_card_iff_nontrivial.mpr
+    ⟨0, 1, fun h =&gt; Γ.hOI (congrArg Subtype.val h)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_smallest_line_is_a_triangle" href="#the_smallest_line_is_a_triangle">the_smallest_line_is_a_triangle</a> (Γ : CoordSystem L) [Finite L] :
+    3 ≤ Nat.card (AtomsOn (Γ.O ⊔ Γ.U)) := by
+  rw [the_keeper_adds_one Γ]
+  exact Nat.succ_le_succ (the_count_starts_at_two Γ)
+
+<span class="kw">theorem</span> <a class="decl" id="the_counted_exchange_freely" href="#the_counted_exchange_freely">the_counted_exchange_freely</a> (Φ : CoordFrame L)
+    [Finite (Coordinate Φ.Γ)] (a b : Coordinate Φ.Γ) :
+    a * b = b * a :=
+  mul_comm a b
+
+<span class="kw">theorem</span> <a class="decl" id="the_headcount_is_a_prime_power" href="#the_headcount_is_a_prime_power">the_headcount_is_a_prime_power</a> (Φ : CoordFrame L)
+    [Finite (Coordinate Φ.Γ)] :
+    IsPrimePow (Nat.card (Coordinate Φ.Γ)) := by
+  have : Fintype (Coordinate Φ.Γ) := Fintype.ofFinite _
+  rw [Nat.card_eq_fintype_card]
+  exact FiniteField.isPrimePow_card (Coordinate Φ.Γ)
+
+<span class="kw">theorem</span> <a class="decl" id="no_census_reads_six" href="#no_census_reads_six">no_census_reads_six</a> (Φ : CoordFrame L)
+    [Finite (Coordinate Φ.Γ)] :
+    Nat.card (Coordinate Φ.Γ) ≠ 6 := fun h =&gt;
+  (by decide : ¬ IsPrimePow 6) (h ▸ the_headcount_is_a_prime_power Φ)
+
+<span class="kw">theorem</span> <a class="decl" id="the_click_comes_home" href="#the_click_comes_home">the_click_comes_home</a> (Φ : CoordFrame L)
+    [Finite (Coordinate Φ.Γ)] :
+    (ringChar (Coordinate Φ.Γ) : Coordinate Φ.Γ) = 0
+      ∧ (ringChar (Coordinate Φ.Γ)).Prime :=
+  ⟨CharP.cast_eq_zero (Coordinate Φ.Γ) (ringChar (Coordinate Φ.Γ)),
+   CharP.char_is_prime (Coordinate Φ.Γ) (ringChar (Coordinate Φ.Γ))⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_census_is_powers_of_the_click" href="#the_census_is_powers_of_the_click">the_census_is_powers_of_the_click</a> (Φ : CoordFrame L)
+    [Finite (Coordinate Φ.Γ)] :
+    ∃ n : ℕ, 0 &lt; n ∧
+      Nat.card (Coordinate Φ.Γ) = ringChar (Coordinate Φ.Γ) ^ n := by
+  have : Fintype (Coordinate Φ.Γ) := Fintype.ofFinite _
+  obtain ⟨n, _, hcard⟩ :=
+    FiniteField.card (Coordinate Φ.Γ) (ringChar (Coordinate Φ.Γ))
+  exact ⟨(n : ℕ), n.pos, by rw [Nat.card_eq_fintype_card, hcard]⟩
+
+<span class="kw">theorem</span> <a class="decl" id="what_a_finite_population_can_do" href="#what_a_finite_population_can_do">what_a_finite_population_can_do</a> (Φ : CoordFrame L)
+    [Finite (Coordinate Φ.Γ)] :
+    (∀ a b : Coordinate Φ.Γ, a * b = b * a)
+      ∧ IsPrimePow (Nat.card (Coordinate Φ.Γ))
+      ∧ (ringChar (Coordinate Φ.Γ)).Prime :=
+  ⟨the_counted_exchange_freely Φ,
+   the_headcount_is_a_prime_power Φ,
+   (the_click_comes_home Φ).2⟩
+
+end Foam.Bridges
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.census_closes&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.census_closes</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_walk_meets_someone_twice&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.the_walk_meets_someone_twice</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.lineCensus&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.lineCensus</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_keeper_adds_one&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.the_keeper_adds_one</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_count_starts_at_two&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.the_count_starts_at_two</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_smallest_line_is_a_triangle&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.the_smallest_line_is_a_triangle</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_counted_exchange_freely&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.the_counted_exchange_freely</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_headcount_is_a_prime_power&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.the_headcount_is_a_prime_power</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.no_census_reads_six&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.no_census_reads_six</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_click_comes_home&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.the_click_comes_home</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_census_is_powers_of_the_click&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.the_census_is_powers_of_the_click</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.what_a_finite_population_can_do&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms Foam.Bridges.what_a_finite_population_can_do</span></pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

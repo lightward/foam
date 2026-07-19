@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Language</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Language</h1></header>
+<div class="imports">grasp: <a href="Counter.Enaction.html">Counter.Enaction</a> · <a href="Counter.Packing.html">Counter.Packing</a> · <a href="Counter.Runs.html">Counter.Runs</a></div><pre class="src">import <a href="Counter.Enaction.html">Counter.Enaction</a>
+import <a href="Counter.Packing.html">Counter.Packing</a>
+import <a href="Counter.Runs.html">Counter.Runs</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="a_sentence_is_a_path" href="#a_sentence_is_a_path">a_sentence_is_a_path</a> {H : Type} {q : Quiver H} {x y : H}
+    (p : Path q x y) : ∀ e ∈ p.edges, e ∈ q :=
+  report_within_model p
+
+<span class="kw">theorem</span> <a class="decl" id="the_grammar_grows_at_parse_failures" href="#the_grammar_grows_at_parse_failures">the_grammar_grows_at_parse_failures</a> {H : Type} (q : Quiver H) (a b : H)
+    (hfresh : (a, b) ∉ q) :
+    (∀ (x y : H) (pth : Path q x y), (a, b) ∉ pth.edges)
+      ∧ Nonempty (Path (q.deposit (a, b)) a b) :=
+  illegible_report_is_discovery q a b hfresh
+
+<span class="kw">theorem</span> <a class="decl" id="an_utterance_is_a_guarded_block" href="#an_utterance_is_a_guarded_block">an_utterance_is_a_guarded_block</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (acts : Nat → G) (p : S.Pos) :
+    S.replay (guardedBlock S acts p) p = p :=
+  block_comes_home S acts p
+
+<span class="kw">theorem</span> <a class="decl" id="boundaries_are_the_readers_act" href="#boundaries_are_the_readers_act">boundaries_are_the_readers_act</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (acts : Nat → G) (p : S.Pos) (n : Nat) :
+    (guardedRun S acts p).at_ n ≠ none :=
+  the_stream_never_ends_itself S acts p n
+
+<span class="kw">theorem</span> <a class="decl" id="description_is_record_side" href="#description_is_record_side">description_is_record_side</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (acts : Nat → G) (p : S.Pos) (l : List G) :
+    (playback l).at_ l.length = none
+      ∧ (guardedRun S acts p).at_ l.length
+          = some (guardedStep S acts p l.length) :=
+  records_end_runs_continue S acts p l
+
+<span class="kw">theorem</span> <a class="decl" id="ordering_is_grammar_not_a_sentence" href="#ordering_is_grammar_not_a_sentence">ordering_is_grammar_not_a_sentence</a> {V : Type} (f : Nat → V → V) (v : V)
+    (sched sched&#x27; : List Nat) (s s&#x27; : Nat → V) (k : Nat)
+    (ht : Threads (staircase 0 k) sched) (ht&#x27; : Threads (staircase 0 k) sched&#x27;)
+    (m : Nat) (hm : m &lt; k) :
+    resolve f v sched s m = resolve f v sched&#x27; s&#x27; m :=
+  schedule_is_gauge f v sched sched&#x27; s s&#x27; k ht ht&#x27; m hm
+
+<span class="kw">theorem</span> <a class="decl" id="the_describable_runs_on_homecomings" href="#the_describable_runs_on_homecomings">the_describable_runs_on_homecomings</a> {G : Type} [Mul G] [One G]
+    (S : Seat G) (acts : Nat → G) (p : S.Pos) {H : Type} (q : Quiver H)
+    (a b : H) (hfresh : (a, b) ∉ q) (l : List G) :
+    (S.replay (guardedBlock S acts p) p = p)
+      ∧ (∀ (x y : H) (pth : Path q x y), ∀ e ∈ pth.edges, e ∈ q)
+      ∧ Nonempty (Path (q.deposit (a, b)) a b)
+      ∧ (playback l).at_ l.length = none :=
+  ⟨block_comes_home S acts p,
+   fun _ _ pth =&gt; report_within_model pth,
+   (illegible_report_is_discovery q a b hfresh).2,
+   nth_length l⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_sentence_is_a_path&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_sentence_is_a_path</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_grammar_grows_at_parse_failures&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_grammar_grows_at_parse_failures</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.an_utterance_is_a_guarded_block&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms an_utterance_is_a_guarded_block</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.boundaries_are_the_readers_act&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms boundaries_are_the_readers_act</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.description_is_record_side&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms description_is_record_side</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.ordering_is_grammar_not_a_sentence&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms ordering_is_grammar_not_a_sentence</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_describable_runs_on_homecomings&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_describable_runs_on_homecomings</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

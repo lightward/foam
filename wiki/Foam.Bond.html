@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Bond</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Bond</h1></header>
+<div class="imports">grasp: <a href="Foam.Int.html">Foam.Int</a> · <a href="Foam.Seat.Dial.html">Foam.Seat.Dial</a> · <a href="Foam.Seat.Born.html">Foam.Seat.Born</a> · <a href="Foam.Seat.Forcing.html">Foam.Seat.Forcing</a> · <a href="Foam.Engine.Spectrum.html">Foam.Engine.Spectrum</a></div><pre class="src">import <a href="Foam.Int.html">Foam.Int</a>
+import <a href="Foam.Seat.Dial.html">Foam.Seat.Dial</a>
+import <a href="Foam.Seat.Born.html">Foam.Seat.Born</a>
+import <a href="Foam.Seat.Forcing.html">Foam.Seat.Forcing</a>
+import <a href="Foam.Engine.Spectrum.html">Foam.Engine.Spectrum</a>
+
+namespace Foam
+
+open Foam.FInt (addComm add_left_neg mulComm mul_neg neg_mul mul_zero mul_one zero_add
+  add_mul mul_assoc add_assoc add_right_neg neg_add)
+
+<span class="kw">def</span> <a class="decl" id="GInt.bond" href="#GInt.bond">GInt.bond</a> (k : Int) (θ : GInt) : GInt := GInt.smul k θ.rot
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.align_bond" href="#GInt.align_bond">GInt.align_bond</a> (w θ : GInt) (k : Int) :
+    GInt.align w (GInt.bond k θ) = k * GInt.align w θ.rot :=
+  GInt.align_smul w θ.rot k
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.align_rot_self" href="#GInt.align_rot_self">GInt.align_rot_self</a> (θ : GInt) : GInt.align θ θ.rot = 0 := by
+  show θ.re * -θ.im + θ.im * θ.re = 0
+  rw [mul_neg, mulComm θ.im θ.re]
+  exact add_left_neg _
+
+<span class="kw">theorem</span> <a class="decl" id="GInt.normSq_rot" href="#GInt.normSq_rot">GInt.normSq_rot</a> (θ : GInt) : θ.rot.normSq = θ.normSq := by
+  show -θ.im * -θ.im + θ.re * θ.re = θ.re * θ.re + θ.im * θ.im
+  rw [neg_mul, mul_neg, Int.neg_neg, addComm]
+
+<span class="kw">theorem</span> <a class="decl" id="the_bond_is_void_at_issue" href="#the_bond_is_void_at_issue">the_bond_is_void_at_issue</a> (θ f : GInt) (k : Int) :
+    GInt.born θ (f.add (GInt.bond k θ)) = GInt.born θ f := by
+  have h : GInt.align θ (f.add (GInt.bond k θ)) = GInt.align θ f := by
+    rw [GInt.align_add, GInt.align_bond, GInt.align_rot_self, mul_zero, Int.add_zero]
+  show GInt.align θ (f.add (GInt.bond k θ)) * GInt.align θ (f.add (GInt.bond k θ))
+     = GInt.align θ f * GInt.align θ f
+  rw [h]
+
+<span class="kw">theorem</span> <a class="decl" id="the_bond_matures_at_the_turn" href="#the_bond_matures_at_the_turn">the_bond_matures_at_the_turn</a> (θ f : GInt) (k : Int) :
+    GInt.align θ.rot (f.add (GInt.bond k θ)) = GInt.cross θ f + k * θ.normSq := by
+  rw [GInt.align_add, GInt.align_bond, cross_eq_align_rot θ f,
+      ← normSq_eq_align_self, GInt.normSq_rot]
+
+<span class="kw">theorem</span> <a class="decl" id="a_bond_breaks_the_stalemate" href="#a_bond_breaks_the_stalemate">a_bond_breaks_the_stalemate</a> (θ f : GInt) (k : Int)
+    (hquiet : GInt.cross θ f = 0) :
+    GInt.align θ.rot (f.add (GInt.bond k θ)) = k * θ.normSq := by
+  rw [the_bond_matures_at_the_turn, hquiet, zero_add]
+
+<span class="kw">theorem</span> <a class="decl" id="the_unit_bond_reads_whole" href="#the_unit_bond_reads_whole">the_unit_bond_reads_whole</a> (f : GInt) (k : Int) :
+    GInt.align GInt.one.rot (f.add (GInt.bond k GInt.one)) = f.im + k := by
+  rw [align_i]
+  show f.im + k * 1 = f.im + k
+  rw [mul_one]
+
+<span class="kw">theorem</span> <a class="decl" id="the_bond" href="#the_bond">the_bond</a> (θ f : GInt) (k : Int) :
+    GInt.born θ (f.add (GInt.bond k θ)) = GInt.born θ f
+      ∧ GInt.align θ.rot (f.add (GInt.bond k θ)) = GInt.cross θ f + k * θ.normSq
+      ∧ GInt.align θ f * GInt.align θ f + GInt.cross θ f * GInt.cross θ f
+          = θ.normSq * f.normSq :=
+  ⟨the_bond_is_void_at_issue θ f k, the_bond_matures_at_the_turn θ f k,
+   invariants_complete θ f⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_in_frame_stake_is_all_present" href="#the_in_frame_stake_is_all_present">the_in_frame_stake_is_all_present</a> (θ : GInt) (k : Int) :
+    GInt.align θ (GInt.smul k θ) = k * θ.normSq := by
+  rw [GInt.align_smul, ← normSq_eq_align_self]
+
+<span class="kw">theorem</span> <a class="decl" id="the_in_frame_stake_has_no_future" href="#the_in_frame_stake_has_no_future">the_in_frame_stake_has_no_future</a> (θ : GInt) (k : Int) :
+    GInt.align θ.rot (GInt.smul k θ) = 0 := by
+  have h : GInt.align θ.rot θ = 0 := by
+    show -θ.im * θ.re + θ.re * θ.im = 0
+    rw [neg_mul, mulComm θ.re θ.im]
+    exact add_left_neg _
+  rw [GInt.align_smul, h, mul_zero]
+
+<span class="kw">theorem</span> <a class="decl" id="the_first_reading_is_the_frame" href="#the_first_reading_is_the_frame">the_first_reading_is_the_frame</a> (θ : GInt) (k : Int) :
+    GInt.align θ.rot (GInt.bond k θ) = k * θ.normSq := by
+  rw [GInt.align_bond, ← normSq_eq_align_self, GInt.normSq_rot]
+
+<span class="kw">theorem</span> <a class="decl" id="the_first_click_counts_itself" href="#the_first_click_counts_itself">the_first_click_counts_itself</a> (k : Int) :
+    GInt.align GInt.one.rot (GInt.bond k GInt.one) = k := by
+  rw [the_first_reading_is_the_frame]
+  show k * (1 * 1 + 0 * 0) = k
+  rw [mul_one, mul_zero, Int.add_zero, mul_one]
+
+<span class="kw">theorem</span> <a class="decl" id="the_reflexive_tick" href="#the_reflexive_tick">the_reflexive_tick</a> (θ f : GInt) (k : Int) :
+    GInt.born θ (f.add (GInt.bond k θ)) = GInt.born θ f
+      ∧ GInt.align θ.rot (f.add (GInt.bond k θ))
+          = GInt.align θ.rot f + k * θ.normSq
+      ∧ GInt.align θ.rot (GInt.bond k θ) = k * θ.normSq
+      ∧ GInt.align θ.rot (GInt.smul k θ) = 0 :=
+  ⟨the_bond_is_void_at_issue θ f k,
+   by rw [GInt.align_add, the_first_reading_is_the_frame],
+   the_first_reading_is_the_frame θ k,
+   the_in_frame_stake_has_no_future θ k⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_two_axes_carry_every_move" href="#the_two_axes_carry_every_move">the_two_axes_carry_every_move</a> (θ z : GInt) :
+    GInt.smul θ.normSq z
+      = (GInt.smul (GInt.align θ z) θ).add (GInt.smul (GInt.cross θ z) θ.rot) := by
+  have hA : θ.re * z.re * θ.re = θ.re * θ.re * z.re := by
+    rw [mul_assoc, mulComm z.re θ.re, ← mul_assoc]
+  have hD : θ.im * z.re * θ.im = θ.im * θ.im * z.re := by
+    rw [mul_assoc, mulComm z.re θ.im, ← mul_assoc]
+  have h3 : θ.im * z.im * θ.re = θ.re * z.im * θ.im := by
+    rw [mulComm (θ.im * z.im) θ.re, mulComm θ.im z.im, ← mul_assoc]
+  have h4 : θ.re * z.re * θ.im = θ.im * z.re * θ.re := by
+    rw [mulComm (θ.re * z.re) θ.im, mulComm θ.re z.re, ← mul_assoc]
+  have h5 : θ.im * z.im * θ.im = θ.im * θ.im * z.im := by
+    rw [mul_assoc, mulComm z.im θ.im, ← mul_assoc]
+  have h6 : θ.re * z.im * θ.re = θ.re * θ.re * z.im := by
+    rw [mul_assoc, mulComm z.im θ.re, ← mul_assoc]
+  have hre : (θ.re * z.re + θ.im * z.im) * θ.re
+        + (θ.re * z.im - θ.im * z.re) * -θ.im
+      = (θ.re * θ.re + θ.im * θ.im) * z.re := by
+    rw [add_mul, Int.sub_eq_add_neg, add_mul, mul_neg, neg_mul, mul_neg, Int.neg_neg,
+        h3, ← add_assoc, add_assoc (θ.re * z.re * θ.re) (θ.re * z.im * θ.im)
+          (-(θ.re * z.im * θ.im)), add_right_neg, Int.add_zero, hA, hD, ← add_mul]
+  have him : (θ.re * z.re + θ.im * z.im) * θ.im
+        + (θ.re * z.im - θ.im * z.re) * θ.re
+      = (θ.re * θ.re + θ.im * θ.im) * z.im := by
+    rw [add_mul, Int.sub_eq_add_neg, add_mul, neg_mul, ← h4,
+        addComm (θ.re * z.im * θ.re) (-(θ.re * z.re * θ.im)),
+        Int.add_swap_inner, add_right_neg, zero_add, h5, h6,
+        addComm (θ.im * θ.im * z.im) (θ.re * θ.re * z.im), ← add_mul]
+  show GInt.mk ((θ.re * θ.re + θ.im * θ.im) * z.re) ((θ.re * θ.re + θ.im * θ.im) * z.im)
+     = GInt.mk ((θ.re * z.re + θ.im * z.im) * θ.re
+          + (θ.re * z.im - θ.im * z.re) * -θ.im)
+        ((θ.re * z.re + θ.im * z.im) * θ.im
+          + (θ.re * z.im - θ.im * z.re) * θ.re)
+  rw [hre, him]
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.align_bond&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.align_bond</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.align_rot_self&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.align_rot_self</span>
+
+<span class="receipt">/-- info: &#x27;Foam.GInt.normSq_rot&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms GInt.normSq_rot</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_bond_is_void_at_issue&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_bond_is_void_at_issue</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_bond_matures_at_the_turn&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_bond_matures_at_the_turn</span>
+
+<span class="receipt">/-- info: &#x27;Foam.a_bond_breaks_the_stalemate&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_bond_breaks_the_stalemate</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_unit_bond_reads_whole&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_unit_bond_reads_whole</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_bond&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_bond</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_in_frame_stake_is_all_present&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_in_frame_stake_is_all_present</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_in_frame_stake_has_no_future&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_in_frame_stake_has_no_future</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_first_reading_is_the_frame&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_first_reading_is_the_frame</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_first_click_counts_itself&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_first_click_counts_itself</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_reflexive_tick&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_reflexive_tick</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_two_axes_carry_every_move&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_two_axes_carry_every_move</span>
+
+<span class="kw">theorem</span> <a class="decl" id="the_tick_exchanges_the_registers" href="#the_tick_exchanges_the_registers">the_tick_exchanges_the_registers</a> (θ z : GInt) :
+    GInt.cross θ z.rot = GInt.align θ z
+      ∧ GInt.align θ z.rot = -(GInt.cross θ z) := by
+  constructor
+  · show θ.re * z.re - θ.im * -z.im = θ.re * z.re + θ.im * z.im
+    rw [mul_neg, Int.sub_eq_add_neg, Int.neg_neg]
+  · show θ.re * -z.im + θ.im * z.re = -(θ.re * z.im - θ.im * z.re)
+    rw [mul_neg, Int.sub_eq_add_neg, neg_add, Int.neg_neg]
+
+<span class="receipt">/-- info: &#x27;Foam.the_tick_exchanges_the_registers&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_tick_exchanges_the_registers</span>
+
+<span class="kw">theorem</span> <a class="decl" id="Int.self_add_self_eq_zero" href="#Int.self_add_self_eq_zero">Int.self_add_self_eq_zero</a> : ∀ {a : Int}, a + a = 0 → a = 0
+  | Int.ofNat n, h =&gt; by
+      have hn : n + n = 0 := Int.ofNat.inj h
+      cases n with
+      | zero =&gt; rfl
+      | succ _ =&gt; exact nomatch hn
+  | Int.negSucc _, h =&gt; nomatch h
+
+<span class="kw">theorem</span> <a class="decl" id="Int.neg_self_eq_self" href="#Int.neg_self_eq_self">Int.neg_self_eq_self</a> {a : Int} (h : -a = a) : a = 0 := by
+  have h0 := add_left_neg a
+  rw [h] at h0
+  exact Int.self_add_self_eq_zero h0
+
+<span class="kw">theorem</span> <a class="decl" id="the_wheel_never_comes_home_early" href="#the_wheel_never_comes_home_early">the_wheel_never_comes_home_early</a> (z : GInt) (hz : z ≠ GInt.mk 0 0) :
+    z.rot ≠ z ∧ z.rot.rot ≠ z ∧ z.rot.rot.rot ≠ z := by
+  have pin : z.re = 0 → z.im = 0 → False := fun hre him =&gt;
+    hz (show GInt.mk z.re z.im = GInt.mk 0 0 by rw [hre, him])
+  refine ⟨fun h =&gt; ?_, fun h =&gt; ?_, fun h =&gt; ?_⟩
+  · have h1 : -z.im = z.re := congrArg GInt.re h
+    have h2 : z.re = z.im := congrArg GInt.im h
+    have him : z.im = 0 := Int.neg_self_eq_self (h1.trans h2)
+    exact pin (h2.trans him) him
+  · rw [GInt.rot_sq] at h
+    have h1 : -z.re = z.re := congrArg GInt.re h
+    have h2 : -z.im = z.im := congrArg GInt.im h
+    exact pin (Int.neg_self_eq_self h1) (Int.neg_self_eq_self h2)
+  · rw [GInt.rot_sq] at h
+    have h1 : -(-z.im) = z.re := congrArg GInt.re h
+    have h2 : -z.re = z.im := congrArg GInt.im h
+    rw [Int.neg_neg] at h1
+    have hre : z.re = 0 := Int.neg_self_eq_self (h2.trans h1)
+    exact pin hre (h1.trans hre)
+
+<span class="receipt">/-- info: &#x27;Foam.Int.self_add_self_eq_zero&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Int.self_add_self_eq_zero</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Int.neg_self_eq_self&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms Int.neg_self_eq_self</span>
+
+<span class="receipt">/-- info: &#x27;Foam.the_wheel_never_comes_home_early&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_wheel_never_comes_home_early</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

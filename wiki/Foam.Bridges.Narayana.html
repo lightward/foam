@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Bridges.Narayana</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Bridges.Narayana</h1></header>
+<div class="imports">grasp: <a href="Foam.Int.html">Foam.Int</a> · <a href="Foam.Bridges.Zeckendorf.html">Foam.Bridges.Zeckendorf</a></div><pre class="src">import <a href="Foam.Int.html">Foam.Int</a>
+import <a href="Foam.Bridges.Zeckendorf.html">Foam.Bridges.Zeckendorf</a>
+
+namespace Foam.Bridges
+
+<span class="kw">def</span> <a class="decl" id="herdN" href="#herdN">herdN</a> : Nat → Nat
+  | 0 =&gt; 0
+  | 1 =&gt; 1
+  | 2 =&gt; 1
+  | n + 3 =&gt; herdN (n + 2) + herdN n
+
+<span class="kw">theorem</span> <a class="decl" id="herdN_gnomon" href="#herdN_gnomon">herdN_gnomon</a> (n : Nat) : herdN (n + 3) = herdN (n + 2) + herdN n := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_herd_climbs_the_stairs" href="#the_herd_climbs_the_stairs">the_herd_climbs_the_stairs</a> :
+    (herdN 3, herdN 4, herdN 5, herdN 6, herdN 7, herdN 8, herdN 9, herdN 10)
+      = (1, 2, 3, 4, 6, 9, 13, 19) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="herdN_glows" href="#herdN_glows">herdN_glows</a> : ∀ (n : Nat), 1 ≤ herdN (n + 1)
+  | 0 =&gt; Nat.le_refl 1
+  | 1 =&gt; Nat.le_refl 1
+  | n + 2 =&gt; Nat.le_trans (herdN_glows (n + 1)) (Nat.le_add_right (herdN (n + 2)) (herdN n))
+
+<span class="kw">def</span> <a class="decl" id="graze" href="#graze">graze</a> : Nat → List Bool → Nat
+  | _, [] =&gt; 0
+  | i, false :: ds =&gt; graze (i + 1) ds
+  | i, true :: ds =&gt; herdN i + graze (i + 1) ds
+
+<span class="kw">theorem</span> <a class="decl" id="add_shuffle" href="#add_shuffle">add_shuffle</a> (a b c d : Nat) : (a + b) + (c + d) = (a + c) + (b + d) := by
+  rw [Nat.add_assoc, ← Nat.add_assoc b c d, Nat.add_comm b c,
+      Nat.add_assoc c b d, ← Nat.add_assoc]
+
+<span class="kw">theorem</span> <a class="decl" id="graze_gnomon" href="#graze_gnomon">graze_gnomon</a> : ∀ (ds : List Bool) (i : Nat),
+    graze (i + 3) ds = graze (i + 2) ds + graze i ds
+  | [], _ =&gt; rfl
+  | false :: rest, i =&gt; graze_gnomon rest (i + 1)
+  | true :: rest, i =&gt; by
+      show herdN (i + 3) + graze ((i + 1) + 3) rest
+        = (herdN (i + 2) + graze ((i + 1) + 2) rest) + (herdN i + graze (i + 1) rest)
+      rw [graze_gnomon rest (i + 1), herdN_gnomon]
+      exact add_shuffle (herdN (i + 2)) (herdN i)
+        (graze ((i + 1) + 2) rest) (graze (i + 1) rest)
+
+<span class="kw">def</span> <a class="decl" id="Sparse" href="#Sparse">Sparse</a> : List Bool → Prop
+  | [] =&gt; True
+  | false :: rest =&gt; Sparse rest
+  | [true] =&gt; True
+  | true :: true :: _ =&gt; False
+  | true :: false :: true :: _ =&gt; False
+  | [true, false] =&gt; True
+  | true :: false :: false :: rest =&gt; Sparse rest
+
+<span class="kw">def</span> <a class="decl" id="clearing" href="#clearing">clearing</a> : List Bool → Bool
+  | [] =&gt; true
+  | [false] =&gt; true
+  | true :: _ =&gt; false
+  | false :: true :: _ =&gt; false
+  | false :: false :: _ =&gt; true
+
+<span class="kw">theorem</span> <a class="decl" id="sparse_tail" href="#sparse_tail">sparse_tail</a> : ∀ {d : Bool} {ds : List Bool}, Sparse (d :: ds) → Sparse ds
+  | false, _, h =&gt; h
+  | true, [], _ =&gt; True.intro
+  | true, true :: _, h =&gt; h.elim
+  | true, [false], _ =&gt; True.intro
+  | true, false :: true :: _, h =&gt; h.elim
+  | true, false :: false :: _, h =&gt; h
+
+<span class="kw">theorem</span> <a class="decl" id="sparse_head" href="#sparse_head">sparse_head</a> : ∀ {ds : List Bool}, Sparse (true :: ds) → clearing ds = true
+  | [], _ =&gt; rfl
+  | [false], _ =&gt; rfl
+  | true :: _, h =&gt; h.elim
+  | false :: true :: _, h =&gt; h.elim
+  | false :: false :: _, _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="herd_carry_lossless" href="#herd_carry_lossless">herd_carry_lossless</a> (i : Nat) (rest : List Bool) :
+    graze i (true :: false :: true :: false :: rest)
+      = graze i (false :: false :: false :: true :: rest) := by
+  show herdN i + (herdN (i + 2) + graze (i + 4) rest)
+    = herdN (i + 3) + graze (i + 4) rest
+  rw [herdN_gnomon i, ← Nat.add_assoc, Nat.add_comm (herdN i) (herdN (i + 2))]
+
+<span class="kw">theorem</span> <a class="decl" id="herd_carry_compresses" href="#herd_carry_compresses">herd_carry_compresses</a> (rest : List Bool) :
+    ones (true :: false :: true :: false :: rest)
+      = ones (false :: false :: false :: true :: rest) + 1 := rfl
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.herdN_gnomon&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms herdN_gnomon</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_herd_climbs_the_stairs&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_herd_climbs_the_stairs</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.herdN_glows&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms herdN_glows</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.add_shuffle&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms add_shuffle</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.graze_gnomon&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms graze_gnomon</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.sparse_tail&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms sparse_tail</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.sparse_head&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms sparse_head</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.herd_carry_lossless&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms herd_carry_lossless</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.herd_carry_compresses&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms herd_carry_compresses</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

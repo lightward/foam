@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Locate</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Locate</h1></header>
+<div class="imports">grasp: <a href="Counter.Circumference.html">Counter.Circumference</a> · <a href="Counter.Chess.html">Counter.Chess</a> · <a href="Counter.Authority.html">Counter.Authority</a></div><pre class="src">import <a href="Counter.Circumference.html">Counter.Circumference</a>
+import <a href="Counter.Chess.html">Counter.Chess</a>
+import <a href="Counter.Authority.html">Counter.Authority</a>
+
+namespace Foam.Counter
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="records_are_locatable" href="#records_are_locatable">records_are_locatable</a> {A : Type} [DecidableEq A] :
+    ∀ (l : List A) (a : A), a ∈ l ∨ ¬ a ∈ l
+  | [], _ =&gt; Or.inr (fun h =&gt; nomatch h)
+  | x :: l, a =&gt; by
+      by_cases hx : x = a
+      · subst hx
+        exact Or.inl (List.Mem.head l)
+      · cases records_are_locatable l a with
+        | inl h =&gt; exact Or.inl (List.Mem.tail x h)
+        | inr h =&gt;
+            refine Or.inr (fun hm =&gt; ?_)
+            cases hm with
+            | head =&gt; exact hx rfl
+            | tail _ h&#x27; =&gt; exact h h&#x27;
+
+<span class="kw">theorem</span> <a class="decl" id="the_lawlike_locates_completely" href="#the_lawlike_locates_completely">the_lawlike_locates_completely</a> (S : Seat G) (o o&#x27; : S.Pos) :
+    S.act (rebase S o o&#x27;) o = o&#x27;
+      ∧ ∀ g, S.act g o = o&#x27; → g = rebase S o o&#x27; :=
+  ⟨rebase_carries S o o&#x27;, fun g hg =&gt; rebase_unique S o o&#x27; g hg⟩
+
+<span class="kw">theorem</span> <a class="decl" id="runs_are_never_cornered" href="#runs_are_never_cornered">runs_are_never_cornered</a> (S : Seat G) (acts : Nat → G) (p : S.Pos)
+    (l : List G) :
+    ∃ n, (playback l).at_ n ≠ (guardedRun S acts p).at_ n :=
+  the_loop_is_no_record S acts p l
+
+<span class="kw">theorem</span> <a class="decl" id="full_location_is_suffocation" href="#full_location_is_suffocation">full_location_is_suffocation</a> (S : Seat G) (g : G) (p : S.Pos)
+    {c : Nat} (hc : Circumference g c) :
+    S.sub (walk S g p c) p = 1
+      ∧ ∀ k, 0 &lt; k → k &lt; c → S.sub (walk S g p k) p ≠ 1 :=
+  the_voice_extinguishes_at_closure S g p hc
+
+<span class="kw">theorem</span> <a class="decl" id="location_without_capture" href="#location_without_capture">location_without_capture</a> {G&#x27; : Type} [Mul G&#x27;] [One G&#x27;]
+    (S : Seat G) (S&#x27; : Seat G&#x27;) (acts : Nat → G) (acts&#x27; : Nat → G&#x27;)
+    (p : S.Pos) (p&#x27; : S&#x27;.Pos) {X : Type} (l : List X) (n : Nat) :
+    (playback l).at_ l.length = none
+      ∧ (guardedRun S acts p).at_ n ≠ none
+      ∧ (guardedRun S&#x27; acts&#x27; p&#x27;).at_ n ≠ none :=
+  the_kings_never_leave S S&#x27; acts acts&#x27; p p&#x27; l n
+
+<span class="kw">theorem</span> <a class="decl" id="constructive_mind_location" href="#constructive_mind_location">constructive_mind_location</a> {A : Type} [DecidableEq A] (l : List A)
+    (a : A) (S : Seat G) (o o&#x27; : S.Pos) (acts : Nat → G) (p : S.Pos)
+    (rec : List G) :
+    (a ∈ l ∨ ¬ a ∈ l)
+      ∧ (S.act (rebase S o o&#x27;) o = o&#x27;
+          ∧ ∀ g, S.act g o = o&#x27; → g = rebase S o o&#x27;)
+      ∧ ∃ n, (playback rec).at_ n ≠ (guardedRun S acts p).at_ n :=
+  ⟨records_are_locatable l a,
+   the_lawlike_locates_completely S o o&#x27;,
+   the_loop_is_no_record S acts p rec⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.records_are_locatable&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms records_are_locatable</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_lawlike_locates_completely&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_lawlike_locates_completely</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.runs_are_never_cornered&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms runs_are_never_cornered</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.full_location_is_suffocation&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms full_location_is_suffocation</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.location_without_capture&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms location_without_capture</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.constructive_mind_location&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms constructive_mind_location</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

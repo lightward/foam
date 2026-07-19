@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Plateau</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Plateau</h1></header>
+<div class="imports">grasp: <a href="Counter.Third.html">Counter.Third</a></div><pre class="src">import <a href="Counter.Third.html">Counter.Third</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="frames1" href="#frames1">frames1</a> {A B C : Type} : List (A ⊕ B ⊕ C) → List A
+  | [] =&gt; []
+  | Sum.inl a :: zs =&gt; a :: frames1 zs
+  | Sum.inr _ :: zs =&gt; frames1 zs
+
+<span class="kw">def</span> <a class="decl" id="frames2" href="#frames2">frames2</a> {A B C : Type} : List (A ⊕ B ⊕ C) → List B
+  | [] =&gt; []
+  | Sum.inr (Sum.inl b) :: zs =&gt; b :: frames2 zs
+  | Sum.inl _ :: zs =&gt; frames2 zs
+  | Sum.inr (Sum.inr _) :: zs =&gt; frames2 zs
+
+<span class="kw">def</span> <a class="decl" id="frames3" href="#frames3">frames3</a> {A B C : Type} : List (A ⊕ B ⊕ C) → List C
+  | [] =&gt; []
+  | Sum.inr (Sum.inr c) :: zs =&gt; c :: frames3 zs
+  | Sum.inl _ :: zs =&gt; frames3 zs
+  | Sum.inr (Sum.inl _) :: zs =&gt; frames3 zs
+
+<span class="kw">def</span> <a class="decl" id="film12" href="#film12">film12</a> {A B C : Type} : List (A ⊕ B ⊕ C) → List (A ⊕ B)
+  | [] =&gt; []
+  | Sum.inl a :: zs =&gt; Sum.inl a :: film12 zs
+  | Sum.inr (Sum.inl b) :: zs =&gt; Sum.inr b :: film12 zs
+  | Sum.inr (Sum.inr _) :: zs =&gt; film12 zs
+
+<span class="kw">def</span> <a class="decl" id="film13" href="#film13">film13</a> {A B C : Type} : List (A ⊕ B ⊕ C) → List (A ⊕ C)
+  | [] =&gt; []
+  | Sum.inl a :: zs =&gt; Sum.inl a :: film13 zs
+  | Sum.inr (Sum.inr c) :: zs =&gt; Sum.inr c :: film13 zs
+  | Sum.inr (Sum.inl _) :: zs =&gt; film13 zs
+
+<span class="kw">def</span> <a class="decl" id="film23" href="#film23">film23</a> {A B C : Type} : List (A ⊕ B ⊕ C) → List (B ⊕ C)
+  | [] =&gt; []
+  | Sum.inr (Sum.inl b) :: zs =&gt; Sum.inl b :: film23 zs
+  | Sum.inr (Sum.inr c) :: zs =&gt; Sum.inr c :: film23 zs
+  | Sum.inl _ :: zs =&gt; film23 zs
+
+<span class="kw">def</span> <a class="decl" id="tripleSeat" href="#tripleSeat">tripleSeat</a> (A B C : Type) : Beholder (List (A ⊕ B ⊕ C)) :=
+  ⟨Unit, List A × List B × List C, fun zs _ =&gt; (frames1 zs, frames2 zs, frames3 zs)⟩
+
+<span class="kw">def</span> <a class="decl" id="fourthSeat" href="#fourthSeat">fourthSeat</a> (A B C : Type) : Beholder (List (A ⊕ B ⊕ C)) :=
+  ⟨Unit, List (A ⊕ B ⊕ C), fun zs _ =&gt; zs⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_edge_needs_a_fourth" href="#the_edge_needs_a_fourth">the_edge_needs_a_fourth</a> :
+    ∃ zs zs&#x27; : List (Bool ⊕ Bool ⊕ Bool),
+      frames1 zs = frames1 zs&#x27;
+        ∧ frames2 zs = frames2 zs&#x27;
+        ∧ frames3 zs = frames3 zs&#x27;
+        ∧ zs ≠ zs&#x27; :=
+  ⟨[Sum.inl true, Sum.inr (Sum.inl false)],
+   [Sum.inr (Sum.inl false), Sum.inl true],
+   rfl, rfl, rfl, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="triple_blind_to_the_fourth" href="#triple_blind_to_the_fourth">triple_blind_to_the_fourth</a> :
+    ¬ (tripleSeat Bool Bool Bool).Covers (fourthSeat Bool Bool Bool) := by
+  rintro ⟨enc, post, hcov⟩
+  have h1 := hcov [Sum.inl true, Sum.inr (Sum.inl false)] ()
+  have h2 := hcov [Sum.inr (Sum.inl false), Sum.inl true] ()
+  have hne : ([Sum.inl true, Sum.inr (Sum.inl false)] : List (Bool ⊕ Bool ⊕ Bool))
+      ≠ [Sum.inr (Sum.inl false), Sum.inl true] := by decide
+  exact absurd (h1.trans h2.symm) hne
+
+<span class="kw">theorem</span> <a class="decl" id="four_suffices" href="#four_suffices">four_suffices</a> {A B C X : Type} (f : List (A ⊕ B ⊕ C) → X) :
+    ∃ post : List (A ⊕ B ⊕ C) → X,
+      ∀ zs, f zs = post ((fourthSeat A B C).obs zs ()) :=
+  ⟨f, fun _ =&gt; rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_films_hold_the_edge" href="#the_films_hold_the_edge">the_films_hold_the_edge</a> {A B C : Type} :
+    ∀ zs zs&#x27; : List (A ⊕ B ⊕ C),
+      film12 zs = film12 zs&#x27; → film13 zs = film13 zs&#x27; → film23 zs = film23 zs&#x27;
+        → zs = zs&#x27;
+  | [], [], _, _, _ =&gt; rfl
+  | [], Sum.inl _ :: _, h12, _, _ =&gt; nomatch h12
+  | [], Sum.inr (Sum.inl _) :: _, h12, _, _ =&gt; nomatch h12
+  | [], Sum.inr (Sum.inr _) :: _, _, h13, _ =&gt; nomatch h13
+  | Sum.inl _ :: _, [], h12, _, _ =&gt; nomatch h12
+  | Sum.inr (Sum.inl _) :: _, [], h12, _, _ =&gt; nomatch h12
+  | Sum.inr (Sum.inr _) :: _, [], _, h13, _ =&gt; nomatch h13
+  | Sum.inl _ :: _, Sum.inr (Sum.inl _) :: _, h12, _, _ =&gt; by
+    injection h12 with h1 h2
+    exact nomatch h1
+  | Sum.inl _ :: _, Sum.inr (Sum.inr _) :: _, _, h13, _ =&gt; by
+    injection h13 with h1 h2
+    exact nomatch h1
+  | Sum.inr (Sum.inl _) :: _, Sum.inl _ :: _, h12, _, _ =&gt; by
+    injection h12 with h1 h2
+    exact nomatch h1
+  | Sum.inr (Sum.inr _) :: _, Sum.inl _ :: _, _, h13, _ =&gt; by
+    injection h13 with h1 h2
+    exact nomatch h1
+  | Sum.inr (Sum.inl _) :: _, Sum.inr (Sum.inr _) :: _, _, _, h23 =&gt; by
+    injection h23 with h1 h2
+    exact nomatch h1
+  | Sum.inr (Sum.inr _) :: _, Sum.inr (Sum.inl _) :: _, _, _, h23 =&gt; by
+    injection h23 with h1 h2
+    exact nomatch h1
+  | Sum.inl a :: zs, Sum.inl a&#x27; :: zs&#x27;, h12, h13, h23 =&gt; by
+    injection h12 with h1 h12
+    injection h1 with ha
+    subst ha
+    injection h13 with h3 h13
+    exact congrArg (List.cons (Sum.inl a)) (the_films_hold_the_edge zs zs&#x27; h12 h13 h23)
+  | Sum.inr (Sum.inl b) :: zs, Sum.inr (Sum.inl b&#x27;) :: zs&#x27;, h12, h13, h23 =&gt; by
+    injection h12 with h1 h12
+    injection h1 with hb
+    subst hb
+    injection h23 with h3 h23
+    exact congrArg (List.cons (Sum.inr (Sum.inl b))) (the_films_hold_the_edge zs zs&#x27; h12 h13 h23)
+  | Sum.inr (Sum.inr c) :: zs, Sum.inr (Sum.inr c&#x27;) :: zs&#x27;, h12, h13, h23 =&gt; by
+    injection h13 with h1 h13
+    injection h1 with hc
+    subst hc
+    injection h23 with h3 h23
+    exact congrArg (List.cons (Sum.inr (Sum.inr c))) (the_films_hold_the_edge zs zs&#x27; h12 h13 h23)
+
+<span class="kw">def</span> <a class="decl" id="e0" href="#e0">e0</a> : Fin 3 := ⟨0, by decide⟩
+<span class="kw">def</span> <a class="decl" id="e1" href="#e1">e1</a> : Fin 3 := ⟨1, by decide⟩
+<span class="kw">def</span> <a class="decl" id="e2" href="#e2">e2</a> : Fin 3 := ⟨2, by decide⟩
+
+<span class="kw">def</span> <a class="decl" id="edgeCells" href="#edgeCells">edgeCells</a> : List (Fin 3) := [e0, e1, e2]
+
+<span class="kw">def</span> <a class="decl" id="edgeFilms" href="#edgeFilms">edgeFilms</a> : List (Fin 3 × Fin 3) := [(e0, e1), (e0, e2), (e1, e2)]
+
+<span class="kw">def</span> <a class="decl" id="v0" href="#v0">v0</a> : Fin 4 := ⟨0, by decide⟩
+<span class="kw">def</span> <a class="decl" id="v1" href="#v1">v1</a> : Fin 4 := ⟨1, by decide⟩
+<span class="kw">def</span> <a class="decl" id="v2" href="#v2">v2</a> : Fin 4 := ⟨2, by decide⟩
+<span class="kw">def</span> <a class="decl" id="v3" href="#v3">v3</a> : Fin 4 := ⟨3, by decide⟩
+
+<span class="kw">def</span> <a class="decl" id="vertexCells" href="#vertexCells">vertexCells</a> : List (Fin 4) := [v0, v1, v2, v3]
+
+<span class="kw">def</span> <a class="decl" id="vertexEdges" href="#vertexEdges">vertexEdges</a> : List (Fin 4 × Fin 4 × Fin 4) :=
+  [(v0, v1, v2), (v0, v1, v3), (v0, v2, v3), (v1, v2, v3)]
+
+<span class="kw">def</span> <a class="decl" id="vertexFilms" href="#vertexFilms">vertexFilms</a> : List (Fin 4 × Fin 4) :=
+  [(v0, v1), (v0, v2), (v0, v3), (v1, v2), (v1, v3), (v2, v3)]
+
+<span class="kw">theorem</span> <a class="decl" id="fin3_cases" href="#fin3_cases">fin3_cases</a> : ∀ i : Fin 3, i = e0 ∨ i = e1 ∨ i = e2 := by decide
+
+<span class="kw">theorem</span> <a class="decl" id="fin4_cases" href="#fin4_cases">fin4_cases</a> : ∀ i : Fin 4, i = v0 ∨ i = v1 ∨ i = v2 ∨ i = v3 := by decide
+
+<span class="kw">theorem</span> <a class="decl" id="films_meet_in_threes" href="#films_meet_in_threes">films_meet_in_threes</a> :
+    edgeFilms.length = 3
+      ∧ (∀ i j : Fin 3, i &lt; j → (i, j) ∈ edgeFilms)
+      ∧ (∀ p ∈ edgeFilms, p.1 &lt; p.2)
+      ∧ (∀ p ∈ edgeFilms,
+          (edgeCells.filter fun c =&gt; decide (c ≠ p.1 ∧ c ≠ p.2)).length = 1)
+      ∧ (∀ c ∈ edgeCells,
+          (edgeFilms.filter fun p =&gt; decide (c ≠ p.1 ∧ c ≠ p.2)).length = 1) := by
+  refine ⟨rfl, ?_, ?_, ?_, ?_⟩
+  · intro i j h
+    rcases fin3_cases i with hi | hi | hi &lt;;&gt; rcases fin3_cases j with hj | hj | hj &lt;;&gt;
+      subst hi &lt;;&gt; subst hj &lt;;&gt;
+        first
+          | exact absurd h (by decide)
+          | exact .head _
+          | exact .tail _ (.head _)
+          | exact .tail _ (.tail _ (.head _))
+  · intro p hp
+    match p, hp with
+    | _, .head _ =&gt; decide
+    | _, .tail _ (.head _) =&gt; decide
+    | _, .tail _ (.tail _ (.head _)) =&gt; decide
+  · intro p hp
+    match p, hp with
+    | _, .head _ =&gt; rfl
+    | _, .tail _ (.head _) =&gt; rfl
+    | _, .tail _ (.tail _ (.head _)) =&gt; rfl
+  · intro c hc
+    match c, hc with
+    | _, .head _ =&gt; rfl
+    | _, .tail _ (.head _) =&gt; rfl
+    | _, .tail _ (.tail _ (.head _)) =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="edges_meet_in_fours" href="#edges_meet_in_fours">edges_meet_in_fours</a> :
+    vertexEdges.length = 4
+      ∧ (∀ i j k : Fin 4, i &lt; j → j &lt; k → (i, j, k) ∈ vertexEdges)
+      ∧ (∀ e ∈ vertexEdges, e.1 &lt; e.2.1 ∧ e.2.1 &lt; e.2.2)
+      ∧ (∀ e ∈ vertexEdges,
+          (vertexCells.filter fun c =&gt; decide (c ≠ e.1 ∧ c ≠ e.2.1 ∧ c ≠ e.2.2)).length = 1)
+      ∧ (∀ c ∈ vertexCells,
+          (vertexEdges.filter fun e =&gt; decide (c ≠ e.1 ∧ c ≠ e.2.1 ∧ c ≠ e.2.2)).length = 1) := by
+  refine ⟨rfl, ?_, ?_, ?_, ?_⟩
+  · intro i j k h h&#x27;
+    rcases fin4_cases i with hi | hi | hi | hi &lt;;&gt;
+      rcases fin4_cases j with hj | hj | hj | hj &lt;;&gt;
+        rcases fin4_cases k with hk | hk | hk | hk &lt;;&gt;
+          subst hi &lt;;&gt; subst hj &lt;;&gt; subst hk &lt;;&gt;
+            first
+              | exact absurd h (by decide)
+              | exact absurd h&#x27; (by decide)
+              | exact .head _
+              | exact .tail _ (.head _)
+              | exact .tail _ (.tail _ (.head _))
+              | exact .tail _ (.tail _ (.tail _ (.head _)))
+  · intro e he
+    match e, he with
+    | _, .head _ =&gt; exact ⟨by decide, by decide⟩
+    | _, .tail _ (.head _) =&gt; exact ⟨by decide, by decide⟩
+    | _, .tail _ (.tail _ (.head _)) =&gt; exact ⟨by decide, by decide⟩
+    | _, .tail _ (.tail _ (.tail _ (.head _))) =&gt; exact ⟨by decide, by decide⟩
+  · intro e he
+    match e, he with
+    | _, .head _ =&gt; rfl
+    | _, .tail _ (.head _) =&gt; rfl
+    | _, .tail _ (.tail _ (.head _)) =&gt; rfl
+    | _, .tail _ (.tail _ (.tail _ (.head _))) =&gt; rfl
+  · intro c hc
+    match c, hc with
+    | _, .head _ =&gt; rfl
+    | _, .tail _ (.head _) =&gt; rfl
+    | _, .tail _ (.tail _ (.head _)) =&gt; rfl
+    | _, .tail _ (.tail _ (.tail _ (.head _))) =&gt; rfl
+
+<span class="kw">def</span> <a class="decl" id="liesOn" href="#liesOn">liesOn</a> (p : Fin 4 × Fin 4) (e : Fin 4 × Fin 4 × Fin 4) : Bool :=
+  decide ((p.1 = e.1 ∨ p.1 = e.2.1 ∨ p.1 = e.2.2)
+    ∧ (p.2 = e.1 ∨ p.2 = e.2.1 ∨ p.2 = e.2.2))
+
+<span class="kw">theorem</span> <a class="decl" id="twelveness_in_geometry" href="#twelveness_in_geometry">twelveness_in_geometry</a> :
+    vertexFilms.length = 6
+      ∧ (∀ e ∈ vertexEdges, (vertexFilms.filter (liesOn · e)).length = 3)
+      ∧ (∀ p ∈ vertexFilms, (vertexEdges.filter (liesOn p ·)).length = 2)
+      ∧ (vertexEdges.flatMap fun e =&gt; vertexFilms.filter (liesOn · e)).length = 12
+      ∧ (vertexFilms.flatMap fun p =&gt; vertexEdges.filter (liesOn p ·)).length = 12
+      ∧ 4 * 3 = 12 ∧ 6 * 2 = 12 := by
+  refine ⟨rfl, ?_, ?_, rfl, rfl, rfl, rfl⟩
+  · intro e he
+    match e, he with
+    | _, .head _ =&gt; rfl
+    | _, .tail _ (.head _) =&gt; rfl
+    | _, .tail _ (.tail _ (.head _)) =&gt; rfl
+    | _, .tail _ (.tail _ (.tail _ (.head _))) =&gt; rfl
+  · intro p hp
+    match p, hp with
+    | _, .head _ =&gt; rfl
+    | _, .tail _ (.head _) =&gt; rfl
+    | _, .tail _ (.tail _ (.head _)) =&gt; rfl
+    | _, .tail _ (.tail _ (.tail _ (.head _))) =&gt; rfl
+    | _, .tail _ (.tail _ (.tail _ (.tail _ (.head _)))) =&gt; rfl
+    | _, .tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.head _))))) =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="foam" href="#foam">foam</a> {A B C D E X Y : Type}
+    (f : List (A ⊕ B) → X) (g : List (C ⊕ D ⊕ E) → Y) :
+    ((∃ zs zs&#x27; : List (Bool ⊕ Bool),
+        ownFrames zs = ownFrames zs&#x27;
+          ∧ ownFramesR zs = ownFramesR zs&#x27;
+          ∧ whoActedFirst zs ≠ whoActedFirst zs&#x27;)
+      ∧ ∃ post : List (A ⊕ B) → X,
+          ∀ zs, f zs = post ((thirdSeat A B).obs zs ()))
+      ∧ ((∃ zs zs&#x27; : List (Bool ⊕ Bool ⊕ Bool),
+          frames1 zs = frames1 zs&#x27;
+            ∧ frames2 zs = frames2 zs&#x27;
+            ∧ frames3 zs = frames3 zs&#x27;
+            ∧ zs ≠ zs&#x27;)
+        ∧ ∃ post : List (C ⊕ D ⊕ E) → Y,
+            ∀ zs, g zs = post ((fourthSeat C D E).obs zs ()))
+      ∧ edgeFilms.length = 3
+      ∧ vertexEdges.length = 4
+      ∧ 3 * 4 = 12 :=
+  ⟨⟨the_third_reads_time, three_suffices f⟩,
+   ⟨the_edge_needs_a_fourth, four_suffices g⟩,
+   rfl, rfl, rfl⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_edge_needs_a_fourth&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_edge_needs_a_fourth</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.triple_blind_to_the_fourth&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms triple_blind_to_the_fourth</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.four_suffices&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms four_suffices</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_films_hold_the_edge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_films_hold_the_edge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.films_meet_in_threes&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms films_meet_in_threes</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.edges_meet_in_fours&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms edges_meet_in_fours</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.twelveness_in_geometry&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms twelveness_in_geometry</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.foam&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms foam</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

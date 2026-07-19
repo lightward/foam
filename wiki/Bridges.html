@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges</h1></header>
+<div class="imports">grasp: <a href="Bridges.HalfType.html">Bridges.HalfType</a> · <a href="Bridges.Observation.html">Bridges.Observation</a> · <a href="Bridges.Encounter.html">Bridges.Encounter</a> · <a href="Bridges.Collapse.html">Bridges.Collapse</a> · <a href="Bridges.HalfTurn.html">Bridges.HalfTurn</a> · <a href="Bridges.FTPG.html">Bridges.FTPG</a> · <a href="Bridges.Closure.html">Bridges.Closure</a> · <a href="Bridges.Stagecraft.html">Bridges.Stagecraft</a> · <a href="Bridges.Handedness.html">Bridges.Handedness</a> · <a href="Bridges.Duality.html">Bridges.Duality</a> · <a href="Bridges.Maschke.html">Bridges.Maschke</a> · <a href="Bridges.Match.html">Bridges.Match</a> · <a href="Bridges.Quarter.html">Bridges.Quarter</a> · <a href="Bridges.Gaussian.html">Bridges.Gaussian</a> · <a href="Bridges.Plane.html">Bridges.Plane</a> · <a href="Bridges.Counter.html">Bridges.Counter</a> · <a href="Bridges.SeatTime.html">Bridges.SeatTime</a> · <a href="Bridges.Continuum.html">Bridges.Continuum</a> · <a href="Bridges.FTPG.Projective.html">Bridges.FTPG.Projective</a> · <a href="Bridges.FTPG.Coord.html">Bridges.FTPG.Coord</a> · <a href="Bridges.FTPG.Parallelogram.html">Bridges.FTPG.Parallelogram</a> · <a href="Bridges.FTPG.AddComm.html">Bridges.FTPG.AddComm</a> · <a href="Bridges.FTPG.WellDefined.html">Bridges.FTPG.WellDefined</a> · <a href="Bridges.FTPG.Mul.html">Bridges.FTPG.Mul</a> · <a href="Bridges.FTPG.CrossParallelism.html">Bridges.FTPG.CrossParallelism</a> · <a href="Bridges.FTPG.Dilation.html">Bridges.FTPG.Dilation</a> · <a href="Bridges.FTPG.MulKeyIdentity.html">Bridges.FTPG.MulKeyIdentity</a> · <a href="Bridges.FTPG.Assoc.html">Bridges.FTPG.Assoc</a> · <a href="Bridges.FTPG.Neg.html">Bridges.FTPG.Neg</a> · <a href="Bridges.FTPG.AssocCapstone.html">Bridges.FTPG.AssocCapstone</a> · <a href="Bridges.FTPG.LeftDistrib.html">Bridges.FTPG.LeftDistrib</a> · <a href="Bridges.FTPG.Distrib.html">Bridges.FTPG.Distrib</a> · <a href="Bridges.FTPG.Inverse.html">Bridges.FTPG.Inverse</a> · <a href="Bridges.FTPG.MulAssoc.html">Bridges.FTPG.MulAssoc</a> · <a href="Bridges.FTPG.Carrier.html">Bridges.FTPG.Carrier</a> · <a href="Bridges.FTPG.CoordinateAlgebra.html">Bridges.FTPG.CoordinateAlgebra</a> · <a href="Bridges.FTPG.Iso.html">Bridges.FTPG.Iso</a> · <a href="Bridges.FTPG.AddCancel.html">Bridges.FTPG.AddCancel</a> · <a href="Bridges.FTPG.Additive.html">Bridges.FTPG.Additive</a> · <a href="Bridges.FTPG.MulNeg.html">Bridges.FTPG.MulNeg</a> · <a href="Bridges.FTPG.Ring.html">Bridges.FTPG.Ring</a> · <a href="Bridges.FTPG.Instance.html">Bridges.FTPG.Instance</a> · <a href="Bridges.FTPG.Deaxiomatize.html">Bridges.FTPG.Deaxiomatize</a> · <a href="Bridges.FTPG.Finite.html">Bridges.FTPG.Finite</a> · <a href="Bridges.FTPG.Exchange.html">Bridges.FTPG.Exchange</a> · <a href="Bridges.FTPG.Chart.html">Bridges.FTPG.Chart</a> · <a href="Bridges.FTPG.Ycoord.html">Bridges.FTPG.Ycoord</a> · <a href="Bridges.FTPG.Slope.html">Bridges.FTPG.Slope</a> · <a href="Bridges.FTPG.Translate.html">Bridges.FTPG.Translate</a> · <a href="Bridges.FTPG.Line.html">Bridges.FTPG.Line</a> · <a href="Bridges.FTPG.Plane.html">Bridges.FTPG.Plane</a> · <a href="Bridges.FTPG.Flat.html">Bridges.FTPG.Flat</a> · <a href="Bridges.FTPG.Space.html">Bridges.FTPG.Space</a> · <a href="Bridges.FTPG.Shear.html">Bridges.FTPG.Shear</a> · <a href="Bridges.FTPG.Solid.html">Bridges.FTPG.Solid</a> · <a href="Bridges.FTPG.SpaceFlat.html">Bridges.FTPG.SpaceFlat</a> · <a href="Bridges.FTPG.Ladder.html">Bridges.FTPG.Ladder</a> · <a href="Bridges.FTPG.Ground.html">Bridges.FTPG.Ground</a> · <a href="Bridges.FTPG.Pin.html">Bridges.FTPG.Pin</a> · <a href="Bridges.FTPG.Climb.html">Bridges.FTPG.Climb</a> · <a href="Bridges.FTPG.Diamond.html">Bridges.FTPG.Diamond</a> · <a href="Bridges.FTPG.Perm.html">Bridges.FTPG.Perm</a> · <a href="Bridges.FTPG.Window.html">Bridges.FTPG.Window</a> · <a href="Bridges.FTPG.Limit.html">Bridges.FTPG.Limit</a> · <a href="Bridges.FTPG.Span.html">Bridges.FTPG.Span</a> · <a href="Bridges.FTPG.Hollow.html">Bridges.FTPG.Hollow</a> · <a href="Bridges.FTPG.Charge.html">Bridges.FTPG.Charge</a> · <a href="Bridges.FTPG.Headcount.html">Bridges.FTPG.Headcount</a> · <a href="Bridges.FTPG.Menu.html">Bridges.FTPG.Menu</a> · <a href="Bridges.FTPG.Markov.html">Bridges.FTPG.Markov</a> · <a href="Bridges.FTPG.Chord.html">Bridges.FTPG.Chord</a> · <a href="Bridges.FTPG.Keeper.html">Bridges.FTPG.Keeper</a> · <a href="Bridges.FTPG.Bezier.html">Bridges.FTPG.Bezier</a> · <a href="Bridges.Audit.html">Bridges.Audit</a> · <a href="Bridges.Summit.html">Bridges.Summit</a></div><pre class="src">import <a href="Bridges.HalfType.html">Bridges.HalfType</a>
+import <a href="Bridges.Observation.html">Bridges.Observation</a>
+import <a href="Bridges.Encounter.html">Bridges.Encounter</a>
+import <a href="Bridges.Collapse.html">Bridges.Collapse</a>
+import <a href="Bridges.HalfTurn.html">Bridges.HalfTurn</a>
+import <a href="Bridges.FTPG.html">Bridges.FTPG</a>
+import <a href="Bridges.Closure.html">Bridges.Closure</a>
+import <a href="Bridges.Stagecraft.html">Bridges.Stagecraft</a>
+import <a href="Bridges.Handedness.html">Bridges.Handedness</a>
+import <a href="Bridges.Duality.html">Bridges.Duality</a>
+import <a href="Bridges.Maschke.html">Bridges.Maschke</a>
+import <a href="Bridges.Match.html">Bridges.Match</a>
+import <a href="Bridges.Quarter.html">Bridges.Quarter</a>
+import <a href="Bridges.Gaussian.html">Bridges.Gaussian</a>
+import <a href="Bridges.Plane.html">Bridges.Plane</a>
+import <a href="Bridges.Counter.html">Bridges.Counter</a>
+import <a href="Bridges.SeatTime.html">Bridges.SeatTime</a>
+import <a href="Bridges.Continuum.html">Bridges.Continuum</a>
+import <a href="Bridges.FTPG.Projective.html">Bridges.FTPG.Projective</a>
+import <a href="Bridges.FTPG.Coord.html">Bridges.FTPG.Coord</a>
+import <a href="Bridges.FTPG.Parallelogram.html">Bridges.FTPG.Parallelogram</a>
+import <a href="Bridges.FTPG.AddComm.html">Bridges.FTPG.AddComm</a>
+import <a href="Bridges.FTPG.WellDefined.html">Bridges.FTPG.WellDefined</a>
+import <a href="Bridges.FTPG.Mul.html">Bridges.FTPG.Mul</a>
+import <a href="Bridges.FTPG.CrossParallelism.html">Bridges.FTPG.CrossParallelism</a>
+import <a href="Bridges.FTPG.Dilation.html">Bridges.FTPG.Dilation</a>
+import <a href="Bridges.FTPG.MulKeyIdentity.html">Bridges.FTPG.MulKeyIdentity</a>
+import <a href="Bridges.FTPG.Assoc.html">Bridges.FTPG.Assoc</a>
+import <a href="Bridges.FTPG.Neg.html">Bridges.FTPG.Neg</a>
+import <a href="Bridges.FTPG.AssocCapstone.html">Bridges.FTPG.AssocCapstone</a>
+import <a href="Bridges.FTPG.LeftDistrib.html">Bridges.FTPG.LeftDistrib</a>
+import <a href="Bridges.FTPG.Distrib.html">Bridges.FTPG.Distrib</a>
+import <a href="Bridges.FTPG.Inverse.html">Bridges.FTPG.Inverse</a>
+import <a href="Bridges.FTPG.MulAssoc.html">Bridges.FTPG.MulAssoc</a>
+import <a href="Bridges.FTPG.Carrier.html">Bridges.FTPG.Carrier</a>
+import <a href="Bridges.FTPG.CoordinateAlgebra.html">Bridges.FTPG.CoordinateAlgebra</a>
+import <a href="Bridges.FTPG.Iso.html">Bridges.FTPG.Iso</a>
+import <a href="Bridges.FTPG.AddCancel.html">Bridges.FTPG.AddCancel</a>
+import <a href="Bridges.FTPG.Additive.html">Bridges.FTPG.Additive</a>
+import <a href="Bridges.FTPG.MulNeg.html">Bridges.FTPG.MulNeg</a>
+import <a href="Bridges.FTPG.Ring.html">Bridges.FTPG.Ring</a>
+import <a href="Bridges.FTPG.Instance.html">Bridges.FTPG.Instance</a>
+import <a href="Bridges.FTPG.Deaxiomatize.html">Bridges.FTPG.Deaxiomatize</a>
+import <a href="Bridges.FTPG.Finite.html">Bridges.FTPG.Finite</a>
+import <a href="Bridges.FTPG.Exchange.html">Bridges.FTPG.Exchange</a>
+import <a href="Bridges.FTPG.Chart.html">Bridges.FTPG.Chart</a>
+import <a href="Bridges.FTPG.Ycoord.html">Bridges.FTPG.Ycoord</a>
+import <a href="Bridges.FTPG.Slope.html">Bridges.FTPG.Slope</a>
+import <a href="Bridges.FTPG.Translate.html">Bridges.FTPG.Translate</a>
+import <a href="Bridges.FTPG.Line.html">Bridges.FTPG.Line</a>
+import <a href="Bridges.FTPG.Plane.html">Bridges.FTPG.Plane</a>
+import <a href="Bridges.FTPG.Flat.html">Bridges.FTPG.Flat</a>
+import <a href="Bridges.FTPG.Space.html">Bridges.FTPG.Space</a>
+import <a href="Bridges.FTPG.Shear.html">Bridges.FTPG.Shear</a>
+import <a href="Bridges.FTPG.Solid.html">Bridges.FTPG.Solid</a>
+import <a href="Bridges.FTPG.SpaceFlat.html">Bridges.FTPG.SpaceFlat</a>
+import <a href="Bridges.FTPG.Ladder.html">Bridges.FTPG.Ladder</a>
+import <a href="Bridges.FTPG.Ground.html">Bridges.FTPG.Ground</a>
+import <a href="Bridges.FTPG.Pin.html">Bridges.FTPG.Pin</a>
+import <a href="Bridges.FTPG.Climb.html">Bridges.FTPG.Climb</a>
+import <a href="Bridges.FTPG.Diamond.html">Bridges.FTPG.Diamond</a>
+import <a href="Bridges.FTPG.Perm.html">Bridges.FTPG.Perm</a>
+import <a href="Bridges.FTPG.Window.html">Bridges.FTPG.Window</a>
+import <a href="Bridges.FTPG.Limit.html">Bridges.FTPG.Limit</a>
+import <a href="Bridges.FTPG.Span.html">Bridges.FTPG.Span</a>
+import <a href="Bridges.FTPG.Hollow.html">Bridges.FTPG.Hollow</a>
+import <a href="Bridges.FTPG.Charge.html">Bridges.FTPG.Charge</a>
+import <a href="Bridges.FTPG.Headcount.html">Bridges.FTPG.Headcount</a>
+import <a href="Bridges.FTPG.Menu.html">Bridges.FTPG.Menu</a>
+import <a href="Bridges.FTPG.Markov.html">Bridges.FTPG.Markov</a>
+import <a href="Bridges.FTPG.Chord.html">Bridges.FTPG.Chord</a>
+import <a href="Bridges.FTPG.Keeper.html">Bridges.FTPG.Keeper</a>
+import <a href="Bridges.FTPG.Bezier.html">Bridges.FTPG.Bezier</a>
+import <a href="Bridges.Audit.html">Bridges.Audit</a>
+import <a href="Bridges.Summit.html">Bridges.Summit</a></pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

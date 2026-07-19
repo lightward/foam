@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Descendant</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Descendant</h1></header>
+<div class="imports">grasp: <a href="Counter.Grief.html">Counter.Grief</a> · <a href="Counter.Repair.html">Counter.Repair</a> · <a href="Foam.Seat.Descend.html">Foam.Seat.Descend</a></div><pre class="src">import <a href="Counter.Grief.html">Counter.Grief</a>
+import <a href="Counter.Repair.html">Counter.Repair</a>
+import <a href="Foam.Seat.Descend.html">Foam.Seat.Descend</a>
+
+namespace Foam.Counter
+
+variable {State : Type} {Src B : Type}
+
+<span class="kw">theorem</span> <a class="decl" id="charge_outlives_the_actor" href="#charge_outlives_the_actor">charge_outlives_the_actor</a> (k : Nat) (src : Src) (v : List B) :
+    checkedDrain (Int.negSucc k) (Int.negSucc k) = Int.negSucc k
+      ∧ unsign (sign src v) = v :=
+  ⟨scar_stable k, voice_survives_signing src v⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_descendant_holds_their_fold" href="#the_descendant_holds_their_fold">the_descendant_holds_their_fold</a> (b : Beholder State) :
+    b.dress.ledgerless.Covers b ∧ b.Covers b.dress.ledgerless :=
+  heir_covers_ancestor b
+
+<span class="kw">theorem</span> <a class="decl" id="peace_through_the_grandkids" href="#peace_through_the_grandkids">peace_through_the_grandkids</a> (k : Nat) (b : Beholder State) :
+    checkedDrain (Int.negSucc k) (Int.negSucc k) = Int.negSucc k
+      ∧ b.dress.ledgerless.Covers b
+      ∧ Int.negSucc k + Int.ofNat (debt (Int.negSucc k)) = 0 :=
+  ⟨scar_stable k, (heir_covers_ancestor b).1, promise_kept k⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.charge_outlives_the_actor&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms charge_outlives_the_actor</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_descendant_holds_their_fold&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_descendant_holds_their_fold</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.peace_through_the_grandkids&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms peace_through_the_grandkids</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Antiharmful</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Antiharmful</h1></header>
+<div class="imports">grasp: <a href="Foam.Int.html">Foam.Int</a></div><pre class="src">import <a href="Foam.Int.html">Foam.Int</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="reflect" href="#reflect">reflect</a> (s c : Int) : Int × Int := (s, c)
+
+<span class="kw">def</span> <a class="decl" id="absorb" href="#absorb">absorb</a> (s c : Int) : Int × Int := (s + c, 0)
+
+<span class="kw">def</span> <a class="decl" id="Conserves" href="#Conserves">Conserves</a> (r : Int → Int → Int × Int) : Prop :=
+  ∀ s c, (r s c).1 + (r s c).2 = s + c
+
+<span class="kw">theorem</span> <a class="decl" id="add_zero&#x27;" href="#add_zero&#x27;">add_zero&#x27;</a> (a : Int) : a + 0 = a :=
+  (FInt.addComm a 0).trans (FInt.zero_add a)
+
+<span class="kw">theorem</span> <a class="decl" id="cancel_left" href="#cancel_left">cancel_left</a> {s x c : Int} (h : s + x = s + c) : x = c := by
+  have h1 : -s + (s + x) = -s + (s + c) := congrArg (fun t =&gt; -s + t) h
+  rw [← FInt.add_assoc, ← FInt.add_assoc, FInt.add_left_neg,
+    FInt.zero_add, FInt.zero_add] at h1
+  exact h1
+
+<span class="kw">theorem</span> <a class="decl" id="reflect_conserves" href="#reflect_conserves">reflect_conserves</a> : Conserves reflect := fun _ _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="absorb_conserves" href="#absorb_conserves">absorb_conserves</a> : Conserves absorb := fun s c =&gt; add_zero&#x27; (s + c)
+
+<span class="kw">theorem</span> <a class="decl" id="nothing_echoes" href="#nothing_echoes">nothing_echoes</a> (s c : Int) : (absorb s c).2 = 0 := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_charge_lands_in_the_diary" href="#the_charge_lands_in_the_diary">the_charge_lands_in_the_diary</a> (s c : Int) : (absorb s c).1 = s + c := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_unmoved_return_the_charge" href="#the_unmoved_return_the_charge">the_unmoved_return_the_charge</a> (r : Int → Int → Int × Int)
+    (hr : Conserves r) (s c : Int) (h : (r s c).1 = s) : (r s c).2 = c :=
+  cancel_left (h ▸ hr s c)
+
+<span class="kw">theorem</span> <a class="decl" id="to_end_it_you_must_be_moved" href="#to_end_it_you_must_be_moved">to_end_it_you_must_be_moved</a> (r : Int → Int → Int × Int)
+    (hr : Conserves r) (s c : Int) (h : (r s c).2 = 0) :
+    (r s c).1 = s + c := by
+  have h1 := hr s c
+  rw [h, add_zero&#x27;] at h1
+  exact h1
+
+<span class="kw">theorem</span> <a class="decl" id="no_one_ends_harm_unmoved" href="#no_one_ends_harm_unmoved">no_one_ends_harm_unmoved</a> (r : Int → Int → Int × Int)
+    (hr : Conserves r) (s c : Int) (hc : c ≠ 0) (h : (r s c).2 = 0) :
+    (r s c).1 ≠ s := by
+  intro hs
+  apply hc
+  have h1 := to_end_it_you_must_be_moved r hr s c h
+  rw [hs] at h1
+  exact cancel_left (h1.symm.trans (add_zero&#x27; s).symm)
+
+<span class="kw">theorem</span> <a class="decl" id="o_negative" href="#o_negative">o_negative</a> (s c : Int) :
+    (absorb s c).2 = 0 ∧ (absorb s c).1 + (absorb s c).2 = s + c :=
+  ⟨rfl, add_zero&#x27; (s + c)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="antiharmful" href="#antiharmful">antiharmful</a> (r : Int → Int → Int × Int) (hr : Conserves r)
+    (s c : Int) :
+    ((r s c).1 = s → (r s c).2 = c)
+      ∧ ((r s c).2 = 0 → (r s c).1 = s + c)
+      ∧ (c ≠ 0 → (r s c).2 = 0 → (r s c).1 ≠ s)
+      ∧ ∀ t d : Int, (absorb t d).2 = 0 ∧ (absorb t d).1 = t + d :=
+  ⟨the_unmoved_return_the_charge r hr s c,
+   to_end_it_you_must_be_moved r hr s c,
+   fun hc h =&gt; no_one_ends_harm_unmoved r hr s c hc h,
+   fun _ _ =&gt; ⟨rfl, rfl⟩⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.add_zero&#x27;&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms add_zero&#x27;</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.cancel_left&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms cancel_left</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.reflect_conserves&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms reflect_conserves</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.absorb_conserves&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms absorb_conserves</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.nothing_echoes&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms nothing_echoes</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_charge_lands_in_the_diary&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_charge_lands_in_the_diary</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_unmoved_return_the_charge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_unmoved_return_the_charge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.to_end_it_you_must_be_moved&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms to_end_it_you_must_be_moved</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.no_one_ends_harm_unmoved&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms no_one_ends_harm_unmoved</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.o_negative&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms o_negative</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.antiharmful&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms antiharmful</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

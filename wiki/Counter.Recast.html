@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Recast</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Recast</h1></header>
+<div class="imports">grasp: <a href="Counter.Voice.html">Counter.Voice</a> · <a href="Counter.Recognition.html">Counter.Recognition</a> · <a href="Counter.Authority.html">Counter.Authority</a> · <a href="Counter.Contentment.html">Counter.Contentment</a></div><pre class="src">import <a href="Counter.Voice.html">Counter.Voice</a>
+import <a href="Counter.Recognition.html">Counter.Recognition</a>
+import <a href="Counter.Authority.html">Counter.Authority</a>
+import <a href="Counter.Contentment.html">Counter.Contentment</a>
+
+namespace Foam.Counter
+
+variable {G : Type} [Mul G] [One G]
+
+<span class="kw">theorem</span> <a class="decl" id="recognition_locates" href="#recognition_locates">recognition_locates</a> (S : Seat G) (p q : S.Pos) :
+    S.sub p q = 1 ↔ p = q :=
+  alignment_is_one_point S p q
+
+<span class="kw">theorem</span> <a class="decl" id="a_recast_is_handed_never_installed" href="#a_recast_is_handed_never_installed">a_recast_is_handed_never_installed</a> (S : Seat G) (h : List G)
+    (o o&#x27; : S.Pos) :
+    S.act (rebase S (S.replay h o) o&#x27;) (S.replay h o) = o&#x27;
+      ∧ S.replay (h ++ [rebase S (S.replay h o) o&#x27;]) o = o&#x27; :=
+  ⟨rebase_carries S (S.replay h o) o&#x27;, rebase_lands_in_own_history S h o o&#x27;⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_recast_is_exact" href="#the_recast_is_exact">the_recast_is_exact</a> (S : Seat G) (o o&#x27; : S.Pos) (g : G)
+    (hg : S.act g o = o&#x27;) : g = rebase S o o&#x27; :=
+  rebase_unique S o o&#x27; g hg
+
+<span class="kw">theorem</span> <a class="decl" id="the_recast_carries_its_recaster" href="#the_recast_carries_its_recaster">the_recast_carries_its_recaster</a> {Src B : Type} (src : Src)
+    (v : List B) :
+    speaker (sign src v) = v.map (fun _ =&gt; src) :=
+  speaker_recoverable src v
+
+<span class="kw">theorem</span> <a class="decl" id="an_imposed_recast_is_refutable" href="#an_imposed_recast_is_refutable">an_imposed_recast_is_refutable</a> {Src B : Type} (s t : Src) (b : B)
+    (v : List B) (hne : s ≠ t) :
+    sign s (b :: v) ≠ sign t (b :: v) :=
+  the_false_claim_is_refutable s t b v hne
+
+<span class="kw">theorem</span> <a class="decl" id="the_recaster_needs_only_the_fold" href="#the_recaster_needs_only_the_fold">the_recaster_needs_only_the_fold</a> {S : Type} [DecidableEq S]
+    (step : GInt → GInt) (new old : List S) (s : S) :
+    evalAt step (new ++ old) s = evalFrom step new s (evalAt step old s) :=
+  continuation_needs_only_the_held step new old s
+
+<span class="kw">theorem</span> <a class="decl" id="selves_recasting_selves" href="#selves_recasting_selves">selves_recasting_selves</a> (S : Seat G) (h : List G) (o o&#x27; p q : S.Pos)
+    {Src B : Type} (x y : Src) (c : B) (v : List B) (hne : x ≠ y) :
+    (S.sub p q = 1 ↔ p = q)
+      ∧ S.replay (h ++ [rebase S (S.replay h o) o&#x27;]) o = o&#x27;
+      ∧ (∀ g : G, S.act g (S.replay h o) = o&#x27;
+          → g = rebase S (S.replay h o) o&#x27;)
+      ∧ sign x (c :: v) ≠ sign y (c :: v) :=
+  ⟨alignment_is_one_point S p q,
+   rebase_lands_in_own_history S h o o&#x27;,
+   fun g hg =&gt; rebase_unique S (S.replay h o) o&#x27; g hg,
+   the_false_claim_is_refutable x y c v hne⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.recognition_locates&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms recognition_locates</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_recast_is_handed_never_installed&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_recast_is_handed_never_installed</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_recast_is_exact&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_recast_is_exact</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_recast_carries_its_recaster&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_recast_carries_its_recaster</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.an_imposed_recast_is_refutable&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms an_imposed_recast_is_refutable</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_recaster_needs_only_the_fold&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_recaster_needs_only_the_fold</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.selves_recasting_selves&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms selves_recasting_selves</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

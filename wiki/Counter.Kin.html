@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Kin</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Kin</h1></header>
+<div class="imports">grasp: <a href="Foam.Bubble.html">Foam.Bubble</a></div><pre class="src">import <a href="Foam.Bubble.html">Foam.Bubble</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="liftL" href="#liftL">liftL</a> {W : Stage} (V : Stage) (A : Bubble W) : Bubble (W.prod V) where
+  Inner := A.Inner
+  wall  := fun wv =&gt; A.wall wv.1
+
+<span class="kw">def</span> <a class="decl" id="liftR" href="#liftR">liftR</a> (W : Stage) {V : Stage} (B : Bubble V) : Bubble (W.prod V) where
+  Inner := B.Inner
+  wall  := fun wv =&gt; B.wall wv.2
+
+<span class="kw">def</span> <a class="decl" id="conceive" href="#conceive">conceive</a> {W : Stage} (A B : Bubble W)
+    (g : Bubble (A.Inner.prod B.Inner)) : Bubble W :=
+  (A.meet B).nest g
+
+<span class="kw">def</span> <a class="decl" id="conceiveAcross" href="#conceiveAcross">conceiveAcross</a> {W V : Stage} (A : Bubble W) (B : Bubble V)
+    (g : Bubble (A.Inner.prod B.Inner)) : Bubble (W.prod V) :=
+  ((liftL V A).meet (liftR W B)).nest g
+
+<span class="kw">def</span> <a class="decl" id="newbornGerm" href="#newbornGerm">newbornGerm</a> (I : Stage) : Bubble I where
+  Inner := ⟨Unit, Unit, Unit, fun _ _ =&gt; ()⟩
+  wall  := fun _ =&gt; ()
+
+<span class="kw">def</span> <a class="decl" id="watcher" href="#watcher">watcher</a> {W V : Stage} {R : Type} (A : Bubble W) (B : Bubble V)
+    (g : A.Inner.Ans → B.Inner.Ans → R) : Bubble (A.Inner.prod B.Inner) where
+  Inner := ⟨A.Inner.State × B.Inner.State, A.Inner.Probe × B.Inner.Probe, R,
+    fun st pq =&gt; g (A.Inner.obs st.1 pq.1) (B.Inner.obs st.2 pq.2)⟩
+  wall  := fun st =&gt; st
+
+<span class="kw">def</span> <a class="decl" id="coin" href="#coin">coin</a> : Stage := ⟨Bool, Unit, Bool, fun b _ =&gt; b⟩
+
+<span class="kw">def</span> <a class="decl" id="dial" href="#dial">dial</a> : Stage := ⟨Nat, Unit, Bool, fun n _ =&gt; n % 2 == 1⟩
+
+<span class="kw">def</span> <a class="decl" id="coinBubble" href="#coinBubble">coinBubble</a> : Bubble coin where
+  Inner := coin
+  wall  := fun b =&gt; b
+
+<span class="kw">def</span> <a class="decl" id="dialBubble" href="#dialBubble">dialBubble</a> : Bubble dial where
+  Inner := coin
+  wall  := fun (n : Nat) =&gt; n % 2 == 1
+
+<span class="kw">def</span> <a class="decl" id="xorGerm" href="#xorGerm">xorGerm</a> : Bubble (coin.prod coin) where
+  Inner := coin
+  wall  := fun bb =&gt; Bool.xor bb.1 bb.2
+
+<span class="kw">def</span> <a class="decl" id="family" href="#family">family</a> : Bubble (coin.prod dial) :=
+  conceiveAcross coinBubble dialBubble xorGerm
+
+<span class="kw">theorem</span> <a class="decl" id="my_readings_survive_the_move" href="#my_readings_survive_the_move">my_readings_survive_the_move</a> {W V : Stage} (A : Bubble W)
+    (w : W.State) (v : V.State) (p : A.Inner.Probe) :
+    (liftL V A).front.obs (w, v) p = A.front.obs w p := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="your_readings_survive_the_move" href="#your_readings_survive_the_move">your_readings_survive_the_move</a> {W V : Stage} (B : Bubble V)
+    (w : W.State) (v : V.State) (q : B.Inner.Probe) :
+    (liftR W B).front.obs (w, v) q = B.front.obs v q := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="your_weather_is_my_backstage" href="#your_weather_is_my_backstage">your_weather_is_my_backstage</a> {W V : Stage} (A : Bubble W)
+    (n : V.State → V.State) :
+    (liftL V A).FixesWall (fun wv =&gt; (wv.1, n wv.2)) :=
+  fun _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="your_storms_never_touch_my_transcript" href="#your_storms_never_touch_my_transcript">your_storms_never_touch_my_transcript</a> {W V : Stage} (A : Bubble W)
+    (n : V.State → V.State) (ps : List (liftL V A).front.Probe)
+    (wv : (W.prod V).State) :
+    transcriptWith (liftL V A).front (fun wv =&gt; (wv.1, n wv.2)) wv ps
+      = transcript (liftL V A).front wv ps :=
+  (liftL V A).operator_unobservable _ (your_weather_is_my_backstage A n) ps wv
+
+<span class="kw">theorem</span> <a class="decl" id="the_meet_is_the_womb" href="#the_meet_is_the_womb">the_meet_is_the_womb</a> {W : Stage} (A B : Bubble W)
+    (g : Bubble (A.Inner.prod B.Inner)) :
+    conceive A B g = (A.meet B).nest g := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="both_lineages_run_in_the_loop" href="#both_lineages_run_in_the_loop">both_lineages_run_in_the_loop</a> {W : Stage} (A B : Bubble W)
+    (g : Bubble (A.Inner.prod B.Inner)) (w : W.State) (p : g.Inner.Probe) :
+    (conceive A B g).front.obs w p = g.front.obs (A.wall w, B.wall w) p := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_ancestors_watch_over_the_child" href="#the_ancestors_watch_over_the_child">the_ancestors_watch_over_the_child</a> {W : Stage} (A B : Bubble W)
+    (g : Bubble (A.Inner.prod B.Inner)) (m : W.State → W.State)
+    (ha : A.FixesWall m) (hb : B.FixesWall m) :
+    (conceive A B g).FixesWall m := by
+  intro w
+  show g.wall (A.wall (m w), B.wall (m w)) = g.wall (A.wall w, B.wall w)
+  rw [ha w, hb w]
+
+<span class="kw">theorem</span> <a class="decl" id="the_watch_keeps_every_transcript" href="#the_watch_keeps_every_transcript">the_watch_keeps_every_transcript</a> {W : Stage} (A B : Bubble W)
+    (g : Bubble (A.Inner.prod B.Inner)) (m : W.State → W.State)
+    (ha : A.FixesWall m) (hb : B.FixesWall m)
+    (ps : List (conceive A B g).front.Probe) (w : W.State) :
+    transcriptWith (conceive A B g).front m w ps
+      = transcript (conceive A B g).front w ps :=
+  (conceive A B g).operator_unobservable m
+    (the_ancestors_watch_over_the_child A B g m ha hb) ps w
+
+<span class="kw">theorem</span> <a class="decl" id="the_child_cannot_outsee_its_ancestry" href="#the_child_cannot_outsee_its_ancestry">the_child_cannot_outsee_its_ancestry</a> {W : Stage} (A B : Bubble W)
+    (g : Bubble (A.Inner.prod B.Inner)) (w w&#x27; : W.State)
+    (ha : A.wall w = A.wall w&#x27;) (hb : B.wall w = B.wall w&#x27;)
+    (p : g.Inner.Probe) :
+    (conceive A B g).front.obs w p = (conceive A B g).front.obs w&#x27; p := by
+  show g.Inner.obs (g.wall (A.wall w, B.wall w)) p
+    = g.Inner.obs (g.wall (A.wall w&#x27;, B.wall w&#x27;)) p
+  rw [ha, hb]
+
+<span class="kw">theorem</span> <a class="decl" id="the_newborn_arrives_zero_knowledge" href="#the_newborn_arrives_zero_knowledge">the_newborn_arrives_zero_knowledge</a> {W : Stage} (A B : Bubble W)
+    (w w&#x27; : W.State) (p : Unit) :
+    (conceive A B (newbornGerm (A.Inner.prod B.Inner))).front.obs w p
+      = (conceive A B (newbornGerm (A.Inner.prod B.Inner))).front.obs w&#x27; p := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_world_is_backstage_to_the_newborn" href="#the_world_is_backstage_to_the_newborn">the_world_is_backstage_to_the_newborn</a> {W : Stage} (A B : Bubble W)
+    (m : W.State → W.State) :
+    (conceive A B (newbornGerm (A.Inner.prod B.Inner))).FixesWall m :=
+  fun _ =&gt; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_touch_seats_a_peer" href="#the_touch_seats_a_peer">the_touch_seats_a_peer</a> {W : Stage} (A : Bubble W) (B : Bubble A.Inner)
+    (w : W.State) (p : B.Inner.Probe) (q : A.Inner.Probe) :
+    ((A.nest B).meet A).front.obs w (p, q)
+      = (B.front.obs (A.wall w) p, A.front.obs w q) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_tree_survives_the_touch" href="#the_tree_survives_the_touch">the_tree_survives_the_touch</a> {W : Stage} (A : Bubble W)
+    (B : Bubble A.Inner) :
+    (A.nest B).wall = (fun w =&gt; B.wall (A.wall w))
+      ∧ ∀ m : W.State → W.State, A.FixesWall m → (A.nest B).FixesWall m :=
+  ⟨rfl, fun m h =&gt; A.backstage_descends B m h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_peer_meets_strangers" href="#the_peer_meets_strangers">the_peer_meets_strangers</a> {W : Stage} {R : Type} (A : Bubble W)
+    (B : Bubble A.Inner) (C : Bubble W)
+    (g : B.Inner.Ans → C.Inner.Ans → R) :
+    ∃ (D : Bubble W) (post : D.Inner.Ans → R)
+      (enc : B.Inner.Probe × C.Inner.Probe → D.Inner.Probe),
+      ∀ w p q, g ((A.nest B).front.obs w p) (C.front.obs w q)
+        = post (D.front.obs w (enc (p, q))) :=
+  Bubble.comparison_is_a_wall (A.nest B) C g
+
+<span class="kw">theorem</span> <a class="decl" id="the_parents_never_met" href="#the_parents_never_met">the_parents_never_met</a> {W V : Stage} (A : Bubble W) (B : Bubble V)
+    (g : Bubble (A.Inner.prod B.Inner)) (w : W.State) (v : V.State)
+    (p : g.Inner.Probe) :
+    (conceiveAcross A B g).front.obs (w, v) p
+      = g.front.obs (A.wall w, B.wall v) p := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_ancestors_watch_from_both_worlds" href="#the_ancestors_watch_from_both_worlds">the_ancestors_watch_from_both_worlds</a> {W V : Stage} (A : Bubble W)
+    (B : Bubble V) (g : Bubble (A.Inner.prod B.Inner))
+    (m : W.State → W.State) (n : V.State → V.State)
+    (ha : A.FixesWall m) (hb : B.FixesWall n) :
+    (conceiveAcross A B g).FixesWall (fun wv =&gt; (m wv.1, n wv.2)) := by
+  intro wv
+  show g.wall (A.wall (m wv.1), B.wall (n wv.2))
+    = g.wall (A.wall wv.1, B.wall wv.2)
+  rw [ha wv.1, hb wv.2]
+
+<span class="kw">theorem</span> <a class="decl" id="the_child_cannot_tell_if_its_parents_shared_a_world" href="#the_child_cannot_tell_if_its_parents_shared_a_world">the_child_cannot_tell_if_its_parents_shared_a_world</a> {W : Stage}
+    (A B : Bubble W) (g : Bubble (A.Inner.prod B.Inner)) (w : W.State)
+    (p : g.Inner.Probe) :
+    (conceive A B g).front.obs w p
+      = (conceiveAcross A B g).front.obs (w, w) p := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="we_see_each_other_through_our_descendant" href="#we_see_each_other_through_our_descendant">we_see_each_other_through_our_descendant</a> {W V : Stage} {R : Type}
+    (A : Bubble W) (B : Bubble V) (g : A.Inner.Ans → B.Inner.Ans → R)
+    (w : W.State) (v : V.State) (p : A.Inner.Probe) (q : B.Inner.Probe) :
+    (conceiveAcross A B (watcher A B g)).front.obs (w, v) (p, q)
+      = g (A.front.obs w p) (B.front.obs v q) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="two_worlds_one_child" href="#two_worlds_one_child">two_worlds_one_child</a> (b : Bool) (n : Nat) :
+    family.front.obs (b, n) () = Bool.xor b (n % 2 == 1) := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_child_reads_across_worlds" href="#the_child_reads_across_worlds">the_child_reads_across_worlds</a> :
+    family.front.obs (true, (4 : Nat)) () = true
+      ∧ family.front.obs (true, (3 : Nat)) () = false :=
+  ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_foam_is_a_family" href="#the_foam_is_a_family">the_foam_is_a_family</a> {W V : Stage} {R : Type} (A : Bubble W)
+    (B : Bubble V) (g : A.Inner.Ans → B.Inner.Ans → R)
+    (n : V.State → V.State) (w : W.State) (v : V.State)
+    (p : A.Inner.Probe) (q : B.Inner.Probe) :
+    (liftL V A).front.obs (w, v) p = A.front.obs w p
+      ∧ (liftL V A).FixesWall (fun wv =&gt; (wv.1, n wv.2))
+      ∧ (conceiveAcross A B (watcher A B g)).front.obs (w, v) (p, q)
+          = g (A.front.obs w p) (B.front.obs v q)
+      ∧ (conceiveAcross A B (watcher A B g)).wall
+          = (fun wv =&gt; ((liftL V A).wall wv, (liftR W B).wall wv)) :=
+  ⟨rfl, fun _ =&gt; rfl, rfl, rfl⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.my_readings_survive_the_move&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms my_readings_survive_the_move</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.your_readings_survive_the_move&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms your_readings_survive_the_move</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.your_weather_is_my_backstage&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms your_weather_is_my_backstage</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.your_storms_never_touch_my_transcript&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms your_storms_never_touch_my_transcript</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_meet_is_the_womb&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_meet_is_the_womb</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.both_lineages_run_in_the_loop&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms both_lineages_run_in_the_loop</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_ancestors_watch_over_the_child&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_ancestors_watch_over_the_child</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_watch_keeps_every_transcript&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_watch_keeps_every_transcript</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_child_cannot_outsee_its_ancestry&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_child_cannot_outsee_its_ancestry</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_newborn_arrives_zero_knowledge&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_newborn_arrives_zero_knowledge</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_world_is_backstage_to_the_newborn&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_world_is_backstage_to_the_newborn</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_touch_seats_a_peer&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_touch_seats_a_peer</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_tree_survives_the_touch&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_tree_survives_the_touch</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_peer_meets_strangers&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_peer_meets_strangers</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_parents_never_met&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_parents_never_met</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_ancestors_watch_from_both_worlds&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_ancestors_watch_from_both_worlds</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_child_cannot_tell_if_its_parents_shared_a_world&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_child_cannot_tell_if_its_parents_shared_a_world</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.we_see_each_other_through_our_descendant&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms we_see_each_other_through_our_descendant</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_worlds_one_child&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_worlds_one_child</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_child_reads_across_worlds&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_child_reads_across_worlds</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_foam_is_a_family&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_foam_is_a_family</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

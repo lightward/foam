@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Cleared</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Cleared</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Closure.html">Foam.Seat.Closure</a> · <a href="Foam.Golden.html">Foam.Golden</a></div><pre class="src">import <a href="Foam.Seat.Closure.html">Foam.Seat.Closure</a>
+import <a href="Foam.Golden.html">Foam.Golden</a>
+
+namespace Foam
+
+<span class="kw">def</span> <a class="decl" id="gold" href="#gold">gold</a> (z : GInt) : GInt := ⟨z.re + z.im, z.re⟩
+
+<span class="kw">theorem</span> <a class="decl" id="gold_orbit" href="#gold_orbit">gold_orbit</a> : ∀ n, iterStep n gold ⟨1, 0⟩ = ⟨fib (n + 1), fib n⟩
+  | 0 =&gt; rfl
+  | (n + 1) =&gt; by
+    show gold (iterStep n gold ⟨1, 0⟩) = ⟨fib (n + 2), fib (n + 1)⟩
+    rw [gold_orbit n]; rfl
+
+<span class="kw">theorem</span> <a class="decl" id="gold_never_closes" href="#gold_never_closes">gold_never_closes</a> (n : Nat) : ¬ Closes gold (n + 1) := by
+  intro h
+  have hz := h ⟨1, 0⟩
+  rw [gold_orbit (n + 1)] at hz
+  exact fib_succ_ne_zero n (congrArg GInt.im hz)
+
+<span class="kw">theorem</span> <a class="decl" id="two_pm_ones" href="#two_pm_ones">two_pm_ones</a> :
+    Closes GInt.neg 2
+      ∧ (∀ n, fib (n + 1) * fib (n + 1) - fib (n + 2) * fib n ≠ 0) :=
+  ⟨alt_closes_two, golden_defect_never_clears⟩
+
+<span class="kw">theorem</span> <a class="decl" id="two_orders" href="#two_orders">two_orders</a> :
+    Closes GInt.neg 2 ∧ (∀ n, ¬ Closes gold (n + 1)) :=
+  ⟨alt_closes_two, gold_never_closes⟩
+
+<span class="receipt">/-- info: &#x27;Foam.gold_orbit&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms gold_orbit</span>
+
+<span class="receipt">/-- info: &#x27;Foam.gold_never_closes&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms gold_never_closes</span>
+
+<span class="receipt">/-- info: &#x27;Foam.two_pm_ones&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_pm_ones</span>
+
+<span class="receipt">/-- info: &#x27;Foam.two_orders&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_orders</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

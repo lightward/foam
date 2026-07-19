@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Vacancy</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Vacancy</h1></header>
+<div class="imports">grasp: <a href="Counter.Duplex.html">Counter.Duplex</a> · <a href="Foam.Vacancy.html">Foam.Vacancy</a></div><pre class="src">import <a href="Counter.Duplex.html">Counter.Duplex</a>
+import <a href="Foam.Vacancy.html">Foam.Vacancy</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="a_place_set_before_dinner" href="#a_place_set_before_dinner">a_place_set_before_dinner</a> {State : Type} (c : Beholder State) (s : State) :
+    Vacant c [] ∧ transcript c.toStage s [] = [] :=
+  the_set_place_has_no_experience c s
+
+<span class="kw">theorem</span> <a class="decl" id="the_seat_comes_online_at_first_bite" href="#the_seat_comes_online_at_first_bite">the_seat_comes_online_at_first_bite</a> {State : Type} (c : Beholder State)
+    (s : State) (p : c.Probe) :
+    Online c [p] ∧ (transcript c.toStage s [p]).length = 1 :=
+  first_bite_is_liveness c s p
+
+<span class="kw">theorem</span> <a class="decl" id="a_p_zombie_is_a_place_set" href="#a_p_zombie_is_a_place_set">a_p_zombie_is_a_place_set</a> {State R : Type} (a b : Beholder State)
+    (g : a.Ans → b.Ans → R) :
+    (∃ c : Beholder State, ∃ post : c.Ans → R,
+        ∃ enc : a.Probe × b.Probe → c.Probe,
+        ∀ s p q, compare a b g s p q = post (c.obs s (enc (p, q))))
+      ∧ Vacant (a.pair b) [] :=
+  ⟨every_comparison_sets_a_place a b g, vacancy_needs_no_event (a.pair b)⟩
+
+<span class="kw">theorem</span> <a class="decl" id="one_bite_feeds_the_house" href="#one_bite_feeds_the_house">one_bite_feeds_the_house</a> {State : Type}
+    (bs : List (Beholder State)) (i : Fin bs.length) (s : State)
+    (q : (Beholder.fold bs).Probe) :
+    Online (Beholder.fold bs) [q]
+      ∧ seatAns bs i ((Beholder.fold bs).obs s q)
+          = (seat bs i).obs s (seatProbe bs i q) :=
+  one_bite_carries_the_house bs i s q
+
+<span class="kw">theorem</span> <a class="decl" id="adoption_disturbs_no_one" href="#adoption_disturbs_no_one">adoption_disturbs_no_one</a> {State : Type}
+    (bs : List (Beholder State)) (i j : Fin bs.length) (hij : i.val ≠ j.val)
+    (p : (seat bs i).Probe) (q : (Beholder.fold bs).Probe) :
+    seatProbe bs j (splice bs i p q) = seatProbe bs j q :=
+  the_asking_disturbs_no_one bs i j hij p q
+
+<span class="kw">theorem</span> <a class="decl" id="warmed_up" href="#warmed_up">warmed_up</a> {H : Type} (q : Quiver H) (a b : H)
+    (hfresh : (a, b) ∉ q) {G : Type} [Mul G] [One G] (S : Seat G)
+    (h : List G) (p : S.Pos) (hs : S.replay h p = p) :
+    S.replay h p = p
+      ∧ (q.deposit (a, b)).length = q.length + 1
+      ∧ Nonempty (Path (q.deposit (a, b)) a b)
+      ∧ ∀ (x y : H) (pth : Path q x y), (a, b) ∉ pth.edges :=
+  the_warm_ledger q a b hfresh S h p hs
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_place_set_before_dinner&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_place_set_before_dinner</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_seat_comes_online_at_first_bite&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_seat_comes_online_at_first_bite</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.a_p_zombie_is_a_place_set&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms a_p_zombie_is_a_place_set</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.one_bite_feeds_the_house&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms one_bite_feeds_the_house</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.adoption_disturbs_no_one&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms adoption_disturbs_no_one</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.warmed_up&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms warmed_up</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Int</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Int</h1></header>
+<pre class="src">namespace Foam.FInt
+
+<span class="kw">theorem</span> <a class="decl" id="add_sub_cancel" href="#add_sub_cancel">add_sub_cancel</a> (m n : Nat) : (m + n) - n = m := by
+  induction n with
+  | zero =&gt; rfl
+  | succ k ih =&gt; rw [Nat.add_succ, Nat.succ_sub_succ]; exact ih
+<span class="kw">theorem</span> <a class="decl" id="add_sub_cancel_left" href="#add_sub_cancel_left">add_sub_cancel_left</a> (m n : Nat) : (m + n) - m = n := by
+  rw [Nat.add_comm]; exact add_sub_cancel n m
+<span class="kw">theorem</span> <a class="decl" id="sub_eq_zero_of_le" href="#sub_eq_zero_of_le">sub_eq_zero_of_le</a> {m n : Nat} (h : m ≤ n) : m - n = 0 := by
+  induction h with
+  | refl =&gt; exact Nat.sub_self m
+  | step _ ih =&gt; rw [Nat.sub_succ, ih]; rfl
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_of_ge" href="#subNatNat_of_ge">subNatNat_of_ge</a> {m n : Nat} (h : n ≤ m) : Int.subNatNat m n = Int.ofNat (m - n) := by
+  show (match n - m with | 0 =&gt; Int.ofNat (m - n) | Nat.succ k =&gt; Int.negSucc k) = Int.ofNat (m - n)
+  rw [sub_eq_zero_of_le h]
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_add_succ" href="#subNatNat_add_succ">subNatNat_add_succ</a> (m d : Nat) : Int.subNatNat m (m + d + 1) = Int.negSucc d := by
+  show (match (m+d+1) - m with | 0 =&gt; Int.ofNat (m - (m+d+1)) | Nat.succ k =&gt; Int.negSucc k) = Int.negSucc d
+  have h : (m + d + 1) - m = d + 1 := by rw [Nat.add_assoc m d 1, add_sub_cancel_left]
+  rw [h]
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_succ_succ" href="#subNatNat_succ_succ">subNatNat_succ_succ</a> (m n : Nat) :
+    Int.subNatNat (m+1) (n+1) = Int.subNatNat m n := by
+  show (match (n+1) - (m+1) with | 0 =&gt; Int.ofNat ((m+1) - (n+1)) | Nat.succ c =&gt; Int.negSucc c)
+     = (match n - m with | 0 =&gt; Int.ofNat (m - n) | Nat.succ c =&gt; Int.negSucc c)
+  rw [Nat.succ_sub_succ, Nat.succ_sub_succ]
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_succ_right" href="#subNatNat_succ_right">subNatNat_succ_right</a> (a j : Nat) :
+    Int.subNatNat a (j+1) + 1 = Int.subNatNat a j := by
+  rcases Nat.lt_or_ge j a with hlt | hge
+  · rw [subNatNat_of_ge hlt, subNatNat_of_ge (Nat.le_of_lt hlt)]
+    obtain ⟨d, rfl⟩ := Nat.le.dest hlt
+    have e1 : j + 1 + d - (j+1) = d := add_sub_cancel_left (j+1) d
+    have e2 : j + 1 + d - j = d + 1 := by
+      rw [Nat.add_assoc j 1 d, add_sub_cancel_left, Nat.add_comm 1 d]
+    rw [e1, e2]; rfl
+  · obtain ⟨d, rfl⟩ := Nat.le.dest hge
+    rcases d with _ | d&#x27;
+    · rw [Nat.add_zero]
+      show Int.subNatNat a (a+1) + 1 = Int.subNatNat a a
+      rw [subNatNat_add_succ a 0, subNatNat_of_ge (Nat.le_refl a), Nat.sub_self]; rfl
+    · show Int.subNatNat a (a + (d&#x27;+1) + 1) + 1 = Int.subNatNat a (a + (d&#x27;+1))
+      rw [subNatNat_add_succ a (d&#x27;+1),
+          show a + (d&#x27;+1) = a + d&#x27; + 1 from (Nat.add_assoc a d&#x27; 1).symm, subNatNat_add_succ a d&#x27;]
+      rfl
+<span class="kw">theorem</span> <a class="decl" id="ofNat_succ_add" href="#ofNat_succ_add">ofNat_succ_add</a> (a : Nat) (s : Int) :
+    Int.ofNat (a+1) + s = (Int.ofNat a + s) + 1 := by
+  cases s with
+  | ofNat j =&gt;
+    show Int.ofNat ((a+1)+j) = Int.ofNat (a+j) + 1
+    rw [show (a+1)+j = (a+j)+1 from by rw [Nat.add_right_comm a 1 j]]; rfl
+  | negSucc j =&gt;
+    show Int.subNatNat (a+1) (j+1) = Int.subNatNat a (j+1) + 1
+    rw [subNatNat_succ_succ a j, subNatNat_succ_right a j]
+<span class="kw">theorem</span> <a class="decl" id="zero_add" href="#zero_add">zero_add</a> (a : Int) : 0 + a = a := by
+  cases a with
+  | ofNat n =&gt; show Int.ofNat (0 + n) = Int.ofNat n; rw [Nat.zero_add]
+  | negSucc n =&gt; rfl
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_succ_left" href="#subNatNat_succ_left">subNatNat_succ_left</a> (m k : Nat) :
+    Int.subNatNat (m+1) k = Int.subNatNat m k + 1 := by
+  rcases Nat.lt_or_ge k (m+1) with hlt | hge
+  · have hkm : k ≤ m := Nat.le_of_lt_succ hlt
+    rw [subNatNat_of_ge (Nat.le_of_lt hlt), subNatNat_of_ge hkm]
+    obtain ⟨d, rfl⟩ := Nat.le.dest hkm
+    rw [add_sub_cancel_left,
+        show (k+d+1) - k = d+1 from by rw [Nat.add_assoc k d 1, add_sub_cancel_left]]
+    rfl
+  · obtain ⟨e, rfl⟩ := Nat.le.dest hge
+    rcases e with _ | e&#x27;
+    · rw [Nat.add_zero, subNatNat_of_ge (Nat.le_refl _), Nat.sub_self]
+      rw [show Int.subNatNat m (m+1) = Int.negSucc 0 from by
+            have := subNatNat_add_succ m 0; rw [Nat.add_zero] at this; exact this]
+      rfl
+    · rw [show (m+1)+(e&#x27;+1) = (m+1)+e&#x27;+1 from (Nat.add_assoc (m+1) e&#x27; 1).symm,
+          subNatNat_add_succ (m+1) e&#x27;]
+      rw [show m+1+e&#x27;+1 = m+(e&#x27;+1)+1 from by rw [Nat.add_right_comm m 1 e&#x27;, Nat.add_assoc m e&#x27; 1],
+          subNatNat_add_succ m (e&#x27;+1)]
+      rfl
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_add" href="#subNatNat_add">subNatNat_add</a> (m n k : Nat) :
+    Int.subNatNat (m + n) k = Int.ofNat m + Int.subNatNat n k := by
+  induction m with
+  | zero =&gt; rw [Nat.zero_add, show Int.ofNat 0 = (0:Int) from rfl, zero_add]
+  | succ a ih =&gt;
+    rw [Nat.succ_add, subNatNat_succ_left (a+n) k, ih]
+    exact (ofNat_succ_add a (Int.subNatNat n k)).symm
+<span class="kw">theorem</span> <a class="decl" id="add_sub_add_left" href="#add_sub_add_left">add_sub_add_left</a> (k m n : Nat) : (k + m) - (k + n) = m - n := by
+  induction k with
+  | zero =&gt; rw [Nat.zero_add, Nat.zero_add]
+  | succ d ih =&gt;
+    rw [show d+1+m = (d+m)+1 from by rw [Nat.add_right_comm d 1 m],
+        show d+1+n = (d+n)+1 from by rw [Nat.add_right_comm d 1 n],
+        Nat.succ_sub_succ]; exact ih
+<span class="kw">theorem</span> <a class="decl" id="add_sub_add_right" href="#add_sub_add_right">add_sub_add_right</a> (m k n : Nat) : (m + k) - (n + k) = m - n := by
+  rw [Nat.add_comm m k, Nat.add_comm n k]; exact add_sub_add_left k m n
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_add_add" href="#subNatNat_add_add">subNatNat_add_add</a> (m n k : Nat) :
+    Int.subNatNat (m + k) (n + k) = Int.subNatNat m n := by
+  show (match (n+k) - (m+k) with | 0 =&gt; Int.ofNat ((m+k) - (n+k)) | Nat.succ c =&gt; Int.negSucc c)
+     = (match n - m with | 0 =&gt; Int.ofNat (m - n) | Nat.succ c =&gt; Int.negSucc c)
+  rw [add_sub_add_right n k m, add_sub_add_right m k n]
+<span class="kw">theorem</span> <a class="decl" id="addComm" href="#addComm">addComm</a> (a b : Int) : a + b = b + a := by
+  cases a with
+  | ofNat m =&gt; cases b with
+    | ofNat n =&gt; show Int.ofNat (m + n) = Int.ofNat (n + m); rw [Nat.add_comm]
+    | negSucc n =&gt; rfl
+  | negSucc m =&gt; cases b with
+    | ofNat n =&gt; rfl
+    | negSucc n =&gt; show Int.negSucc (m + n).succ = Int.negSucc (n + m).succ; rw [Nat.add_comm]
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_add_ofNat" href="#subNatNat_add_ofNat">subNatNat_add_ofNat</a> (m n k : Nat) :
+    Int.subNatNat m n + Int.ofNat k = Int.subNatNat (m + k) n := by
+  rw [Nat.add_comm m k, subNatNat_add k m n, addComm]
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_add_negSucc" href="#subNatNat_add_negSucc">subNatNat_add_negSucc</a> (m n k : Nat) :
+    Int.subNatNat m n + Int.negSucc k = Int.subNatNat m (n + (k+1)) := by
+  rcases Nat.lt_or_ge n m with hlt | hge
+  · rw [subNatNat_of_ge (Nat.le_of_lt hlt)]
+    show Int.subNatNat (m-n) (k+1) = Int.subNatNat m (n+(k+1))
+    obtain ⟨d, rfl⟩ := Nat.le.dest (Nat.le_of_lt hlt)
+    rw [add_sub_cancel_left,
+        show n+d = d+n from Nat.add_comm n d, show n+(k+1) = (k+1)+n from Nat.add_comm n (k+1),
+        subNatNat_add_add d (k+1) n]
+  · obtain ⟨d, rfl⟩ := Nat.le.dest hge
+    rcases d with _ | d&#x27;
+    · rw [Nat.add_zero, subNatNat_of_ge (Nat.le_refl m), Nat.sub_self]
+      show Int.negSucc k = Int.subNatNat m (m + (k+1))
+      rw [show m+(k+1) = m+k+1 from (Nat.add_assoc m k 1).symm, subNatNat_add_succ m k]
+    · rw [show m+(d&#x27;+1) = m+d&#x27;+1 from (Nat.add_assoc m d&#x27; 1).symm, subNatNat_add_succ m d&#x27;]
+      show Int.negSucc (d&#x27; + k).succ = Int.subNatNat m (m + (d&#x27;+1) + (k+1))
+      rw [show m+(d&#x27;+1)+(k+1) = m + ((d&#x27;+k+1)+1) from by
+            rw [Nat.add_assoc m (d&#x27;+1) (k+1)]
+            apply congrArg (m + ·)
+            rw [Nat.add_assoc d&#x27; 1 (k+1), Nat.add_comm 1 (k+1), ← Nat.add_assoc d&#x27; (k+1) 1,
+                Nat.add_assoc d&#x27; k 1],
+          show m + ((d&#x27;+k+1)+1) = m + (d&#x27;+k+1) + 1 from (Nat.add_assoc m (d&#x27;+k+1) 1).symm,
+          subNatNat_add_succ m (d&#x27;+k+1)]
+<span class="kw">theorem</span> <a class="decl" id="add_assoc" href="#add_assoc">add_assoc</a> (a b c : Int) : a + b + c = a + (b + c) := by
+  cases a with
+  | ofNat p =&gt; cases b with
+    | ofNat q =&gt; cases c with
+      | ofNat r =&gt; show Int.ofNat (p+q+r) = Int.ofNat (p+(q+r)); rw [Nat.add_assoc]
+      | negSucc r =&gt; show Int.subNatNat (p+q) (r+1) = Int.ofNat p + Int.subNatNat q (r+1); rw [subNatNat_add]
+    | negSucc q =&gt; cases c with
+      | ofNat r =&gt;
+        show Int.subNatNat p (q+1) + Int.ofNat r = Int.ofNat p + Int.subNatNat r (q+1)
+        rw [subNatNat_add_ofNat p (q+1) r, subNatNat_add p r (q+1)]
+      | negSucc r =&gt;
+        show Int.subNatNat p (q+1) + Int.negSucc r = Int.ofNat p + Int.negSucc (q + r).succ
+        rw [subNatNat_add_negSucc p (q+1) r]
+        show Int.subNatNat p (q+1+(r+1)) = Int.subNatNat p ((q+r).succ + 1)
+        rw [Nat.add_right_comm q 1 (r+1)]; show Int.subNatNat p (q+(r+1)+1) = Int.subNatNat p ((q+r)+1+1)
+        rw [← Nat.add_assoc q r 1]
+  | negSucc p =&gt; cases b with
+    | ofNat q =&gt; cases c with
+      | ofNat r =&gt;
+        show Int.subNatNat q (p+1) + Int.ofNat r = Int.subNatNat (q+r) (p+1)
+        rw [subNatNat_add_ofNat q (p+1) r]
+      | negSucc r =&gt;
+        show Int.subNatNat q (p+1) + Int.negSucc r = Int.negSucc p + Int.subNatNat q (r+1)
+        rw [subNatNat_add_negSucc q (p+1) r,
+            addComm (Int.negSucc p) (Int.subNatNat q (r+1)), subNatNat_add_negSucc q (r+1) p]
+        show Int.subNatNat q (p+1+(r+1)) = Int.subNatNat q (r+1+(p+1))
+        rw [Nat.add_comm (p+1) (r+1)]
+    | negSucc q =&gt; cases c with
+      | ofNat r =&gt;
+        show Int.subNatNat r ((p+q).succ+1) = Int.negSucc p + Int.subNatNat r (q+1)
+        rw [addComm (Int.negSucc p) (Int.subNatNat r (q+1)), subNatNat_add_negSucc r (q+1) p]
+        show Int.subNatNat r ((p+q).succ+1) = Int.subNatNat r (q+1+(p+1))
+        rw [Nat.add_right_comm q 1 (p+1)]; show Int.subNatNat r ((p+q)+1+1) = Int.subNatNat r (q+(p+1)+1)
+        rw [← Nat.add_assoc q p 1, Nat.add_comm q p]
+      | negSucc r =&gt;
+        show Int.negSucc ((p+q).succ + r).succ = Int.negSucc (p + (q+r).succ).succ
+        rw [show (p+q).succ + r = p + (q+r).succ from by rw [Nat.succ_add, Nat.add_succ, Nat.add_assoc]]
+<span class="kw">theorem</span> <a class="decl" id="add_right_neg" href="#add_right_neg">add_right_neg</a> (a : Int) : a + (-a) = 0 := by
+  cases a with
+  | ofNat n =&gt;
+    cases n with
+    | zero =&gt; rfl
+    | succ k =&gt;
+      show Int.subNatNat (k+1) (k+1) = 0
+      rw [subNatNat_of_ge (Nat.le_refl _), Nat.sub_self]; rfl
+  | negSucc n =&gt;
+    show Int.subNatNat (n+1) (n+1) = 0
+    rw [subNatNat_of_ge (Nat.le_refl _), Nat.sub_self]; rfl
+<span class="kw">theorem</span> <a class="decl" id="add_left_neg" href="#add_left_neg">add_left_neg</a> (a : Int) : (-a) + a = 0 := by
+  rw [addComm]; exact add_right_neg a
+<span class="kw">theorem</span> <a class="decl" id="neg_eq_of_add_eq_zero" href="#neg_eq_of_add_eq_zero">neg_eq_of_add_eq_zero</a> {a b : Int} (h : a + b = 0) : -a = b := by
+  rw [← Int.add_zero (-a), ← h, ← add_assoc, add_left_neg, zero_add]
+<span class="kw">theorem</span> <a class="decl" id="neg_add" href="#neg_add">neg_add</a> (a b : Int) : -(a + b) = -a + -b := by
+  apply neg_eq_of_add_eq_zero
+  rw [add_assoc, addComm (-a) (-b), ← add_assoc b (-b) (-a), add_right_neg, zero_add, add_right_neg]
+<span class="kw">theorem</span> <a class="decl" id="subNatNat_of_lt" href="#subNatNat_of_lt">subNatNat_of_lt</a> {m n : Nat} (h : m &lt; n) : Int.subNatNat m n = -(Int.ofNat (n - m)) := by
+  obtain ⟨d, rfl⟩ := Nat.le.dest h
+  rw [show Int.subNatNat m (m+1+d) = Int.negSucc d from by
+        rw [show m+1+d = m+d+1 from by rw [Nat.add_right_comm m 1 d]]; exact subNatNat_add_succ m d]
+  rw [show (m+1+d) - m = d+1 from by
+        rw [Nat.add_right_comm m 1 d, Nat.add_assoc m d 1, add_sub_cancel_left]]
+  rfl
+<span class="kw">theorem</span> <a class="decl" id="mulComm" href="#mulComm">mulComm</a> (a b : Int) : a * b = b * a := by
+  cases a with
+  | ofNat m =&gt; cases b with
+    | ofNat n =&gt; show Int.ofNat (m * n) = Int.ofNat (n * m); rw [Nat.mul_comm]
+    | negSucc n =&gt; show Int.negOfNat (m * n.succ) = Int.negOfNat (n.succ * m); rw [Nat.mul_comm]
+  | negSucc m =&gt; cases b with
+    | ofNat n =&gt; show Int.negOfNat (m.succ * n) = Int.negOfNat (n * m.succ); rw [Nat.mul_comm]
+    | negSucc n =&gt; show Int.ofNat (m.succ * n.succ) = Int.ofNat (n.succ * m.succ); rw [Nat.mul_comm]
+<span class="kw">theorem</span> <a class="decl" id="zero_mul" href="#zero_mul">zero_mul</a> (a : Int) : 0 * a = 0 := by
+  cases a with
+  | ofNat n =&gt; show Int.ofNat (0 * n) = Int.ofNat 0; rw [Nat.zero_mul]
+  | negSucc n =&gt; show Int.negOfNat (0 * n.succ) = (0:Int); rw [Nat.zero_mul]; rfl
+<span class="kw">theorem</span> <a class="decl" id="mul_zero" href="#mul_zero">mul_zero</a> (a : Int) : a * 0 = 0 := by rw [mulComm]; exact zero_mul a
+<span class="kw">theorem</span> <a class="decl" id="mul_one" href="#mul_one">mul_one</a> (a : Int) : a * 1 = a := by
+  cases a with
+  | ofNat n =&gt; show Int.ofNat (n * 1) = Int.ofNat n; rw [Nat.mul_one]
+  | negSucc n =&gt; show Int.negOfNat (n.succ * 1) = Int.negSucc n; rw [Nat.mul_one]; rfl
+<span class="kw">theorem</span> <a class="decl" id="one_mul" href="#one_mul">one_mul</a> (a : Int) : 1 * a = a := by rw [mulComm]; exact mul_one a
+<span class="kw">theorem</span> <a class="decl" id="neg_mul" href="#neg_mul">neg_mul</a> (a b : Int) : (-a) * b = -(a * b) := by
+  cases a with
+  | ofNat m =&gt;
+    cases m with
+    | zero =&gt; show (0:Int) * b = -((0:Int) * b); rw [zero_mul]; rfl
+    | succ k =&gt;
+      cases b with
+      | ofNat n =&gt; show Int.negOfNat ((k+1) * n) = -(Int.ofNat ((k+1)*n)); rw [Int.negOfNat_eq]
+      | negSucc n =&gt; show Int.ofNat ((k+1) * n.succ) = -(Int.negOfNat ((k+1) * n.succ)); rw [Int.negOfNat_eq, Int.neg_neg]
+  | negSucc m =&gt;
+    cases b with
+    | ofNat n =&gt; show Int.ofNat (m.succ * n) = -(Int.negOfNat (m.succ * n)); rw [Int.negOfNat_eq, Int.neg_neg]
+    | negSucc n =&gt; show Int.negOfNat (m.succ * n.succ) = -(Int.ofNat (m.succ * n.succ)); rw [Int.negOfNat_eq]
+<span class="kw">theorem</span> <a class="decl" id="mul_neg" href="#mul_neg">mul_neg</a> (a b : Int) : a * (-b) = -(a * b) := by rw [mulComm a (-b), neg_mul, mulComm]
+<span class="kw">theorem</span> <a class="decl" id="nat_mul_sub" href="#nat_mul_sub">nat_mul_sub</a> (c m n : Nat) (h : n ≤ m) : c * (m - n) = c * m - c * n := by
+  obtain ⟨d, rfl⟩ := Nat.le.dest h
+  rw [add_sub_cancel_left n d, Nat.left_distrib c n d, add_sub_cancel_left (c*n) (c*d)]
+<span class="kw">theorem</span> <a class="decl" id="ofNat_mul_subNatNat" href="#ofNat_mul_subNatNat">ofNat_mul_subNatNat</a> (c m n : Nat) :
+    Int.ofNat c * Int.subNatNat m n = Int.subNatNat (c*m) (c*n) := by
+  cases c with
+  | zero =&gt; rw [show Int.ofNat 0 = (0:Int) from rfl, zero_mul, Nat.zero_mul, Nat.zero_mul]; rfl
+  | succ c&#x27; =&gt;
+    rcases Nat.lt_or_ge n m with hlt | hge
+    · rw [subNatNat_of_ge (Nat.le_of_lt hlt),
+          subNatNat_of_ge (Nat.mul_le_mul_left (c&#x27;+1) (Nat.le_of_lt hlt))]
+      show Int.ofNat ((c&#x27;+1) * (m - n)) = Int.ofNat ((c&#x27;+1)*m - (c&#x27;+1)*n)
+      rw [nat_mul_sub (c&#x27;+1) m n (Nat.le_of_lt hlt)]
+    · rcases Nat.eq_or_lt_of_le hge with heq | hlt
+      · rw [← heq, subNatNat_of_ge (Nat.le_refl m), Nat.sub_self,
+            subNatNat_of_ge (Nat.le_refl ((c&#x27;+1)*m)), Nat.sub_self]; rfl
+      · have hmul : (c&#x27;+1)*m &lt; (c&#x27;+1)*n := Nat.mul_lt_mul_of_pos_left hlt (Nat.succ_pos c&#x27;)
+        rw [subNatNat_of_lt hlt, subNatNat_of_lt hmul, mul_neg]
+        show -(Int.ofNat ((c&#x27;+1) * (n - m))) = -(Int.ofNat ((c&#x27;+1)*n - (c&#x27;+1)*m))
+        rw [nat_mul_sub (c&#x27;+1) n m (Nat.le_of_lt hlt)]
+<span class="kw">theorem</span> <a class="decl" id="ofNat_mul_ofNat" href="#ofNat_mul_ofNat">ofNat_mul_ofNat</a> (p q : Nat) : Int.ofNat p * Int.ofNat q = Int.ofNat (p*q) := rfl
+<span class="kw">theorem</span> <a class="decl" id="ofNat_mul_negSucc" href="#ofNat_mul_negSucc">ofNat_mul_negSucc</a> (p q : Nat) : Int.ofNat p * Int.negSucc q = -(Int.ofNat (p*(q+1))) := by
+  rw [show Int.negSucc q = -(Int.ofNat (q+1)) from rfl, mul_neg]; rfl
+<span class="kw">theorem</span> <a class="decl" id="ofNat_add_neg_ofNat" href="#ofNat_add_neg_ofNat">ofNat_add_neg_ofNat</a> (a b : Nat) : Int.ofNat a + -(Int.ofNat b) = Int.subNatNat a b := by
+  cases b with
+  | zero =&gt; show Int.ofNat a + 0 = Int.subNatNat a 0; rw [Int.add_zero, subNatNat_of_ge (Nat.zero_le a), Nat.sub_zero]
+  | succ k =&gt; show Int.ofNat a + Int.negSucc k = Int.subNatNat a (k+1); rfl
+<span class="kw">theorem</span> <a class="decl" id="neg_ofNat_add_ofNat" href="#neg_ofNat_add_ofNat">neg_ofNat_add_ofNat</a> (a b : Nat) : -(Int.ofNat a) + Int.ofNat b = Int.subNatNat b a := by
+  rw [addComm, ofNat_add_neg_ofNat]
+<span class="kw">theorem</span> <a class="decl" id="neg_ofNat_add_neg_ofNat" href="#neg_ofNat_add_neg_ofNat">neg_ofNat_add_neg_ofNat</a> (a b : Nat) :
+    -(Int.ofNat a) + -(Int.ofNat b) = -(Int.ofNat (a + b)) := by
+  rw [← neg_add]; rfl
+<span class="kw">theorem</span> <a class="decl" id="ofNat_mul_add" href="#ofNat_mul_add">ofNat_mul_add</a> (p : Nat) (b c : Int) :
+    Int.ofNat p * (b + c) = Int.ofNat p * b + Int.ofNat p * c := by
+  cases b with
+  | ofNat q =&gt; cases c with
+    | ofNat r =&gt;
+      show Int.ofNat (p*(q+r)) = Int.ofNat (p*q) + Int.ofNat (p*r)
+      rw [Nat.left_distrib]; rfl
+    | negSucc r =&gt;
+      show Int.ofNat p * Int.subNatNat q (r+1) = Int.ofNat (p*q) + Int.ofNat p * Int.negSucc r
+      rw [ofNat_mul_subNatNat p q (r+1), ofNat_mul_negSucc p r, ofNat_add_neg_ofNat]
+  | negSucc q =&gt; cases c with
+    | ofNat r =&gt;
+      show Int.ofNat p * Int.subNatNat r (q+1) = Int.ofNat p * Int.negSucc q + Int.ofNat (p*r)
+      rw [ofNat_mul_subNatNat p r (q+1), ofNat_mul_negSucc p q,
+          addComm (-(Int.ofNat (p*(q+1)))) (Int.ofNat (p*r)), ofNat_add_neg_ofNat]
+    | negSucc r =&gt;
+      show Int.ofNat p * Int.negSucc (q + r).succ = Int.ofNat p * Int.negSucc q + Int.ofNat p * Int.negSucc r
+      rw [ofNat_mul_negSucc p (q+r+1), ofNat_mul_negSucc p q, ofNat_mul_negSucc p r,
+          neg_ofNat_add_neg_ofNat]
+      show -(Int.ofNat (p * ((q+r)+1+1))) = -(Int.ofNat (p*(q+1) + p*(r+1)))
+      rw [← Nat.left_distrib p (q+1) (r+1)]
+      show -(Int.ofNat (p * ((q+r)+1+1))) = -(Int.ofNat (p*((q+1)+(r+1))))
+      rw [show (q+1)+(r+1) = (q+r)+1+1 from by
+            rw [← Nat.add_assoc (q+1) r 1, Nat.add_right_comm q 1 r]]
+<span class="kw">theorem</span> <a class="decl" id="mul_add" href="#mul_add">mul_add</a> (a b c : Int) : a * (b + c) = a * b + a * c := by
+  cases a with
+  | ofNat p =&gt; exact ofNat_mul_add p b c
+  | negSucc p =&gt;
+    show (-(Int.ofNat (p+1))) * (b + c) = (-(Int.ofNat (p+1))) * b + (-(Int.ofNat (p+1))) * c
+    rw [neg_mul, neg_mul, neg_mul, ofNat_mul_add (p+1) b c, neg_add]
+<span class="kw">theorem</span> <a class="decl" id="add_mul" href="#add_mul">add_mul</a> (a b c : Int) : (a + b) * c = a * c + b * c := by
+  rw [mulComm (a+b) c, mul_add, mulComm c a, mulComm c b]
+<span class="kw">theorem</span> <a class="decl" id="nat_mul_assoc" href="#nat_mul_assoc">nat_mul_assoc</a> (a b c : Nat) : a * b * c = a * (b * c) := by
+  induction c with
+  | zero =&gt; rfl
+  | succ d ih =&gt; rw [Nat.mul_succ, Nat.mul_succ, Nat.left_distrib, ih]
+<span class="kw">theorem</span> <a class="decl" id="mul_assoc" href="#mul_assoc">mul_assoc</a> (a b c : Int) : a * b * c = a * (b * c) := by
+  cases a with
+  | ofNat p =&gt; cases b with
+    | ofNat q =&gt; cases c with
+      | ofNat r =&gt; show Int.ofNat (p*q*r) = Int.ofNat (p*(q*r)); rw [nat_mul_assoc]
+      | negSucc r =&gt;
+        show Int.ofNat (p*q) * Int.negSucc r = Int.ofNat p * (Int.ofNat q * Int.negSucc r)
+        rw [ofNat_mul_negSucc (p*q) r, ofNat_mul_negSucc q r, mul_neg, ofNat_mul_ofNat]
+        show -(Int.ofNat (p*q*(r+1))) = -(Int.ofNat (p*(q*(r+1)))); rw [nat_mul_assoc]
+    | negSucc q =&gt; cases c with
+      | ofNat r =&gt;
+        show Int.ofNat p * Int.negSucc q * Int.ofNat r = Int.ofNat p * (Int.negSucc q * Int.ofNat r)
+        rw [ofNat_mul_negSucc p q, mulComm (Int.negSucc q) (Int.ofNat r), ofNat_mul_negSucc r q,
+            neg_mul, mul_neg, ofNat_mul_ofNat]
+        show -(Int.ofNat (p*(q+1)*r)) = -(Int.ofNat (p*(r*(q+1)))); rw [nat_mul_assoc, Nat.mul_comm r (q+1)]
+      | negSucc r =&gt;
+        show Int.ofNat p * Int.negSucc q * Int.negSucc r = Int.ofNat p * (Int.negSucc q * Int.negSucc r)
+        rw [ofNat_mul_negSucc p q, neg_mul]
+        show -(Int.ofNat (p*(q+1)) * Int.negSucc r) = Int.ofNat p * (Int.negSucc q * Int.negSucc r)
+        rw [ofNat_mul_negSucc (p*(q+1)) r]
+        show -(-(Int.ofNat (p*(q+1)*(r+1)))) = Int.ofNat p * (Int.negSucc q * Int.negSucc r)
+        rw [Int.neg_neg]
+        show Int.ofNat (p*(q+1)*(r+1)) = Int.ofNat p * Int.ofNat ((q+1)*(r+1))
+        rw [ofNat_mul_ofNat, nat_mul_assoc]
+  | negSucc p =&gt;
+    show (-(Int.ofNat (p+1))) * b * c = (-(Int.ofNat (p+1))) * (b * c)
+    rw [neg_mul, neg_mul, neg_mul]
+    apply congrArg Neg.neg
+    cases b with
+    | ofNat q =&gt; cases c with
+      | ofNat r =&gt; show Int.ofNat ((p+1)*q*r) = Int.ofNat ((p+1)*(q*r)); rw [nat_mul_assoc]
+      | negSucc r =&gt;
+        show Int.ofNat ((p+1)*q) * Int.negSucc r = Int.ofNat (p+1) * (Int.ofNat q * Int.negSucc r)
+        rw [ofNat_mul_negSucc ((p+1)*q) r, ofNat_mul_negSucc q r, mul_neg, ofNat_mul_ofNat]
+        show -(Int.ofNat ((p+1)*q*(r+1))) = -(Int.ofNat ((p+1)*(q*(r+1)))); rw [nat_mul_assoc]
+    | negSucc q =&gt; cases c with
+      | ofNat r =&gt;
+        show Int.ofNat (p+1) * Int.negSucc q * Int.ofNat r = Int.ofNat (p+1) * (Int.negSucc q * Int.ofNat r)
+        rw [ofNat_mul_negSucc (p+1) q, mulComm (Int.negSucc q) (Int.ofNat r), ofNat_mul_negSucc r q,
+            neg_mul, mul_neg, ofNat_mul_ofNat]
+        show -(Int.ofNat ((p+1)*(q+1)*r)) = -(Int.ofNat ((p+1)*(r*(q+1)))); rw [nat_mul_assoc, Nat.mul_comm r (q+1)]
+      | negSucc r =&gt;
+        show Int.ofNat (p+1) * Int.negSucc q * Int.negSucc r = Int.ofNat (p+1) * (Int.negSucc q * Int.negSucc r)
+        rw [ofNat_mul_negSucc (p+1) q, neg_mul, ofNat_mul_negSucc ((p+1)*(q+1)) r, Int.neg_neg]
+        show Int.ofNat ((p+1)*(q+1)*(r+1)) = Int.ofNat (p+1) * Int.ofNat ((q+1)*(r+1))
+        rw [ofNat_mul_ofNat, nat_mul_assoc]
+<span class="kw">theorem</span> <a class="decl" id="mul_neg_one" href="#mul_neg_one">mul_neg_one</a> (a : Int) : a * (-1) = -a := by rw [mul_neg, mul_one]
+
+<span class="kw">theorem</span> <a class="decl" id="sub_zero" href="#sub_zero">sub_zero</a> (a : Int) : a - 0 = a := by
+  rw [Int.sub_eq_add_neg]; show a + (-0) = a; rw [show (-0:Int) = 0 from rfl, Int.add_zero]
+<span class="kw">theorem</span> <a class="decl" id="sub_add_cancel" href="#sub_add_cancel">sub_add_cancel</a> (a b : Int) : a - b + b = a := by
+  rw [Int.sub_eq_add_neg, add_assoc, add_left_neg, Int.add_zero]
+<span class="kw">theorem</span> <a class="decl" id="add_sub_cancel_right" href="#add_sub_cancel_right">add_sub_cancel_right</a> (a b : Int) : a + b - b = a := by
+  rw [Int.sub_eq_add_neg, add_assoc, add_right_neg, Int.add_zero]
+<span class="kw">theorem</span> <a class="decl" id="neg_sub" href="#neg_sub">neg_sub</a> (a b : Int) : -(a - b) = b - a := by
+  rw [Int.sub_eq_add_neg, Int.sub_eq_add_neg, neg_add, Int.neg_neg, addComm]
+<span class="kw">theorem</span> <a class="decl" id="mul_sub" href="#mul_sub">mul_sub</a> (a b c : Int) : a * (b - c) = a * b - a * c := by
+  rw [Int.sub_eq_add_neg, Int.sub_eq_add_neg, mul_add, mul_neg]
+<span class="kw">theorem</span> <a class="decl" id="sub_mul" href="#sub_mul">sub_mul</a> (a b c : Int) : (a - b) * c = a * c - b * c := by
+  rw [Int.sub_eq_add_neg, Int.sub_eq_add_neg, add_mul, neg_mul]
+<span class="kw">theorem</span> <a class="decl" id="sub_sub" href="#sub_sub">sub_sub</a> (a b c : Int) : a - b - c = a - (b + c) := by
+  rw [Int.sub_eq_add_neg, Int.sub_eq_add_neg, Int.sub_eq_add_neg, add_assoc, neg_add]
+
+<span class="kw">theorem</span> <a class="decl" id="two_mul" href="#two_mul">two_mul</a> (a : Int) : 2 * a = a + a := by
+  rw [show (2:Int) = 1 + 1 from rfl, add_mul, one_mul]
+<span class="kw">theorem</span> <a class="decl" id="mul_eq_zero" href="#mul_eq_zero">mul_eq_zero</a> {a b : Int} : a * b = 0 ↔ a = 0 ∨ b = 0 := by
+  constructor
+  · intro h
+    cases a with
+    | ofNat m =&gt; cases m with
+      | zero =&gt; exact Or.inl rfl
+      | succ k =&gt; cases b with
+        | ofNat n =&gt; cases n with
+          | zero =&gt; exact Or.inr rfl
+          | succ j =&gt; exact absurd h (by
+              show Int.ofNat ((k+1)*(j+1)) ≠ 0
+              rw [show (k+1)*(j+1) = k*(j+1)+(j+1) from Nat.succ_mul k (j+1)]
+              intro hc; exact Nat.noConfusion (Int.ofNat.inj hc))
+        | negSucc n =&gt; exact absurd h (by
+            show Int.negOfNat ((k+1)*(n+1)) ≠ 0
+            rw [show (k+1)*(n+1) = k*(n+1)+(n+1) from Nat.succ_mul k (n+1)]
+            intro hc; exact Int.noConfusion hc)
+    | negSucc m =&gt; cases b with
+      | ofNat n =&gt; cases n with
+        | zero =&gt; exact Or.inr rfl
+        | succ j =&gt; exact absurd h (by
+            show Int.negOfNat ((m+1)*(j+1)) ≠ 0
+            rw [show (m+1)*(j+1) = m*(j+1)+(j+1) from Nat.succ_mul m (j+1)]
+            intro hc; exact Int.noConfusion hc)
+      | negSucc n =&gt; exact absurd h (by
+          show Int.ofNat ((m+1)*(n+1)) ≠ 0
+          rw [show (m+1)*(n+1) = m*(n+1)+(n+1) from Nat.succ_mul m (n+1)]
+          intro hc; exact Nat.noConfusion (Int.ofNat.inj hc))
+  · intro h; cases h with
+    | inl ha =&gt; rw [ha, zero_mul]
+    | inr hb =&gt; rw [hb, mul_zero]
+
+end Foam.FInt</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

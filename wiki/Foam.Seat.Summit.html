@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam.Seat.Summit</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam.Seat.Summit</h1></header>
+<div class="imports">grasp: <a href="Foam.Seat.Closure.html">Foam.Seat.Closure</a></div><pre class="src">import <a href="Foam.Seat.Closure.html">Foam.Seat.Closure</a>
+
+namespace Foam
+
+<span class="kw">def</span> <a class="decl" id="Ascends" href="#Ascends">Ascends</a> (c : Nat → Nat) : Prop := ∀ n, c n ≤ c (n + 1)
+
+<span class="kw">def</span> <a class="decl" id="Climbs" href="#Climbs">Climbs</a> (c : Nat → Nat) : Prop := ∀ n, c n &lt; c (n + 1)
+
+<span class="kw">def</span> <a class="decl" id="Rests" href="#Rests">Rests</a> (c : Nat → Nat) (n : Nat) : Prop := c (n + 1) = c n
+
+<span class="kw">def</span> <a class="decl" id="Seated" href="#Seated">Seated</a> (c : Nat → Nat) (n : Nat) : Prop := ∀ m, n ≤ m → c m = c n
+
+<span class="kw">theorem</span> <a class="decl" id="ascends_le_add" href="#ascends_le_add">ascends_le_add</a> {c : Nat → Nat} (h : Ascends c) :
+    ∀ (a k : Nat), c a ≤ c (a + k)
+  | _, 0 =&gt; Nat.le_refl _
+  | a, k + 1 =&gt; Nat.le_trans (ascends_le_add h a k) (h (a + k))
+
+<span class="kw">theorem</span> <a class="decl" id="ascends_le" href="#ascends_le">ascends_le</a> {c : Nat → Nat} (h : Ascends c) {a b : Nat} (hab : a ≤ b) :
+    c a ≤ c b := by
+  obtain ⟨k, rfl⟩ := Nat.le.dest hab
+  exact ascends_le_add h a k
+
+<span class="kw">theorem</span> <a class="decl" id="climbs_ascends" href="#climbs_ascends">climbs_ascends</a> {c : Nat → Nat} (h : Climbs c) : Ascends c :=
+  fun n =&gt; Nat.le_of_lt (h n)
+
+<span class="kw">theorem</span> <a class="decl" id="climbs_add_le" href="#climbs_add_le">climbs_add_le</a> {c : Nat → Nat} (h : Climbs c) :
+    ∀ n, c 0 + n ≤ c n
+  | 0 =&gt; Nat.le_refl _
+  | n + 1 =&gt; Nat.lt_of_le_of_lt (climbs_add_le h n) (h n)
+
+<span class="kw">theorem</span> <a class="decl" id="climbs_escape" href="#climbs_escape">climbs_escape</a> {c : Nat → Nat} (h : Climbs c) (B : Nat) :
+    ∃ n, B &lt; c n :=
+  ⟨B + 1, Nat.lt_of_lt_of_le (Nat.lt_succ_self B)
+    (Nat.le_trans (Nat.le_add_left (B + 1) (c 0)) (climbs_add_le h (B + 1)))⟩
+
+<span class="kw">theorem</span> <a class="decl" id="climbs_never_rests" href="#climbs_never_rests">climbs_never_rests</a> {c : Nat → Nat} (h : Climbs c) (n : Nat) :
+    ¬ Rests c n :=
+  fun hr =&gt; Nat.lt_irrefl (c n) (hr ▸ h n)
+
+<span class="kw">theorem</span> <a class="decl" id="climbs_seg_le" href="#climbs_seg_le">climbs_seg_le</a> {c : Nat → Nat} :
+    ∀ k, (∀ i, i &lt; k → c i &lt; c (i + 1)) → c 0 + k ≤ c k
+  | 0, _ =&gt; Nat.le_refl _
+  | k + 1, h =&gt;
+      Nat.lt_of_le_of_lt (climbs_seg_le k (fun i hi =&gt; h i (Nat.lt_succ_of_lt hi)))
+        (h k (Nat.lt_succ_self k))
+
+<span class="kw">theorem</span> <a class="decl" id="rests_or_seg_climbs" href="#rests_or_seg_climbs">rests_or_seg_climbs</a> {c : Nat → Nat} (hc : Ascends c) :
+    ∀ k, (∃ i, Rests c i) ∨ (∀ i, i &lt; k → c i &lt; c (i + 1))
+  | 0 =&gt; Or.inr (fun i hi =&gt; absurd hi (Nat.not_lt_zero i))
+  | k + 1 =&gt;
+    match rests_or_seg_climbs hc k with
+    | Or.inl h =&gt; Or.inl h
+    | Or.inr h =&gt;
+      match Nat.decEq (c (k + 1)) (c k) with
+      | isTrue heq =&gt; Or.inl ⟨k, heq⟩
+      | isFalse hne =&gt;
+        Or.inr (fun i hi =&gt;
+          match Nat.lt_or_ge i k with
+          | Or.inl hik =&gt; h i hik
+          | Or.inr hki =&gt; by
+              have hik : i = k := Nat.le_antisymm (Nat.le_of_lt_succ hi) hki
+              subst hik
+              exact Nat.lt_of_le_of_ne (hc i) (fun e =&gt; hne e.symm))
+
+<span class="kw">theorem</span> <a class="decl" id="bounded_rests" href="#bounded_rests">bounded_rests</a> {c : Nat → Nat} (hc : Ascends c) (B : Nat)
+    (hB : ∀ n, c n ≤ B) : ∃ n, Rests c n :=
+  match rests_or_seg_climbs hc (B + 1) with
+  | Or.inl h =&gt; h
+  | Or.inr h =&gt;
+      absurd
+        (Nat.le_trans
+          (Nat.le_trans (Nat.le_add_left (B + 1) (c 0)) (climbs_seg_le (B + 1) h))
+          (hB (B + 1)))
+        (Nat.not_succ_le_self B)
+
+<span class="kw">theorem</span> <a class="decl" id="rests_forever_of_seated" href="#rests_forever_of_seated">rests_forever_of_seated</a> {c : Nat → Nat} {n : Nat} (h : Seated c n) :
+    ∀ m, n ≤ m → Rests c m :=
+  fun m hm =&gt; (h (m + 1) (Nat.le_succ_of_le hm)).trans (h m hm).symm
+
+<span class="kw">theorem</span> <a class="decl" id="seated_of_rests_forever" href="#seated_of_rests_forever">seated_of_rests_forever</a> {c : Nat → Nat} {n : Nat}
+    (h : ∀ m, n ≤ m → Rests c m) : Seated c n := by
+  intro m hm
+  induction m with
+  | zero =&gt;
+      have hn : n = 0 := Nat.eq_zero_of_le_zero hm
+      subst hn
+      rfl
+  | succ k ih =&gt;
+      match Nat.eq_or_lt_of_le hm with
+      | Or.inl heq =&gt; rw [heq]
+      | Or.inr hlt =&gt;
+          have hnk : n ≤ k := Nat.le_of_lt_succ hlt
+          exact (h k hnk).trans (ih hnk)
+
+<span class="kw">theorem</span> <a class="decl" id="seated_iff_rests_forever" href="#seated_iff_rests_forever">seated_iff_rests_forever</a> {c : Nat → Nat} {n : Nat} :
+    Seated c n ↔ ∀ m, n ≤ m → Rests c m :=
+  ⟨rests_forever_of_seated, seated_of_rests_forever⟩
+
+<span class="kw">theorem</span> <a class="decl" id="seated_never_climbs" href="#seated_never_climbs">seated_never_climbs</a> {c : Nat → Nat} {n : Nat} (h : Seated c n) :
+    ¬ Climbs c :=
+  fun hcl =&gt; climbs_never_rests hcl n (rests_forever_of_seated h n (Nat.le_refl n))
+
+<span class="kw">theorem</span> <a class="decl" id="iterStep_add" href="#iterStep_add">iterStep_add</a> (f : GInt → GInt) :
+    ∀ (a b : Nat) (z : GInt), iterStep (a + b) f z = iterStep b f (iterStep a f z)
+  | _, 0, _ =&gt; rfl
+  | a, b + 1, z =&gt; congrArg f (iterStep_add f a b z)
+
+<span class="kw">theorem</span> <a class="decl" id="closes_laps" href="#closes_laps">closes_laps</a> (f : GInt → GInt) (k : Nat) (h : Closes f k) :
+    ∀ m, Closes f (k * m)
+  | 0 =&gt; fun _ =&gt; rfl
+  | m + 1 =&gt; fun z =&gt; by
+      show iterStep (k * m + k) f z = z
+      rw [iterStep_add f (k * m) k z, closes_laps f k h m z, h z]
+
+<span class="kw">theorem</span> <a class="decl" id="lap_carries" href="#lap_carries">lap_carries</a> (f : GInt → GInt) (k : Nat) (h : Closes f k)
+    (m r : Nat) (z : GInt) :
+    iterStep (k * m + r) f z = iterStep r f z := by
+  rw [iterStep_add f (k * m) r z, closes_laps f k h m z]
+
+<span class="kw">theorem</span> <a class="decl" id="rot_lap_carries" href="#rot_lap_carries">rot_lap_carries</a> (m r : Nat) (z : GInt) :
+    iterStep (4 * m + r) GInt.rot z = iterStep r GInt.rot z :=
+  lap_carries GInt.rot 4 spec_closes_four m r z
+
+<span class="receipt">/-- info: &#x27;Foam.ascends_le&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms ascends_le</span>
+
+<span class="receipt">/-- info: &#x27;Foam.climbs_ascends&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms climbs_ascends</span>
+
+<span class="receipt">/-- info: &#x27;Foam.climbs_escape&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms climbs_escape</span>
+
+<span class="receipt">/-- info: &#x27;Foam.climbs_never_rests&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms climbs_never_rests</span>
+
+<span class="receipt">/-- info: &#x27;Foam.bounded_rests&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms bounded_rests</span>
+
+<span class="receipt">/-- info: &#x27;Foam.seated_iff_rests_forever&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms seated_iff_rests_forever</span>
+
+<span class="receipt">/-- info: &#x27;Foam.seated_never_climbs&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms seated_never_climbs</span>
+
+<span class="receipt">/-- info: &#x27;Foam.iterStep_add&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms iterStep_add</span>
+
+<span class="receipt">/-- info: &#x27;Foam.closes_laps&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms closes_laps</span>
+
+<span class="receipt">/-- info: &#x27;Foam.lap_carries&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms lap_carries</span>
+
+<span class="receipt">/-- info: &#x27;Foam.rot_lap_carries&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms rot_lap_carries</span>
+
+end Foam</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

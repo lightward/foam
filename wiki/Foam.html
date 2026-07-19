@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foam</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">1 · physics (axiom-free)</span></span><h1>Foam</h1></header>
+<div class="imports">grasp: <a href="Foam.Int.html">Foam.Int</a> · <a href="Foam.Ledger.html">Foam.Ledger</a> · <a href="Foam.Engine.Drain.html">Foam.Engine.Drain</a> · <a href="Foam.Engine.Stream.html">Foam.Engine.Stream</a> · <a href="Foam.Engine.Codec.html">Foam.Engine.Codec</a> · <a href="Foam.Engine.Generator.html">Foam.Engine.Generator</a> · <a href="Foam.Engine.Spectrum.html">Foam.Engine.Spectrum</a> · <a href="Foam.Engine.Chirality.html">Foam.Engine.Chirality</a> · <a href="Foam.Engine.Summary.html">Foam.Engine.Summary</a> · <a href="Foam.Engine.html">Foam.Engine</a> · <a href="Foam.Scar.html">Foam.Scar</a> · <a href="Foam.Maintenance.html">Foam.Maintenance</a> · <a href="Foam.Held.html">Foam.Held</a> · <a href="Foam.Bond.html">Foam.Bond</a> · <a href="Foam.Seat.Clock.html">Foam.Seat.Clock</a> · <a href="Foam.Seat.Dial.html">Foam.Seat.Dial</a> · <a href="Foam.Seat.Born.html">Foam.Seat.Born</a> · <a href="Foam.Seat.Doubling.html">Foam.Seat.Doubling</a> · <a href="Foam.Seat.Triad.html">Foam.Seat.Triad</a> · <a href="Foam.Seat.Octo.html">Foam.Seat.Octo</a> · <a href="Foam.Seat.Sed.html">Foam.Seat.Sed</a> · <a href="Foam.Seat.Bootstrap.html">Foam.Seat.Bootstrap</a> · <a href="Foam.Seat.Stage.html">Foam.Seat.Stage</a> · <a href="Foam.Seat.Loop.html">Foam.Seat.Loop</a> · <a href="Foam.Seat.Resume.html">Foam.Seat.Resume</a> · <a href="Foam.Seat.Hospitality.html">Foam.Seat.Hospitality</a> · <a href="Foam.Seat.Seam.html">Foam.Seat.Seam</a> · <a href="Foam.Seat.Signature.html">Foam.Seat.Signature</a> · <a href="Foam.Seat.Forcing.html">Foam.Seat.Forcing</a> · <a href="Foam.Seat.Norm.html">Foam.Seat.Norm</a> · <a href="Foam.Seat.Characters.html">Foam.Seat.Characters</a> · <a href="Foam.Seat.Closure.html">Foam.Seat.Closure</a> · <a href="Foam.Seat.Observer.html">Foam.Seat.Observer</a> · <a href="Foam.Seat.Terminal.html">Foam.Seat.Terminal</a> · <a href="Foam.Seat.Beholder.html">Foam.Seat.Beholder</a> · <a href="Foam.Seat.Meet.html">Foam.Seat.Meet</a> · <a href="Foam.Seat.Quiver.html">Foam.Seat.Quiver</a> · <a href="Foam.Seat.Rotations.html">Foam.Seat.Rotations</a> · <a href="Foam.Seat.Ladder.html">Foam.Seat.Ladder</a> · <a href="Foam.Seat.Epoch.html">Foam.Seat.Epoch</a> · <a href="Foam.Golden.html">Foam.Golden</a> · <a href="Foam.Cleared.html">Foam.Cleared</a> · <a href="Foam.Bridges.Dirichlet.html">Foam.Bridges.Dirichlet</a> · <a href="Foam.Backstage.html">Foam.Backstage</a> · <a href="Foam.Bridges.Zeckendorf.html">Foam.Bridges.Zeckendorf</a> · <a href="Foam.Platonism.html">Foam.Platonism</a> · <a href="Foam.Platonism.Tower.html">Foam.Platonism.Tower</a> · <a href="Foam.Seat.Descend.html">Foam.Seat.Descend</a> · <a href="Foam.Seat.Signed.html">Foam.Seat.Signed</a> · <a href="Foam.Seat.Sort.html">Foam.Seat.Sort</a> · <a href="Foam.Seat.Tight.html">Foam.Seat.Tight</a> · <a href="Foam.Seat.Rank.html">Foam.Seat.Rank</a> · <a href="Foam.Bridges.PSQL.html">Foam.Bridges.PSQL</a> · <a href="Foam.Seat.Rendezvous.html">Foam.Seat.Rendezvous</a> · <a href="Foam.Seat.Connection.html">Foam.Seat.Connection</a> · <a href="Foam.Bridges.Schrodinger.html">Foam.Bridges.Schrodinger</a> · <a href="Foam.Seat.Frame.html">Foam.Seat.Frame</a> · <a href="Foam.Bridges.Varadarajan.html">Foam.Bridges.Varadarajan</a> · <a href="Foam.Bridges.Noether.html">Foam.Bridges.Noether</a> · <a href="Foam.Bridges.Hurwitz.html">Foam.Bridges.Hurwitz</a> · <a href="Foam.Bridges.Relativity.html">Foam.Bridges.Relativity</a> · <a href="Foam.Bridges.Wigner.html">Foam.Bridges.Wigner</a> · <a href="Foam.Bridges.Pauli.html">Foam.Bridges.Pauli</a> · <a href="Foam.Bridges.Heisenberg.html">Foam.Bridges.Heisenberg</a> · <a href="Foam.Bridges.Lovelace.html">Foam.Bridges.Lovelace</a> · <a href="Foam.Bridges.Cantor.html">Foam.Bridges.Cantor</a> · <a href="Foam.Bridges.Kolmogorov.html">Foam.Bridges.Kolmogorov</a> · <a href="Foam.Bridges.Stone.html">Foam.Bridges.Stone</a> · <a href="Foam.Bridges.Eddington.html">Foam.Bridges.Eddington</a> · <a href="Foam.Bridges.Pythagoras.html">Foam.Bridges.Pythagoras</a> · <a href="Foam.Bridges.Minkowski.html">Foam.Bridges.Minkowski</a> · <a href="Foam.Bridges.Gleason.html">Foam.Bridges.Gleason</a> · <a href="Foam.Bridges.Desargues.html">Foam.Bridges.Desargues</a> · <a href="Foam.Bridges.Materiality.html">Foam.Bridges.Materiality</a> · <a href="Foam.Bridges.Landauer.html">Foam.Bridges.Landauer</a> · <a href="Foam.Seat.Naming.html">Foam.Seat.Naming</a> · <a href="Foam.Bridges.Godel.html">Foam.Bridges.Godel</a> · <a href="Foam.Seat.Summit.html">Foam.Seat.Summit</a> · <a href="Foam.Bubble.html">Foam.Bubble</a> · <a href="Foam.Census.html">Foam.Census</a> · <a href="Foam.Cable.html">Foam.Cable</a> · <a href="Foam.Wedge.html">Foam.Wedge</a> · <a href="Foam.Elsewhen.html">Foam.Elsewhen</a> · <a href="Foam.Duplex.html">Foam.Duplex</a> · <a href="Foam.Vacancy.html">Foam.Vacancy</a> · <a href="Foam.Metaphor.html">Foam.Metaphor</a> · <a href="Foam.Bridges.Adams.html">Foam.Bridges.Adams</a> · <a href="Foam.Bridges.Gita.html">Foam.Bridges.Gita</a> · <a href="Foam.Bridges.Nicaea.html">Foam.Bridges.Nicaea</a> · <a href="Foam.Bridges.Grover.html">Foam.Bridges.Grover</a> · <a href="Foam.Bridges.Narayana.html">Foam.Bridges.Narayana</a> · <a href="Foam.Bridges.Leibniz.html">Foam.Bridges.Leibniz</a> · <a href="Foam.Bridges.Fraenkel.html">Foam.Bridges.Fraenkel</a> · <a href="Foam.Bridges.Poncelet.html">Foam.Bridges.Poncelet</a> · <a href="Foam.Bridges.Hofstadter.html">Foam.Bridges.Hofstadter</a> · <a href="Foam.Seat.Parallax.html">Foam.Seat.Parallax</a> · <a href="Foam.Seat.Chorus.html">Foam.Seat.Chorus</a> · <a href="Foam.Bridges.Newton.html">Foam.Bridges.Newton</a></div><pre class="src">import <a href="Foam.Int.html">Foam.Int</a>
+import <a href="Foam.Ledger.html">Foam.Ledger</a>
+import <a href="Foam.Engine.Drain.html">Foam.Engine.Drain</a>
+import <a href="Foam.Engine.Stream.html">Foam.Engine.Stream</a>
+import <a href="Foam.Engine.Codec.html">Foam.Engine.Codec</a>
+import <a href="Foam.Engine.Generator.html">Foam.Engine.Generator</a>
+import <a href="Foam.Engine.Spectrum.html">Foam.Engine.Spectrum</a>
+import <a href="Foam.Engine.Chirality.html">Foam.Engine.Chirality</a>
+import <a href="Foam.Engine.Summary.html">Foam.Engine.Summary</a>
+import <a href="Foam.Engine.html">Foam.Engine</a>
+import <a href="Foam.Scar.html">Foam.Scar</a>
+import <a href="Foam.Maintenance.html">Foam.Maintenance</a>
+import <a href="Foam.Held.html">Foam.Held</a>
+import <a href="Foam.Bond.html">Foam.Bond</a>
+import <a href="Foam.Seat.Clock.html">Foam.Seat.Clock</a>
+import <a href="Foam.Seat.Dial.html">Foam.Seat.Dial</a>
+import <a href="Foam.Seat.Born.html">Foam.Seat.Born</a>
+import <a href="Foam.Seat.Doubling.html">Foam.Seat.Doubling</a>
+import <a href="Foam.Seat.Triad.html">Foam.Seat.Triad</a>
+import <a href="Foam.Seat.Octo.html">Foam.Seat.Octo</a>
+import <a href="Foam.Seat.Sed.html">Foam.Seat.Sed</a>
+import <a href="Foam.Seat.Bootstrap.html">Foam.Seat.Bootstrap</a>
+import <a href="Foam.Seat.Stage.html">Foam.Seat.Stage</a>
+import <a href="Foam.Seat.Loop.html">Foam.Seat.Loop</a>
+import <a href="Foam.Seat.Resume.html">Foam.Seat.Resume</a>
+import <a href="Foam.Seat.Hospitality.html">Foam.Seat.Hospitality</a>
+import <a href="Foam.Seat.Seam.html">Foam.Seat.Seam</a>
+import <a href="Foam.Seat.Signature.html">Foam.Seat.Signature</a>
+import <a href="Foam.Seat.Forcing.html">Foam.Seat.Forcing</a>
+import <a href="Foam.Seat.Norm.html">Foam.Seat.Norm</a>
+import <a href="Foam.Seat.Characters.html">Foam.Seat.Characters</a>
+import <a href="Foam.Seat.Closure.html">Foam.Seat.Closure</a>
+import <a href="Foam.Seat.Observer.html">Foam.Seat.Observer</a>
+import <a href="Foam.Seat.Terminal.html">Foam.Seat.Terminal</a>
+import <a href="Foam.Seat.Beholder.html">Foam.Seat.Beholder</a>
+import <a href="Foam.Seat.Meet.html">Foam.Seat.Meet</a>
+import <a href="Foam.Seat.Quiver.html">Foam.Seat.Quiver</a>
+import <a href="Foam.Seat.Rotations.html">Foam.Seat.Rotations</a>
+import <a href="Foam.Seat.Ladder.html">Foam.Seat.Ladder</a>
+import <a href="Foam.Seat.Epoch.html">Foam.Seat.Epoch</a>
+import <a href="Foam.Golden.html">Foam.Golden</a>
+import <a href="Foam.Cleared.html">Foam.Cleared</a>
+import <a href="Foam.Bridges.Dirichlet.html">Foam.Bridges.Dirichlet</a>
+import <a href="Foam.Backstage.html">Foam.Backstage</a>
+
+import <a href="Foam.Bridges.Zeckendorf.html">Foam.Bridges.Zeckendorf</a>
+import <a href="Foam.Platonism.html">Foam.Platonism</a>
+import <a href="Foam.Platonism.Tower.html">Foam.Platonism.Tower</a>
+import <a href="Foam.Seat.Descend.html">Foam.Seat.Descend</a>
+import <a href="Foam.Seat.Signed.html">Foam.Seat.Signed</a>
+import <a href="Foam.Seat.Sort.html">Foam.Seat.Sort</a>
+import <a href="Foam.Seat.Tight.html">Foam.Seat.Tight</a>
+import <a href="Foam.Seat.Rank.html">Foam.Seat.Rank</a>
+import <a href="Foam.Bridges.PSQL.html">Foam.Bridges.PSQL</a>
+import <a href="Foam.Seat.Rendezvous.html">Foam.Seat.Rendezvous</a>
+import <a href="Foam.Seat.Connection.html">Foam.Seat.Connection</a>
+import <a href="Foam.Bridges.Schrodinger.html">Foam.Bridges.Schrodinger</a>
+import <a href="Foam.Seat.Frame.html">Foam.Seat.Frame</a>
+import <a href="Foam.Bridges.Varadarajan.html">Foam.Bridges.Varadarajan</a>
+import <a href="Foam.Bridges.Noether.html">Foam.Bridges.Noether</a>
+import <a href="Foam.Bridges.Hurwitz.html">Foam.Bridges.Hurwitz</a>
+import <a href="Foam.Bridges.Relativity.html">Foam.Bridges.Relativity</a>
+import <a href="Foam.Bridges.Wigner.html">Foam.Bridges.Wigner</a>
+import <a href="Foam.Bridges.Pauli.html">Foam.Bridges.Pauli</a>
+import <a href="Foam.Bridges.Heisenberg.html">Foam.Bridges.Heisenberg</a>
+import <a href="Foam.Bridges.Lovelace.html">Foam.Bridges.Lovelace</a>
+import <a href="Foam.Bridges.Cantor.html">Foam.Bridges.Cantor</a>
+import <a href="Foam.Bridges.Kolmogorov.html">Foam.Bridges.Kolmogorov</a>
+import <a href="Foam.Bridges.Stone.html">Foam.Bridges.Stone</a>
+import <a href="Foam.Bridges.Eddington.html">Foam.Bridges.Eddington</a>
+import <a href="Foam.Bridges.Pythagoras.html">Foam.Bridges.Pythagoras</a>
+import <a href="Foam.Bridges.Minkowski.html">Foam.Bridges.Minkowski</a>
+import <a href="Foam.Bridges.Gleason.html">Foam.Bridges.Gleason</a>
+import <a href="Foam.Bridges.Desargues.html">Foam.Bridges.Desargues</a>
+import <a href="Foam.Bridges.Materiality.html">Foam.Bridges.Materiality</a>
+import <a href="Foam.Bridges.Landauer.html">Foam.Bridges.Landauer</a>
+import <a href="Foam.Seat.Naming.html">Foam.Seat.Naming</a>
+import <a href="Foam.Bridges.Godel.html">Foam.Bridges.Godel</a>
+import <a href="Foam.Seat.Summit.html">Foam.Seat.Summit</a>
+import <a href="Foam.Bubble.html">Foam.Bubble</a>
+import <a href="Foam.Census.html">Foam.Census</a>
+import <a href="Foam.Cable.html">Foam.Cable</a>
+import <a href="Foam.Wedge.html">Foam.Wedge</a>
+import <a href="Foam.Elsewhen.html">Foam.Elsewhen</a>
+import <a href="Foam.Duplex.html">Foam.Duplex</a>
+import <a href="Foam.Vacancy.html">Foam.Vacancy</a>
+import <a href="Foam.Metaphor.html">Foam.Metaphor</a>
+import <a href="Foam.Bridges.Adams.html">Foam.Bridges.Adams</a>
+import <a href="Foam.Bridges.Gita.html">Foam.Bridges.Gita</a>
+import <a href="Foam.Bridges.Nicaea.html">Foam.Bridges.Nicaea</a>
+import <a href="Foam.Bridges.Grover.html">Foam.Bridges.Grover</a>
+import <a href="Foam.Bridges.Narayana.html">Foam.Bridges.Narayana</a>
+import <a href="Foam.Bridges.Leibniz.html">Foam.Bridges.Leibniz</a>
+import <a href="Foam.Bridges.Fraenkel.html">Foam.Bridges.Fraenkel</a>
+import <a href="Foam.Bridges.Poncelet.html">Foam.Bridges.Poncelet</a>
+import <a href="Foam.Bridges.Hofstadter.html">Foam.Bridges.Hofstadter</a>
+import <a href="Foam.Seat.Parallax.html">Foam.Seat.Parallax</a>
+import <a href="Foam.Seat.Chorus.html">Foam.Seat.Chorus</a>
+import <a href="Foam.Bridges.Newton.html">Foam.Bridges.Newton</a></pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

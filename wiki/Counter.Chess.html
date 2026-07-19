@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Chess</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Chess</h1></header>
+<div class="imports">grasp: <a href="Counter.Legible.html">Counter.Legible</a> · <a href="Counter.Actor.html">Counter.Actor</a> · <a href="Counter.Enaction.html">Counter.Enaction</a> · <a href="Foam.Cleared.html">Foam.Cleared</a></div><pre class="src">import <a href="Counter.Legible.html">Counter.Legible</a>
+import <a href="Counter.Actor.html">Counter.Actor</a>
+import <a href="Counter.Enaction.html">Counter.Enaction</a>
+import <a href="Foam.Cleared.html">Foam.Cleared</a>
+
+namespace Foam.Counter
+
+<span class="kw">theorem</span> <a class="decl" id="the_kings_never_leave" href="#the_kings_never_leave">the_kings_never_leave</a> {G G&#x27; : Type} [Mul G] [One G] [Mul G&#x27;] [One G&#x27;]
+    (S : Seat G) (S&#x27; : Seat G&#x27;) (acts : Nat → G) (acts&#x27; : Nat → G&#x27;)
+    (p : S.Pos) (p&#x27; : S&#x27;.Pos) {X : Type} (l : List X) (n : Nat) :
+    (playback l).at_ l.length = none
+      ∧ (guardedRun S acts p).at_ n ≠ none
+      ∧ (guardedRun S&#x27; acts&#x27; p&#x27;).at_ n ≠ none :=
+  ⟨nth_length l, the_stream_never_ends_itself S acts p n,
+   the_stream_never_ends_itself S&#x27; acts&#x27; p&#x27; n⟩
+
+<span class="kw">theorem</span> <a class="decl" id="transposition" href="#transposition">transposition</a> :
+    ∃ h h&#x27; : List Rot, h ≠ h&#x27; ∧ netAct h = netAct h&#x27; :=
+  ⟨[Rot.r1, Rot.r2], [Rot.r2, Rot.r1], by decide, by decide⟩
+
+<span class="kw">theorem</span> <a class="decl" id="mate_has_no_escape" href="#mate_has_no_escape">mate_has_no_escape</a> {H : Type} (q : Quiver H) (a : H)
+    (hstuck : stuck q a) :
+    ∀ b : H, a ≠ b → ¬ Nonempty (Path q a b) := by
+  rintro b hne ⟨pth⟩
+  cases pth with
+  | nil =&gt; exact hne rfl
+  | cons e _ =&gt; exact hstuck _ e
+
+<span class="kw">theorem</span> <a class="decl" id="promotion_is_the_boundary_move" href="#promotion_is_the_boundary_move">promotion_is_the_boundary_move</a> {H : Type} (q : Quiver H) (a b : H)
+    (hstuck : stuck q a) :
+    Nonempty (Path (q.deposit (a, b)) a b)
+      ∧ ¬ ∃ g : Path (q.deposit (a, b)) a b → Path q a b,
+          ∀ pth, ancestor_reach_survives (a, b) (g pth) = pth :=
+  ⟨(relief_at_position q a b hstuck).1, (relief_at_position q a b hstuck).2.2.2⟩
+
+<span class="kw">theorem</span> <a class="decl" id="pawns_never_come_home" href="#pawns_never_come_home">pawns_never_come_home</a> (n : Nat) : ¬ Closes gold (n + 1) :=
+  gold_never_closes n
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_kings_never_leave&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_kings_never_leave</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.transposition&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms transposition</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.mate_has_no_escape&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms mate_has_no_escape</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.promotion_is_the_boundary_move&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms promotion_is_the_boundary_move</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.pawns_never_come_home&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms pawns_never_come_home</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

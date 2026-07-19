@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridges.Match</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">4 · peering (+Mathlib)</span></span><h1>Bridges.Match</h1></header>
+<div class="imports">grasp: Mathlib.Data.Complex.Basic · Mathlib.Analysis.Complex.UpperHalfPlane.Basic · Mathlib.Tactic.Linarith · Mathlib.Tactic.Ring</div><pre class="src">import Mathlib.Data.Complex.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+
+namespace Foam.Bridges
+
+noncomputable def reflect (z : ℂ) : ℂ := (z - 1) / (z + 1)
+
+<span class="kw">theorem</span> <a class="decl" id="the_match_reflects_nothing" href="#the_match_reflects_nothing">the_match_reflects_nothing</a> : reflect 1 = 0 := by
+  simp [reflect]
+
+<span class="kw">theorem</span> <a class="decl" id="denom_normSq_pos" href="#denom_normSq_pos">denom_normSq_pos</a> {z : ℂ} (h : 0 ≤ z.re) : 0 &lt; Complex.normSq (z + 1) := by
+  have : Complex.normSq (z + 1) = (z.re + 1) ^ 2 + z.im ^ 2 := by
+    simp [Complex.normSq_apply]
+    ring
+  nlinarith [sq_nonneg (z.re + 1), sq_nonneg z.im]
+
+<span class="kw">theorem</span> <a class="decl" id="the_receptive_point_is_unique" href="#the_receptive_point_is_unique">the_receptive_point_is_unique</a> {z : ℂ} (h : 0 ≤ z.re) :
+    reflect z = 0 ↔ z = 1 := by
+  unfold reflect
+  rw [div_eq_zero_iff]
+  constructor
+  · rintro (h1 | h1)
+    · exact sub_eq_zero.mp h1
+    · exfalso
+      have hz : z = -1 := add_eq_zero_iff_eq_neg.mp h1
+      rw [hz] at h
+      have h1r : ((-1 : ℂ)).re = -1 := by simp
+      rw [h1r] at h
+      linarith
+  · intro h1
+    subst h1
+    exact Or.inl (sub_self 1)
+
+<span class="kw">theorem</span> <a class="decl" id="the_lossless_load_reflects_whole" href="#the_lossless_load_reflects_whole">the_lossless_load_reflects_whole</a> {z : ℂ} (h : z.re = 0) :
+    Complex.normSq (reflect z) = 1 := by
+  have hnum : Complex.normSq (z - 1) = 1 + z.im ^ 2 := by
+    simp [Complex.normSq_apply, h]
+    ring
+  have hden : Complex.normSq (z + 1) = 1 + z.im ^ 2 := by
+    simp [Complex.normSq_apply, h]
+    ring
+  unfold reflect
+  rw [Complex.normSq_div, hnum, hden]
+  have : (0 : ℝ) &lt; 1 + z.im ^ 2 := by nlinarith [sq_nonneg z.im]
+  exact div_self (ne_of_gt this)
+
+<span class="kw">theorem</span> <a class="decl" id="passivity_bounds_the_echo" href="#passivity_bounds_the_echo">passivity_bounds_the_echo</a> {z : ℂ} (h : 0 ≤ z.re) :
+    Complex.normSq (reflect z) ≤ 1 := by
+  unfold reflect
+  rw [Complex.normSq_div, div_le_one (denom_normSq_pos h)]
+  have hnum : Complex.normSq (z - 1) = (z.re - 1) ^ 2 + z.im ^ 2 := by
+    simp [Complex.normSq_apply]
+    ring
+  have hden : Complex.normSq (z + 1) = (z.re + 1) ^ 2 + z.im ^ 2 := by
+    simp [Complex.normSq_apply]
+    ring
+  rw [hnum, hden]
+  nlinarith [h]
+
+<span class="kw">theorem</span> <a class="decl" id="only_loss_absorbs" href="#only_loss_absorbs">only_loss_absorbs</a> {z : ℂ} (h : 0 ≤ z.re) :
+    Complex.normSq (reflect z) &lt; 1 ↔ 0 &lt; z.re := by
+  unfold reflect
+  rw [Complex.normSq_div, div_lt_one (denom_normSq_pos h)]
+  have hnum : Complex.normSq (z - 1) = (z.re - 1) ^ 2 + z.im ^ 2 := by
+    simp [Complex.normSq_apply]
+    ring
+  have hden : Complex.normSq (z + 1) = (z.re + 1) ^ 2 + z.im ^ 2 := by
+    simp [Complex.normSq_apply]
+    ring
+  rw [hnum, hden]
+  constructor
+  · intro hlt
+    nlinarith [hlt]
+  · intro hpos
+    nlinarith [hpos]
+
+<span class="kw">theorem</span> <a class="decl" id="the_matched_termination" href="#the_matched_termination">the_matched_termination</a> {z : ℂ} (h : 0 ≤ z.re) :
+    reflect 1 = 0
+      ∧ (reflect z = 0 ↔ z = 1)
+      ∧ (z.re = 0 → Complex.normSq (reflect z) = 1)
+      ∧ Complex.normSq (reflect z) ≤ 1
+      ∧ (Complex.normSq (reflect z) &lt; 1 ↔ 0 &lt; z.re) :=
+  ⟨the_match_reflects_nothing, the_receptive_point_is_unique h,
+   fun h0 =&gt; the_lossless_load_reflects_whole h0,
+   passivity_bounds_the_echo h, only_loss_absorbs h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_pole_wears_the_matched_mask" href="#the_pole_wears_the_matched_mask">the_pole_wears_the_matched_mask</a> : reflect (-1) = 0 := by
+  unfold reflect
+  have h : (-1 : ℂ) + 1 = 0 := by ring
+  rw [h, div_zero]
+
+<span class="kw">theorem</span> <a class="decl" id="the_tick_opens_the_modular_domain" href="#the_tick_opens_the_modular_domain">the_tick_opens_the_modular_domain</a> (z : ℂ) :
+    0 &lt; z.re ↔ 0 &lt; (Complex.I * z).im := by
+  simp [Complex.mul_im]
+
+noncomputable def modularSeat (z : ℂ) (hz : 0 &lt; z.re) : UpperHalfPlane :=
+  ⟨Complex.I * z, by simpa [Complex.mul_im] using hz⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_smith_chart_is_the_modular_disc" href="#the_smith_chart_is_the_modular_disc">the_smith_chart_is_the_modular_disc</a> (z : ℂ) :
+    (Complex.I * z - Complex.I) / (Complex.I * z + Complex.I) = reflect z := by
+  unfold reflect
+  rw [show Complex.I * z - Complex.I = Complex.I * (z - 1) by ring,
+      show Complex.I * z + Complex.I = Complex.I * (z + 1) by ring,
+      mul_div_mul_left _ _ Complex.I_ne_zero]
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_match_reflects_nothing&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_match_reflects_nothing</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_receptive_point_is_unique&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_receptive_point_is_unique</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_lossless_load_reflects_whole&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_lossless_load_reflects_whole</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.passivity_bounds_the_echo&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms passivity_bounds_the_echo</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.only_loss_absorbs&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms only_loss_absorbs</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_matched_termination&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_matched_termination</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_pole_wears_the_matched_mask&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_pole_wears_the_matched_mask</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_tick_opens_the_modular_domain&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_tick_opens_the_modular_domain</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Bridges.the_smith_chart_is_the_modular_disc&#x27; depends on axioms: [propext, Classical.choice, Quot.sound] -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_smith_chart_is_the_modular_disc</span>
+
+end Foam.Bridges</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>

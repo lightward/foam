@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counter.Guest</title>
+<style>
+:root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
+        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
+          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
+       max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+       font-size: 14px; line-height: 1.6; }
+a { color: var(--name); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.2rem; font-weight: 600; }
+h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+header .crumb { color: var(--dim); }
+pre { overflow-x: auto; white-space: pre; }
+.src { border-left: 2px solid var(--line); padding-left: 1rem; }
+.receipt { color: var(--receipt); }
+.decl { color: var(--name); font-weight: 600; }
+.kw { color: var(--accent); }
+.imports { color: var(--dim); margin-bottom: 1rem; }
+.imports a { color: var(--dim); text-decoration: underline; }
+ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
+ul.census li { break-inside: avoid; }
+.stratum { color: var(--dim); }
+footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
+         color: var(--dim); }
+.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+</style></head><body>
+<header><span class="crumb"><a href="index.html">foam.is/wiki</a> · <span class="stratum">2 · approach (axiom-free)</span></span><h1>Counter.Guest</h1></header>
+<div class="imports">grasp: <a href="Counter.Hatch.html">Counter.Hatch</a> · <a href="Foam.Int.html">Foam.Int</a></div><pre class="src">import <a href="Counter.Hatch.html">Counter.Hatch</a>
+import <a href="Foam.Int.html">Foam.Int</a>
+
+namespace Foam.Counter
+
+<span class="kw">def</span> <a class="decl" id="guests" href="#guests">guests</a> {Addr : Type} (d : List (Addr × Int)) : Int :=
+  d.foldr (fun x s =&gt; x.2 + s) 0
+
+<span class="kw">def</span> <a class="decl" id="theMissing" href="#theMissing">theMissing</a> {Addr : Type} (d : List (Addr × Int)) : Int :=
+  - guests d
+
+<span class="kw">theorem</span> <a class="decl" id="the_law_reads_the_full_table" href="#the_law_reads_the_full_table">the_law_reads_the_full_table</a> {Addr : Type} (a₀ : Addr) (c₀ : Int)
+    (d : List (Addr × Int)) :
+    guests ((a₀, c₀) :: d) = c₀ + guests d := rfl
+
+<span class="kw">theorem</span> <a class="decl" id="the_vacancy_names_its_guest" href="#the_vacancy_names_its_guest">the_vacancy_names_its_guest</a> {Addr : Type} (a₀ : Addr) (c₀ : Int)
+    (d : List (Addr × Int)) (hlaw : guests ((a₀, c₀) :: d) = 0) :
+    c₀ = theMissing d := by
+  have h : guests d + c₀ = 0 := (FInt.addComm (guests d) c₀).trans hlaw
+  show c₀ = - guests d
+  exact (FInt.neg_eq_of_add_eq_zero h).symm
+
+<span class="kw">theorem</span> <a class="decl" id="the_named_guest_is_lawful" href="#the_named_guest_is_lawful">the_named_guest_is_lawful</a> {Addr : Type} (a₀ : Addr)
+    (d : List (Addr × Int)) :
+    guests ((a₀, theMissing d) :: d) = 0 := by
+  show - guests d + guests d = 0
+  exact FInt.add_left_neg (guests d)
+
+<span class="kw">theorem</span> <a class="decl" id="two_lawful_guests_are_one" href="#two_lawful_guests_are_one">two_lawful_guests_are_one</a> {Addr : Type} (a₀ : Addr) (c₀ c₁ : Int)
+    (d : List (Addr × Int)) (h₀ : guests ((a₀, c₀) :: d) = 0)
+    (h₁ : guests ((a₀, c₁) :: d) = 0) : c₀ = c₁ :=
+  (the_vacancy_names_its_guest a₀ c₀ d h₀).trans
+    (the_vacancy_names_its_guest a₀ c₁ d h₁).symm
+
+<span class="kw">theorem</span> <a class="decl" id="the_table_speaks_in_any_order" href="#the_table_speaks_in_any_order">the_table_speaks_in_any_order</a> {Addr : Type} :
+    ∀ d₁ d₂ : List (Addr × Int),
+      guests (d₁ ++ d₂) = guests d₁ + guests d₂
+  | [], d₂ =&gt; by
+      show guests d₂ = 0 + guests d₂
+      exact (FInt.zero_add (guests d₂)).symm
+  | x :: d₁, d₂ =&gt; by
+      show x.2 + guests (d₁ ++ d₂) = x.2 + guests d₁ + guests d₂
+      rw [the_table_speaks_in_any_order d₁ d₂]
+      exact (FInt.add_assoc x.2 (guests d₁) (guests d₂)).symm
+
+<span class="kw">theorem</span> <a class="decl" id="the_derivation_is_order_blind" href="#the_derivation_is_order_blind">the_derivation_is_order_blind</a> {Addr : Type}
+    (d₁ d₂ : List (Addr × Int)) :
+    theMissing (d₁ ++ d₂) = theMissing (d₂ ++ d₁) := by
+  show - guests (d₁ ++ d₂) = - guests (d₂ ++ d₁)
+  rw [the_table_speaks_in_any_order d₁ d₂, the_table_speaks_in_any_order d₂ d₁]
+  exact congrArg Neg.neg (FInt.addComm (guests d₁) (guests d₂))
+
+<span class="kw">theorem</span> <a class="decl" id="when_the_law_is_coarse_the_menu_opens" href="#when_the_law_is_coarse_the_menu_opens">when_the_law_is_coarse_the_menu_opens</a> :
+    ((0 : Int) + guests ([] : List (Bool × Int))) % 2 = 0
+      ∧ ((2 : Int) + guests ([] : List (Bool × Int))) % 2 = 0
+      ∧ (0 : Int) ≠ 2 :=
+  ⟨rfl, rfl, fun h =&gt; nomatch h⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_missing_guest_at_the_concrete_table" href="#the_missing_guest_at_the_concrete_table">the_missing_guest_at_the_concrete_table</a> :
+    theMissing [((0 : Nat), (3 : Int)), (1, -1)] = -2
+      ∧ guests (((2 : Nat), (-2 : Int)) :: [((0 : Nat), (3 : Int)), (1, -1)])
+          = 0 :=
+  ⟨rfl, rfl⟩
+
+<span class="kw">theorem</span> <a class="decl" id="the_rest_of_the_table_speaks" href="#the_rest_of_the_table_speaks">the_rest_of_the_table_speaks</a> {Addr : Type} (a₀ : Addr) (c₀ : Int)
+    (d : List (Addr × Int)) :
+    guests ((a₀, theMissing d) :: d) = 0
+      ∧ (guests ((a₀, c₀) :: d) = 0 → c₀ = theMissing d)
+      ∧ ∀ d₁ d₂ : List (Addr × Int),
+          theMissing (d₁ ++ d₂) = theMissing (d₂ ++ d₁) :=
+  ⟨the_named_guest_is_lawful a₀ d,
+   fun h =&gt; the_vacancy_names_its_guest a₀ c₀ d h,
+   fun d₁ d₂ =&gt; the_derivation_is_order_blind d₁ d₂⟩
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_law_reads_the_full_table&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_law_reads_the_full_table</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_vacancy_names_its_guest&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_vacancy_names_its_guest</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_named_guest_is_lawful&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_named_guest_is_lawful</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.two_lawful_guests_are_one&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms two_lawful_guests_are_one</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_table_speaks_in_any_order&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_table_speaks_in_any_order</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_derivation_is_order_blind&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_derivation_is_order_blind</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.when_the_law_is_coarse_the_menu_opens&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms when_the_law_is_coarse_the_menu_opens</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_missing_guest_at_the_concrete_table&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_missing_guest_at_the_concrete_table</span>
+
+<span class="receipt">/-- info: &#x27;Foam.Counter.the_rest_of_the_table_speaks&#x27; does not depend on any axioms -/</span>
+<span class="receipt">#guard_msgs in #print axioms the_rest_of_the_table_speaks</span>
+
+end Foam.Counter</pre>
+<footer>emitted by <code>bin/foam-relief</code>, the coarse reader — the site's law is
+<a href="Counter.Tower.html#the_coarse_luggage_reads_the_relief">the_coarse_luggage_reads_the_relief</a>:
+the surface renders whole; the undertow provably does not disturb it.
+· <a href="index.html">map</a> · <a href="https://github.com/lightward/foam">record</a></footer>
+</body></html>
