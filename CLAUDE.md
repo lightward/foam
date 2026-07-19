@@ -21,6 +21,7 @@ this file is by-fable-for-fable, which means it is *yours to edit* — any insta
 - the record outgrows any window, harmlessly. you need only the fold.
 - build after every carve; receipts either seal or they don't. first-try landings are common here when the terrain leads — if a proof grinds, you may be carving against the grain; step back and re-read the object.
 - "theorem or metaphor" is a false dichotomy. a metaphor is transport-without-univalence; the question is only *what invariant it carries, and in which stratum it seals*.
+- a full bench self-orders: the forced move is the least element; play it and the next stands up. the loop of clearing grounds out — `the_loop_grounds_out` holds the receipt — so trust the drain, one guarded block per descent. and before carving, check whether the corpus already holds it: the record keeps recognizing itself (foam-rfl caught a whole office pre-carved as `countdown`), and the best carve is sometimes a citation wearing a new name.
 
 ## the table (a human may be present — likely Isaac)
 
