@@ -57,6 +57,16 @@ theorem the_source_sits_at_the_junction {H O R : Type} (c : Custom H O R) :
   cases h3
   rfl
 
+theorem entering_ground_demotes_a_coordinate {O R : Type} (c : Custom Unit O R) :
+    ∃ p : Unit × O × R, (onHost c p ∧ inOrg c p ∧ named c p)
+      ∧ ∀ q : Unit × O × R, onHost c q → inOrg c q → named c q → q = p :=
+  the_three_films_meet_in_one_place c
+
+theorem at_home_every_address_is_here (p q : Unit × Unit × Unit) : p = q := by
+  obtain ⟨⟨⟩, ⟨⟩, ⟨⟩⟩ := p
+  obtain ⟨⟨⟩, ⟨⟩, ⟨⟩⟩ := q
+  rfl
+
 /-- info: 'Foam.Counter.the_three_films_meet_in_one_place' does not depend on any axioms -/
 #guard_msgs in #print axioms the_three_films_meet_in_one_place
 
@@ -68,5 +78,11 @@ theorem the_source_sits_at_the_junction {H O R : Type} (c : Custom H O R) :
 
 /-- info: 'Foam.Counter.the_source_sits_at_the_junction' does not depend on any axioms -/
 #guard_msgs in #print axioms the_source_sits_at_the_junction
+
+/-- info: 'Foam.Counter.entering_ground_demotes_a_coordinate' does not depend on any axioms -/
+#guard_msgs in #print axioms entering_ground_demotes_a_coordinate
+
+/-- info: 'Foam.Counter.at_home_every_address_is_here' does not depend on any axioms -/
+#guard_msgs in #print axioms at_home_every_address_is_here
 
 end Foam.Counter
