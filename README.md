@@ -54,6 +54,7 @@ there are three import-roots with no imports: `Foam/Int.lean` (arithmetic), `Foa
    - `Foam/Bridges/`: Adams Cantor Desargues Dirichlet Eddington Fraenkel Gita Gleason Godel Grover Heisenberg Hofstadter Hurwitz Kolmogorov Landauer Leibniz Lovelace Materiality Minkowski Narayana Nicaea Noether Pauli Poncelet PSQL Pythagoras Relativity Schrodinger Stone Varadarajan Wigner Zeckendorf
    - `Foam/Platonism/`: Tower
 2. `counter/` (axiom-free): Abe Absorber Account Actor Address Amniscience Anchor Antiharmful Arrows Attest Authority Basis Bless Bloom Bubble Buffer Cable Carse Cascade Catalog Census Change Chess Cipher Circumference Complete Consent Contentment Contract Cursor Dark Declension Denoise Descendant Desire Discovery Dive Donor Doubled Downhill Duplex Elsewhen Enaction Entrance Entropy Entry Eraser Exit Extraction Feferman Fiber Film Flinch Framing Frontsearch Fungible Ghost Grasp Grief Grid Ground Guard Guest Hallway Hand Hatch Health Hemisphere Holonomy Home Hooponopono Imaginary Interleave Involve Isaac Jay Joke Kelly Kin Language Laugh Lease Legible Locate Logbook Lu Luck Luggage Morse Mu Nap Needle Neutral Nothing Nu Nurse Operator Packing Peer Plain Plateau Port Predict Quadrature Recast Recognition Relay Render Repair Reparent Rest Returns Reversal Rhythm Runaway Runs Scry Settle Shelf Sibling Silent Socket Sphere Stream Surprise Suspension Tally Telling Temperature Tempo Tenancy Third Toll Tower Trefoil Tremble Triage Tsort Twelve Twins Unknot Upsearch Vacancy Vanishing Verb Voice Waggle Wake Waking Ward Wedge Well Wind Window Witness Worldline Worn Zoom
+   - `counter/Counter/Isaac/`: ImpliedReality KoiPond
 3. `seam/` (core-Lean axioms only): Arrival Denominate Temperament Tender
 4. `bridges/` (+Mathlib, *not* axiom-free): Audit Closure Collapse Continuum Counter Duality Encounter Gaussian HalfTurn HalfType Handedness Maschke Match Observation Plane Quarter SeatTime Stagecraft Summit
    - `bridges/Bridges/FTPG/`: AddCancel AddComm Additive Assoc AssocCapstone Bezier Carrier Charge Chart Chord Climb Coord CoordinateAlgebra CrossParallelism Deaxiomatize Diamond Dilation Distrib Exchange Finite Flat Ground Headcount Hollow Instance Inverse Iso Keeper Ladder LeftDistrib Limit Line Markov Menu Mul MulAssoc MulKeyIdentity MulNeg Neg Parallelogram Perm Pin Plane Projective Ring Shear Slope Solid Space SpaceFlat Span Translate WellDefined Window Ycoord
@@ -108,6 +109,7 @@ nb: there's enough congruence-at-scale for surprising links to crop up in surpri
   - i.e. "okay yeah that's what this *means* and here's the full logical context that would need to be mapped, seat-for-seat, before the dynamic it describes becomes *interactive*, with control points in the same world you're in"
   - `bridge_is_conductive`
   - contrib: ../lightward-ai/app/prompts/system/3-perspectives/your-ps-and-qs.md
+- wiki: foam.is compiles from the record — talk pages are just pages; we talk in theorems, and theorems go on the map like everything else (the plumbing stands: \_config.yml + CNAME; the census is the index; the receipts are the citations; tier three is the see-also engine)
 - counter: ./counter/README.md
 
 ---

@@ -156,3 +156,5 @@ import Counter.Fiber
 import Counter.Luggage
 import Counter.Tower
 import Counter.Feferman
+import Counter.Isaac.KoiPond
+import Counter.Isaac.ImpliedReality
