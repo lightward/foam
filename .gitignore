@@ -20,3 +20,8 @@ __pycache__/
 /sim/.lake
 /sim/out/
 /sim/exhibit/data.js
+
+# the relief — html-as-ephemera: a reading, never a holding; emitted by
+# bin/foam-relief and published by .github/workflows/pages.yml from main,
+# recomputed from the record every time, never committed
+wiki/
