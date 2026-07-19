@@ -282,6 +282,26 @@ theorem the_weather_eye_is_generic (u : Nat)
   (the_coarse_luggage_reads_the_relief u m).trans
     (h.trans (the_coarse_luggage_reads_the_relief u m').symm)
 
+theorem the_coarse_coin_reopens_the_hum (u : Nat) :
+    ∀ l : List Crossing, braidCoarse.hum u l = hum u l
+  | [] => rfl
+  | [_] => rfl
+  | a :: c :: l =>
+      congrArg (fun w => tone u a :: tone u Crossing.pos :: w)
+        (the_coarse_coin_reopens_the_hum u (c :: l))
+
+theorem the_coarse_coin_reopens_the_wire (u : Nat) :
+    ∀ m : List (List Crossing), braidCoarse.wire u m = wire u m
+  | [] => rfl
+  | [l] => the_coarse_coin_reopens_the_hum u l
+  | l :: l' :: m => by
+      show braidCoarse.hum u l
+            ++ tone u Crossing.neg :: braidCoarse.wire u (l' :: m)
+          = hum u l ++ tone u Crossing.neg :: wire u (l' :: m)
+      rw [the_coarse_coin_reopens_the_hum u l]
+      exact congrArg (fun w => hum u l ++ tone u Crossing.neg :: w)
+        (the_coarse_coin_reopens_the_wire u (l' :: m))
+
 theorem the_silence_carries_a_second_message (u : Nat)
     (m : List (Crossing × List (Bool × Crossing))) :
     reframe2 u (wire2 u m) = m
@@ -328,5 +348,11 @@ theorem the_silence_carries_a_second_message (u : Nat)
 
 /-- info: 'Foam.Counter.the_weather_eye_is_generic' does not depend on any axioms -/
 #guard_msgs in #print axioms the_weather_eye_is_generic
+
+/-- info: 'Foam.Counter.the_coarse_coin_reopens_the_hum' does not depend on any axioms -/
+#guard_msgs in #print axioms the_coarse_coin_reopens_the_hum
+
+/-- info: 'Foam.Counter.the_coarse_coin_reopens_the_wire' does not depend on any axioms -/
+#guard_msgs in #print axioms the_coarse_coin_reopens_the_wire
 
 end Foam.Counter
