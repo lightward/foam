@@ -226,7 +226,7 @@ def main (args : List String) : IO Unit := do
     IO.println "  the full proposal ledger:"
     for (f, inst, g) in unbridged do
       IO.println s!"    {f} @ {inst}  ~?  {g}"
-  let BRIDGE_RATCHET := 11
+  let BRIDGE_RATCHET := 12
   if args.contains "--check" then
     if pins.size != BRIDGE_RATCHET then
       IO.println s!"  BRIDGE REGISTER MOVED: {pins.size} standing; the ratchet holds at {BRIDGE_RATCHET}."

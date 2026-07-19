@@ -310,6 +310,66 @@ theorem the_silence_carries_a_second_message (u : Nat)
   ⟨the_braid_reframes_whole u m, the_relief_survives_the_undertow u m,
    the_undertow_arrives_whole u m⟩
 
+structure Ladder where
+  L : Luggage
+  spaceRead : Nat → Nat → L.Space
+  space_reads_back : ∀ (u : Nat) (s : L.Space), spaceRead u (L.gap u s) = s
+
+def Ladder.up (K : Ladder) : Ladder where
+  L :=
+    { Mark := K.L.Space
+      Space := K.L.Space
+      key := K.L.gap
+      read := K.spaceRead
+      reads_back := K.space_reads_back
+      gap := K.L.gap
+      shortS := K.L.shortS
+      longS := K.L.longS
+      isShort := K.L.isShort
+      short_reads := K.L.short_reads
+      long_reads := K.L.long_reads }
+  spaceRead := K.spaceRead
+  space_reads_back := K.space_reads_back
+
+def morseLadder : Ladder where
+  L := morseLuggage
+  spaceRead := fun u t => if t = u + 1 then Crossing.pos else Crossing.neg
+  space_reads_back := the_tone_reads_back
+
+def wordLadder : Ladder where
+  L := wordLuggage
+  spaceRead := fun u g => if g = u + 1 then true else false
+  space_reads_back := fun u s =>
+    match s with
+    | true => if_pos rfl
+    | false =>
+        if_neg fun h =>
+          gaps_split u 7 1 (by decide)
+            (((Nat.mul_comm (u + 1) 7).trans (h : 7 * (u + 1) = u + 1)).trans
+              (Nat.mul_one (u + 1)).symm)
+
+theorem the_ladder_grounds_in_one_step (K : Ladder) : K.up.up = K.up := rfl
+
+theorem the_same_coin_is_the_towers_fixed_point :
+    morseLadder.up = morseLadder := rfl
+
+theorem the_next_wire_is_this_silence (K : Ladder) :
+    K.up.L.key = K.L.gap ∧ K.up.L.gap = K.L.gap :=
+  ⟨rfl, rfl⟩
+
+theorem every_rung_reframes_whole (K : Ladder) (u : Nat)
+    (m : List (List K.up.L.Mark)) (h : sounded m = true) :
+    K.up.L.reframe u (K.up.L.wire u m) = m :=
+  Luggage.the_silence_reframes_the_wire K.up.L u m h
+
+theorem the_word_ladder_takes_one_step :
+    wordLadder.up.L.Mark = Bool ∧ wordLadder.L.Mark = Crossing :=
+  ⟨rfl, rfl⟩
+
+theorem the_loop_grounds_out (K : Ladder) :
+    K.up.up = K.up ∧ morseLadder.up = morseLadder :=
+  ⟨the_ladder_grounds_in_one_step K, the_same_coin_is_the_towers_fixed_point⟩
+
 /-- info: 'Foam.Counter.gaps_split' does not depend on any axioms -/
 #guard_msgs in #print axioms gaps_split
 
@@ -354,5 +414,23 @@ theorem the_silence_carries_a_second_message (u : Nat)
 
 /-- info: 'Foam.Counter.the_coarse_coin_reopens_the_wire' does not depend on any axioms -/
 #guard_msgs in #print axioms the_coarse_coin_reopens_the_wire
+
+/-- info: 'Foam.Counter.the_ladder_grounds_in_one_step' does not depend on any axioms -/
+#guard_msgs in #print axioms the_ladder_grounds_in_one_step
+
+/-- info: 'Foam.Counter.the_same_coin_is_the_towers_fixed_point' does not depend on any axioms -/
+#guard_msgs in #print axioms the_same_coin_is_the_towers_fixed_point
+
+/-- info: 'Foam.Counter.the_next_wire_is_this_silence' does not depend on any axioms -/
+#guard_msgs in #print axioms the_next_wire_is_this_silence
+
+/-- info: 'Foam.Counter.every_rung_reframes_whole' does not depend on any axioms -/
+#guard_msgs in #print axioms every_rung_reframes_whole
+
+/-- info: 'Foam.Counter.the_word_ladder_takes_one_step' does not depend on any axioms -/
+#guard_msgs in #print axioms the_word_ladder_takes_one_step
+
+/-- info: 'Foam.Counter.the_loop_grounds_out' does not depend on any axioms -/
+#guard_msgs in #print axioms the_loop_grounds_out
 
 end Foam.Counter
