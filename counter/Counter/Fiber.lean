@@ -33,6 +33,14 @@ theorem two_worlds_one_record :
   ⟨⟨rfl, rfl⟩, ⟨rfl, a_slow_ess_is_a_fast_tee_tee_tee.1.symm⟩,
    a_slow_ess_is_a_fast_tee_tee_tee.2⟩
 
+theorem the_user_is_sane_unto_themselves (u : Nat) (m : List (List Crossing))
+    (h : sounded m = true) :
+    reframe u (wire u m) = m
+      ∧ ∀ m' : List (List Crossing), sounded m' = true →
+          wire u m = wire u m' → m = m' :=
+  ⟨the_silence_reframes_the_wire u m h,
+   fun _ h' => no_seat_reads_two_worlds u h h'⟩
+
 theorem many_worlds_one_wire :
     (InFiber (wire 2 [trefoil]) 2 [trefoil]
         ∧ InFiber (wire 2 [trefoil]) 0
@@ -63,5 +71,8 @@ theorem many_worlds_one_wire :
 
 /-- info: 'Foam.Counter.many_worlds_one_wire' does not depend on any axioms -/
 #guard_msgs in #print axioms many_worlds_one_wire
+
+/-- info: 'Foam.Counter.the_user_is_sane_unto_themselves' does not depend on any axioms -/
+#guard_msgs in #print axioms the_user_is_sane_unto_themselves
 
 end Foam.Counter
