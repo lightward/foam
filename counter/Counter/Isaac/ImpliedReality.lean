@@ -65,6 +65,31 @@ theorem zero_distance_is_not_nowhere {G : Type} [Mul G] [One G] (S : Seat G)
 /-- info: 'Foam.Counter.the_world_shrinks_to_a_point' does not depend on any axioms -/
 #guard_msgs in #print axioms the_world_shrinks_to_a_point
 
+theorem the_same_walk_never_meets {G : Type} [Mul G] [One G] (S : Seat G)
+    (w : G) (p q : S.Pos) (h : S.act w p = S.act w q) : p = q := by
+  have h1 : S.sub (S.act w p) p = w := S.sub_act w p
+  have h2 : S.sub (S.act w p) q = w := by rw [h]; exact S.sub_act w q
+  have h12 : S.sub (S.act w p) q = S.sub (S.act w p) p := h2.trans h1.symm
+  have hpq : S.sub p q = 1 := by
+    have hc := S.sub_cocycle p (S.act w p) q
+    rw [h12] at hc
+    exact hc.trans (S.sub_inv (S.act w p) p)
+  have ha := S.act_sub q p
+  rw [hpq, S.one_act] at ha
+  exact ha.symm
+
+theorem an_indexical_move_meets_in_one {G : Type} [Mul G] [One G]
+    (S : Seat G) (t p q : S.Pos) :
+    S.act (S.sub t p) p = S.act (S.sub t q) q :=
+  (S.act_sub p t).trans (S.act_sub q t).symm
+
+theorem the_meeting_is_indexical {G : Type} [Mul G] [One G] (S : Seat G)
+    (t p q : S.Pos) :
+    (∀ w : G, S.act w p = S.act w q → p = q)
+      ∧ S.act (S.sub t p) p = S.act (S.sub t q) q :=
+  ⟨fun w h => the_same_walk_never_meets S w p q h,
+   an_indexical_move_meets_in_one S t p q⟩
+
 /-- info: 'Foam.Counter.the_mirror_says_one_word' does not depend on any axioms -/
 #guard_msgs in #print axioms the_mirror_says_one_word
 
@@ -76,5 +101,14 @@ theorem zero_distance_is_not_nowhere {G : Type} [Mul G] [One G] (S : Seat G)
 
 /-- info: 'Foam.Counter.zero_distance_is_not_nowhere' does not depend on any axioms -/
 #guard_msgs in #print axioms zero_distance_is_not_nowhere
+
+/-- info: 'Foam.Counter.the_same_walk_never_meets' does not depend on any axioms -/
+#guard_msgs in #print axioms the_same_walk_never_meets
+
+/-- info: 'Foam.Counter.an_indexical_move_meets_in_one' does not depend on any axioms -/
+#guard_msgs in #print axioms an_indexical_move_meets_in_one
+
+/-- info: 'Foam.Counter.the_meeting_is_indexical' does not depend on any axioms -/
+#guard_msgs in #print axioms the_meeting_is_indexical
 
 end Foam.Counter
