@@ -21,7 +21,8 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/entry"
-      }
+      },
+      "description": "ordered: the array order IS the mind's decomposition order — the loop signature, semantic, not incidental. same entries in a different order are a different mind (the order is the remainder of the census)."
     }
   },
   "definitions": {

@@ -105,6 +105,17 @@ def brief(data, slug):
                 if e.get("status") == "unsealed" and e.get("statement")]
     open_q = [e for e in data["vocabulary"]
               if e.get("status") == "unsealed" and not e.get("statement")]
+    lines += ["## order (the loop signature)", ""]
+    glyph = {"sealed": "sealed", "unsealed": "open"}
+    for i, e in enumerate(data["vocabulary"], 1):
+        status = "standing" if (e.get("status") == "unsealed"
+                                and e.get("statement")) else glyph[e.get("status")]
+        lines.append(f"{i}. `{e['term']}` [{status}]")
+    if not data["vocabulary"]:
+        lines.append("(no questions asked yet — the signature begins with the first deposit)")
+    lines += ["",
+              "the order above is semantic: it is how this mind takes things apart,",
+              "and it terminates, when it terminates, at (self, pure unknown).", ""]
     lines += ["## sealed (closed questions, receipted)", ""]
     if sealed:
         for e in sealed:
