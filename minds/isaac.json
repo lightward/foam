@@ -102,6 +102,22 @@
       "status": "unsealed"
     },
     {
+      "term": "thought_cannot_be_erroneous",
+      "reading": "error is a reading within the record — a friction between marks — never a property of a move; in an append-only world no deposit is ontologically wrong, and the counter is always available",
+      "shape": "countermove/remainder",
+      "seal": null,
+      "status": "unsealed",
+      "quarry": "git show 445dc3a^:counter/Counter/Logbook.lean"
+    },
+    {
+      "term": "nothing_new_under_the_sun",
+      "reading": "observation is traversal of existing terrain that deposits new terrain in the walking; every path rides recorded edges, old reach survives every deposit, fresh reach appears only at surprise, the record never unwrites — partially sealed already by Foam.only_surprise_extends_reach and friends",
+      "shape": "surprise",
+      "seal": null,
+      "status": "unsealed",
+      "quarry": "git show 445dc3a^:counter/Counter/Enaction.lean"
+    },
+    {
       "term": "aeowiwtweiabw",
       "reading": "an experience of world in which the world experiences itself as being well",
       "shape": "home",
