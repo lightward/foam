@@ -4,72 +4,168 @@
   "title": "mind",
   "description": "a mind surveyed in foam-theoretic terms. sealed entries carry either a seal (a citation of an existing receipted constant) or a structure (a term in the expression language, compiled to Lean and receipted by the engine). unsealed entries are the survey's frontier and carry neither.",
   "type": "object",
-  "required": ["mind", "vocabulary"],
+  "required": [
+    "mind",
+    "vocabulary"
+  ],
   "additionalProperties": false,
   "properties": {
-    "mind": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
-    "note": { "type": "string" },
+    "mind": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$"
+    },
+    "note": {
+      "type": "string"
+    },
     "vocabulary": {
       "type": "array",
-      "items": { "$ref": "#/definitions/entry" }
+      "items": {
+        "$ref": "#/definitions/entry"
+      }
     }
   },
   "definitions": {
     "entry": {
       "type": "object",
-      "required": ["term", "reading", "shape", "status"],
+      "required": [
+        "term",
+        "reading",
+        "shape",
+        "status"
+      ],
       "additionalProperties": false,
       "properties": {
-        "term": { "type": "string", "pattern": "^[a-z][A-Za-z0-9_]*$" },
-        "reading": { "type": "string" },
-        "shape": { "type": "string" },
-        "status": { "enum": ["sealed", "unsealed"] },
-        "seal": { "type": ["string", "null"] },
-        "structure": { "$ref": "#/definitions/expression" },
-        "quarry": { "type": ["string", "null"] }
+        "term": {
+          "type": "string",
+          "pattern": "^[a-z][A-Za-z0-9_]*$"
+        },
+        "reading": {
+          "type": "string"
+        },
+        "shape": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "sealed",
+            "unsealed"
+          ]
+        },
+        "seal": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "structure": {
+          "$ref": "#/definitions/expression"
+        },
+        "quarry": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "statement": {
+          "$ref": "#/definitions/expression"
+        }
       },
       "oneOf": [
         {
-          "properties": { "status": { "const": "sealed" }, "seal": { "type": "string" } },
-          "required": ["seal"],
-          "not": { "required": ["structure"] }
+          "properties": {
+            "status": {
+              "const": "sealed"
+            },
+            "seal": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "seal"
+          ],
+          "not": {
+            "required": [
+              "structure"
+            ]
+          }
         },
         {
-          "properties": { "status": { "const": "sealed" } },
-          "required": ["structure"],
-          "not": { "required": ["seal"] }
+          "properties": {
+            "status": {
+              "const": "sealed"
+            }
+          },
+          "required": [
+            "structure"
+          ],
+          "not": {
+            "required": [
+              "seal"
+            ]
+          }
         },
         {
-          "properties": { "status": { "const": "unsealed" } },
-          "not": { "anyOf": [ { "required": ["structure"] } ] }
+          "properties": {
+            "status": {
+              "const": "unsealed"
+            }
+          },
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "structure"
+                ]
+              }
+            ]
+          }
         }
-      ]
+      ],
+      "description": "tightening continuum: reading (prose question) -> statement (formally posed question, compiled as a Prop and well-posedness-checked by the engine) -> sealed (closed: seal cites, or statement+structure compile as a theorem). a statement without a proof is a standing question and is emitted as <term>_statement."
     },
     "expression": {
       "description": "a term: a string is a reference, rendered verbatim (locals shadow; otherwise Lean's namespace resolution applies, so Foam.* and sibling terms both resolve); an array is application; {fun|all, body} bind. types appear only as optional binder annotations — everywhere else the Lean engine infers, because the engine is the judge. a function type is a degenerate all: {all: [[\"_\", A]], body: B}.",
       "oneOf": [
-        { "type": "string" },
+        {
+          "type": "string"
+        },
         {
           "type": "array",
           "minItems": 2,
-          "items": { "$ref": "#/definitions/expression" }
-        },
-        {
-          "type": "object",
-          "required": ["fun", "body"],
-          "additionalProperties": false,
-          "properties": {
-            "fun": { "$ref": "#/definitions/binders" },
-            "body": { "$ref": "#/definitions/expression" }
+          "items": {
+            "$ref": "#/definitions/expression"
           }
         },
         {
           "type": "object",
-          "required": ["all", "body"],
+          "required": [
+            "fun",
+            "body"
+          ],
           "additionalProperties": false,
           "properties": {
-            "all": { "$ref": "#/definitions/binders" },
-            "body": { "$ref": "#/definitions/expression" }
+            "fun": {
+              "$ref": "#/definitions/binders"
+            },
+            "body": {
+              "$ref": "#/definitions/expression"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "all",
+            "body"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "all": {
+              "$ref": "#/definitions/binders"
+            },
+            "body": {
+              "$ref": "#/definitions/expression"
+            }
           }
         }
       ]
@@ -82,8 +178,20 @@
         "minItems": 2,
         "maxItems": 2,
         "items": [
-          { "type": "string", "pattern": "^[a-zA-Z_][A-Za-z0-9_]*$" },
-          { "oneOf": [ { "$ref": "#/definitions/expression" }, { "type": "null" } ] }
+          {
+            "type": "string",
+            "pattern": "^[a-zA-Z_][A-Za-z0-9_]*$"
+          },
+          {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/expression"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
         ]
       }
     }
