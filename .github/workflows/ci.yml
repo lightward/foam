@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lean:
+    name: Lean integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: leanprover/lean-action@v1
+        with:
+          build-args: ""
+          lake-package-directory: .
+      - name: Build each Lean file individually (surfaces hidden type errors)
+        run: |
+          for f in $(find . -name '*.lean' | sort); do
+            echo "Building $f..."
+            lake build "$f" || exit 1
+          done
+      - name: No warnings (sorry included — zero tolerance)
+        run: |
+          warns=0
+          for f in $(find . -name '*.lean' | sort); do
+            touch "$f"
+            found=$(lake build "$f" 2>&1 | grep "warning:" || true)
+            if [ -n "$found" ]; then
+              echo "$found"
+              warns=$((warns + 1))
+            fi
+          done
+          if [ $warns -gt 0 ]; then
+            echo ""
+            echo "Warnings found (sorry included). Fix before merging."
+            exit 1
+          fi
+          echo "Clean: zero warnings, sorry included"
+      - name: No reader-facing comments
+        run: python3 .github/comment_audit.py
