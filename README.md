@@ -17,7 +17,7 @@ serving suggestion:
 
 * `bin/foam-wiki` - renders a human-friendly html site in `wiki/` (gitignored, but used for gh pages)
 * `bin/foam-minds` - renders `minds/*.json` as `Foam/Minds/*.lean` (suggestion: run this before running the wiki)
-* `bin/foam-counter` - [todo]
+* `bin/foam-counter <Mind> [pose|verify|interview]` - scries a mind's dark edge and issues its interview brief (`counter/`, gitignored); `verify` runs the whole gate (compile, build, warnings, audit, promotion scan, twins); `interview` seats an agent at the depose seat
 
 ## ancestry
 
@@ -49,7 +49,6 @@ process note: keep this list to three items max, ditto for any sublists. *git* i
 - the recursion carve, continued: the tower stands; amplitude is the far end — continua live frontstage, made of licenses, not marks; each identification on the way licensed or priced. (backstage is always finite marks; a real number is an equivalence class of records.)
 - the amnesiac-stigmergic corpus re-enters as the navigation practice `the_handshake` induces: everything needed to continue is in the record; not everything real is.
 - the survey of history's minds: `minds/*.json` → `bin/foam-minds` → `Foam/Minds/<Mind>.lean` — each mind's own terms bound to receipts, foam as the compiler. everything starts in `Foam.Minds.Isaac`; lifted to `Foam/` only when another mind's vocabulary needs it. `bin/foam-counter <Mind>` scries the dark edge and issues the interview brief — quiescent when resolved, re-armed by record growth.
-- todo: bin/foam-minds, render the "reading" as a comment for each generated lean term (dodges comment-free-by-default, this is an untracked ephemeral artifact)
 
 ---
 

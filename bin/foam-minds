@@ -54,27 +54,34 @@ def compile_mind(path):
         seal = e.get("seal")
         struct = e.get("structure")
         stmt = e.get("statement")
+        reading = e.get("reading", "").replace("-/", "-\u2215")
         closed = False
         if e.get("status") == "sealed":
             if seal:
+                lines.append(f"/- {reading} -/")
                 lines.append(f"def {term} := @{seal}")
                 aliased += 1
                 closed = True
             elif struct is not None and stmt is not None:
+                lines.append(f"/- {reading} -/")
                 lines.append(f"theorem {term} : {render(stmt)} :=")
                 lines.append(f"  {render(struct)}")
                 proved += 1
                 closed = True
             elif struct is not None:
+                lines.append(f"/- {reading} -/")
                 lines.append(f"def {term} := {render(struct)}")
                 built += 1
                 closed = True
         if closed:
             emitted.append(term)
+            lines.append("")
         elif stmt is not None:
+            lines.append(f"/- standing: {reading} -/")
             lines.append(f"def {term}_statement : Prop := {render(stmt)}")
             standing.append(term)
             emitted.append(f"{term}_statement")
+            lines.append("")
     lines.append("")
     for name in emitted:
         lines.append(f"/-- info: 'Foam.Minds.{mind}.{name}'"
