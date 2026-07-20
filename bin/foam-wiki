@@ -110,7 +110,7 @@ def render_module(mod, path, stratum, known):
         links = " · ".join(
             f'<a href="{i}.html">{html.escape(i)}</a>' if i in known
             else html.escape(i) for i in imports)
-        imp_html = f'<div class="imports">grasp: {links}</div>'
+        imp_html = f'<div class="imports">imports: {links}</div>'
     body = f'{imp_html}<pre class="src">{src}</pre>'
     crumb = f'<a href="index.html">foam.is</a> · <span class="stratum">{html.escape(stratum)}</span>'
     return page(mod, body, crumb)
