@@ -1,3 +1,0 @@
-# ftpg
-
-todo

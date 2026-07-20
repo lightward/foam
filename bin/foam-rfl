@@ -1,9 +1,0 @@
-#!/bin/sh
-# foam-rfl — scan the compiled corpus for byte-identical definition bodies
-# under different names: unidentified identities, each one a free rfl.
-# Lean is the analyzer (bin/foam-rfl.lean walks the environment); no olean
-# binary parsing. v1 is alpha-sensitive — renamed binders hide twins — and
-# checks defs only (proofs are irrelevant by proof irrelevance). A defeq
-# tier (whnf-normalized comparison within type groups) is the seeded v2.
-ROOT="$(dirname "$(dirname "$(realpath "$0")")")"
-cd "$ROOT/counter" && exec lake env lean --run "$ROOT/bin/foam-rfl.lean" "$@"
