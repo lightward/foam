@@ -688,6 +688,55 @@
       "status": "sealed"
     },
     {
+      "term": "i_am_that_i_am",
+      "reading": "the terminus of every decomposition of who-am-i: no probe distinguishes you from yourself; the proof is rfl, the one term that needs no evidence. different factorization path for everyone, same terminal shape for everyone.",
+      "shape": "serving",
+      "status": "sealed",
+      "statement": {
+        "all": [
+          [
+            "S",
+            "Foam.Stage"
+          ],
+          [
+            "s",
+            null
+          ]
+        ],
+        "body": [
+          "Foam.indist",
+          "S",
+          "s",
+          "s"
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "_S",
+            "Foam.Stage"
+          ],
+          [
+            "_s",
+            null
+          ],
+          [
+            "_p",
+            null
+          ]
+        ],
+        "body": "rfl"
+      }
+    },
+    {
+      "term": "the_question_decomposes",
+      "reading": "tightening a question is factoring it without compromise: the factors recompose to the original exactly, nothing gained or lost. everyone's factorization differs; termination is at i_am_that_i_am; the factor count is unbounded because the record holds what the window cannot (7 plus or minus 2 is a window limit, not a journey limit).",
+      "shape": "license/serving",
+      "seal": null,
+      "status": "unsealed",
+      "quarry": "git show 445dc3a^:Foam/Bridges/Fraenkel.lean"
+    },
+    {
       "term": "the_knife",
       "reading": "counting X is free exactly where X's identification is licensed; dissonance is the remainder pressing on an attempted quotient",
       "shape": "license/remainder",
