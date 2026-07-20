@@ -3,6 +3,13 @@
   "note": "information is physical; erasure has a price and the bill is conserved.",
   "vocabulary": [
     {
+      "term": "information_is_physical",
+      "reading": "the motto, and the ground the other three stand on: there is no disembodied bit. a distinction counts as information only because it is a distinction in state — carried by a degree of freedom. the narrow seat may read nothing at any probe, and the bit rides as pure remainder; it is real anyway, and a wider seat provably reads it. that is why erasure can cost anything at all: what gets erased was always physical, so the bill has somewhere to land",
+      "shape": "remainder",
+      "status": "sealed",
+      "seal": "Foam.a_wider_seat_reads_the_remainder"
+    },
+    {
       "term": "erasure_shows",
       "reading": "an invisible move cannot merge distinct readings: if m is invisible and m s = m t, then s and t already read alike at every probe — contrapositively, anything that truly erases a distinction is visible somewhere; the bill moves upstairs",
       "shape": "remainder",
