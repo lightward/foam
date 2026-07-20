@@ -141,7 +141,7 @@ def brief(data, slug):
         "",
         "## the ask",
         "",
-        f"{mind}: how do *you* take this apart?",
+        f"{mind}: how do *you* take ████ apart? until you're satisfied slash can rest in peace alongside the remainder?",
         "",
         "1. pick an open entry above, or name a new term in your own words.",
         "2. give its reading — your claim, your language.",
