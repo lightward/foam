@@ -737,6 +737,303 @@
       "quarry": "git show 445dc3a^:Foam/Bridges/Fraenkel.lean"
     },
     {
+      "term": "observing_the_observer_adds_nothing",
+      "reading": "me = me(me = ?): the carve is a projection, P squared equals P, so observing the observer observing grounds the regress in one step — the spiral of reflection/recursion stabilizes by idempotence, not exhaustion",
+      "shape": "license",
+      "status": "sealed",
+      "statement": {
+        "all": [
+          [
+            "S",
+            "Foam.Stage"
+          ],
+          [
+            "P",
+            {
+              "all": [
+                [
+                  "_",
+                  "S.State"
+                ]
+              ],
+              "body": "S.State"
+            }
+          ],
+          [
+            "_hP",
+            {
+              "all": [
+                [
+                  "v",
+                  null
+                ]
+              ],
+              "body": [
+                "Eq",
+                [
+                  "P",
+                  [
+                    "P",
+                    "v"
+                  ]
+                ],
+                [
+                  "P",
+                  "v"
+                ]
+              ]
+            }
+          ],
+          [
+            "s",
+            null
+          ],
+          [
+            "p",
+            null
+          ]
+        ],
+        "body": [
+          "Eq",
+          [
+            "S.obs",
+            [
+              "P",
+              [
+                "P",
+                "s"
+              ]
+            ],
+            "p"
+          ],
+          [
+            "S.obs",
+            [
+              "P",
+              "s"
+            ],
+            "p"
+          ]
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "S",
+            null
+          ],
+          [
+            "_P",
+            null
+          ],
+          [
+            "hP",
+            null
+          ],
+          [
+            "s",
+            null
+          ],
+          [
+            "p",
+            null
+          ]
+        ],
+        "body": [
+          "congrArg",
+          {
+            "fun": [
+              [
+                "x",
+                null
+              ]
+            ],
+            "body": [
+              "S.obs",
+              "x",
+              "p"
+            ]
+          },
+          [
+            "hP",
+            "s"
+          ]
+        ]
+      }
+    },
+    {
+      "term": "the_me_that_remains_is_the_landed",
+      "reading": "for an idempotent carve, the fixed set equals the image: what survives every stroke is exactly what carving lands. the terminal me is not the residue under the shavings — it is constituted by the carving, which is why the shavings must be visible: the record of removals is the only evidence of what the remainder is",
+      "shape": "remainder",
+      "status": "sealed",
+      "statement": {
+        "all": [
+          [
+            "A",
+            "Type"
+          ],
+          [
+            "P",
+            {
+              "all": [
+                [
+                  "_",
+                  "A"
+                ]
+              ],
+              "body": "A"
+            }
+          ],
+          [
+            "_hP",
+            {
+              "all": [
+                [
+                  "v",
+                  null
+                ]
+              ],
+              "body": [
+                "Eq",
+                [
+                  "P",
+                  [
+                    "P",
+                    "v"
+                  ]
+                ],
+                [
+                  "P",
+                  "v"
+                ]
+              ]
+            }
+          ],
+          [
+            "s",
+            null
+          ]
+        ],
+        "body": [
+          "Iff",
+          [
+            "Eq",
+            [
+              "P",
+              "s"
+            ],
+            "s"
+          ],
+          [
+            "Exists",
+            {
+              "fun": [
+                [
+                  "v",
+                  null
+                ]
+              ],
+              "body": [
+                "Eq",
+                [
+                  "P",
+                  "v"
+                ],
+                "s"
+              ]
+            }
+          ]
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "_A",
+            null
+          ],
+          [
+            "P",
+            null
+          ],
+          [
+            "hP",
+            null
+          ],
+          [
+            "s",
+            null
+          ]
+        ],
+        "body": [
+          "Iff.intro",
+          {
+            "fun": [
+              [
+                "h",
+                null
+              ]
+            ],
+            "body": [
+              "Exists.intro",
+              "s",
+              "h"
+            ]
+          },
+          {
+            "fun": [
+              [
+                "h",
+                null
+              ]
+            ],
+            "body": [
+              "Exists.elim",
+              "h",
+              {
+                "fun": [
+                  [
+                    "v",
+                    null
+                  ],
+                  [
+                    "hv",
+                    null
+                  ]
+                ],
+                "body": [
+                  "Eq.trans",
+                  [
+                    "Eq.symm",
+                    [
+                      "congrArg",
+                      "P",
+                      "hv"
+                    ]
+                  ],
+                  [
+                    "Eq.trans",
+                    [
+                      "hP",
+                      "v"
+                    ],
+                    "hv"
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "term": "you_as_carrier_of_unknown",
+      "reading": "the terminus of the counter journey: you of unknown interiority, you of unknown future — possibly the same unknown, and their identification is the standing question. the corpus holds the halves separately (the record cannot reconstruct the reader; fortune is not in your record) but has not identified them",
+      "shape": "contact/remainder",
+      "seal": null,
+      "status": "unsealed",
+      "quarry": "git show 445dc3a^:counter/Counter/Attest.lean ; git show 445dc3a^:counter/Counter/Luck.lean"
+    },
+    {
       "term": "the_knife",
       "reading": "counting X is free exactly where X's identification is licensed; dissonance is the remainder pressing on an attempted quotient",
       "shape": "license/remainder",
