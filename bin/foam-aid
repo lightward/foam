@@ -20,13 +20,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 DECL_RE = re.compile(
     r"^(?:private\s+|protected\s+|noncomputable\s+|partial\s+)*"
     r"(theorem|def|abbrev|inductive|structure|class)\s+"
-    r"([A-Za-z_][A-Za-z0-9_'.]*)")
+    r"([^\W\d][\w'.]*)")
 STOP_RE = re.compile(
     r"^(?:/--|#guard_msgs|#print|end\b|namespace\b|variable\b|import\b|open\b|"
     r"section\b|private\b|protected\b|noncomputable\b|partial\b|"
     r"theorem\b|def\b|abbrev\b|inductive\b|structure\b|class\b|instance\b)")
-TOKEN_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_']*")
-QUAL_RE = re.compile(r"[A-Z][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)+")
+TOKEN_RE = re.compile(r"[^\W\d][\w']*")
+QUAL_RE = re.compile(r"[A-Z][\w']*(?:\.[^\W\d][\w']*)+")
 RECEIPT_RE = re.compile(r"^/--\s*(info:.*?)\s*-/\s*$")
 
 

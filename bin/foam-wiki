@@ -1,11 +1,25 @@
 #!/usr/bin/env python3
 
 import html
+import importlib.machinery
+import importlib.util
 import os
 import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 OUT = os.environ.get("FOAM_WIKI_OUT", os.path.join(ROOT, "wiki"))
+
+
+def load_aid():
+    path = os.path.join(ROOT, "bin", "foam-aid")
+    loader = importlib.machinery.SourceFileLoader("foam_aid", path)
+    spec = importlib.util.spec_from_loader("foam_aid", loader)
+    mod = importlib.util.module_from_spec(spec)
+    loader.exec_module(mod)
+    return mod
+
+
+AID = load_aid()
 
 STRATA = [
     ("Foam", "Foam", "1 · physics (axiom-free)"),
@@ -43,9 +57,13 @@ ul.census li { break-inside: avoid; }
 footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
          color: var(--dim); }
 .law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+.dep { margin: 1.5rem 0; }
+.dep-home { color: var(--dim); margin-bottom: 0.25rem; }
 """
 
-DECL_RE = re.compile(r"^(theorem|def|structure|inductive|abbrev|instance) (\S+)")
+DECL_RE = re.compile(
+    r"^(?:(?:private|protected|noncomputable|partial)\s+)*"
+    r"(theorem|def|structure|inductive|abbrev|instance|class)\s+(\S+)")
 IMPORT_RE = re.compile(r"^import ([\w.]+)$")
 GUARD_RE = re.compile(r"^(/-- info:|#guard_msgs)")
 
@@ -79,7 +97,17 @@ def page(title, body, crumb=""):
 </body></html>"""
 
 
-def render_module(mod, path, stratum, known):
+def render_decl_line(line, d, href, with_id=True):
+    prefix = html.escape(line[:d.start(1)])
+    kw = d.group(1)
+    name = html.escape(d.group(2))
+    rest = html.escape(line[d.end(2):])
+    ident = f' id="{name}"' if with_id else ""
+    return (f'{prefix}<span class="kw">{kw}</span> '
+            f'<a class="decl"{ident} href="{href}">{name}</a>{rest}')
+
+
+def render_module(mod, path, stratum, known, deps, path_to_mod):
     with open(path, encoding="utf-8") as f:
         lines = f.read().splitlines()
     imports = []
@@ -96,12 +124,8 @@ def render_module(mod, path, stratum, known):
             continue
         d = DECL_RE.match(line)
         if d:
-            kw, name = d.group(1), d.group(2)
-            anchor = html.escape(name)
-            rest = html.escape(line[len(kw) + 1 + len(name):])
-            esc = (f'<span class="kw">{kw}</span> '
-                   f'<a class="decl" id="{anchor}" href="#{anchor}">{anchor}</a>{rest}')
-            out.append(esc)
+            anchor = html.escape(d.group(2))
+            out.append(render_decl_line(line, d, f"#{anchor}"))
             continue
         if GUARD_RE.match(line):
             out.append(f'<span class="receipt">{esc}</span>')
@@ -114,9 +138,38 @@ def render_module(mod, path, stratum, known):
             f'<a href="{i}.html">{html.escape(i)}</a>' if i in known
             else html.escape(i) for i in imports)
         imp_html = f'<div class="imports">grasp: {links}</div>'
-    body = f'{imp_html}<pre class="src">{src}</pre>'
+    body = f'{imp_html}<pre class="src">{src}</pre>{render_upstream(deps, path_to_mod)}'
     crumb = f'<a href="index.html">foam.is</a> · <span class="stratum">{html.escape(stratum)}</span>'
     return page(mod, body, crumb)
+
+
+def render_upstream(deps, path_to_mod):
+    if not deps:
+        return ""
+    blocks = []
+    for b in deps:
+        home = path_to_mod.get(b["file"], "")
+        anchor = html.escape(b["short"])
+        href = f"{home}.html#{anchor}" if home else "#"
+        out = []
+        for line in b["body"].splitlines():
+            d = DECL_RE.match(line)
+            if d:
+                out.append(render_decl_line(line, d, href, with_id=False))
+            else:
+                out.append(html.escape(line))
+        if b["receipt"]:
+            out.append(f'<span class="receipt">/-- {html.escape(b["receipt"])} -/</span>')
+        home_html = (f'<a href="{home}.html">{html.escape(home)}</a>'
+                     if home else html.escape(b["file"]))
+        src = "\n".join(out)
+        blocks.append(
+            f'<div class="dep"><div class="dep-home">'
+            f'<span class="decl">{html.escape(b["full"])}</span> · {home_html}</div>'
+            f'<pre class="src">{src}</pre></div>')
+    return (f'<h2 id="upstream">upstream — {len(deps)} blocks, primitives first</h2>'
+            f'<p class="stratum">each block verbatim from its home file; '
+            f'with these, the page reads whole.</p>' + "".join(blocks))
 
 
 def render_index(modules):
@@ -145,12 +198,22 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     modules = collect()
     known = set(modules)
+    path_to_mod = {os.path.relpath(path, ROOT): mod
+                   for mod, (path, _) in modules.items()}
+    aid_blocks = AID.harvest()
+    aid_idx = AID.index(aid_blocks)
+    carried = 0
     for mod, (path, stratum) in modules.items():
+        rel = os.path.relpath(path, ROOT)
+        roots = [b for b in aid_blocks if b["file"] == rel]
+        deps = [b for b in AID.closure(roots, aid_idx) if b["file"] != rel]
+        carried += len(deps)
         with open(os.path.join(OUT, f"{mod}.html"), "w", encoding="utf-8") as f:
-            f.write(render_module(mod, path, stratum, known))
+            f.write(render_module(mod, path, stratum, known, deps, path_to_mod))
     with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
         f.write(render_index(modules))
-    print(f"[foam relief] {len(modules)} module pages + index → wiki/")
+    print(f"[foam relief] {len(modules)} module pages + index → wiki/ "
+          f"({carried} upstream blocks carried)")
 
 
 if __name__ == "__main__":
