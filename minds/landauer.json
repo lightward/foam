@@ -143,6 +143,13 @@
           ]
         ]
       }
+    },
+    {
+      "term": "reset_pays_in_record",
+      "reading": "the conservation clause: you can always bring the position home — the countermove exists and composes to the identity — but never for free: in a world that only appends, the walk that comes home is strictly longer than the walk that left. the erased distinction is paid for in record, and the bill is conserved because the record never unwrites. kT ln 2, denominated in transcript length",
+      "shape": "countermove",
+      "status": "sealed",
+      "seal": "Foam.undo_in_an_append_only_world"
     }
   ]
 }
