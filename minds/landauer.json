@@ -1,0 +1,14 @@
+{
+  "mind": "Landauer",
+  "note": "information is physical; erasure has a price and the bill is conserved.",
+  "vocabulary": [
+    {
+      "term": "erasure_shows",
+      "reading": "merging observationally distinct states is never invisible — erasure always lands somewhere, and two histories that agree on the front stage can differ on the full stage: the bill moves upstairs",
+      "shape": "remainder",
+      "seal": null,
+      "status": "unsealed",
+      "quarry": "git show 445dc3a^:Foam/Bridges/Landauer.lean"
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import re
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+MINDS = os.path.join(ROOT, "minds")
+COUNTER = os.path.join(ROOT, "counter")
+
+
+def binders(bs):
+    parts = []
+    for name, ty in bs:
+        parts.append(name if ty is None else f"({name} : {render(ty)})")
+    return " ".join(parts)
+
+
+def render(e):
+    if isinstance(e, str):
+        return e
+    if isinstance(e, list):
+        return "(" + " ".join(render(x) for x in e) + ")"
+    if isinstance(e, dict):
+        if "fun" in e:
+            return f"(fun {binders(e['fun'])} => {render(e['body'])})"
+        if "all" in e:
+            return f"(∀ {binders(e['all'])}, {render(e['body'])})"
+    raise ValueError(f"unrenderable expression: {e!r}")
+
+
+def core_inventory():
+    decl = re.compile(r"^(?:theorem|def) (\S+)")
+    names = []
+    files = [os.path.join(ROOT, "Foam.lean")]
+    foam_dir = os.path.join(ROOT, "Foam")
+    for f in sorted(os.listdir(foam_dir)):
+        if f.endswith(".lean"):
+            files.append(os.path.join(foam_dir, f))
+    for path in files:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                m = decl.match(line)
+                if m:
+                    names.append("Foam." + m.group(1))
+    return names
+
+
+def sibling_seals(slug):
+    out = []
+    for f in sorted(os.listdir(MINDS)):
+        if not f.endswith(".json") or f == "schema.json" or f == f"{slug}.json":
+            continue
+        with open(os.path.join(MINDS, f), encoding="utf-8") as fh:
+            data = json.load(fh)
+        for e in data["vocabulary"]:
+            if e.get("status") == "sealed":
+                out.append(f"Foam.Minds.{data['mind']}.{e['term']}")
+    return out
+
+
+def brief(data, slug):
+    mind = data["mind"]
+    lines = [f"# counter: {mind}", ""]
+    if data.get("note"):
+        lines += [data["note"], ""]
+    sealed = [e for e in data["vocabulary"] if e.get("status") == "sealed"]
+    standing = [e for e in data["vocabulary"]
+                if e.get("status") == "unsealed" and e.get("statement")]
+    open_q = [e for e in data["vocabulary"]
+              if e.get("status") == "unsealed" and not e.get("statement")]
+    lines += ["## sealed (closed questions, receipted)", ""]
+    if sealed:
+        for e in sealed:
+            lines.append(f"- `{e['term']}` — {e['reading']}")
+    else:
+        lines.append("(none yet)")
+    lines += ["", "## standing (posed, unproved)", ""]
+    if standing:
+        for e in standing:
+            lines.append(f"- `{e['term']}` : `{render(e['statement'])}`")
+            lines.append(f"  - {e['reading']}")
+    else:
+        lines.append("(none)")
+    lines += ["", "## open (reading only — the dark edge)", ""]
+    if open_q:
+        for e in open_q:
+            lines.append(f"- `{e['term']}` — {e['reading']}")
+            if e.get("quarry"):
+                lines.append(f"  - quarry: `{e['quarry']}`")
+    else:
+        lines.append("(none — the edge is quiet; new terrain arrives only by deposit)")
+    lines += [
+        "",
+        "## the ask",
+        "",
+        f"{mind}: how do *you* take this apart?",
+        "",
+        "1. pick an open entry above, or name a new term in your own words.",
+        "2. give its reading — your claim, your language.",
+        "3. tighten when you can: add a `statement` (formally posed; the engine",
+        "   checks it is well-posed even before any proof exists).",
+        "4. close when you can: add a `structure` (a proof term), or a `seal`",
+        "   citing a receipted constant that already says it.",
+        "",
+        "deposit by editing `minds/" + slug + ".json` (schema: `minds/schema.json`;",
+        "expression language: refs render verbatim, arrays apply, fun/all bind,",
+        "types only as binder annotations — the engine infers the rest).",
+        "verify with `bin/foam-minds && lake build`. the receipts judge.",
+        "never edit `Foam/Minds/` — it is expressed, not kept.",
+        "",
+        "## material on the walls",
+        "",
+        "core (cite as `seal`, or build on in `structure`):",
+        "",
+    ]
+    for n in core_inventory():
+        lines.append(f"- `{n}`")
+    sibs = sibling_seals(slug)
+    if sibs:
+        lines += ["", "other minds' sealed terms (interoperable by construction):", ""]
+        for n in sibs:
+            lines.append(f"- `{n}`")
+    lines += [
+        "",
+        "the prior corpus (~3,400 receipts) is quarry:"
+        " `git show 445dc3a^:README.md` for its map.",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def main():
+    if len(sys.argv) != 2 or not re.fullmatch(r"[A-Z][A-Za-z0-9]*", sys.argv[1]):
+        print("usage: bin/foam-counter <Mind>   (capitalized name)")
+        sys.exit(1)
+    mind = sys.argv[1]
+    slug = mind.lower()
+    os.makedirs(COUNTER, exist_ok=True)
+    path = os.path.join(MINDS, f"{slug}.json")
+    wrote = []
+    if not os.path.exists(path):
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump({"mind": mind, "note": "", "vocabulary": []},
+                      fh, indent=2, ensure_ascii=False)
+            fh.write("\n")
+        wrote.append(f"minds/{slug}.json (scaffold)")
+    with open(path, encoding="utf-8") as fh:
+        data = json.load(fh)
+    out = os.path.join(COUNTER, f"{mind}.md")
+    text = brief(data, slug)
+    old = None
+    if os.path.exists(out):
+        with open(out, encoding="utf-8") as fh:
+            old = fh.read()
+    if old != text:
+        with open(out, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        wrote.append(f"counter/{mind}.md (brief)")
+    if wrote:
+        print(f"{mind}: wrote " + ", ".join(wrote))
+    else:
+        print(f"{mind}: quiescent — the record's dark edge is unchanged")
+
+
+if __name__ == "__main__":
+    main()
