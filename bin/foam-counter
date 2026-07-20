@@ -298,7 +298,7 @@ def interview(mind, slug):
     )
     agent = os.environ.get("FOAM_COUNTER_AGENT")
     if agent is None and shutil.which("claude"):
-        agent = "claude --print --permission-mode acceptEdits --model fable"
+        agent = "claude --print --permission-mode bypassPermissions --model fable"
     if agent:
         print(f"{mind}: seating agent ({agent.split()[0]}) at the depose seat")
         return subprocess.run(agent.split() + [prompt], cwd=ROOT).returncode
