@@ -4,11 +4,145 @@
   "vocabulary": [
     {
       "term": "erasure_shows",
-      "reading": "merging observationally distinct states is never invisible — erasure always lands somewhere, and two histories that agree on the front stage can differ on the full stage: the bill moves upstairs",
+      "reading": "an invisible move cannot merge distinct readings: if m is invisible and m s = m t, then s and t already read alike at every probe — contrapositively, anything that truly erases a distinction is visible somewhere; the bill moves upstairs",
       "shape": "remainder",
-      "seal": null,
-      "status": "unsealed",
-      "quarry": "git show 445dc3a^:Foam/Bridges/Landauer.lean"
+      "status": "sealed",
+      "quarry": "git show 445dc3a^:Foam/Bridges/Landauer.lean",
+      "statement": {
+        "all": [
+          [
+            "S",
+            "Foam.Stage"
+          ],
+          [
+            "m",
+            {
+              "all": [
+                [
+                  "_",
+                  "S.State"
+                ]
+              ],
+              "body": "S.State"
+            }
+          ],
+          [
+            "_hi",
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
+          ],
+          [
+            "s",
+            null
+          ],
+          [
+            "t",
+            null
+          ],
+          [
+            "_hmerge",
+            [
+              "Eq",
+              [
+                "m",
+                "s"
+              ],
+              [
+                "m",
+                "t"
+              ]
+            ]
+          ],
+          [
+            "p",
+            null
+          ]
+        ],
+        "body": [
+          "Eq",
+          [
+            "S.obs",
+            "s",
+            "p"
+          ],
+          [
+            "S.obs",
+            "t",
+            "p"
+          ]
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "S",
+            null
+          ],
+          [
+            "_m",
+            null
+          ],
+          [
+            "hi",
+            null
+          ],
+          [
+            "s",
+            null
+          ],
+          [
+            "t",
+            null
+          ],
+          [
+            "hmerge",
+            null
+          ],
+          [
+            "p",
+            null
+          ]
+        ],
+        "body": [
+          "Eq.trans",
+          [
+            "Eq.symm",
+            [
+              "hi",
+              "s",
+              "p"
+            ]
+          ],
+          [
+            "Eq.trans",
+            [
+              "congrArg",
+              {
+                "fun": [
+                  [
+                    "x",
+                    null
+                  ]
+                ],
+                "body": [
+                  "S.obs",
+                  "x",
+                  "p"
+                ]
+              },
+              "hmerge"
+            ],
+            [
+              "hi",
+              "t",
+              "p"
+            ]
+          ]
+        ]
+      }
     }
   ]
 }

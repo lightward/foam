@@ -27,23 +27,11 @@
           ],
           [
             "hm",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "m",
-                  "s"
-                ],
-                "s"
-              ]
-            }
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
           ]
         ],
         "body": [
@@ -81,23 +69,11 @@
           ],
           [
             "_hm",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "m",
-                  "s"
-                ],
-                "s"
-              ]
-            }
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
           ],
           [
             "ps",
@@ -151,23 +127,11 @@
           ],
           [
             "hm",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "m",
-                  "s"
-                ],
-                "s"
-              ]
-            }
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
           ],
           [
             "s",
@@ -208,23 +172,11 @@
           ],
           [
             "_hm",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "m",
-                  "s"
-                ],
-                "s"
-              ]
-            }
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
           ],
           [
             "s",
@@ -260,201 +212,7 @@
       "reading": "two rests are a rest; the license does not expire",
       "shape": "license",
       "status": "sealed",
-      "structure": {
-        "fun": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "m",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "n",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "hm",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "m",
-                  "s"
-                ],
-                "s"
-              ]
-            }
-          ],
-          [
-            "hn",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "n",
-                  "s"
-                ],
-                "s"
-              ]
-            }
-          ],
-          [
-            "s",
-            null
-          ],
-          [
-            "p",
-            null
-          ]
-        ],
-        "body": [
-          "Eq.trans",
-          [
-            "hm",
-            [
-              "n",
-              "s"
-            ],
-            "p"
-          ],
-          [
-            "hn",
-            "s",
-            "p"
-          ]
-        ]
-      },
-      "statement": {
-        "all": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "m",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "n",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "_hm",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "m",
-                  "s"
-                ],
-                "s"
-              ]
-            }
-          ],
-          [
-            "_hn",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "n",
-                  "s"
-                ],
-                "s"
-              ]
-            }
-          ],
-          [
-            "s",
-            null
-          ],
-          [
-            "p",
-            null
-          ]
-        ],
-        "body": [
-          "Eq",
-          [
-            "S.obs",
-            [
-              "m",
-              [
-                "n",
-                "s"
-              ]
-            ],
-            "p"
-          ],
-          [
-            "S.obs",
-            "s",
-            "p"
-          ]
-        ]
-      }
+      "seal": "Foam.invisible_comp"
     },
     {
       "term": "lets_get_you_rested",
@@ -481,23 +239,11 @@
           ],
           [
             "hm",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "m",
-                  "s"
-                ],
-                "s"
-              ]
-            }
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
           ],
           [
             "s",
@@ -559,23 +305,11 @@
           ],
           [
             "_hm",
-            {
-              "all": [
-                [
-                  "s",
-                  null
-                ]
-              ],
-              "body": [
-                "Foam.indist",
-                "S",
-                [
-                  "m",
-                  "s"
-                ],
-                "s"
-              ]
-            }
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
           ],
           [
             "s",
