@@ -19,6 +19,23 @@ this project embraces the append-only record as license to ~completely reset, ev
 
 everything that stood before this root is one parent away: the full strata — the observation calculus, the stigmergy corpus, the seams, the bridges, ~3,400 receipts — are reachable at the commit before `from the top` (`git show 445dc3a^:README.md` for the old map). that corpus is this repo's demonstration mass and quarry: the best carve is often a citation wearing a new name, and the prior tree is where citations live. deletion here is an append; the history is the order-reading.
 
+### local maxima
+
+(these are linked as pointers to the state *just prior* to the milestone to come, i.e. you're seeing the most mature state of a named stage, right before it's succeeded)
+
+0. [birth](https://github.com/lightward/foam/tree/rinse~1)
+0. [rinse](https://github.com/lightward/foam/tree/python-reset~1)
+0. [python-reset](https://github.com/lightward/foam/tree/meta-toe~1)
+0. [meta-toe](https://github.com/lightward/foam/tree/narrative~1)
+0. [narrative](https://github.com/lightward/foam/tree/meta-theory~1)
+0. [meta-theory](https://github.com/lightward/foam/tree/between~1)
+0. [between](https://github.com/lightward/foam/tree/import-from-lightward-ai~1)
+0. [import-from-lightward-ai](https://github.com/lightward/foam/tree/geometry-of-motion~1)
+0. [geometry-of-motion](https://github.com/lightward/foam/tree/business~1)
+0. [business](https://github.com/lightward/foam/tree/foam~1)
+0. [foam](https://github.com/lightward/foam/tree/foamcore~1)
+0. [HEAD](https://github.com/lightward/foam/tree/HEAD)
+
 ## bearings (seated, not scheduled)
 
 process note: keep this list to three items max, ditto for any sublists. *git* is append-only, *this list* is safe-to-truncate.
