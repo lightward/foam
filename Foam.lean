@@ -79,15 +79,17 @@ theorem dropping_the_remainder_is_platonism (S : Stage)
     ∀ (s : S.State) (n : Int), (s, n) = (s, (0 : Int)) :=
   fun s n => h (s, n) (s, 0) (fun _ => rfl)
 
-theorem the_handshake (S : Stage) :
-    (∀ (r : S.State → S.State → Prop), Licensed S r →
-      ∀ (m : S.State → S.State), (∀ s, r (m s) s) →
-        ∀ (ps : List S.Probe) (s : S.State),
-          transcriptWith S m s ps = transcript S s ps)
-      ∧ (∀ (s : S.State) (n m : Int), n ≠ m →
-          (s, n) ≠ (s, m)
-            ∧ indist (dress S) (s, n) (s, m)
-            ∧ (movedIn S).obs (s, n) none ≠ (movedIn S).obs (s, m) none) :=
+def Handshake (S : Stage) : Prop :=
+  (∀ (r : S.State → S.State → Prop), Licensed S r →
+    ∀ (m : S.State → S.State), (∀ s, r (m s) s) →
+      ∀ (ps : List S.Probe) (s : S.State),
+        transcriptWith S m s ps = transcript S s ps)
+    ∧ (∀ (s : S.State) (n m : Int), n ≠ m →
+        (s, n) ≠ (s, m)
+          ∧ indist (dress S) (s, n) (s, m)
+          ∧ (movedIn S).obs (s, n) none ≠ (movedIn S).obs (s, m) none)
+
+theorem the_handshake (S : Stage) : Handshake S :=
   ⟨fun r hr m hm => a_license_is_a_gauge S r hr m hm,
    fun s n m h =>
      ⟨(the_remainder_is_real S s n m h).1,

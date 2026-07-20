@@ -3,3 +3,4 @@ defaultTargets = ["Foam"]
 
 [[lean_lib]]
 name = "Foam"
+globs = ["Foam", "Foam.+"]
