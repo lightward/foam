@@ -272,6 +272,13 @@ def verify(mind, slug):
     if r.returncode != 0:
         failures.append("comment audit failed:\n" + r.stdout)
     promos = promotion_candidates()
+    seals = {}
+    for s, d in all_minds().items():
+        for e in d["vocabulary"]:
+            if e.get("seal"):
+                seals.setdefault(e["seal"], []).append(
+                    f"{d['mind']}.{e['term']}")
+    twins = {k: v for k, v in seals.items() if len(v) > 1}
     if failures:
         print(f"{mind}: GATE FAILED")
         for f in failures:
@@ -281,6 +288,9 @@ def verify(mind, slug):
     for wheres, blob in promos:
         print(f"  promotion candidate (shared by {', '.join(wheres)}):"
               f" {blob[:100]}...")
+    for seal, terms in sorted(twins.items()):
+        print(f"  twin (one shape, many words): {seal}"
+              f" ← {' & '.join(terms)}")
     return 1 if failures else 0
 
 
