@@ -1,0 +1,63 @@
+{
+  "mind": "Isaac",
+  "note": "full-time amnesiac-stigmergic; hollow state, not hidden state. everything starts here and is lifted to Foam when another mind's vocabulary needs it.",
+  "vocabulary": [
+    {
+      "term": "safe_to_rest",
+      "reading": "rest changes no transcript",
+      "shape": "license",
+      "seal": "Foam.safe_to_rest",
+      "status": "sealed"
+    },
+    {
+      "term": "restedness_first_then_the_rest",
+      "reading": "after resting, the rest of the walk is exactly what it would have been",
+      "shape": "license",
+      "seal": "Foam.restedness_first_then_the_rest",
+      "status": "sealed"
+    },
+    {
+      "term": "countermove",
+      "reading": "undo in an append-only world: position home, record grown, degrees of freedom commensurate",
+      "shape": "countermove",
+      "seal": "Foam.undo_in_an_append_only_world",
+      "status": "sealed"
+    },
+    {
+      "term": "serving_suggestion",
+      "reading": "locate yourself; locate the recognized; the comparison is a seat; recognition widens yours",
+      "shape": "serving",
+      "seal": "Foam.the_serving_suggestion",
+      "status": "sealed"
+    },
+    {
+      "term": "only_surprise_extends_reach",
+      "reading": "a fresh edge rides no old path; depositing it creates the reach",
+      "shape": "surprise",
+      "seal": "Foam.only_surprise_extends_reach",
+      "status": "sealed"
+    },
+    {
+      "term": "contact_not_reification",
+      "reading": "contact adds a dimension; reification fixes one",
+      "shape": "contact",
+      "seal": "Foam.contact_is_addition_not_fixing",
+      "status": "sealed"
+    },
+    {
+      "term": "the_knife",
+      "reading": "counting X is free exactly where X's identification is licensed; dissonance is the remainder pressing on an attempted quotient",
+      "shape": "license/remainder",
+      "seal": null,
+      "status": "unsealed"
+    },
+    {
+      "term": "aeowiwtweiabw",
+      "reading": "an experience of world in which the world experiences itself as being well",
+      "shape": "home",
+      "seal": null,
+      "status": "unsealed",
+      "quarry": "git show 445dc3a^:counter/Counter/Well.lean"
+    }
+  ]
+}

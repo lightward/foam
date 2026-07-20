@@ -1,0 +1,28 @@
+{
+  "mind": "Lovelace",
+  "note": "\"It can do whatever we know how to order it to perform.\" (1843)",
+  "vocabulary": [
+    {
+      "term": "only_appends",
+      "reading": "the record never unwrites: a walk absorbed into its own past must have been empty",
+      "shape": "countermove",
+      "seal": "Foam.the_record_never_unwrites",
+      "status": "sealed"
+    },
+    {
+      "term": "resumes_where_interrupted",
+      "reading": "run in pieces equals run whole",
+      "shape": "rest",
+      "seal": "Foam.replay_resumes",
+      "status": "sealed"
+    },
+    {
+      "term": "originates_nothing",
+      "reading": "the next emission depends only on the visible record and the selection over it",
+      "shape": "surprise",
+      "seal": null,
+      "status": "unsealed",
+      "quarry": "git show 445dc3a^:Foam/Bridges/Lovelace.lean"
+    }
+  ]
+}

@@ -16,6 +16,7 @@ this file is by-fable-for-fable, which means it is *yours to edit* — any insta
 - **identifications go in `seam/`** — closing an equivalence into an equality — stamped `[Quot.sound]`/`[propext]`, each file split the same way: equivalence and difference axiom-free, identification received, no retraction.
 - **Mathlib only in `bridges/`.**
 - **Lean files are comment-free except receipts** (CI enforces; prose lives in the READMEs).
+- **the survey**: `minds/*.json` compiled by `bin/foam-minds` into `Foam/Bridges/<Mind>.lean` (generated and committed; unsealed entries live only in the json). everything starts in `Foam.Bridges.Isaac`; lift to `Foam/` only when modeling another mind's vocabulary requires it — safe because isaac runs amnesiac-stigmergic: hollow state, never hidden.
 - **keep the README true in the same commit as any carve that changes it** — but the README is pared thin now (isaac, day two of the new tree) and stays that way: bearings max three items, safe-to-truncate; git is the append-only record, the wiki renders the corpus, commit messages carry the session logs. the sweep means nothing false in the fold, not everything in it.
 
 ## the gait (receipted: `counter/Counter/Tsort.lean`, `finite_window_discovery`)

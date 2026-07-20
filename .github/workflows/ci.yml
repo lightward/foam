@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - name: express the minds (product checked, not committed)
+        run: bin/foam-minds
       - uses: leanprover/lean-action@v1
         with:
           build-args: ""

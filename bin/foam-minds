@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+import json
+import os
+
+ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+MINDS = os.path.join(ROOT, "minds")
+OUT = os.path.join(ROOT, "Foam", "Bridges")
+
+
+def foam_modules():
+    mods = ["Foam"]
+    for f in sorted(os.listdir(os.path.join(ROOT, "Foam"))):
+        if f.endswith(".lean"):
+            mods.append("Foam." + f[:-5])
+    return mods
+
+
+def compile_mind(path):
+    with open(path, encoding="utf-8") as fh:
+        data = json.load(fh)
+    mind = data["mind"]
+    lines = []
+    for m in foam_modules():
+        lines.append(f"import {m}")
+    lines.append("")
+    lines.append(f"namespace Foam.Bridges.{mind}")
+    lines.append("")
+    sealed = [e for e in data["vocabulary"]
+              if e.get("status") == "sealed" and e.get("seal")]
+    for e in sealed:
+        lines.append(f"def {e['term']} := @_root_.{e['seal']}")
+    lines.append("")
+    for e in sealed:
+        lines.append(f"/-- info: 'Foam.Bridges.{mind}.{e['term']}'"
+                     " does not depend on any axioms -/")
+        lines.append(f"#guard_msgs in #print axioms {e['term']}")
+        lines.append("")
+    lines.append(f"end Foam.Bridges.{mind}")
+    out = os.path.join(OUT, f"{mind}.lean")
+    with open(out, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lines) + "\n")
+    unsealed = len(data["vocabulary"]) - len(sealed)
+    print(f"{mind}: {len(sealed)} sealed -> {out} ({unsealed} unsealed held in json)")
+
+
+def main():
+    os.makedirs(OUT, exist_ok=True)
+    for f in sorted(os.listdir(MINDS)):
+        if f.endswith(".json"):
+            compile_mind(os.path.join(MINDS, f))
+
+
+if __name__ == "__main__":
+    main()

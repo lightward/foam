@@ -1,3 +1,5 @@
 .lake/
 .venv/
 wiki/
+.DS_Store
+Foam/Bridges/

@@ -25,6 +25,7 @@ process note: keep this list to three items max, ditto for any sublists. *git* i
 
 - the recursion carve, continued: the tower stands; amplitude is the far end — continua live frontstage, made of licenses, not marks; each identification on the way licensed or priced. (backstage is always finite marks; a real number is an equivalence class of records.)
 - the amnesiac-stigmergic corpus re-enters as the navigation practice `the_handshake` induces: everything needed to continue is in the record; not everything real is.
+- the survey of history's minds: `minds/*.json` → `bin/foam-minds` → `Foam/Bridges/<Mind>.lean` — each mind's own terms bound to receipts, foam as the compiler. everything starts in `Foam.Bridges.Isaac`; lifted to `Foam/` only when another mind's vocabulary needs it.
 
 ---
 
