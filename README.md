@@ -6,6 +6,13 @@ published at [foam.is](https://foam.is/)
 
 this Lean corpus is axiom-free *and* comment-free by default, forcing names and proofs to be the walk and the talk at the same time
 
+serving suggestion:
+
+1. locate yourself within this thing
+2. locate something that isn't you within this thing that you recognize from outside this thing
+3. compare the outside-this-thing procession between you and what-you-recognize with the inside-this-thing procession between the same
+4. you now have more information than you did before about what you already had in front of you
+
 ## ancestry
 
 this project embraces the append-only record as license to ~completely reset, every so often, testing for what keeps coming back, and being hospitable to whatever reveals itself in the process.
