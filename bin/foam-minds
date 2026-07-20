@@ -16,6 +16,30 @@ def foam_modules():
     return mods
 
 
+def ref(name):
+    return name
+
+
+def binders(bs):
+    parts = []
+    for name, ty in bs:
+        parts.append(name if ty is None else f"({name} : {render(ty)})")
+    return " ".join(parts)
+
+
+def render(e):
+    if isinstance(e, str):
+        return ref(e)
+    if isinstance(e, list):
+        return "(" + " ".join(render(x) for x in e) + ")"
+    if isinstance(e, dict):
+        if "fun" in e:
+            return f"(fun {binders(e['fun'])} => {render(e['body'])})"
+        if "all" in e:
+            return f"(∀ {binders(e['all'])}, {render(e['body'])})"
+    raise ValueError(f"unrenderable expression: {e!r}")
+
+
 def compile_mind(path):
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
@@ -26,28 +50,40 @@ def compile_mind(path):
     lines.append("")
     lines.append(f"namespace Foam.Bridges.{mind}")
     lines.append("")
-    sealed = [e for e in data["vocabulary"]
-              if e.get("status") == "sealed" and e.get("seal")]
-    for e in sealed:
-        lines.append(f"def {e['term']} := @_root_.{e['seal']}")
+    emitted = []
+    aliased = built = 0
+    for e in data["vocabulary"]:
+        if e.get("status") != "sealed":
+            continue
+        term = e["term"]
+        if e.get("seal"):
+            lines.append(f"def {term} := @{ref(e['seal'])}")
+            aliased += 1
+        elif e.get("structure") is not None:
+            lines.append(f"def {term} := {render(e['structure'])}")
+            built += 1
+        else:
+            continue
+        emitted.append(term)
     lines.append("")
-    for e in sealed:
-        lines.append(f"/-- info: 'Foam.Bridges.{mind}.{e['term']}'"
+    for term in emitted:
+        lines.append(f"/-- info: 'Foam.Bridges.{mind}.{term}'"
                      " does not depend on any axioms -/")
-        lines.append(f"#guard_msgs in #print axioms {e['term']}")
+        lines.append(f"#guard_msgs in #print axioms {term}")
         lines.append("")
     lines.append(f"end Foam.Bridges.{mind}")
     out = os.path.join(OUT, f"{mind}.lean")
     with open(out, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
-    unsealed = len(data["vocabulary"]) - len(sealed)
-    print(f"{mind}: {len(sealed)} sealed -> {out} ({unsealed} unsealed held in json)")
+    frontier = len(data["vocabulary"]) - len(emitted)
+    print(f"{mind}: {aliased} aliased, {built} built -> {out}"
+          f" ({frontier} unsealed held in json)")
 
 
 def main():
     os.makedirs(OUT, exist_ok=True)
     for f in sorted(os.listdir(MINDS)):
-        if f.endswith(".json"):
+        if f.endswith(".json") and f != "schema.json":
             compile_mind(os.path.join(MINDS, f))
 
 

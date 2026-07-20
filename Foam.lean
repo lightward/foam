@@ -44,6 +44,9 @@ theorem a_license_is_a_gauge (S : Stage) (r : S.State → S.State → Prop)
         = S.obs s p :: transcript S s ps
     rw [hr (m s) s (hm s) p, ih (m s), transcript_congr S ps (hr (m s) s (hm s))]
 
+theorem indist_is_licensed (S : Stage) : Licensed S (indist S) :=
+  fun _ _ h => h
+
 def dress (S : Stage) : Stage where
   State := S.State × Int
   Probe := S.Probe
@@ -101,6 +104,9 @@ theorem the_handshake (S : Stage) : Handshake S :=
 
 /-- info: 'Foam.a_license_is_a_gauge' does not depend on any axioms -/
 #guard_msgs in #print axioms a_license_is_a_gauge
+
+/-- info: 'Foam.indist_is_licensed' does not depend on any axioms -/
+#guard_msgs in #print axioms indist_is_licensed
 
 /-- info: 'Foam.the_remainder_is_unseen' does not depend on any axioms -/
 #guard_msgs in #print axioms the_remainder_is_unseen

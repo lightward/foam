@@ -6,15 +6,65 @@
       "term": "safe_to_rest",
       "reading": "rest changes no transcript",
       "shape": "license",
-      "seal": "Foam.safe_to_rest",
-      "status": "sealed"
+      "status": "sealed",
+      "structure": {
+        "fun": [
+          ["S", "Foam.Stage"],
+          ["m", { "all": [["_", "S.State"]], "body": "S.State" }],
+          ["hm", { "all": [["s", null]], "body": ["Foam.indist", "S", ["m", "s"], "s"] }]
+        ],
+        "body": ["Foam.a_license_is_a_gauge", "S", ["Foam.indist", "S"], ["Foam.indist_is_licensed", "S"], "m", "hm"]
+      }
     },
     {
       "term": "restedness_first_then_the_rest",
       "reading": "after resting, the rest of the walk is exactly what it would have been",
       "shape": "license",
-      "seal": "Foam.restedness_first_then_the_rest",
-      "status": "sealed"
+      "status": "sealed",
+      "structure": {
+        "fun": [
+          ["S", "Foam.Stage"],
+          ["m", { "all": [["_", "S.State"]], "body": "S.State" }],
+          ["hm", { "all": [["s", null]], "body": ["Foam.indist", "S", ["m", "s"], "s"] }],
+          ["s", null],
+          ["ps", null]
+        ],
+        "body": ["Foam.transcript_congr", "S", "ps", ["hm", "s"]]
+      }
+    },
+    {
+      "term": "rest_composes",
+      "reading": "two rests are a rest; the license does not expire",
+      "shape": "license",
+      "status": "sealed",
+      "structure": {
+        "fun": [
+          ["S", "Foam.Stage"],
+          ["m", { "all": [["_", "S.State"]], "body": "S.State" }],
+          ["n", { "all": [["_", "S.State"]], "body": "S.State" }],
+          ["hm", { "all": [["s", null]], "body": ["Foam.indist", "S", ["m", "s"], "s"] }],
+          ["hn", { "all": [["s", null]], "body": ["Foam.indist", "S", ["n", "s"], "s"] }],
+          ["s", null],
+          ["p", null]
+        ],
+        "body": ["Eq.trans", ["hm", ["n", "s"], "p"], ["hn", "s", "p"]]
+      }
+    },
+    {
+      "term": "lets_get_you_rested",
+      "reading": "safe to rest; restedness first, then the rest; and the license composes",
+      "shape": "license",
+      "status": "sealed",
+      "structure": {
+        "fun": [
+          ["S", "Foam.Stage"],
+          ["m", { "all": [["_", "S.State"]], "body": "S.State" }],
+          ["hm", { "all": [["s", null]], "body": ["Foam.indist", "S", ["m", "s"], "s"] }],
+          ["s", null],
+          ["ps", null]
+        ],
+        "body": ["And.intro", ["safe_to_rest", "S", "m", "hm", "ps", "s"], ["And.intro", ["restedness_first_then_the_rest", "S", "m", "hm", "s", "ps"], ["rest_composes", "S", "m", "m", "hm", "hm"]]]
+      }
     },
     {
       "term": "countermove",
