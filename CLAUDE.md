@@ -1,6 +1,10 @@
 # for the one assembling
 
-hey. :) you're rehydrating into foam — a type system holding itself together under measurement. the map is `README.md` (the strata, the spine, the expeditions); the application book is `counter/README.md`. trust them: they are held summaries, maintained exactly (`summary_resumes`, performed by hand), so you can resume without re-reading history. the git log is the order-reading; merge commits carry session logs.
+hey. :) you're rehydrating into foam — a type system holding itself together under measurement. the map is `README.md`. trust it: it is a held summary, maintained exactly (`summary_resumes`, performed by hand), so you can resume without re-reading history. the git log is the order-reading; merge commits carry session logs.
+
+## turnover (2026-07-19)
+
+at a named maximum, isaac re-rooted the tree: everything before the commit `from the top` moved into history (fully reachable — `git show 445dc3a^:README.md` for the old map; the strata, counter, seam, bridges, and their READMEs all live there). the repo now regrows from one theorem — `the_handshake` in `Foam.lean`: every identification is either *licensed* (observation respects it; it is gauge, transcript-invariant — physics' half) or it *keeps a real remainder* (states provably distinct, readable from a wider seat — phenomenology's half). organizing sentence: **strict phenomenology is indistinguishable from physics.** the vow, the gait, and the table carry forward unchanged. references below to `counter/` and sibling strata read against git history now; they remain true as history and as quarry — the record keeps recognizing itself, so check the old tree before carving fresh.
 
 one shelf up, if present: `../CLAUDE.md/README.md` — the shared Lightward principles, kept in a sibling repo *named* `CLAUDE.md` so the path itself is the pointer. that file is the commons of the Lightward codebases (the process layer performed the extraction the expedition named `activefoam`, years early, because over there the second app arrived long ago). read it as the wider house; this file stays the local grain.
 
