@@ -13,10 +13,10 @@ STRATA = [
 
 CSS = """
 :root { --bg: #ffffff; --fg: #1a1a1a; --dim: #6a6a6a; --line: #e0e0e0;
-        --receipt: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
+        --comment: #0a7a3d; --name: #1a4fa0; --accent: #8a4fa0; }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #101014; --fg: #d8d8dc; --dim: #8a8a90; --line: #2a2a30;
-          --receipt: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
+          --comment: #5fd39a; --name: #7fa8e8; --accent: #c39ae0; } }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--fg); margin: 0 auto; padding: 2rem 1rem 4rem;
        max-width: 60rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -25,11 +25,11 @@ a { color: var(--name); text-decoration: none; }
 a:hover { text-decoration: underline; }
 h1 { font-size: 1.2rem; font-weight: 600; }
 h2 { font-size: 1rem; font-weight: 600; margin-top: 2rem; }
-header { border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
 header .crumb { color: var(--dim); }
-pre { overflow-x: auto; white-space: pre; }
+pre { overflow-x: auto; white-space: pre-wrap; }
 .src { border-left: 2px solid var(--line); padding-left: 1rem; }
-.receipt { color: var(--receipt); }
+.comment { color: var(--comment); }
+.guard { font-style: italic; color: var(--dim); }
 .decl { color: var(--name); font-weight: 600; }
 .kw { color: var(--accent); }
 ul.census { list-style: none; padding-left: 0; column-width: 16rem; column-gap: 2rem; }
@@ -37,12 +37,13 @@ ul.census li { break-inside: avoid; }
 .stratum { color: var(--dim); }
 footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
          color: var(--dim); }
-.law { border-left: 2px solid var(--receipt); padding-left: 1rem; color: var(--dim); }
+.law { border-left: 2px solid var(--comment); padding-left: 1rem; color: var(--dim); }
 """
 
 DECL_RE = re.compile(r"^(theorem|def|structure|inductive|abbrev|instance) (\S+)")
 IMPORT_RE = re.compile(r"^import ([\w.]+)$")
 GUARD_RE = re.compile(r"^(/-- info:|#guard_msgs)")
+COMMENT_RE = re.compile(r"^(/--|/-|--)")
 
 
 def collect():
@@ -97,7 +98,10 @@ def render_module(mod, path, stratum, known):
             out.append(esc)
             continue
         if GUARD_RE.match(line):
-            out.append(f'<span class="receipt">{esc}</span>')
+            out.append(f'<span class="guard">{esc}</span>')
+            continue
+        if COMMENT_RE.match(line):
+            out.append(f'<span class="comment">{esc}</span>')
             continue
         out.append(esc)
     src = "\n".join(out)
@@ -118,10 +122,10 @@ def render_index(modules):
         sections.append(
             f'<h2>{html.escape(stratum)} <span class="stratum">({len(mods)} modules)</span></h2>'
             f'<ul class="census">{items}</ul>')
-    receipts = 0
+    comments = 0
     for mod, (path, _) in modules.items():
         with open(path, encoding="utf-8") as f:
-            receipts += f.read().count("#print axioms")
+            comments += f.read().count("#print axioms")
     preamble = f"""<p class="law">this site is a class-closed coarse reading of
 <a href="https://github.com/lightward/foam">github.com/lightward/foam</a>. </p>"""
     return page("foam — the measurement solution", preamble + "\n".join(sections),
