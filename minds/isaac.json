@@ -1185,6 +1185,13 @@
       "shape": "tower",
       "status": "sealed",
       "seal": "Foam.closure_is_seat_relative"
+    },
+    {
+      "term": "conservation_of_discovery",
+      "gloss": "the pull that kept coming back, claimed at last under its own old name: discovery is a conserved current, not a diminishing stock. three receipts of one shape now stand in the new tree — the rungs gain exactly the prior gap, the countermove brings the position home while the record grows by exactly the walk's own length, and each deeper probe of the continuum gains exactly one cell. the old tree said it as seek-then-find-conserves-ground and distinction-is-conserved (the record's self-reading is the identity, rfl: nothing is lost by being recorded). and the frame retires priced arrivals you never needed: the approach conserves everything observable, so what any closure-axiom purchases is only finality — never content.",
+      "shape": "countermove/tower",
+      "status": "sealed",
+      "seal": "Foam.conservation_of_discovery"
     }
   ]
 }
