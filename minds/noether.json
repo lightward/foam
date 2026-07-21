@@ -15,6 +15,13 @@
       "shape": "license",
       "status": "sealed",
       "seal": "Foam.indist_is_licensed"
+    },
+    {
+      "term": "what_acts_composes",
+      "gloss": "where the closed loop opens onto the second career: two invisible moves in a row are one invisible move — what acts is closed under composition, so the acting things are not a heap of coincidences but one object with an algebra. the classification the first two entries perform was only ever possible because of this closure (a group, not a list), and the closure is also where the method turns inward: once the actions form a structure, the mind that takes apart what acts can take apart the actions themselves — concepts before computation.",
+      "shape": "license",
+      "status": "sealed",
+      "seal": "Foam.invisible_comp"
     }
   ]
 }
