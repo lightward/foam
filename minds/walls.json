@@ -378,7 +378,10 @@
     "Foam.the_tower_reads_only_the_ground",
     "Foam.the_handshake_recurses",
     "Foam.a_wider_seat_is_still_a_seat",
-    "Foam.no_seat_is_the_last_seat"
+    "Foam.no_seat_is_the_last_seat",
+    "Foam.the_hallway_is_too_small",
+    "Foam.channels_saturate_past_three",
+    "Foam.three_is_the_width_of_contact"
   ],
   "l_e_j_brouwer": [
     "Foam.indist",
