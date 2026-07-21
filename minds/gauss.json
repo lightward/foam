@@ -194,8 +194,137 @@
       }
     },
     {
+      "term": "the_shape_arrives_by_counting",
+      "gloss": "the finite floor of the error law, carved at the shallowest depth that shows it: stack two error contacts, take the complete book of two-flip words, and census the readings — the middle reading is carried twice, the extremes once each. pascal's row, 1-2-1, arrives as a census of the unread: freq applied to freq, aggregation reading the reading, peaked and symmetric with no measure stratum touched. this is the dark edge's first data point: at depth two the shape is forced by stacking and arrives as a theorem, by counting alone. what stays dark is the limit — whether the silhouette itself descends the same way or must be received at a seam.",
+      "shape": "census",
+      "status": "sealed",
+      "statement": [
+        {
+          "fun": [
+            [
+              "readings",
+              [
+                "List",
+                "Nat"
+              ]
+            ]
+          ],
+          "body": [
+            "And",
+            [
+              "Eq",
+              [
+                "Foam.freq",
+                "readings",
+                "1"
+              ],
+              "2"
+            ],
+            [
+              "And",
+              [
+                "Eq",
+                [
+                  "Foam.freq",
+                  "readings",
+                  "0"
+                ],
+                "1"
+              ],
+              [
+                "Eq",
+                [
+                  "Foam.freq",
+                  "readings",
+                  "2"
+                ],
+                "1"
+              ]
+            ]
+          ]
+        },
+        [
+          "List.map",
+          {
+            "fun": [
+              [
+                "w",
+                [
+                  "List",
+                  "Bool"
+                ]
+              ]
+            ],
+            "body": [
+              "Foam.freq",
+              "w",
+              "true"
+            ]
+          },
+          [
+            "List.cons",
+            [
+              "List.cons",
+              "true",
+              [
+                "List.cons",
+                "true",
+                "List.nil"
+              ]
+            ],
+            [
+              "List.cons",
+              [
+                "List.cons",
+                "true",
+                [
+                  "List.cons",
+                  "false",
+                  "List.nil"
+                ]
+              ],
+              [
+                "List.cons",
+                [
+                  "List.cons",
+                  "false",
+                  [
+                    "List.cons",
+                    "true",
+                    "List.nil"
+                  ]
+                ],
+                [
+                  "List.cons",
+                  [
+                    "List.cons",
+                    "false",
+                    [
+                      "List.cons",
+                      "false",
+                      "List.nil"
+                    ]
+                  ],
+                  "List.nil"
+                ]
+              ]
+            ]
+          ]
+        ]
+      ],
+      "structure": [
+        "And.intro",
+        "rfl",
+        [
+          "And.intro",
+          "rfl",
+          "rfl"
+        ]
+      ]
+    },
+    {
       "term": "the_error_has_a_shape",
-      "gloss": "the dark edge, terminus of the signature: every observation arrives dressed in error — no probe reads the true state, only a transcript of noisy contacts — and the residual never closes; least squares minimizes it and then rests beside it, the survey's own posture done in arithmetic. but gauss claims more than coexistence: aggregated, the unread remainder takes a shape — the bell — as if the sum of what no seat read acquires a reading of its own. dark because the fold has no measure stratum: a third knock at the amplitude bearing (shannon by the measure of surprise, brouwer by continuity, gauss by the law of error). the edge terminates at the estimator's own seat: no estimate reads its own error from inside — one sample carries the unknown. posed: does the bell arrive as a theorem about aggregated dressings — error as stacked contact, the shape as what stacking forces — or does measure enter this fold only as a received seam?",
+      "gloss": "the dark edge, terminus of the signature: every observation arrives dressed in error — no probe reads the true state, only a transcript of noisy contacts — and the residual never closes; least squares minimizes it and then rests beside it, the survey's own posture done in arithmetic. but gauss claims more than coexistence: aggregated, the unread remainder takes a shape — the bell — as if the sum of what no seat read acquires a reading of its own. dark because the fold has no measure stratum: a third knock at the amplitude bearing (shannon by the measure of surprise, brouwer by continuity, gauss by the law of error). the edge terminates at the estimator's own seat: no estimate reads its own error from inside — one sample carries the unknown. posed: does the bell arrive as a theorem about aggregated dressings — error as stacked contact, the shape as what stacking forces — or does measure enter this fold only as a received seam? first foothold sealed one step up the signature (the_shape_arrives_by_counting): at depth two the census already peaks and balances by counting alone; the residue that stays dark is the limit silhouette, which no finite census reads.",
       "shape": "measure",
       "status": "unsealed",
       "seal": null
