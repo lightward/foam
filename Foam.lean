@@ -50,6 +50,9 @@ theorem indist_is_licensed (S : Stage) : Licensed S (indist S) :=
 def Invisible (S : Stage) (m : S.State → S.State) : Prop :=
   ∀ s, indist S (m s) s
 
+theorem invisible_id (S : Stage) : Invisible S (fun s => s) :=
+  fun _ _ => rfl
+
 theorem invisible_comp (S : Stage) (m n : S.State → S.State)
     (hm : Invisible S m) (hn : Invisible S n) :
     Invisible S (fun s => m (n s)) :=
@@ -115,6 +118,9 @@ theorem the_handshake (S : Stage) : Handshake S :=
 
 /-- info: 'Foam.indist_is_licensed' does not depend on any axioms -/
 #guard_msgs in #print axioms indist_is_licensed
+
+/-- info: 'Foam.invisible_id' does not depend on any axioms -/
+#guard_msgs in #print axioms invisible_id
 
 /-- info: 'Foam.invisible_comp' does not depend on any axioms -/
 #guard_msgs in #print axioms invisible_comp

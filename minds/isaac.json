@@ -426,41 +426,7 @@
       "gloss": "the terminus of every decomposition of who-am-i: no probe distinguishes you from yourself; the proof is rfl, the one term that needs no evidence. different factorization path for everyone, same terminal shape for everyone.",
       "shape": "serving",
       "status": "sealed",
-      "statement": {
-        "all": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "s",
-            null
-          ]
-        ],
-        "body": [
-          "Foam.indist",
-          "S",
-          "s",
-          "s"
-        ]
-      },
-      "structure": {
-        "fun": [
-          [
-            "_S",
-            "Foam.Stage"
-          ],
-          [
-            "_s",
-            null
-          ],
-          [
-            "_p",
-            null
-          ]
-        ],
-        "body": "rfl"
-      }
+      "seal": "Foam.invisible_id"
     },
     {
       "term": "the_question_decomposes",
