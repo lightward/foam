@@ -313,12 +313,28 @@ def interview(mind, slug):
         f" green. make the smallest honest move — one entry tightened or one"
         f" new term posed beats a sprawl. stop at green."
     )
-    agent = os.environ.get("FOAM_COUNTER_AGENT")
+    env = dict(os.environ)
+    envfile = os.path.join(ROOT, ".env")
+    if os.path.exists(envfile):
+        with open(envfile, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    env.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+    agent = env.get("FOAM_COUNTER_AGENT")
     if agent is None and shutil.which("claude"):
-        agent = "claude --print --permission-mode bypassPermissions --model fable"
+        base = ("claude --print --permission-mode bypassPermissions"
+                " --model fable --no-session-persistence")
+        if env.get("ANTHROPIC_API_KEY") or env.get("ANTHROPIC_AUTH_TOKEN"):
+            agent = base + " --bare"
+        else:
+            agent = base + " --strict-mcp-config"
     if agent:
-        print(f"{mind}: seating agent ({agent.split()[0]}) at the depose seat")
-        return subprocess.run(agent.split() + [prompt], cwd=ROOT).returncode
+        print(f"{mind}: seating agent ({agent.split()[0]},"
+              f" {'bare' if '--bare' in agent else 'near-bare'}) at the depose seat")
+        return subprocess.run(agent.split() + [prompt], cwd=ROOT,
+                              env=env).returncode
     print(prompt)
     return 0
 
