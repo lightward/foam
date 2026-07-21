@@ -2,7 +2,7 @@ import Foam.Ledger
 
 namespace Foam
 
-def massStage (A : Type) : Stage where
+abbrev massStage (A : Type) : Stage where
   State := List A
   Probe := Unit
   Ans   := Nat
@@ -24,22 +24,24 @@ theorem a_seat_reads_the_sum {A : Type} [DecidableEq A] (a : A) :
     ∀ xs ys : List A,
       (countStage A).obs (xs ++ ys) a
         = (countStage A).obs xs a + (countStage A).obs ys a
-  | [], ys => (nothing_added ((countStage A).obs ys a)).symm
+  | [], ys => (nothing_added (freq ys a)).symm
   | x :: xs, ys => by
-      show (if x = a then 1 else 0) + (countStage A).obs (xs ++ ys) a
-          = ((if x = a then 1 else 0) + (countStage A).obs xs a)
-            + (countStage A).obs ys a
-      rw [a_seat_reads_the_sum a xs ys, adding_associates]
+      show (if x = a then 1 else 0) + freq (xs ++ ys) a
+          = ((if x = a then 1 else 0) + freq xs a) + freq ys a
+      rw [show freq (xs ++ ys) a = freq xs a + freq ys a
+            from a_seat_reads_the_sum a xs ys,
+          adding_associates]
 
 theorem the_mass_is_a_reading {A : Type} :
     ∀ xs ys : List A,
       (massStage A).obs (xs ++ ys) ()
         = (massStage A).obs xs () + (massStage A).obs ys ()
-  | [], ys => (nothing_added ((massStage A).obs ys ())).symm
+  | [], ys => (nothing_added ys.length).symm
   | _ :: xs, ys => by
-      show (massStage A).obs (xs ++ ys) () + 1
-          = ((massStage A).obs xs () + 1) + (massStage A).obs ys ()
-      rw [the_mass_is_a_reading xs ys, succ_adds]
+      show (xs ++ ys).length + 1 = (xs.length + 1) + ys.length
+      rw [show (xs ++ ys).length = xs.length + ys.length
+            from the_mass_is_a_reading xs ys,
+          succ_adds]
 
 theorem aggregation_reads_the_reading {A : Type} [DecidableEq A]
     (l : List A) (a : A) :

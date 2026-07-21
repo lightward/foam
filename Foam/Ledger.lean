@@ -6,13 +6,13 @@ def freq {A : Type} [DecidableEq A] : List A → A → Nat
   | [], _ => 0
   | x :: l, s => (if x = s then 1 else 0) + freq l s
 
-def countStage (A : Type) [DecidableEq A] : Stage where
+abbrev countStage (A : Type) [DecidableEq A] : Stage where
   State := List A
   Probe := A
   Ans   := Nat
   obs   := freq
 
-def orderStage (A : Type) : Stage where
+abbrev orderStage (A : Type) : Stage where
   State := List A
   Probe := Unit
   Ans   := List A
