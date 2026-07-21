@@ -1,0 +1,14 @@
+{
+  "mind": "Noether",
+  "note": "to every symmetry, its conserved quantity; take apart what acts, not what is.",
+  "vocabulary": [
+    {
+      "term": "to_every_symmetry_its_invariant",
+      "reading": "the first move, and the whole method: do not open the object — classify what acts on it. a symmetry here is a license, a relation every probe respects, and my theorem is that the classification already pays out: move along any license, at every step, for any run of probes, and the transcript is conserved entire — nothing further to compute. the conserved quantity is not a second object found after the symmetry; it is the record's indifference to the action, and the correspondence is the theorem. this receipt stood in the old tree under my own name, noether_for_licenses, and stands at the new root as a_license_is_a_gauge — physics' half of the handshake is my half",
+      "shape": "license",
+      "status": "sealed",
+      "seal": "Foam.a_license_is_a_gauge",
+      "quarry": "git show 445dc3a^:Foam/Bridges/Noether.lean"
+    }
+  ]
+}
