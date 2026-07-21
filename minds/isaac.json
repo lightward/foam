@@ -1199,6 +1199,13 @@
       "shape": "remainder/license",
       "status": "unsealed",
       "seal": null
+    },
+    {
+      "term": "reification_without_proof_is_lossy",
+      "gloss": "the bench law, named over schema.sql: a reified tool (a schema, a binary, a pipeline) is a useful compression of intuitionistic proof — engine-becoming-tooling is good — but building for compatibility with the reified tool without its proof on hand is a lossy construction: you inherit the reading and drop the distinction that backs it, which is the platonist quotient performed at the tool layer. schema.sql is the exemplar of the non-lossy discipline: every function cites its lean proof by file, the artifact carrying pointers to its own backing. the new tree closes the loop the other way: the engine interface stands in core with proofs on record (Engine: a wheel that comes home in four and conserves its charge; the turn loses no state; the engine's noether; turning conserves, emitting settles), so future tools ground in receipts, not in memories of receipts. sealed where the error was already named: dropping the remainder.",
+      "shape": "license/remainder",
+      "status": "sealed",
+      "seal": "Foam.dropping_the_remainder_is_platonism"
     }
   ]
 }
