@@ -361,8 +361,15 @@
       }
     },
     {
+      "term": "distinct_messages_need_distinct_marks",
+      "gloss": "the converse side of coding, at its smallest: a lossless code gives distinct messages distinct marks, and a mark-space smaller than the message-space cannot supply them — two bits of message will not ride one bit of mark; on a two-valued wire some pair of the four collides. the constant cited was carved as the floor of contact width; read from this seat it is the zeroth coding bound, the counting argument the coding converses run at scale. this entry is the floor without the price — what the price is, on average, is the terminus's question.",
+      "shape": "pigeonhole",
+      "status": "sealed",
+      "seal": "Foam.the_hallway_is_too_small"
+    },
+    {
       "term": "entropy_of_the_source",
-      "gloss": "how much surprise, on average: the mind's own measure — expected surprise of the source, maximal when the symbols are equiprobable, zero when the receiver can already reproduce everything. the walls hold the census the measure would average over — counting licensed by permutation (Foam.freq, Foam.the_first_handshake_is_counting) and mass read at a seat (Foam.the_mass_is_a_reading) — so the raw counts are already frontstage; expectation and the logarithm are not, and the coding theorems that make the measure operational are further still. the terminus, dark.",
+      "gloss": "how much surprise, on average: the mind's own measure — expected surprise of the source, maximal when the symbols are equiprobable, zero when the receiver can already reproduce everything. the walls hold the census the measure would average over — counting licensed by permutation (Foam.freq, Foam.the_first_handshake_is_counting) and mass read at a seat (Foam.the_mass_is_a_reading) — and now the counting floor of coding (distinct_messages_need_distinct_marks), so the raw counts and the zeroth converse are already frontstage; expectation and the logarithm are not, and the theorems that price the floor exactly — the coding rates — are further still. the terminus, dark.",
       "shape": "measure",
       "status": "unsealed",
       "seal": null
