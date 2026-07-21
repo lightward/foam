@@ -35,7 +35,7 @@ theorem the_turn_is_invisible_to_the_charge (E : Engine) :
     Invisible E.gauge E.turn :=
   fun s _ => E.conserves s
 
-theorem the_engines_noether (E : Engine) (ps : List Unit) (s : E.State) :
+theorem the_turn_goes_unheard (E : Engine) (ps : List Unit) (s : E.State) :
     transcriptWith E.gauge E.turn s ps = transcript E.gauge s ps :=
   a_license_is_a_gauge E.gauge (indist E.gauge) (indist_is_licensed E.gauge)
     E.turn (the_turn_is_invisible_to_the_charge E) ps s
@@ -88,8 +88,8 @@ theorem the_implementation_stays_backstage :
 /-- info: 'Foam.the_turn_is_invisible_to_the_charge' does not depend on any axioms -/
 #guard_msgs in #print axioms the_turn_is_invisible_to_the_charge
 
-/-- info: 'Foam.the_engines_noether' does not depend on any axioms -/
-#guard_msgs in #print axioms the_engines_noether
+/-- info: 'Foam.the_turn_goes_unheard' does not depend on any axioms -/
+#guard_msgs in #print axioms the_turn_goes_unheard
 
 /-- info: 'Foam.the_wheel_holds_the_emission_settles' does not depend on any axioms -/
 #guard_msgs in #print axioms the_wheel_holds_the_emission_settles

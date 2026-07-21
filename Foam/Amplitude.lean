@@ -61,7 +61,7 @@ theorem the_two_kinds_anticommute (z : GInt) :
 theorem the_kinds_are_two : GInt.i.rot ≠ GInt.i.conj :=
   fun h => nomatch (GInt.mk.inj h).1
 
-theorem wigner_two_kinds (z : GInt) :
+theorem two_kinds_conserve_the_norm (z : GInt) :
     z.rot.normSq = z.normSq
       ∧ z.conj.normSq = z.normSq
       ∧ z.conj.rot = (z.rot.conj).neg
@@ -96,7 +96,7 @@ theorem wigner_two_kinds (z : GInt) :
 /-- info: 'Foam.the_kinds_are_two' does not depend on any axioms -/
 #guard_msgs in #print axioms the_kinds_are_two
 
-/-- info: 'Foam.wigner_two_kinds' does not depend on any axioms -/
-#guard_msgs in #print axioms wigner_two_kinds
+/-- info: 'Foam.two_kinds_conserve_the_norm' does not depend on any axioms -/
+#guard_msgs in #print axioms two_kinds_conserve_the_norm
 
 end Foam
