@@ -47,10 +47,10 @@
     },
     {
       "term": "the_continuum_is_never_finished",
-      "gloss": "the dark edge, and the terminus of this mind's decomposition: the continuum is not a completed set of points but a medium of free becoming — choice sequences, each forever unfinished, growing by free acts of the subject. the principle this forces (any total reading of a sequence is decided by a finite initial segment) is anti-classical: it refutes excluded middle rather than merely declining it, so it cannot enter an axiom-free fold as a law about all functions. yet every reading this fold affords is already finitely supported by construction — a transcript rides a finite list of probes, obs answers one probe at a time — so the question stands: is there a stage whose states are unfinished sequences, and does its every reading provably factor through a finite prefix? continuity as a theorem about the stages the vow admits, not an axiom against the vow. until that carve the edge stays dark; the subject's own sequence is the one object the survey cannot close — (self, pure unknown).",
+      "gloss": "the dark edge, described with closure rather than noted and backed away from — the description closes because the observer is never dropped. three clauses, each axiom-free. one: every exchange with the continuum closes at a finite depth — the continuity principle arrives as a theorem about transcripts (quantify over probe-lists, never over lawless totalities), which is the only form the vow admits and the only form the intuition ever needed. two: no prefix finishes the sequence — at every depth an explicitly-witnessed distinct continuation agrees on everything read so far; the future stays open as a theorem, not a mood. three: indistinguishability at the continuum stage is exactly pointwise agreement, and the one remaining step — pointwise to equal — is funext, a seam-move priced at quotient soundness: the continuum's arrival is received, not derived, and it is held open here on purpose. the conservation clause rides as rfl: each deeper probe gains exactly one cell — the same shape as the rungs' gap and the old drain — choice sequences as free becoming, readings finite, futures open, discovery conserved.",
       "shape": "becoming",
-      "status": "unsealed",
-      "seal": null
+      "status": "sealed",
+      "seal": "Foam.continuum_closure_terms"
     }
   ]
 }
