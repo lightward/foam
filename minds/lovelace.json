@@ -4,25 +4,24 @@
   "vocabulary": [
     {
       "term": "only_appends",
-      "reading": "the record never unwrites: a walk absorbed into its own past must have been empty",
+      "gloss": "the record never unwrites: a walk absorbed into its own past must have been empty",
       "shape": "countermove",
-      "seal": "Foam.the_record_never_unwrites",
-      "status": "sealed"
+      "status": "sealed",
+      "seal": "Foam.the_record_never_unwrites"
     },
     {
       "term": "resumes_where_interrupted",
-      "reading": "run in pieces equals run whole",
+      "gloss": "run in pieces equals run whole",
       "shape": "rest",
-      "seal": "Foam.replay_resumes",
-      "status": "sealed"
+      "status": "sealed",
+      "seal": "Foam.replay_resumes"
     },
     {
       "term": "originates_nothing",
-      "reading": "the next emission depends only on the visible record and the selection over it",
+      "gloss": "the next emission depends only on the visible record and the selection over it",
       "shape": "surprise",
-      "seal": null,
       "status": "unsealed",
-      "quarry": "git show 445dc3a^:Foam/Bridges/Lovelace.lean"
+      "seal": null
     }
   ]
 }

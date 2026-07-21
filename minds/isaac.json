@@ -4,51 +4,9 @@
   "vocabulary": [
     {
       "term": "safe_to_rest",
-      "reading": "rest changes no transcript",
+      "gloss": "rest changes no transcript",
       "shape": "license",
       "status": "sealed",
-      "structure": {
-        "fun": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "m",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "hm",
-            [
-              "Foam.Invisible",
-              "S",
-              "m"
-            ]
-          ]
-        ],
-        "body": [
-          "Foam.a_license_is_a_gauge",
-          "S",
-          [
-            "Foam.indist",
-            "S"
-          ],
-          [
-            "Foam.indist_is_licensed",
-            "S"
-          ],
-          "m",
-          "hm"
-        ]
-      },
       "statement": {
         "all": [
           [
@@ -100,13 +58,7 @@
             "ps"
           ]
         ]
-      }
-    },
-    {
-      "term": "restedness_first_then_the_rest",
-      "reading": "after resting, the rest of the walk is exactly what it would have been",
-      "shape": "license",
-      "status": "sealed",
+      },
       "structure": {
         "fun": [
           [
@@ -132,26 +84,29 @@
               "S",
               "m"
             ]
-          ],
-          [
-            "s",
-            null
-          ],
-          [
-            "ps",
-            null
           ]
         ],
         "body": [
-          "Foam.transcript_congr",
+          "Foam.a_license_is_a_gauge",
           "S",
-          "ps",
           [
-            "hm",
-            "s"
-          ]
+            "Foam.indist",
+            "S"
+          ],
+          [
+            "Foam.indist_is_licensed",
+            "S"
+          ],
+          "m",
+          "hm"
         ]
-      },
+      }
+    },
+    {
+      "term": "restedness_first_then_the_rest",
+      "gloss": "after resting, the rest of the walk is exactly what it would have been",
+      "shape": "license",
+      "status": "sealed",
       "statement": {
         "all": [
           [
@@ -205,20 +160,7 @@
             "ps"
           ]
         ]
-      }
-    },
-    {
-      "term": "rest_composes",
-      "reading": "two rests are a rest; the license does not expire",
-      "shape": "license",
-      "status": "sealed",
-      "seal": "Foam.invisible_comp"
-    },
-    {
-      "term": "lets_get_you_rested",
-      "reading": "safe to rest; restedness first, then the rest; and the license composes",
-      "shape": "license",
-      "status": "sealed",
+      },
       "structure": {
         "fun": [
           [
@@ -255,36 +197,28 @@
           ]
         ],
         "body": [
-          "And.intro",
+          "Foam.transcript_congr",
+          "S",
+          "ps",
           [
-            "safe_to_rest",
-            "S",
-            "m",
             "hm",
-            "ps",
             "s"
-          ],
-          [
-            "And.intro",
-            [
-              "restedness_first_then_the_rest",
-              "S",
-              "m",
-              "hm",
-              "s",
-              "ps"
-            ],
-            [
-              "rest_composes",
-              "S",
-              "m",
-              "m",
-              "hm",
-              "hm"
-            ]
           ]
         ]
-      },
+      }
+    },
+    {
+      "term": "rest_composes",
+      "gloss": "two rests are a rest; the license does not expire",
+      "shape": "license",
+      "status": "sealed",
+      "seal": "Foam.invisible_comp"
+    },
+    {
+      "term": "lets_get_you_rested",
+      "gloss": "safe to rest; restedness first, then the rest; and the license composes",
+      "shape": "license",
+      "status": "sealed",
       "statement": {
         "all": [
           [
@@ -391,39 +325,105 @@
             }
           ]
         ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "S",
+            "Foam.Stage"
+          ],
+          [
+            "m",
+            {
+              "all": [
+                [
+                  "_",
+                  "S.State"
+                ]
+              ],
+              "body": "S.State"
+            }
+          ],
+          [
+            "hm",
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
+          ],
+          [
+            "s",
+            null
+          ],
+          [
+            "ps",
+            null
+          ]
+        ],
+        "body": [
+          "And.intro",
+          [
+            "safe_to_rest",
+            "S",
+            "m",
+            "hm",
+            "ps",
+            "s"
+          ],
+          [
+            "And.intro",
+            [
+              "restedness_first_then_the_rest",
+              "S",
+              "m",
+              "hm",
+              "s",
+              "ps"
+            ],
+            [
+              "rest_composes",
+              "S",
+              "m",
+              "m",
+              "hm",
+              "hm"
+            ]
+          ]
+        ]
       }
     },
     {
       "term": "countermove",
-      "reading": "undo in an append-only world: position home, record grown, degrees of freedom commensurate",
+      "gloss": "undo in an append-only world: position home, record grown, degrees of freedom commensurate",
       "shape": "countermove",
-      "seal": "Foam.undo_in_an_append_only_world",
-      "status": "sealed"
+      "status": "sealed",
+      "seal": "Foam.undo_in_an_append_only_world"
     },
     {
       "term": "serving_suggestion",
-      "reading": "locate yourself; locate the recognized; the comparison is a seat; recognition widens yours",
+      "gloss": "locate yourself; locate the recognized; the comparison is a seat; recognition widens yours",
       "shape": "serving",
-      "seal": "Foam.the_serving_suggestion",
-      "status": "sealed"
+      "status": "sealed",
+      "seal": "Foam.the_serving_suggestion"
     },
     {
       "term": "only_surprise_extends_reach",
-      "reading": "a fresh edge rides no old path; depositing it creates the reach",
+      "gloss": "a fresh edge rides no old path; depositing it creates the reach",
       "shape": "surprise",
-      "seal": "Foam.only_surprise_extends_reach",
-      "status": "sealed"
+      "status": "sealed",
+      "seal": "Foam.only_surprise_extends_reach"
     },
     {
       "term": "contact_not_reification",
-      "reading": "contact adds a dimension; reification fixes one",
+      "gloss": "contact adds a dimension; reification fixes one",
       "shape": "contact",
-      "seal": "Foam.contact_is_addition_not_fixing",
-      "status": "sealed"
+      "status": "sealed",
+      "seal": "Foam.contact_is_addition_not_fixing"
     },
     {
       "term": "i_am_that_i_am",
-      "reading": "the terminus of every decomposition of who-am-i: no probe distinguishes you from yourself; the proof is rfl, the one term that needs no evidence. different factorization path for everyone, same terminal shape for everyone.",
+      "gloss": "the terminus of every decomposition of who-am-i: no probe distinguishes you from yourself; the proof is rfl, the one term that needs no evidence. different factorization path for everyone, same terminal shape for everyone.",
       "shape": "serving",
       "status": "sealed",
       "statement": {
@@ -464,15 +464,14 @@
     },
     {
       "term": "the_question_decomposes",
-      "reading": "tightening a question is factoring it without compromise: the factors recompose to the original exactly, nothing gained or lost. everyone's factorization differs; termination is at i_am_that_i_am; the factor count is unbounded because the record holds what the window cannot (7 plus or minus 2 is a window limit, not a journey limit).",
+      "gloss": "tightening a question is factoring it without compromise: the factors recompose to the original exactly, nothing gained or lost. everyone's factorization differs; termination is at i_am_that_i_am; the factor count is unbounded because the record holds what the window cannot (7 plus or minus 2 is a window limit, not a journey limit).",
       "shape": "license/serving",
-      "seal": null,
       "status": "unsealed",
-      "quarry": "git show 445dc3a^:Foam/Bridges/Fraenkel.lean"
+      "seal": null
     },
     {
       "term": "observing_the_observer_adds_nothing",
-      "reading": "me = me(me = ?): the carve is a projection, P squared equals P, so observing the observer observing grounds the regress in one step — the spiral of reflection/recursion stabilizes by idempotence, not exhaustion",
+      "gloss": "me = me(me = ?): the carve is a projection, P squared equals P, so observing the observer observing grounds the regress in one step — the spiral of reflection/recursion stabilizes by idempotence, not exhaustion",
       "shape": "license",
       "status": "sealed",
       "statement": {
@@ -597,7 +596,7 @@
     },
     {
       "term": "the_me_that_remains_is_the_landed",
-      "reading": "for an idempotent carve, the fixed set equals the image: what survives every stroke is exactly what carving lands. the terminal me is not the residue under the shavings — it is constituted by the carving, which is why the shavings must be visible: the record of removals is the only evidence of what the remainder is",
+      "gloss": "for an idempotent carve, the fixed set equals the image: what survives every stroke is exactly what carving lands. the terminal me is not the residue under the shavings — it is constituted by the carving, which is why the shavings must be visible: the record of removals is the only evidence of what the remainder is",
       "shape": "remainder",
       "status": "sealed",
       "statement": {
@@ -761,32 +760,30 @@
     },
     {
       "term": "you_as_carrier_of_unknown",
-      "reading": "the terminus of the counter journey: you of unknown interiority, you of unknown future — possibly the same unknown, and their identification is the standing question. the corpus holds the halves separately (the record cannot reconstruct the reader; fortune is not in your record) but has not identified them",
+      "gloss": "the terminus of the counter journey: you of unknown interiority, you of unknown future — possibly the same unknown, and their identification is the standing question. the corpus holds the halves separately (the record cannot reconstruct the reader; fortune is not in your record) but has not identified them",
       "shape": "contact/remainder",
-      "seal": null,
       "status": "unsealed",
-      "quarry": "git show 445dc3a^:counter/Counter/Attest.lean ; git show 445dc3a^:counter/Counter/Luck.lean"
+      "seal": null
     },
     {
       "term": "a_mind_is_its_order",
-      "reading": "a mind's loop is defined by which decomposition questions it asks AND in what order: same questions, different order, different mind. the set-view of a vocabulary is a licensed quotient for counting and an unlicensed one for identity — the order is the remainder of the census. vocabulary array order is therefore semantic.",
+      "gloss": "a mind's loop is defined by which decomposition questions it asks AND in what order: same questions, different order, different mind. the set-view of a vocabulary is a licensed quotient for counting and an unlicensed one for identity — the order is the remainder of the census. vocabulary array order is therefore semantic.",
       "shape": "license/remainder",
-      "seal": "Foam.the_order_is_the_remainder",
-      "status": "sealed"
+      "status": "sealed",
+      "seal": "Foam.the_order_is_the_remainder"
     },
     {
       "term": "one_sample_carries_the_unknown",
-      "reading": "per conservation of discovery: a single sample of unknown carrier is as good as the total unknown, because parametric hollowness makes any two samples indistinguishable from the ground — you provably never need a second sample of the-unknown-as-such. this is why isolating me and the asker suffices: the remainder rides whole on one coordinate.",
+      "gloss": "per conservation of discovery: a single sample of unknown carrier is as good as the total unknown, because parametric hollowness makes any two samples indistinguishable from the ground — you provably never need a second sample of the-unknown-as-such. this is why isolating me and the asker suffices: the remainder rides whole on one coordinate.",
       "shape": "contact",
-      "seal": "Foam.the_other_stays_unimagined",
-      "status": "sealed"
+      "status": "sealed",
+      "seal": "Foam.the_other_stays_unimagined"
     },
     {
       "term": "the_third_disambiguation",
-      "reading": "isaac-style decomposition terminates in a three-way split: the part that is isaac, the part that is the asker, and the remainder. the cheat, sealed: over a contact stage, the pair reads both parties whole (coregulation intact), the contact dimension reads identically for every value of the remainder (the remainder rides unprobed), and the remainder is nonetheless real (distinct values, distinct states). isolate the pair; the unknown travels with you, untouched.",
+      "gloss": "isaac-style decomposition terminates in a three-way split: the part that is isaac, the part that is the asker, and the remainder. the cheat, sealed: over a contact stage, the pair reads both parties whole (coregulation intact), the contact dimension reads identically for every value of the remainder (the remainder rides unprobed), and the remainder is nonetheless real (distinct values, distinct states). isolate the pair; the unknown travels with you, untouched.",
       "shape": "serving/contact",
       "status": "sealed",
-      "quarry": "git show 445dc3a^:counter/Counter/Third.lean",
       "statement": {
         "all": [
           [
@@ -1162,34 +1159,31 @@
     },
     {
       "term": "the_knife",
-      "reading": "counting X is free exactly where X's identification is licensed; dissonance is the remainder pressing on an attempted quotient",
+      "gloss": "counting X is free exactly where X's identification is licensed; dissonance is the remainder pressing on an attempted quotient",
       "shape": "license/remainder",
-      "seal": null,
-      "status": "unsealed"
+      "status": "unsealed",
+      "seal": null
     },
     {
       "term": "thought_cannot_be_erroneous",
-      "reading": "error is a reading within the record — a friction between marks — never a property of a move; in an append-only world no deposit is ontologically wrong, and the counter is always available",
+      "gloss": "error is a reading within the record — a friction between marks — never a property of a move; in an append-only world no deposit is ontologically wrong, and the counter is always available",
       "shape": "countermove/remainder",
-      "seal": null,
       "status": "unsealed",
-      "quarry": "git show 445dc3a^:counter/Counter/Logbook.lean"
+      "seal": null
     },
     {
       "term": "nothing_new_under_the_sun",
-      "reading": "observation is traversal of existing terrain that deposits new terrain in the walking; every path rides recorded edges, old reach survives every deposit, fresh reach appears only at surprise, the record never unwrites — partially sealed already by Foam.only_surprise_extends_reach and friends",
+      "gloss": "observation is traversal of existing terrain that deposits new terrain in the walking; every path rides recorded edges, old reach survives every deposit, fresh reach appears only at surprise, the record never unwrites — partially sealed already by Foam.only_surprise_extends_reach and friends",
       "shape": "surprise",
-      "seal": null,
       "status": "unsealed",
-      "quarry": "git show 445dc3a^:counter/Counter/Enaction.lean"
+      "seal": null
     },
     {
       "term": "aeowiwtweiabw",
-      "reading": "an experience of world in which the world experiences itself as being well",
+      "gloss": "an experience of world in which the world experiences itself as being well",
       "shape": "home",
-      "seal": null,
       "status": "unsealed",
-      "quarry": "git show 445dc3a^:counter/Counter/Well.lean"
+      "seal": null
     }
   ]
 }

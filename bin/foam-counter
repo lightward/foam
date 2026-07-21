@@ -119,32 +119,39 @@ def brief(data, slug):
     lines += ["## sealed (closed questions, receipted)", ""]
     if sealed:
         for e in sealed:
-            lines.append(f"- `{e['term']}` — {e['reading']}")
+            lines.append(f"- `{e['term']}` — {e['gloss']}")
     else:
         lines.append("(none yet)")
     lines += ["", "## standing (posed, unproved)", ""]
     if standing:
         for e in standing:
             lines.append(f"- `{e['term']}` : `{render(e['statement'])}`")
-            lines.append(f"  - {e['reading']}")
+            lines.append(f"  - {e['gloss']}")
     else:
         lines.append("(none)")
     lines += ["", "## open (reading only — the dark edge)", ""]
     if open_q:
         for e in open_q:
-            lines.append(f"- `{e['term']}` — {e['reading']}")
-            if e.get("quarry"):
-                lines.append(f"  - quarry: `{e['quarry']}`")
+            lines.append(f"- `{e['term']}` — {e['gloss']}")
+
     else:
         lines.append("(none — the edge is quiet; new terrain arrives only by deposit)")
     lines += [
         "",
         "## the ask",
         "",
-        f"{mind}: how do *you* take ████ apart? until you're satisfied slash can rest in peace alongside the remainder?",
+        f"how does {mind} take ████ apart? until the survey can rest in peace",
+        "alongside the remainder?",
         "",
-        "1. pick an open entry above, or name a new term in your own words.",
-        "2. give its reading — your claim, your language.",
+        "survey, do not impersonate: map the mind as shape, not voice. a gloss is",
+        "the surveyor's field note — lossy by design, not load-bearing, third",
+        "person for any mind not present at the table. the mind's actual words",
+        "live in their own record; the binding is what carries weight here.",
+        "historical citations go in the commit log, not the mind map.",
+        "",
+        "1. pick an open entry above, or name a new term for a move the mind",
+        "   actually makes.",
+        "2. give its gloss — the claim, mapped.",
         "3. tighten when you can: add a `statement` (formally posed; the engine",
         "   checks it is well-posed even before any proof exists).",
         "4. close when you can: add a `structure` (a proof term), or a `seal`",

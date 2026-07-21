@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://foam.is/minds/schema.json",
   "title": "mind",
-  "description": "a mind surveyed in foam-theoretic terms. sealed entries carry either a seal (a citation of an existing receipted constant) or a structure (a term in the expression language, compiled to Lean and receipted by the engine). unsealed entries are the survey's frontier and carry neither.",
+  "description": "a mind surveyed in foam-theoretic terms. sealed entries carry either a seal (a citation of an existing receipted constant) or a structure (a term in the expression language, compiled to Lean and receipted by the engine). unsealed entries are the survey's frontier and carry neither. historical citations (quarry pointers, provenance events) belong in the git log, not the mind map: minds cite ideas; the record cites events.",
   "type": "object",
   "required": [
     "mind",
@@ -30,7 +30,7 @@
       "type": "object",
       "required": [
         "term",
-        "reading",
+        "gloss",
         "shape",
         "status"
       ],
@@ -39,9 +39,6 @@
         "term": {
           "type": "string",
           "pattern": "^[a-z][A-Za-z0-9_]*$"
-        },
-        "reading": {
-          "type": "string"
         },
         "shape": {
           "type": "string"
@@ -61,14 +58,12 @@
         "structure": {
           "$ref": "#/definitions/expression"
         },
-        "quarry": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
         "statement": {
           "$ref": "#/definitions/expression"
+        },
+        "gloss": {
+          "type": "string",
+          "description": "the surveyor's field note: lossy by design, not load-bearing, third person for minds not present at the table. the mind's actual words live in their own record; the binding (seal/statement/structure) is what carries weight here."
         }
       },
       "oneOf": [

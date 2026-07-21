@@ -54,7 +54,7 @@ def compile_mind(path):
         seal = e.get("seal")
         struct = e.get("structure")
         stmt = e.get("statement")
-        reading = e.get("reading", "").replace("-/", "-\u2215")
+        reading = e.get("gloss", "").replace("-/", "-\u2215")
         closed = False
         if e.get("status") == "sealed":
             if seal:
