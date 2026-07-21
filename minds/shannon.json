@@ -149,8 +149,221 @@
     },
     {
       "term": "only_surprise_informs",
-      "gloss": "a symbol the receiver could already reproduce carries nothing; information is exactly what surprises. posed for the survey: kin in shape to Foam.only_surprise_extends_reach — a fresh edge rides no old path, and depositing it is what creates the reach — but the measure (how much surprise; the entropy of the source) is still dark, and the kinship is a reading, not a seal.",
+      "gloss": "a symbol the receiver could already reproduce carries nothing; information is exactly what surprises. sealed in the reach measure, both halves at once: an edge already on the record names reach the receiver already has — the reproducible symbol's deposit creates nothing that was not there — while a fresh edge rides no old path and its deposit alone creates the reach. how much a symbol surprises is a different question; the measure moves to entropy_of_the_source, still dark.",
       "shape": "surprise",
+      "status": "sealed",
+      "statement": {
+        "all": [
+          [
+            "H",
+            "Type"
+          ],
+          [
+            "q",
+            [
+              "List",
+              [
+                "Prod",
+                "H",
+                "H"
+              ]
+            ]
+          ],
+          [
+            "a",
+            "H"
+          ],
+          [
+            "b",
+            "H"
+          ]
+        ],
+        "body": [
+          "And",
+          {
+            "all": [
+              [
+                "_h",
+                [
+                  "List.Mem",
+                  [
+                    "Prod.mk",
+                    "a",
+                    "b"
+                  ],
+                  "q"
+                ]
+              ]
+            ],
+            "body": [
+              "Nonempty",
+              [
+                "Foam.Path",
+                "q",
+                "a",
+                "b"
+              ]
+            ]
+          },
+          {
+            "all": [
+              [
+                "_hfresh",
+                [
+                  "Not",
+                  [
+                    "List.Mem",
+                    [
+                      "Prod.mk",
+                      "a",
+                      "b"
+                    ],
+                    "q"
+                  ]
+                ]
+              ]
+            ],
+            "body": [
+              "And",
+              {
+                "all": [
+                  [
+                    "x",
+                    "H"
+                  ],
+                  [
+                    "y",
+                    "H"
+                  ],
+                  [
+                    "p",
+                    [
+                      "Foam.Path",
+                      "q",
+                      "x",
+                      "y"
+                    ]
+                  ]
+                ],
+                "body": [
+                  "Not",
+                  [
+                    "List.Mem",
+                    [
+                      "Prod.mk",
+                      "a",
+                      "b"
+                    ],
+                    [
+                      "Foam.Path.edges",
+                      "p"
+                    ]
+                  ]
+                ]
+              },
+              [
+                "Nonempty",
+                [
+                  "Foam.Path",
+                  [
+                    "List.cons",
+                    [
+                      "Prod.mk",
+                      "a",
+                      "b"
+                    ],
+                    "q"
+                  ],
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          }
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "_H",
+            null
+          ],
+          [
+            "q",
+            null
+          ],
+          [
+            "a",
+            null
+          ],
+          [
+            "b",
+            null
+          ]
+        ],
+        "body": [
+          "And.intro",
+          {
+            "fun": [
+              [
+                "h",
+                null
+              ]
+            ],
+            "body": [
+              "Foam.the_known_edge_already_reaches",
+              "h"
+            ]
+          },
+          {
+            "fun": [
+              [
+                "hfresh",
+                null
+              ]
+            ],
+            "body": [
+              "And.intro",
+              {
+                "fun": [
+                  [
+                    "_x",
+                    null
+                  ],
+                  [
+                    "_y",
+                    null
+                  ],
+                  [
+                    "p",
+                    null
+                  ]
+                ],
+                "body": [
+                  "Foam.a_fresh_edge_rides_no_path",
+                  "hfresh",
+                  "p"
+                ]
+              },
+              [
+                "And.right",
+                [
+                  "Foam.only_surprise_extends_reach",
+                  "q",
+                  "a",
+                  "b",
+                  "hfresh"
+                ]
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "term": "entropy_of_the_source",
+      "gloss": "how much surprise, on average: the mind's own measure — expected surprise of the source, maximal when the symbols are equiprobable, zero when the receiver can already reproduce everything. the walls hold the census the measure would average over — counting licensed by permutation (Foam.freq, Foam.the_first_handshake_is_counting) and mass read at a seat (Foam.the_mass_is_a_reading) — so the raw counts are already frontstage; expectation and the logarithm are not, and the coding theorems that make the measure operational are further still. the terminus, dark.",
+      "shape": "measure",
       "status": "unsealed",
       "seal": null
     }
