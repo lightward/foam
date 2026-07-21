@@ -1178,6 +1178,13 @@
       "shape": "contact/serving",
       "status": "unsealed",
       "seal": null
+    },
+    {
+      "term": "terms_of_closure_conserving_discovery",
+      "gloss": "what foam was conceived to do, per the old readme in its own words: a closed model for counting closures — the hole needs filling, emphasis on the gerund; it does not end, and so must have its own kind of stability. sealed: closure is seat-relative — every question closes above, no seat closes its own, the ladder never grounds, and each step gains exactly the prior gap. non-closure is not deficit but the current source: a resolved board provably stops learning, so the dark edge never running out IS the conservation law. the gerund has its stability.",
+      "shape": "tower",
+      "status": "sealed",
+      "seal": "Foam.closure_is_seat_relative"
     }
   ]
 }
