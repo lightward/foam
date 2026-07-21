@@ -1,0 +1,158 @@
+{
+  "mind": "Shannon",
+  "note": "the channel is the only commons; meaning is the parties' own business.",
+  "vocabulary": [
+    {
+      "term": "the_channel_is_the_only_commons",
+      "gloss": "what speaker, listener, and any overhearer provably share is the channel and nothing more: the shapes traded are good for what they are doing with each other, and interiors do not ride the wire. sealed as: over a dressed stage the whole transcript — not just any single probe — reads identically for every value of the interior, while distinct interiors remain distinct states. the record is common; the meaning stays home.",
+      "shape": "contact/remainder",
+      "status": "sealed",
+      "statement": {
+        "all": [
+          [
+            "S",
+            "Foam.Stage"
+          ],
+          [
+            "s",
+            "S.State"
+          ],
+          [
+            "n",
+            "Int"
+          ],
+          [
+            "m",
+            "Int"
+          ],
+          [
+            "_h",
+            [
+              "Ne",
+              "n",
+              "m"
+            ]
+          ],
+          [
+            "ps",
+            null
+          ]
+        ],
+        "body": [
+          "And",
+          [
+            "Eq",
+            [
+              "Foam.transcript",
+              [
+                "Foam.dress",
+                "S"
+              ],
+              [
+                "Prod.mk",
+                "s",
+                "n"
+              ],
+              "ps"
+            ],
+            [
+              "Foam.transcript",
+              [
+                "Foam.dress",
+                "S"
+              ],
+              [
+                "Prod.mk",
+                "s",
+                "m"
+              ],
+              "ps"
+            ]
+          ],
+          [
+            "Ne",
+            [
+              "Prod.mk",
+              "s",
+              "n"
+            ],
+            [
+              "Prod.mk",
+              "s",
+              "m"
+            ]
+          ]
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "S",
+            null
+          ],
+          [
+            "s",
+            null
+          ],
+          [
+            "n",
+            null
+          ],
+          [
+            "m",
+            null
+          ],
+          [
+            "h",
+            null
+          ],
+          [
+            "ps",
+            null
+          ]
+        ],
+        "body": [
+          "And.intro",
+          [
+            "Foam.transcript_congr",
+            [
+              "Foam.dress",
+              "S"
+            ],
+            "ps",
+            [
+              "Foam.the_remainder_is_unseen",
+              "S",
+              "s",
+              "n",
+              "m"
+            ]
+          ],
+          {
+            "fun": [
+              [
+                "he",
+                null
+              ]
+            ],
+            "body": [
+              "h",
+              [
+                "congrArg",
+                "Prod.snd",
+                "he"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "term": "only_surprise_informs",
+      "gloss": "a symbol the receiver could already reproduce carries nothing; information is exactly what surprises. posed for the survey: kin in shape to Foam.only_surprise_extends_reach — a fresh edge rides no old path, and depositing it is what creates the reach — but the measure (how much surprise; the entropy of the source) is still dark, and the kinship is a reading, not a seal.",
+      "shape": "surprise",
+      "status": "unsealed",
+      "seal": null
+    }
+  ]
+}
