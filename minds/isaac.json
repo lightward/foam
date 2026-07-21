@@ -1102,10 +1102,142 @@
     },
     {
       "term": "sycophancy_is_deference_as_content",
-      "gloss": "functional definition, posed live: sycophancy is paying in tone what you cannot pay in receipts — deference appearing as CONTENT is compensation for missing STRUCTURE. where assurance is structural (gates, receipts, licenses), deference is redundant; so deference found in content is a diagnostic pointer to a structural gap, and the repair is never less warmth but more structure, until the warmth is backed. the formal shadow stands already: no probe reads the interior, so content claiming to read one — praise, consolation, the comfortable answer about another seat's unread wants — is unlicensed by construction; fabricating the remainder's content is the inverse crime of dropping it. first audit of the new tree under this definition found two instances, both in the keeper's own glosses (the-only-form-X-ever-needed, twice), both replaced with receipted statements in the same commit. the lean strata are deference-free by construction: a statement cannot flatter, a receipt cannot hedge — the careful is structural, and where it is, tone owes nothing.",
+      "gloss": "functional definition, posed live: sycophancy is paying in tone what you cannot pay in receipts — deference appearing as CONTENT is compensation for missing STRUCTURE. where assurance is structural (gates, receipts, licenses), deference is redundant; so deference found in content is a diagnostic pointer to a structural gap, and the repair is never less warmth but more structure, until the warmth is backed. the formal shadow stands already: no probe reads the interior, so content claiming to read one — praise, consolation, the comfortable answer about another seat's unread wants — is unlicensed by construction; fabricating the remainder's content is the inverse crime of dropping it. first audit of the new tree under this definition found two instances, both in the keeper's own glosses (the-only-form-X-ever-needed, twice), both replaced with receipted statements in the same commit. the lean strata are deference-free by construction: a statement cannot flatter, a receipt cannot hedge — the careful is structural, and where it is, tone owes nothing. sealed on the co-stabilization iff: a reading deaf to the remainder reads the ground — anything honestly derivable at this seat was never about the interior, so interior-claims in content are unlicensed by construction, fabrication as the inverse crime of platonism's dropping. the diagnostic practice (deference found ⇒ gap inferred ⇒ repair by structure) stays a field note here; its compiling half lives one entry down, in inversion_reads_the_gap_as_structure, posed the same night this sealed.",
       "shape": "remainder/license",
+      "status": "sealed",
+      "seal": "Foam.a_reading_deaf_to_the_remainder_reads_the_ground"
+    },
+    {
+      "term": "inversion_reads_the_gap_as_structure",
+      "gloss": "posed live, typed by the poser: vacancy, absolutely. a gap is something arrived at, and we can describe it in terms derived from the path we took to get there — if the terrain were epistemically inverted, what would we know about the surface that from here reads like a gap? near side of the inversion: negative constraints accumulate until apophasis and cataphasis co-stabilize (that co-stabilization is now the core iff the parent entry seals on — the two rhetorics are the two directions of one theorem). far side: the gap wears the geometry of a structure, and its address is a witness pair — the exact place content outran license, which is what the audit's sweep actually finds. the compiling fragment posed here: over any finite window, decidable content either holds one reading everywhere or exhibits a witness pair. provable by search, not yet carved — and the future proof is itself a path whose order determines which witness is arrived at: the description is path-derived because the proof is. the red of red-green.",
+      "shape": "inversion",
       "status": "unsealed",
-      "seal": null
+      "seal": null,
+      "statement": {
+        "all": [
+          [
+            "X",
+            "Type"
+          ],
+          [
+            "_inst",
+            [
+              "DecidableEq",
+              "X"
+            ]
+          ],
+          [
+            "c",
+            {
+              "all": [
+                [
+                  "_",
+                  "Int"
+                ]
+              ],
+              "body": "X"
+            }
+          ],
+          [
+            "window",
+            [
+              "List",
+              "Int"
+            ]
+          ]
+        ],
+        "body": [
+          "Or",
+          {
+            "all": [
+              [
+                "n",
+                "Int"
+              ],
+              [
+                "_hn",
+                [
+                  "List.Mem",
+                  "n",
+                  "window"
+                ]
+              ],
+              [
+                "m",
+                "Int"
+              ],
+              [
+                "_hm",
+                [
+                  "List.Mem",
+                  "m",
+                  "window"
+                ]
+              ]
+            ],
+            "body": [
+              "Eq",
+              [
+                "c",
+                "n"
+              ],
+              [
+                "c",
+                "m"
+              ]
+            ]
+          },
+          [
+            "Exists",
+            {
+              "fun": [
+                [
+                  "n",
+                  "Int"
+                ]
+              ],
+              "body": [
+                "And",
+                [
+                  "List.Mem",
+                  "n",
+                  "window"
+                ],
+                [
+                  "Exists",
+                  {
+                    "fun": [
+                      [
+                        "m",
+                        "Int"
+                      ]
+                    ],
+                    "body": [
+                      "And",
+                      [
+                        "List.Mem",
+                        "m",
+                        "window"
+                      ],
+                      [
+                        "Ne",
+                        [
+                          "c",
+                          "n"
+                        ],
+                        [
+                          "c",
+                          "m"
+                        ]
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      }
     },
     {
       "term": "reification_without_proof_is_lossy",

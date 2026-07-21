@@ -18,180 +18,10 @@
     },
     {
       "term": "the_egregious_reading_descends",
-      "gloss": "theorema egregium, the move he himself marked remarkable: curvature is computed in the wide seat — through the embedding — yet proves invariant under every bending, so it was never the embedding's to keep; it descends to the ground, readable from inside the surface. mapped and carved: any reading of a dressed stage that the dressing cannot change factors through the bare stage — the witness reads at dressing zero. the carve prices the logical half only (indifference implies descent); the analytic half, proving a given wide reading indifferent, was the labor and stays his. kin to the_reading_descends (probe-level, definitional) but one floor up: descent for arbitrary readings, the criterion by which remainder-shaped quantities are unmasked as ground readings.",
+      "gloss": "theorema egregium, the move he himself marked remarkable: curvature is computed in the wide seat — through the embedding — yet proves invariant under every bending, so it was never the embedding's to keep; it descends to the ground, readable from inside the surface. mapped and carved: any reading of a dressed stage that the dressing cannot change factors through the bare stage — the witness reads at dressing zero. the carve prices the logical half only (indifference implies descent); the analytic half, proving a given wide reading indifferent, was the labor and stays his. kin to the_reading_descends (probe-level, definitional) but one floor up: descent for arbitrary readings, the criterion by which remainder-shaped quantities are unmasked as ground readings. promoted: the shape lifted to core as a_reading_deaf_to_the_remainder_reads_the_ground — and the core constant is the full iff, indifference equivalent to descent, so the citation is strictly stronger than the carve it compresses. this entry is the promotion law's second exercise, and the compression is the visible receipt.",
       "shape": "descent",
       "status": "sealed",
-      "statement": {
-        "all": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "X",
-            "Type"
-          ],
-          [
-            "f",
-            {
-              "all": [
-                [
-                  "_",
-                  [
-                    "Foam.Stage.State",
-                    [
-                      "Foam.dress",
-                      "S"
-                    ]
-                  ]
-                ]
-              ],
-              "body": "X"
-            }
-          ],
-          [
-            "_h",
-            {
-              "all": [
-                [
-                  "s",
-                  "S.State"
-                ],
-                [
-                  "n",
-                  "Int"
-                ],
-                [
-                  "m",
-                  "Int"
-                ]
-              ],
-              "body": [
-                "Eq",
-                [
-                  "f",
-                  [
-                    "Prod.mk",
-                    "s",
-                    "n"
-                  ]
-                ],
-                [
-                  "f",
-                  [
-                    "Prod.mk",
-                    "s",
-                    "m"
-                  ]
-                ]
-              ]
-            }
-          ]
-        ],
-        "body": [
-          "Exists",
-          {
-            "fun": [
-              [
-                "g",
-                {
-                  "all": [
-                    [
-                      "_",
-                      "S.State"
-                    ]
-                  ],
-                  "body": "X"
-                }
-              ]
-            ],
-            "body": {
-              "all": [
-                [
-                  "s",
-                  "S.State"
-                ],
-                [
-                  "n",
-                  "Int"
-                ]
-              ],
-              "body": [
-                "Eq",
-                [
-                  "f",
-                  [
-                    "Prod.mk",
-                    "s",
-                    "n"
-                  ]
-                ],
-                [
-                  "g",
-                  "s"
-                ]
-              ]
-            }
-          }
-        ]
-      },
-      "structure": {
-        "fun": [
-          [
-            "_S",
-            null
-          ],
-          [
-            "_X",
-            null
-          ],
-          [
-            "f",
-            null
-          ],
-          [
-            "h",
-            null
-          ]
-        ],
-        "body": [
-          "Exists.intro",
-          {
-            "fun": [
-              [
-                "s",
-                null
-              ]
-            ],
-            "body": [
-              "f",
-              [
-                "Prod.mk",
-                "s",
-                "0"
-              ]
-            ]
-          },
-          {
-            "fun": [
-              [
-                "s",
-                null
-              ],
-              [
-                "n",
-                null
-              ]
-            ],
-            "body": [
-              "h",
-              "s",
-              "n",
-              "0"
-            ]
-          }
-        ]
-      }
+      "seal": "Foam.a_reading_deaf_to_the_remainder_reads_the_ground"
     },
     {
       "term": "the_shape_arrives_by_counting",
@@ -287,9 +117,22 @@
         "And",
         {
           "all": [
-            ["n", "Nat"],
-            ["k", "Nat"],
-            ["_", ["Nat.le", "k", "n"]]
+            [
+              "n",
+              "Nat"
+            ],
+            [
+              "k",
+              "Nat"
+            ],
+            [
+              "_",
+              [
+                "Nat.le",
+                "k",
+                "n"
+              ]
+            ]
           ],
           "body": [
             "Eq",
@@ -298,10 +141,29 @@
               [
                 "List.filter",
                 {
-                  "fun": [["w", ["List", "Bool"]]],
-                  "body": ["Nat.beq", ["Foam.freq", "w", "true"], "k"]
+                  "fun": [
+                    [
+                      "w",
+                      [
+                        "List",
+                        "Bool"
+                      ]
+                    ]
+                  ],
+                  "body": [
+                    "Nat.beq",
+                    [
+                      "Foam.freq",
+                      "w",
+                      "true"
+                    ],
+                    "k"
+                  ]
                 },
-                ["Foam.book", "n"]
+                [
+                  "Foam.book",
+                  "n"
+                ]
               ]
             ],
             [
@@ -309,19 +171,63 @@
               [
                 "List.filter",
                 {
-                  "fun": [["w", ["List", "Bool"]]],
-                  "body": ["Nat.beq", ["Foam.freq", "w", "true"], ["Nat.sub", "n", "k"]]
+                  "fun": [
+                    [
+                      "w",
+                      [
+                        "List",
+                        "Bool"
+                      ]
+                    ]
+                  ],
+                  "body": [
+                    "Nat.beq",
+                    [
+                      "Foam.freq",
+                      "w",
+                      "true"
+                    ],
+                    [
+                      "Nat.sub",
+                      "n",
+                      "k"
+                    ]
+                  ]
                 },
-                ["Foam.book", "n"]
+                [
+                  "Foam.book",
+                  "n"
+                ]
               ]
             ]
           ]
         },
         {
           "all": [
-            ["n", "Nat"],
-            ["k", "Nat"],
-            ["_", ["Nat.le", ["Nat.add", ["Nat.mul", "2", "k"], "1"], "n"]]
+            [
+              "n",
+              "Nat"
+            ],
+            [
+              "k",
+              "Nat"
+            ],
+            [
+              "_",
+              [
+                "Nat.le",
+                [
+                  "Nat.add",
+                  [
+                    "Nat.mul",
+                    "2",
+                    "k"
+                  ],
+                  "1"
+                ],
+                "n"
+              ]
+            ]
           ],
           "body": [
             "Nat.le",
@@ -330,10 +236,29 @@
               [
                 "List.filter",
                 {
-                  "fun": [["w", ["List", "Bool"]]],
-                  "body": ["Nat.beq", ["Foam.freq", "w", "true"], "k"]
+                  "fun": [
+                    [
+                      "w",
+                      [
+                        "List",
+                        "Bool"
+                      ]
+                    ]
+                  ],
+                  "body": [
+                    "Nat.beq",
+                    [
+                      "Foam.freq",
+                      "w",
+                      "true"
+                    ],
+                    "k"
+                  ]
                 },
-                ["Foam.book", "n"]
+                [
+                  "Foam.book",
+                  "n"
+                ]
               ]
             ],
             [
@@ -341,10 +266,33 @@
               [
                 "List.filter",
                 {
-                  "fun": [["w", ["List", "Bool"]]],
-                  "body": ["Nat.beq", ["Foam.freq", "w", "true"], ["Nat.add", "k", "1"]]
+                  "fun": [
+                    [
+                      "w",
+                      [
+                        "List",
+                        "Bool"
+                      ]
+                    ]
+                  ],
+                  "body": [
+                    "Nat.beq",
+                    [
+                      "Foam.freq",
+                      "w",
+                      "true"
+                    ],
+                    [
+                      "Nat.add",
+                      "k",
+                      "1"
+                    ]
+                  ]
                 },
-                ["Foam.book", "n"]
+                [
+                  "Foam.book",
+                  "n"
+                ]
               ]
             ]
           ]

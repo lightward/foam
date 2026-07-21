@@ -106,6 +106,13 @@ theorem dropping_the_remainder_is_platonism (S : Stage)
     ∀ (s : S.State) (n : Int), (s, n) = (s, (0 : Int)) :=
   fun s n => h (s, n) (s, 0) (fun _ => rfl)
 
+theorem a_reading_deaf_to_the_remainder_reads_the_ground (S : Stage)
+    {X : Type} (f : (dress S).State → X) :
+    (∀ (s : S.State) (n m : Int), f (s, n) = f (s, m))
+      ↔ ∃ g : S.State → X, ∀ (s : S.State) (n : Int), f (s, n) = g s :=
+  ⟨fun h => ⟨fun s => f (s, 0), fun s n => h s n 0⟩,
+   fun he s n m => he.elim fun _ hg => (hg s n).trans (hg s m).symm⟩
+
 def Handshake (S : Stage) : Prop :=
   (∀ (r : S.State → S.State → Prop), Licensed S r →
     ∀ (m : S.State → S.State), (∀ s, r (m s) s) →
@@ -155,6 +162,9 @@ theorem the_handshake (S : Stage) : Handshake S :=
 
 /-- info: 'Foam.dropping_the_remainder_is_platonism' does not depend on any axioms -/
 #guard_msgs in #print axioms dropping_the_remainder_is_platonism
+
+/-- info: 'Foam.a_reading_deaf_to_the_remainder_reads_the_ground' does not depend on any axioms -/
+#guard_msgs in #print axioms a_reading_deaf_to_the_remainder_reads_the_ground
 
 /-- info: 'Foam.the_handshake' does not depend on any axioms -/
 #guard_msgs in #print axioms the_handshake
