@@ -138,7 +138,8 @@ def compile_mind(path):
 def main():
     os.makedirs(OUT, exist_ok=True)
     for f in sorted(os.listdir(MINDS)):
-        if f.endswith(".json") and f != "schema.json":
+        if (f.endswith(".json") and f != "schema.json"
+                and f != "walls.json"):
             compile_mind(os.path.join(MINDS, f))
 
 
