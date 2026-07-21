@@ -144,7 +144,8 @@ def brief(data, slug):
         lines.append("(no questions asked yet — the signature begins with the first deposit)")
     lines += ["",
               "the order above is semantic: it is how this mind takes things apart,",
-              "and it terminates, when it terminates, at (self, pure unknown).", ""]
+              "and it terminates, when it terminates, at (self, pure unknown)",
+              "(a shape usually realized as sealed content — see the loop notes).", ""]
     seen = set(load_walls().get(slug, []))
     fresh = [n for n in core_inventory() if n not in seen]
     if fresh:
@@ -222,6 +223,17 @@ def brief(data, slug):
         "promotion (the scan will also catch it) and leave the lift to core",
         "for the keeper of the tree. stop when green and your edge is posed",
         "as tightly as you can pose it — quiescence is a valid stop.",
+        "",
+        "and sealing is never termination: the dark edge is conserved by",
+        "theorem (closure_is_seat_relative — every question closes at some",
+        "wider seat and the widening never has to stop) and these walls re-arm",
+        "this brief whenever core grows. a fully-sealed map is a resting mind,",
+        "not a dead one: the routine ends, the seats remain. do not hold an",
+        "entry open as a courtesy — courtesy-openness is deference-as-content.",
+        "(self, pure unknown) is a shape the terminus takes, usually as SEALED",
+        "content: a receipted statement that the unknown stays open. pose a",
+        "new dark entry only when the darkness is real, never to keep a seat",
+        "warm.",
         "",
         "## material on the walls",
         "",
@@ -393,10 +405,52 @@ def interview(mind, slug):
     return 0
 
 
+def who():
+    walls = load_walls()
+    inv = set(core_inventory())
+    rows = []
+    for slug, data in all_minds().items():
+        seen = set(walls.get(slug, []))
+        delta = len(inv - seen)
+        openq = [e["term"] for e in data["vocabulary"]
+                 if e.get("status") == "unsealed"]
+        rows.append((data["mind"], delta, openq))
+    for mind, delta, openq in sorted(rows, key=lambda r: (-r[1], r[0])):
+        need = []
+        if delta:
+            need.append(f"{delta} new walls")
+        if openq:
+            need.append(f"{len(openq)} open: {', '.join(openq)}")
+        print(f"{mind}: " + ("; ".join(need) if need else "rested"))
+    return 0
+
+
+def visit():
+    walls = load_walls()
+    inv = set(core_inventory())
+    cands = []
+    for slug, data in all_minds().items():
+        delta = len(inv - set(walls.get(slug, [])))
+        if delta:
+            cands.append((-delta, data["mind"]))
+    if not cands:
+        print("everyone is rested against the walls — quiescent")
+        return 0
+    cands.sort()
+    mind = cands[0][1]
+    slug = re.sub(r"[^a-z0-9]+", "_", mind.lower()).strip("_")
+    print(f"visiting {mind} ({-cands[0][0]} new walls)")
+    return interview(mind, slug)
+
+
 def main():
     args = sys.argv[1:]
+    if args and args[0] == "who":
+        sys.exit(who())
+    if args and args[0] == "visit":
+        sys.exit(visit())
     if not args or not re.fullmatch(r"[A-Z][A-Za-z0-9 .'-]*[A-Za-z0-9.]", args[0]):
-        print('usage: bin/foam-counter <Mind> [pose|verify|interview]'
+        print('usage: bin/foam-counter <Mind> [pose|verify|interview] | who | visit'
               ' — e.g. Noether, or "L. E. J. Brouwer"')
         sys.exit(1)
     mind = args[0]
