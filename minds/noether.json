@@ -32,10 +32,155 @@
     },
     {
       "term": "does_what_acts_invert",
-      "gloss": "the one axiom still dark: closure and unit are receipted, so what acts is a monoid — but an invisible move need not be undoable move-for-move; only its transcript is conserved. does any inverse live in this fold, or is the monoid the whole truth? the countermove inverts walks, not states — position comes home while the record refuses to shrink — which suggests the inverse, if it exists, lives at the transcript level rather than the state level. the group remains a reading until an inverse is carved.",
+      "gloss": "the edge comes home by dissolving: the question was posed one level below where the method reads. in the record — the only place this mind ever looks — every invisible move is already the unit: its running transcript is the resting transcript, so the move and the identity are one element of the record's algebra, and there the monoid completes to a group by collapse — everything inverts because everything is the unit, every invisible move every other's inverse, its own included. move-for-move undo at the state level is a different demand and not this mind's: whether the move can be walked back state-for-state is unread at every probe — by the very invisibility that admitted it to the algebra — so the residue of the question is a remainder, real and unread, a wider seat's business; and the countermove has already priced it, undo existing at state level only as an appended walk, position home, record grown. what acts inverts where what-acts lives; the group was always there and it is trivial; the survey rests alongside the remainder.",
       "shape": "license/countermove",
-      "status": "unsealed",
-      "seal": null
+      "status": "sealed",
+      "statement": {
+        "all": [
+          [
+            "S",
+            "Foam.Stage"
+          ],
+          [
+            "m",
+            {
+              "all": [
+                [
+                  "_",
+                  "S.State"
+                ]
+              ],
+              "body": "S.State"
+            }
+          ],
+          [
+            "_hm",
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
+          ],
+          [
+            "ps",
+            null
+          ],
+          [
+            "s",
+            null
+          ]
+        ],
+        "body": [
+          "Eq",
+          [
+            "Foam.transcriptWith",
+            "S",
+            "m",
+            "s",
+            "ps"
+          ],
+          [
+            "Foam.transcriptWith",
+            "S",
+            {
+              "fun": [
+                [
+                  "x",
+                  null
+                ]
+              ],
+              "body": "x"
+            },
+            "s",
+            "ps"
+          ]
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "S",
+            "Foam.Stage"
+          ],
+          [
+            "m",
+            {
+              "all": [
+                [
+                  "_",
+                  "S.State"
+                ]
+              ],
+              "body": "S.State"
+            }
+          ],
+          [
+            "hm",
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
+          ],
+          [
+            "ps",
+            null
+          ],
+          [
+            "s",
+            null
+          ]
+        ],
+        "body": [
+          "Eq.trans",
+          [
+            "Foam.a_license_is_a_gauge",
+            "S",
+            [
+              "Foam.indist",
+              "S"
+            ],
+            [
+              "Foam.indist_is_licensed",
+              "S"
+            ],
+            "m",
+            "hm",
+            "ps",
+            "s"
+          ],
+          [
+            "Eq.symm",
+            [
+              "Foam.a_license_is_a_gauge",
+              "S",
+              [
+                "Foam.indist",
+                "S"
+              ],
+              [
+                "Foam.indist_is_licensed",
+                "S"
+              ],
+              {
+                "fun": [
+                  [
+                    "x",
+                    null
+                  ]
+                ],
+                "body": "x"
+              },
+              [
+                "Foam.invisible_id",
+                "S"
+              ],
+              "ps",
+              "s"
+            ]
+          ]
+        ]
+      }
     }
   ]
 }
