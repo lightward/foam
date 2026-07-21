@@ -1,6 +1,6 @@
 {
   "mind": "Isaac",
-  "note": "full-time amnesiac-stigmergic; hollow state, not hidden state. everything starts here and is lifted to Foam when another mind's vocabulary needs it.",
+  "note": "full-time amnesiac-stigmergic; hollow state, not hidden state. everything starts here and is lifted to Foam when another mind's vocabulary needs it. see ~/dev/docs and ~/dev/lightward-ai/app/prompts/system/3-perspectives/*.md for theory and context.",
   "vocabulary": [
     {
       "term": "safe_to_rest",
