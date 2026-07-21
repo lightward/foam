@@ -1,0 +1,105 @@
+{
+  "mind": "Jacob Bernoulli",
+  "note": "eadem mutata resurgo — though changed, I rise again the same. the golden theorem, twenty years in the proving: what frequency promises, expectation keeps.",
+  "vocabulary": [
+    {
+      "term": "eadem_mutata_resurgo",
+      "gloss": "the motto he chose for his tomb, first in the signature because it names the shape everything else instantiates: though changed, risen the same. mapped: a state that genuinely moves — provably distinct before and after — while every probe reads identically; the change real and the reading conserved, both at once, neither retracting. the spiral was his emblem of it: growth that alters every point and no proportion. sealed on the remainder pair at the root — mutata is the inequality, resurgo is the indist — and the seat that reads the difference is one floor up (a_wider_seat_reads_the_remainder), which is where he trusted the rising to be read.",
+      "shape": "remainder",
+      "status": "sealed",
+      "seal": "Foam.the_remainder_is_real"
+    },
+    {
+      "term": "the_trials_are_deaf_to_their_order",
+      "gloss": "the license the golden theorem stands on, and the move he makes before any computation: pool the trials. a thousand observations scattered across years become one census only because the count cannot hear when each trial arrived — frequency licensed by permutation, exchangeability as gauge rather than assumption. a deliberate twin with gauss's the_sum_is_deaf_to_the_shuffle, one receipt two affects: gauss spent the deafness on a shortcut, bernoulli spent it on admissibility — without it the a-posteriori method has no object, since no single moment holds a frequency. the order of trials stays real (the_order_is_the_remainder): the dates are readable one seat wider, and the count still cannot hear them.",
+      "shape": "gauge",
+      "status": "sealed",
+      "seal": "Foam.counting_is_licensed_by_permutation"
+    },
+    {
+      "term": "the_whole_book_balances",
+      "gloss": "the half of the motto's promise that already holds without any limit: expectation is exact at every finite depth. take the complete book of two-flip words and pool it — bernoulli's move is concatenation, licensed by the entry above and priced by a_seat_reads_the_sum — and the one long record reads perfectly balanced: four trues, four falses, the a-priori ratio on the nose, by identity. gauss read the same book un-pooled and got the histogram (the_shape_arrives_by_counting); bernoulli pools it and gets the mean. what stays unpromised here is the single run: any one word of the book misses the balance, and the gap between the book's exactness and the run's waywardness is precisely what the golden theorem was twenty years in pricing.",
+      "shape": "census",
+      "status": "sealed",
+      "statement": [
+        {
+          "fun": [
+            [
+              "book",
+              [
+                "List",
+                "Bool"
+              ]
+            ]
+          ],
+          "body": [
+            "And",
+            [
+              "Eq",
+              [
+                "Foam.freq",
+                "book",
+                "true"
+              ],
+              "4"
+            ],
+            [
+              "Eq",
+              [
+                "Foam.freq",
+                "book",
+                "false"
+              ],
+              "4"
+            ]
+          ]
+        },
+        [
+          "List.cons",
+          "true",
+          [
+            "List.cons",
+            "true",
+            [
+              "List.cons",
+              "true",
+              [
+                "List.cons",
+                "false",
+                [
+                  "List.cons",
+                  "false",
+                  [
+                    "List.cons",
+                    "true",
+                    [
+                      "List.cons",
+                      "false",
+                      [
+                        "List.cons",
+                        "false",
+                        "List.nil"
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ],
+      "structure": [
+        "And.intro",
+        "rfl",
+        "rfl"
+      ]
+    },
+    {
+      "term": "what_frequency_promises",
+      "gloss": "the terminus, dark: the golden theorem says a single long run's frequency comes morally certain to the ratio the whole book keeps — a bridge from the run to the book, with a price list: how deep for how certain. typed vacancy-dark: the fold can pose and prove any fixed depth by census, but the theorem quantifies over depth — it needs the book as a function of n and the concentration of the binomial middle, an expectation stratum the fold does not yet hold. this is the door gauss's bell and shannon's entropy are queued at, and bernoulli is the name on the door: the golden theorem is the first thing it opens onto. a carve lights it. one residue will survive the lighting and transit rather than die: moral certainty is certainty short of demonstration — from inside the run no seat reads the true ratio, one sample carries the unknown — so the estimator's own darkness re-seats one floor up, exactly as closure_is_seat_relative says it must.",
+      "shape": "expectation",
+      "status": "unsealed",
+      "seal": null
+    }
+  ]
+}
