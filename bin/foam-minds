@@ -2,18 +2,48 @@
 
 import json
 import os
+import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 MINDS = os.path.join(ROOT, "minds")
 OUT = os.path.join(ROOT, "Foam", "Minds")
 
 
-def foam_modules():
-    mods = ["Foam"]
-    for f in sorted(os.listdir(os.path.join(ROOT, "Foam"))):
+def module_decls():
+    decl = re.compile(r"^(?:theorem|def|structure|inductive|abbrev|class) (\S+)")
+    name2mod = {}
+    files = [("Foam", os.path.join(ROOT, "Foam.lean"))]
+    foam_dir = os.path.join(ROOT, "Foam")
+    for f in sorted(os.listdir(foam_dir)):
         if f.endswith(".lean"):
-            mods.append("Foam." + f[:-5])
-    return mods
+            files.append(("Foam." + f[:-5], os.path.join(foam_dir, f)))
+    for mod, path in files:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                m = decl.match(line)
+                if m:
+                    name2mod["Foam." + m.group(1)] = mod
+    return name2mod
+
+
+def needed_imports(data, name2mod):
+    parts = []
+    for e in data["vocabulary"]:
+        if e.get("seal"):
+            parts.append(e["seal"])
+        for f in ("statement", "structure"):
+            if e.get(f) is not None:
+                parts.append(render(e[f]))
+    tokens = set(re.findall(r"[A-Za-z_][A-Za-z0-9_.]*", " ".join(parts)))
+    needed = set()
+    for t in tokens:
+        segs = t.split(".")
+        for i in range(len(segs), 0, -1):
+            cand = ".".join(segs[:i])
+            if cand in name2mod:
+                needed.add(name2mod[cand])
+                break
+    return sorted(needed)
 
 
 def binders(bs):
@@ -41,9 +71,10 @@ def compile_mind(path):
         data = json.load(fh)
     mind = data["mind"]
     lines = []
-    for m in foam_modules():
+    for m in needed_imports(data, module_decls()):
         lines.append(f"import {m}")
-    lines.append("")
+    if lines:
+        lines.append("")
     lines.append(f"namespace Foam.Minds.{mind}")
     lines.append("")
     emitted = []
