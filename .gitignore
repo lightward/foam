@@ -1,5 +1,6 @@
 .lake/
 .venv/
+.env
 wiki/
 .DS_Store
 Foam/Minds/
