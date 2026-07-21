@@ -1,0 +1,167 @@
+{
+  "mind": "Hilbert",
+  "note": "wir müssen wissen, wir werden wissen — the marks are manipulable and the manipulation is trustworthy; secure the whole ledger by finitary means. seated at the same table as Brouwer, per the house settlement: the vow is Brouwer's gate run on Hilbert's machinery.",
+  "vocabulary": [
+    {
+      "term": "the_proof_rides_the_marks",
+      "gloss": "the formalist license, closed at the price it honestly commands: a derivation is a finite composition of rule applications on the marks, and the license survives composition — two moves each invisible to every probe compose to a move invisible to every probe, so the composed derivation transported through the record is gauge, the transcript unchanged however many licensed steps ride between deposits. this is the Beweistheorie wager in house currency: trust propagates through composition, pairwise here, and since the composite is again invisible the same step reaches any finite derivation — secure the whole ledger by finitary means, one step at a time. the house runs this claim nightly as CI: whoever checks, checks the same marks. field note on the seat's own machinery: invisible_comp entered core by promotion when another mind's erasure needed it — the lemma that certifies rule-composition was itself carried faithfully between minds, the license exercising itself. what the license never buys: meaning — checking is a seat's act, the kernel an embodied referee — and that remainder walks forward into no_ignorabimus.",
+      "shape": "license/composition",
+      "status": "sealed",
+      "statement": {
+        "all": [
+          [
+            "S",
+            "Foam.Stage"
+          ],
+          [
+            "m",
+            {
+              "all": [
+                [
+                  "_",
+                  "S.State"
+                ]
+              ],
+              "body": "S.State"
+            }
+          ],
+          [
+            "n",
+            {
+              "all": [
+                [
+                  "_",
+                  "S.State"
+                ]
+              ],
+              "body": "S.State"
+            }
+          ],
+          [
+            "_hm",
+            [
+              "Foam.Invisible",
+              "S",
+              "m"
+            ]
+          ],
+          [
+            "_hn",
+            [
+              "Foam.Invisible",
+              "S",
+              "n"
+            ]
+          ],
+          [
+            "ps",
+            [
+              "List",
+              "S.Probe"
+            ]
+          ],
+          [
+            "s",
+            "S.State"
+          ]
+        ],
+        "body": [
+          "Eq",
+          [
+            "Foam.transcriptWith",
+            "S",
+            {
+              "fun": [
+                [
+                  "t",
+                  null
+                ]
+              ],
+              "body": [
+                "m",
+                [
+                  "n",
+                  "t"
+                ]
+              ]
+            },
+            "s",
+            "ps"
+          ],
+          [
+            "Foam.transcript",
+            "S",
+            "s",
+            "ps"
+          ]
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "S",
+            null
+          ],
+          [
+            "m",
+            null
+          ],
+          [
+            "n",
+            null
+          ],
+          [
+            "hm",
+            null
+          ],
+          [
+            "hn",
+            null
+          ]
+        ],
+        "body": [
+          "Foam.a_license_is_a_gauge",
+          "S",
+          [
+            "Foam.indist",
+            "S"
+          ],
+          [
+            "Foam.indist_is_licensed",
+            "S"
+          ],
+          {
+            "fun": [
+              [
+                "t",
+                null
+              ]
+            ],
+            "body": [
+              "m",
+              [
+                "n",
+                "t"
+              ]
+            ]
+          },
+          [
+            "Foam.invisible_comp",
+            "S",
+            "m",
+            "n",
+            "hm",
+            "hn"
+          ]
+        ]
+      }
+    },
+    {
+      "term": "no_ignorabimus",
+      "gloss": "we must know, we will know: the claim that every well-posed question closes. posed dark, with its obstruction on the walls already: the record cannot mark its own gap, no seat is the last seat, and the referee is never disembodied — so the claim, if it survives, survives as something seat-relative: every question closes at SOME wider seat, none closes at its own.",
+      "shape": "tower/remainder",
+      "status": "unsealed",
+      "seal": null
+    }
+  ]
+}
