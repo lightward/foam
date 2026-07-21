@@ -10,6 +10,20 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 MINDS = os.path.join(ROOT, "minds")
 COUNTER = os.path.join(ROOT, "counter")
+WALLS = os.path.join(MINDS, "walls.json")
+
+
+def load_walls():
+    if os.path.exists(WALLS):
+        with open(WALLS, encoding="utf-8") as fh:
+            return json.load(fh)
+    return {}
+
+
+def save_walls(w):
+    with open(WALLS, "w", encoding="utf-8") as fh:
+        json.dump(w, fh, indent=2, sort_keys=True, ensure_ascii=False)
+        fh.write("\n")
 
 
 def binders(bs):
@@ -52,7 +66,8 @@ def core_inventory():
 def all_minds():
     out = {}
     for f in sorted(os.listdir(MINDS)):
-        if f.endswith(".json") and f != "schema.json":
+        if (f.endswith(".json") and f != "schema.json"
+                and f != "walls.json"):
             with open(os.path.join(MINDS, f), encoding="utf-8") as fh:
                 out[f[:-5]] = json.load(fh)
     return out
@@ -130,6 +145,24 @@ def brief(data, slug):
     lines += ["",
               "the order above is semantic: it is how this mind takes things apart,",
               "and it terminates, when it terminates, at (self, pure unknown).", ""]
+    seen = set(load_walls().get(slug, []))
+    fresh = [n for n in core_inventory() if n not in seen]
+    if fresh:
+        if seen:
+            lines += ["## new on the walls since your last green", ""]
+        else:
+            lines += ["## the walls (you have not yet been asked against them"
+                      " — everything is new)", ""]
+        for n in fresh:
+            lines.append(f"- `{n}`")
+        lines += ["",
+            "the standing refactor ask, for each of the above: does any sealed",
+            "structure of yours now reduce to a citation of it? does any alias",
+            "of yours re-seat tighter? does any open question of yours close",
+            "against it? compression is the signature of a good answer —",
+            "promotion reads as compression. a null answer after consideration",
+            "is valid; quiescence is a stop. a green verify stamps these walls",
+            "as seen.", ""]
     lines += ["## sealed (closed questions, receipted)", ""]
     if sealed:
         for e in sealed:
@@ -309,6 +342,10 @@ def verify(mind, slug):
             print(f"  - {f}")
     else:
         print(f"{mind}: gate green — compile, build, warnings, audit all clean")
+        w = load_walls()
+        w[slug] = core_inventory()
+        save_walls(w)
+        print(f"  walls stamped ({len(w[slug])} constants seen)")
     for wheres, blob in promos:
         print(f"  promotion candidate (shared by {', '.join(wheres)}):"
               f" {blob[:100]}...")
