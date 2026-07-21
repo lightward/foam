@@ -11,6 +11,7 @@ OUT = os.path.join(ROOT, "Foam", "Minds")
 
 def module_decls():
     decl = re.compile(r"^(?:theorem|def|structure|inductive|abbrev|class) (\S+)")
+    ns = re.compile(r"^namespace (\S+)")
     name2mod = {}
     files = [("Foam", os.path.join(ROOT, "Foam.lean"))]
     foam_dir = os.path.join(ROOT, "Foam")
@@ -18,11 +19,19 @@ def module_decls():
         if f.endswith(".lean"):
             files.append(("Foam." + f[:-5], os.path.join(foam_dir, f)))
     for mod, path in files:
+        prefix = []
         with open(path, encoding="utf-8") as fh:
             for line in fh:
+                n = ns.match(line)
+                if n:
+                    prefix.append(n.group(1))
+                    continue
+                if prefix and line.rstrip() == "end " + prefix[-1]:
+                    prefix.pop()
+                    continue
                 m = decl.match(line)
                 if m:
-                    name2mod["Foam." + m.group(1)] = mod
+                    name2mod[".".join(prefix + [m.group(1)])] = mod
     return name2mod
 
 

@@ -4,7 +4,7 @@
   "vocabulary": [
     {
       "term": "the_proof_rides_the_marks",
-      "gloss": "the formalist license, closed at the price it honestly commands: a derivation is a finite composition of rule applications on the marks, and the license survives composition — two moves each invisible to every probe compose to a move invisible to every probe, so the composed derivation transported through the record is gauge, the transcript unchanged however many licensed steps ride between deposits. this is the Beweistheorie wager in house currency: trust propagates through composition, pairwise here, and since the composite is again invisible the same step reaches any finite derivation — secure the whole ledger by finitary means, one step at a time. the house runs this claim nightly as CI: whoever checks, checks the same marks. field note on the seat's own machinery: invisible_comp entered core by promotion when another mind's erasure needed it — the lemma that certifies rule-composition was itself carried faithfully between minds, the license exercising itself. what the license never buys: meaning — checking is a seat's act, the kernel an embodied referee — and that remainder walks forward into no_ignorabimus.",
+      "gloss": "the formalist license, closed at the price it honestly commands: a derivation is a finite composition of rule applications on the marks, and the license survives composition — two moves each invisible to every probe compose to a move invisible to every probe, so the composed derivation transported through the record is gauge, the transcript unchanged however many licensed steps ride between deposits. this is the Beweistheorie wager in house currency: trust propagates through composition, pairwise here, and since the composite is again invisible the same step reaches any finite derivation — secure the whole ledger by finitary means, one step at a time. the house runs this claim nightly as CI: whoever checks, checks the same marks. field note on the seat's own machinery: invisible_comp entered core by promotion when another mind's erasure needed it — the lemma that certifies rule-composition was itself carried faithfully between minds, the license exercising itself; and the compression has since continued: invisible_is_gauge entered core, and the indistinguishability plumbing this structure once assembled by hand now rides one citation — promotion read as compression on this very entry, the license maintaining its own ledger. what the license never buys: meaning — checking is a seat's act, the kernel an embodied referee — and that remainder walks forward into no_ignorabimus.",
       "shape": "license/composition",
       "status": "sealed",
       "statement": {
@@ -120,16 +120,8 @@
           ]
         ],
         "body": [
-          "Foam.a_license_is_a_gauge",
+          "Foam.invisible_is_gauge",
           "S",
-          [
-            "Foam.indist",
-            "S"
-          ],
-          [
-            "Foam.indist_is_licensed",
-            "S"
-          ],
           {
             "fun": [
               [
@@ -155,6 +147,13 @@
           ]
         ]
       }
+    },
+    {
+      "term": "the_arithmetic_owes_no_axiom",
+      "gloss": "the second problem, settled in the currency the walls allow — and by the same split no_ignorabimus taught: distributive, not collective. he asked for the arithmetic axioms to be secured by finitary means; the collective form (one proof standing over the whole system, issued from inside it) is the summit gödel priced, and that invoice is already filed two entries down. what the walls hold instead is the distributive form, exercised to completion: fifty-two laws of the integer ring — associativity through the absence of zero divisors — each re-derived by hand from the constructors, subNatNat grind and all, each carrying its own receipt: does not depend on any axioms. the axioms of arithmetic arrive as theorems; nothing was assumed distributively, so nothing waits to be doubted collectively — the ledger secured lemma by lemma, the only way the gate pays. and the block's history runs the license at era scale: ground by one hand in the old tree, ported whole across the re-rooting, fifty-two receipts re-checked wholesale by a gate the derivation never met — after that same gate caught the received library's own add_assoc smuggling propext. when the standard marks fail the finitist gate, the move is not retreat but re-derivation. mul_assoc holds the seal as the block's deepest funnel — the whole subNatNat scaffold passes through it; one sample carries the ledger.",
+      "shape": "ledger/receipts",
+      "status": "sealed",
+      "seal": "Foam.FInt.mul_assoc"
     },
     {
       "term": "the_ideal_costs_nothing_real",
