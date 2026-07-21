@@ -70,12 +70,13 @@ def compile_mind(path):
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
     mind = data["mind"]
+    lean = re.sub(r"[^A-Za-z0-9]", "", mind)
     lines = []
     for m in needed_imports(data, module_decls()):
         lines.append(f"import {m}")
     if lines:
         lines.append("")
-    lines.append(f"namespace Foam.Minds.{mind}")
+    lines.append(f"namespace Foam.Minds.{lean}")
     lines.append("")
     emitted = []
     standing = []
@@ -115,12 +116,12 @@ def compile_mind(path):
             lines.append("")
     lines.append("")
     for name in emitted:
-        lines.append(f"/-- info: 'Foam.Minds.{mind}.{name}'"
+        lines.append(f"/-- info: 'Foam.Minds.{lean}.{name}'"
                      " does not depend on any axioms -/")
         lines.append(f"#guard_msgs in #print axioms {name}")
         lines.append("")
-    lines.append(f"end Foam.Minds.{mind}")
-    out = os.path.join(OUT, f"{mind}.lean")
+    lines.append(f"end Foam.Minds.{lean}")
+    out = os.path.join(OUT, f"{lean}.lean")
     with open(out, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
     open_q = [e["term"] for e in data["vocabulary"]

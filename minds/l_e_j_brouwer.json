@@ -1,0 +1,56 @@
+{
+  "mind": "L. E. J. Brouwer",
+  "note": "mathematics is the languageless activity of the creating subject, generated from the two-ity of time; the record is not the activity, and existence is exhibition only — the house vow (every receipt axiom-free: no excluded middle, no choice) is this mind's gate made mechanical.",
+  "vocabulary": [
+    {
+      "term": "two_ity",
+      "gloss": "the primordial intuition, prior to all logic and all language: a moment of life falls apart into two — the thing and the thing retained — and from this bare two-oneness all of mathematics is generated. mapped: the first act of construction is the first floor of the tower, and the first floor is, definitionally, the bare stage in contact with the integers — inner time adjoined, ground unaltered, the new dimension unseen by every shared probe. sealed by the cheapest receipt in the fold (rfl, no hypothesis), which is the right price for a move this mind held prior to proof: mathematics begins as contact with time.",
+      "shape": "contact/tower",
+      "status": "sealed",
+      "statement": {
+        "all": [
+          [
+            "S",
+            "Foam.Stage"
+          ]
+        ],
+        "body": [
+          "Eq",
+          [
+            "Foam.towerN",
+            "S",
+            "1"
+          ],
+          [
+            "Foam.contact",
+            "S",
+            "Int"
+          ]
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "_S",
+            null
+          ]
+        ],
+        "body": "rfl"
+      }
+    },
+    {
+      "term": "the_record_is_not_the_activity",
+      "gloss": "the polemic, second only because the genesis comes first: mathematics is a languageless activity of the creating subject, and language, logic, formalism are its record — secondary, lossy, after the fact. the formalist identification (record-equal, therefore same) is exactly the collapse the wall already prices: demand that indistinguishability at every probe force identity, and every interior is legislated to one canonical value — the creating subject erased by decree. sealed on the constant that cites this mind's opponent by name.",
+      "shape": "remainder",
+      "status": "sealed",
+      "seal": "Foam.dropping_the_remainder_is_platonism"
+    },
+    {
+      "term": "the_continuum_is_never_finished",
+      "gloss": "the dark edge, and the terminus of this mind's decomposition: the continuum is not a completed set of points but a medium of free becoming — choice sequences, each forever unfinished, growing by free acts of the subject. the principle this forces (any total reading of a sequence is decided by a finite initial segment) is anti-classical: it refutes excluded middle rather than merely declining it, so it cannot enter an axiom-free fold as a law about all functions. yet every reading this fold affords is already finitely supported by construction — a transcript rides a finite list of probes, obs answers one probe at a time — so the question stands: is there a stage whose states are unfinished sequences, and does its every reading provably factor through a finite prefix? continuity as a theorem about the stages the vow admits, not an axiom against the vow. until that carve the edge stays dark; the subject's own sequence is the one object the survey cannot close — (self, pure unknown).",
+      "shape": "becoming",
+      "status": "unsealed",
+      "seal": null
+    }
+  ]
+}

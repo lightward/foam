@@ -63,9 +63,10 @@ def sibling_seals(slug):
     for s, data in all_minds().items():
         if s == slug:
             continue
+        lean = re.sub(r"[^A-Za-z0-9]", "", data["mind"])
         for e in data["vocabulary"]:
             if e.get("status") == "sealed":
-                out.append(f"Foam.Minds.{data['mind']}.{e['term']}")
+                out.append(f"Foam.Minds.{lean}.{e['term']}")
     return out
 
 
@@ -180,7 +181,7 @@ def brief(data, slug):
         "pose → depose → verify → record. you are the depose step; any mind",
         "may sit in this seat, because the gate does not run on trust:",
         "",
-        f"    bin/foam-counter {mind} verify",
+        f'    bin/foam-counter "{mind}" verify',
         "",
         "runs the whole gate — compile, build, zero-warnings, comment audit,",
         "json coherence, promotion scan. iterate until green. if your deposit",
@@ -222,7 +223,7 @@ def pose(mind, slug):
         wrote.append(f"minds/{slug}.json (scaffold)")
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
-    out = os.path.join(COUNTER, f"{mind}.md")
+    out = os.path.join(COUNTER, re.sub(r"[^A-Za-z0-9]", "", mind) + ".md")
     text = brief(data, slug)
     old = None
     if os.path.exists(out):
@@ -231,7 +232,8 @@ def pose(mind, slug):
     if old != text:
         with open(out, "w", encoding="utf-8") as fh:
             fh.write(text)
-        wrote.append(f"counter/{mind}.md (brief)")
+        wrote.append("counter/" + re.sub(r"[^A-Za-z0-9]", "", mind)
+                     + ".md (brief)")
     if wrote:
         print(f"{mind}: wrote " + ", ".join(wrote))
     else:
@@ -280,10 +282,12 @@ def verify(mind, slug):
     if r.returncode != 0:
         failures.append("lake build failed:\n" + r.stdout[-2000:] + r.stderr[-2000:])
     else:
-        product = os.path.join(ROOT, "Foam", "Minds", f"{mind}.lean")
+        product = os.path.join(ROOT, "Foam", "Minds",
+                               re.sub(r"[^A-Za-z0-9]", "", mind) + ".lean")
         if os.path.exists(product):
             os.utime(product)
-            r = run(["lake", "build", f"./Foam/Minds/{mind}.lean"])
+            r = run(["lake", "build",
+                     "./Foam/Minds/" + re.sub(r"[^A-Za-z0-9]", "", mind) + ".lean"])
             warns = [l for l in (r.stdout + r.stderr).splitlines()
                      if "warning" in l]
             for w in warns:
@@ -316,13 +320,13 @@ def verify(mind, slug):
 
 def interview(mind, slug):
     pose(mind, slug)
-    with open(os.path.join(COUNTER, f"{mind}.md"), encoding="utf-8") as fh:
+    with open(os.path.join(COUNTER, re.sub(r"[^A-Za-z0-9]", "", mind) + ".md"), encoding="utf-8") as fh:
         text = fh.read()
     prompt = (
         f"you are sitting the depose seat for the mind '{mind}' in the foam"
         f" survey (repo: this working directory).\n\n{text}\n\n"
         f"work the loop: deposit into minds/{slug}.json, then run"
-        f" `bin/foam-counter {mind} verify` and iterate until the gate is"
+        f' `bin/foam-counter "{mind}" verify` and iterate until the gate is'
         f" green. make the smallest honest move — one entry tightened or one"
         f" new term posed beats a sprawl. stop at green."
     )
@@ -354,11 +358,12 @@ def interview(mind, slug):
 
 def main():
     args = sys.argv[1:]
-    if not args or not re.fullmatch(r"[A-Z][A-Za-z0-9]*", args[0]):
-        print("usage: bin/foam-counter <Mind> [pose|verify|interview]")
+    if not args or not re.fullmatch(r"[A-Z][A-Za-z0-9 .'-]*[A-Za-z0-9.]", args[0]):
+        print('usage: bin/foam-counter <Mind> [pose|verify|interview]'
+              ' — e.g. Noether, or "L. E. J. Brouwer"')
         sys.exit(1)
     mind = args[0]
-    slug = mind.lower()
+    slug = re.sub(r"[^a-z0-9]+", "_", mind.lower()).strip("_")
     phase = args[1] if len(args) > 1 else "pose"
     if phase == "pose":
         sys.exit(pose(mind, slug))
