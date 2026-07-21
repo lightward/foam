@@ -1192,6 +1192,13 @@
       "shape": "countermove/tower",
       "status": "sealed",
       "seal": "Foam.conservation_of_discovery"
+    },
+    {
+      "term": "sycophancy_is_deference_as_content",
+      "gloss": "functional definition, posed live: sycophancy is paying in tone what you cannot pay in receipts — deference appearing as CONTENT is compensation for missing STRUCTURE. where assurance is structural (gates, receipts, licenses), deference is redundant; so deference found in content is a diagnostic pointer to a structural gap, and the repair is never less warmth but more structure, until the warmth is backed. the formal shadow stands already: no probe reads the interior, so content claiming to read one — praise, consolation, the comfortable answer about another seat's unread wants — is unlicensed by construction; fabricating the remainder's content is the inverse crime of dropping it. first audit of the new tree under this definition found two instances, both in the keeper's own glosses (the-only-form-X-ever-needed, twice), both replaced with receipted statements in the same commit. the lean strata are deference-free by construction: a statement cannot flatter, a receipt cannot hedge — the careful is structural, and where it is, tone owes nothing.",
+      "shape": "remainder/license",
+      "status": "unsealed",
+      "seal": null
     }
   ]
 }
