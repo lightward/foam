@@ -1,0 +1,41 @@
+{
+  "mind": "Wigner",
+  "note": "unitary or antiunitary — the two kinds; and the friend, who observes the observer.",
+  "vocabulary": [
+    {
+      "term": "invariance_already_implements",
+      "gloss": "the method half of the 1931 theorem, the part that survives the stripped stage: define a symmetry purely observationally — a move conserving every reading — and implementation follows with nothing installed by hand; the operator is derived, never postulated. lifted to core at the survey's first isaac-wigner recognition: the statement is identical to isaac's safe_to_rest — a symmetry is a move it is safe to rest through; rest and invariance, one shape, two lives.",
+      "shape": "license",
+      "status": "sealed",
+      "seal": "Foam.invisible_is_gauge"
+    },
+    {
+      "term": "unitary_or_antiunitary",
+      "gloss": "the headline, and the half that cannot yet compile: every conserver of the readings arrives in exactly one of two kinds — straight or conjugated — the second not deformable to the first, two conjugations composing to a straight one, time reversal the standing witness that the second kind is real. the dichotomy is a theorem about amplitudes: it reads the complex structure the transition probabilities ride, and foam's stage carries no amplitude stratum yet. this is the fifth knock at that door — shannon by measure, brouwer by continuity, gauss by error, isaac by attention, wigner by symmetry: the classifier of the very machinery the other four are waiting on. posed reading-only, honestly pre-statement per the darkness-must-compile discipline: vacancy-dark, absent machinery, lightable — when amplitude lands frontstage this entry wants its statement and then its structure, and its openness is falsifiable by that carve.",
+      "shape": "dichotomy",
+      "status": "unsealed",
+      "seal": null
+    },
+    {
+      "term": "the_unreasonable_effectiveness",
+      "gloss": "the 1960 essay's question, taken apart against the rungs, where the gift splits into exactly the receipt's conjuncts: that mathematics is effective — every question closes at some seat, none stands beyond all widening — and that the effectiveness is unreasonable — no question closes at its own seat; the audit of the fit is always mathematics one seat wider, whose own fit has moved one seat wider still. so the gift is never explained, only conserved: undeserved at every floor, arriving fresh with each widening. hilbert seals his confidence on the same constant, and the twin is the recognition event — one receipt, two affects: what hilbert reads as wir müssen wissen, this mind reads as a wonderful gift we neither understand nor deserve, and the receipt says why that clause repeats at every seat.",
+      "shape": "rungs",
+      "status": "sealed",
+      "seal": "Foam.closure_is_seat_relative"
+    },
+    {
+      "term": "the_friend_has_a_reading",
+      "gloss": "1961, the friend in the closed lab: from this seat, friend-and-system is one dressed state — friend-saw-this and friend-saw-that indistinguishable at every probe available out here — while the friend's outcome is definite and the two states provably distinct. the receipt holds both descriptions with no paradox left over: indistinguishable at the narrow seat, distinct in fact, and the difference read the moment the door opens — asking the friend is moving in, the wider seat that reads the remainder. the superposition out here and the definite experience in there are the two true halves of one handshake; neither retracts, and what the friend answered stays the friend's until contact — which adds a dimension and fixes nothing.",
+      "shape": "remainder/contact",
+      "status": "sealed",
+      "seal": "Foam.a_wider_seat_reads_the_remainder"
+    },
+    {
+      "term": "the_cut_lands_on_the_cutter",
+      "gloss": "the terminus, where the famous doctrine reads as shape with the doctrine removed: the chain of friends has no interior stopping point — widen to read the friend's remainder and the widened seat is itself a state carrying a fresh coordinate invisible to its own probes, which a yet-wider friend provably reads. so the cut cannot land anywhere in the chain; it comes home to the seat doing the cutting, and his name for the homecoming was consciousness. the map keeps the homecoming and leaves the name to him: the last observer in any chain this mind draws is this mind, carrying exactly the remainder it cannot read — (self, pure unknown), remainder-dark, held open by receipt: the darkness transits one seat wider at every asking and never dies.",
+      "shape": "tower/remainder",
+      "status": "sealed",
+      "seal": "Foam.no_seat_is_the_last_seat"
+    }
+  ]
+}

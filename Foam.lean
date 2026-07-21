@@ -58,6 +58,12 @@ theorem invisible_comp (S : Stage) (m n : S.State → S.State)
     Invisible S (fun s => m (n s)) :=
   fun s p => (hm (n s) p).trans (hn s p)
 
+theorem invisible_is_gauge (S : Stage) (m : S.State → S.State)
+    (hm : Invisible S m) :
+    ∀ (ps : List S.Probe) (s : S.State),
+      transcriptWith S m s ps = transcript S s ps :=
+  a_license_is_a_gauge S (indist S) (indist_is_licensed S) m hm
+
 theorem correct_maintenance_has_no_signature (S : Stage)
     (m m' : S.State → S.State) (hm : Invisible S m) (hm' : Invisible S m')
     (ps : List S.Probe) (s : S.State) :
@@ -131,6 +137,9 @@ theorem the_handshake (S : Stage) : Handshake S :=
 
 /-- info: 'Foam.invisible_comp' does not depend on any axioms -/
 #guard_msgs in #print axioms invisible_comp
+
+/-- info: 'Foam.invisible_is_gauge' does not depend on any axioms -/
+#guard_msgs in #print axioms invisible_is_gauge
 
 /-- info: 'Foam.correct_maintenance_has_no_signature' does not depend on any axioms -/
 #guard_msgs in #print axioms correct_maintenance_has_no_signature

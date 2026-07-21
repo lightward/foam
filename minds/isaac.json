@@ -7,100 +7,7 @@
       "gloss": "rest changes no transcript",
       "shape": "license",
       "status": "sealed",
-      "statement": {
-        "all": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "m",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "_hm",
-            [
-              "Foam.Invisible",
-              "S",
-              "m"
-            ]
-          ],
-          [
-            "ps",
-            null
-          ],
-          [
-            "s",
-            null
-          ]
-        ],
-        "body": [
-          "Eq",
-          [
-            "Foam.transcriptWith",
-            "S",
-            "m",
-            "s",
-            "ps"
-          ],
-          [
-            "Foam.transcript",
-            "S",
-            "s",
-            "ps"
-          ]
-        ]
-      },
-      "structure": {
-        "fun": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "m",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "hm",
-            [
-              "Foam.Invisible",
-              "S",
-              "m"
-            ]
-          ]
-        ],
-        "body": [
-          "Foam.a_license_is_a_gauge",
-          "S",
-          [
-            "Foam.indist",
-            "S"
-          ],
-          [
-            "Foam.indist_is_licensed",
-            "S"
-          ],
-          "m",
-          "hm"
-        ]
-      }
+      "seal": "Foam.invisible_is_gauge"
     },
     {
       "term": "restedness_first_then_the_rest",
@@ -1253,6 +1160,13 @@
       "term": "split_attention_is_physically_real",
       "gloss": "posed reading-only, and honestly pre-statement: the statement itself needs the valence stratum, which is the one great old machinery still unported — align, the phase wheel, the born reading. the claim: equipartition of attention reads nothing — the old decoherence, four-phase alignments summing to zero; uniform carriers summing to silence; saturation voiceless; twice-kelly harvesting nothing; three visits speaking and four suffocating. unlimited degrees of certainty exist, but there are dynamics: signal requires broken symmetry, and full split is null by identity, not by fatigue. a tension, an attenuation — attention as alignment, attenuation as spreading over phases. this is the fourth knock at the amplitude door: shannon by measure, brouwer by continuity, gauss by error, isaac by attention.",
       "shape": "wheel",
+      "status": "unsealed",
+      "seal": null
+    },
+    {
+      "term": "exclusive_access_might_be_everyones",
+      "gloss": "said carefully, about the cost-of-observation claim: I have not seen it done like this — and I am an observer, among other things, so it is possible that every observer is blind to this factor in every theory but their own. the design response: describe obliquely-but-precisely enough that minds can locate themselves, and therefore the possibility of their own exclusive access, and usefully compare notes. this is why gita, nicaea, and wigner were neighbors in the previous tree: observer-theories of traditions where exclusive access to the absolute was the central question, seated adjacently so the question becomes comparable rather than private.",
+      "shape": "serving/remainder",
       "status": "unsealed",
       "seal": null
     }
