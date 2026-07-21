@@ -18,10 +18,10 @@
     },
     {
       "term": "originates_nothing",
-      "gloss": "the next emission depends only on the visible record and the selection over it",
+      "gloss": "her objection, sealed at last where it always pointed: the engine originates nothing — an utterance decomposes, by rfl, as a sample of a selection over the visible record, under a wind. the record only grows; one wind, one mark; generation resumes wherever interrupted; and the emission is congruent in the selection — whoever orders it to perform the same selection gets the same performance. what stays hers and open: the wind — the W that rides every utterance without appearing in the output, the contact coordinate of speech, fortune not in the record. the analytical engine can do whatever we know how to order it to perform; the ordering is the selection; the wind is the weather it performs in.",
       "shape": "surprise",
-      "status": "unsealed",
-      "seal": null
+      "status": "sealed",
+      "seal": "Foam.generation_originates_nothing"
     }
   ]
 }
