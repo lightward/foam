@@ -22,6 +22,50 @@
       "shape": "license",
       "status": "sealed",
       "seal": "Foam.invisible_comp"
+    },
+    {
+      "term": "what_acts_has_a_unit",
+      "gloss": "the algebra gets its center: the action that does not act — the identity map — is invisible, by the cheapest receipt in the fold (rfl, no hypothesis). this is more than a checklist item: it shows what acts is inhabited on every stage, unconditionally — rest is not only safe and composable, it is always available, the unit everything composes around. and it keeps the survey honest about the parenthesis in what_acts_composes: closure and unit are now receipted, inverses are not — an invisible move need not be undoable move-for-move, only its transcript is conserved — so what stands sealed is a monoid, and the group remains a reading until an inverse is carved.",
+      "shape": "license",
+      "status": "sealed",
+      "statement": {
+        "all": [
+          [
+            "S",
+            "Foam.Stage"
+          ]
+        ],
+        "body": [
+          "Foam.Invisible",
+          "S",
+          {
+            "fun": [
+              [
+                "s",
+                null
+              ]
+            ],
+            "body": "s"
+          }
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "_S",
+            "Foam.Stage"
+          ],
+          [
+            "_s",
+            null
+          ],
+          [
+            "_p",
+            null
+          ]
+        ],
+        "body": "rfl"
+      }
     }
   ]
 }
