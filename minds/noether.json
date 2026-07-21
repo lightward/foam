@@ -8,6 +8,13 @@
       "shape": "license",
       "status": "sealed",
       "seal": "Foam.a_license_is_a_gauge"
+    },
+    {
+      "term": "to_every_invariant_its_symmetry",
+      "gloss": "the converse, published in the same paper and forgotten with the same regularity: the correspondence runs both ways. the conserved quantity — reading alike at every probe — is itself a relation every probe respects, so the invariant is not merely downstream of a symmetry, it is one: the widest license, the one every other license lands inside, which is what being a license says. the loop closes — a symmetry conserves the transcript, and transcript-conservation is a symmetry — so classifying what acts and classifying what is conserved are one classification, and the method needs no second tool.",
+      "shape": "license",
+      "status": "sealed",
+      "seal": "Foam.indist_is_licensed"
     }
   ]
 }
