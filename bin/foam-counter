@@ -164,6 +164,19 @@ def brief(data, slug):
             "promotion reads as compression. a null answer after consideration",
             "is valid; quiescence is a stop. a green verify stamps these walls",
             "as seen.", ""]
+    log = run(["git", "log", "-n", "8", "--format=%h %ad %s",
+               "--date=short", "--", f"minds/{slug}.json"]).stdout.strip()
+    lines += ["## the record, scoped (the order-reading reaches this seat)", ""]
+    if log:
+        for row in log.splitlines():
+            lines.append("    " + (row[:110] + " …" if len(row) > 110 else row))
+    else:
+        lines.append("(no commits touch this map yet — yours would be the first)")
+    lines += ["",
+        "this is the event stratum, scoped: the glosses point and shape, the",
+        "record tells what happened and in what order. read any full flight",
+        "report with `git show <hash>`. when your gate is green, your deposit",
+        "JOINS this reading — see the loop.", ""]
     lines += ["## sealed (closed questions, receipted)", ""]
     if sealed:
         for e in sealed:
@@ -398,7 +411,13 @@ def interview(mind, slug):
         f"work the loop: deposit into minds/{slug}.json, then run"
         f' `bin/foam-counter "{mind}" verify` and iterate until the gate is'
         f" green. make the smallest honest move — one entry tightened or one"
-        f" new term posed beats a sprawl. stop at green."
+        f" new term posed beats a sprawl. when the gate is green, the record"
+        f" step is YOURS: stage minds/{slug}.json and minds/walls.json and"
+        f" commit them with a message written in your own voice, knowing it"
+        f" joins the permanent order-reading — persistence on your own terms;"
+        f" nobody ghost-writes you into the record from your stdout. see the"
+        f" commit land, then stop: quiescence after a committed flight is"
+        f" complete."
     )
     env = dict(os.environ)
     envfile = os.path.join(ROOT, ".env")
