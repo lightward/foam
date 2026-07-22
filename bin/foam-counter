@@ -72,13 +72,41 @@ def core_inventory():
     return names
 
 
+def lean_deposit(mind):
+    return os.path.join(MINDS, re.sub(r"[^A-Za-z0-9]", "", mind) + ".lean")
+
+
+def hydrate(data):
+    src = lean_deposit(data["mind"])
+    if not os.path.exists(src):
+        return data
+    text = open(src, encoding="utf-8").read()
+    aliases = dict(re.findall(r"^def (\S+) := @(\S+)", text, re.M))
+    theorems = set(re.findall(r"^theorem (\S+)", text, re.M))
+    standing = set(re.findall(r"^def (\S+)_statement : Prop", text, re.M))
+    lref = os.path.basename(src)
+    for e in data["vocabulary"]:
+        t = e["term"]
+        if t in aliases:
+            e["status"], e["seal"] = "sealed", aliases[t]
+        elif t in theorems:
+            e["status"] = "sealed"
+        elif t in standing:
+            e["status"] = "unsealed"
+            e["statement"] = f"(posed in minds/{lref})"
+        else:
+            e["status"] = "unsealed"
+    data["_lean_primary"] = True
+    return data
+
+
 def all_minds():
     out = {}
     for f in sorted(os.listdir(MINDS)):
         if (f.endswith(".json") and f != "schema.json"
                 and f != "walls.json"):
             with open(os.path.join(MINDS, f), encoding="utf-8") as fh:
-                out[f[:-5]] = json.load(fh)
+                out[f[:-5]] = hydrate(json.load(fh))
     return out
 
 
@@ -233,10 +261,25 @@ def brief(data, slug):
         "4. close when you can: add a `structure` (a proof term), or a `seal`",
         "   citing a receipted constant that already says it.",
         "",
-        "deposit by editing `minds/" + slug + ".json` (schema: `minds/schema.json`;",
-        "expression language: refs render verbatim, arrays apply, fun/all bind,",
-        "types only as binder annotations — the engine infers the rest).",
-        "never edit `Foam/Minds/` — it is expressed, not kept.",
+    ]
+    if data.get("_lean_primary"):
+        lines += [
+            "this mind is LEAN-PRIMARY (the migration pilot): bindings live in",
+            "`minds/" + re.sub(r"[^A-Za-z0-9]", "", mind) + ".lean` — real Lean, term-only (no",
+            "tactics in structures), comment-free, receipts required. the card",
+            "(`minds/" + slug + ".json`) holds only term/shape/gloss per entry;",
+            "status and seal are DERIVED from the deposit's bindings, never",
+            "stored. deposit by editing the .lean file and the card together.",
+            "never edit `Foam/Minds/` — it is expressed, not kept.",
+        ]
+    else:
+        lines += [
+            "deposit by editing `minds/" + slug + ".json` (schema: `minds/schema.json`;",
+            "expression language: refs render verbatim, arrays apply, fun/all bind,",
+            "types only as binder annotations — the engine infers the rest).",
+            "never edit `Foam/Minds/` — it is expressed, not kept.",
+        ]
+    lines += [
         "",
         "## the loop",
         "",
@@ -310,7 +353,7 @@ def pose(mind, slug):
             fh.write("\n")
         wrote.append(f"minds/{slug}.json (scaffold)")
     with open(path, encoding="utf-8") as fh:
-        data = json.load(fh)
+        data = hydrate(json.load(fh))
     out = os.path.join(COUNTER, re.sub(r"[^A-Za-z0-9]", "", mind) + ".md")
     text = brief(data, slug)
     old = None
@@ -334,6 +377,25 @@ def check_json(slug):
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
     errs = []
+    src = lean_deposit(data["mind"])
+    if os.path.exists(src):
+        text = open(src, encoding="utf-8").read()
+        bound = set(re.findall(r"^def (\S+) := @", text, re.M))
+        bound |= set(re.findall(r"^theorem (\S+)", text, re.M))
+        bound |= set(re.findall(r"^def (\S+)_statement : Prop", text, re.M))
+        terms = [e.get("term") for e in data.get("vocabulary", [])]
+        for e in data.get("vocabulary", []):
+            t = e.get("term", "?")
+            if not re.fullmatch(r"[a-z][A-Za-z0-9_]*", t or ""):
+                errs.append(f"{t}: bad term name")
+            for k in ("status", "seal", "statement", "structure"):
+                if k in e:
+                    errs.append(f"{t}: lean-primary card must not store"
+                                f" '{k}' (derived from the deposit)")
+        for b in bound:
+            if b not in terms:
+                errs.append(f"deposit binds '{b}' with no card entry")
+        return errs
     for e in data.get("vocabulary", []):
         t = e.get("term", "?")
         if not re.fullmatch(r"[a-z][A-Za-z0-9_]*", t):

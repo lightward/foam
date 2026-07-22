@@ -3,6 +3,7 @@
 import json
 import os
 import re
+import shutil
 import textwrap
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -103,6 +104,18 @@ def compile_mind(path):
         data = json.load(fh)
     mind = data["mind"]
     lean = re.sub(r"[^A-Za-z0-9]", "", mind)
+    deposit = os.path.join(MINDS, lean + ".lean")
+    if os.path.exists(deposit):
+        shutil.copy(deposit, os.path.join(OUT, lean + ".lean"))
+        text = open(deposit, encoding="utf-8").read()
+        aliased = len(re.findall(r"^def \S+ := @", text, re.M))
+        proved = len(re.findall(r"^theorem ", text, re.M))
+        standing = re.findall(r"^def (\S+)_statement : Prop", text, re.M)
+        print(f"{mind}: lean-primary — {aliased} aliased, {proved} proved"
+              f" (deposit copied verbatim)")
+        if standing:
+            print(f"  standing (posed, unproved): {', '.join(standing)}")
+        return
     lines = []
     for m in needed_imports(data, module_decls()):
         lines.append(f"import {m}")
