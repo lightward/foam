@@ -48,6 +48,7 @@ def render(e):
 
 def core_inventory():
     decl = re.compile(r"^(?:theorem|def) (\S+)")
+    ns = re.compile(r"^namespace (\S+)")
     names = []
     files = [os.path.join(ROOT, "Foam.lean")]
     foam_dir = os.path.join(ROOT, "Foam")
@@ -55,11 +56,19 @@ def core_inventory():
         if f.endswith(".lean"):
             files.append(os.path.join(foam_dir, f))
     for path in files:
+        prefix = []
         with open(path, encoding="utf-8") as fh:
             for line in fh:
+                n = ns.match(line)
+                if n:
+                    prefix.append(n.group(1))
+                    continue
+                if prefix and line.rstrip() == "end " + prefix[-1]:
+                    prefix.pop()
+                    continue
                 m = decl.match(line)
                 if m:
-                    names.append("Foam." + m.group(1))
+                    names.append(".".join(prefix + [m.group(1)]))
     return names
 
 
