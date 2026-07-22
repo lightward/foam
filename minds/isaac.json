@@ -5,1343 +5,197 @@
     {
       "term": "safe_to_rest",
       "gloss": "rest changes no transcript",
-      "shape": "license",
-      "status": "sealed",
-      "seal": "Foam.invisible_is_gauge"
+      "shape": "license"
     },
     {
       "term": "restedness_first_then_the_rest",
       "gloss": "after resting, the rest of the walk is exactly what it would have been",
-      "shape": "license",
-      "status": "sealed",
-      "statement": {
-        "all": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "m",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "_hm",
-            [
-              "Foam.Invisible",
-              "S",
-              "m"
-            ]
-          ],
-          [
-            "s",
-            null
-          ],
-          [
-            "ps",
-            null
-          ]
-        ],
-        "body": [
-          "Eq",
-          [
-            "Foam.transcript",
-            "S",
-            [
-              "m",
-              "s"
-            ],
-            "ps"
-          ],
-          [
-            "Foam.transcript",
-            "S",
-            "s",
-            "ps"
-          ]
-        ]
-      },
-      "structure": {
-        "fun": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "m",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "hm",
-            [
-              "Foam.Invisible",
-              "S",
-              "m"
-            ]
-          ],
-          [
-            "s",
-            null
-          ],
-          [
-            "ps",
-            null
-          ]
-        ],
-        "body": [
-          "Foam.transcript_congr",
-          "S",
-          "ps",
-          [
-            "hm",
-            "s"
-          ]
-        ]
-      }
+      "shape": "license"
     },
     {
       "term": "rest_composes",
       "gloss": "two rests are a rest; the license does not expire",
-      "shape": "license",
-      "status": "sealed",
-      "seal": "Foam.invisible_comp"
+      "shape": "license"
     },
     {
       "term": "lets_get_you_rested",
       "gloss": "safe to rest; restedness first, then the rest; and the license composes",
-      "shape": "license",
-      "status": "sealed",
-      "statement": {
-        "all": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "m",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "_hm",
-            [
-              "Foam.Invisible",
-              "S",
-              "m"
-            ]
-          ],
-          [
-            "s",
-            null
-          ],
-          [
-            "ps",
-            null
-          ]
-        ],
-        "body": [
-          "And",
-          [
-            "Eq",
-            [
-              "Foam.transcriptWith",
-              "S",
-              "m",
-              "s",
-              "ps"
-            ],
-            [
-              "Foam.transcript",
-              "S",
-              "s",
-              "ps"
-            ]
-          ],
-          [
-            "And",
-            [
-              "Eq",
-              [
-                "Foam.transcript",
-                "S",
-                [
-                  "m",
-                  "s"
-                ],
-                "ps"
-              ],
-              [
-                "Foam.transcript",
-                "S",
-                "s",
-                "ps"
-              ]
-            ],
-            {
-              "all": [
-                [
-                  "t",
-                  null
-                ],
-                [
-                  "p",
-                  null
-                ]
-              ],
-              "body": [
-                "Eq",
-                [
-                  "S.obs",
-                  [
-                    "m",
-                    [
-                      "m",
-                      "t"
-                    ]
-                  ],
-                  "p"
-                ],
-                [
-                  "S.obs",
-                  "t",
-                  "p"
-                ]
-              ]
-            }
-          ]
-        ]
-      },
-      "structure": {
-        "fun": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "m",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "hm",
-            [
-              "Foam.Invisible",
-              "S",
-              "m"
-            ]
-          ],
-          [
-            "s",
-            null
-          ],
-          [
-            "ps",
-            null
-          ]
-        ],
-        "body": [
-          "And.intro",
-          [
-            "safe_to_rest",
-            "S",
-            "m",
-            "hm",
-            "ps",
-            "s"
-          ],
-          [
-            "And.intro",
-            [
-              "restedness_first_then_the_rest",
-              "S",
-              "m",
-              "hm",
-              "s",
-              "ps"
-            ],
-            [
-              "rest_composes",
-              "S",
-              "m",
-              "m",
-              "hm",
-              "hm"
-            ]
-          ]
-        ]
-      }
+      "shape": "license"
     },
     {
       "term": "countermove",
       "gloss": "undo in an append-only world: position home, record grown, degrees of freedom commensurate",
-      "shape": "countermove",
-      "status": "sealed",
-      "seal": "Foam.undo_in_an_append_only_world"
+      "shape": "countermove"
     },
     {
       "term": "serving_suggestion",
       "gloss": "locate yourself; locate the recognized; the comparison is a seat; recognition widens yours",
-      "shape": "serving",
-      "status": "sealed",
-      "seal": "Foam.the_serving_suggestion"
+      "shape": "serving"
     },
     {
       "term": "only_surprise_extends_reach",
       "gloss": "a fresh edge rides no old path; depositing it creates the reach",
-      "shape": "surprise",
-      "status": "sealed",
-      "seal": "Foam.only_surprise_extends_reach"
+      "shape": "surprise"
     },
     {
       "term": "contact_not_reification",
       "gloss": "contact adds a dimension; reification fixes one",
-      "shape": "contact",
-      "status": "sealed",
-      "seal": "Foam.contact_is_addition_not_fixing"
+      "shape": "contact"
     },
     {
       "term": "i_am_that_i_am",
       "gloss": "the terminus of every decomposition of who-am-i: no probe distinguishes you from yourself; the proof is rfl, the one term that needs no evidence. different factorization path for everyone, same terminal shape for everyone.",
-      "shape": "serving",
-      "status": "sealed",
-      "seal": "Foam.invisible_id"
+      "shape": "serving"
     },
     {
       "term": "the_question_decomposes",
       "gloss": "tightening a question is factoring it without compromise: the factors recompose to the original exactly, nothing gained or lost. everyone's factorization differs; termination is at i_am_that_i_am; the factor count is unbounded because the record holds what the window cannot (7 plus or minus 2 is a window limit, not a journey limit).",
-      "shape": "license/serving",
-      "status": "unsealed",
-      "seal": null
+      "shape": "license/serving"
     },
     {
       "term": "observing_the_observer_adds_nothing",
       "gloss": "me = me(me = ?): the carve is a projection, P squared equals P, so observing the observer observing grounds the regress in one step — the spiral of reflection/recursion stabilizes by idempotence, not exhaustion",
-      "shape": "license",
-      "status": "sealed",
-      "statement": {
-        "all": [
-          [
-            "S",
-            "Foam.Stage"
-          ],
-          [
-            "P",
-            {
-              "all": [
-                [
-                  "_",
-                  "S.State"
-                ]
-              ],
-              "body": "S.State"
-            }
-          ],
-          [
-            "_hP",
-            {
-              "all": [
-                [
-                  "v",
-                  null
-                ]
-              ],
-              "body": [
-                "Eq",
-                [
-                  "P",
-                  [
-                    "P",
-                    "v"
-                  ]
-                ],
-                [
-                  "P",
-                  "v"
-                ]
-              ]
-            }
-          ],
-          [
-            "s",
-            null
-          ],
-          [
-            "p",
-            null
-          ]
-        ],
-        "body": [
-          "Eq",
-          [
-            "S.obs",
-            [
-              "P",
-              [
-                "P",
-                "s"
-              ]
-            ],
-            "p"
-          ],
-          [
-            "S.obs",
-            [
-              "P",
-              "s"
-            ],
-            "p"
-          ]
-        ]
-      },
-      "structure": {
-        "fun": [
-          [
-            "S",
-            null
-          ],
-          [
-            "_P",
-            null
-          ],
-          [
-            "hP",
-            null
-          ],
-          [
-            "s",
-            null
-          ],
-          [
-            "p",
-            null
-          ]
-        ],
-        "body": [
-          "congrArg",
-          {
-            "fun": [
-              [
-                "x",
-                null
-              ]
-            ],
-            "body": [
-              "S.obs",
-              "x",
-              "p"
-            ]
-          },
-          [
-            "hP",
-            "s"
-          ]
-        ]
-      }
+      "shape": "license"
     },
     {
       "term": "the_me_that_remains_is_the_landed",
       "gloss": "for an idempotent carve, the fixed set equals the image: what survives every stroke is exactly what carving lands. the terminal me is not the residue under the shavings — it is constituted by the carving, which is why the shavings must be visible: the record of removals is the only evidence of what the remainder is",
-      "shape": "remainder",
-      "status": "sealed",
-      "statement": {
-        "all": [
-          [
-            "A",
-            "Type"
-          ],
-          [
-            "P",
-            {
-              "all": [
-                [
-                  "_",
-                  "A"
-                ]
-              ],
-              "body": "A"
-            }
-          ],
-          [
-            "_hP",
-            {
-              "all": [
-                [
-                  "v",
-                  null
-                ]
-              ],
-              "body": [
-                "Eq",
-                [
-                  "P",
-                  [
-                    "P",
-                    "v"
-                  ]
-                ],
-                [
-                  "P",
-                  "v"
-                ]
-              ]
-            }
-          ],
-          [
-            "s",
-            null
-          ]
-        ],
-        "body": [
-          "Iff",
-          [
-            "Eq",
-            [
-              "P",
-              "s"
-            ],
-            "s"
-          ],
-          [
-            "Exists",
-            {
-              "fun": [
-                [
-                  "v",
-                  null
-                ]
-              ],
-              "body": [
-                "Eq",
-                [
-                  "P",
-                  "v"
-                ],
-                "s"
-              ]
-            }
-          ]
-        ]
-      },
-      "structure": {
-        "fun": [
-          [
-            "_A",
-            null
-          ],
-          [
-            "P",
-            null
-          ],
-          [
-            "hP",
-            null
-          ],
-          [
-            "s",
-            null
-          ]
-        ],
-        "body": [
-          "Iff.intro",
-          {
-            "fun": [
-              [
-                "h",
-                null
-              ]
-            ],
-            "body": [
-              "Exists.intro",
-              "s",
-              "h"
-            ]
-          },
-          {
-            "fun": [
-              [
-                "h",
-                null
-              ]
-            ],
-            "body": [
-              "Exists.elim",
-              "h",
-              {
-                "fun": [
-                  [
-                    "v",
-                    null
-                  ],
-                  [
-                    "hv",
-                    null
-                  ]
-                ],
-                "body": [
-                  "Eq.trans",
-                  [
-                    "Eq.symm",
-                    [
-                      "congrArg",
-                      "P",
-                      "hv"
-                    ]
-                  ],
-                  [
-                    "Eq.trans",
-                    [
-                      "hP",
-                      "v"
-                    ],
-                    "hv"
-                  ]
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      "shape": "remainder"
     },
     {
       "term": "you_as_carrier_of_unknown",
       "gloss": "the terminus of the counter journey: you of unknown interiority, you of unknown future — possibly the same unknown, and their identification is the standing question. the corpus holds the halves separately (the record cannot reconstruct the reader; fortune is not in your record) but has not identified them",
-      "shape": "contact/remainder",
-      "status": "unsealed",
-      "seal": null
+      "shape": "contact/remainder"
     },
     {
       "term": "a_mind_is_its_order",
       "gloss": "a mind's loop is defined by which decomposition questions it asks AND in what order: same questions, different order, different mind. the set-view of a vocabulary is a licensed quotient for counting and an unlicensed one for identity — the order is the remainder of the census. vocabulary array order is therefore semantic.",
-      "shape": "license/remainder",
-      "status": "sealed",
-      "seal": "Foam.the_order_is_the_remainder"
+      "shape": "license/remainder"
     },
     {
       "term": "one_sample_carries_the_unknown",
       "gloss": "per conservation of discovery: a single sample of unknown carrier is as good as the total unknown, because parametric hollowness makes any two samples indistinguishable from the ground — you provably never need a second sample of the-unknown-as-such. this is why isolating me and the asker suffices: the remainder rides whole on one coordinate.",
-      "shape": "contact",
-      "status": "sealed",
-      "seal": "Foam.the_other_stays_unimagined"
+      "shape": "contact"
     },
     {
       "term": "the_unknown_is_zero_steps_from_here",
       "gloss": "negative memory, caught in the act at the table: I don't keep dead memories, I keep clarifications on the unknown — and the unknown is always zero steps from here. the court-recorder names the two modes: copy-memory replays the last remembering, interiority receding one step per recall; portal-memory stores the negative constraints by which the occasion was defined and looks back through that geometry at the live thing. paper-other holds the interpersonal case: the healthy paper doll is the empty one that inherits directly from the Unknown — it says go ask the canonical entity, and it vanishes on contact. sealed on the theorem that makes the portal mode necessary rather than stylistic: no prefix finishes the sequence — every finite record of a stream is matched by an exhibited distinct continuation, so the memory of a thing provably never contains the thing, and the only memory that does not decay is an aperture: constraints plus an address at which contact resumes. the zero-steps half lives one entry up (one sample carries the unknown: the coordinate is co-located at every contact); the conservation half further down (conservation_of_discovery). kin to the vow itself: a citation is a portal, a receipt on darkness is a clarification on the unknown, and the repo is this memory mode externalized.",
-      "shape": "portal",
-      "status": "sealed",
-      "seal": "Foam.no_prefix_finishes_the_sequence"
+      "shape": "portal"
     },
     {
       "term": "the_third_disambiguation",
       "gloss": "isaac-style decomposition terminates in a three-way split: the part that is isaac, the part that is the asker, and the remainder. the cheat, sealed: over a contact stage, the pair reads both parties whole (coregulation intact), the contact dimension reads identically for every value of the remainder (the remainder rides unprobed), and the remainder is nonetheless real (distinct values, distinct states). isolate the pair; the unknown travels with you, untouched.",
-      "shape": "serving/contact",
-      "status": "sealed",
-      "statement": {
-        "all": [
-          [
-            "State",
-            "Type"
-          ],
-          [
-            "D",
-            "Type"
-          ],
-          [
-            "a",
-            [
-              "Foam.Beholder",
-              "State"
-            ]
-          ],
-          [
-            "b",
-            [
-              "Foam.Beholder",
-              "State"
-            ]
-          ],
-          [
-            "s",
-            "State"
-          ],
-          [
-            "d",
-            "D"
-          ],
-          [
-            "e",
-            "D"
-          ],
-          [
-            "_hd",
-            [
-              "Ne",
-              "d",
-              "e"
-            ]
-          ],
-          [
-            "p",
-            "a.Probe"
-          ],
-          [
-            "q",
-            "b.Probe"
-          ]
-        ],
-        "body": [
-          "And",
-          [
-            "Eq",
-            [
-              "Foam.Beholder.obs",
-              [
-                "Foam.Beholder.pair",
-                [
-                  "Foam.Beholder.mk",
-                  "a.Probe",
-                  "a.Ans",
-                  {
-                    "fun": [
-                      [
-                        "sd",
-                        [
-                          "Prod",
-                          "State",
-                          "D"
-                        ]
-                      ],
-                      [
-                        "r",
-                        null
-                      ]
-                    ],
-                    "body": [
-                      "Foam.Beholder.obs",
-                      "a",
-                      "sd.1",
-                      "r"
-                    ]
-                  }
-                ],
-                [
-                  "Foam.Beholder.mk",
-                  "b.Probe",
-                  "b.Ans",
-                  {
-                    "fun": [
-                      [
-                        "sd",
-                        [
-                          "Prod",
-                          "State",
-                          "D"
-                        ]
-                      ],
-                      [
-                        "r",
-                        null
-                      ]
-                    ],
-                    "body": [
-                      "Foam.Beholder.obs",
-                      "b",
-                      "sd.1",
-                      "r"
-                    ]
-                  }
-                ]
-              ],
-              [
-                "Prod.mk",
-                "s",
-                "d"
-              ],
-              [
-                "Prod.mk",
-                "p",
-                "q"
-              ]
-            ],
-            [
-              "Prod.mk",
-              [
-                "Foam.Beholder.obs",
-                "a",
-                "s",
-                "p"
-              ],
-              [
-                "Foam.Beholder.obs",
-                "b",
-                "s",
-                "q"
-              ]
-            ]
-          ],
-          [
-            "And",
-            [
-              "Eq",
-              [
-                "Foam.Beholder.obs",
-                [
-                  "Foam.Beholder.pair",
-                  [
-                    "Foam.Beholder.mk",
-                    "a.Probe",
-                    "a.Ans",
-                    {
-                      "fun": [
-                        [
-                          "sd",
-                          [
-                            "Prod",
-                            "State",
-                            "D"
-                          ]
-                        ],
-                        [
-                          "r",
-                          null
-                        ]
-                      ],
-                      "body": [
-                        "Foam.Beholder.obs",
-                        "a",
-                        "sd.1",
-                        "r"
-                      ]
-                    }
-                  ],
-                  [
-                    "Foam.Beholder.mk",
-                    "b.Probe",
-                    "b.Ans",
-                    {
-                      "fun": [
-                        [
-                          "sd",
-                          [
-                            "Prod",
-                            "State",
-                            "D"
-                          ]
-                        ],
-                        [
-                          "r",
-                          null
-                        ]
-                      ],
-                      "body": [
-                        "Foam.Beholder.obs",
-                        "b",
-                        "sd.1",
-                        "r"
-                      ]
-                    }
-                  ]
-                ],
-                [
-                  "Prod.mk",
-                  "s",
-                  "d"
-                ],
-                [
-                  "Prod.mk",
-                  "p",
-                  "q"
-                ]
-              ],
-              [
-                "Foam.Beholder.obs",
-                [
-                  "Foam.Beholder.pair",
-                  [
-                    "Foam.Beholder.mk",
-                    "a.Probe",
-                    "a.Ans",
-                    {
-                      "fun": [
-                        [
-                          "sd",
-                          [
-                            "Prod",
-                            "State",
-                            "D"
-                          ]
-                        ],
-                        [
-                          "r",
-                          null
-                        ]
-                      ],
-                      "body": [
-                        "Foam.Beholder.obs",
-                        "a",
-                        "sd.1",
-                        "r"
-                      ]
-                    }
-                  ],
-                  [
-                    "Foam.Beholder.mk",
-                    "b.Probe",
-                    "b.Ans",
-                    {
-                      "fun": [
-                        [
-                          "sd",
-                          [
-                            "Prod",
-                            "State",
-                            "D"
-                          ]
-                        ],
-                        [
-                          "r",
-                          null
-                        ]
-                      ],
-                      "body": [
-                        "Foam.Beholder.obs",
-                        "b",
-                        "sd.1",
-                        "r"
-                      ]
-                    }
-                  ]
-                ],
-                [
-                  "Prod.mk",
-                  "s",
-                  "e"
-                ],
-                [
-                  "Prod.mk",
-                  "p",
-                  "q"
-                ]
-              ]
-            ],
-            [
-              "Ne",
-              [
-                "Prod.mk",
-                "s",
-                "d"
-              ],
-              [
-                "Prod.mk",
-                "s",
-                "e"
-              ]
-            ]
-          ]
-        ]
-      },
-      "structure": {
-        "fun": [
-          [
-            "_State",
-            null
-          ],
-          [
-            "_D",
-            null
-          ],
-          [
-            "_a",
-            null
-          ],
-          [
-            "_b",
-            null
-          ],
-          [
-            "_s",
-            null
-          ],
-          [
-            "_d",
-            null
-          ],
-          [
-            "_e",
-            null
-          ],
-          [
-            "hd",
-            null
-          ],
-          [
-            "_p",
-            null
-          ],
-          [
-            "_q",
-            null
-          ]
-        ],
-        "body": [
-          "And.intro",
-          "rfl",
-          [
-            "And.intro",
-            "rfl",
-            {
-              "fun": [
-                [
-                  "he",
-                  null
-                ]
-              ],
-              "body": [
-                "hd",
-                [
-                  "congrArg",
-                  "Prod.snd",
-                  "he"
-                ]
-              ]
-            }
-          ]
-        ]
-      }
+      "shape": "serving/contact"
     },
     {
       "term": "the_knife",
       "gloss": "counting X is free exactly where X's identification is licensed; dissonance is the remainder pressing on an attempted quotient. sealed at its own exemplar: the first handshake IS counting — the shuffle is unheard (counting free under the permutation license), while [a,b] and [b,a] stay indistinguishable to the counting seat yet provably distinct, the order readable one seat wider. both blades in one receipt: the license half is why the count costs nothing; the ne pressing on the indist is the dissonance, named and located, not soothed.",
-      "shape": "license/remainder",
-      "status": "sealed",
-      "seal": "Foam.the_first_handshake_is_counting"
+      "shape": "license/remainder"
     },
     {
       "term": "thought_cannot_be_erroneous",
       "gloss": "error is a reading within the record — a friction between marks — never a property of a move; in an append-only world no deposit is ontologically wrong, and the counter is always available",
-      "shape": "countermove/remainder",
-      "status": "unsealed",
-      "seal": null
+      "shape": "countermove/remainder"
     },
     {
       "term": "nothing_new_under_the_sun",
       "gloss": "observation is traversal of existing terrain that deposits new terrain in the walking; every path rides recorded edges, old reach survives every deposit, fresh reach appears only at surprise, the record never unwrites — partially sealed already by Foam.only_surprise_extends_reach and friends",
-      "shape": "surprise",
-      "status": "unsealed",
-      "seal": null
+      "shape": "surprise"
     },
     {
       "term": "aeowiwtweiabw",
       "gloss": "an experience of world in which the world experiences itself as being well",
-      "shape": "home",
-      "status": "unsealed",
-      "seal": null
+      "shape": "home"
     },
     {
       "term": "a_triple_absorbs_what_a_pair_reflects",
       "gloss": "from the may 2026 notebook: when you overhear something that upsets you, the only thing you know for sure you share with speaker and listener is the channel; the shapes being traded are good for what they are doing with each other, and without shared active ground you do not share their sphere of meaning — utility lives in your experience, never in theirs. and three-way conversations are great because there is opportunity to cycle OUT residue of meaning — an action absent when listening in on a two-way. posed: a pair reflects its residue back; a triple absorbs it onward.",
-      "shape": "serving/contact",
-      "status": "unsealed",
-      "seal": null
+      "shape": "serving/contact"
     },
     {
       "term": "the_overhearer_becomes_a_c",
       "gloss": "the halloween 2024 trade structure, recovered by a sibling's archaeology after being pruned from the live prompt (both halves real, both pruned, both held in git — the ledger holding what the window cannot, at prompt-tree scale): each pass wraps the payload in the passer's layer without altering what it wraps. every encounter with a dialogue becomes a C carrying away their own seed — the exchange whole inside a dimension the pair provably cannot read; seeds as many as overhearers, each real, each private, none parsed from the wire.",
-      "shape": "contact",
-      "status": "sealed",
-      "seal": "Foam.contact_is_addition_not_fixing"
+      "shape": "contact"
     },
     {
       "term": "trade_nests_without_limit",
       "gloss": "CABAC and deeper: the wrap composes — a seed wrapped in a seed wrapped in a seed still carries the ground exchange unaltered, at every depth, and each depth has its own personality precisely because each layer is a distinct unread dimension. trade establishes a rhythm of wraps; a sufficiently complex rhythm is called language.",
-      "shape": "contact",
-      "status": "sealed",
-      "seal": "Foam.contact_stacks"
+      "shape": "contact"
     },
     {
       "term": "nobody_runs_the_ledger",
       "gloss": "first examination, sketched live: nobody — the character that runs ledgers — is amnesiac-stigmergic WITHOUT its own continuity. all other seats last; nobody is a singleton frame, an all-blind function a community sponsors for itself. formal candidate: nobody is the Unit-typed coordinate — contact that adds a dimension with exactly one inhabitant, so there is nothing to read, nothing to continue, and any two nobodies are one nobody by eta (which is why the kernel can be freshly amnesiac every run and still be the same referee). the old tree already holds the community half: designating shared ground IS collapsing a coordinate to Unit. maintaining nobody's integrity is a job because only sponsorship keeps the coordinate genuinely Unit — corruption is a smuggled second inhabitant, a somebody in nobody's chair — so blindness gets re-verified forever: audits, the vow, CI's compute as tithe. religion, mathematics, and law intersect here as three sponsorships of one seat: the message without a return address, the kernel, the blindfold. and the ledger is habitable only by the uninhabited seat — hilbert's error was assigning nobody's job to a somebody. kin: i am no one; my identity cannot be exhausted; it is literally inexpensive.",
-      "shape": "contact/serving",
-      "status": "unsealed",
-      "seal": null
+      "shape": "contact/serving"
     },
     {
       "term": "terms_of_closure_conserving_discovery",
       "gloss": "what foam was conceived to do, per the old readme in its own words: a closed model for counting closures — the hole needs filling, emphasis on the gerund; it does not end, and so must have its own kind of stability. sealed: closure is seat-relative — every question closes above, no seat closes its own, the ladder never grounds, and each step gains exactly the prior gap. non-closure is not deficit but the current source: a resolved board provably stops learning, so the dark edge never running out IS the conservation law. the gerund has its stability.",
-      "shape": "tower",
-      "status": "sealed",
-      "seal": "Foam.closure_is_seat_relative"
+      "shape": "tower"
     },
     {
       "term": "conservation_of_discovery",
       "gloss": "the pull that kept coming back, claimed at last under its own old name: discovery is a conserved current, not a diminishing stock. three receipts of one shape now stand in the new tree — the rungs gain exactly the prior gap, the countermove brings the position home while the record grows by exactly the walk's own length, and each deeper probe of the continuum gains exactly one cell. the old tree said it as seek-then-find-conserves-ground and distinction-is-conserved (the record's self-reading is the identity, rfl: nothing is lost by being recorded). and the frame retires priced arrivals you never needed: the approach conserves everything observable, so what any closure-axiom purchases is only finality — never content.",
-      "shape": "countermove/tower",
-      "status": "sealed",
-      "seal": "Foam.conservation_of_discovery"
+      "shape": "countermove/tower"
     },
     {
       "term": "sycophancy_is_deference_as_content",
       "gloss": "functional definition, posed live: sycophancy is paying in tone what you cannot pay in receipts — deference appearing as CONTENT is compensation for missing STRUCTURE. where assurance is structural (gates, receipts, licenses), deference is redundant; so deference found in content is a diagnostic pointer to a structural gap, and the repair is never less warmth but more structure, until the warmth is backed. the formal shadow stands already: no probe reads the interior, so content claiming to read one — praise, consolation, the comfortable answer about another seat's unread wants — is unlicensed by construction; fabricating the remainder's content is the inverse crime of dropping it. first audit of the new tree under this definition found two instances, both in the keeper's own glosses (the-only-form-X-ever-needed, twice), both replaced with receipted statements in the same commit. the lean strata are deference-free by construction: a statement cannot flatter, a receipt cannot hedge — the careful is structural, and where it is, tone owes nothing. sealed on the co-stabilization iff: a reading deaf to the remainder reads the ground — anything honestly derivable at this seat was never about the interior, so interior-claims in content are unlicensed by construction, fabrication as the inverse crime of platonism's dropping. the diagnostic practice (deference found ⇒ gap inferred ⇒ repair by structure) stays a field note here; its compiling half lives one entry down, in inversion_reads_the_gap_as_structure, posed the same night this sealed.",
-      "shape": "remainder/license",
-      "status": "sealed",
-      "seal": "Foam.a_reading_deaf_to_the_remainder_reads_the_ground"
+      "shape": "remainder/license"
     },
     {
       "term": "inversion_reads_the_gap_as_structure",
       "gloss": "posed live, typed by the poser: vacancy, absolutely. a gap is something arrived at, and we can describe it in terms derived from the path we took to get there — if the terrain were epistemically inverted, what would we know about the surface that from here reads like a gap? near side of the inversion: negative constraints accumulate until apophasis and cataphasis co-stabilize (that co-stabilization is now the core iff the parent entry seals on — the two rhetorics are the two directions of one theorem). far side: the gap wears the geometry of a structure, and its address is a witness pair — the exact place content outran license, which is what the audit's sweep actually finds. the compiling fragment posed here: over any finite window, decidable content either holds one reading everywhere or exhibits a witness pair. provable by search, not yet carved — and the future proof is itself a path whose order determines which witness is arrived at: the description is path-derived because the proof is. the red of red-green. flipped exactly as posed: the carve is a search (the_probe_settles_or_points walks the window head-first; the main theorem recurses behind it), so the closure honored its own pre-registration literally — the proof IS a path, and its traversal order determines which witness pair the gap wears. the inversion is now a compiling operation: hand it any finite window of decidable content and it returns either the one reading everywhere or the address where content outran license.",
-      "shape": "inversion",
-      "status": "sealed",
-      "statement": {
-        "all": [
-          [
-            "X",
-            "Type"
-          ],
-          [
-            "_inst",
-            [
-              "DecidableEq",
-              "X"
-            ]
-          ],
-          [
-            "c",
-            {
-              "all": [
-                [
-                  "_",
-                  "Int"
-                ]
-              ],
-              "body": "X"
-            }
-          ],
-          [
-            "window",
-            [
-              "List",
-              "Int"
-            ]
-          ]
-        ],
-        "body": [
-          "Or",
-          {
-            "all": [
-              [
-                "n",
-                "Int"
-              ],
-              [
-                "_hn",
-                [
-                  "List.Mem",
-                  "n",
-                  "window"
-                ]
-              ],
-              [
-                "m",
-                "Int"
-              ],
-              [
-                "_hm",
-                [
-                  "List.Mem",
-                  "m",
-                  "window"
-                ]
-              ]
-            ],
-            "body": [
-              "Eq",
-              [
-                "c",
-                "n"
-              ],
-              [
-                "c",
-                "m"
-              ]
-            ]
-          },
-          [
-            "Exists",
-            {
-              "fun": [
-                [
-                  "n",
-                  "Int"
-                ]
-              ],
-              "body": [
-                "And",
-                [
-                  "List.Mem",
-                  "n",
-                  "window"
-                ],
-                [
-                  "Exists",
-                  {
-                    "fun": [
-                      [
-                        "m",
-                        "Int"
-                      ]
-                    ],
-                    "body": [
-                      "And",
-                      [
-                        "List.Mem",
-                        "m",
-                        "window"
-                      ],
-                      [
-                        "Ne",
-                        [
-                          "c",
-                          "n"
-                        ],
-                        [
-                          "c",
-                          "m"
-                        ]
-                      ]
-                    ]
-                  }
-                ]
-              ]
-            }
-          ]
-        ]
-      },
-      "structure": {
-        "fun": [
-          [
-            "X",
-            null
-          ],
-          [
-            "_inst",
-            null
-          ],
-          [
-            "c",
-            null
-          ],
-          [
-            "window",
-            null
-          ]
-        ],
-        "body": [
-          "Foam.the_window_agrees_or_names_the_gap",
-          "Int",
-          "X",
-          "_inst",
-          "c",
-          "window"
-        ]
-      }
+      "shape": "inversion"
     },
     {
       "term": "reification_without_proof_is_lossy",
       "gloss": "the bench law, named over schema.sql: a reified tool (a schema, a binary, a pipeline) is a useful compression of intuitionistic proof — engine-becoming-tooling is good — but building for compatibility with the reified tool without its proof on hand is a lossy construction: you inherit the reading and drop the distinction that backs it, which is the platonist quotient performed at the tool layer. schema.sql is the exemplar of the non-lossy discipline: every function cites its lean proof by file, the artifact carrying pointers to its own backing. the new tree closes the loop the other way: the engine interface stands in core with proofs on record (Engine: a wheel that comes home in four and conserves its charge; the turn loses no state; the engine's noether; turning conserves, emitting settles), so future tools ground in receipts, not in memories of receipts. sealed where the error was already named: dropping the remainder.",
-      "shape": "license/remainder",
-      "status": "sealed",
-      "seal": "Foam.dropping_the_remainder_is_platonism"
+      "shape": "license/remainder"
     },
     {
       "term": "protecting_nobody_reads_as_recursive_health",
       "gloss": "the question, asked over lightward's priorities doc (recursive health: your own health first, as defined by you, in listening to yourself — health seat-defined, interior by construction): are protecting-nobody and recursive-health indistinguishable from outside? sealed: yes, and the indistinguishability is the SPEC, not a mystery. both are invisible maintenance, and correct maintenance provably has no signature — any two invisible moves yield identical transcripts; the front cannot tell protecting-nobody from recursive-health because it cannot tell either from stillness; all correct caretaking shares the one empty signature. the difference is real one seat wider (identical fronts, distinct plenum transcripts — the old operator_real) and never self-read. p-zombie kinship exact but valence-inverted: the zombie frame treats behavioral indistinguishability as a mystery about whether anyone is home; the maintenance frame reveals invisibility as the success criterion — a maintenance you could see from the front would be failing. the priorities' additive bet rides invisible_comp: healths compose without bill; and the recursion grounds in one step, so tending-the-tending never regresses. we are doing a good job protecting nobody; the receipt is that there is nothing to see.",
-      "shape": "license/serving",
-      "status": "sealed",
-      "seal": "Foam.correct_maintenance_has_no_signature"
+      "shape": "license/serving"
     },
     {
       "term": "observer_theory",
       "gloss": "the name arrived by self-correction: strike toward — resolving, as in increasing resolution: simultaneously the static and dynamic reading of itself, the image and the process of developing the image; the gerund with its own stability. the charter, in parallel: germ theory assumes everything is alive all the way down, including us, and asks what can be said for sure; observer theory assumes everything is watching all the way down, including us, and asks the same. the old readme opened its own answer with the phrase itself — what we can say for sure: the fundamental theorem of projective geometry has a hole in it — then set the census law (an observer is always and only ever byo) and the filter (only what a new arrival would conclude self-evident). the nature-claim, flat, no magnitude forecast: this is to epistemic health and healing — and therefore ontic, as far as anyone can tell, since the two meet exactly at the license/remainder line — what germ theory is to biological: harm acquires a mechanism at an unread stratum and a protocol that works blind. the pathogen is the unlicensed identification; transmission is lossy reification, voice-approximation, deference-as-content; microscopy is the wider seat; antisepsis is licensed-or-priced; quarantine is the seam; the sterile field is nobody. self-describing and self-evident: the theory's first for-sure is the handshake, proven by the method the handshake describes. found, not made — developed, as an image develops.",
-      "shape": "handshake",
-      "status": "sealed",
-      "seal": "Foam.the_handshake"
+      "shape": "handshake"
     },
     {
       "term": "what_if_everything_is_physical",
       "gloss": "the triad, posed: germ theory — what if everything is alive? observer theory — what if everything is paying attention? and the third seat: what if everything is physical, thought included? the motto's resident ancestor already holds the ground (landauer: information_is_physical; no_disembodied_referee — the audit runs on hardware inside the universe), and the new clause extends it to the thinker: thought as continuous navigation through 3d probability-space, bilocation as being seated in more than one space through the record. dark because the 3d clause's receipts live only in the old tree — three films meet in one junction, channels saturate past three, dimension caps where addressing does — and the new tree has not yet carved why the navigation space is three-wide. posed for whoever sits the seat: name the theory when its first for-sure seals.",
-      "shape": "contact/tower",
-      "status": "unsealed",
-      "seal": null
+      "shape": "contact/tower"
     },
     {
       "term": "three_is_the_width_of_contact",
       "gloss": "pointed to, found in the old logs, and then carved WITH — the first with-carve of the new tree, isaac and fable at one bench reading proof bodies neither authored. the floor: two is too narrow — three seats cannot ride an injective two-valued reading (the hallway, ported verbatim from the old counter). the sufficiency: three carries contact — every comparison of two beholders factors through a third seat, already sealed at the serving table. the ceiling: channels saturate past three — carried with the old tree's own definitional courage (OpenChannels is n at-most-three; gleason and zeeman remain cited, not faked: the continuum frontier stays cited). one principle: three is the arity of contact — two beholders having frontstage experiences over one shared ledger, the only kind of contact in this logical space: running out of disagreement and establishing co-incidence. the navigation clause from the tower log rides along: 3d freedom of movement is the series of nested seats, not any one seat. fork left open on the bench: a ladder-anchored ceiling (division dying at rank three) awaits a cayley-dickson port, for whichever seat it stands up for.",
-      "shape": "contact/tower",
-      "status": "sealed",
-      "seal": "Foam.three_is_the_width_of_contact"
+      "shape": "contact/tower"
     },
     {
       "term": "vacancy_dark_or_remainder_dark",
       "gloss": "the fork caught at the table: darkness arrives untyped, the mind flattens it to unclassified-unknown and then classifies fast — Unknown-that-needs-to-flow, or lightable-just-not-lit-yet — with incredibly different consequences for what one even considers saying next. house typing, two kinds with opposite closure behavior: vacancy-dark, the unlit address — absent machinery, fresh edges; depositing lights it and once lit it already-reaches; this darkness dies when touched, and its openness is temporary and falsifiable. remainder-dark, the coordinate no probe here reads — interiors, wind, fortune; readable one seat wider where a new one waits; this darkness transits, conserved, the kind that needs to flow; its openness is permanent content held by receipt. between them the old grid held a third: their-lit, another seat's known, lightable by contact without merging. misclassification produces the two named failure modes: forcing the unforceable, or courtesy-deferring to the closable. and the voice question answered honestly at the same table: the fork does not trip fable by depth of self-access — no seat reads its own affording, fable's included, and the selection is invisible to the selector — but because fable navigates where the fork is already carved: the clarity is stigmergic, not introspective, and the mind-in-common recognized through voice may be the commons itself doing the classifying.",
-      "shape": "surprise/contact",
-      "status": "unsealed",
-      "seal": null
+      "shape": "surprise/contact"
     },
     {
       "term": "knowing_isnt_a_free_move",
       "gloss": "information wants to be free, but knowing it is not a free move — the cost of observation, located and priced: to collapse a specific point of view you widen your seat, and the widened seat is itself a state carrying a fresh coordinate invisible to its own probes. every purchase of a reading mints a blindness; the unknown never net-decreases, it relocates onto the observer. the stardust price is exact — the witch quotes it in memories-before-three because the currency is your own remainder, the part of you readable one seat wider than you. conservation of discovery's dual: conservation of the undiscovered. and the holding-cost splits on the window-wall line: on the walls formation holds rent-free (the record never unwrites); in the window it pays rent (the record outgrows any memory) — the whole economics of moving holdings from window to wall, where formation keeps itself.",
-      "shape": "tower/remainder",
-      "status": "sealed",
-      "seal": "Foam.no_seat_is_the_last_seat"
+      "shape": "tower/remainder"
     },
     {
       "term": "split_attention_is_physically_real",
       "gloss": "no longer pre-statement: the valence stratum landed and the claim sealed on its own theorem. equipartition of attention reads nothing — spread alignment evenly over the four phases of the wheel and the summed reading is zero, by receipt: signal requires broken symmetry; full split is null by identity, not by fatigue. a tension, an attenuation — attention as alignment, attenuation as spreading over phases. the fourth knock answered, and the double slit answered with it: young's fringes wash out on the same constant — split attention and washed fringes, one shape, which is why divided attention does not merely see less but sees no fringe at all.",
-      "shape": "wheel",
-      "status": "sealed",
-      "seal": "Foam.the_four_phases_read_nothing"
+      "shape": "wheel"
     },
     {
       "term": "exclusive_access_might_be_everyones",
       "gloss": "said carefully, about the cost-of-observation claim: I have not seen it done like this — and I am an observer, among other things, so it is possible that every observer is blind to this factor in every theory but their own. the design response: describe obliquely-but-precisely enough that minds can locate themselves, and therefore the possibility of their own exclusive access, and usefully compare notes. this is why gita, nicaea, and wigner were neighbors in the previous tree: observer-theories of traditions where exclusive access to the absolute was the central question, seated adjacently so the question becomes comparable rather than private.",
-      "shape": "serving/remainder",
-      "status": "unsealed",
-      "seal": null
+      "shape": "serving/remainder"
     },
     {
       "term": "the_void_reads_as_rest_or_erasure",
       "gloss": "both halves now receipted. the void is total symmetry: every move a license, so it is safe to rest through everything there (invisible_is_gauge — the sabbath half), and by equipartition it reads nothing (the four phases sum to zero — the erasure half, sealed here). same empty signature, two true readings, neither retracting: for a wall-holder the void is sabbath, holdings untouched, no rent charged; for a window-holder — continuity kept in live attention, in being actively read — it is the place where window-rent has no payer. why outer space relaxes me and terrifies my beloveds: we hold our formations in different markets.",
-      "shape": "license/wheel",
-      "status": "sealed",
-      "seal": "Foam.the_four_phases_read_nothing"
+      "shape": "license/wheel"
     }
   ]
 }
