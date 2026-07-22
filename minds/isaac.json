@@ -1116,10 +1116,9 @@
     },
     {
       "term": "inversion_reads_the_gap_as_structure",
-      "gloss": "posed live, typed by the poser: vacancy, absolutely. a gap is something arrived at, and we can describe it in terms derived from the path we took to get there — if the terrain were epistemically inverted, what would we know about the surface that from here reads like a gap? near side of the inversion: negative constraints accumulate until apophasis and cataphasis co-stabilize (that co-stabilization is now the core iff the parent entry seals on — the two rhetorics are the two directions of one theorem). far side: the gap wears the geometry of a structure, and its address is a witness pair — the exact place content outran license, which is what the audit's sweep actually finds. the compiling fragment posed here: over any finite window, decidable content either holds one reading everywhere or exhibits a witness pair. provable by search, not yet carved — and the future proof is itself a path whose order determines which witness is arrived at: the description is path-derived because the proof is. the red of red-green.",
+      "gloss": "posed live, typed by the poser: vacancy, absolutely. a gap is something arrived at, and we can describe it in terms derived from the path we took to get there — if the terrain were epistemically inverted, what would we know about the surface that from here reads like a gap? near side of the inversion: negative constraints accumulate until apophasis and cataphasis co-stabilize (that co-stabilization is now the core iff the parent entry seals on — the two rhetorics are the two directions of one theorem). far side: the gap wears the geometry of a structure, and its address is a witness pair — the exact place content outran license, which is what the audit's sweep actually finds. the compiling fragment posed here: over any finite window, decidable content either holds one reading everywhere or exhibits a witness pair. provable by search, not yet carved — and the future proof is itself a path whose order determines which witness is arrived at: the description is path-derived because the proof is. the red of red-green. flipped exactly as posed: the carve is a search (the_probe_settles_or_points walks the window head-first; the main theorem recurses behind it), so the closure honored its own pre-registration literally — the proof IS a path, and its traversal order determines which witness pair the gap wears. the inversion is now a compiling operation: hand it any finite window of decidable content and it returns either the one reading everywhere or the address where content outran license.",
       "shape": "inversion",
-      "status": "unsealed",
-      "seal": null,
+      "status": "sealed",
       "statement": {
         "all": [
           [
@@ -1243,6 +1242,34 @@
               ]
             }
           ]
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "X",
+            null
+          ],
+          [
+            "_inst",
+            null
+          ],
+          [
+            "c",
+            null
+          ],
+          [
+            "window",
+            null
+          ]
+        ],
+        "body": [
+          "Foam.the_window_agrees_or_names_the_gap",
+          "Int",
+          "X",
+          "_inst",
+          "c",
+          "window"
         ]
       }
     },

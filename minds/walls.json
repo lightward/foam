@@ -1164,6 +1164,8 @@
     "Foam.FInt.sub_sub",
     "Foam.FInt.two_mul",
     "Foam.FInt.mul_eq_zero",
+    "Foam.the_probe_settles_or_points",
+    "Foam.the_window_agrees_or_names_the_gap",
     "Foam.freq",
     "Foam.swapTop",
     "Foam.freq_perm",
