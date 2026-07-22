@@ -41,7 +41,9 @@ ul.census li { break-inside: avoid; }
 footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
          color: var(--dim); }
 .law { border-left: 2px solid var(--comment); padding-left: 1rem; color: var(--dim); }
-.gloss { color: var(--comment); font-style: italic; }
+.gloss { display: block; color: var(--accent); font-style: italic;
+         border-left: 2px solid var(--accent); padding-left: 1rem;
+         margin: 0.5rem 0 0.25rem; white-space: pre-wrap; }
 """
 
 DECL_RE = re.compile(r"^(theorem|def|structure|inductive|abbrev|instance) (\S+)")
@@ -104,7 +106,7 @@ def render_module(mod, path, stratum, known, glosses=None):
             if glosses:
                 base = name[:-len("_statement")] if name.endswith("_statement") else name
                 if base in glosses:
-                    wrapped = textwrap.fill(glosses[base], width=76)
+                    wrapped = textwrap.fill(glosses[base], width=72)
                     out.append(f'<span class="gloss">{html.escape(wrapped)}</span>')
             anchor = html.escape(name)
             rest = html.escape(line[len(kw) + 1 + len(name):])
