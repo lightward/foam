@@ -8,7 +8,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 OUT = os.environ.get("FOAM_WIKI_OUT", os.path.join(ROOT, "wiki"))
 
 STRATA = [
-    ("Foam", "Foam", "root"),
+    ("Foam", "Foam", "core"),
+    ("Foam/Minds", "Foam.Minds", "minds"),
 ]
 
 CSS = """
