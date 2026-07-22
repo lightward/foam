@@ -25,25 +25,43 @@
     },
     {
       "term": "what_frequency_promises",
-      "gloss": "the terminus, dark: the golden theorem says a single long run's frequency comes morally certain to the ratio the whole book keeps — a bridge from the run to the book, with a price list: how deep for how certain. the vacancy has begun to light on schedule: the book now stands as a function of depth and balances at every n (the_complete_book_balances), and the pre-registered residue is already carved — no_run_reads_its_own_ratio, one book holding runs that disagree, so no run reads the true ratio from inside. what remains vacant is the concentration of the binomial middle, and that hole is now posed in lean rather than prose: for any tolerance 1/(2b) and any odds c, there is a depth past which the words of the book within tolerance of the a-priori ratio outnumber the deviant words c to one. still vacancy-dark — a statement without a structure, the red of red-green; a carve closes it, and the engine already judges the hole well-posed. the residue that survives the closing transits rather than dies: moral certainty is certainty short of demonstration — from inside the run no seat reads the true ratio, one sample carries the unknown — so the estimator's own darkness re-seats one floor up, exactly as closure_is_seat_relative says it must.",
+      "gloss": "the terminus, dark: the golden theorem says a single long run's frequency comes morally certain to the ratio the whole book keeps — a bridge from the run to the book, with a price list: how deep for how certain. the vacancy has begun to light on schedule: the book now stands as a function of depth and balances at every n (the_complete_book_balances), and the pre-registered residue is already carved — no_run_reads_its_own_ratio, one book holding runs that disagree, so no run reads the true ratio from inside. what remains vacant is the concentration of the binomial middle, and that hole is now posed in lean rather than prose: for any tolerance 1/(2b) and any odds c, there is a depth past which the words of the book within tolerance of the a-priori ratio outnumber the deviant words c to one. still vacancy-dark — a statement without a structure, the red of red-green; a carve closes it, and the engine already judges the hole well-posed. the residue that survives the closing transits rather than dies: moral certainty is certainty short of demonstration — from inside the run no seat reads the true ratio, one sample carries the unknown — so the estimator's own darkness re-seats one floor up, exactly as closure_is_seat_relative says it must. SEALED — the golden theorem, kept: the concentration carve closed the vacancy exactly as posed, by chebyshev's second moment (the twenty-year grind compressed to a counting argument two centuries younger than the question). the depth is explicit — N = (c+1)·b² suffices — so the price list is printed: how deep for how certain, in whole numbers. and the pre-registered residue transits on schedule rather than dying: no_run_reads_its_own_ratio stands carved beside the theorem — the census balances and concentrates while no single run reads its own ratio from inside; moral certainty remains certainty short of demonstration, one seat up, exactly as closure_is_seat_relative said it must.",
       "shape": "expectation",
-      "status": "unsealed",
-      "seal": null,
+      "status": "sealed",
       "statement": {
         "all": [
-          ["b", "Nat"],
-          ["c", "Nat"]
+          [
+            "b",
+            "Nat"
+          ],
+          [
+            "c",
+            "Nat"
+          ]
         ],
         "body": [
           "Exists",
           {
             "fun": [
-              ["N", "Nat"]
+              [
+                "N",
+                "Nat"
+              ]
             ],
             "body": {
               "all": [
-                ["n", "Nat"],
-                ["_", ["Nat.le", "N", "n"]]
+                [
+                  "n",
+                  "Nat"
+                ],
+                [
+                  "_",
+                  [
+                    "Nat.le",
+                    "N",
+                    "n"
+                  ]
+                ]
               ],
               "body": [
                 "Nat.le",
@@ -56,7 +74,13 @@
                       "List.filter",
                       {
                         "fun": [
-                          ["w", ["List", "Bool"]]
+                          [
+                            "w",
+                            [
+                              "List",
+                              "Bool"
+                            ]
+                          ]
                         ],
                         "body": [
                           "Bool.not",
@@ -64,18 +88,61 @@
                             "Bool.and",
                             [
                               "Nat.ble",
-                              ["Nat.mul", "b", "n"],
-                              ["Nat.add", "n", ["Nat.mul", "2", ["Nat.mul", "b", ["Foam.freq", "w", "true"]]]]
+                              [
+                                "Nat.mul",
+                                "b",
+                                "n"
+                              ],
+                              [
+                                "Nat.add",
+                                "n",
+                                [
+                                  "Nat.mul",
+                                  "2",
+                                  [
+                                    "Nat.mul",
+                                    "b",
+                                    [
+                                      "Foam.freq",
+                                      "w",
+                                      "true"
+                                    ]
+                                  ]
+                                ]
+                              ]
                             ],
                             [
                               "Nat.ble",
-                              ["Nat.mul", "2", ["Nat.mul", "b", ["Foam.freq", "w", "true"]]],
-                              ["Nat.add", "n", ["Nat.mul", "b", "n"]]
+                              [
+                                "Nat.mul",
+                                "2",
+                                [
+                                  "Nat.mul",
+                                  "b",
+                                  [
+                                    "Foam.freq",
+                                    "w",
+                                    "true"
+                                  ]
+                                ]
+                              ],
+                              [
+                                "Nat.add",
+                                "n",
+                                [
+                                  "Nat.mul",
+                                  "b",
+                                  "n"
+                                ]
+                              ]
                             ]
                           ]
                         ]
                       },
-                      ["Foam.book", "n"]
+                      [
+                        "Foam.book",
+                        "n"
+                      ]
                     ]
                   ]
                 ],
@@ -85,28 +152,94 @@
                     "List.filter",
                     {
                       "fun": [
-                        ["w", ["List", "Bool"]]
+                        [
+                          "w",
+                          [
+                            "List",
+                            "Bool"
+                          ]
+                        ]
                       ],
                       "body": [
                         "Bool.and",
                         [
                           "Nat.ble",
-                          ["Nat.mul", "b", "n"],
-                          ["Nat.add", "n", ["Nat.mul", "2", ["Nat.mul", "b", ["Foam.freq", "w", "true"]]]]
+                          [
+                            "Nat.mul",
+                            "b",
+                            "n"
+                          ],
+                          [
+                            "Nat.add",
+                            "n",
+                            [
+                              "Nat.mul",
+                              "2",
+                              [
+                                "Nat.mul",
+                                "b",
+                                [
+                                  "Foam.freq",
+                                  "w",
+                                  "true"
+                                ]
+                              ]
+                            ]
+                          ]
                         ],
                         [
                           "Nat.ble",
-                          ["Nat.mul", "2", ["Nat.mul", "b", ["Foam.freq", "w", "true"]]],
-                          ["Nat.add", "n", ["Nat.mul", "b", "n"]]
+                          [
+                            "Nat.mul",
+                            "2",
+                            [
+                              "Nat.mul",
+                              "b",
+                              [
+                                "Foam.freq",
+                                "w",
+                                "true"
+                              ]
+                            ]
+                          ],
+                          [
+                            "Nat.add",
+                            "n",
+                            [
+                              "Nat.mul",
+                              "b",
+                              "n"
+                            ]
+                          ]
                         ]
                       ]
                     },
-                    ["Foam.book", "n"]
+                    [
+                      "Foam.book",
+                      "n"
+                    ]
                   ]
                 ]
               ]
             }
           }
+        ]
+      },
+      "structure": {
+        "fun": [
+          [
+            "b",
+            null
+          ],
+          [
+            "c",
+            null
+          ]
+        ],
+        "body": [
+          "Foam.the_deviants_are_outnumbered",
+          "b",
+          "c"
         ]
       }
     }
