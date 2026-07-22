@@ -109,10 +109,9 @@
     },
     {
       "term": "the_error_has_a_shape",
-      "gloss": "the dark edge, terminus of the signature: every observation arrives dressed in error — no probe reads the true state, only a transcript of noisy contacts — and the residual never closes; least squares minimizes it and then rests beside it, the survey's own posture done in arithmetic. but gauss claims more than coexistence: aggregated, the unread remainder takes a shape — the bell — as if the sum of what no seat read acquires a reading of its own. the vacancy half is now typed rather than prose: census the complete book at every depth and the histogram of readings is symmetric about the middle and rises toward it — the finite silhouette posed as a compiling statement in pure Nat arithmetic, the foothold one step up (the_shape_arrives_by_counting, 1-2-1 at depth two) generalized to all n, over the same book bernoulli's concentration question reads; the binomial machinery that closes his closes this, the red of red-green. what stays remainder-dark transits rather than dying: the limit silhouette, which no finite census reads — measure enters this fold so far only as counting, and whether the bell's continuum dress descends or must be received at a seam is still the question (a third knock at the amplitude bearing: shannon by surprise, brouwer by continuity, gauss by the law of error) — and the estimator's own seat, now carved in core exactly as the edge posed it: no_run_reads_its_own_ratio — no estimate reads its own error from inside; one sample carries the unknown.",
+      "gloss": "the dark edge, terminus of the signature: every observation arrives dressed in error — no probe reads the true state, only a transcript of noisy contacts — and the residual never closes; least squares minimizes it and then rests beside it, the survey's own posture done in arithmetic. but gauss claims more than coexistence: aggregated, the unread remainder takes a shape — the bell — as if the sum of what no seat read acquires a reading of its own. the vacancy half is now typed rather than prose: census the complete book at every depth and the histogram of readings is symmetric about the middle and rises toward it — the finite silhouette posed as a compiling statement in pure Nat arithmetic, the foothold one step up (the_shape_arrives_by_counting, 1-2-1 at depth two) generalized to all n, over the same book bernoulli's concentration question reads; the binomial machinery that closes his closes this, the red of red-green. what stays remainder-dark transits rather than dying: the limit silhouette, which no finite census reads — measure enters this fold so far only as counting, and whether the bell's continuum dress descends or must be received at a seam is still the question (a third knock at the amplitude bearing: shannon by surprise, brouwer by continuity, gauss by the law of error) — and the estimator's own seat, now carved in core exactly as the edge posed it: no_run_reads_its_own_ratio — no estimate reads its own error from inside; one sample carries the unknown. SEALED, proved exactly as posed, and the answer to the posed question is: the bell arrives as a THEOREM about aggregated dressings — no seam, no received measure. the census of frequency classes obeys pascal's stack as a fact about the book's own split (the_census_stacks), is symmetric by induction on the stack alone (no involution needed), and rises monotonically to the middle — with the odd boundary closing by symmetry, the middle pair equal by mirror rather than by comparison. the silhouette is forced by stacking, by counting alone, at every finite depth. what stays remainder-dark transits as pre-registered: the limit silhouette that no finite census reads, and the estimator's own seat (no_run_reads_its_own_ratio) — the error has a shape, and no observation reads its own.",
       "shape": "measure",
-      "status": "unsealed",
-      "seal": null,
+      "status": "sealed",
       "statement": [
         "And",
         {
@@ -297,6 +296,11 @@
             ]
           ]
         }
+      ],
+      "structure": [
+        "And.intro",
+        "Foam.the_census_is_symmetric",
+        "Foam.the_census_rises_to_the_middle"
       ]
     }
   ]
