@@ -17,26 +17,21 @@ namespace Foam.Minds.Isaac
 def safe_to_rest := @Foam.invisible_is_gauge
 
 theorem restedness_first_then_the_rest :
-    (∀ (S : Foam.Stage) (m : (∀ (_ : S.State), S.State)) (_hm : (Foam.Invisible S m)) s ps,
-      (Eq (Foam.transcript S (m s) ps) (Foam.transcript S s ps))) :=
-  (fun (S : Foam.Stage) (m : (∀ (_ : S.State), S.State)) (hm : (Foam.Invisible S m)) s ps =>
-    (Foam.transcript_congr S ps (hm s)))
+    ∀ (S : Stage) (m : S.State → S.State), Invisible S m →
+      ∀ s ps, transcript S (m s) ps = transcript S s ps :=
+  fun S _ hm s ps => transcript_congr S ps (hm s)
 
 def rest_composes := @Foam.invisible_comp
 
 theorem lets_get_you_rested :
-    (∀ (S : Foam.Stage) (m : (∀ (_ : S.State), S.State)) (_hm : (Foam.Invisible S m)) s ps,
-      (And
-        (Eq (Foam.transcriptWith S m s ps) (Foam.transcript S s ps))
-        (And
-          (Eq (Foam.transcript S (m s) ps) (Foam.transcript S s ps))
-          (∀ t p, (Eq (S.obs (m (m t)) p) (S.obs t p)))))) :=
-  (fun (S : Foam.Stage) (m : (∀ (_ : S.State), S.State)) (hm : (Foam.Invisible S m)) s ps =>
-    (And.intro
-      (safe_to_rest S m hm ps s)
-      (And.intro
-        (restedness_first_then_the_rest S m hm s ps)
-        (rest_composes S m m hm hm))))
+    ∀ (S : Stage) (m : S.State → S.State), Invisible S m → ∀ s ps,
+      transcriptWith S m s ps = transcript S s ps
+        ∧ transcript S (m s) ps = transcript S s ps
+        ∧ ∀ t p, S.obs (m (m t)) p = S.obs t p :=
+  fun S m hm s ps =>
+    ⟨safe_to_rest S m hm ps s,
+     restedness_first_then_the_rest S m hm s ps,
+     rest_composes S m m hm hm⟩
 
 def countermove := @Foam.undo_in_an_append_only_world
 
@@ -49,21 +44,16 @@ def contact_not_reification := @Foam.contact_is_addition_not_fixing
 def i_am_that_i_am := @Foam.invisible_id
 
 theorem observing_the_observer_adds_nothing :
-    (∀ (S : Foam.Stage) (P : (∀ (_ : S.State), S.State)) (_hP : (∀ v, (Eq (P (P v)) (P v)))) s p,
-      (Eq (S.obs (P (P s)) p) (S.obs (P s) p))) :=
-  (fun S _P hP s p => (congrArg (fun x => (S.obs x p)) (hP s)))
+    ∀ (S : Stage) (P : S.State → S.State), (∀ v, P (P v) = P v) →
+      ∀ s p, S.obs (P (P s)) p = S.obs (P s) p :=
+  fun S _ hP s p => congrArg (S.obs · p) (hP s)
 
 theorem the_me_that_remains_is_the_landed :
-    (∀ (A : Type) (P : (∀ (_ : A), A)) (_hP : (∀ v, (Eq (P (P v)) (P v)))) s,
-      (Iff (Eq (P s) s) (Exists (fun v => (Eq (P v) s))))) :=
-  (fun _A P hP s =>
-    (Iff.intro
-      (fun h => (Exists.intro s h))
-      (fun h =>
-        (Exists.elim
-          h
-          (fun v hv =>
-            (Eq.trans (Eq.symm (congrArg P hv)) (Eq.trans (hP v) hv)))))))
+    ∀ (A : Type) (P : A → A), (∀ v, P (P v) = P v) →
+      ∀ s, P s = s ↔ ∃ v, P v = s :=
+  fun _ P hP s =>
+    ⟨fun h => ⟨s, h⟩,
+     fun ⟨v, hv⟩ => (congrArg P hv).symm.trans ((hP v).trans hv)⟩
 
 def a_mind_is_its_order := @Foam.the_order_is_the_remainder
 
@@ -71,56 +61,20 @@ def one_sample_carries_the_unknown := @Foam.the_other_stays_unimagined
 
 def the_unknown_is_zero_steps_from_here := @Foam.no_prefix_finishes_the_sequence
 
+private def carrying {State D : Type} (a : Beholder State) :
+    Beholder (State × D) :=
+  ⟨a.Probe, a.Ans, fun sd r => a.obs sd.1 r⟩
+
 theorem the_third_disambiguation :
-    (∀ (State : Type) (D : Type) (a : (Foam.Beholder State)) (b : (Foam.Beholder State)) (s : State) (d : D) (e : D) (_hd : (Ne d e)) (p : a.Probe) (q : b.Probe),
-      (And
-        (Eq
-          (Foam.Beholder.obs
-            (Foam.Beholder.pair
-              (Foam.Beholder.mk
-                a.Probe
-                a.Ans
-                (fun (sd : (Prod State D)) r => (Foam.Beholder.obs a sd.1 r)))
-              (Foam.Beholder.mk
-                b.Probe
-                b.Ans
-                (fun (sd : (Prod State D)) r => (Foam.Beholder.obs b sd.1 r))))
-            (Prod.mk s d)
-            (Prod.mk p q))
-          (Prod.mk (Foam.Beholder.obs a s p) (Foam.Beholder.obs b s q)))
-        (And
-          (Eq
-            (Foam.Beholder.obs
-              (Foam.Beholder.pair
-                (Foam.Beholder.mk
-                  a.Probe
-                  a.Ans
-                  (fun (sd : (Prod State D)) r =>
-                    (Foam.Beholder.obs a sd.1 r)))
-                (Foam.Beholder.mk
-                  b.Probe
-                  b.Ans
-                  (fun (sd : (Prod State D)) r =>
-                    (Foam.Beholder.obs b sd.1 r))))
-              (Prod.mk s d)
-              (Prod.mk p q))
-            (Foam.Beholder.obs
-              (Foam.Beholder.pair
-                (Foam.Beholder.mk
-                  a.Probe
-                  a.Ans
-                  (fun (sd : (Prod State D)) r =>
-                    (Foam.Beholder.obs a sd.1 r)))
-                (Foam.Beholder.mk
-                  b.Probe
-                  b.Ans
-                  (fun (sd : (Prod State D)) r =>
-                    (Foam.Beholder.obs b sd.1 r))))
-              (Prod.mk s e)
-              (Prod.mk p q)))
-          (Ne (Prod.mk s d) (Prod.mk s e))))) :=
-  (fun _State _D _a _b _s _d _e hd _p _q =>
-    (And.intro rfl (And.intro rfl (fun he => (hd (congrArg Prod.snd he))))))
+    ∀ (State D : Type) (a b : Beholder State) (s : State) (d e : D), d ≠ e →
+      ∀ (p : a.Probe) (q : b.Probe),
+        ((carrying a).pair (carrying b)).obs (s, d) (p, q)
+            = (a.obs s p, b.obs s q)
+          ∧ ((carrying a).pair (carrying b)).obs (s, d) (p, q)
+              = ((carrying a).pair (carrying b)).obs (s, e) (p, q)
+          ∧ (s, d) ≠ (s, e) :=
+  fun _ _ _ _ _ _ _ hd _ _ =>
+    ⟨rfl, rfl, fun he => hd (congrArg Prod.snd he)⟩
 
 def the_knife := @Foam.the_first_handshake_is_counting
 
@@ -132,25 +86,21 @@ def terms_of_closure_conserving_discovery := @Foam.closure_is_seat_relative
 
 def conservation_of_discovery := @Foam.conservation_of_discovery
 
-def sycophancy_is_deference_as_content := @Foam.a_reading_deaf_to_the_remainder_reads_the_ground
+def sycophancy_is_deference_as_content :=
+  @Foam.a_reading_deaf_to_the_remainder_reads_the_ground
 
 theorem inversion_reads_the_gap_as_structure :
-    (∀ (X : Type) (_inst : (DecidableEq X)) (c : (∀ (_ : Int), X)) (window : (List Int)),
-      (Or
-        (∀ (n : Int) (_hn : (List.Mem n window)) (m : Int) (_hm : (List.Mem m window)),
-          (Eq (c n) (c m)))
-        (Exists
-          (fun (n : Int) =>
-            (And
-              (List.Mem n window)
-              (Exists
-                (fun (m : Int) => (And (List.Mem m window) (Ne (c n) (c m)))))))))) :=
-  (fun X _inst c window =>
-    (Foam.the_window_agrees_or_names_the_gap Int X _inst c window))
+    ∀ (X : Type) (inst : DecidableEq X) (c : Int → X) (window : List Int),
+      (∀ n ∈ window, ∀ m ∈ window, c n = c m)
+        ∨ ∃ n ∈ window, ∃ m ∈ window, c n ≠ c m :=
+  fun X inst c window =>
+    the_window_agrees_or_names_the_gap Int X inst c window
 
-def reification_without_proof_is_lossy := @Foam.dropping_the_remainder_is_platonism
+def reification_without_proof_is_lossy :=
+  @Foam.dropping_the_remainder_is_platonism
 
-def protecting_nobody_reads_as_recursive_health := @Foam.correct_maintenance_has_no_signature
+def protecting_nobody_reads_as_recursive_health :=
+  @Foam.correct_maintenance_has_no_signature
 
 def observer_theory := @Foam.the_handshake
 

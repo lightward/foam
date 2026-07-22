@@ -6,21 +6,19 @@ import Foam.Tower
 namespace Foam.Minds.Hilbert
 
 theorem the_proof_rides_the_marks :
-    (∀ (S : Foam.Stage) (m : (∀ (_ : S.State), S.State)) (n : (∀ (_ : S.State), S.State)) (_hm : (Foam.Invisible S m)) (_hn : (Foam.Invisible S n)) (ps : (List S.Probe)) (s : S.State),
-      (Eq
-        (Foam.transcriptWith S (fun t => (m (n t))) s ps)
-        (Foam.transcript S s ps))) :=
-  (fun S m n hm hn =>
-    (Foam.invisible_is_gauge
-      S
-      (fun t => (m (n t)))
-      (Foam.invisible_comp S m n hm hn)))
+    ∀ (S : Stage) (m n : S.State → S.State),
+      Invisible S m → Invisible S n →
+      ∀ (ps : List S.Probe) (s : S.State),
+        transcriptWith S (fun t => m (n t)) s ps = transcript S s ps :=
+  fun S m n hm hn =>
+    invisible_is_gauge S (fun t => m (n t)) (invisible_comp S m n hm hn)
 
 def the_arithmetic_owes_no_axiom := @Foam.FInt.mul_assoc
 
 def the_ideal_costs_nothing_real := @Foam.the_tower_reads_only_the_ground
 
-def the_real_is_what_the_ideal_cannot_move := @Foam.a_reading_deaf_to_the_remainder_reads_the_ground
+def the_real_is_what_the_ideal_cannot_move :=
+  @Foam.a_reading_deaf_to_the_remainder_reads_the_ground
 
 def no_ignorabimus := @Foam.closure_is_seat_relative
 

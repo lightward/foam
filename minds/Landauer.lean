@@ -8,12 +8,10 @@ namespace Foam.Minds.Landauer
 def information_is_physical := @Foam.a_wider_seat_reads_the_remainder
 
 theorem erasure_shows :
-    (∀ (S : Foam.Stage) (m : (∀ (_ : S.State), S.State)) (_hi : (Foam.Invisible S m)) s t (_hmerge : (Eq (m s) (m t))) p,
-      (Eq (S.obs s p) (S.obs t p))) :=
-  (fun S _m hi s t hmerge p =>
-    (Eq.trans
-      (Eq.symm (hi s p))
-      (Eq.trans (congrArg (fun x => (S.obs x p)) hmerge) (hi t p))))
+    ∀ (S : Stage) (m : S.State → S.State), Invisible S m →
+      ∀ s t, m s = m t → ∀ p, S.obs s p = S.obs t p :=
+  fun S _ hi s t hmerge p =>
+    (hi s p).symm.trans ((congrArg (S.obs · p) hmerge).trans (hi t p))
 
 def reset_pays_in_record := @Foam.undo_in_an_append_only_world
 

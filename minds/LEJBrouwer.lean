@@ -7,9 +7,8 @@ import Foam.Tower
 
 namespace Foam.Minds.LEJBrouwer
 
-theorem two_ity :
-    (∀ (S : Foam.Stage), (Eq (Foam.towerN S 1) (Foam.contact S Int))) :=
-  (fun _S => rfl)
+theorem two_ity : ∀ S : Stage, towerN S 1 = contact S Int :=
+  fun _ => rfl
 
 def the_record_is_not_the_activity := @Foam.dropping_the_remainder_is_platonism
 

@@ -6,26 +6,12 @@ namespace Foam.Minds.Young
 def intensity_cannot_read_the_phase := @Foam.rot_conserves_the_norm
 
 theorem the_difference_is_the_cross_term :
-    (∀ (a : GInt) (b : GInt),
-      (Eq
-        (GInt.normSq
-          (GInt.mk
-            (Int.add (GInt.re a) (GInt.re b))
-            (Int.add (GInt.im a) (GInt.im b))))
-        (Int.add
-          (Int.add (GInt.normSq a) (GInt.normSq b))
-          (Int.mul
-            2
-            (Int.add
-              (Int.mul (GInt.re a) (GInt.re b))
-              (Int.mul (GInt.im a) (GInt.im b))))))) :=
-  (fun (a : GInt) (b : GInt) =>
-    (Eq.trans
-      (Foam.the_screen_reads_a_cross_term a b)
-      (congrArg
-        (fun (t : Int) =>
-          (Int.add (Int.add (GInt.normSq a) (GInt.normSq b)) t))
-        (Eq.symm (Foam.FInt.two_mul (GInt.align a b))))))
+    ∀ a b : GInt,
+      GInt.normSq ⟨a.re + b.re, a.im + b.im⟩
+        = (a.normSq + b.normSq) + 2 * (a.re * b.re + a.im * b.im) :=
+  fun a b =>
+    (the_screen_reads_a_cross_term a b).trans
+      (congrArg ((a.normSq + b.normSq) + ·) (FInt.two_mul (a.align b)).symm)
 
 def the_fringes_wash_out := @Foam.the_four_phases_read_nothing
 
