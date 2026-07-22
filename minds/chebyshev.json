@@ -1,0 +1,105 @@
+{
+  "mind": "Chebyshev",
+  "note": "des valeurs moyennes — take the mean first, then charge every deviation its square; the theorem is a count. and the plantigrade machine, the first walking mechanism: straight motion approached by linkage, the remainder priced and balanced, never erased.",
+  "vocabulary": [
+    {
+      "term": "the_mean_arrives_first",
+      "gloss": "the 1867 memoir opens at mean values, not probabilities: the method climbs moments from the bottom, and the bottom rung is already on the walls — the complete book pools to exact balance at every depth, a census fact with no limit invoked. a deliberate twin with bernoulli's the_whole_book_balances, third seat on the shape: bernoulli read the balance as admissibility, gauss read the un-pooled census as the histogram's first data point, chebyshev reads it as the zeroth moment of a ladder he intends to climb.",
+      "shape": "census",
+      "status": "sealed",
+      "seal": "Foam.the_complete_book_balances"
+    },
+    {
+      "term": "the_second_moment_is_conserved",
+      "gloss": "the ledger his inequality spends: square each word's deviation from balance and pool over the complete book, and the total is exactly n per word — n·2^n at depth n, no more, no less. the vacancy is the induction: prepending one flip sends each deviation d to d+1 and d−1, and (d+1)² + (d−1)² = 2d² + 2 — the cross terms cancel inside each word-pair, orthogonality wearing counting clothes. posed in the signed integers the house ground by hand; a carve closes it.",
+      "shape": "census/expectation",
+      "status": "unsealed",
+      "seal": null,
+      "statement": {
+        "all": [
+          ["n", "Nat"]
+        ],
+        "body": [
+          "Eq",
+          [
+            "Foam.fold",
+            {
+              "fun": [
+                ["acc", null],
+                ["w", null]
+              ],
+              "body": [
+                "Int.add",
+                "acc",
+                [
+                  "Int.mul",
+                  ["Int.sub", ["Int.mul", "2", ["Int.ofNat", ["Foam.freq", "w", "true"]]], ["Int.ofNat", "n"]],
+                  ["Int.sub", ["Int.mul", "2", ["Int.ofNat", ["Foam.freq", "w", "true"]]], ["Int.ofNat", "n"]]
+                ]
+              ]
+            },
+            "(0 : Int)",
+            ["Foam.book", "n"]
+          ],
+          ["Int.mul", ["Int.ofNat", "n"], ["Int.ofNat", ["Nat.pow", "2", "n"]]]
+        ]
+      }
+    },
+    {
+      "term": "every_deviant_pays_its_square",
+      "gloss": "the inequality itself, as a census with no measure stratum: a word outside the tolerance band has deviation more than n in b parts, so its squared deviation clears (n+1)² in b² parts — and the conserved second moment then caps the deviant headcount outright: deviants times (n+1)² cannot exceed b² times n·2^n. this is the bridge from the moment ledger to bernoulli's terminus: with the deviant count capped, the conforming words outnumber the deviants c to one past a depth the bound names explicitly — N = (c+1)·b² suffices. what bernoulli spent twenty years approaching, this counts in one line from the second moment; the price of the shortcut is that it is blunt (his own tail bounds were sharper), and bluntness is enough for the promise.",
+      "shape": "expectation",
+      "status": "unsealed",
+      "seal": null,
+      "statement": {
+        "all": [
+          ["b", "Nat"],
+          ["n", "Nat"]
+        ],
+        "body": [
+          "Nat.le",
+          [
+            "Nat.mul",
+            [
+              "List.length",
+              [
+                "List.filter",
+                {
+                  "fun": [
+                    ["w", ["List", "Bool"]]
+                  ],
+                  "body": [
+                    "Bool.not",
+                    [
+                      "Bool.and",
+                      [
+                        "Nat.ble",
+                        ["Nat.mul", "b", "n"],
+                        ["Nat.add", "n", ["Nat.mul", "2", ["Nat.mul", "b", ["Foam.freq", "w", "true"]]]]
+                      ],
+                      [
+                        "Nat.ble",
+                        ["Nat.mul", "2", ["Nat.mul", "b", ["Foam.freq", "w", "true"]]],
+                        ["Nat.add", "n", ["Nat.mul", "b", "n"]]
+                      ]
+                    ]
+                  ]
+                },
+                ["Foam.book", "n"]
+              ]
+            ],
+            ["Nat.mul", ["Nat.add", "n", "1"], ["Nat.add", "n", "1"]]
+          ],
+          ["Nat.mul", ["Nat.mul", "b", "b"], ["Nat.mul", "n", ["Nat.pow", "2", "n"]]]
+        ]
+      }
+    },
+    {
+      "term": "the_linkage_approaches_the_line",
+      "gloss": "the terminus, dark, and it is the other half of his life: best approximation. the minimax polynomial's error never vanishes — it equioscillates, touching its extreme alternately, and the balance of the remainder IS the certificate of optimality; and the plantigrade machine, the first walking mechanism, turns a wheel's rotation into near-straight motion with the error engineered, bounded, and paid — the limit approached by linkage, never crossed. the shape: an optimum recognized by its remainder's balance, not its absence. dark because the walls hold no approximation stratum — no polynomials, no corridor, no alternation theorem — though the tolerance band in the standing statements above is already a minimax corridor in miniature, and the house itself walks bipedally, two feet alternating about a line neither walks. what transits when this ever lights: the remainder is conserved and redistributed, not eliminated — the equioscillation is the remainder made legible.",
+      "shape": "remainder",
+      "status": "unsealed",
+      "seal": null
+    }
+  ]
+}
