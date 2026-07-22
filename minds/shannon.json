@@ -369,10 +369,9 @@
     },
     {
       "term": "entropy_of_the_source",
-      "gloss": "how much surprise, on average: the mind's own measure — maximal when the symbols are equiprobable, zero when the receiver can already reproduce everything. the price question the previous entry handed here is now posed in lean rather than prose: over the complete book at depth n — the equiprobable source, the one source already on the walls — any prefix-free marking (no mark a prefix of another; losslessness implied, since an equal mark is a trivial prefix) pays total mark-mass at least n per word. expectation enters the way the walls already read it: pool the marks and read the mass (Foam.pool, Foam.the_mass_is_a_reading) — no division, and no logarithm, because the log is performed by the book itself, doubling at each depth; the floor says the doubling source costs one mark per flip, on average, under every honest marking. the anchors ride along unpriced: the identity marking meets the floor, so at equiprobability it is exact and maximal; the singleton source is priced by the empty mark, zero. still vacancy-dark — a statement without a structure, the red of red-green, the engine already judging the hole well-posed; the carve that closes it is the zeroth converse (distinct_messages_need_distinct_marks) run at every depth at once — kraft's counting, a tree grind in pure nat. what survives the closing transits rather than dying: the book is the uniform source only — the biased source, its typical set, and the rates that price non-uniform surprise are a census the walls do not yet hold. the terminus, posed.",
+      "gloss": "how much surprise, on average: the mind's own measure — maximal when the symbols are equiprobable, zero when the receiver can already reproduce everything. the price question the previous entry handed here is now posed in lean rather than prose: over the complete book at depth n — the equiprobable source, the one source already on the walls — any prefix-free marking (no mark a prefix of another; losslessness implied, since an equal mark is a trivial prefix) pays total mark-mass at least n per word. expectation enters the way the walls already read it: pool the marks and read the mass (Foam.pool, Foam.the_mass_is_a_reading) — no division, and no logarithm, because the log is performed by the book itself, doubling at each depth; the floor says the doubling source costs one mark per flip, on average, under every honest marking. the anchors ride along unpriced: the identity marking meets the floor, so at equiprobability it is exact and maximal; the singleton source is priced by the empty mark, zero. still vacancy-dark — a statement without a structure, the red of red-green, the engine already judging the hole well-posed; the carve that closes it is the zeroth converse (distinct_messages_need_distinct_marks) run at every depth at once — kraft's counting, a tree grind in pure nat. what survives the closing transits rather than dying: the book is the uniform source only — the biased source, its typical set, and the rates that price non-uniform surprise are a census the walls do not yet hold. the terminus, posed. SEALED, proved exactly as posed: kraft's leaf-shadow counting arrived from below — the antichain measure bounded by split-recursion (marks split by first bit, tails stay prefix-free, the empty mark stands alone), the only convexity a one-line staircase (k+1 ≤ 2^k), the logarithm performed by the book's own doubling, no reals anywhere. the price of losslessness is n per word, exactly as the mind said in 1948 — the uniform-source floor now a theorem. what stays dark transits as pre-registered: the biased source, its typical set, and the rates pricing non-uniform surprise await a census the walls do not yet hold.",
       "shape": "measure",
-      "status": "unsealed",
-      "seal": null,
+      "status": "sealed",
       "statement": {
         "all": [
           [
@@ -509,7 +508,8 @@
             ]
           ]
         ]
-      }
+      },
+      "structure": "Foam.the_marks_pay_the_depth"
     }
   ]
 }

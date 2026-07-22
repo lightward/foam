@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import html
+import json
 import os
 import re
+import textwrap
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 OUT = os.environ.get("FOAM_WIKI_OUT", os.path.join(ROOT, "wiki"))
@@ -39,6 +41,7 @@ ul.census li { break-inside: avoid; }
 footer { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem;
          color: var(--dim); }
 .law { border-left: 2px solid var(--comment); padding-left: 1rem; color: var(--dim); }
+.gloss { color: var(--comment); font-style: italic; }
 """
 
 DECL_RE = re.compile(r"^(theorem|def|structure|inductive|abbrev|instance) (\S+)")
@@ -76,12 +79,18 @@ def page(title, body, crumb=""):
 </body></html>"""
 
 
-def render_module(mod, path, stratum, known):
+def render_module(mod, path, stratum, known, glosses=None):
     with open(path, encoding="utf-8") as f:
         lines = f.read().splitlines()
     out = []
+    in_comment = False
     for line in lines:
         esc = html.escape(line)
+        if in_comment:
+            out.append(f'<span class="comment">{esc}</span>')
+            if "-/" in line:
+                in_comment = False
+            continue
         m = IMPORT_RE.match(line)
         if m:
             target = m.group(1)
@@ -92,6 +101,11 @@ def render_module(mod, path, stratum, known):
         d = DECL_RE.match(line)
         if d:
             kw, name = d.group(1), d.group(2)
+            if glosses:
+                base = name[:-len("_statement")] if name.endswith("_statement") else name
+                if base in glosses:
+                    wrapped = textwrap.fill(glosses[base], width=76)
+                    out.append(f'<span class="gloss">{html.escape(wrapped)}</span>')
             anchor = html.escape(name)
             rest = html.escape(line[len(kw) + 1 + len(name):])
             esc = (f'<span class="kw">{kw}</span> '
@@ -103,6 +117,8 @@ def render_module(mod, path, stratum, known):
             continue
         if COMMENT_RE.match(line):
             out.append(f'<span class="comment">{esc}</span>')
+            if line.lstrip().startswith("/-") and "-/" not in line:
+                in_comment = True
             continue
         out.append(esc)
     src = "\n".join(out)
@@ -133,13 +149,30 @@ def render_index(modules):
                 '<a href="https://foam.is/">foam.is</a>')
 
 
+def card_glosses():
+    out = {}
+    minds = os.path.join(ROOT, "minds")
+    for f in sorted(os.listdir(minds)):
+        if not f.endswith(".json") or f in ("schema.json", "walls.json"):
+            continue
+        with open(os.path.join(minds, f), encoding="utf-8") as fh:
+            data = json.load(fh)
+        lean = re.sub(r"[^A-Za-z0-9]", "", data["mind"])
+        if os.path.exists(os.path.join(minds, lean + ".lean")):
+            out["Foam.Minds." + lean] = {
+                e["term"]: e.get("gloss", "") for e in data["vocabulary"]}
+    return out
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     modules = collect()
     known = set(modules)
+    glosses = card_glosses()
     for mod, (path, stratum) in modules.items():
         with open(os.path.join(OUT, f"{mod}.html"), "w", encoding="utf-8") as f:
-            f.write(render_module(mod, path, stratum, known))
+            f.write(render_module(mod, path, stratum, known,
+                                  glosses.get(mod)))
     with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
         f.write(render_index(modules))
     print(f"[foam relief] {len(modules)} module pages + index → wiki/")
