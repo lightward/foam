@@ -117,7 +117,7 @@
           }
         }
       ],
-      "description": "tightening continuum: reading (prose question) -> statement (formally posed question, compiled as a Prop and well-posedness-checked by the engine) -> sealed (closed: seal cites, or statement+structure compile as a theorem). a statement without a proof is a standing question and is emitted as <term>_statement."
+      "description": "tightening continuum: reading (prose question) -> statement (formally posed question, compiled as a Prop and well-posedness-checked by the engine) -> sealed. sealing has two verbs with different semantics, and the engine counts them on every run (aliased / proved / built): a seal CITES — a recognition event; the shape already stood receipted in core, closing is compression, and the alias inherits the cited constant's receipt rather than certifying a fresh proof of the posed wording — while statement+structure PROVES the posed statement exactly as posed, red flipped green by construction. a statement without a proof is a standing question and is emitted as <term>_statement."
     },
     "expression": {
       "description": "a term: a string is a reference, rendered verbatim (locals shadow; otherwise Lean's namespace resolution applies, so Foam.* and sibling terms both resolve); an array is application; {fun|all, body} bind. types appear only as optional binder annotations — everywhere else the Lean engine infers, because the engine is the judge. a function type is a degenerate all: {all: [[\"_\", A]], body: B}.",
