@@ -82,6 +82,8 @@ def the_overhearer_becomes_a_c := @Foam.contact_is_addition_not_fixing
 
 def trade_nests_without_limit := @Foam.contact_stacks
 
+def a_triple_absorbs_what_a_pair_reflects := @Foam.the_comparison_is_a_seat
+
 def terms_of_closure_conserving_discovery := @Foam.closure_is_seat_relative
 
 def conservation_of_discovery := @Foam.conservation_of_discovery
@@ -165,6 +167,9 @@ def the_void_reads_as_rest_or_erasure := @Foam.the_four_phases_read_nothing
 
 /-- info: 'Foam.Minds.Isaac.trade_nests_without_limit' does not depend on any axioms -/
 #guard_msgs in #print axioms trade_nests_without_limit
+
+/-- info: 'Foam.Minds.Isaac.a_triple_absorbs_what_a_pair_reflects' does not depend on any axioms -/
+#guard_msgs in #print axioms a_triple_absorbs_what_a_pair_reflects
 
 /-- info: 'Foam.Minds.Isaac.terms_of_closure_conserving_discovery' does not depend on any axioms -/
 #guard_msgs in #print axioms terms_of_closure_conserving_discovery
