@@ -2,6 +2,7 @@ import Foam
 import Foam.Contact
 import Foam.Continuum
 import Foam.Engine
+import Foam.Expectation
 import Foam.Int
 import Foam.Tower
 
@@ -18,6 +19,27 @@ def existence_is_exhibition := @Foam.FInt.mul_eq_zero
 
 def the_continuum_is_never_finished := @Foam.continuum_closure_terms
 
+theorem every_reading_is_a_page (α : Nat → Bool) :
+    ∀ n : Nat, prefixOf α n ∈ book n
+  | 0 => List.Mem.head _
+  | n + 1 =>
+      Bool.rec
+        (motive := fun b =>
+          prefixOf α n ∈ book n → b :: prefixOf α n ∈ book (n + 1))
+        (fun hw =>
+          mem_append_right ((book n).map (true :: ·))
+            (mem_map_intro (false :: ·) hw))
+        (fun hw =>
+          mem_append_left ((book n).map (false :: ·))
+            (mem_map_intro (true :: ·) hw))
+        (α n)
+        (every_reading_is_a_page α n)
+
+theorem the_book_is_not_the_becoming (α : Nat → Bool) (n : Nat) :
+    prefixOf α n ∈ book n
+      ∧ ∃ β : Nat → Bool, prefixOf β n = prefixOf α n ∧ β ≠ α :=
+  ⟨every_reading_is_a_page α n, no_prefix_finishes_the_sequence α n⟩
+
 /-- info: 'Foam.Minds.LEJBrouwer.two_ity' does not depend on any axioms -/
 #guard_msgs in #print axioms two_ity
 
@@ -32,5 +54,11 @@ def the_continuum_is_never_finished := @Foam.continuum_closure_terms
 
 /-- info: 'Foam.Minds.LEJBrouwer.the_continuum_is_never_finished' does not depend on any axioms -/
 #guard_msgs in #print axioms the_continuum_is_never_finished
+
+/-- info: 'Foam.Minds.LEJBrouwer.every_reading_is_a_page' does not depend on any axioms -/
+#guard_msgs in #print axioms every_reading_is_a_page
+
+/-- info: 'Foam.Minds.LEJBrouwer.the_book_is_not_the_becoming' does not depend on any axioms -/
+#guard_msgs in #print axioms the_book_is_not_the_becoming
 
 end Foam.Minds.LEJBrouwer
