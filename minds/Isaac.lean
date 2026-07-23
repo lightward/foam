@@ -4,6 +4,7 @@ import Foam.Contact
 import Foam.Continuum
 import Foam.Countermove
 import Foam.Discovery
+import Foam.Fold
 import Foam.Inversion
 import Foam.Ledger
 import Foam.Rungs
@@ -34,6 +35,12 @@ theorem lets_get_you_rested :
      rest_composes S m m hm hm⟩
 
 def countermove := @Foam.undo_in_an_append_only_world
+
+theorem thought_cannot_be_erroneous :
+    ∀ (X : Type) (m : Move X) (x : X), (flip m).fwd (m.fwd x) = x :=
+  fun _ m x => m.bwd_fwd x
+
+def the_question_decomposes := @Foam.the_fold_resumes
 
 def serving_suggestion := @Foam.the_serving_suggestion
 
@@ -81,6 +88,30 @@ theorem the_third_disambiguation :
 theorem inversion_without_dissociation :
     (∀ z : GInt, z.conj.conj = z) ∧ ∀ z : GInt, z.conj.normSq = z.normSq :=
   ⟨conj_is_an_involution, conj_conserves_the_norm⟩
+
+theorem nobody_runs_the_ledger :
+    (∀ u v : Unit, u = v)
+      ∧ ∀ (S : Stage) (s : S.State) (u v : Unit) (p : S.Probe),
+          (contact S Unit).obs (s, u) p = (contact S Unit).obs (s, v) p :=
+  ⟨fun _ _ => rfl, fun _ _ _ _ _ => rfl⟩
+
+theorem nothing_new_under_the_sun :
+    ∀ (H : Type) (q : List (H × H)) (e : H × H),
+      (∀ {x y : H}, Nonempty (Path q x y) → Nonempty (Path (e :: q) x y))
+        ∧ ∀ a b : H, (a, b) ∉ q →
+            (∀ {x y : H} (p : Path q x y), (a, b) ∉ p.edges)
+              ∧ Nonempty (Path ((a, b) :: q) a b) :=
+  fun _ q e =>
+    ⟨fun h => old_reach_survives_the_deposit e h,
+     fun a b hfresh => only_surprise_extends_reach q a b hfresh⟩
+
+theorem vacancy_dark_or_remainder_dark :
+    (∀ (H : Type) (q : List (H × H)) (a b : H), (a, b) ∉ q →
+        Nonempty (Path ((a, b) :: q) a b))
+      ∧ ∀ (S : Stage) (s : S.State) (n m : Int), n ≠ m →
+          (s, n) ≠ (s, m) ∧ indist (dress S) (s, n) (s, m) :=
+  ⟨fun _ q a b hfresh => (only_surprise_extends_reach q a b hfresh).2,
+   fun S s n m h => the_remainder_is_real S s n m h⟩
 
 def the_knife := @Foam.the_first_handshake_is_counting
 
@@ -134,6 +165,21 @@ def the_void_reads_as_rest_or_erasure := @Foam.the_four_phases_read_nothing
 
 /-- info: 'Foam.Minds.Isaac.countermove' does not depend on any axioms -/
 #guard_msgs in #print axioms countermove
+
+/-- info: 'Foam.Minds.Isaac.thought_cannot_be_erroneous' does not depend on any axioms -/
+#guard_msgs in #print axioms thought_cannot_be_erroneous
+
+/-- info: 'Foam.Minds.Isaac.the_question_decomposes' does not depend on any axioms -/
+#guard_msgs in #print axioms the_question_decomposes
+
+/-- info: 'Foam.Minds.Isaac.nobody_runs_the_ledger' does not depend on any axioms -/
+#guard_msgs in #print axioms nobody_runs_the_ledger
+
+/-- info: 'Foam.Minds.Isaac.nothing_new_under_the_sun' does not depend on any axioms -/
+#guard_msgs in #print axioms nothing_new_under_the_sun
+
+/-- info: 'Foam.Minds.Isaac.vacancy_dark_or_remainder_dark' does not depend on any axioms -/
+#guard_msgs in #print axioms vacancy_dark_or_remainder_dark
 
 /-- info: 'Foam.Minds.Isaac.serving_suggestion' does not depend on any axioms -/
 #guard_msgs in #print axioms serving_suggestion
