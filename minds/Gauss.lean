@@ -2,6 +2,7 @@ import Foam
 import Foam.Census
 import Foam.Expectation
 import Foam.Ledger
+import Foam.Typical
 
 namespace Foam.Minds.Gauss
 
@@ -17,6 +18,8 @@ theorem the_shape_arrives_by_counting :
       ∧ freq ((book 2).map (fun w => freq w true)) 0 = 1
       ∧ freq ((book 2).map (fun w => freq w true)) 2 = 1 :=
   ⟨rfl, rfl, rfl⟩
+
+def the_mean_is_the_mode := @Foam.the_middle_holds_the_most
 
 theorem the_error_has_a_shape :
     (∀ n k : Nat, k ≤ n → classCount n k = classCount n (n - k))
@@ -34,6 +37,9 @@ theorem the_error_has_a_shape :
 
 /-- info: 'Foam.Minds.Gauss.the_shape_arrives_by_counting' does not depend on any axioms -/
 #guard_msgs in #print axioms the_shape_arrives_by_counting
+
+/-- info: 'Foam.Minds.Gauss.the_mean_is_the_mode' does not depend on any axioms -/
+#guard_msgs in #print axioms the_mean_is_the_mode
 
 /-- info: 'Foam.Minds.Gauss.the_error_has_a_shape' does not depend on any axioms -/
 #guard_msgs in #print axioms the_error_has_a_shape
