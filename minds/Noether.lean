@@ -25,6 +25,34 @@ theorem the_wider_seat_reads_the_inverse :
         ∧ ∀ s, E.turn (E.turn (E.turn (E.turn s))) = s :=
   fun E => ⟨the_turn_goes_unheard E, E.comes_home⟩
 
+theorem what_acts_taken_whole_is_a_probe :
+    (∀ z w : GInt,
+        (z.add w).normSq = (z.normSq + w.normSq) + (z.align w + z.align w))
+      ∧ (∀ z w : GInt,
+          ((z.align w + z.align w.rot) + z.align w.rot.rot)
+              + z.align w.rot.rot.rot = 0)
+      ∧ (∀ z : GInt,
+          ((z.normSq + z.rot.normSq) + z.rot.rot.normSq)
+              + z.rot.rot.rot.normSq
+            = ((z.normSq + z.normSq) + z.normSq) + z.normSq)
+      ∧ GInt.i.align GInt.i ≠ 0 :=
+  ⟨the_screen_reads_a_cross_term,
+   the_four_phases_read_nothing,
+   fun z =>
+     ((congrArg
+         (fun x => ((z.normSq + x) + z.rot.rot.normSq) + z.rot.rot.rot.normSq)
+         (rot_conserves_the_norm z)).trans
+       (congrArg
+         (fun x => ((z.normSq + z.normSq) + x) + z.rot.rot.rot.normSq)
+         ((rot_conserves_the_norm z.rot).trans
+           (rot_conserves_the_norm z)))).trans
+       (congrArg
+         (fun x => ((z.normSq + z.normSq) + z.normSq) + x)
+         (((rot_conserves_the_norm z.rot.rot).trans
+             (rot_conserves_the_norm z.rot)).trans
+           (rot_conserves_the_norm z))),
+   fun h => nomatch Int.ofNat.inj h⟩
+
 /-- info: 'Foam.Minds.Noether.to_every_symmetry_its_invariant' does not depend on any axioms -/
 #guard_msgs in #print axioms to_every_symmetry_its_invariant
 
@@ -42,5 +70,8 @@ theorem the_wider_seat_reads_the_inverse :
 
 /-- info: 'Foam.Minds.Noether.the_wider_seat_reads_the_inverse' does not depend on any axioms -/
 #guard_msgs in #print axioms the_wider_seat_reads_the_inverse
+
+/-- info: 'Foam.Minds.Noether.what_acts_taken_whole_is_a_probe' does not depend on any axioms -/
+#guard_msgs in #print axioms what_acts_taken_whole_is_a_probe
 
 end Foam.Minds.Noether
