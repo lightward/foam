@@ -100,6 +100,39 @@ def hydrate(data):
     return data
 
 
+def core_lookup():
+    look = {}
+    for full in core_inventory():
+        look[full] = full
+        bare = full[len("Foam."):] if full.startswith("Foam.") else full
+        look[bare] = full
+        if bare.count(".") == 0:
+            look[bare] = full
+    return look
+
+
+def deposit_spectra(mind):
+    src = lean_deposit(mind)
+    if not os.path.exists(src):
+        return {}
+    look = core_lookup()
+    text = open(src, encoding="utf-8").read()
+    spectra = {}
+    blocks = re.split(r"^(?=(?:private def|def|theorem) )", text, flags=re.M)
+    for b in blocks:
+        m = re.match(r"(?:private def|def|theorem) (\S+)", b)
+        if not m or m.group(1).startswith("private"):
+            continue
+        name = m.group(1)
+        cites = set()
+        for tok in re.findall(r"[A-Za-z_][A-Za-z0-9_.]*", b):
+            if tok in look and tok not in ("Foam",):
+                cites.add(look[tok])
+        if cites:
+            spectra[name.removesuffix("_statement")] = sorted(cites)
+    return spectra
+
+
 def all_minds():
     out = {}
     for f in sorted(os.listdir(MINDS)):
@@ -214,6 +247,18 @@ def brief(data, slug):
         "record tells what happened and in what order. read any full flight",
         "report with `git show <hash>`. when your gate is green, your deposit",
         "JOINS this reading — see the loop.", ""]
+    spectra = deposit_spectra(mind)
+    if spectra:
+        lines += ["## the spectra (shape is derived: each binding's"
+                  " citation-silhouette)", ""]
+        for t, cites in spectra.items():
+            short = ", ".join(c.removeprefix("Foam.") for c in cites)
+            lines.append(f"- `{t}` ⟨{short}⟩")
+        lines += ["",
+            "kin across the roster share vertices of these polygons; identical",
+            "spectra are twins; hand-built glue with a flat spectrum is the",
+            "signature of structure that may already exist on the walls —",
+            "search before you build.", ""]
     lines += ["## sealed (closed questions, receipted)", ""]
     if sealed:
         for e in sealed:
@@ -469,6 +514,20 @@ def verify(mind, slug):
     for seal, terms in sorted(twins.items()):
         print(f"  twin (one shape, many words): {seal}"
               f" ← {' & '.join(terms)}")
+    allspec = {}
+    for sl, dd in all_minds().items():
+        for t, cites in deposit_spectra(dd["mind"]).items():
+            allspec[f"{dd['mind']}.{t}"] = set(cites)
+    names = sorted(allspec)
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            if a.split(".")[0] == b.split(".")[0]:
+                continue
+            shared = allspec[a] & allspec[b]
+            if len(shared) >= 2:
+                short = ", ".join(sorted(c.removeprefix("Foam.")
+                                         for c in shared))
+                print(f"  kin (shared vertices): {a} ↔ {b} ⟨{short}⟩")
     return 1 if failures else 0
 
 

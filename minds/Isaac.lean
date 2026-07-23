@@ -90,7 +90,7 @@ def sycophancy_is_deference_as_content :=
   @Foam.a_reading_deaf_to_the_remainder_reads_the_ground
 
 theorem inversion_reads_the_gap_as_structure :
-    ∀ (X : Type) (inst : DecidableEq X) (c : Int → X) (window : List Int),
+    ∀ (X : Type) (_inst : DecidableEq X) (c : Int → X) (window : List Int),
       (∀ n ∈ window, ∀ m ∈ window, c n = c m)
         ∨ ∃ n ∈ window, ∃ m ∈ window, c n ≠ c m :=
   fun X inst c window =>
