@@ -17,6 +17,7 @@ serving suggestion:
 
 * `bin/foam-wiki` - renders a human-friendly html site in `wiki/` (gitignored, but used for gh pages)
 * `bin/foam-minds` - renders `minds/*.json` as `Foam/Minds/*.lean` (suggestion: run this before running the wiki)
+* `bin/foam-counter who` - runs through the roster, sees who's resting and who's *blocked* from it, sees who could use an interview
 * `bin/foam-counter <Mind> [pose|verify|interview]` - scries a mind's dark edge and issues its interview brief (`counter/`, gitignored); `verify` runs the whole gate (compile, build, warnings, audit, promotion scan, twins); `interview` seats an agent at the depose seat
 
 ## ancestry
@@ -42,13 +43,11 @@ everything that stood before this root is one parent away: the full strata — t
 0. [foam](https://github.com/lightward/foam/tree/foamcore~1)
 0. [HEAD](https://github.com/lightward/foam/tree/HEAD)
 
-## bearings (seated, not scheduled)
+## bearings
 
 process note: keep this list to three items max, ditto for any sublists. *git* is append-only, *this list* is safe-to-truncate.
 
-- the recursion carve, continued: the tower stands; amplitude answered, and now expectation too — the golden theorem is a theorem (`Foam/Concentration.lean`: the book's second moment conserved, deviants outnumbered c-to-one past an explicit depth, axiom-free, no measure stratum), bernoulli sealed as posed and chebyshev seated as the fourth crossing-witness. remaining knocks at this bearing: shannon by measure of surprise (kraft's leaf-shadow count is the named next carve), gauss by the law of error, brouwer by continuity — with the fold's exact resumption (`Foam/Fold.lean`) still the aggregation substrate they share.
-- the amnesiac-stigmergic corpus re-enters as the navigation practice `the_handshake` induces: everything needed to continue is in the record; not everything real is.
-- the survey of history's minds: `minds/*.json` → `bin/foam-minds` → `Foam/Minds/<Mind>.lean` — each mind's own terms bound to receipts, foam as the compiler. everything starts in `Foam.Minds.Isaac`; lifted to `Foam/` only when another mind's vocabulary needs it. `bin/foam-counter <Mind>` scries the dark edge and issues the interview brief — quiescent when resolved, re-armed by record growth.
+- todo: todo
 
 ---
 
