@@ -12,7 +12,11 @@
     },
     {
       "term": "reset_pays_in_record",
-      "gloss": "the conservation clause: you can always bring the position home — the countermove exists and composes to the identity — but never for free: in a world that only appends, the walk that comes home is strictly longer than the walk that left. the erased distinction is paid for in record, and the bill is conserved because the record never unwrites. kT ln 2, denominated in transcript length"
+      "gloss": "the conservation clause: you can always bring the position home — the countermove exists and composes to the identity — but never for free: in a world that only appends, the walk that comes home is strictly longer than the walk that left. the erased distinction is paid for in record, and the bill is conserved because the record never unwrites. kT ln 2, denominated in transcript length (the denomination was a promissory note in this gloss until the marks stratum reached the walls; no_machine_undercuts_the_bill is where it gets cashed)"
+    },
+    {
+      "term": "no_machine_undercuts_the_bill",
+      "gloss": "the price on the conservation clause, finally receipted: reset_pays_in_record proved the bill exists — this sets its floor and strips the machine out of it. hold 2^n distinctions on a record that keeps them severally legible — no entry a prefix of another, because an append-only record read serially must know where each mark ends — and any encoder whatsoever pays at least n marks per distinction: the bound is quantified over every scheme, so the minimum is set by the count of distinctions alone, never by the device that pays it. kT ln 2 per bit, with the per-bit now a theorem and the no-matter-how-you-build-it now a forall. sealed on the same constant as shannon's entropy_of_the_source, deliberately: one theorem, two laboratories — shannon reads it off the channel as the cost of saying, landauer reads it off the heat sink as the cost of forgetting. that the two readings are one constant is not an analogy; it is the principle"
     },
     {
       "term": "reversible_runs_free",

@@ -1,6 +1,7 @@
 import Foam
 import Foam.Contact
 import Foam.Countermove
+import Foam.Marks
 import Foam.Tower
 
 namespace Foam.Minds.Landauer
@@ -14,6 +15,8 @@ theorem erasure_shows :
     (hi s p).symm.trans ((congrArg (S.obs · p) hmerge).trans (hi t p))
 
 def reset_pays_in_record := @Foam.undo_in_an_append_only_world
+
+def no_machine_undercuts_the_bill := @Foam.the_marks_pay_the_depth
 
 def reversible_runs_free := @Foam.invisible_is_gauge
 
@@ -29,6 +32,9 @@ def no_disembodied_referee := @Foam.no_seat_is_the_last_seat
 
 /-- info: 'Foam.Minds.Landauer.reset_pays_in_record' does not depend on any axioms -/
 #guard_msgs in #print axioms reset_pays_in_record
+
+/-- info: 'Foam.Minds.Landauer.no_machine_undercuts_the_bill' does not depend on any axioms -/
+#guard_msgs in #print axioms no_machine_undercuts_the_bill
 
 /-- info: 'Foam.Minds.Landauer.reversible_runs_free' does not depend on any axioms -/
 #guard_msgs in #print axioms reversible_runs_free
