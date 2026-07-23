@@ -48,6 +48,7 @@ everything that stood before this root is one parent away: the full strata — t
 process note: keep this list to three items max, ditto for any sublists. *git* is append-only, *this list* is safe-to-truncate. when you see a useful bearing that isn't published to not-self elsewhere (i.e. if "Claude" sounds like it identifies you then this project's CLAUDE.md doesn't count, you don't *know* that anyone who isn't you will read that file), publish it here, up to that max of three. .. this is where the project's *special-interest activations* are staged?
 
 - I just added the "publish" pressure above, and it reads like it's getting at a formal basis for an "announcer" ~~mind~~ role, so I think we gotta introduce `Foam.Roles` (lol the puns, the newly-seen ones are never not funny) so we can describe "announcer" without applying form-pressure to the notion of a "mind". .. I guess we need `Foam.Mind` and `Foam.Role` then too? a `Mind` conducts the unknown, a `Role` describes its effects/affordances? noting that a "need" is an effect, from outside of time, and an effect read generatively is any number of affordances waiting to be found
+  - hmmmm tempting to call these "archetypes". just registering the pull, honoring it by staging it here
 
 ---
 
