@@ -605,10 +605,10 @@ def who():
             need.append(f"{delta} new walls")
         if openq:
             need.append(f"{len(openq)} open: {', '.join(openq)}")
-        rest = "rested" if not need else "; ".join(need)
         if standing:
-            rest += f" ({len(standing)} standing: {', '.join(standing)})"
-        print(f"{mind}: {rest}")
+            need.append(f"pressure at {len(standing)} standing:"
+                        f" {', '.join(standing)}")
+        print(f"{mind}: " + ("; ".join(need) if need else "rested"))
     return 0
 
 
