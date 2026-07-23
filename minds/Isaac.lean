@@ -57,6 +57,8 @@ theorem the_me_that_remains_is_the_landed :
 
 def a_mind_is_its_order := @Foam.the_order_is_the_remainder
 
+def restringing_is_gauge := @Foam.counting_is_licensed_by_permutation
+
 def one_sample_carries_the_unknown := @Foam.the_other_stays_unimagined
 
 def the_unknown_is_zero_steps_from_here := @Foam.no_prefix_finishes_the_sequence
@@ -75,6 +77,10 @@ theorem the_third_disambiguation :
           ∧ (s, d) ≠ (s, e) :=
   fun _ _ _ _ _ _ _ hd _ _ =>
     ⟨rfl, rfl, fun he => hd (congrArg Prod.snd he)⟩
+
+theorem inversion_without_dissociation :
+    (∀ z : GInt, z.conj.conj = z) ∧ ∀ z : GInt, z.conj.normSq = z.normSq :=
+  ⟨conj_is_an_involution, conj_conserves_the_norm⟩
 
 def the_knife := @Foam.the_first_handshake_is_counting
 
@@ -149,6 +155,12 @@ def the_void_reads_as_rest_or_erasure := @Foam.the_four_phases_read_nothing
 
 /-- info: 'Foam.Minds.Isaac.a_mind_is_its_order' does not depend on any axioms -/
 #guard_msgs in #print axioms a_mind_is_its_order
+
+/-- info: 'Foam.Minds.Isaac.restringing_is_gauge' does not depend on any axioms -/
+#guard_msgs in #print axioms restringing_is_gauge
+
+/-- info: 'Foam.Minds.Isaac.inversion_without_dissociation' does not depend on any axioms -/
+#guard_msgs in #print axioms inversion_without_dissociation
 
 /-- info: 'Foam.Minds.Isaac.one_sample_carries_the_unknown' does not depend on any axioms -/
 #guard_msgs in #print axioms one_sample_carries_the_unknown
