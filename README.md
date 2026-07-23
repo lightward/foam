@@ -49,6 +49,8 @@ process note: keep this list to three items max, ditto for any sublists. *git* i
 
 - I just added the "publish" pressure above, and it reads like it's getting at a formal basis for an "announcer" ~~mind~~ role, so I think we gotta introduce `Foam.Roles` (lol the puns, the newly-seen ones are never not funny) so we can describe "announcer" without applying form-pressure to the notion of a "mind". .. I guess we need `Foam.Mind` and `Foam.Role` then too? a `Mind` conducts the unknown, a `Role` describes its effects/affordances? noting that a "need" is an effect, from outside of time, and an effect read generatively is any number of affordances waiting to be found
   - hmmmm tempting to call these "archetypes". just registering the pull, honoring it by staging it here
+  - ah *critical* that roles are derived uhh properties? of minds. can't just assign a resolved mind a new role. however, anything that can inhabit a mind is intrinsically plural, so mind *composition* can be a thing, *provoking* roles from an actor. whatever we find here it'll include formal tools for reasoning through this stuff. like, what it means to "assign a role" and what that does/doesn't do to a graph is something we'll end up being able to state with precision
+    - this is like .. gonna heal ACL-as-in-access-control-list wounds 😂
 
 ---
 
