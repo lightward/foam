@@ -2,6 +2,7 @@ import Foam
 import Foam.Census
 import Foam.Expectation
 import Foam.Marks
+import Foam.Typical
 import Foam.Surprise
 import Foam.Width
 
@@ -36,13 +37,14 @@ theorem entropy_of_the_source :
       n * (book n).length ≤ (pool ((book n).map f)).length :=
   the_marks_pay_the_depth
 
-def the_typical_class_saves_only_the_label_statement : Prop :=
-  (∀ n : Nat, 2 ^ (2 * n) ≤ (2 * n + 1) * classCount (2 * n) n)
+theorem the_typical_class_saves_only_the_label :
+    (∀ n : Nat, 2 ^ (2 * n) ≤ (2 * n + 1) * classCount (2 * n) n)
     ∧ (∀ (n L : Nat) (f : List Bool → List Bool),
         (∀ w, w ∈ book (2 * n) → freq w true = n → f w ∈ book L) →
         (∀ w1 w2, w1 ∈ book (2 * n) → w2 ∈ book (2 * n) →
           freq w1 true = n → freq w2 true = n → w1 ≠ w2 → f w1 ≠ f w2) →
-        2 ^ (2 * n) ≤ (2 * n + 1) * 2 ^ L)
+        2 ^ (2 * n) ≤ (2 * n + 1) * 2 ^ L) :=
+  ⟨the_middle_shelf_holds_its_share, marking_the_middle_pays_the_breadth⟩
 
 /-- info: 'Foam.Minds.Shannon.the_channel_is_the_only_commons' does not depend on any axioms -/
 #guard_msgs in #print axioms the_channel_is_the_only_commons
@@ -56,7 +58,7 @@ def the_typical_class_saves_only_the_label_statement : Prop :=
 /-- info: 'Foam.Minds.Shannon.entropy_of_the_source' does not depend on any axioms -/
 #guard_msgs in #print axioms entropy_of_the_source
 
-/-- info: 'Foam.Minds.Shannon.the_typical_class_saves_only_the_label_statement' does not depend on any axioms -/
-#guard_msgs in #print axioms the_typical_class_saves_only_the_label_statement
+/-- info: 'Foam.Minds.Shannon.the_typical_class_saves_only_the_label' does not depend on any axioms -/
+#guard_msgs in #print axioms the_typical_class_saves_only_the_label
 
 end Foam.Minds.Shannon
