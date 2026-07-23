@@ -108,7 +108,7 @@ def compile_mind(path):
     if os.path.exists(deposit):
         shutil.copy(deposit, os.path.join(OUT, lean + ".lean"))
         text = open(deposit, encoding="utf-8").read()
-        aliased = len(re.findall(r"^def \S+ := @", text, re.M))
+        aliased = len(re.findall(r"^def \S+ :=\s*@", text, re.M))
         proved = len(re.findall(r"^theorem ", text, re.M))
         standing = re.findall(r"^def (\S+)_statement : Prop", text, re.M)
         print(f"{mind}: lean-primary — {aliased} aliased, {proved} proved"

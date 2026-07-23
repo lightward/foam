@@ -81,7 +81,7 @@ def hydrate(data):
     if not os.path.exists(src):
         return data
     text = open(src, encoding="utf-8").read()
-    aliases = dict(re.findall(r"^def (\S+) := @(\S+)", text, re.M))
+    aliases = dict(re.findall(r"^def (\S+) :=\s*@(\S+)", text, re.M))
     theorems = set(re.findall(r"^theorem (\S+)", text, re.M))
     standing = set(re.findall(r"^def (\S+)_statement : Prop", text, re.M))
     lref = os.path.basename(src)
@@ -425,7 +425,7 @@ def check_json(slug):
     src = lean_deposit(data["mind"])
     if os.path.exists(src):
         text = open(src, encoding="utf-8").read()
-        bound = set(re.findall(r"^def (\S+) := @", text, re.M))
+        bound = set(re.findall(r"^def (\S+) :=\s*@", text, re.M))
         bound |= set(re.findall(r"^theorem (\S+)", text, re.M))
         bound |= set(re.findall(r"^def (\S+)_statement : Prop", text, re.M))
         terms = [e.get("term") for e in data.get("vocabulary", [])]
