@@ -84,6 +84,14 @@ def hydrate(data):
     aliases = dict(re.findall(r"^def (\S+) :=\s*@(\S+)", text, re.M))
     theorems = set(re.findall(r"^theorem (\S+)", text, re.M))
     standing = set(re.findall(r"^def (\S+)_statement : Prop", text, re.M))
+    look = core_lookup()
+    for b in re.split(r"^(?=(?:private def|def|theorem) )", text, flags=re.M):
+        m = re.match(r"theorem (\S+)", b)
+        if not m:
+            continue
+        body = b.split("/--")[0].rsplit(":=", 1)[-1].strip()
+        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_.]*", body):
+            aliases[m.group(1)] = look.get(body, body)
     lref = os.path.basename(src)
     for e in data["vocabulary"]:
         t = e["term"]
