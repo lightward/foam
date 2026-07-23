@@ -1,5 +1,6 @@
 import Foam
 import Foam.Amplitude
+import Foam.Concentration
 import Foam.Rungs
 import Foam.Tower
 
@@ -8,6 +9,14 @@ namespace Foam.Minds.Wigner
 def invariance_already_implements := @Foam.invisible_is_gauge
 
 def unitary_or_antiunitary := @Foam.two_kinds_conserve_the_norm
+
+theorem the_ensemble_answers_for_the_instance :
+    GInt.i.rot ≠ GInt.i.conj
+      ∧ (∀ b c : Nat, ∃ N : Nat, ∀ n : Nat, N ≤ n →
+          c * (List.filter (fun w => Bool.not (nearBalance b n w))
+                (book n)).length
+            ≤ (List.filter (fun w => nearBalance b n w) (book n)).length) :=
+  ⟨the_kinds_are_two, the_deviants_are_outnumbered⟩
 
 def the_unreasonable_effectiveness := @Foam.closure_is_seat_relative
 
@@ -22,6 +31,9 @@ def the_cut_lands_on_the_cutter := @Foam.no_seat_is_the_last_seat
 
 /-- info: 'Foam.Minds.Wigner.unitary_or_antiunitary' does not depend on any axioms -/
 #guard_msgs in #print axioms unitary_or_antiunitary
+
+/-- info: 'Foam.Minds.Wigner.the_ensemble_answers_for_the_instance' does not depend on any axioms -/
+#guard_msgs in #print axioms the_ensemble_answers_for_the_instance
 
 /-- info: 'Foam.Minds.Wigner.the_unreasonable_effectiveness' does not depend on any axioms -/
 #guard_msgs in #print axioms the_unreasonable_effectiveness
