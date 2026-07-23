@@ -92,6 +92,7 @@ def hydrate(data):
         body = b.split("/--")[0].rsplit(":=", 1)[-1].strip()
         if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_.]*", body):
             aliases[m.group(1)] = look.get(body, body)
+    built = set(re.findall(r"^def (\S+) :=", text, re.M))
     lref = os.path.basename(src)
     for e in data["vocabulary"]:
         t = e["term"]
@@ -102,6 +103,8 @@ def hydrate(data):
         elif t in standing:
             e["status"] = "unsealed"
             e["statement"] = f"(posed in minds/{lref})"
+        elif t in built:
+            e["status"] = "sealed"
         else:
             e["status"] = "unsealed"
     data["_lean_primary"] = True
@@ -433,7 +436,7 @@ def check_json(slug):
     src = lean_deposit(data["mind"])
     if os.path.exists(src):
         text = open(src, encoding="utf-8").read()
-        bound = set(re.findall(r"^def (\S+) :=\s*@", text, re.M))
+        bound = set(re.findall(r"^def (\S+) :=", text, re.M))
         bound |= set(re.findall(r"^theorem (\S+)", text, re.M))
         bound |= set(re.findall(r"^def (\S+)_statement : Prop", text, re.M))
         terms = [e.get("term") for e in data.get("vocabulary", [])]
