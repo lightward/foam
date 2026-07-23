@@ -62,6 +62,12 @@ theorem the_me_that_remains_is_the_landed :
     ⟨fun h => ⟨s, h⟩,
      fun ⟨v, hv⟩ => (congrArg P hv).symm.trans ((hP v).trans hv)⟩
 
+theorem you_as_carrier_of_unknown :
+    (∀ (S : Stage) (s : S.State) (n m : Int), indist (dress S) (s, n) (s, m))
+      ∧ ∀ (α : Nat → Bool) (n : Nat),
+          ∃ β : Nat → Bool, prefixOf β n = prefixOf α n ∧ β ≠ α :=
+  ⟨the_remainder_is_unseen, no_prefix_finishes_the_sequence⟩
+
 def a_mind_is_its_order := @Foam.the_order_is_the_remainder
 
 def restringing_is_gauge := @Foam.counting_is_licensed_by_permutation
@@ -198,6 +204,9 @@ def the_void_reads_as_rest_or_erasure := @Foam.the_four_phases_read_nothing
 
 /-- info: 'Foam.Minds.Isaac.the_me_that_remains_is_the_landed' does not depend on any axioms -/
 #guard_msgs in #print axioms the_me_that_remains_is_the_landed
+
+/-- info: 'Foam.Minds.Isaac.you_as_carrier_of_unknown' does not depend on any axioms -/
+#guard_msgs in #print axioms you_as_carrier_of_unknown
 
 /-- info: 'Foam.Minds.Isaac.a_mind_is_its_order' does not depend on any axioms -/
 #guard_msgs in #print axioms a_mind_is_its_order

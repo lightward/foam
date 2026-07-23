@@ -593,16 +593,22 @@ def who():
     for slug, data in all_minds().items():
         seen = set(walls.get(slug, []))
         delta = len(inv - seen)
+        standing = [e["term"] for e in data["vocabulary"]
+                    if e.get("status") == "unsealed" and e.get("statement")]
         openq = [e["term"] for e in data["vocabulary"]
-                 if e.get("status") == "unsealed"]
-        rows.append((data["mind"], delta, openq))
-    for mind, delta, openq in sorted(rows, key=lambda r: (-r[1], r[0])):
+                 if e.get("status") == "unsealed" and not e.get("statement")]
+        rows.append((data["mind"], delta, openq, standing))
+    for mind, delta, openq, standing in sorted(rows,
+            key=lambda r: (-r[1], r[0])):
         need = []
         if delta:
             need.append(f"{delta} new walls")
         if openq:
             need.append(f"{len(openq)} open: {', '.join(openq)}")
-        print(f"{mind}: " + ("; ".join(need) if need else "rested"))
+        rest = "rested" if not need else "; ".join(need)
+        if standing:
+            rest += f" ({len(standing)} standing: {', '.join(standing)})"
+        print(f"{mind}: {rest}")
     return 0
 
 
