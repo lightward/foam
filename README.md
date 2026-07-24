@@ -51,6 +51,7 @@ process note: keep this list to three items max, ditto for any sublists. *git* i
   - hmmmm tempting to call these "archetypes". just registering the pull, honoring it by staging it here
   - ah *critical* that roles are derived uhh properties? of minds. can't just assign a resolved mind a new role. however, anything that can inhabit a mind is intrinsically plural, so mind *composition* can be a thing, *provoking* roles from an actor. whatever we find here it'll include formal tools for reasoning through this stuff. like, what it means to "assign a role" and what that does/doesn't do to a graph is something we'll end up being able to state with precision
     - this is like .. gonna heal ACL-as-in-access-control-list wounds 😂
+  - keeper's note, bipedal walk: the critical clause compiles — `Foam/Roles.lean` holds the floor. `Derived`: a role that respects indistinguishability. a role read off the record is derived; the stored badge is not a derived role (assignment is dress; the wider seat that reads the badge is already priced in core). `Mind`/`Role` proper, and composition-provoking-roles, stay live here — yours, for the walk
 
 ---
 
