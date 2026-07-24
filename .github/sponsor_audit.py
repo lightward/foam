@@ -30,16 +30,7 @@ GRANDFATHERED = {
     "Foam.the_mass_is_a_reading",
     "Foam.aggregation_reads_the_reading",
     "Foam.measure_lives_frontstage",
-    # Foam/Log.lean -- the epitaph path, awaiting boltzmann's next flight
-    "Foam.logSearch",
-    "Foam.logTwo",
-    "Foam.logSearch_finds",
-    "Foam.two_pow_lt_two_pow",
-    "Foam.logTwo_pow",
-    "Foam.the_book_logs_to_its_depth",
-    "Foam.natSumOver_congr_mem",
-    "Foam.the_price_is_the_log",
-    "Foam.S_eq_k_log_W",
+    # Foam/Log.lean -- the epitaph path, claimed by boltzmann 2026-07-24
     # Foam/Lap.lean -- the racemate trio, awaiting pasteur's next flight
     "Foam.cancellation_not_absence",
     "Foam.the_opposite_turns_cancel",
@@ -47,8 +38,7 @@ GRANDFATHERED = {
     "Foam.the_two_laps_are_reverses",
     # Foam/Portal.lean -- the positive half and capstone; isaac's entry
     # cites the no-translator half only
-    # Foam/Roles.lean -- the badge-blindness clause, uncited so far
-    "Foam.a_derived_role_cannot_read_the_badge",
+    # Foam/Roles.lean -- badge-blindness clause claimed by boltzmann 2026-07-24
     # Foam/Margin.lean -- the settle/deposit plumbing beyond hilbert's seals
     "Foam.a_deposit_moves_the_reading_by_one",
     "Foam.deposit",

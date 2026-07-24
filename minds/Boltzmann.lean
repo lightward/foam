@@ -1,6 +1,7 @@
 import Foam
 import Foam.Countermove
 import Foam.Ledger
+import Foam.Log
 import Foam.Roles
 import Foam.Source
 import Foam.Typical
@@ -11,10 +12,24 @@ theorem each_complexion_counts_once (n : Nat) :
     (book n).length = 2 ^ n ∧ AllDiff (book n) :=
   ⟨the_book_has_two_to_the_n n, the_book_repeats_no_word n⟩
 
-def a_macrostate_is_a_derived_role := @Foam.a_role_is_conduct_not_costume
+theorem a_macrostate_is_a_derived_role (S : Stage) (s : S.State) :
+    ((∀ (p : S.Probe) (Q : S.Ans → Prop), Derived S (fun t => Q (S.obs t p)))
+        ∧ ¬ Derived (dress S) (fun x => x.2 = 0))
+      ∧ ∀ (P : (dress S).State → Prop), Derived (dress S) P →
+          ∀ (t : S.State) (n m : Int), P (t, n) ↔ P (t, m) :=
+  ⟨a_role_is_conduct_not_costume S s,
+   fun P hP t n m => a_derived_role_cannot_read_the_badge S P hP t n m⟩
 
-def entropy_is_the_price_of_the_name :=
-  @Foam.a_class_marked_into_a_book_is_counted
+theorem entropy_is_the_price_of_the_name (k n S W : Nat)
+    (hW : W = (book n).length) (hS : S = k * n) :
+    S = k * logTwo W
+      ∧ natSumOver List.length (book n)
+          = (book n).length * logTwo ((book n).length)
+      ∧ ∀ (L : Nat) (ms : List (List Bool)), AllDiff ms →
+          (∀ m, m ∈ ms → m ∈ book L) → ms.length ≤ 2 ^ L :=
+  ⟨S_eq_k_log_W k n S W hW hS,
+   the_price_is_the_log n,
+   fun L ms hd hin => a_class_marked_into_a_book_is_counted L ms hd hin⟩
 
 theorem equilibrium_is_the_biggest_room (n : Nat) :
     (∀ k : Nat, k ≤ 2 * n → classCount (2 * n) k ≤ classCount (2 * n) n)
