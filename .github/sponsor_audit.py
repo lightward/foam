@@ -25,16 +25,13 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 GRANDFATHERED = {
-    # Foam/Measure.lean -- pooling laws walked by glosses, uncited by bindings
-    "Foam.massStage",
-    "Foam.the_mass_is_a_reading",
+    # Foam/Measure.lean -- mass pair claimed by shannon 2026-07-24; the
+    # aggregation pair awaits gauss, whose gloss walks it by name
     "Foam.aggregation_reads_the_reading",
     "Foam.measure_lives_frontstage",
     # Foam/Log.lean -- the epitaph path, claimed by boltzmann 2026-07-24
-    # Foam/Lap.lean -- the racemate trio, awaiting pasteur's next flight
-    "Foam.cancellation_not_absence",
-    "Foam.the_opposite_turns_cancel",
-    "Foam.the_facing_pair_cancels",
+    # Foam/Lap.lean -- racemate trio claimed by pasteur 2026-07-24 (trim
+    # recorded one commit late, at shannon's flight); the reversal waits
     "Foam.the_two_laps_are_reverses",
     # Foam/Portal.lean -- the positive half and capstone; isaac's entry
     # cites the no-translator half only

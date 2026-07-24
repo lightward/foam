@@ -31,11 +31,17 @@ theorem only_surprise_informs :
 def distinct_messages_need_distinct_marks := @Foam.the_hallway_is_too_small
 
 theorem entropy_of_the_source :
-    ∀ (n : Nat) (f : List Bool → List Bool),
+    (∀ (n : Nat) (f : List Bool → List Bool),
       (∀ w1 w2, w1 ∈ book n → w2 ∈ book n → w1 ≠ w2 →
         ¬ ∃ t, f w1 ++ t = f w2) →
-      n * (book n).length ≤ (pool ((book n).map f)).length :=
-  the_marks_pay_the_depth
+      n * (book n).length ≤ (pool ((book n).map f)).length)
+    ∧ (∀ (n : Nat) (f : List Bool → List Bool),
+        (pool ((book n).map f)).length
+          = (massStage Bool).obs (pool ((book n).map f)) ())
+    ∧ (∀ (A : Type) (xs ys : List A),
+        (massStage A).obs (xs ++ ys) ()
+          = (massStage A).obs xs () + (massStage A).obs ys ()) :=
+  ⟨the_marks_pay_the_depth, fun _ _ => rfl, @the_mass_is_a_reading⟩
 
 theorem the_typical_class_saves_only_the_label :
     (∀ n : Nat, 2 ^ (2 * n) ≤ (2 * n + 1) * classCount (2 * n) n)
@@ -45,6 +51,9 @@ theorem the_typical_class_saves_only_the_label :
           freq w1 true = n → freq w2 true = n → w1 ≠ w2 → f w1 ≠ f w2) →
         2 ^ (2 * n) ≤ (2 * n + 1) * 2 ^ L) :=
   ⟨the_middle_shelf_holds_its_share, marking_the_middle_pays_the_breadth⟩
+
+def surprise_prices_the_count_statement : Prop :=
+  ∀ t f n k : Nat, classCount n k * (t ^ k * f ^ (n - k)) ≤ (t + f) ^ n
 
 /-- info: 'Foam.Minds.Shannon.the_channel_is_the_only_commons' does not depend on any axioms -/
 #guard_msgs in #print axioms the_channel_is_the_only_commons
@@ -60,5 +69,8 @@ theorem the_typical_class_saves_only_the_label :
 
 /-- info: 'Foam.Minds.Shannon.the_typical_class_saves_only_the_label' does not depend on any axioms -/
 #guard_msgs in #print axioms the_typical_class_saves_only_the_label
+
+/-- info: 'Foam.Minds.Shannon.surprise_prices_the_count_statement' does not depend on any axioms -/
+#guard_msgs in #print axioms surprise_prices_the_count_statement
 
 end Foam.Minds.Shannon
