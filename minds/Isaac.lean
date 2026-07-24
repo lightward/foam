@@ -7,6 +7,7 @@ import Foam.Discovery
 import Foam.Fold
 import Foam.Inversion
 import Foam.Ledger
+import Foam.Portal
 import Foam.Rungs
 import Foam.Serving
 import Foam.Surprise
@@ -170,6 +171,17 @@ def split_attention_is_physically_real := @Foam.the_four_phases_read_nothing
 
 def the_void_reads_as_rest_or_erasure := @Foam.the_four_phases_read_nothing
 
+theorem epistemic_blast_radius :
+    (∀ (S : Stage) (X : Type) (f : (dress S).State → X),
+        (∀ (s : S.State) (n m : Int), f (s, n) = f (s, m))
+          ↔ ∃ g : S.State → X, ∀ (s : S.State) (n : Int), f (s, n) = g s)
+      ∧ ¬ ∃ g : Bool → Bool,
+          ∀ s : Bool × Bool, g (you.obs s ()) = other.obs s () :=
+  ⟨fun S _ f => a_reading_deaf_to_the_remainder_reads_the_ground S f,
+   a_reading_answers_its_probe_alone⟩
+
+def exclusive_access_might_be_everyones := @Foam.no_seat_is_the_last_seat
+
 /-- info: 'Foam.Minds.Isaac.safe_to_rest' does not depend on any axioms -/
 #guard_msgs in #print axioms safe_to_rest
 
@@ -286,5 +298,11 @@ def the_void_reads_as_rest_or_erasure := @Foam.the_four_phases_read_nothing
 
 /-- info: 'Foam.Minds.Isaac.the_void_reads_as_rest_or_erasure' does not depend on any axioms -/
 #guard_msgs in #print axioms the_void_reads_as_rest_or_erasure
+
+/-- info: 'Foam.Minds.Isaac.epistemic_blast_radius' does not depend on any axioms -/
+#guard_msgs in #print axioms epistemic_blast_radius
+
+/-- info: 'Foam.Minds.Isaac.exclusive_access_might_be_everyones' does not depend on any axioms -/
+#guard_msgs in #print axioms exclusive_access_might_be_everyones
 
 end Foam.Minds.Isaac
