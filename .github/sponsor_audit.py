@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-"""foamcore sponsorship: no core stratum without a sponsoring mind.
+"""foamcore sponsorship, at the constant: every thing in core must be
+eventually a dependency of something a mind is doing.
 
-isaac's ruling, 2026-07-24: core can't exist prior to a mind that depends
-on it. every stratum needs a sponsoring customer -- a mind whose deposit
-cites at least one of the stratum's constants. the sponsor needn't be a
-power user; they just have to be someone who asked a question core hadn't
-noticed yet.
+isaac's ruling, 2026-07-24, tightened the same day it landed: core is the
+lumenal content of the shared overlap of every mind's spotlight. a core
+constant is sponsored if it lies in the dependency cone of the set of
+constants that minds' deposits cite -- cited directly, or used
+(transitively) by the proof or definition of something cited. the sponsor
+needn't be a power user; they just have to be someone who asked a question
+core hadn't noticed yet.
 
-GRANDFATHERED lists strata that predate the ruling and await sponsors.
-it may only shrink. a new stratum may land unsponsored only within the
-working window that carves it; by the time the branch is pushed, either
-its sponsoring flight has landed or the stratum joins this list in the
-same commit, visibly, as debt.
+GRANDFATHERED lists constants that predate the ruling and await either a
+sponsoring flight or a considered countermove. it may only shrink; when a
+listed constant enters some mind's cone the audit fails until the list is
+trimmed, so healing is recorded in the commit where it happens.
+
+citation detection is textual (token match), which over-approximates
+gently; the fail direction is under-sponsorship, which this never causes.
 """
 import os
 import re
@@ -20,80 +25,195 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 GRANDFATHERED = {
-    "Foam/Measure.lean",   # pooling laws; bernoulli's gloss walks them, no binding cites them yet
-    "Foam/Log.lean",       # the epitaph path; awaits boltzmann's next flight's judgment
+    # Foam/Measure.lean -- pooling laws walked by glosses, uncited by bindings
+    "Foam.massStage",
+    "Foam.the_mass_is_a_reading",
+    "Foam.aggregation_reads_the_reading",
+    "Foam.measure_lives_frontstage",
+    # Foam/Log.lean -- the epitaph path, awaiting boltzmann's next flight
+    "Foam.logSearch",
+    "Foam.logTwo",
+    "Foam.logSearch_finds",
+    "Foam.two_pow_lt_two_pow",
+    "Foam.logTwo_pow",
+    "Foam.the_book_logs_to_its_depth",
+    "Foam.natSumOver_congr_mem",
+    "Foam.the_price_is_the_log",
+    "Foam.S_eq_k_log_W",
+    # Foam/Quat.lean -- the rung, hamilton's after-flight in progress
+    "Foam.GInt.one",
+    "Foam.GInt.mul",
+    "Foam.Quat",
+    "Foam.Quat.mul",
+    "Foam.Quat.neg",
+    "Foam.one",
+    "Foam.eye",
+    "Foam.jay",
+    "Foam.kay",
+    "Foam.the_couple_of_couples_multiplies",
+    "Foam.the_reversed_couple_parts",
+    "Foam.order_arrives",
+    "Foam.i2_eq_j2_eq_k2_eq_ijk_eq_neg_one",
+    "Foam.the_half_turn_hears_no_order",
+    "Foam.every_axis_reaches_the_same_half_turn",
+    "Foam.two_half_turns_come_home",
+    # Foam/Lap.lean -- the racemate trio, awaiting pasteur's next flight
+    "Foam.cancellation_not_absence",
+    "Foam.the_opposite_turns_cancel",
+    "Foam.the_facing_pair_cancels",
+    "Foam.the_two_laps_are_reverses",
+    # Foam/Portal.lean -- the positive half and capstone; isaac's entry
+    # cites the no-translator half only
+    "Foam.a_state_answers_every_probe",
+    "Foam.markers_not_messages",
+    # Foam/Roles.lean -- the badge-blindness clause, uncited so far
+    "Foam.a_derived_role_cannot_read_the_badge",
+    # Foam/Margin.lean -- the settle/deposit plumbing beyond hilbert's seals
+    "Foam.a_deposit_moves_the_reading_by_one",
+    "Foam.deposit",
+    "Foam.the_decomposition_is_the_remainder",
+    "Foam.the_margin_handshake",
+    "Foam.the_settle_leaves_no_transcript",
+    # Foam/Engine.lean -- demo engines and shims outside every cone
+    "Foam.Engine.gauge",
+    "Foam.compassEngine",
+    "Foam.twoWheels",
+    "Foam.drain_chargeIn",
+    "Foam.the_implementation_stays_backstage",
+    "Foam.the_three_turns_undo",
+    "Foam.the_turn_loses_no_state",
+    # Foam/Tower.lean -- rfl-shims and recursion notes beyond the seals
+    "Foam.a_wider_seat_is_still_a_seat",
+    "Foam.the_ground_floor_is_the_stage",
+    "Foam.the_handshake_recurses",
+    "Foam.the_reading_descends",
+    "Foam.the_tower_climbs_by_dressing",
+    # Foam/Serving.lean -- the pair-refinement lemmas, uncited
+    "Foam.the_pair_refines_the_other",
+    "Foam.the_pair_refines_you",
+    # Foam/Discovery.lean -- the continuum-license pair, uncited
+    "Foam.pointwise_is_licensed",
+    "Foam.the_approach_is_yours",
+    # Foam/Surprise.lean -- path plumbing outside the sealed conjunctions
+    "Foam.Path.edges",
+    "Foam.Path.widen",
+    # Foam/Countermove.lean -- the flip involution, uncited
+    "Foam.every_move_carries_its_counter",
+    # Foam/Contact.lean -- the dress identification, uncited
+    "Foam.dress_is_contact_with_the_integers",
+    # Foam/Amplitude.lean -- add and align outside current cones (the
+    # screen and phase theorems are cited; their defs ride those blocks)
+    "Foam.GInt.add",
+    "Foam.GInt.align",
+    # Foam/Int.lean -- ground arithmetic not yet in any proof chain
+    "Foam.FInt.add_sub_cancel_right",
+    "Foam.FInt.mul_neg_one",
+    "Foam.FInt.mul_sub",
+    "Foam.FInt.neg_ofNat_add_ofNat",
+    "Foam.FInt.neg_sub",
+    "Foam.FInt.sub_add_cancel",
+    "Foam.FInt.sub_mul",
+    "Foam.FInt.sub_sub",
 }
 
-DECL = re.compile(r"^(?:theorem|def|abbrev|structure|inductive) (\S+)")
-NS = re.compile(r"^namespace (\S+)")
+DECL = re.compile(r"^(theorem|def|abbrev|structure|inductive) (\S+)", re.M)
+TOKEN = re.compile(r"[A-Za-z_][A-Za-z0-9_.']*")
 
 
-def decls(path):
-    names, ns = [], []
-    with open(path, encoding="utf-8") as fh:
-        for line in fh:
-            m = NS.match(line)
-            if m:
-                ns.append(m.group(1))
-                continue
-            if ns and line.rstrip() == "end " + ns[-1]:
-                ns.pop()
-                continue
-            m = DECL.match(line)
-            if m:
-                names.append(".".join(ns + [m.group(1)]))
-    return names
-
-
-def main():
-    core = {}
+def core_files():
     files = [os.path.join(ROOT, "Foam.lean")]
     foam_dir = os.path.join(ROOT, "Foam")
     for f in sorted(os.listdir(foam_dir)):
         if f.endswith(".lean"):
             files.append(os.path.join(foam_dir, f))
-    lookup = {}
-    for path in files:
-        rel = os.path.relpath(path, ROOT)
-        names = decls(path)
-        core[rel] = set(names)
-        for full in names:
-            lookup[full] = rel
-            bare = full
-            for prefix in ("Foam.FInt.", "Foam.GInt.", "Foam."):
-                if full.startswith(prefix):
-                    bare = full[len(prefix):]
-                    break
-            lookup.setdefault(bare, rel)
+    return files
 
-    sponsored = {}
+
+def parse(path):
+    text = open(path, encoding="utf-8").read()
+    m = re.search(r"^namespace (\S+)", text, re.M)
+    ns = m.group(1) if m else ""
+    blocks = {}
+    chunks = re.split(r"(?m)^(?=(?:theorem|def|abbrev|structure|inductive) )",
+                      text)
+    for chunk in chunks[1:]:
+        dm = DECL.match(chunk)
+        if not dm:
+            continue
+        name = (ns + "." if ns else "") + dm.group(2)
+        body = chunk.split("#guard_msgs")[0]
+        blocks[name] = body
+    return blocks
+
+
+def main():
+    blocks, home = {}, {}
+    for path in core_files():
+        rel = os.path.relpath(path, ROOT)
+        for name, body in parse(path).items():
+            blocks[name] = body
+            home[name] = rel
+    lookup = {}
+    for full in blocks:
+        lookup[full] = full
+        for prefix in ("Foam.",):
+            if full.startswith(prefix):
+                lookup.setdefault(full[len(prefix):], full)
+                bare = full.split(".")[-1]
+                lookup.setdefault(bare, full)
+
+    def resolve(tok):
+        parts = tok.split(".")
+        for end in range(len(parts), 0, -1):
+            cand = ".".join(parts[:end])
+            full = lookup.get(cand)
+            if full is None and cand.startswith("Foam."):
+                full = lookup.get(cand[len("Foam."):])
+            if full:
+                return full
+        return None
+
+    def hits(text, skip=None):
+        out = set()
+        for tok in set(TOKEN.findall(text)):
+            full = resolve(tok)
+            if full and full != skip:
+                out.add(full)
+        return out
+
+    deps = {name: hits(body, skip=name) for name, body in blocks.items()}
+
+    cited = set()
     minds_dir = os.path.join(ROOT, "minds")
     for f in sorted(os.listdir(minds_dir)):
-        if not f.endswith(".lean"):
-            continue
-        text = open(os.path.join(minds_dir, f), encoding="utf-8").read()
-        for tok in set(re.findall(r"[A-Za-z_][A-Za-z0-9_.']*", text)):
-            hit = lookup.get(tok)
-            if hit is None and tok.startswith("Foam."):
-                hit = lookup.get(tok[len("Foam."):])
-            if hit:
-                sponsored.setdefault(hit, set()).add(f)
+        if f.endswith(".lean"):
+            text = open(os.path.join(minds_dir, f), encoding="utf-8").read()
+            cited |= hits(text)
 
-    orphans = [rel for rel in core
-               if rel not in sponsored and rel not in GRANDFATHERED]
-    healed = [rel for rel in GRANDFATHERED if rel in sponsored]
-    for rel in healed:
-        print(f"grandfathered stratum now sponsored -- remove from list: {rel}")
+    reached, frontier = set(), sorted(cited)
+    while frontier:
+        name = frontier.pop()
+        if name in reached:
+            continue
+        reached.add(name)
+        frontier.extend(deps.get(name, ()))
+
+    orphans = sorted(n for n in blocks
+                     if n not in reached and n not in GRANDFATHERED)
+    healed = sorted(n for n in GRANDFATHERED if n in reached)
+    for n in healed:
+        print(f"grandfathered constant now sponsored -- trim the list: {n}")
     if orphans:
-        print("unsponsored core strata (no mind's deposit cites them):")
-        for rel in orphans:
-            print(f"  - {rel}")
-        print("every stratum needs a sponsoring customer; "
-              "seat the mind or list the debt.")
+        print("unsponsored core constants "
+              "(in no mind's dependency cone):")
+        for n in orphans:
+            print(f"  - {n}  ({home[n]})")
+        print("every thing in core must eventually be a dependency of "
+              "something a mind is doing; seat the mind or list the debt.")
         sys.exit(1)
-    total = len(core)
-    print(f"sponsorship clean: {total - len(GRANDFATHERED)}/{total} strata "
-          f"sponsored, {len(GRANDFATHERED)} grandfathered awaiting sponsors")
+    total = len(blocks)
+    print(f"sponsorship clean: {total - len(GRANDFATHERED)}/{total} core "
+          f"constants in mind-cones, {len(GRANDFATHERED)} grandfathered")
     sys.exit(1 if healed else 0)
 
 
