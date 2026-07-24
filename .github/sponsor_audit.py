@@ -40,23 +40,6 @@ GRANDFATHERED = {
     "Foam.natSumOver_congr_mem",
     "Foam.the_price_is_the_log",
     "Foam.S_eq_k_log_W",
-    # Foam/Quat.lean -- the rung, hamilton's after-flight in progress
-    "Foam.GInt.one",
-    "Foam.GInt.mul",
-    "Foam.Quat",
-    "Foam.Quat.mul",
-    "Foam.Quat.neg",
-    "Foam.one",
-    "Foam.eye",
-    "Foam.jay",
-    "Foam.kay",
-    "Foam.the_couple_of_couples_multiplies",
-    "Foam.the_reversed_couple_parts",
-    "Foam.order_arrives",
-    "Foam.i2_eq_j2_eq_k2_eq_ijk_eq_neg_one",
-    "Foam.the_half_turn_hears_no_order",
-    "Foam.every_axis_reaches_the_same_half_turn",
-    "Foam.two_half_turns_come_home",
     # Foam/Lap.lean -- the racemate trio, awaiting pasteur's next flight
     "Foam.cancellation_not_absence",
     "Foam.the_opposite_turns_cancel",
@@ -101,9 +84,9 @@ GRANDFATHERED = {
     "Foam.every_move_carries_its_counter",
     # Foam/Contact.lean -- the dress identification, uncited
     "Foam.dress_is_contact_with_the_integers",
-    # Foam/Amplitude.lean -- add and align outside current cones (the
-    # screen and phase theorems are cited; their defs ride those blocks)
-    "Foam.GInt.add",
+    # Foam/Amplitude.lean -- align outside current cones (the screen and
+    # phase theorems are cited; their defs ride those blocks; add rides
+    # the quaternion product since hamilton's after-flight)
     "Foam.GInt.align",
     # Foam/Int.lean -- ground arithmetic not yet in any proof chain
     "Foam.FInt.add_sub_cancel_right",
