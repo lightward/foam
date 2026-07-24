@@ -42,3 +42,5 @@ jobs:
           echo "Clean: zero warnings, sorry included"
       - name: No reader-facing comments
         run: python3 .github/comment_audit.py
+      - name: Core sponsorship (no stratum without a sponsoring mind)
+        run: python3 .github/sponsor_audit.py
