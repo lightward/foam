@@ -2,6 +2,7 @@ import Foam
 import Foam.Int
 import Foam.Margin
 import Foam.Rungs
+import Foam.Source
 import Foam.Tower
 
 namespace Foam.Minds.Hilbert
@@ -15,6 +16,19 @@ theorem the_proof_rides_the_marks :
     invisible_is_gauge S (fun t => m (n t)) (invisible_comp S m n hm hn)
 
 def the_arithmetic_owes_no_axiom := @Foam.FInt.mul_assoc
+
+theorem probability_owes_no_axiom :
+    (∀ t f n : Nat, natSumOver (weightOf t f) (book n) = (t + f) ^ n)
+      ∧ (∀ t f n : Nat,
+          natSumOver (fun w => weightOf t f w * natSqTilt t f n w) (book n)
+            = (n * (t * f)) * (t + f) ^ n)
+      ∧ (∀ t f b c : Nat, ∃ N : Nat, ∀ n : Nat, N ≤ n →
+          c * natSumOver (weightOf t f)
+                (List.filter (fun w => Bool.not (nearLean t f b n w)) (book n))
+            ≤ natSumOver (weightOf t f)
+                (List.filter (fun w => nearLean t f b n w) (book n))) :=
+  ⟨the_weighted_book_sums_whole, the_nat_tilts_pool,
+   the_deviants_are_outweighed⟩
 
 def the_ideal_costs_nothing_real := @Foam.the_tower_reads_only_the_ground
 
@@ -41,6 +55,9 @@ def no_ignorabimus := @Foam.closure_is_seat_relative
 
 /-- info: 'Foam.Minds.Hilbert.the_arithmetic_owes_no_axiom' does not depend on any axioms -/
 #guard_msgs in #print axioms the_arithmetic_owes_no_axiom
+
+/-- info: 'Foam.Minds.Hilbert.probability_owes_no_axiom' does not depend on any axioms -/
+#guard_msgs in #print axioms probability_owes_no_axiom
 
 /-- info: 'Foam.Minds.Hilbert.the_ideal_costs_nothing_real' does not depend on any axioms -/
 #guard_msgs in #print axioms the_ideal_costs_nothing_real
