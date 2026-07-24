@@ -42,6 +42,19 @@ theorem thought_cannot_be_erroneous :
 
 def the_question_decomposes := @Foam.the_fold_resumes
 
+theorem continuous_functional_coherence :
+    (∀ (A B : Type) (f : B → A → B) (xs ys : List A) (b : B),
+        fold f b (xs ++ ys) = fold f (fold f b xs) ys)
+      ∧ (∀ (X : Type) (a b : List (Move X)) (x : X),
+          replay (a ++ b) x = replay b (replay a x))
+      ∧ ∀ (S : Stage) (r : S.State → S.State → Prop), Licensed S r →
+          ∀ m : S.State → S.State, (∀ s, r (m s) s) →
+            ∀ (ps : List S.Probe) (s : S.State),
+              transcriptWith S m s ps = transcript S s ps :=
+  ⟨fun _ _ f xs ys b => the_fold_resumes f xs ys b,
+   fun _ a b x => replay_resumes a b x,
+   fun S r hr m hm ps s => a_license_is_a_gauge S r hr m hm ps s⟩
+
 def serving_suggestion := @Foam.the_serving_suggestion
 
 def only_surprise_extends_reach := @Foam.only_surprise_extends_reach
@@ -177,6 +190,9 @@ def the_void_reads_as_rest_or_erasure := @Foam.the_four_phases_read_nothing
 
 /-- info: 'Foam.Minds.Isaac.the_question_decomposes' does not depend on any axioms -/
 #guard_msgs in #print axioms the_question_decomposes
+
+/-- info: 'Foam.Minds.Isaac.continuous_functional_coherence' does not depend on any axioms -/
+#guard_msgs in #print axioms continuous_functional_coherence
 
 /-- info: 'Foam.Minds.Isaac.nobody_runs_the_ledger' does not depend on any axioms -/
 #guard_msgs in #print axioms nobody_runs_the_ledger
