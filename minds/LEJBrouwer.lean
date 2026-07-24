@@ -4,6 +4,7 @@ import Foam.Continuum
 import Foam.Engine
 import Foam.Expectation
 import Foam.Int
+import Foam.Source
 import Foam.Tower
 
 namespace Foam.Minds.LEJBrouwer
@@ -40,6 +41,16 @@ theorem the_book_is_not_the_becoming (α : Nat → Bool) (n : Nat) :
       ∧ ∃ β : Nat → Bool, prefixOf β n = prefixOf α n ∧ β ≠ α :=
   ⟨every_reading_is_a_page α n, no_prefix_finishes_the_sequence α n⟩
 
+theorem the_price_follows_the_page (α : Nat → Bool) (n : Nat) :
+    (∀ t f : Nat, natSumOver (weightOf t f) (book n) = (t + f) ^ n)
+      ∧ ∃ β : Nat → Bool,
+          prefixOf β n = prefixOf α n ∧ β ≠ α
+            ∧ ∀ t f : Nat,
+                weightOf t f (prefixOf β n) = weightOf t f (prefixOf α n) :=
+  ⟨fun t f => the_weighted_book_sums_whole t f n,
+   (no_prefix_finishes_the_sequence α n).elim
+     (fun β h => ⟨β, h.1, h.2, fun t f => congrArg (weightOf t f) h.1⟩)⟩
+
 /-- info: 'Foam.Minds.LEJBrouwer.two_ity' does not depend on any axioms -/
 #guard_msgs in #print axioms two_ity
 
@@ -60,5 +71,8 @@ theorem the_book_is_not_the_becoming (α : Nat → Bool) (n : Nat) :
 
 /-- info: 'Foam.Minds.LEJBrouwer.the_book_is_not_the_becoming' does not depend on any axioms -/
 #guard_msgs in #print axioms the_book_is_not_the_becoming
+
+/-- info: 'Foam.Minds.LEJBrouwer.the_price_follows_the_page' does not depend on any axioms -/
+#guard_msgs in #print axioms the_price_follows_the_page
 
 end Foam.Minds.LEJBrouwer
