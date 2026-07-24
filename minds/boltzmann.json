@@ -1,0 +1,34 @@
+{
+  "mind": "Boltzmann",
+  "note": "S = k log W — the count carved over him because the count was the whole move: cut the energy into finite cells, list the complexions, and heat, equilibrium, and the arrow fall out as arithmetic. seated as the source stratum's crossing-witness, carrying the braid the order-reading names: macrostate : Role :: microstate : Mind.",
+  "vocabulary": [
+    {
+      "term": "each_complexion_counts_once",
+      "gloss": "the 1877 move that opens every decomposition: before anything is probable, everything is counted. he cut the energy into finite cells precisely so the complexions could be enumerated — the continuum was a limit he took later, under protest — and this corpus never takes the limit at all, which makes its book his native habitat: at depth n the complexions number exactly 2^n and no word repeats. W is a count of distinct complexions, each entered once; equal a priori weight arrives not as an assumption about nature but as a fact about a complete, repeat-free enumeration. everything downstream — the room, the arrow, the epitaph — is arithmetic on this list."
+    },
+    {
+      "term": "a_macrostate_is_a_derived_role",
+      "gloss": "the braid this seat was named for: macrostate : Role :: microstate : Mind. a macrostate is not something the gas has in addition to its molecules — it is a predicate of the coarse reading, and any such predicate automatically respects micro-indistinguishability: same conduct, same macrostate, by definition rather than by decree. the seal's other half runs the same wall from the far side: the microstate label itself — which complexion is 'really' there — is exactly the badge that fails derivation; no macro-probe reads it, and the wider seat that does is already priced in core. so pressure on the vessel wall is a role the gas performs, and the molecule's secret coordinate is a remainder the performance never shows."
+    },
+    {
+      "term": "entropy_is_the_price_of_the_name",
+      "gloss": "S = k log W, read the only way this corpus reads logarithms: as lengths of marks. name every complexion of a class faithfully — distinct words for distinct complexions — into the book of depth L, and the class is counted against 2^L; the count W cannot exceed what the name-space affords, so the name must be at least log W deep. the entropy of a macrostate is the price of naming its room, k a unit conversion the walls never need. shannon's wall holds the same receipt read from the source-coding side; this seal reads it from the class side, which is the side his stone faces."
+    },
+    {
+      "term": "equilibrium_is_the_biggest_room",
+      "gloss": "equilibrium with the dynamics removed: the equilibrium distribution is not where the gas is pushed, it is the shelf with the most complexions. at depth 2n the middle shelf outholds every other, and it holds at least its share — the whole book divided by the number of shelves — so the biggest room is not merely biggest but polynomially close to being the whole house: 2^2n complexions, 2n+1 shelves, the crown at least one part in 2n+1 of everything. the maxwellian fell out of his counting as exactly this crown one stratum up; here the fair book carries the shape, and the biased crown waits on the entry posed below."
+    },
+    {
+      "term": "the_arrow_rides_the_count",
+      "gloss": "the reversibility objection, held and answered in one conjunction, both halves receipted. first half: the objection is correct — every walk of reversible moves carries a countermove that brings the state home exactly; nothing in the dynamics prefers a direction, and the corpus proves the un-doing rather than conceding it. second half: the counting concentrates anyway — past a computable depth the deviant words are outnumbered at any odds. no contradiction, because the halves quantify over different things: the first over trajectories, the second over the book. the arrow is not in the moves; it is in how many words sit on each shelf. what the H-theorem asked of mechanics, the census delivers by arithmetic — and the reversed trajectory stays possible, merely outnumbered."
+    },
+    {
+      "term": "the_most_probable_distribution",
+      "gloss": "the far bank, posed: everything above runs on the fair book, where every complexion weighs one. his gas never weighed its cells equally — under a two-celled source leaning t : f, a complexion weighs t^(#true)·f^(#false), and his 1877 claim is that the weighted book still crowns: past some depth the words near the lean ratio carry any odds-multiple of the weight the deviants carry. posed here in the walls' own Nat — weights as powers, the window as an inequality pair in the nearBalance idiom, mass summed by natSumOver — a statement without a structure, the red of red-green: vacancy-dark, waiting on the source stratum the order-reading already names as the next port. when that carve lands, the biased crown and the biased entropy both stand on it; until then the hole itself is engine-checked well-posed."
+    },
+    {
+      "term": "no_seat_inside_the_fluctuation",
+      "gloss": "the terminus, and it was his cosmology before it was anyone's paradox: if the world is a rare fluctuation of a vaster equilibrium, the observer inside it cannot count the book it was drawn from. the receipt holds one book containing runs that disagree about the ratio, so no run reads its own typicality from inside — remainder-dark, held open by receipt, and the darkness transits rather than dying: whoever holds the whole book reads the shelf this run sits on, and then cannot read their own, exactly as closure_is_seat_relative says. he bet the visible universe was a deviant word; the map keeps the bet as what it provably is — undecidable from the seat that is the word. (self, pure unknown)."
+    }
+  ]
+}
