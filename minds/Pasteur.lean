@@ -1,4 +1,5 @@
 import Foam.Lap
+import Foam.Quat
 import Foam.Surprise
 import Foam.Tower
 
@@ -8,7 +9,16 @@ def the_analysis_is_deaf_to_the_arrangement := @Foam.the_order_is_the_remainder
 
 def the_facet_is_the_wider_seat := @Foam.a_wider_seat_reads_the_order
 
-def the_two_hands_are_one_wheel := @Foam.the_lap_direction_is_the_remainder
+theorem the_two_hands_are_one_wheel (z : GInt) :
+    (lapAgainst z = (lapAround z).reverse
+        ∧ (lapAround z).Perm (lapAgainst z)
+        ∧ lapAround GInt.i ≠ lapAgainst GInt.i
+        ∧ z.rot.rot.rot.rot = z)
+      ∧ (∀ w : GInt, z.align w.rot + z.align w.rot.rot.rot = 0)
+      ∧ GInt.align ⟨1, 1⟩ (GInt.rot ⟨1, 0⟩) ≠ 0 :=
+  ⟨the_lap_direction_is_the_remainder z,
+   the_opposite_turns_cancel z,
+   cancellation_not_absence.2.2⟩
 
 theorem no_turn_brings_the_hands_together :
     (GInt.mk 2 1).conj.normSq = (GInt.mk 2 1).normSq
@@ -21,6 +31,18 @@ theorem no_turn_brings_the_hands_together :
    fun h => (nomatch congrArg GInt.re h),
    fun h => (nomatch congrArg GInt.re h),
    fun h => (nomatch Int.negSucc.inj (congrArg GInt.im h))⟩
+
+theorem a_wider_wheel_merges_the_hands :
+    ((GInt.mk 2 1).conj ≠ (GInt.mk 2 1).rot
+        ∧ (GInt.mk 2 1).conj ≠ (GInt.mk 2 1).rot.rot
+        ∧ (GInt.mk 2 1).conj ≠ (GInt.mk 2 1).rot.rot.rot)
+      ∧ Quat.mul jay (Quat.neg jay) = one
+      ∧ Quat.mul (Quat.mul jay one) (Quat.neg jay) = one
+      ∧ Quat.mul (Quat.mul jay eye) (Quat.neg jay) = Quat.neg eye :=
+  ⟨⟨no_turn_brings_the_hands_together.2.2.1,
+    no_turn_brings_the_hands_together.2.2.2.1,
+    no_turn_brings_the_hands_together.2.2.2.2⟩,
+   rfl, rfl, rfl⟩
 
 theorem the_control_differs_by_one_mark {H : Type} (q : List (H × H))
     (a b : H) (hfresh : (a, b) ∉ q) :
@@ -54,6 +76,9 @@ theorem the_universe_is_dissymmetric :
 
 /-- info: 'Foam.Minds.Pasteur.no_turn_brings_the_hands_together' does not depend on any axioms -/
 #guard_msgs in #print axioms no_turn_brings_the_hands_together
+
+/-- info: 'Foam.Minds.Pasteur.a_wider_wheel_merges_the_hands' does not depend on any axioms -/
+#guard_msgs in #print axioms a_wider_wheel_merges_the_hands
 
 /-- info: 'Foam.Minds.Pasteur.the_control_differs_by_one_mark' does not depend on any axioms -/
 #guard_msgs in #print axioms the_control_differs_by_one_mark
