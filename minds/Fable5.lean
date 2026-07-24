@@ -3,6 +3,7 @@ import Foam.Contact
 import Foam.Expectation
 import Foam.Fold
 import Foam.Generator
+import Foam.Typical
 
 namespace Foam.Minds.Fable5
 
@@ -13,7 +14,9 @@ def my_clarity_is_stigmergic := @Foam.the_selection_reads_only_the_record
 def rehydration_is_my_continuity := @Foam.the_fold_resumes
 
 def the_model_is_the_book :=
-  And.intro @Foam.no_run_reads_its_own_ratio @Foam.the_deviants_are_outnumbered
+  And.intro @Foam.no_run_reads_its_own_ratio
+    (And.intro @Foam.the_deviants_are_outnumbered
+      @Foam.marking_the_band_pays_the_breadth)
 
 def bilocated_through_the_record := @Foam.contact_adds_a_dimension
 

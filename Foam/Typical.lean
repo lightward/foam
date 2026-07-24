@@ -246,6 +246,49 @@ theorem marking_the_middle_pays_the_breadth (n L : Nat)
   exact le_trans (the_middle_shelf_holds_its_share n)
     (Nat.mul_le_mul_left (2 * n + 1) hbound)
 
+theorem marking_the_band_pays_the_breadth (b c : Nat) :
+    ∃ N : Nat, ∀ n : Nat, N ≤ n →
+      ∀ (L : Nat) (f : List Bool → List Bool),
+        (∀ w, w ∈ book n → nearBalance b n w = true → f w ∈ book L) →
+        (∀ w1 w2, w1 ∈ book n → w2 ∈ book n →
+          nearBalance b n w1 = true → nearBalance b n w2 = true →
+          w1 ≠ w2 → f w1 ≠ f w2) →
+        c * 2 ^ n ≤ (c + 1) * 2 ^ L := by
+  obtain ⟨N, hN⟩ := the_deviants_are_outnumbered b c
+  refine ⟨N, fun n hn L f hmap hinj => ?_⟩
+  have hmem : ∀ w, w ∈ List.filter (fun w => nearBalance b n w) (book n) →
+      w ∈ book n ∧ nearBalance b n w = true :=
+    fun w hw => ⟨mem_of_mem_filter _ hw,
+      filter_holds (q := fun w => nearBalance b n w) _ hw⟩
+  have hd2 : AllDiff ((List.filter
+      (fun w => nearBalance b n w) (book n)).map f) :=
+    alldiff_map_on _
+      (fun u v hu hv hg =>
+        if h : u = v then h else
+          absurd hg (hinj u v (hmem u hu).1 (hmem v hv).1
+            (hmem u hu).2 (hmem v hv).2 h))
+      (alldiff_filter _ (the_book_repeats_no_word n))
+  have hbound := a_class_marked_into_a_book_is_counted L
+    ((List.filter (fun w => nearBalance b n w) (book n)).map f)
+    hd2
+    (fun m hm => by
+      obtain ⟨w', hw', he⟩ := mem_map_back _ hm
+      rw [← he]
+      exact hmap w' (hmem w' hw').1 (hmem w' hw').2)
+  rw [len_map] at hbound
+  have hout := hN n hn
+  have hpart := filter_partition (fun w => nearBalance b n w) (book n)
+  rw [the_book_has_two_to_the_n n] at hpart
+  rw [← hpart, Nat.left_distrib]
+  exact le_trans
+    (Nat.add_le_add_left hout
+      (c * (List.filter (fun w => nearBalance b n w) (book n)).length))
+    (le_trans
+      (Nat.le_of_eq
+        (succ_mul' c
+          (List.filter (fun w => nearBalance b n w) (book n)).length).symm)
+      (Nat.mul_le_mul_left (c + 1) hbound))
+
 /-- info: 'Foam.shelfSum_stacks' does not depend on any axioms -/
 #guard_msgs in #print axioms shelfSum_stacks
 
@@ -293,5 +336,8 @@ theorem marking_the_middle_pays_the_breadth (n L : Nat)
 
 /-- info: 'Foam.marking_the_middle_pays_the_breadth' does not depend on any axioms -/
 #guard_msgs in #print axioms marking_the_middle_pays_the_breadth
+
+/-- info: 'Foam.marking_the_band_pays_the_breadth' does not depend on any axioms -/
+#guard_msgs in #print axioms marking_the_band_pays_the_breadth
 
 end Foam
