@@ -16,7 +16,7 @@
     },
     {
       "term": "equilibrium_is_the_biggest_room",
-      "gloss": "equilibrium with the dynamics removed: the equilibrium distribution is not where the gas is pushed, it is the shelf with the most complexions. at depth 2n the middle shelf outholds every other, and it holds at least its share — the whole book divided by the number of shelves — so the biggest room is not merely biggest but polynomially close to being the whole house: 2^2n complexions, 2n+1 shelves, the crown at least one part in 2n+1 of everything. the maxwellian fell out of his counting as exactly this crown one stratum up; here the fair book carries the shape, and the biased crown waits on the entry posed below."
+      "gloss": "equilibrium with the dynamics removed: the equilibrium distribution is not where the gas is pushed, it is the shelf with the most complexions. at depth 2n the middle shelf outholds every other, and it holds at least its share — the whole book divided by the number of shelves — so the biggest room is not merely biggest but polynomially close to being the whole house: 2^2n complexions, 2n+1 shelves, the crown at least one part in 2n+1 of everything. the maxwellian fell out of his counting as exactly this crown one stratum up; here the fair book carries the shape, and the biased crown now stands one entry below."
     },
     {
       "term": "the_arrow_rides_the_count",
@@ -24,7 +24,7 @@
     },
     {
       "term": "the_most_probable_distribution",
-      "gloss": "the far bank, posed: everything above runs on the fair book, where every complexion weighs one. his gas never weighed its cells equally — under a two-celled source leaning t : f, a complexion weighs t^(#true)·f^(#false), and his 1877 claim is that the weighted book still crowns: past some depth the words near the lean ratio carry any odds-multiple of the weight the deviants carry. posed here in the walls' own Nat — weights as powers, the window as an inequality pair in the nearBalance idiom, mass summed by natSumOver — a statement without a structure, the red of red-green: vacancy-dark, waiting on the source stratum the order-reading already names as the next port. when that carve lands, the biased crown and the biased entropy both stand on it; until then the hole itself is engine-checked well-posed."
+      "gloss": "the far bank, reached: posed vacancy-dark before the source stratum existed — weights as powers t^(#true)·f^(#false), the window an inequality pair, mass summed by natSumOver — and sealed by that stratum exactly as posed, character for character: the carve's nearLean and weightOf turned out to be the pose's own spelling read back, so the seal is a bare application. his 1877 claim holds: the weighted book crowns, and past an explicit depth N = (c+1)·b²·t·f the words near the lean ratio outweigh the deviants at any odds. one strengthening, visible in the term itself: the pose asked for 0 < t and 0 < f, and the two hypotheses are discarded unused — the count never needed the cells occupied; the degenerate sources die in the arithmetic, not in case splits. the biased crown stands on this now; the biased entropy — pricing the crowned class in marks, his permutability measure as a mark-length floor — is the residue that transits to the rates side of shannon's wall, awaiting the census of the biased class against the weighted mass."
     },
     {
       "term": "no_seat_inside_the_fluctuation",

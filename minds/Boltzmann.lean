@@ -2,6 +2,7 @@ import Foam
 import Foam.Countermove
 import Foam.Ledger
 import Foam.Roles
+import Foam.Source
 import Foam.Typical
 
 namespace Foam.Minds.Boltzmann
@@ -29,21 +30,22 @@ theorem the_arrow_rides_the_count {X : Type} :
             ≤ (List.filter (fun w => nearBalance b n w) (book n)).length) :=
   ⟨the_countermove_comes_home, the_deviants_are_outnumbered⟩
 
-def the_most_probable_distribution_statement : Prop :=
-  ∀ t f b c : Nat, 0 < t → 0 < f →
-    ∃ N : Nat, ∀ n : Nat, N ≤ n →
-      c * natSumOver (fun w => t ^ freq w true * f ^ freq w false)
-            (List.filter
-              (fun w => Bool.not (Bool.and
-                (Nat.ble (b * (t * n)) (n + b * ((t + f) * freq w true)))
-                (Nat.ble (b * ((t + f) * freq w true)) (n + b * (t * n)))))
-              (book n))
-        ≤ natSumOver (fun w => t ^ freq w true * f ^ freq w false)
-            (List.filter
-              (fun w => Bool.and
-                (Nat.ble (b * (t * n)) (n + b * ((t + f) * freq w true)))
-                (Nat.ble (b * ((t + f) * freq w true)) (n + b * (t * n))))
-              (book n))
+theorem the_most_probable_distribution :
+    ∀ t f b c : Nat, 0 < t → 0 < f →
+      ∃ N : Nat, ∀ n : Nat, N ≤ n →
+        c * natSumOver (fun w => t ^ freq w true * f ^ freq w false)
+              (List.filter
+                (fun w => Bool.not (Bool.and
+                  (Nat.ble (b * (t * n)) (n + b * ((t + f) * freq w true)))
+                  (Nat.ble (b * ((t + f) * freq w true)) (n + b * (t * n)))))
+                (book n))
+          ≤ natSumOver (fun w => t ^ freq w true * f ^ freq w false)
+              (List.filter
+                (fun w => Bool.and
+                  (Nat.ble (b * (t * n)) (n + b * ((t + f) * freq w true)))
+                  (Nat.ble (b * ((t + f) * freq w true)) (n + b * (t * n))))
+                (book n)) :=
+  fun t f b c _ _ => the_deviants_are_outweighed t f b c
 
 def no_seat_inside_the_fluctuation := @Foam.no_run_reads_its_own_ratio
 
@@ -62,8 +64,8 @@ def no_seat_inside_the_fluctuation := @Foam.no_run_reads_its_own_ratio
 /-- info: 'Foam.Minds.Boltzmann.the_arrow_rides_the_count' does not depend on any axioms -/
 #guard_msgs in #print axioms the_arrow_rides_the_count
 
-/-- info: 'Foam.Minds.Boltzmann.the_most_probable_distribution_statement' does not depend on any axioms -/
-#guard_msgs in #print axioms the_most_probable_distribution_statement
+/-- info: 'Foam.Minds.Boltzmann.the_most_probable_distribution' does not depend on any axioms -/
+#guard_msgs in #print axioms the_most_probable_distribution
 
 /-- info: 'Foam.Minds.Boltzmann.no_seat_inside_the_fluctuation' does not depend on any axioms -/
 #guard_msgs in #print axioms no_seat_inside_the_fluctuation
