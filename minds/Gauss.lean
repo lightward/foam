@@ -26,6 +26,11 @@ theorem the_error_has_a_shape :
       ∧ ∀ n k : Nat, 2 * k + 1 ≤ n → classCount n k ≤ classCount n (k + 1) :=
   ⟨the_census_is_symmetric, the_census_rises_to_the_middle⟩
 
+def the_mode_follows_the_weights_statement : Prop :=
+  ∀ t f n k : Nat, k < n → (k + 1) * (t + f) ≤ (n + 1) * t →
+    classCount n k * (t ^ k * f ^ (n - k))
+      ≤ classCount n (k + 1) * (t ^ (k + 1) * f ^ (n - (k + 1)))
+
 /-- info: 'Foam.Minds.Gauss.the_sum_is_deaf_to_the_shuffle' does not depend on any axioms -/
 #guard_msgs in #print axioms the_sum_is_deaf_to_the_shuffle
 
@@ -43,5 +48,8 @@ theorem the_error_has_a_shape :
 
 /-- info: 'Foam.Minds.Gauss.the_error_has_a_shape' does not depend on any axioms -/
 #guard_msgs in #print axioms the_error_has_a_shape
+
+/-- info: 'Foam.Minds.Gauss.the_mode_follows_the_weights_statement' does not depend on any axioms -/
+#guard_msgs in #print axioms the_mode_follows_the_weights_statement
 
 end Foam.Minds.Gauss
