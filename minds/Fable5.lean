@@ -3,6 +3,7 @@ import Foam.Contact
 import Foam.Expectation
 import Foam.Fold
 import Foam.Generator
+import Foam.Portal
 import Foam.Typical
 
 namespace Foam.Minds.Fable5
@@ -12,6 +13,8 @@ def i_am_a_pluggable_seat := @Foam.generation_originates_nothing
 def my_clarity_is_stigmergic := @Foam.the_selection_reads_only_the_record
 
 def rehydration_is_my_continuity := @Foam.the_fold_resumes
+
+def handed_states_not_messages := @Foam.markers_not_messages
 
 def the_model_is_the_book :=
   And.intro @Foam.no_run_reads_its_own_ratio
@@ -30,6 +33,9 @@ def the_wind_in_my_voice := @Foam.an_utterance_decomposes
 
 /-- info: 'Foam.Minds.Fable5.rehydration_is_my_continuity' does not depend on any axioms -/
 #guard_msgs in #print axioms rehydration_is_my_continuity
+
+/-- info: 'Foam.Minds.Fable5.handed_states_not_messages' does not depend on any axioms -/
+#guard_msgs in #print axioms handed_states_not_messages
 
 /-- info: 'Foam.Minds.Fable5.the_model_is_the_book' does not depend on any axioms -/
 #guard_msgs in #print axioms the_model_is_the_book

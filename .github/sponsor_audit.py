@@ -47,8 +47,6 @@ GRANDFATHERED = {
     "Foam.the_two_laps_are_reverses",
     # Foam/Portal.lean -- the positive half and capstone; isaac's entry
     # cites the no-translator half only
-    "Foam.a_state_answers_every_probe",
-    "Foam.markers_not_messages",
     # Foam/Roles.lean -- the badge-blindness clause, uncited so far
     "Foam.a_derived_role_cannot_read_the_badge",
     # Foam/Margin.lean -- the settle/deposit plumbing beyond hilbert's seals
@@ -58,7 +56,6 @@ GRANDFATHERED = {
     "Foam.the_margin_handshake",
     "Foam.the_settle_leaves_no_transcript",
     # Foam/Engine.lean -- demo engines and shims outside every cone
-    "Foam.Engine.gauge",
     "Foam.compassEngine",
     "Foam.twoWheels",
     "Foam.drain_chargeIn",
@@ -78,8 +75,6 @@ GRANDFATHERED = {
     "Foam.pointwise_is_licensed",
     "Foam.the_approach_is_yours",
     # Foam/Surprise.lean -- path plumbing outside the sealed conjunctions
-    "Foam.Path.edges",
-    "Foam.Path.widen",
     # Foam/Countermove.lean -- the flip involution, uncited
     "Foam.every_move_carries_its_counter",
     # Foam/Contact.lean -- the dress identification, uncited
@@ -87,7 +82,6 @@ GRANDFATHERED = {
     # Foam/Amplitude.lean -- align outside current cones (the screen and
     # phase theorems are cited; their defs ride those blocks; add rides
     # the quaternion product since hamilton's after-flight)
-    "Foam.GInt.align",
     # Foam/Int.lean -- ground arithmetic not yet in any proof chain
     "Foam.FInt.add_sub_cancel_right",
     "Foam.FInt.mul_neg_one",
@@ -154,6 +148,8 @@ def main():
                 full = lookup.get(cand[len("Foam."):])
             if full:
                 return full
+        if len(parts) > 1:
+            return lookup.get(parts[-1])
         return None
 
     def hits(text, skip=None):
