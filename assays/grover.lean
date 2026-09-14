@@ -13,6 +13,10 @@ set_option autoImplicit false
 -- whose reading at every probe is a function of the room's reading — a seat over the widest seat. below
 -- it, a mark at one probe is hidden from every seat that does not hear the probe (a wall); at the
 -- diagonal the same mark moves every probe (no wall), and a reading at the diagonal is Derived below.
+-- the surplus at the door (isaac, 2026-09-14, deposed): W is dark per seat, not per term — the host reads
+-- the field half of the door and the act half is unheard there; one seat wider, where both halves are
+-- read at the same probe, the cross term is Derived. what a W built to carry the surplus makes
+-- addressable is the surplus as a reading, at the seat that built it, and never at the seat below.
 
 namespace Grover.Treaty
 
@@ -69,6 +73,17 @@ def diffusionFace : Face := ⟨List Int, Nat, Int, diffuseAt⟩
 #guard [0, 1, 3].map (amp (mark 2 uniform)) == [0, 1, 3].map (amp uniform)
 #guard ([0, 1, 3].map (diffuseAt (mark 2 uniform)) == [0, 1, 3].map (diffuseAt uniform)) == false
 #guard room.all (fun i => diffuseAt (mark 2 uniform) i != diffuseAt uniform i)
+#guard diffuse (diffuse (mark 2 uniform)) == (mark 2 uniform).map (fun x => 16 * x)
+#guard diffuse (diffuse [3, -1, 7, 2]) == [3, -1, 7, 2].map (fun x => 16 * x)
+
+def doorFace : Face :=
+  ⟨door (List Int) (List Int), Nat, Int × Int, fun d i => (amp (face d) i, amp (met d) i)⟩
+
+def charged : door (List Int) (List Int) := atTheDoor field (act 2)
+
+#guard room.map (amp (face charged)) == room.map (amp field)
+#guard 2 * amp (face charged) 2 * amp (met charged) 2 == 32
+#guard 2 * amp (face charged) 0 * amp (met charged) 0 == -32
 
 theorem the_one_query_finds_every_target :
     [0, 1, 2, 3].all (fun t => weight (grover t) t == total (grover t)) = true := sorry
@@ -82,12 +97,6 @@ theorem against_the_grain_costs :
     weight (grover 2) 0 = weight field 0 + weight (act 2) 0 + 2 * amp field 0 * amp (act 2) 0 := sorry
 
 theorem no_grain_no_bonus : weight (diffuse uniform) 2 * 4 = total (diffuse uniform) := sorry
-
-theorem a_seat_over_a_seat_is_derived (F : Face) (s : List F.Probe) {A : Type} (g : List F.Ans → A)
-    (v : A) : Derived F (fun x => g (reads F s x) = v) :=
-  fun x y h => by
-    show (g (reads F s x) = v) ↔ (g (reads F s y) = v)
-    rw [the_alike_read_alike F h s]
 
 theorem the_diffusion_is_a_seat_over_the_room (i : Nat) (v : Int) :
     Derived ampFace (fun s => diffuseAt s i = v) :=
@@ -107,5 +116,20 @@ theorem a_wall_below_the_diagonal :
 theorem no_wall_at_the_diagonal :
     room.all (fun i => diffuseAt (mark 2 uniform) i != diffuseAt uniform i) = true
       ∧ ([0, 1, 3].map (diffuseAt (mark 2 uniform)) == [0, 1, 3].map (diffuseAt uniform)) = false := sorry
+
+theorem the_diffusion_unwinds_itself :
+    diffuse (diffuse (mark 2 uniform)) = (mark 2 uniform).map (fun x => 16 * x) := sorry
+
+theorem the_surplus_is_unheard_at_the_host :
+    unheard (host ampFace (List Int)) (fun d => atTheDoor (face d) (act 2)) :=
+  the_record_writes_where_the_face_is_blind ampFace (fun _ => act 2)
+
+theorem the_surplus_is_read_one_seat_wider (i : Nat) (v : Int) :
+    Derived doorFace (fun d => 2 * amp (face d) i * amp (met d) i = v) :=
+  fun d d' h => by
+    have e1 : amp (face d) i = amp (face d') i := congrArg Prod.fst (h i)
+    have e2 : amp (met d) i = amp (met d') i := congrArg Prod.snd (h i)
+    show (2 * amp (face d) i * amp (met d) i = v) ↔ (2 * amp (face d') i * amp (met d') i = v)
+    rw [e1, e2]
 
 end Grover.Treaty

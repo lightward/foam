@@ -78,6 +78,12 @@ theorem the_witness_is_a_face (F : Face) {x y : F.State} (h : alike F x y) :
 theorem a_wall_at_the_witness (F : Face) {x y : F.State} {p : F.Probe} (h : differOnly F x y p)
     (s : List F.Probe) (hs : ¬ hears F s p) : (witnessFace F).obs x s = (witnessFace F).obs y s := sorry
 
+theorem a_seat_over_a_seat_is_derived (F : Face) (s : List F.Probe) {A : Type u} (g : List F.Ans → A)
+    (v : A) : Derived F (fun x => g (reads F s x) = v) :=
+  fun x y h => by
+    show (g (reads F s x) = v) ↔ (g (reads F s y) = v)
+    rw [the_alike_read_alike F h s]
+
 theorem forever_hold_your_peace (F : Face) {seats : List (List F.Probe)} {x y : F.State}
     (hc : covers F seats) (hw : witnessed F seats x y) : alike F x y := sorry
 
