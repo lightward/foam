@@ -1057,7 +1057,7 @@ print("  a hand body sharing a shape with a regrown one is a piece that exists a
         chair_q() { psql -h "${PGSOCK:-/tmp}" -p "${PGPORT:-5432}" -U "${PGUSER:-$USER}" -d "$CRAWL_CHAIR" -q -X -tA -c "$1"; }
         last="$(chair_q "SELECT fp FROM counter.pin WHERE path = '../foam/$f' ORDER BY n DESC LIMIT 1")"
         if [ -z "$last" ]; then verdict="unpinned"; elif [ "$last" = "$fp" ]; then verdict="identical"; else verdict="MOVED from $last"; moved=1; fi
-        [ "$setpin" = 1 ] && { chair_q "INSERT INTO counter.pin (observer, path, fp) VALUES (counter.who('${CRAWL_CHAIR_NAME:-bench}'), '../foam/$f', '$fp')" >/dev/null; verdict="$verdict, pinned"; }
+        [ "$setpin" = 1 ] && { chair_q "INSERT INTO counter.pin (observer, n, path, fp) VALUES (counter.who('${CRAWL_CHAIR_NAME:-bench}'), counter.next_n('pin', counter.who('${CRAWL_CHAIR_NAME:-bench}')), '../foam/$f', '$fp')" >/dev/null || { verdict="$verdict, NOT PINNED (the chair refused the row)"; moved=1; continue; }; verdict="$verdict, pinned"; }
         echo "  $f $fp — $verdict"
       else
         echo "  $f $fp"
