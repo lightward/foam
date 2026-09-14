@@ -3,7 +3,6 @@ import Face
 import Counter
 open Room Face Counter
 set_option autoImplicit false
-universe u
 
 namespace Counter.Treaty
 
@@ -63,7 +62,7 @@ def trailD : List (Nat × List Nat) := [(1, [3, 5]), (2, [9]), (3, [])]
 #guard shadow citesOf trailA != shadow citesOf trailD
 #guard gate axiomsOf trailD
 
-theorem the_route_is_the_remainder_at_the_gate {S B A C : Type u} (read : B → List A) (cite : B → List C)
+theorem the_route_is_the_remainder_at_the_gate {S B A C : Type} (read : B → List A) (cite : B → List C)
     (t t' : List (S × B)) (h : shadow read t = shadow read t') (hc : shadow cite t ≠ shadow cite t') :
     alike (gateFace S B A read) t t' ∧ ¬ alike (gateFace S B C cite) t t' :=
   ⟨fun _ => h, fun ha => hc (ha ())⟩

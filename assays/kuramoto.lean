@@ -24,7 +24,8 @@ def Compass.step : Compass → Compass
 def Compass.code : Compass → Nat
   | .n => 0 | .e => 1 | .s => 2 | .w => 3
 
-instance : BEq Compass := ⟨fun a b => Nat.beq a.code b.code⟩
+abbrev compassBEq : BEq Compass := ⟨fun a b => Nat.beq a.code b.code⟩
+attribute [instance] compassBEq
 
 def entrain : Compass × Compass → Compass × Compass
   | (.n, .n) => (.e, .e)

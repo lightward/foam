@@ -134,7 +134,7 @@ settle_mode = os.environ.get('CRAWL_SETTLE') == '1'
 check_mode = os.environ.get('CRAWL_CHECK') == '1'
 germ_path = sys.argv[1]
 probe_name = os.environ.get('CRAWL_PROBE', '')
-DECL = re.compile(r'^(theorem|def|structure|inductive|abbrev) (\w+)', re.M)
+DECL = re.compile(r'^(theorem|def|structure|inductive|abbrev) (\w+(?:\.\w+)*)', re.M)
 
 MARKER = re.compile(r'^-- held \(waiting on: ([^)]*)\)\n', re.M)
 marker_needs = {}
@@ -903,7 +903,16 @@ else:
     for _, n, _ in order:
         seated_text[n] = by_name[n].rstrip('\n')
 
-text = list(prefix)
+# the artifact carries a receipt for every organ, carriers included (2026-09-14): a def carries its
+# compilation into every theorem that cites it, and the file certifies itself to whoever has only the
+# file. the receipts are minted here, into the artifact only — never into the prefix the trials see,
+# never into a settled germ — so what an organ is, is decided at this one seat; the gate counts the
+# kernel's organs against the file's receipts and parts on any disagreement.
+text = [header.rstrip('\n'), '']
+for _, n, b in carriers:
+    text.append(b.rstrip('\n')); text.append('')
+    if germ_mode and f'#print axioms {n}' not in b:
+        text.append(f"/-- info: '{NS_NAME}.{n}' does not depend on any axioms -/\n#guard_msgs in #print axioms {n}"); text.append('')
 for _, n, _ in order:
     text.append(seated_text[n]); text.append('')
 if footer:
