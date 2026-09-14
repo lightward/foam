@@ -3,10 +3,13 @@ import Counter
 open Lean Elab
 
 /-! the gate, drawn from the compiler's own species: an artifact is elaborated whole (every
-message a parting — a receipt that does not match prints one), each theorem's receipt is read by
-the kernel (the axioms it seats on), and the verdict is `Counter.conductive` on that shadow, the
-same def the assay's rows run. the gate reads a body only through the kernel; its verdict is a
-function of the shadow (`Counter.the_gate_hears_only_the_receipt`). -/
+message a parting — a receipt that does not match prints one), each organ's receipt is read by
+the kernel (the axioms it seats on) — theorems and carriers alike, since a def carries its
+compilation into every theorem that cites it (2026-09-14: an overlapping catch-all compiled
+through propext and was heard only two rows downstream) — and the verdict is `Counter.conductive`
+on that shadow, the same def the assay's rows run. the inline receipts are the theorems'; a
+carrier's receipt is read here and nowhere else. the gate reads a body only through the kernel;
+its verdict is a function of the shadow (`Counter.the_gate_hears_only_the_receipt`). -/
 
 abbrev EnvM := StateM Environment
 instance : MonadEnv EnvM where
@@ -34,10 +37,13 @@ unsafe def main (args : List String) : IO Unit := do
         if line.startsWith "namespace " then return (line.drop 10).trimAscii.toName
       return .anonymous
     let mut shadow : List (Name × List Name) := []
+    let mut theorems := 0
     for (n, ci) in st.env.constants.map₂.toList do
-      if !ci.isTheorem || n.isInternal then continue
+      if n.isInternal then continue
       if ns != .anonymous && n.getPrefix != ns then continue
+      if ci.isTheorem then theorems := theorems + 1
       shadow := (n, receiptsOf st.env n) :: shadow
+    let carriers := shadow.length - theorems
     let receipts := (src.splitOn "#print axioms").length - 1
     let partings := st.messages.toList
     let conductive := Counter.conductive shadow
@@ -47,10 +53,10 @@ unsafe def main (args : List String) : IO Unit := do
     if !conductive then
       let smuggled := shadow.filter (fun r => !r.2.isEmpty)
       holds := holds ++ smuggled.map (fun r => s!"{r.1} seats on {r.2}")
-    if receipts != shadow.length then
-      holds := holds ++ [s!"{shadow.length} organs but {receipts} receipts inline"]
+    if receipts != theorems then
+      holds := holds ++ [s!"{theorems} theorems but {receipts} receipts inline"]
     if holds.isEmpty then
-      IO.println s!"the gate [{path}]: silent, {shadow.length} organs, {receipts} receipts inline, conductive — drawn from Counter.gate"
+      IO.println s!"the gate [{path}]: silent, {shadow.length} organs ({theorems} theorems, {carriers} carriers), {receipts} receipts inline, conductive — drawn from Counter.gate"
     else
       red := true
       IO.println s!"the gate [{path}]: PARTS"
