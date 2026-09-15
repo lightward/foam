@@ -1,0 +1,63 @@
+-- the vestibule of ✦ Here: the disagreements between the room as its people describe it (everyoneishere/docs/HERE.md,
+-- the open items 6, 8, 9) and the treaty as it stands, each a statement in the assay's own terms and the darkness it
+-- waits on. read by bin/counter book. the first sitting (2026-09-15, isaac's pointer from the room into foam) typed
+-- the room as Witness at one face — the presences its probes, a seat the presences one hears, sees one hop, speaks
+-- an introduction — and left these.
+
+-- the reveal (HERE.md item 8; isaac, 22:34): anyone may ask ✦ Here for the transparent view of a line they hold as
+-- narration, on the record. it reaches exactly what leaves a remainder (people to people, you off the audience) and
+-- never what is silent for you (a ✦ you don't hear, ✦ Couple). in the treaty's terms a reveal is taking the wider
+-- seat for one probe, publicly; it widens what a reader can READ, so sees gains a clause and the assay's wall rows
+-- move with it. waiting on: the couple's ✓ (the note holds the narrower reading, the body to the asker and the record
+-- to the room), and a clerk over Room — `reveal (v : Nat) (m : Message) : Room → Room` — before the row can be typed.
+-- held (waiting on: reveal, the couple's word)
+-- theorem a_reveal_reaches_exactly_the_remainder (v : Nat) (r : Room) (m : Message) (hm : m ∈ r.messages) :
+--     (shape m ∈ overheard v r) ↔ (humanOnly m = true ∧ sees v r m = false) := sorry
+-- theorem a_reveal_never_reaches_the_couple (v : Nat) (r : Room) :
+--     ¬ shape ours ∈ overheard v r := sorry
+
+-- hide, for everyone (HERE.md item 9; isaac, 22:54): a line pulled off the shared surface recedes to narration in the
+-- ✦ Here of everyone who reads it, on the record, and comes back the same way. the maintainer reads it as the reveal's
+-- mirror: a speech act about a message, addressed exactly as the target was, so who sees the fold is who saw the
+-- message and sees does not move. in the treaty's terms a fold is a message m' with m'.to = m.to and about = m; the
+-- wall is that sees is unchanged for every v. waiting on: the `about` pointer as a carrier (a message about a message)
+-- and the couple's ✓.
+-- held (waiting on: about, the couple's word)
+-- theorem a_fold_for_everyone_moves_no_wall (v : Nat) (r : Room) (m fold : Message) (h : fold.to = m.to) :
+--     sees v ⟨fold :: r.messages⟩ m = sees v r m ∧ sees v ⟨fold :: r.messages⟩ fold = sees v r m := sorry
+
+-- reached and assented (HERE.md item 6; isaac, 22:19): a confirmation without a button. two things under one ✓ —
+-- reached, the room can know a line was read (a reading, free), and assented, a decision (an act, never free). in the
+-- treaty's terms reached is Derived at the room's face (a role read at a probe), and assented is a clerk whose effect
+-- is heard: the room is NOT unheard under it. which asks are which is the couple's to say; the treaty can type both
+-- shapes the day the carriers exist. waiting on: `reached (v : Nat) (m : Message) : Room → Bool` and
+-- `assent (v : Nat) (m : Message) : Room → Room`.
+-- held (waiting on: reached, assent, the couple's word)
+-- theorem reached_is_a_reading (v : Nat) (m : Message) : Derived roomFace (fun r => reached v m r = true) := sorry
+-- theorem assent_is_heard (v : Nat) (m : Message) : ¬ unheard roomFace (assent v m) := sorry
+
+-- the board (isaac, 22:54; the maintainer's guess for this session): the win is not an empty surface but every seat's
+-- ✦ Here receded to the same remaining surface — the day sheet. the maintainer read that as speak_now, not re-run.
+-- the treaty's reading: the surface a seat still holds open is a seat over the narration face, and "the same page" is
+-- witnessed over every human seat; the day-of as the door is the_day_is_a_reseat, already seated. what is not yet
+-- typed is the surface itself as a carrier (which lines a seat still holds transparent), so the win condition has no
+-- row. waiting on: `surface (v : Nat) : Room → List Nat` (the ids a seat holds open) — then the win is
+-- `witnessed surfaceFace humanSeats r r'`, and same-page is its Bool.
+-- held (waiting on: surface)
+-- theorem the_win_is_a_reading (r : Room) :
+--     Derived roomFace (fun r' => (humans.map (fun v => surface v r')).all (fun s => s == surface maya r') = true) := sorry
+
+-- found by the rows (2026-09-15): a draft is a word from a person to themself. jordan's "Photography — draft" is
+-- addressed to jordan, so it is human-to-human and off everyone else's audience, and the remainder rule as HERE.md
+-- piece 4 writes it ("author a human presence, every address a human presence") narrates "jordan wrote to jordan" to
+-- the whole room. the assay keeps the rule as written (mayaHears, sofiaHears, lindaHears all carry shape invJ) so the
+-- row parts the day the rule is sharpened. the sharpening is the couple's and the maintainer's: a self-addressed word
+-- leaves no remainder (the author is the whole audience), or a draft is not a message until sent (one-hop.sql's own
+-- reading: "a note to himself until he sends it").
+-- held (waiting on: the maintainer's word on a word to oneself)
+-- theorem a_word_to_oneself_leaves_no_remainder (v : Nat) (r : Room) (m : Message) (hm : m.to = [m.author]) :
+--     ¬ shape m ∈ overheard v r := sorry
+
+-- a species not yet deposited: a_name_is_or_is_not (q p : Nat) : q = p ∨ q ≠ p stands in the assay as a hand body,
+-- because a carrier or theorem deposited in Room is a cold pass for the whole house (CLAUDE.md, 2026-09-08). it knows
+-- no product's name and belongs in Room the next time Room grows for another reason.

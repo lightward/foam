@@ -37,7 +37,7 @@ print()
 
 # every stream read first, so a leaf is a leaf only if nothing in the house cites it:
 # citation crosses storeys (Face seats on Room's lemmas; Counter on both)
-DECL = re.compile(r'^(theorem|def|structure|inductive|abbrev) (\w+)', re.M)
+DECL = re.compile(r"^(theorem|def|structure|inductive|abbrev) (\w+'*)", re.M)
 books = []
 for label, src in lean_srcs:
     decls = [(m.group(1), m.group(2)) for m in DECL.finditer(src)]

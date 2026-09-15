@@ -63,6 +63,28 @@ theorem the_witness_parts_what_the_face_parts (F : Face) {x y : F.State}
 theorem the_sounding_is_the_trails_reading (F : Face) (s : F.State) :
     ∀ q : Interview F.Probe F.Ans, sound F s q = reads F (trail F s q) s := sorry
 
+theorem a_dark_probe_is_out_of_earshot (F : Face) (seats : List (List F.Probe)) (p : F.Probe)
+    (h : ∀ s, s ∈ seats → ¬ hears F s p) : ¬ p ∈ earshot F seats :=
+  fun hp => match mem_joinMap_back seats hp with
+    | ⟨s, hs, hps⟩ => h s hs hps
+
+theorem out_of_earshot_is_dark (F : Face) (seats : List (List F.Probe)) (p : F.Probe)
+    (h : ¬ p ∈ earshot F seats) : ∀ s, s ∈ seats → ¬ hears F s p :=
+  fun _ hs hps => h (mem_joinMap_intro hs hps)
+
+theorem the_ceremony_reseats_every_reading (F : Face) {W : Type w} (s : List F.Probe) (x : F.State) (w : W) :
+    reads (host F W) s (atTheDoor x w) = reads F s x := sorry
+
+theorem the_word_at_the_door_is_unread_at_every_seat (F : Face) {W : Type w} (s : List F.Probe) (x : F.State)
+    (w w' : W) : reads (host F W) s (atTheDoor x w) = reads (host F W) s (atTheDoor x w') := sorry
+
+theorem a_word_hidden_in_the_body_is_unheard_in_the_narration (F : Face) {B : Type w} (g : F.Ans → B)
+    {x y : F.State} {p : F.Probe} (h : differOnly F x y p) (hp : g (F.obs x p) = g (F.obs y p))
+    (dec : ∀ q : F.Probe, q = p ∨ q ≠ p) : alike (retell F g) x y :=
+  fun q => match dec q with
+    | Or.inl hq => by rw [hq]; exact hp
+    | Or.inr hq => by show g (F.obs x q) = g (F.obs y q); rw [h q hq]
+
 theorem the_room_is_the_widest_seat (F : Face) (s : List F.Probe) (x y : F.State)
     (h : reads F s x ≠ reads F s y) : ¬ alike F x y := sorry
 
@@ -83,6 +105,14 @@ theorem a_seat_over_a_seat_is_derived (F : Face) (s : List F.Probe) {A : Type u}
   fun x y h => by
     show (g (reads F s x) = v) ↔ (g (reads F s y) = v)
     rw [the_alike_read_alike F h s]
+
+theorem a_probe_no_seat_hears_is_dark (F : Face) {x y : F.State} {p : F.Probe} (h : differOnly F x y p)
+    (seats : List (List F.Probe)) (hd : ∀ s, s ∈ seats → ¬ hears F s p) : witnessed F seats x y := sorry
+
+theorem the_narration_reads_alike_at_every_seat (F : Face) {B : Type w} (g : F.Ans → B)
+    {x y : F.State} {p : F.Probe} (h : differOnly F x y p) (hp : g (F.obs x p) = g (F.obs y p))
+    (dec : ∀ q : F.Probe, q = p ∨ q ≠ p) (s : List F.Probe) :
+    reads (retell F g) s x = reads (retell F g) s y := sorry
 
 theorem forever_hold_your_peace (F : Face) {seats : List (List F.Probe)} {x y : F.State}
     (hc : covers F seats) (hw : witnessed F seats x y) : alike F x y := sorry

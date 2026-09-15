@@ -134,7 +134,7 @@ settle_mode = os.environ.get('CRAWL_SETTLE') == '1'
 check_mode = os.environ.get('CRAWL_CHECK') == '1'
 germ_path = sys.argv[1]
 probe_name = os.environ.get('CRAWL_PROBE', '')
-DECL = re.compile(r'^(theorem|def|structure|inductive|abbrev) (\w+(?:\.\w+)*)', re.M)
+DECL = re.compile(r"^(theorem|def|structure|inductive|abbrev) (\w+'*(?:\.\w+'*)*)", re.M)
 
 MARKER = re.compile(r'^-- held \(waiting on: ([^)]*)\)\n', re.M)
 marker_needs = {}
