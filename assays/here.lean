@@ -96,8 +96,14 @@ def narrationFace : Face := retell roomFace narrate
 
 def humanOnly (m : Message) : Bool := enrolled Nat.beq humans m.author && m.to.all (enrolled Nat.beq humans)
 
+def alone (m : Message) : Bool :=
+  match m.to with
+  | [] => false
+  | [a] => Nat.beq a m.author
+  | _ :: _ :: _ => false
+
 def overheard (v : Nat) (r : Room) : List (Nat × List Nat × Nat) :=
-  narrate (r.messages.filter (fun m => humanOnly m && !(sees v r m)))
+  narrate (r.messages.filter (fun m => humanOnly m && !(alone m) && !(sees v r m)))
 
 def others : List Nat := [ava, sofia, jordan, dana, linda]
 
@@ -170,11 +176,14 @@ def narrated' : List (List (Nat × List Nat × Nat)) := reads narrationFace (sea
 #guard sees ava demo ours == false
 #guard sees linda demo ours == false
 #guard coupleInEarshot == false
-#guard lindaHears == [shape thread, shape invJ]
-#guard avaHears == [shape thread, shape invJ]
-#guard mayaHears == [shape invJ]
-#guard sofiaHears == [shape invJ]
+#guard lindaHears == [shape thread]
+#guard avaHears == [shape thread]
+#guard mayaHears == []
+#guard sofiaHears == []
 #guard humanOnly invJ
+#guard alone invJ
+#guard alone thread == false
+#guard (overheard linda demo).all (fun t => !(t == shape invJ))
 #guard (overheard linda demo).all (fun t => !(t == shape ours))
 #guard overheard linda demo == overheard linda demo'
 #guard lindaReads == lindaReads'
@@ -233,5 +242,27 @@ theorem the_room_is_the_widest_seat (s : List Nat) (r r' : Room) (h : reads room
 
 theorem two_rooms_part_only_at_a_presence (r r' : Room) :
     alike roomFace r r' ↔ ∀ q, sound roomFace r q = sound roomFace r' q := sorry
+
+theorem the_draft_leaves_no_remainder : (overheard linda demo).all (fun t => !(t == shape invJ)) = true := sorry
+
+theorem a_word_to_oneself_is_unread_at_every_other_seat (r r' : Room) (h : differOnly roomFace r r' jordan)
+    (s : List Nat) (hs : ¬ hears roomFace s jordan) : reads roomFace s r = reads roomFace s r' := sorry
+
+theorem the_shape_keeps_the_audience (m m' : Message) (h : shape m' = shape m) : alone m' = alone m := by
+  have ha : m'.author = m.author := congrArg (fun t : Nat × List Nat × Nat => t.1) h
+  have ht : m'.to = m.to := congrArg (fun t : Nat × List Nat × Nat => t.2.1) h
+  show (match m'.to with | [] => false | [a] => Nat.beq a m'.author | _ :: _ :: _ => false)
+    = (match m.to with | [] => false | [a] => Nat.beq a m.author | _ :: _ :: _ => false)
+  rw [ha, ht]
+
+theorem a_word_to_oneself_leaves_no_remainder (v : Nat) (r : Room) (m : Message) (hm : alone m = true) :
+    ¬ shape m ∈ overheard v r := fun hin => by
+  obtain ⟨m', hm', he⟩ := mem_map_back _ hin
+  have hp := filter_holds r.messages hm'
+  have h1 := and_reads _ _ hp
+  have h2 := and_reads _ _ h1.1
+  have hal : alone m' = true := (the_shape_keeps_the_audience m m' he).trans hm
+  rw [hal] at h2
+  exact nomatch h2.2
 
 end Here.Treaty

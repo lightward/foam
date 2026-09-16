@@ -47,16 +47,14 @@
 -- theorem the_win_is_a_reading (r : Room) :
 --     Derived roomFace (fun r' => (humans.map (fun v => surface v r')).all (fun s => s == surface maya r') = true) := sorry
 
--- found by the rows (2026-09-15): a draft is a word from a person to themself. jordan's "Photography — draft" is
--- addressed to jordan, so it is human-to-human and off everyone else's audience, and the remainder rule as HERE.md
--- piece 4 writes it ("author a human presence, every address a human presence") narrates "jordan wrote to jordan" to
--- the whole room. the assay keeps the rule as written (mayaHears, sofiaHears, lindaHears all carry shape invJ) so the
--- row parts the day the rule is sharpened. the sharpening is the couple's and the maintainer's: a self-addressed word
--- leaves no remainder (the author is the whole audience), or a draft is not a message until sent (one-hop.sql's own
--- reading: "a note to himself until he sends it").
--- held (waiting on: the maintainer's word on a word to oneself)
--- theorem a_word_to_oneself_leaves_no_remainder (v : Nat) (r : Room) (m : Message) (hm : m.to = [m.author]) :
---     ¬ shape m ∈ overheard v r := sorry
+-- seated (2026-09-16, the room's word through the maintainer, ce851e7 in everyoneishere): a self-addressed word
+-- leaves no remainder — the general rule, the draft one case of it, the invoice row unmoved, the reveal kept honest.
+-- the assay's overheard now excludes a word whose audience is its author alone (`alone`); the concrete row regrows,
+-- the wall reading regrows (a word only its author's seat hears is unread at every seat that does not hear the
+-- author, by a_wall_hides_the_probe), and the general statement a_word_to_oneself_leaves_no_remainder stands as a
+-- hand body: its proof walks the filter (mem_map_back, filter_holds, and_reads) and the shape keeping the audience,
+-- a route the search does not compose. found 2026-09-15 by the rows: with piece 4 as first written, jordan's unsent
+-- invoice narrated "jordan wrote to jordan" to the whole room.
 
 -- a species not yet deposited: a_name_is_or_is_not (q p : Nat) : q = p ∨ q ≠ p stands in the assay as a hand body,
 -- because a carrier or theorem deposited in Room is a cold pass for the whole house (CLAUDE.md, 2026-09-08). it knows
