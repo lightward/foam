@@ -308,6 +308,23 @@ def recordTheState (d : door Nat Nat) : Nat := face d
 
 def readThrough (w i : Nat) : Nat := i + w
 
+def runs {I : Type u} {O : Type v} (m : Machine I O) (r : m.S → I) (rest : m.S → Bool) : m.S → Nat → Option O
+  | s, 0 => cond (rest s) (some (m.out s)) none
+  | s, n + 1 => cond (rest s) (some (m.out s)) (runs m r rest (m.step s (r s)) n)
+
+structure Runner (I : Type u) (O : Type v) where
+  m : Machine.{u, v, w} I O
+  steer : m.S → I
+  rest : m.S → Bool
+
+def haltingGap (I : Type u) (O : Type v) : Face :=
+  ⟨Runner.{u, v, w} I O, List I × Nat, Option O, fun R p => runs R.m R.steer R.rest (park R.m R.m.s0 p.1) p.2⟩
+
+def counting : Runner Unit Nat := ⟨tally, fun _ => (), fun s => Nat.ble 3 s⟩
+
+def carrying : Runner Unit Nat :=
+  ⟨⟨Nat × Unit, (0, ()), fun s _ => (s.1 + 1, ()), fun s => s.1⟩, fun _ => (), fun s => Nat.ble 3 s.1⟩
+
 theorem no_interview_parts_the_alike (F : Face) {s t : F.State} (h : alike F s t) :
     ∀ q, sound F s q = sound F t q
   | .rest => rfl
@@ -889,6 +906,19 @@ theorem the_read_tape_parts_at_the_gap :
     behavior (tape adder (0 : Nat) recordTheState readThrough) [1, 1, 1] = (4 : Nat)
       ∧ behavior adder [1, 1, 1] = (3 : Nat) ∧ (4 : Nat) ≠ 3 := sorry
 
+theorem the_intertwiner_carries_the_run {I : Type u} {O : Type v} (m n : Machine I O) (r : m.S → I) (r' : n.S → I)
+    (rest : m.S → Bool) (rest' : n.S → Bool) (h : m.S → n.S)
+    (hstep : ∀ s i, n.step (h s) i = h (m.step s i)) (hsteer : ∀ s, r' (h s) = r s)
+    (hrest : ∀ s, rest' (h s) = rest s) (hout : ∀ s, n.out (h s) = m.out s) :
+    ∀ (k : Nat) (s : m.S), runs n r' rest' (h s) k = runs m r rest s k
+  | 0, s => by
+      show cond (rest' (h s)) (some (n.out (h s))) none = cond (rest s) (some (m.out s)) none
+      rw [hrest, hout]
+  | k + 1, s => by
+      show cond (rest' (h s)) (some (n.out (h s))) (runs n r' rest' (n.step (h s) (r' (h s))) k)
+        = cond (rest s) (some (m.out s)) (runs m r rest (m.step s (r s)) k)
+      rw [hrest, hout, hsteer, hstep, the_intertwiner_carries_the_run m n r r' rest rest' h hstep hsteer hrest hout k]
+
 theorem a_wider_seat_reads_the_remainder (F : Face) {W : Type v'}
     (s : F.State) {w w' : W} (hw : w ≠ w') :
     ¬ alike (widen F W) (atTheDoor s w) (atTheDoor s w') :=
@@ -1117,6 +1147,16 @@ theorem the_tended_walk_is_the_walk {I : Type u} {O : Type v} {W : Type w} (m : 
     (σ : door m.S W → W) (w : List I) (d : door m.S W) :
     face (park (tend m w0 σ) d w) = park m (face d) w := sorry
 
+theorem an_elegant_rebody_is_unheard_at_the_halting_gap {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
+    (h : R.m.S → R'.m.S) (hs0 : h R.m.s0 = R'.m.s0)
+    (hstep : ∀ s i, R'.m.step (h s) i = h (R.m.step s i)) (hsteer : ∀ s, R'.steer (h s) = R.steer s)
+    (hrest : ∀ s, R'.rest (h s) = R.rest s) (hout : ∀ s, R'.m.out (h s) = R.m.out s) :
+    alike (haltingGap I O) R' R :=
+  fun p => by
+    show runs R'.m R'.steer R'.rest (park R'.m R'.m.s0 p.1) p.2 = runs R.m R.steer R.rest (park R.m R.m.s0 p.1) p.2
+    rw [← hs0, the_intertwined_walks_agree R.m R'.m h hstep p.1 R.m.s0,
+        the_intertwiner_carries_the_run R.m R'.m R.steer R'.steer R.rest R'.rest h hstep hsteer hrest hout]
+
 theorem the_seat_map_carries_the_conduct (F : Face) (s t : F.State) :
     alike F s t ↔ alike (appFace F.Probe F.Ans) (F.obs s) (F.obs t) := sorry
 
@@ -1217,6 +1257,10 @@ theorem the_left_loop_reads_zero :
 theorem the_tending_is_unheard_at_the_gap {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W)
     (σ : door m.S W → W) (w : List I) : behavior (tend m w0 σ) w = behavior m w :=
   congrArg m.out (the_tended_walk_is_the_walk m w0 σ w (atTheDoor m.s0 w0))
+
+theorem the_carried_unit_is_unheard_at_rest : alike (haltingGap Unit Nat) carrying counting :=
+  an_elegant_rebody_is_unheard_at_the_halting_gap counting carrying (fun s => (s, ())) rfl
+    (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
 theorem the_pointwise_license (P : Type v) (A : Type w) (g h : P → A) :
     alike (appFace P A) g h ↔ ∀ p, g p = h p := sorry
