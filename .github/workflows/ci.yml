@@ -25,12 +25,22 @@ jobs:
           build: false
           test: false
           lake-package-directory: .
-      - name: the chair (../counter — the memo of every trial and reading the house has run, so a check re-derives only what changed; the artifact is byte-identical with or without it, and pin says so)
+      - name: the chair's seats (../counter — chairs.sql; the memo itself lives in a cache, below, never in a repo)
         run: |
           sudo apt-get install -y -q postgresql-client >/dev/null
           git clone -q --depth 1 https://github.com/lightward/counter.git ../counter
           PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres ../counter/bin/chair init
           for kv in CRAWL_CHAIR=counter CRAWL_CHAIR_NAME=bench PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres; do echo "$kv" >> "$GITHUB_ENV"; done
+      - name: the memo, restored (every charge and reading the house has run, keyed by the judge, the pieces, and the toolchain; a key that misses is a cold pass, never a red)
+        id: memo
+        uses: actions/cache/restore@v4
+        with:
+          path: memo.sql
+          key: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
+          restore-keys: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-
+      - name: the memo, loaded
+        if: steps.memo.outputs.cache-matched-key != ''
+        run: PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -q -X -v ON_ERROR_STOP=1 -f memo.sql && echo "memo loaded from ${{ steps.memo.outputs.cache-matched-key }}"
       - name: grow Room, then Face on it, then Witness on Face (every vacancy regrows; each germ its own settle; the standards print)
         run: bin/counter grow germ/Room.lean --check && bin/counter grow --check && bin/counter grow germ/Witness.lean --check
       - name: "grow the customers on foam (germ/Toy.lean, germ/Counter.lean, germ/Seek.lean, germ/Roster.lean — their own settles)"
@@ -52,5 +62,13 @@ jobs:
         run: |
           bin/counter treaty assays/eih.lean
           bin/counter treaty assays/cycle.lean
-      - name: the pins (every artifact against its last pin in the chair — identical, or moved and said so)
-        run: bin/counter pin || true
+      - name: the pins (every artifact against the pins committed beside the germs — identical, or red: a pin moves in the same commit as its cause, bin/counter pin --set)
+        run: bin/counter pin
+      - name: the memo, saved (the charges and readings after this run, for the next; the cache is immutable per key, so every run saves under its own and the next restores the latest by prefix)
+        if: always()
+        run: PGPASSWORD=postgres pg_dump -h localhost -p 5432 -U postgres -d counter --data-only --inserts --rows-per-insert=1000 --on-conflict-do-nothing --table=counter.charge --table=counter.reading > memo.sql && wc -c memo.sql
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: memo.sql
+          key: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}

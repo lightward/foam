@@ -205,6 +205,30 @@ import hashlib
 chair = os.environ.get('CRAWL_CHAIR')
 chair_name = os.environ.get('CRAWL_CHAIR_NAME', 'bench')
 def sha(b): return hashlib.sha256(b if isinstance(b, bytes) else b.encode()).hexdigest()[:32]
+def shadow_of(src):
+    """the prefix as a trial reads it (2026-09-18): the header and every carrier whole, every theorem its
+    statement and its receipt and never its body — a theorem's value is opaque to elaboration, so a
+    body-only change (a settle vacating a hand body, a piece re-deriving a proof, a rename's citations)
+    leaves every trial's answer standing; the_gate_reads_no_body, applied to the memo's key"""
+    spans = [(m.start(), m.group(1)) for m in DECL.finditer(src)]
+    if not spans: return src
+    out = [src[:spans[0][0]]]
+    for i, (start, kind) in enumerate(spans):
+        end = spans[i + 1][0] if i + 1 < len(spans) else len(src)
+        block = src[start:end]
+        if kind != 'theorem':
+            out.append(block); continue
+        depth, a = 0, -1
+        for j, ch in enumerate(block):
+            if ch in '({[⟨': depth += 1
+            elif ch in ')}]⟩': depth -= 1
+            elif depth == 0 and block.startswith(':=', j):
+                a = j; break
+        c = block.find('\n  | ')
+        cut = min(x for x in (a, c, len(block)) if x != -1)
+        rt = block.rfind('\n/-- info:')
+        out.append(block[:cut].rstrip() + '\n' + (block[rt:] if rt != -1 else ''))
+    return '\n'.join(out)
 env_fp = ''
 chair_id = ''
 if chair:
@@ -214,7 +238,7 @@ if chair:
         if mod in _seen or not os.path.exists(f'grown/{mod}.lean'): return
         _seen.add(mod)
         for dep in re.findall(r'^import (\S+)', open(f'grown/{mod}.lean').read(), re.M): _walk(dep)
-        _parts.append(open(f'grown/{mod}.lean', 'rb').read())
+        _parts.append(shadow_of(open(f'grown/{mod}.lean').read()).encode())
     for _m in IMPORTS: _walk(_m)
     env_fp = sha(b'\0'.join(_parts))
     def chair_sql(sql, stdin=None):
@@ -502,7 +526,7 @@ if primings_path:
         to_judge = []   # the groups' suffixes the chair could not answer
         if chair:
             import csv, io
-            pfx = sha(env_fp + '\n'.join(prefix_lines))
+            pfx = sha(env_fp + shadow_of('\n'.join(prefix_lines)))
             cfps = [sha(t) for t in texts]
             memo = {}
             rows = chair_sql(f"SELECT candidate_fp, verdict, body FROM counter.charge WHERE prefix_fp = '{pfx}' AND candidate_fp = ANY(ARRAY[{', '.join(repr(c) for c in sorted(set(cfps)))}]::text[])")
@@ -553,7 +577,11 @@ if primings_path:
             # neither the artifact nor the memo carries a backtrace as Lean
             for j, i in enumerate(flat):
                 if j in jb and any('PANIC at' in l for l in jb[j]):
-                    jb[j] = [l for l in jb[j] if not ('PANIC at' in l or l.strip() == 'backtrace:' or re.match(r'\s*\d+\s+\S+\s+0x[0-9a-f]+', l))]
+                    # the panic's text is appended after the body it interrupted, and its backtrace wears
+                    # the platform's shape (numbered dylib frames on macOS, /home/runner paths on Linux —
+                    # the first strip kept the Linux lines and CI carried them as Lean): cut at the panic
+                    k = next(x for x, l in enumerate(jb[j]) if 'PANIC at' in l)
+                    jb[j] = jb[j][:k]
                 verdicts[i] = jv[j]
                 if j in jb: bodies[i] = '\n'.join(jb[j]).rstrip()
             if chair:
@@ -1049,27 +1077,25 @@ print("  a hand body sharing a shape with a regrown one is a piece that exists a
   schema) shift; exec "$ROOT/bin/schema.sh" "$@" ;;
   treaty) shift; exec "$ROOT/bin/treaty.sh" "$@" ;;
   pin)
-    # the artifacts by fingerprint; with a chair, each against its last pin. anchor the end so the
-    # means can float: a change that keeps every fingerprint is unheard
+    # the artifacts by fingerprint against the pins committed beside the germs (`pins`: one artifact per
+    # line, path and fingerprint): identical, or MOVED and said so, or unpinned; --set writes them. a pin
+    # moves in the same commit as its cause, so CI is red on a moved or missing pin. anchor the end so
+    # the means can float: a change that keeps every fingerprint is unheard
     shift; setpin=0; [ "${1:-}" = --set ] && { setpin=1; shift; }
     if [ $# -eq 0 ]; then
       set -- $(grep -E '^defaultTargets' lakefile.toml | grep -oE '"[A-Za-z]+"' | tr -d '"' | sed 's|^|grown/|; s|$|.lean|') grown/assays/*.lean
     fi
-    export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
-    moved=0
+    moved=0; lines=""
     for f in "$@"; do
       [ -f "$f" ] || continue
       fp="$(shasum -a 256 "$f" | cut -c1-16)"
-      if [ -n "${CRAWL_CHAIR:-}" ]; then
-        chair_q() { psql -h "${PGSOCK:-/tmp}" -p "${PGPORT:-5432}" -U "${PGUSER:-$USER}" -d "$CRAWL_CHAIR" -q -X -tA -c "$1"; }
-        last="$(chair_q "SELECT fp FROM counter.pin WHERE path = '../foam/$f' ORDER BY n DESC LIMIT 1")"
-        if [ -z "$last" ]; then verdict="unpinned"; elif [ "$last" = "$fp" ]; then verdict="identical"; else verdict="MOVED from $last"; moved=1; fi
-        [ "$setpin" = 1 ] && { chair_q "INSERT INTO counter.pin (observer, n, path, fp) VALUES (counter.who('${CRAWL_CHAIR_NAME:-bench}'), counter.next_n('pin', counter.who('${CRAWL_CHAIR_NAME:-bench}')), '../foam/$f', '$fp')" >/dev/null || { verdict="$verdict, NOT PINNED (the chair refused the row)"; moved=1; continue; }; verdict="$verdict, pinned"; }
-        echo "  $f $fp — $verdict"
-      else
-        echo "  $f $fp"
-      fi
+      last="$(awk -F'\t' -v f="$f" '$1 == f { print $2 }' pins 2>/dev/null)"
+      if [ -z "$last" ]; then verdict="unpinned"; moved=1; elif [ "$last" = "$fp" ]; then verdict="identical"; else verdict="MOVED from $last"; moved=1; fi
+      echo "  $f $fp — $verdict"
+      lines="$lines$f	$fp
+"
     done
+    if [ "$setpin" = 1 ]; then printf '%s' "$lines" > pins; echo "  pins: $(wc -l < pins | tr -d ' ') artifacts anchored in ./pins"; exit 0; fi
     exit $moved ;;
   countersign)
     # the whole house, in one verb: every germ its own settle, the treaty assays grown, lake build,

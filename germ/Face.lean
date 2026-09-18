@@ -1178,8 +1178,7 @@ theorem the_right_loop_reads_zero :
 
 theorem the_tended_walk_is_the_walk {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W)
     (σ : door m.S W → W) (w : List I) (d : door m.S W) :
-    face (park (tend m w0 σ) d w) = park m (face d) w :=
-  (the_intertwined_walks_agree (tend m w0 σ) m face (fun _ _ => rfl) w d).symm
+    face (park (tend m w0 σ) d w) = park m (face d) w := sorry
 
 theorem an_intertwined_rebody_is_unheard_at_the_halting_gap {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
     (h : R.m.S → R'.m.S) (hs0 : h R.m.s0 = R'.m.s0)
@@ -1193,8 +1192,7 @@ theorem an_intertwined_rebody_is_unheard_at_the_halting_gap {I : Type u} {O : Ty
 
 theorem two_runners_in_step_rest_alike {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
     (B : R.m.S → R'.m.S → Prop) (hB : inStepWith R R' B) (h0 : B R.m.s0 R'.m.s0) :
-    alike (haltingGap I O) R R' :=
-  fun p => a_relation_in_step_carries_the_run R R' B hB p.2 _ _ (a_relation_in_step_walks_the_word R R' B hB p.1 _ _ h0)
+    alike (haltingGap I O) R R' := sorry
 
 theorem the_seat_map_carries_the_conduct (F : Face) (s t : F.State) :
     alike F s t ↔ alike (appFace F.Probe F.Ans) (F.obs s) (F.obs t) := sorry

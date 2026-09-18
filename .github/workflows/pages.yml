@@ -37,12 +37,22 @@ jobs:
           build: false
           test: false
           lake-package-directory: .
-      - name: the chair (../counter — the memo of every trial and reading, so the grow re-derives only what changed)
+      - name: the chair's seats (../counter — chairs.sql; the memo lives in the CI cache)
         run: |
           sudo apt-get install -y -q postgresql-client >/dev/null
           git clone -q --depth 1 https://github.com/lightward/counter.git ../counter
           PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres ../counter/bin/chair init
           for kv in CRAWL_CHAIR=counter CRAWL_CHAIR_NAME=bench PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres; do echo "$kv" >> "$GITHUB_ENV"; done
+      - name: the memo, restored
+        id: memo
+        uses: actions/cache/restore@v4
+        with:
+          path: memo.sql
+          key: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
+          restore-keys: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-
+      - name: the memo, loaded
+        if: steps.memo.outputs.cache-matched-key != ''
+        run: PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -q -X -v ON_ERROR_STOP=1 -f memo.sql
       - name: grow foam and its customers
         run: bin/counter grow germ/Room.lean && bin/counter grow && bin/counter grow germ/Witness.lean && bin/counter grow germ/Toy.lean && bin/counter grow germ/Counter.lean && bin/counter grow germ/Seek.lean && bin/counter grow germ/Roster.lean
       - name: build the grown modules
