@@ -546,7 +546,14 @@ if primings_path:
             if res.returncode != 0 or len(jv) != len(flat):
                 raise SystemExit('crawl: the judge did not return a verdict for every candidate:\n'
                                  + (res.stdout + res.stderr)[-2000:])
+            # a panic in the search's speculative branches (2026-09-18: the loose-bvar panic in whnfD,
+            # choosing a witness after an intros'd apply) prints its text and backtrace INTO the body the
+            # judge reports, and the candidate closes the goal regardless — the kernel's receipt is the
+            # verdict, at the trial and again at the artifact's gate; the text is noise, stripped here so
+            # neither the artifact nor the memo carries a backtrace as Lean
             for j, i in enumerate(flat):
+                if j in jb and any('PANIC at' in l for l in jb[j]):
+                    jb[j] = [l for l in jb[j] if not ('PANIC at' in l or l.strip() == 'backtrace:' or re.match(r'\s*\d+\s+\S+\s+0x[0-9a-f]+', l))]
                 verdicts[i] = jv[j]
                 if j in jb: bodies[i] = '\n'.join(jb[j]).rstrip()
             if chair:

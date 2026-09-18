@@ -328,6 +328,9 @@ def carrying : Runner Unit Nat :=
 def replayRunner {I : Type u} {O : Type v} (R : Runner.{u, v, u} I O) : Runner.{u, v, u} I O :=
   ⟨replayer R.m, fun rec => R.steer (park R.m R.m.s0 rec), fun rec => R.rest (park R.m R.m.s0 rec)⟩
 
+def inStepWith {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O) (B : R.m.S → R'.m.S → Prop) : Prop :=
+  ∀ s t, B s t → R.steer s = R'.steer t ∧ R.rest s = R'.rest t ∧ R.m.out s = R'.m.out t ∧ ∀ i, B (R.m.step s i) (R'.m.step t i)
+
 theorem no_interview_parts_the_alike (F : Face) {s t : F.State} (h : alike F s t) :
     ∀ q, sound F s q = sound F t q
   | .rest => rfl
@@ -922,6 +925,33 @@ theorem the_intertwiner_carries_the_run {I : Type u} {O : Type v} (m n : Machine
         = cond (rest s) (some (m.out s)) (runs m r rest (m.step s (r s)) k)
       rw [hrest, hout, hsteer, hstep, the_intertwiner_carries_the_run m n r r' rest rest' h hstep hsteer hrest hout k]
 
+theorem a_relation_in_step_walks_the_word {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
+    (B : R.m.S → R'.m.S → Prop) (hB : inStepWith R R' B) :
+    ∀ (w : List I) (s : R.m.S) (t : R'.m.S), B s t → B (park R.m s w) (park R'.m t w)
+  | [], _, _, h => h
+  | i :: w, s, t, h => a_relation_in_step_walks_the_word R R' B hB w _ _ ((hB s t h).2.2.2 i)
+
+theorem a_relation_in_step_carries_the_run {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
+    (B : R.m.S → R'.m.S → Prop) (hB : inStepWith R R' B) :
+    ∀ (k : Nat) (s : R.m.S) (t : R'.m.S), B s t →
+      runs R.m R.steer R.rest s k = runs R'.m R'.steer R'.rest t k
+  | 0, s, t, h => by
+      show cond (R.rest s) (some (R.m.out s)) none = cond (R'.rest t) (some (R'.m.out t)) none
+      rw [(hB s t h).2.1, (hB s t h).2.2.1]
+  | k + 1, s, t, h => by
+      show cond (R.rest s) (some (R.m.out s)) (runs R.m R.steer R.rest (R.m.step s (R.steer s)) k)
+        = cond (R'.rest t) (some (R'.m.out t)) (runs R'.m R'.steer R'.rest (R'.m.step t (R'.steer t)) k)
+      rw [(hB s t h).2.1, (hB s t h).2.2.1, (hB s t h).1,
+        a_relation_in_step_carries_the_run R R' B hB k _ _ ((hB s t h).2.2.2 (R'.steer t))]
+
+theorem an_intertwiner_is_a_relation_in_step {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
+    (h : R.m.S → R'.m.S)
+    (hstep : ∀ s i, R'.m.step (h s) i = h (R.m.step s i)) (hsteer : ∀ s, R'.steer (h s) = R.steer s)
+    (hrest : ∀ s, R'.rest (h s) = R.rest s) (hout : ∀ s, R'.m.out (h s) = R.m.out s) :
+    inStepWith R R' (fun s t => h s = t) :=
+  fun s _ ht => ⟨(hsteer s).symm.trans (congrArg R'.steer ht), (hrest s).symm.trans (congrArg R'.rest ht),
+    (hout s).symm.trans (congrArg R'.m.out ht), fun i => (hstep s i).symm.trans (congrArg (fun x => R'.m.step x i) ht)⟩
+
 theorem a_wider_seat_reads_the_remainder (F : Face) {W : Type v'}
     (s : F.State) {w w' : W} (hw : w ≠ w') :
     ¬ alike (widen F W) (atTheDoor s w) (atTheDoor s w') :=
@@ -1148,9 +1178,10 @@ theorem the_right_loop_reads_zero :
 
 theorem the_tended_walk_is_the_walk {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W)
     (σ : door m.S W → W) (w : List I) (d : door m.S W) :
-    face (park (tend m w0 σ) d w) = park m (face d) w := sorry
+    face (park (tend m w0 σ) d w) = park m (face d) w :=
+  (the_intertwined_walks_agree (tend m w0 σ) m face (fun _ _ => rfl) w d).symm
 
-theorem an_elegant_rebody_is_unheard_at_the_halting_gap {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
+theorem an_intertwined_rebody_is_unheard_at_the_halting_gap {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
     (h : R.m.S → R'.m.S) (hs0 : h R.m.s0 = R'.m.s0)
     (hstep : ∀ s i, R'.m.step (h s) i = h (R.m.step s i)) (hsteer : ∀ s, R'.steer (h s) = R.steer s)
     (hrest : ∀ s, R'.rest (h s) = R.rest s) (hout : ∀ s, R'.m.out (h s) = R.m.out s) :
@@ -1159,6 +1190,11 @@ theorem an_elegant_rebody_is_unheard_at_the_halting_gap {I : Type u} {O : Type v
     show runs R'.m R'.steer R'.rest (park R'.m R'.m.s0 p.1) p.2 = runs R.m R.steer R.rest (park R.m R.m.s0 p.1) p.2
     rw [← hs0, the_intertwined_walks_agree R.m R'.m h hstep p.1 R.m.s0,
         the_intertwiner_carries_the_run R.m R'.m R.steer R'.steer R.rest R'.rest h hstep hsteer hrest hout]
+
+theorem two_runners_in_step_rest_alike {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
+    (B : R.m.S → R'.m.S → Prop) (hB : inStepWith R R' B) (h0 : B R.m.s0 R'.m.s0) :
+    alike (haltingGap I O) R R' :=
+  fun p => a_relation_in_step_carries_the_run R R' B hB p.2 _ _ (a_relation_in_step_walks_the_word R R' B hB p.1 _ _ h0)
 
 theorem the_seat_map_carries_the_conduct (F : Face) (s t : F.State) :
     alike F s t ↔ alike (appFace F.Probe F.Ans) (F.obs s) (F.obs t) := sorry
@@ -1262,12 +1298,12 @@ theorem the_tending_is_unheard_at_the_gap {I : Type u} {O : Type v} {W : Type w}
   congrArg m.out (the_tended_walk_is_the_walk m w0 σ w (atTheDoor m.s0 w0))
 
 theorem the_carried_unit_is_unheard_at_rest : alike (haltingGap Unit Nat) carrying counting :=
-  an_elegant_rebody_is_unheard_at_the_halting_gap counting carrying (fun s => (s, ())) rfl
+  an_intertwined_rebody_is_unheard_at_the_halting_gap counting carrying (fun s => (s, ())) rfl
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
 theorem the_record_rests_where_the_machine_rests {I : Type u} {O : Type v} (R : Runner.{u, v, u} I O) :
     alike (haltingGap.{u, v, u} I O) R (replayRunner R) :=
-  an_elegant_rebody_is_unheard_at_the_halting_gap (replayRunner R) R (park R.m R.m.s0) rfl
+  an_intertwined_rebody_is_unheard_at_the_halting_gap (replayRunner R) R (park R.m R.m.s0) rfl
     (fun rec i => (the_park_resumes R.m rec R.m.s0 [i]).symm) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
 theorem the_pointwise_license (P : Type v) (A : Type w) (g h : P → A) :
