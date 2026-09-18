@@ -62,7 +62,7 @@ jobs:
         run: |
           bin/counter treaty assays/eih.lean
           bin/counter treaty assays/cycle.lean
-      - name: the pins (every artifact against the pins committed beside the germs — identical, or red: a pin moves in the same commit as its cause, bin/counter pin --set)
+      - name: "the pins (every artifact against the pins committed beside the germs — identical, or red: a pin moves in the same commit as its cause, bin/counter pin --set)"
         run: bin/counter pin
       - name: the memo, saved (the charges and readings after this run, for the next; the cache is immutable per key, so every run saves under its own and the next restores the latest by prefix)
         if: always()
