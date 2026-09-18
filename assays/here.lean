@@ -225,13 +225,11 @@ theorem the_narration_is_a_reading (s : List Nat) (v : List (List (Nat × List N
     Derived roomFace (fun r => (reads roomFace s r).map narrate = v) := sorry
 
 theorem a_body_never_reaches_the_narration (r r' : Room) (p : Nat) (h : differOnly roomFace r r' p)
-    (hp : narrate (addressedTo r p) = narrate (addressedTo r' p)) : alike narrationFace r r' :=
-  a_word_hidden_in_the_body_is_unheard_in_the_narration roomFace narrate h hp (fun q => a_name_is_or_is_not q p)
+    (hp : narrate (addressedTo r p) = narrate (addressedTo r' p)) : alike narrationFace r r' := sorry
 
 theorem the_narration_reads_alike_at_every_seat (r r' : Room) (p : Nat) (h : differOnly roomFace r r' p)
     (hp : narrate (addressedTo r p) = narrate (addressedTo r' p)) (s : List Nat) :
-    reads narrationFace s r = reads narrationFace s r' :=
-  Witness.the_narration_reads_alike_at_every_seat roomFace narrate h hp (fun q => a_name_is_or_is_not q p) s
+    reads narrationFace s r = reads narrationFace s r' := sorry
 
 theorem an_introduction_hears_through_the_seats_it_hears (p : Nat) (r r' : Room)
     (hw : witnessed roomFace ((seat p).map seat) r r') :

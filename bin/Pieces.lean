@@ -349,11 +349,15 @@ likewise; a def-typed hypothesis hides its ∀ from `apply`, so `exact h _` besi
     let e' : Expr ← try g.withContext (Meta.whnfD e) catch _ => pure e
     return if Expr.isAppOf e' ``And then some n else none
   let mut cands : Array Tac := #[]
+  -- a goal that is a ∀ (a decision handed as a hypothesis, `∀ q, q = p ∨ q ≠ p`): `apply` cannot see
+  -- past the binder, so the citation is offered behind an `intros` too — the winner carries it
+  let piGoal := (← instantiateMVars (← g.getType)).isForall
   for t in names do
     let k ← fresh
     let side ← if leaf then `(tactic| first | assumption | rfl | decide | piece_mem_seek $(Syntax.mkNumLit (toString k)):num)
                else `(tactic| first | assumption | rfl | decide | piece_mem_seek $(Syntax.mkNumLit (toString k)):num | piece_seek $(Syntax.mkNumLit (toString k)):num !)
     cands := cands.push (← `(tactic| (apply $t <;> $side)))
+    if piGoal then cands := cands.push (← `(tactic| (intros; apply $t <;> $side)))
     -- choosing the witness: `apply t` may leave a data goal the conclusion did not fix — a probe
     -- `p : F.Probe` whose type is an ENUM (an inductive with only nullary constructors); the side
     -- goals that would fix it are tried before anyone chooses it. so, speculatively: apply, read the

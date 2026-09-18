@@ -24,11 +24,7 @@ def covers (F : Face) (seats : List (List F.Probe)) : Prop :=
   ∀ q, q ∈ earshot F seats
 
 theorem the_alike_read_alike (F : Face) {x y : F.State} (h : alike F x y) :
-    ∀ s : List F.Probe, reads F s x = reads F s y
-  | [] => rfl
-  | p :: s => by
-      show F.obs x p :: reads F s x = F.obs y p :: reads F s y
-      rw [h p, the_alike_read_alike F h s]
+    ∀ s : List F.Probe, reads F s x = reads F s y := sorry
 
 theorem a_wall_hides_the_probe (F : Face) {x y : F.State} {p : F.Probe} (h : differOnly F x y p) :
     ∀ s : List F.Probe, ¬ hears F s p → reads F s x = reads F s y
@@ -85,6 +81,12 @@ theorem a_word_hidden_in_the_body_is_unheard_in_the_narration (F : Face) {B : Ty
     | Or.inl hq => by rw [hq]; exact hp
     | Or.inr hq => by show g (F.obs x q) = g (F.obs y q); rw [h q hq]
 
+theorem the_witness_is_a_face (F : Face) {x y : F.State} (h : alike F x y) :
+    alike (witnessFace F) x y := sorry
+
+theorem a_seat_over_a_seat_is_derived (F : Face) (s : List F.Probe) {A : Type u} (g : List F.Ans → A)
+    (v : A) : Derived F (fun x => g (reads F s x) = v) := sorry
+
 theorem the_room_is_the_widest_seat (F : Face) (s : List F.Probe) (x y : F.State)
     (h : reads F s x ≠ reads F s y) : ¬ alike F x y := sorry
 
@@ -94,17 +96,8 @@ theorem speak_now (F : Face) {seats : List (List F.Probe)} {x y : F.State}
   obtain ⟨s, hs, hqs⟩ := mem_joinMap_back seats hq
   exact the_probe_reads_the_seat F s hqs (hw s hs)
 
-theorem the_witness_is_a_face (F : Face) {x y : F.State} (h : alike F x y) :
-    alike (witnessFace F) x y := sorry
-
 theorem a_wall_at_the_witness (F : Face) {x y : F.State} {p : F.Probe} (h : differOnly F x y p)
     (s : List F.Probe) (hs : ¬ hears F s p) : (witnessFace F).obs x s = (witnessFace F).obs y s := sorry
-
-theorem a_seat_over_a_seat_is_derived (F : Face) (s : List F.Probe) {A : Type u} (g : List F.Ans → A)
-    (v : A) : Derived F (fun x => g (reads F s x) = v) :=
-  fun x y h => by
-    show (g (reads F s x) = v) ↔ (g (reads F s y) = v)
-    rw [the_alike_read_alike F h s]
 
 theorem a_probe_no_seat_hears_is_dark (F : Face) {x y : F.State} {p : F.Probe} (h : differOnly F x y p)
     (seats : List (List F.Probe)) (hd : ∀ s, s ∈ seats → ¬ hears F s p) : witnessed F seats x y := sorry
