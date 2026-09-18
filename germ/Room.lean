@@ -630,6 +630,8 @@ theorem ble_flips : ∀ a b : Nat, Nat.ble a b = false → Nat.ble b a = true
   | _ + 1, 0, _ => rfl
   | a + 1, b + 1, h => ble_flips a b h
 
+theorem no_room_for_one_more : ∀ n : Nat, Nat.ble (n + 1) n = false := sorry
+
 theorem a_merging_map_has_no_section {S : Type u} {T : Type u'} (h : S → T)
     {s s' : S} (hs : s ≠ s') (hm : h s = h s')
     (r : T → S) (hr : ∀ x, r (h x) = x) : False := sorry
@@ -1030,6 +1032,12 @@ theorem a_name_is_or_is_not (q p : Nat) : q = p ∨ q ≠ p := by
   | true => exact Or.inl (eq_of_beq q p h)
   | false => exact Or.inr (ne_of_beq_no beq_self h)
 
+theorem a_click_never_unseats {A : Type u} (beq : A → A → Bool) (st : List A × List (A × List A)) (arr : A × List A) :
+    Nat.ble st.1.length (welcome beq st arr).1.length = true := by
+  cases hb : backed beq st.1 arr.2 with
+  | true => rw [the_backed_are_seated beq st arr hb]; exact ble_le_succ st.1.length
+  | false => rw [the_unbacked_wait beq st arr hb]; exact ble_refl st.1.length
+
 theorem the_join_counts_evenly {A : Type u} {B : Type v} (f : A → List B) (n : Nat) :
     ∀ as : List A, (∀ a, a ∈ as → (f a).length = n) →
       (joinMap f as).length = n * as.length
@@ -1356,6 +1364,13 @@ theorem the_click_spares_the_dark {A : Type u} (beq : A → A → Bool)
 theorem everyone_means_each (beq : Nat → Nat → Bool) (members confirmed : List Nat)
     (h : everyone beq members confirmed = true) :
     ∀ m, m ∈ members → enrolled beq confirmed m = true := sorry
+
+theorem the_seated_never_shrink {A : Type u} (beq : A → A → Bool) :
+    ∀ (w : List (A × List A)) (st : List A × List (A × List A)),
+      Nat.ble st.1.length (intake beq st w).1.length = true
+  | [], _ => ble_refl _
+  | arr :: w, st =>
+      ble_trans _ _ _ (a_click_never_unseats beq st arr) (the_seated_never_shrink beq w (welcome beq st arr))
 
 theorem the_orders_count_to_the_factorial {A : Type u} :
     ∀ l : List A, (perms l).length = fact l.length
@@ -1733,6 +1748,26 @@ theorem the_book_is_the_answer_space (n : Nat) :
           | (apply the_book_repeats_no_word <;> fail)
           | (apply every_word_fits <;> assumption)
           | (apply the_book_holds_every_word <;> fail)))
+
+theorem a_sweep_that_seats_no_one_waited_everyone {A : Type u} (beq : A → A → Bool) :
+    ∀ (w : List (A × List A)) (st : List A × List (A × List A)),
+      (intake beq st w).1.length = st.1.length →
+      ∀ arr, arr ∈ w → backed beq st.1 arr.2 = false
+  | [], _, _, _, h => nomatch h
+  | a :: w, st, hlen, arr, harr => by
+      cases hb : backed beq st.1 a.2 with
+      | true =>
+          have hw : (intake beq (welcome beq st a) w).1.length = st.1.length := hlen
+          rw [the_backed_are_seated beq st a hb] at hw
+          have hm := the_seated_never_shrink beq w (a.1 :: st.1, st.2)
+          rw [hw] at hm
+          exact nomatch ((no_room_for_one_more st.1.length).symm.trans hm)
+      | false =>
+          have hw : (intake beq (welcome beq st a) w).1.length = st.1.length := hlen
+          rw [the_unbacked_wait beq st a hb] at hw
+          cases harr with
+          | head => exact hb
+          | tail _ h' => exact a_sweep_that_seats_no_one_waited_everyone beq w (st.1, a :: st.2) hw arr h'
 
 theorem every_shuffle_is_an_order {A : Type u} :
     ∀ (l p : List A), p.Perm l → p ∈ perms l

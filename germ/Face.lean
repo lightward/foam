@@ -325,6 +325,9 @@ def counting : Runner Unit Nat := ⟨tally, fun _ => (), fun s => Nat.ble 3 s⟩
 def carrying : Runner Unit Nat :=
   ⟨⟨Nat × Unit, (0, ()), fun s _ => (s.1 + 1, ()), fun s => s.1⟩, fun _ => (), fun s => Nat.ble 3 s.1⟩
 
+def replayRunner {I : Type u} {O : Type v} (R : Runner.{u, v, u} I O) : Runner.{u, v, u} I O :=
+  ⟨replayer R.m, fun rec => R.steer (park R.m R.m.s0 rec), fun rec => R.rest (park R.m R.m.s0 rec)⟩
+
 theorem no_interview_parts_the_alike (F : Face) {s t : F.State} (h : alike F s t) :
     ∀ q, sound F s q = sound F t q
   | .rest => rfl
@@ -1261,6 +1264,11 @@ theorem the_tending_is_unheard_at_the_gap {I : Type u} {O : Type v} {W : Type w}
 theorem the_carried_unit_is_unheard_at_rest : alike (haltingGap Unit Nat) carrying counting :=
   an_elegant_rebody_is_unheard_at_the_halting_gap counting carrying (fun s => (s, ())) rfl
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
+
+theorem the_record_rests_where_the_machine_rests {I : Type u} {O : Type v} (R : Runner.{u, v, u} I O) :
+    alike (haltingGap.{u, v, u} I O) R (replayRunner R) :=
+  an_elegant_rebody_is_unheard_at_the_halting_gap (replayRunner R) R (park R.m R.m.s0) rfl
+    (fun rec i => (the_park_resumes R.m rec R.m.s0 [i]).symm) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
 theorem the_pointwise_license (P : Type v) (A : Type w) (g h : P → A) :
     alike (appFace P A) g h ↔ ∀ p, g p = h p := sorry

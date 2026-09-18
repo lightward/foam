@@ -35,6 +35,12 @@ def gate {S B A : Type u} (read : B → List A) (t : List (S × B)) : Bool :=
 def rebody {S B : Type u} (m : B → B) (t : List (S × B)) : List (S × B) :=
   t.map (fun o => (o.1, m o.2))
 
+def sweep (st : room) : room := round (st.1, []) st.2
+
+def settled (st : room) : Bool := Nat.beq (sweep st).1.length st.1.length
+
+def cascade : Runner Unit room := ⟨⟨room, empty, fun st _ => sweep st, fun st => st⟩, fun _ => (), settled⟩
+
 theorem a_name_reads_itself (y : Nat) : Nat.beq y y = true := sorry
 
 theorem the_first_sighting_is_free (st : room) (n : Nat) : offer st (n, []) = (n :: st.1, st.2) := sorry
@@ -95,6 +101,12 @@ theorem the_vow_is_the_empty_receipt {S A : Type u} :
   | (_, _ :: _) :: _, hc, _, _ => by
       have h : false = true := hc
       exact nomatch h
+
+theorem a_rest_is_drained_or_stuck (st : room) (h : settled st = true) :
+    ∀ a, a ∈ st.2 → backed Nat.beq st.1 a.2 = false :=
+  a_sweep_that_seats_no_one_waited_everyone Nat.beq st.2 (st.1, []) (eq_of_beq _ _ h)
+
+theorem the_cascade_and_its_record_rest_alike : alike (haltingGap Unit room) cascade (replayRunner cascade) := sorry
 
 theorem a_receipt_keeping_rebody_is_unheard {S B A : Type u} (read : B → List A) (m : B → B)
     (h : ∀ b, read (m b) = read b) : unheard (gateFace S B A read) (rebody m) := sorry
