@@ -295,6 +295,19 @@ def trail (F : Face) (s : F.State) : Interview F.Probe F.Ans → List F.Probe
   | .rest => []
   | .ask p k => p :: trail F s (k (F.obs s p))
 
+def tend {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W) (σ : door m.S W → W) : Machine I O :=
+  ⟨door m.S W, atTheDoor m.s0 w0, fun d i => atTheDoor (m.step (face d) i) (σ d), fun d => m.out (face d)⟩
+
+def tape {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W) (σ : door m.S W → W) (ρ : W → I → I) :
+    Machine I O :=
+  ⟨door m.S W, atTheDoor m.s0 w0, fun d i => atTheDoor (m.step (face d) (ρ (met d) i)) (σ d), fun d => m.out (face d)⟩
+
+def adder : Machine Nat Nat := ⟨Nat, 0, fun s i => s + i, fun s => s⟩
+
+def recordTheState (d : door Nat Nat) : Nat := face d
+
+def readThrough (w i : Nat) : Nat := i + w
+
 theorem no_interview_parts_the_alike (F : Face) {s t : F.State} (h : alike F s t) :
     ∀ q, sound F s q = sound F t q
   | .rest => rfl
@@ -866,6 +879,16 @@ theorem no_move_past_the_right_comb :
 theorem the_recital_walks_its_list (F : Face) (s : F.State) :
     ∀ ns : List F.Probe, trail F s (recite ns) = ns := sorry
 
+theorem the_tending_writes_the_tape {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W)
+    (σ : door m.S W → W) (d : door m.S W) (i : I) : met (park (tend m w0 σ) d [i]) = σ d := sorry
+
+theorem an_unread_tape_is_a_tending {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W)
+    (σ : door m.S W → W) : tape m w0 σ (fun _ i => i) = tend m w0 σ := sorry
+
+theorem the_read_tape_parts_at_the_gap :
+    behavior (tape adder (0 : Nat) recordTheState readThrough) [1, 1, 1] = (4 : Nat)
+      ∧ behavior adder [1, 1, 1] = (3 : Nat) ∧ (4 : Nat) ≠ 3 := sorry
+
 theorem a_wider_seat_reads_the_remainder (F : Face) {W : Type v'}
     (s : F.State) {w w' : W} (hw : w ≠ w') :
     ¬ alike (widen F W) (atTheDoor s w) (atTheDoor s w') :=
@@ -1090,6 +1113,10 @@ theorem the_right_loop_reads_zero :
   | rest => rfl
   | step h1 h2 => exact absurd h1 no_move_past_the_right_comb
 
+theorem the_tended_walk_is_the_walk {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W)
+    (σ : door m.S W → W) (w : List I) (d : door m.S W) :
+    face (park (tend m w0 σ) d w) = park m (face d) w := sorry
+
 theorem the_seat_map_carries_the_conduct (F : Face) (s t : F.State) :
     alike F s t ↔ alike (appFace F.Probe F.Ans) (F.obs s) (F.obs t) := sorry
 
@@ -1186,6 +1213,10 @@ theorem the_left_loop_reads_zero :
     have h2' : chain m (.board .ground (.board .ground .ground))
         (.board (.board .ground .ground) .ground) := he ▸ h2
     exact nomatch (Plan.board.inj (the_right_comb_rests h2').symm).1
+
+theorem the_tending_is_unheard_at_the_gap {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W)
+    (σ : door m.S W → W) (w : List I) : behavior (tend m w0 σ) w = behavior m w :=
+  congrArg m.out (the_tended_walk_is_the_walk m w0 σ w (atTheDoor m.s0 w0))
 
 theorem the_pointwise_license (P : Type v) (A : Type w) (g h : P → A) :
     alike (appFace P A) g h ↔ ∀ p, g p = h p := sorry
