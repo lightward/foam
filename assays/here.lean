@@ -192,11 +192,6 @@ def narrated' : List (List (Nat × List Nat × Nat)) := reads narrationFace (sea
 #guard hosted [42] == lindaReads
 #guard narrated == narrated'
 
-theorem a_name_is_or_is_not (q p : Nat) : q = p ∨ q ≠ p := by
-  cases h : Nat.beq q p with
-  | true => exact Or.inl (eq_of_beq q p h)
-  | false => exact Or.inr (ne_of_beq_no beq_self h)
-
 theorem the_couples_probe_is_out_of_every_other_earshot : coupleInEarshot = false := sorry
 
 theorem the_room_reads_the_same_whatever_they_say (r r' : Room) (h : differOnly roomFace r r' couple)

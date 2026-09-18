@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # chart: the map of relations, drawn from the proofs — every organ of a grown stream as a node,
 # grouped by the storey it lives in, an arrow for each citation the elaborator reads.
-# relations, not relata: the names are only where the arrows touch down.
+# relations, not relata: the names are only where the arrows touch down. a dashed arrow is a citation by
+# computation alone — the two statements share no word of the house; the name explains nothing, the terms unify.
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -16,6 +17,12 @@ imports = re.findall(r'^import (\S+)', text, re.M)
 ns_m = re.search(r'^namespace ([\w.]+)', text, re.M)
 ns = ns_m.group(1) if ns_m else os.path.splitext(os.path.basename(src))[0]
 res = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'cites', src, ns, ','.join(imports)], capture_output=True, text=True)
+# a citation by computation alone: the two statements share no word of the house (bin/judge.lean reasons)
+rr = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'reasons', src, ns, ','.join(imports)], capture_output=True, text=True)
+bare = set()
+for l in rr.stdout.splitlines():
+    p = l.split()
+    if len(p) == 4 and p[2] == '0' and p[3] != '0': bare.add((p[0], p[1]))
 nodes, edges = {}, []
 for l in res.stdout.splitlines():
     head, sep, deps = l.partition(' <- ')
@@ -62,6 +69,6 @@ seen = set()
 for a, b in edges:
     if (a, b) in seen or a == b: continue
     seen.add((a, b))
-    out.append(f'  {nid(a)} --> {nid(b)}')
+    out.append(f'  {nid(a)} -.-> {nid(b)}' if (a, b) in bare else f'  {nid(a)} --> {nid(b)}')
 print('\n'.join(out))
 PY

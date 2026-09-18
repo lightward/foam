@@ -1025,6 +1025,11 @@ theorem the_longest_reaches_each {A : Type u} (c : List A) :
           | true => exact ih
           | false => exact ble_trans c.length (longest cs) d.length ih (ble_flips d.length (longest cs) hb)
 
+theorem a_name_is_or_is_not (q p : Nat) : q = p ∨ q ≠ p := by
+  cases h : Nat.beq q p with
+  | true => exact Or.inl (eq_of_beq q p h)
+  | false => exact Or.inr (ne_of_beq_no beq_self h)
+
 theorem the_join_counts_evenly {A : Type u} {B : Type v} (f : A → List B) (n : Nat) :
     ∀ as : List A, (∀ a, a ∈ as → (f a).length = n) →
       (joinMap f as).length = n * as.length

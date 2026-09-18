@@ -72,6 +72,29 @@ def citesMode (trail : String) (sc : Scope) : IO Unit := do
     let kind := if ci.isTheorem then "theorem" else "carrier"
     IO.println s!"{kind} {n.getString!} <- {" ".intercalate (deps.map (nameOf sc))}"
 
+/-- reasons: every citation of the trail, with how many words of the house the two statements share —
+none shared, while the cited statement has some, is a citation by computation alone (the terms unify
+after unfolding, and the name explains nothing to a reader of names); the chart draws such an arrow
+dashed and the book counts them. a cited statement with no house word (`0 + n = n`) is core grammar -/
+def reasonsMode (trail : String) (sc : Scope) : IO Unit := do
+  let st ← elabFrom (← IO.FS.readFile trail) trail none
+  let env := st.env
+  -- a word of the house: a constant of no module of Lean's own (the trail's, or any grown module)
+  let houseWord (c : Name) : Bool := match env.getModuleIdxFor? c with
+    | none => true
+    | some idx => let r := env.header.moduleNames[idx.toNat]!.getRoot; !(r == `Init || r == `Lean || r == `Std || r == `Lake)
+  for (n, ci) in env.constants.map₂.toList do
+    if n.getPrefix != sc.ns || !ci.isTheorem then continue
+    let used := usedTopLevel env sc {} n
+    let words := ci.type.getUsedConstants.filter houseWord
+    for d in used.toList do
+      if d == n || !(sc.owns d) then continue
+      let some di := env.find? d | continue
+      if !di.isTheorem then continue
+      let own := di.type.getUsedConstants.filter houseWord
+      let shared := (own.filter (fun c => words.contains c)).size
+      IO.println s!"{n.getString!} {nameOf sc d} {shared} {own.size}"
+
 partial def stripLams : Expr → Expr
   | .lam _ _ b _ => stripLams b
   | e => e
@@ -912,6 +935,9 @@ unsafe def main (args : List String) : IO Unit := do
     return
   if args.head? == some "cites" then
     citesMode args[1]! sc
+    return
+  if args.head? == some "reasons" then
+    reasonsMode args[1]! sc
     return
   if args.head? == some "census" then
     censusMode args[1]! sc

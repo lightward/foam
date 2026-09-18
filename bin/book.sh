@@ -70,16 +70,21 @@ for label, src in lean_srcs:
         for name in bodies:
             if any(other != name and re.search(r'\b' + re.escape(name) + r'\b', body) for other, body in bodies.items()):
                 local.add(name)
-    books.append((label, ns, decls, receipts, local, above, how))
+    # the citations by computation alone: an arrow whose two statements share no word of the house
+    rr = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'reasons', label, ns, ','.join(imports)], capture_output=True, text=True)
+    arrows = [l.split() for l in rr.stdout.splitlines() if len(l.split()) == 4]
+    bare = [(a, d) for a, d, k, own in arrows if k == '0' and own != '0']
+    books.append((label, ns, decls, receipts, local, above, how, len(arrows), bare))
 
 cited_above = {}
-for _, _, _, _, _, above, _ in books:
+for _, _, _, _, _, above, _, _, _ in books:
     for (m, n), by in above.items():
         cited_above.setdefault((m, n), set()).update(by)
 
-for label, ns, decls, receipts, local, _, how in books:
+for label, ns, decls, receipts, local, _, how, n_arrows, bare in books:
     n_thm = sum(1 for k, _ in decls if k == 'theorem')
     print(f"the census [{label}]: {len(decls)} declarations ({len(decls) - n_thm} carriers, {n_thm} theorems), {receipts} receipts")
+    print(f"the arrows [{label}]: {n_arrows} citations, {len(bare)} by computation alone (the statements share no word of the house though the cited one has some; dashed on the chart)" + (': ' + ' '.join(f'{a}→{d}' for a, d in bare) if bare else ''))
     leaves = [n for _, n in decls if n not in local and (ns, n) not in cited_above]
     seated_above = [(n, sorted(cited_above[(ns, n)])) for _, n in decls if n not in local and (ns, n) in cited_above]
     print(f"the frontier [{label}] — {len(leaves)} leaves no organ in the house cites yet ({how}):")
