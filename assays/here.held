@@ -36,6 +36,20 @@
 -- theorem reached_is_a_reading (v : Nat) (m : Message) : Derived roomFace (fun r => reached v m r = true) := sorry
 -- theorem assent_is_heard (v : Nat) (m : Message) : ¬ unheard roomFace (assent v m) := sorry
 
+-- seated (2026-09-19, the room's ask in everyoneishere#2, Abe's issue in the maintainer's words): the edge of an
+-- interval of a seat's ✦ Here — what the seat's own reading holds before and after it — is a reading over the seat
+-- (an_edge_is_a_reading, by a_seat_over_a_seat_is_derived), and a word at a probe the seat does not hear does not
+-- move it (a_walled_word_does_not_move_the_edge, regrown through a_narrower_seat_reads_no_more and
+-- a_wall_hides_the_probe). so the narrator speaks only from the seat's fixed point and a wall is silence: to draw
+-- it the narrator would need a probe the seat does not hear, which is the widen, which is the reveal (item 8) and
+-- not the edge; open 2 (a ✦ you don't hear) closes the same way. the maintainer's open question about the author
+-- clause the treaty answered by removing it: a word is heard at its author's presence as at every addressee's
+-- (heardAt; a_persons_own_word_is_heard_at_their_presence), so sees is the seat's reading and nothing more, and a
+-- person's own words are on their edge as the app shows them. a feed counts each message once whatever probes it
+-- reaches the seat through (onceEach). one thing the room should hear: the seat's feed is the room's order only
+-- within one probe's reading; two rooms alike at every probe may interleave different authors' words differently,
+-- so an edge as a count and a span is exact and an edge as an ordered list is exact up to that interleaving.
+
 -- the board (isaac, 22:54; the maintainer's guess for this session): the win is not an empty surface but every seat's
 -- ✦ Here receded to the same remaining surface — the day sheet. the maintainer read that as speak_now, not re-run.
 -- the treaty's reading: the surface a seat still holds open is a seat over the narration face, and "the same page" is

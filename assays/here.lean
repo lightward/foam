@@ -72,9 +72,10 @@ def hearsOf (v : Nat) : List Nat := lookup hearsTable v
 
 def seat (v : Nat) : List Nat := v :: hearsOf v
 
-def addressedTo (r : Room) (p : Nat) : List Message := r.messages.filter (fun m => enrolled Nat.beq m.to p)
+def heardAt (r : Room) (p : Nat) : List Message :=
+  r.messages.filter (fun m => Nat.beq m.author p || enrolled Nat.beq m.to p)
 
-def roomFace : Face := ⟨Room, Nat, List Message, addressedTo⟩
+def roomFace : Face := ⟨Room, Nat, List Message, heardAt⟩
 
 def ids (ms : List Message) : List Nat := ms.map (·.id)
 
@@ -82,7 +83,7 @@ def bodies (ms : List Message) : List Nat := ms.map (·.body)
 
 def inbox (v : Nat) (r : Room) : List Nat := joinMap ids (reads roomFace (seat v) r)
 
-def sees (v : Nat) (r : Room) (m : Message) : Bool := Nat.beq m.author v || enrolled Nat.beq (inbox v r) m.id
+def sees (v : Nat) (r : Room) (m : Message) : Bool := enrolled Nat.beq (inbox v r) m.id
 
 def introduced (p : Nat) : List Nat := earshot roomFace ((seat p).map seat)
 
@@ -104,6 +105,19 @@ def alone (m : Message) : Bool :=
 
 def overheard (v : Nat) (r : Room) : List (Nat × List Nat × Nat) :=
   narrate (r.messages.filter (fun m => humanOnly m && !(alone m) && !(sees v r m)))
+
+def onceEach : List Nat → List Message → List Message
+  | _, [] => []
+  | seen, m :: ms => cond (enrolled Nat.beq seen m.id) (onceEach seen ms) (m :: onceEach (m.id :: seen) ms)
+
+def feedOf (rd : List (List Message)) : List Message := onceEach [] (joinMap (fun ms => ms) rd)
+
+def feed (v : Nat) (r : Room) : List Message := feedOf (reads roomFace (seat v) r)
+
+def edgeOf (lo hi : Nat) (rd : List (List Message)) : List Nat × List Nat :=
+  (((feedOf rd).filter (fun m => Nat.blt m.sent lo)).map (·.sent), ((feedOf rd).filter (fun m => Nat.blt hi m.sent)).map (·.sent))
+
+def edge (v lo hi : Nat) (r : Room) : List Nat × List Nat := edgeOf lo hi (reads roomFace (seat v) r)
 
 def others : List Nat := [ava, sofia, jordan, dana, linda]
 
@@ -191,6 +205,14 @@ def narrated' : List (List (Nat × List Nat × Nat)) := reads narrationFace (sea
 #guard hosted [42] == hosted [43]
 #guard hosted [42] == lindaReads
 #guard narrated == narrated'
+#guard edge linda 901 902 demo == edge linda 901 902 demo'
+#guard edge linda 900 902 ⟨demo.messages.filter (fun m => !(Nat.beq m.id thread.id))⟩ == edge linda 900 902 demo
+#guard (edge linda 900 902 demo).2.all (fun t => !(Nat.beq t thread.sent))
+#guard enrolled Nat.beq (ids (feed sofia demo)) thread.id
+#guard enrolled Nat.beq (ids (feed maya demo)) thread.id
+#guard enrolled Nat.beq (ids (feed linda demo)) thread.id == false
+#guard (edge sofia 900 902 demo).2 == [thread.sent, invS.sent, table.sent]
+#guard (ids (feed sofia demo)).length == 6
 
 theorem the_couples_probe_is_out_of_every_other_earshot : coupleInEarshot = false := sorry
 
@@ -201,7 +223,7 @@ theorem the_room_reads_the_same_whatever_they_say (r r' : Room) (h : differOnly 
 theorem a_seat_that_does_not_hear_it_reads_the_same (r r' : Room) (h : differOnly roomFace r r' couple)
     (s : List Nat) (hs : ¬ hears roomFace s couple) : reads roomFace s r = reads roomFace s r' := sorry
 
-theorem the_couples_seat_parts_them (r r' : Room) (h : addressedTo r couple ≠ addressedTo r' couple) :
+theorem the_couples_seat_parts_them (r r' : Room) (h : heardAt r couple ≠ heardAt r' couple) :
     reads roomFace (seat maya) r ≠ reads roomFace (seat maya) r' := sorry
 
 theorem the_couples_word_is_a_door (s : List Nat) (r : Room) (w w' : List Nat) :
@@ -220,15 +242,15 @@ theorem the_narration_is_a_reading (s : List Nat) (v : List (List (Nat × List N
     Derived roomFace (fun r => (reads roomFace s r).map narrate = v) := sorry
 
 theorem a_body_never_reaches_the_narration (r r' : Room) (p : Nat) (h : differOnly roomFace r r' p)
-    (hp : narrate (addressedTo r p) = narrate (addressedTo r' p)) : alike narrationFace r r' := sorry
+    (hp : narrate (heardAt r p) = narrate (heardAt r' p)) : alike narrationFace r r' := sorry
 
 theorem the_narration_reads_alike_at_every_seat (r r' : Room) (p : Nat) (h : differOnly roomFace r r' p)
-    (hp : narrate (addressedTo r p) = narrate (addressedTo r' p)) (s : List Nat) :
+    (hp : narrate (heardAt r p) = narrate (heardAt r' p)) (s : List Nat) :
     reads narrationFace s r = reads narrationFace s r' := sorry
 
 theorem an_introduction_hears_through_the_seats_it_hears (p : Nat) (r r' : Room)
     (hw : witnessed roomFace ((seat p).map seat) r r') :
-    ∀ q, q ∈ introduced p → addressedTo r q = addressedTo r' q := sorry
+    ∀ q, q ∈ introduced p → heardAt r q = heardAt r' q := sorry
 
 theorem the_room_is_the_widest_seat (s : List Nat) (r r' : Room) (h : reads roomFace s r ≠ reads roomFace s r') :
     ¬ alike roomFace r r' := sorry
@@ -257,5 +279,16 @@ theorem a_word_to_oneself_leaves_no_remainder (v : Nat) (r : Room) (m : Message)
   have hal : alone m' = true := (the_shape_keeps_the_audience m m' he).trans hm
   rw [hal] at h2
   exact nomatch h2.2
+
+theorem an_edge_is_a_reading (v lo hi : Nat) (e : List Nat × List Nat) :
+    Derived roomFace (fun r => edge v lo hi r = e) := sorry
+
+theorem a_walled_word_does_not_move_the_edge (v lo hi : Nat) (r r' : Room) (p : Nat)
+    (h : differOnly roomFace r r' p) (hs : ¬ hears roomFace (seat v) p) :
+    edge v lo hi r = edge v lo hi r' := sorry
+
+theorem a_persons_own_word_is_heard_at_their_presence (r : Room) (m : Message) (hm : m ∈ r.messages) :
+    m ∈ heardAt r m.author :=
+  mem_filter_intro r.messages hm (by show (Nat.beq m.author m.author || enrolled Nat.beq m.to m.author) = true; rw [beq_self]; rfl)
 
 end Here.Treaty
