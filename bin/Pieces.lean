@@ -46,15 +46,25 @@ def topLevel (env : Environment) (n : Name) : Bool :=
 
 /-- the vocabulary of a type: its constants, and one unfolding through the house's own defs
 (a carrier's value names what the carrier is about) -/
+partial def unfoldInto (env : Environment) (c : Name) (out : NameSet) (fuel : Nat) : NameSet := Id.run do
+  -- a carrier's body may live in an auxiliary named under it (`backed._f` on Lean 4.31, a matcher,
+  -- a `_unary`): the unfolding follows every auxiliary of the carrier and stops at any other name —
+  -- before this (2026-09-19) a goal about `perms` never saw the word `joinMap`
+  if fuel == 0 then return out
+  let some ci := env.find? c | return out
+  if ci.isTheorem then return out
+  let some v := ci.value? | return out
+  let mut out := out
+  for d in v.getUsedConstants do
+    out := out.insert d
+    if d.getPrefix == c || d.getPrefix.getPrefix == c then out := unfoldInto env d out (fuel - 1)
+  return out
+
 def vocab (env : Environment) (e : Expr) : NameSet := Id.run do
   let mut out : NameSet := {}
   for c in e.getUsedConstants do
     out := out.insert c
-    if house env c then
-      if let some ci := env.find? c then
-        if !ci.isTheorem then
-          if let some v := ci.value? then
-            for d in v.getUsedConstants do out := out.insert d
+    if house env c then out := unfoldInto env c out 4
   return out
 
 structure Pool where

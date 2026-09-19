@@ -72,6 +72,19 @@ def citesMode (trail : String) (sc : Scope) : IO Unit := do
     let kind := if ci.isTheorem then "theorem" else "carrier"
     IO.println s!"{kind} {n.getString!} <- {" ".intercalate (deps.map (nameOf sc))}"
 
+/-- a carrier's body may live in an auxiliary named under it (`backed._f` on Lean 4.31, a matcher, a
+`_unary`): the unfolding follows every auxiliary of the carrier and stops at any other name -/
+partial def reasonsUnfold (env : Environment) (houseWord : Name → Bool) (c : Name) (out : Array Name) (fuel : Nat) : Array Name := Id.run do
+  if fuel == 0 then return out
+  let some cci := env.find? c | return out
+  if cci.isTheorem then return out
+  let some v := cci.value? | return out
+  let mut out := out
+  for d in v.getUsedConstants do
+    if houseWord d && !out.contains d then out := out.push d
+    if d.getPrefix == c || d.getPrefix.getPrefix == c then out := reasonsUnfold env houseWord d out (fuel - 1)
+  return out
+
 /-- reasons: every citation of the trail, with how many words of the house the two statements share —
 none shared, while the cited statement has some, is a citation by computation alone (the terms unify
 after unfolding, and the name explains nothing to a reader of names); the chart draws such an arrow
@@ -83,15 +96,24 @@ def reasonsMode (trail : String) (sc : Scope) : IO Unit := do
   let houseWord (c : Name) : Bool := match env.getModuleIdxFor? c with
     | none => true
     | some idx => let r := env.header.moduleNames[idx.toNat]!.getRoot; !(r == `Init || r == `Lean || r == `Std || r == `Lake)
+  -- a statement's words, with one unfolding through the house's own carriers (a statement about
+  -- `perms` speaks of `joinMap`): the same reading the search takes of a goal (Pieces.vocab)
+  let wordsOf (t : Expr) : Array Name := Id.run do
+    let mut out : Array Name := #[]
+    for c in t.getUsedConstants do
+      if !houseWord c then continue
+      out := out.push c
+      out := reasonsUnfold env houseWord c out 4
+    return out
   for (n, ci) in env.constants.map₂.toList do
     if n.getPrefix != sc.ns || !ci.isTheorem then continue
     let used := usedTopLevel env sc {} n
-    let words := ci.type.getUsedConstants.filter houseWord
+    let words := wordsOf ci.type
     for d in used.toList do
       if d == n || !(sc.owns d) then continue
       let some di := env.find? d | continue
       if !di.isTheorem then continue
-      let own := di.type.getUsedConstants.filter houseWord
+      let own := wordsOf di.type
       let shared := (own.filter (fun c => words.contains c)).size
       IO.println s!"{n.getString!} {nameOf sc d} {shared} {own.size}"
 

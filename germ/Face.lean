@@ -1194,8 +1194,14 @@ theorem two_runners_in_step_rest_alike {I : Type u} {O : Type v} (R R' : Runner.
     (B : R.m.S → R'.m.S → Prop) (hB : inStepWith R R' B) (h0 : B R.m.s0 R'.m.s0) :
     alike (haltingGap I O) R R' := sorry
 
+theorem the_flywheel_and_the_shell_sound_alike (q : Interview (List Unit) Bool) :
+    sound (airGap Unit Bool) restingCounter q = sound (airGap Unit Bool) hollowShell q := sorry
+
 theorem the_seat_map_carries_the_conduct (F : Face) (s t : F.State) :
-    alike F s t ↔ alike (appFace F.Probe F.Ans) (F.obs s) (F.obs t) := sorry
+    alike F s t ↔ alike (appFace F.Probe F.Ans) (F.obs s) (F.obs t) :=
+  by
+    (intros; (try dsimp only [alike, Face, appFace] at *); intros;
+      (apply ((the_curtain_is_exact _ _ _)).trans (by (apply ((the_curtain_is_exact _ _ _)).symm <;> fail)) <;> fail))
 
 theorem the_handshake :
     (∀ (F : Face) (s t : F.State), alike F s t → ∀ q, sound F s q = sound F t q) ∧
@@ -1221,10 +1227,6 @@ theorem correct_maintenance_has_no_signature (F : Face) (m n : F.State → F.Sta
 theorem the_pace_is_carried_onto_the_flip :
     carries (fun s w => drive paceOne s w) (fun s w => drive flip s w) oddNat :=
   the_intertwiner_carries_the_walk paceOne flip oddNat (fun _ _ => rfl) (fun _ => rfl)
-
-theorem the_flywheel_and_the_shell_sound_alike (q : Interview (List Unit) Bool) :
-    sound (airGap Unit Bool) restingCounter q = sound (airGap Unit Bool) hollowShell q :=
-  an_audition_hears_only_the_conduct restingCounter hollowShell (fun _ => rfl) q
 
 theorem the_settle_is_unheard {I : Type u} {O : Type v} (m : Machine I O)
     (st : m.S × List I) (w : List I) :
