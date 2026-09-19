@@ -73,9 +73,6 @@ theorem two_sightings_that_cite_each_other_stay_dark (x y : Nat) (w : List sight
 theorem the_key_is_cut_from_the_room (st : room) (needs : List Nat) (h : weight st needs = 1) :
     ∃ k, k ∈ needs ∧ seated st k = false ∧ backed Nat.beq (k :: st.1) needs = true := sorry
 
-theorem a_sighting_is_load_bearing_in_the_same_round (st : room) (a : sighting)
-    (hb : backed Nat.beq st.1 a.2 = true) : seated (offer st a) a.1 = true := sorry
-
 theorem the_gate_hears_only_the_receipt {S B A : Type u} (read : B → List A) :
     Derived (gateFace S B A read) (fun t => gate read t = true) :=
   a_role_read_at_a_probe_is_derived (gateFace S B A read) () (fun rs => conductive rs = true)
@@ -107,6 +104,9 @@ theorem a_rest_is_drained_or_stuck (st : room) (h : settled st = true) :
   a_sweep_that_seats_no_one_waited_everyone Nat.beq st.2 (st.1, []) (eq_of_beq _ _ h)
 
 theorem the_cascade_and_its_record_rest_alike : alike (haltingGap Unit room) cascade (replayRunner cascade) := sorry
+
+theorem a_sighting_is_load_bearing_in_the_same_round (st : room) (a : sighting)
+    (hb : backed Nat.beq st.1 a.2 = true) : seated (offer st a) a.1 = true := sorry
 
 theorem a_receipt_keeping_rebody_is_unheard {S B A : Type u} (read : B → List A) (m : B → B)
     (h : ∀ b, read (m b) = read b) : unheard (gateFace S B A read) (rebody m) := sorry
