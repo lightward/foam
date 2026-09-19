@@ -35,12 +35,17 @@ jobs:
         id: memo
         uses: actions/cache/restore@v4
         with:
-          path: memo.sql
+          path: memo
           key: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
           restore-keys: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-
       - name: the memo, loaded
         if: steps.memo.outputs.cache-matched-key != ''
-        run: PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -q -X -v ON_ERROR_STOP=1 -f memo.sql && echo "memo loaded from ${{ steps.memo.outputs.cache-matched-key }}"
+        run: |
+          for t in charge reading; do
+            [ -s "memo/$t.csv" ] || continue
+            PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -q -X -v ON_ERROR_STOP=1 -c "CREATE TEMP TABLE m (LIKE counter.$t)" -c "\\copy m FROM 'memo/$t.csv' CSV" -c "INSERT INTO counter.$t SELECT * FROM m ON CONFLICT DO NOTHING"
+          done
+          echo "memo loaded from ${{ steps.memo.outputs.cache-matched-key }}: $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.charge') charges, $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.reading') readings"
       - name: grow Room, then Face on it, then Witness on Face (every vacancy regrows; each germ its own settle; the standards print)
         run: bin/counter grow germ/Room.lean --check && bin/counter grow --check && bin/counter grow germ/Witness.lean --check
       - name: "grow the customers on foam (germ/Toy.lean, germ/Counter.lean, germ/Seek.lean, germ/Roster.lean — their own settles)"
@@ -66,9 +71,12 @@ jobs:
         run: bin/counter pin
       - name: the memo, saved (the charges and readings after this run, for the next; the cache is immutable per key, so every run saves under its own and the next restores the latest by prefix)
         if: always()
-        run: PGPASSWORD=postgres pg_dump -h localhost -p 5432 -U postgres -d counter --data-only --inserts --rows-per-insert=1000 --on-conflict-do-nothing --table=counter.charge --table=counter.reading > memo.sql && wc -c memo.sql
+        run: |
+          mkdir -p memo
+          for t in charge reading; do PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -q -X -v ON_ERROR_STOP=1 -c "\\copy (SELECT * FROM counter.$t) TO 'memo/$t.csv' CSV"; done
+          wc -c memo/*.csv
       - uses: actions/cache/save@v4
         if: always()
         with:
-          path: memo.sql
+          path: memo
           key: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}

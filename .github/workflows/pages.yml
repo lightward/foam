@@ -47,12 +47,17 @@ jobs:
         id: memo
         uses: actions/cache/restore@v4
         with:
-          path: memo.sql
+          path: memo
           key: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
           restore-keys: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-
       - name: the memo, loaded
         if: steps.memo.outputs.cache-matched-key != ''
-        run: PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -q -X -v ON_ERROR_STOP=1 -f memo.sql
+        run: |
+          for t in charge reading; do
+            [ -s "memo/$t.csv" ] || continue
+            PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -q -X -v ON_ERROR_STOP=1 -c "CREATE TEMP TABLE m (LIKE counter.$t)" -c "\\copy m FROM 'memo/$t.csv' CSV" -c "INSERT INTO counter.$t SELECT * FROM m ON CONFLICT DO NOTHING"
+          done
+          echo "memo loaded from ${{ steps.memo.outputs.cache-matched-key }}: $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.charge') charges, $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.reading') readings"
       - name: grow foam and its customers
         run: bin/counter grow germ/Room.lean && bin/counter grow && bin/counter grow germ/Witness.lean && bin/counter grow germ/Toy.lean && bin/counter grow germ/Counter.lean && bin/counter grow germ/Seek.lean && bin/counter grow germ/Roster.lean
       - name: build the grown modules
