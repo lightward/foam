@@ -24,6 +24,9 @@ structure Message where
   to : List Nat
   body : Nat
   sent : Nat
+  replyTo : List Nat
+  askedOf : List Nat
+  ackedBy : List (Nat × Nat)
 
 structure Room where
   messages : List Message
@@ -123,21 +126,23 @@ def others : List Nat := [ava, sofia, jordan, dana, linda]
 
 def otherSeats : List (List Nat) := others.map seat
 
-def dock : Message := ⟨1, sofia, [vendors], 101, 900⟩
-def time : Message := ⟨2, maya, [everyone], 102, 901⟩
-def yes : Message := ⟨3, linda, [everyone], 103, 902⟩
-def thread : Message := ⟨4, sofia, [maya, james], 104, 903⟩
-def invS : Message := ⟨5, sofia, [invoicing], 105, 904⟩
-def invJ : Message := ⟨6, jordan, [jordan], 106, 905⟩
-def table : Message := ⟨7, dana, [seating], 107, 906⟩
-def guest : Message := ⟨8, maya, [guests], 108, 907⟩
-def budgetLine : Message := ⟨9, maya, [budget], 109, 908⟩
-def siteLine : Message := ⟨10, maya, [site], 110, 909⟩
-def ours : Message := ⟨11, maya, [couple], 111, 1705⟩
-def theirs : Message := ⟨11, maya, [couple], 999, 1705⟩
+def dock : Message := ⟨1, sofia, [vendors], 101, 900, [], [], []⟩
+def time : Message := ⟨2, maya, [everyone], 102, 901, [], [sofia, jordan, dana], [(sofia, sofia), (jordan, jordan), (dana, ava)]⟩
+def yes : Message := ⟨3, linda, [everyone], 103, 902, [], [], []⟩
+def thread : Message := ⟨4, sofia, [maya, james], 104, 903, [], [], []⟩
+def invS : Message := ⟨5, sofia, [invoicing], 105, 904, [], [], []⟩
+def invJ : Message := ⟨6, jordan, [jordan], 106, 905, [], [], []⟩
+def table : Message := ⟨7, dana, [seating], 107, 906, [], [], []⟩
+def guest : Message := ⟨8, maya, [guests], 108, 907, [], [ava], []⟩
+def budgetLine : Message := ⟨9, maya, [budget], 109, 908, [], [], []⟩
+def siteLine : Message := ⟨10, maya, [site], 110, 909, [], [], []⟩
+def ours : Message := ⟨11, maya, [couple], 111, 1705, [thread.id], [], []⟩
+def theirs : Message := ⟨11, maya, [couple], 999, 1705, [thread.id], [], []⟩
 
-def demo : Room := ⟨[dock, time, yes, thread, invS, invJ, table, guest, budgetLine, siteLine, ours]⟩
-def demo' : Room := ⟨[dock, time, yes, thread, invS, invJ, table, guest, budgetLine, siteLine, theirs]⟩
+def founding : Message := ⟨0, everyone, [everyone], 100, 800, [0], [], []⟩
+
+def demo : Room := ⟨[founding, dock, time, yes, thread, invS, invJ, table, guest, budgetLine, siteLine, ours]⟩
+def demo' : Room := ⟨[founding, dock, time, yes, thread, invS, invJ, table, guest, budgetLine, siteLine, theirs]⟩
 
 def coupleReads : List (List Nat) := (reads roomFace (seat maya) demo).map bodies
 def lindaReads : List (List Nat) := (reads roomFace (seat linda) demo).map bodies
@@ -212,7 +217,7 @@ def narrated' : List (List (Nat × List Nat × Nat)) := reads narrationFace (sea
 #guard enrolled Nat.beq (ids (feed maya demo)) thread.id
 #guard enrolled Nat.beq (ids (feed linda demo)) thread.id == false
 #guard (edge sofia 900 902 demo).2 == [thread.sent, invS.sent, table.sent]
-#guard (ids (feed sofia demo)).length == 6
+#guard (ids (feed sofia demo)).length == 7
 
 theorem the_couples_probe_is_out_of_every_other_earshot : coupleInEarshot = false := sorry
 
@@ -279,6 +284,108 @@ theorem a_word_to_oneself_leaves_no_remainder (v : Nat) (r : Room) (m : Message)
   have hal : alone m' = true := (the_shape_keeps_the_audience m m' he).trans hm
   rw [hal] at h2
   exact nomatch h2.2
+
+def acked (m : Message) : List Nat := m.ackedBy.map (·.1)
+
+def decided (m : Message) : Bool := backed Nat.beq (acked m) m.askedOf
+
+def openEnds (m : Message) : Nat := lacking Nat.beq (acked m) m.askedOf
+
+def waitingOn (m : Message) : List Nat := m.askedOf.filter (fun n => !(enrolled Nat.beq (acked m) n))
+
+def ackOf (of hand : Nat) (m : Message) : Message := { m with ackedBy := (of, hand) :: m.ackedBy }
+
+def nagOf (of : Nat) (m : Message) : Message := { m with askedOf := of :: m.askedOf }
+
+def ack (word of hand : Nat) (m : Message) : Message := cond (Nat.beq m.id word) (ackOf of hand m) m
+
+def nag (word of : Nat) (m : Message) : Message := cond (Nat.beq m.id word) (nagOf of m) m
+
+def onThePage (r : Room) : Bool := r.messages.all decided
+
+def weightOf (r : Room) : Nat := (r.messages.map openEnds).sum
+
+inductive Act where
+  | say (m : Message)
+  | ack (word of hand : Nat)
+  | tick
+
+def act (r : Room) : Act → Room
+  | .say m => ⟨r.messages ++ [m]⟩
+  | .ack word of hand => ⟨r.messages.map (ack word of hand)⟩
+  | .tick => r
+
+def dayMachine : Machine Act Room := ⟨Room, ⟨[]⟩, act, fun r => r⟩
+
+def theDay : Runner Act Room := ⟨dayMachine, fun _ => .tick, onThePage⟩
+
+def unsend (word : Nat) (r : Room) : Room := ⟨r.messages.filter (fun m => !(Nat.beq m.id word))⟩
+
+def edgesOf (rd : List (List Message)) : List (Nat × Nat) :=
+  joinMap (fun m => (m.replyTo.filter (fun o => enrolled Nat.beq (ids (feedOf rd)) o)).map (fun o => (m.id, o))) (feedOf rd)
+
+def seenEdges (v : Nat) (r : Room) : List (Nat × Nat) := edgesOf (reads roomFace (seat v) r)
+
+def dayAt (w : List Act) (fuel : Nat) : Option (List Nat) :=
+  ((haltingGap Act Room).obs theDay (w, fuel)).map (fun r => r.messages.map openEnds)
+
+def demoAcked : Room := act demo (.ack guest.id ava ava)
+
+#guard decided time
+#guard decided guest == false
+#guard openEnds guest == 1
+#guard waitingOn guest == [ava]
+#guard onThePage demo == false
+#guard weightOf demo == 1
+#guard onThePage demoAcked
+#guard decided (nag time.id sofia time)
+#guard openEnds (nag time.id sofia time) == 0
+#guard decided (ack guest.id ava ava guest)
+#guard dayAt [] 0 == some []
+#guard dayAt [.ack guest.id ava ava] 3 == some []
+#guard (dayAt (demo.messages.map Act.say ++ [.ack guest.id ava ava]) 0).map List.sum == some 0
+#guard dayAt (demo.messages.map Act.say) 5 == none
+#guard weightOf (unsend guest.id demo) == 0
+#guard (unsend time.id demo).messages.length + 1 == demo.messages.length
+#guard enrolled Nat.beq (ids (feed maya demo)) founding.id
+#guard (seenEdges maya demo).all (fun e => !(e == (ours.id, thread.id))) == false
+#guard (seenEdges linda demo).all (fun e => !(e == (ours.id, thread.id)))
+#guard (seenEdges linda demo).all (fun e => !(e == (founding.id, founding.id))) == false
+#guard seenEdges linda demo == seenEdges linda demo'
+
+theorem an_ack_is_never_withdrawn (m : Message) (of hand : Nat) (h : decided m = true) :
+    decided (ackOf of hand m) = true :=
+  the_backing_survives_the_seating Nat.beq (acked m) of m.askedOf h
+
+theorem a_nag_waits_on_nothing (m : Message) (of : Nat) (h : enrolled Nat.beq (acked m) of = true) :
+    openEnds (nagOf of m) = openEnds m := by
+  show cond (enrolled Nat.beq (acked m) of) (lacking Nat.beq (acked m) m.askedOf) (lacking Nat.beq (acked m) m.askedOf + 1) = openEnds m
+  rw [h]
+  rfl
+
+theorem the_open_ends_are_named (m : Message) (h : decided m = false) :
+    ∃ n, n ∈ m.askedOf ∧ enrolled Nat.beq (acked m) n = false := sorry
+
+theorem no_open_end_is_decided (m : Message) : openEnds m = 0 ↔ decided m = true := sorry
+
+theorem a_tick_moves_nothing (r : Room) : ∀ n : Nat,
+    runs theDay.m theDay.steer theDay.rest r n = cond (onThePage r) (some r) none
+  | 0 => rfl
+  | n + 1 => by
+      show cond (onThePage r) (some r) (runs theDay.m theDay.steer theDay.rest r n) = cond (onThePage r) (some r) none
+      rw [a_tick_moves_nothing r n]
+      cases onThePage r <;> rfl
+
+theorem the_day_rests_on_the_page_or_not_at_all (w : List Act) (n : Nat) :
+    (haltingGap Act Room).obs theDay (w, n)
+      = cond (onThePage (park dayMachine ⟨[]⟩ w)) (some (park dayMachine ⟨[]⟩ w)) none :=
+  a_tick_moves_nothing (park dayMachine ⟨[]⟩ w) n
+
+theorem the_seen_edges_are_a_reading (v : Nat) (e : List (Nat × Nat)) :
+    Derived roomFace (fun r => seenEdges v r = e) := sorry
+
+theorem a_walled_reply_is_unseen (v : Nat) (r r' : Room) (p : Nat) (h : differOnly roomFace r r' p)
+    (hs : ¬ hears roomFace (seat v) p) : seenEdges v r = seenEdges v r' := sorry
 
 theorem an_edge_is_a_reading (v lo hi : Nat) (e : List Nat × List Nat) :
     Derived roomFace (fun r => edge v lo hi r = e) := sorry

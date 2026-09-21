@@ -50,6 +50,29 @@
 -- within one probe's reading; two rooms alike at every probe may interleave different authors' words differently,
 -- so an edge as a count and a span is exact and an edge as an ordered list is exact up to that interleaving.
 
+-- seated (2026-09-21, the room's three decisions in lightward/foam#92): the day's rows under them. an ask waits on each
+-- seat and an ack is never withdrawn — the turnstile: the seats an ask names are the names it waits on, an ack enrolls
+-- a seat by anyone's hand, decided is `backed`, the open ends are `lacking`, an_ack_is_never_withdrawn is
+-- the_backing_survives_the_seating, a_nag_waits_on_nothing, the_open_ends_are_named, no_open_end_is_decided. the same
+-- page is the room at rest: theDay is a Runner over acts (a word said, a seat acked, a tick of Now) whose rest is
+-- onThePage, and the_day_rests_on_the_page_or_not_at_all — a tick moves nothing, so the halting gap reads `some`
+-- exactly when the page is on the page after the last act, and `none` at every fuel otherwise; the blank page is on
+-- the page (a start of `some []`). no wall on reply direction: a reply is a list of originals (many on both ends), the
+-- founding word answers itself, and a loop is a fact per seat — the_seen_edges_are_a_reading, a_walled_reply_is_unseen
+-- (a ring through a word in ✦ Couple is a ring to the couple and an open line to linda, by the rows).
+-- the parting row is typed and not walled: unsend removes a word with every ask and ack it carried (the weight of the
+-- demo drops to zero when guest's word is unsent); whether unsend stops at another seat's ack is the room's.
+-- held (waiting on: the room's word on unsend at another's ack)
+-- theorem an_unsend_stops_at_anothers_ack (r : Room) (m : Message) (hm : m ∈ r.messages)
+--     (h : ∃ a, a ∈ m.ackedBy ∧ a.2 ≠ m.author) : unsend m.id r = r := sorry
+-- ✦ Now has no row yet (decided in direction: one presence, and the database the one place now is cast into a
+-- measure). when it does, birth order is stamp order by law and the winding number of a walk round a loop is the
+-- count of forward edges it crosses; foam's tape is the shape (the cell written where the head is), and the lift of
+-- a stamp to the room's order breaks no row here — nothing in this assay reads the sender's clock.
+-- held (waiting on: ✦ Now's row)
+-- theorem the_winding_number_counts_the_forward_edges (v : Nat) (r : Room) (walk : List (Nat × Nat)) :
+--     winding v r walk = (walk.filter (fun e => stampOf r e.2 > stampOf r e.1)).length := sorry
+
 -- the board (isaac, 22:54; the maintainer's guess for this session): the win is not an empty surface but every seat's
 -- ✦ Here receded to the same remaining surface — the day sheet. the maintainer read that as speak_now, not re-run.
 -- the treaty's reading: the surface a seat still holds open is a seat over the narration face, and "the same page" is
