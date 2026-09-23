@@ -48,6 +48,11 @@ def held (visited counts : List Nat) : List Nat :=
 
 def due (r : Room) (n cap : Nat) : Bool := Nat.beq (reading r.clocks n % cap) 0
 
+def theRound : Runner (Round Nat) (Tally Nat) := coverage Nat Nat.beq
+
+def walkAt (w : List (Round Nat)) (fuel : Nat) : Option (List Nat) :=
+  ((haltingGap (Round Nat) (Tally Nat)).obs theRound (w, fuel)).map (·.visited)
+
 def isaac : Nat := 0
 def abe : Nat := 1
 def plants : Nat := 2
@@ -91,6 +96,11 @@ def seatReads : List Nat := reads roomFace isaacCounts afterRounds
 #guard report == seatReads
 #guard firstOf Nat.beq abe plants isaacCounts == true
 #guard firstOf Nat.beq plants abe isaacCounts == false
+#guard walkAt [] 0 == some []
+#guard walkAt [.owe abe, .owe plants] 3 == none
+#guard walkAt [.owe abe, .owe plants, .visit abe] 3 == none
+#guard walkAt [.owe abe, .owe plants, .visit abe, .visit plants] 0 == some [plants, abe]
+#guard walkAt (isaacCounts.map Round.owe ++ isaacCounts.map Round.visit) 0 == some isaacCounts.reverse
 #guard reading (rounds start isaacCounts).clocks now == 7
 #guard reading (rounds start (now :: isaacCounts)).clocks now == 8
 #guard reading (tick start).clocks now == 8
@@ -190,5 +200,15 @@ theorem due_is_read_against_now (r : Room) (n : Nat) :
 
 theorem now_is_a_reading (v : Nat) : Derived roomFace (fun r => reading r.clocks now = v) :=
   a_role_read_at_a_probe_is_derived roomFace now (fun (a : Nat) => a = v)
+
+theorem rest_is_coverage (visited counts : List Nat) : mayRest visited counts = rested Nat.beq ⟨visited, counts⟩ := rfl
+
+theorem the_round_is_still (t : Tally Nat) : theRound.m.step t (theRound.steer t) = t := rfl
+
+theorem the_round_rests_where_it_stands (t : Tally Nat) (n : Nat) :
+    runs theRound.m theRound.steer theRound.rest t n = cond (mayRest t.visited t.counts) (some t) none := sorry
+
+theorem a_visit_never_unrests_the_walker (t : Tally Nat) (n : Nat) (h : mayRest t.visited t.counts = true) :
+    mayRest (tallyStep t (.visit n)).visited (tallyStep t (.visit n)).counts = true := sorry
 
 end Cycle.Treaty

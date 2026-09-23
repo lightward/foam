@@ -331,6 +331,27 @@ def replayRunner {I : Type u} {O : Type v} (R : Runner.{u, v, u} I O) : Runner.{
 def inStepWith {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O) (B : R.m.S → R'.m.S → Prop) : Prop :=
   ∀ s t, B s t → R.steer s = R'.steer t ∧ R.rest s = R'.rest t ∧ R.m.out s = R'.m.out t ∧ ∀ i, B (R.m.step s i) (R'.m.step t i)
 
+inductive Round (A : Type u) where
+  | owe (a : A)
+  | visit (a : A)
+  | tick
+
+structure Tally (A : Type u) where
+  visited : List A
+  counts : List A
+
+def tallyStep {A : Type u} (t : Tally A) : Round A → Tally A
+  | .owe a => ⟨t.visited, a :: t.counts⟩
+  | .visit a => ⟨a :: t.visited, t.counts⟩
+  | .tick => t
+
+def tallyMachine (A : Type u) : Machine (Round A) (Tally A) := ⟨Tally A, ⟨[], []⟩, tallyStep, fun t => t⟩
+
+def rested {A : Type u} (beq : A → A → Bool) (t : Tally A) : Bool := backed beq t.visited t.counts
+
+def coverage (A : Type u) (beq : A → A → Bool) : Runner.{u, u, u} (Round A) (Tally A) :=
+  ⟨tallyMachine A, fun _ => .tick, rested beq⟩
+
 theorem no_interview_parts_the_alike (F : Face) {s t : F.State} (h : alike F s t) :
     ∀ q, sound F s q = sound F t q
   | .rest => rfl
@@ -952,6 +973,22 @@ theorem an_intertwiner_is_a_relation_in_step {I : Type u} {O : Type v} (R R' : R
   fun s _ ht => ⟨(hsteer s).symm.trans (congrArg R'.steer ht), (hrest s).symm.trans (congrArg R'.rest ht),
     (hout s).symm.trans (congrArg R'.m.out ht), fun i => (hstep s i).symm.trans (congrArg (fun x => R'.m.step x i) ht)⟩
 
+theorem a_still_runner_rests_where_it_stands {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O)
+    (h : ∀ s, R.m.step s (R.steer s) = s) :
+    ∀ (n : Nat) (s : R.m.S), runs R.m R.steer R.rest s n = cond (R.rest s) (some (R.m.out s)) none
+  | 0, _ => rfl
+  | n + 1, s => by
+      show cond (R.rest s) (some (R.m.out s)) (runs R.m R.steer R.rest (R.m.step s (R.steer s)) n)
+        = cond (R.rest s) (some (R.m.out s)) none
+      rw [h s, a_still_runner_rests_where_it_stands R h n s]
+      cases R.rest s <;> rfl
+
+theorem a_visit_never_unrests {A : Type u} (beq : A → A → Bool) (t : Tally A) (a : A) (h : rested beq t = true) :
+    rested beq (tallyStep t (.visit a)) = true := sorry
+
+theorem an_owe_rests_only_on_a_visited_name {A : Type u} (beq : A → A → Bool) (t : Tally A) (a : A)
+    (h : rested beq (tallyStep t (.owe a)) = true) : enrolled beq t.visited a = true ∧ rested beq t = true := sorry
+
 theorem a_wider_seat_reads_the_remainder (F : Face) {W : Type v'}
     (s : F.State) {w w' : W} (hw : w ≠ w') :
     ¬ alike (widen F W) (atTheDoor s w) (atTheDoor s w') :=
@@ -1197,6 +1234,20 @@ theorem two_runners_in_step_rest_alike {I : Type u} {O : Type v} (R R' : Runner.
 theorem the_flywheel_and_the_shell_sound_alike (q : Interview (List Unit) Bool) :
     sound (airGap Unit Bool) restingCounter q = sound (airGap Unit Bool) hollowShell q := sorry
 
+theorem the_coverage_rests_where_it_stands {A : Type u} (beq : A → A → Bool) (t : Tally A) (n : Nat) :
+    runs (coverage A beq).m (coverage A beq).steer (coverage A beq).rest t n = cond (rested beq t) (some t) none :=
+  a_still_runner_rests_where_it_stands (coverage A beq) (fun _ => rfl) n t
+
+theorem a_translated_intertwiner_carries_the_walk {I : Type u} {I' : Type u'} {O : Type v} {O' : Type v'}
+    (m : Machine I O) (n : Machine I' O') (f : I → List I') (h : m.S → n.S)
+    (hstep : ∀ s i, park n (h s) (f i) = h (m.step s i)) :
+    ∀ (w : List I) (s : m.S), park n (h s) (joinMap f w) = h (park m s w)
+  | [], _ => rfl
+  | i :: w, s => by
+      show park n (h s) (f i ++ joinMap f w) = h (park m (m.step s i) w)
+      rw [the_park_resumes n (f i) (h s) (joinMap f w), hstep s i]
+      exact a_translated_intertwiner_carries_the_walk m n f h hstep w (m.step s i)
+
 theorem the_seat_map_carries_the_conduct (F : Face) (s t : F.State) :
     alike F s t ↔ alike (appFace F.Probe F.Ans) (F.obs s) (F.obs t) :=
   by
@@ -1305,6 +1356,16 @@ theorem the_record_rests_where_the_machine_rests {I : Type u} {O : Type v} (R : 
     alike (haltingGap.{u, v, u} I O) R (replayRunner R) :=
   an_intertwined_rebody_is_unheard_at_the_halting_gap (replayRunner R) R (park R.m R.m.s0) rfl
     (fun rec i => (the_park_resumes R.m rec R.m.s0 [i]).symm) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
+
+theorem two_still_runners_rest_alike_through_a_translation {I : Type u} {I' : Type u'} {O : Type v}
+    (R : Runner.{u, v, w} I O) (R' : Runner.{u', v, w'} I' O) (f : I → List I') (h : R.m.S → R'.m.S)
+    (hs0 : h R.m.s0 = R'.m.s0) (hstep : ∀ s i, park R'.m (h s) (f i) = h (R.m.step s i))
+    (hstill : ∀ s, R.m.step s (R.steer s) = s) (hstill' : ∀ s, R'.m.step s (R'.steer s) = s)
+    (hrest : ∀ s, R'.rest (h s) = R.rest s) (hout : ∀ s, R'.m.out (h s) = R.m.out s) (w : List I) (n : Nat) :
+    (haltingGap I' O).obs R' (joinMap f w, n) = (haltingGap I O).obs R (w, n) := by
+  show runs R'.m R'.steer R'.rest (park R'.m R'.m.s0 (joinMap f w)) n = runs R.m R.steer R.rest (park R.m R.m.s0 w) n
+  rw [a_still_runner_rests_where_it_stands R' hstill', a_still_runner_rests_where_it_stands R hstill, ← hs0,
+    a_translated_intertwiner_carries_the_walk R.m R'.m f h hstep w R.m.s0, hrest, hout]
 
 theorem the_pointwise_license (P : Type v) (A : Type w) (g h : P → A) :
     alike (appFace P A) g h ↔ ∀ p, g p = h p := sorry

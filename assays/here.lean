@@ -368,18 +368,25 @@ theorem the_open_ends_are_named (m : Message) (h : decided m = false) :
 
 theorem no_open_end_is_decided (m : Message) : openEnds m = 0 ↔ decided m = true := sorry
 
-theorem a_tick_moves_nothing (r : Room) : ∀ n : Nat,
-    runs theDay.m theDay.steer theDay.rest r n = cond (onThePage r) (some r) none
-  | 0 => rfl
-  | n + 1 => by
-      show cond (onThePage r) (some r) (runs theDay.m theDay.steer theDay.rest r n) = cond (onThePage r) (some r) none
-      rw [a_tick_moves_nothing r n]
-      cases onThePage r <;> rfl
+theorem the_day_is_still (r : Room) : theDay.m.step r (theDay.steer r) = r := rfl
+
+theorem a_tick_moves_nothing (r : Room) (n : Nat) :
+    runs theDay.m theDay.steer theDay.rest r n = cond (onThePage r) (some r) none := sorry
+
+theorem a_word_is_a_round (m : Message) : decided m = rested Nat.beq ⟨acked m, m.askedOf⟩ := rfl
+
+theorem an_ack_is_a_visit (m : Message) (of hand : Nat) :
+    (⟨acked (ackOf of hand m), (ackOf of hand m).askedOf⟩ : Tally Nat) = tallyStep ⟨acked m, m.askedOf⟩ (.visit of) := rfl
+
+theorem a_nag_is_an_owe (m : Message) (of : Nat) :
+    (⟨acked (nagOf of m), (nagOf of m).askedOf⟩ : Tally Nat) = tallyStep ⟨acked m, m.askedOf⟩ (.owe of) := rfl
+
+theorem the_page_rests_when_every_word_rests (r : Room) :
+    onThePage r = r.messages.all (fun m => rested Nat.beq ⟨acked m, m.askedOf⟩) := rfl
 
 theorem the_day_rests_on_the_page_or_not_at_all (w : List Act) (n : Nat) :
     (haltingGap Act Room).obs theDay (w, n)
-      = cond (onThePage (park dayMachine ⟨[]⟩ w)) (some (park dayMachine ⟨[]⟩ w)) none :=
-  a_tick_moves_nothing (park dayMachine ⟨[]⟩ w) n
+      = cond (onThePage (park dayMachine ⟨[]⟩ w)) (some (park dayMachine ⟨[]⟩ w)) none := sorry
 
 theorem the_seen_edges_are_a_reading (v : Nat) (e : List (Nat × Nat)) :
     Derived roomFace (fun r => seenEdges v r = e) := sorry
