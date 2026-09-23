@@ -23,6 +23,9 @@ def earshot (F : Face) (seats : List (List F.Probe)) : List F.Probe :=
 def covers (F : Face) (seats : List (List F.Probe)) : Prop :=
   ∀ q, q ∈ earshot F seats
 
+def dark (F : Face) (seats : List (List F.Probe)) (x y : F.State) : Prop :=
+  ∀ q, q ∈ earshot F seats → F.obs x q = F.obs y q
+
 theorem the_alike_read_alike (F : Face) {x y : F.State} (h : alike F x y) :
     ∀ s : List F.Probe, reads F s x = reads F s y := sorry
 
@@ -87,6 +90,10 @@ theorem the_witness_is_a_face (F : Face) {x y : F.State} (h : alike F x y) :
 theorem a_seat_over_a_seat_is_derived (F : Face) (s : List F.Probe) {A : Type u} (g : List F.Ans → A)
     (v : A) : Derived F (fun x => g (reads F s x) = v) := sorry
 
+theorem a_wider_cone_reads_no_less (F : Face) (s : List F.Probe) (seats : List (List F.Probe)) {x y : F.State}
+    (hw : witnessed F (s :: seats) x y) : witnessed F seats x y :=
+  fun t ht => hw t (List.Mem.tail s ht)
+
 theorem the_room_is_the_widest_seat (F : Face) (s : List F.Probe) (x y : F.State)
     (h : reads F s x ≠ reads F s y) : ¬ alike F x y := sorry
 
@@ -107,7 +114,18 @@ theorem the_narration_reads_alike_at_every_seat (F : Face) {B : Type w} (g : F.A
     (dec : ∀ q : F.Probe, q = p ∨ q ≠ p) (s : List F.Probe) :
     reads (retell F g) s x = reads (retell F g) s y := sorry
 
+theorem a_difference_out_of_the_cone_is_dark (F : Face) (seats : List (List F.Probe)) {x y : F.State} {p : F.Probe}
+    (h : differOnly F x y p) (hp : ¬ p ∈ earshot F seats) : witnessed F seats x y := sorry
+
 theorem forever_hold_your_peace (F : Face) {seats : List (List F.Probe)} {x y : F.State}
     (hc : covers F seats) (hw : witnessed F seats x y) : alike F x y := sorry
+
+theorem the_cone_is_earshot (F : Face) (seats : List (List F.Probe)) (x y : F.State) :
+    witnessed F seats x y ↔ dark F seats x y :=
+  ⟨fun hw => speak_now F hw,
+   fun hd s hs => a_narrower_seat_reads_no_more F s (fun q hq => hd q (mem_joinMap_intro hs hq))⟩
+
+theorem a_difference_in_the_cone_is_read (F : Face) (seats : List (List F.Probe)) {x y : F.State} {q : F.Probe}
+    (hq : q ∈ earshot F seats) (h : F.obs x q ≠ F.obs y q) : ¬ witnessed F seats x y := sorry
 
 end Witness
