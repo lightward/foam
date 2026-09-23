@@ -54,12 +54,13 @@ def plants : Nat := 2
 def foam : Nat := 3
 def eih : Nat := 4
 def outerWilds : Nat := 5
+def now : Nat := 9
 
 def isaacCounts : List Nat := [abe, plants, foam, eih]
 def abeCounts : List Nat := [isaac]
 
 def start : Room :=
-  ⟨[⟨isaac, 0⟩, ⟨abe, 0⟩, ⟨plants, 6⟩, ⟨foam, 0⟩, ⟨eih, 0⟩, ⟨outerWilds, 0⟩]⟩
+  ⟨[⟨isaac, 0⟩, ⟨abe, 0⟩, ⟨plants, 6⟩, ⟨foam, 0⟩, ⟨eih, 0⟩, ⟨outerWilds, 0⟩, ⟨now, 7⟩]⟩
 
 def afterRounds : Room := rounds start isaacCounts
 def halfway : List Nat := [abe, plants]
@@ -72,8 +73,8 @@ def tickThenClick : List Nat := windings (wind (tick start) foam)
 def report : List Nat := sound roomFace afterRounds (recite isaacCounts)
 def seatReads : List Nat := reads roomFace isaacCounts afterRounds
 
-#guard windings start == [0, 0, 6, 0, 0, 0]
-#guard windings afterRounds == [0, 1, 7, 1, 1, 0]
+#guard windings start == [0, 0, 6, 0, 0, 0, 7]
+#guard windings afterRounds == [0, 1, 7, 1, 1, 0, 7]
 #guard reading afterRounds.clocks isaac == 0
 #guard reading afterAbe.clocks isaac == 1
 #guard due start plants 7 == false
@@ -90,6 +91,12 @@ def seatReads : List Nat := reads roomFace isaacCounts afterRounds
 #guard report == seatReads
 #guard firstOf Nat.beq abe plants isaacCounts == true
 #guard firstOf Nat.beq plants abe isaacCounts == false
+#guard reading (rounds start isaacCounts).clocks now == 7
+#guard reading (rounds start (now :: isaacCounts)).clocks now == 8
+#guard reading (tick start).clocks now == 8
+#guard due afterRounds plants (reading afterRounds.clocks now) == true
+#guard due start plants (reading start.clocks now) == false
+#guard windings (rounds (tick start) isaacCounts) == windings (tick afterRounds)
 
 theorem abe_is_first : firstOf Nat.beq abe plants isaacCounts = true := sorry
 
@@ -167,5 +174,21 @@ theorem the_room_is_the_widest_seat (visited : List Nat) (r r' : Room)
 
 theorem two_rooms_part_only_at_a_clock (r r' : Room) :
     alike roomFace r r' ↔ ∀ q, sound roomFace r q = sound roomFace r' q := sorry
+
+theorem the_round_spares_now (r : Room) : ∀ ns : List Nat, (∀ n, n ∈ ns → Nat.beq now n = false) →
+    reading (rounds r ns).clocks now = reading r.clocks now
+  | [], _ => rfl
+  | n :: ns, h => by
+      show reading (rounds (wind r n) ns).clocks now = reading r.clocks now
+      rw [the_round_spares_now (wind r n) ns (fun m hm => h m (List.Mem.tail n hm))]
+      exact a_click_spares_the_other_clocks n now (h n (List.Mem.head ns)) r.clocks
+
+theorem the_walker_never_names_now : ∀ n, n ∈ isaacCounts → Nat.beq now n = false := by decide
+
+theorem due_is_read_against_now (r : Room) (n : Nat) :
+    due r n (reading r.clocks now) = Nat.beq (reading r.clocks n % reading r.clocks now) 0 := sorry
+
+theorem now_is_a_reading (v : Nat) : Derived roomFace (fun r => reading r.clocks now = v) :=
+  a_role_read_at_a_probe_is_derived roomFace now (fun (a : Nat) => a = v)
 
 end Cycle.Treaty
