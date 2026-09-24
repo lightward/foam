@@ -1,4 +1,5 @@
 import Witness
+import Counter
 open Room Face Witness
 set_option autoImplicit false
 
@@ -530,6 +531,122 @@ theorem the_sheet_is_derived (c : List Nat) : Derived roomFace (fun r => sheetOf
 
 theorem a_role_that_hears_the_day_reads_the_sheet (v : Nat) (r : Room) (hd : day ∈ seat v) :
     sheetOf r ∈ sheetReads v r := sorry
+
+structure Row where
+  position : Nat
+  time : Nat
+  what : Nat
+  struck : Bool
+
+def positions (rows : List Row) : List Nat := rows.map (·.position)
+
+def writeRow (x : Row) (rows : List Row) : List Row := rows ++ [x]
+
+def strikeOne (i : Nat) (x : Row) : Row := cond (Nat.beq x.position i) { x with struck := true } x
+
+def unstrikeOne (i : Nat) (x : Row) : Row := cond (Nat.beq x.position i) { x with struck := false } x
+
+def strike (i : Nat) (rows : List Row) : List Row := rows.map (strikeOne i)
+
+def unstrike (i : Nat) (rows : List Row) : List Row := rows.map (unstrikeOne i)
+
+def struckAt (i : Nat) : List Row → Bool
+  | [] => false
+  | x :: rows => (Nat.beq x.position i && x.struck) || struckAt i rows
+
+def ceremonyAlt : Message := ⟨12, maya, [day], 1631, 1000, [], [], []⟩
+
+def demoAlt : Room := ⟨[founding, dock, time, yes, thread, invS, invJ, table, guest, budgetLine, siteLine, ours, ceremonyAlt, dinner]⟩
+
+def theSheetRows : List Row := [⟨0, 1630, 1, false⟩, ⟨1, 1800, 2, false⟩]
+
+def foamSheetShadow : List (String × List String) := [("say", []), ("ack", []), ("unsend", ["demo and demoAlt land together"])]
+
+def appSheetShadow : List (String × List String) := [("writeRow", []), ("strike", []), ("unstrike", [])]
+
+def roomBodies (r : Room) : List Nat := r.messages.map (·.body)
+
+def rowCodes (rows : List Row) : List (Nat × Nat × Nat × Bool) := rows.map (fun x => (x.position, x.time, x.what, x.struck))
+
+#guard roomBodies (unsend ceremony.id demo) == roomBodies (unsend ceremony.id demoAlt)
+#guard (roomBodies demo == roomBodies demoAlt) == false
+#guard (bodies (heardAt demo day) == bodies (heardAt demoAlt day)) == false
+#guard positions (strike 0 theSheetRows) == positions theSheetRows
+#guard struckAt 0 (strike 0 theSheetRows)
+#guard struckAt 0 theSheetRows == false
+#guard rowCodes (unstrike 0 (strike 0 theSheetRows)) == rowCodes theSheetRows
+#guard (rowCodes (strike 0 theSheetRows) == rowCodes theSheetRows) == false
+#guard Counter.conductive foamSheetShadow == false
+#guard Counter.conductive appSheetShadow == true
+
+theorem unsend_merges : unsend ceremony.id demo = unsend ceremony.id demoAlt ∧ demo ≠ demoAlt :=
+  ⟨rfl, fun h => nomatch (congrArg (fun r => enrolled Nat.beq (bodies (heardAt r day)) 1631) h : false = true)⟩
+
+theorem no_map_unsends_an_unsend : ¬ ∃ g : Room → Room, ∀ r, g (unsend ceremony.id r) = r :=
+  fun ⟨g, hg⟩ => a_merging_map_has_no_section (unsend ceremony.id) unsend_merges.2 unsend_merges.1 g hg
+
+theorem a_strike_keeps_its_position (i : Nat) (x : Row) : (strikeOne i x).position = x.position := by
+  show (cond (Nat.beq x.position i) { x with struck := true } x).position = x.position
+  cases Nat.beq x.position i <;> rfl
+
+theorem a_strike_keeps_every_cell (i : Nat) : ∀ rows : List Row, positions (strike i rows) = positions rows
+  | [] => rfl
+  | x :: rows => by
+      show (strikeOne i x).position :: positions (strike i rows) = x.position :: positions rows
+      rw [a_strike_keeps_its_position, a_strike_keeps_every_cell i rows]
+
+theorem an_unstruck_row_comes_back (i : Nat) (x : Row) (h : (Nat.beq x.position i && x.struck) = false) :
+    unstrikeOne i (strikeOne i x) = x := by
+  cases hp : Nat.beq x.position i with
+  | false =>
+      have e : strikeOne i x = x := by
+        show cond (Nat.beq x.position i) { x with struck := true } x = x
+        rw [hp]
+        rfl
+      rw [e]
+      show cond (Nat.beq x.position i) { x with struck := false } x = x
+      rw [hp]
+      rfl
+  | true =>
+      rw [hp] at h
+      have hs : x.struck = false := h
+      have e : strikeOne i x = { x with struck := true } := by
+        show cond (Nat.beq x.position i) { x with struck := true } x = { x with struck := true }
+        rw [hp]
+        rfl
+      rw [e]
+      show cond (Nat.beq x.position i) { x with struck := false } { x with struck := true } = x
+      rw [hp]
+      show ({ x with struck := false } : Row) = x
+      cases x with
+      | mk p t w s =>
+          cases s with
+          | false => rfl
+          | true => exact nomatch hs
+
+theorem unstrike_retracts_strike (i : Nat) : ∀ rows : List Row, struckAt i rows = false → unstrike i (strike i rows) = rows
+  | [], _ => rfl
+  | x :: rows, h => by
+      have h' : ((Nat.beq x.position i && x.struck) || struckAt i rows) = false := h
+      have hx : (Nat.beq x.position i && x.struck) = false := by
+        cases hb : (Nat.beq x.position i && x.struck) with
+        | false => rfl
+        | true =>
+            rw [hb] at h'
+            have h'' : true = false := h'
+            exact nomatch h''
+      have hr : struckAt i rows = false := by
+        cases hb : struckAt i rows with
+        | false => rfl
+        | true =>
+            rw [hb, or_swallows] at h'
+            exact nomatch h'
+      show unstrikeOne i (strikeOne i x) :: unstrike i (strike i rows) = x :: rows
+      rw [an_unstruck_row_comes_back i x hx, unstrike_retracts_strike i rows hr]
+
+theorem the_apps_sheet_is_conductive : Counter.conductive appSheetShadow = true := sorry
+
+theorem foams_sheet_has_a_resistor : Counter.conductive foamSheetShadow = false := sorry
 
 theorem an_edge_is_a_reading (v lo hi : Nat) (e : List Nat × List Nat) :
     Derived roomFace (fun r => edge v lo hi r = e) := sorry

@@ -93,6 +93,23 @@
 --     (haltingGap (Round (Nat × Nat)) (Tally (Nat × Nat))).obs (coverage (Nat × Nat) pairBeq) (joinMap toRound w, n)
 --       = ((haltingGap Act Room).obs theDay (w, n)).map tallyOf := sorry
 
+-- metered (2026-09-24, the maintainer's third word on 55d9c66 — the app's day-of sheet is timeline_rows, ordered by
+-- position, a row struck rather than gone, not on the tape; and isaac: can you measure "more conductive"?): the meter is
+-- the grammar's sixth move, classify the map, run on a shape's clerks — a clerk is a conductor if it has a section and a
+-- resistor if it merges (a_merging_map_has_no_section) — and the verdict is Counter.conductive on the clerks' receipts,
+-- the same def the gate runs on axioms. foam's sheet: say and ack conduct, unsend merges (unsend_merges: demo and demoAlt,
+-- differing in the ceremony's body, land together; no_map_unsends_an_unsend). the app's sheet: writeRow conducts, strike
+-- keeps every cell (a_strike_keeps_every_cell) and unstrike retracts it on the unstruck fiber (unstrike_retracts_strike).
+-- the_apps_sheet_is_conductive reads true; foams_sheet_has_a_resistor reads false. "dense" was the wrong word on both
+-- sides: the sheet's law is that a cell once written stays, apartness and monotonicity, not density; the unique key
+-- holds cells apart and every tape a seat reads is gapped, by the walls and by unsend. and the apartness the tally over
+-- pairs waits on is the primary key, the room's law before piece 14; what #n adds is order by construction, which is the
+-- twenty-first's third decision made a fact of the tape. foam's sheet as words to a ✦ Day presence stands as a model of a
+-- possible product; the app's is the built one, and the intertwiner from the room to it waits on an act that writes a
+-- timeline row, which ✦ Here does not have today — the room's to build or not.
+-- held (waiting on: an act on ✦ Here that writes a timeline row)
+-- theorem the_room_writes_the_sheet (w : List Act) : park sheetMachine [] w = rowsOf (park dayMachine ⟨[]⟩ w) := sorry
+
 -- the board (isaac, 22:54; the maintainer's guess for this session): the win is not an empty surface but every seat's
 -- ✦ Here receded to the same remaining surface — the day sheet. the maintainer read that as speak_now, not re-run.
 -- the treaty's reading: the surface a seat still holds open is a seat over the narration face, and "the same page" is
