@@ -632,6 +632,19 @@ theorem ble_flips : ∀ a b : Nat, Nat.ble a b = false → Nat.ble b a = true
 
 theorem no_room_for_one_more : ∀ n : Nat, Nat.ble (n + 1) n = false := sorry
 
+theorem an_enrolled_name_is_a_member {A : Type u} (beq : A → A → Bool) (hE : ∀ x y : A, beq x y = true → x = y) :
+    ∀ (s : List A) (p : A), enrolled beq s p = true → p ∈ s
+  | [], _, h => nomatch h
+  | q :: s, p, h => by
+      have h' : (beq q p || enrolled beq s p) = true := h
+      cases hq : beq q p with
+      | true =>
+          rw [hE q p hq]
+          exact List.Mem.head _
+      | false =>
+          rw [hq] at h'
+          exact List.Mem.tail _ (an_enrolled_name_is_a_member beq hE s p h')
+
 theorem a_merging_map_has_no_section {S : Type u} {T : Type u'} (h : S → T)
     {s s' : S} (hs : s ≠ s') (hm : h s = h s')
     (r : T → S) (hr : ∀ x, r (h x) = x) : False := sorry

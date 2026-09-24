@@ -649,6 +649,60 @@ theorem the_apps_sheet_is_conductive : Counter.conductive appSheetShadow = true 
 
 theorem foams_sheet_has_a_resistor : Counter.conductive foamSheetShadow = false := sorry
 
+def humanSeats : List (List Nat) := humans.map seat
+
+def presences : List Nat := humans ++ [everyone, vendors, seating, guests, invoicing, budget, site, couple, day]
+
+def crossed (r : Room) : Bool := (heardAt r everyone).any (fun m => Nat.beq m.id 0 && Nat.beq m.author everyone && enrolled Nat.beq m.replyTo 0)
+
+def crossing : Message := founding
+
+def before : Room := ⟨demo.messages.filter (fun m => !(Nat.beq m.id 0))⟩
+
+def after : Room := demo
+
+def coupleSeats : List (List Nat) := [seat maya, seat james]
+
+#guard crossed before == false
+#guard crossed after
+#guard sees maya after crossing
+#guard sees linda after crossing
+#guard (humans.map (fun v => sees v after crossing)).all (fun b => b)
+#guard lindaReads' == (reads roomFace (seat linda) after).map bodies
+#guard (humans.map (fun v => (reads roomFace (seat v) before).map ids == (reads roomFace (seat v) after).map ids)).all (fun b => !b)
+#guard (reads roomFace (seat linda) before).map bodies == ((reads roomFace (seat linda) after).map bodies).map (fun l => l.filter (fun b => !(Nat.beq b 100)))
+#guard enrolled Nat.beq (earshot roomFace humanSeats) couple
+#guard enrolled Nat.beq (earshot roomFace coupleSeats) couple
+#guard enrolled Nat.beq (earshot roomFace (others.map seat)) couple == false
+#guard presences.all (fun p => enrolled Nat.beq (earshot roomFace humanSeats) p)
+#guard enrolled Nat.beq (earshot roomFace humanSeats) rose == false
+#guard speaks rose maya
+
+theorem the_room_is_covered_by_its_people : coversAll roomFace presences humanSeats :=
+  fun q hq => an_enrolled_name_is_a_member Nat.beq eq_of_beq (earshot roomFace humanSeats) q
+    (the_backing_reaches_each_need Nat.beq (earshot roomFace humanSeats) presences rfl q hq)
+
+theorem a_guest_is_out_of_the_peoples_earshot : ¬ rose ∈ earshot roomFace humanSeats :=
+  the_unenrolled_are_no_member Nat.beq beq_self (earshot roomFace humanSeats) rose rfl
+
+theorem the_crossing_is_a_reading (b : Bool) : Derived roomFace (fun r => crossed r = b) :=
+  a_role_read_at_a_probe_is_derived roomFace everyone (fun (ms : List Message) => (ms.any (fun m => Nat.beq m.id 0 && Nat.beq m.author everyone && enrolled Nat.beq m.replyTo 0)) = b)
+
+theorem two_rooms_alike_to_the_people_are_alike_at_every_presence (r r' : Room)
+    (hw : witnessed roomFace humanSeats r r') : reads roomFace presences r = reads roomFace presences r' := sorry
+
+theorem the_couple_is_dark_to_the_others (r r' : Room) (h : differOnly roomFace r r' couple) :
+    witnessed roomFace (others.map seat) r r' :=
+  a_difference_out_of_the_cone_is_dark roomFace (others.map seat) h
+    (the_unenrolled_are_no_member Nat.beq beq_self (earshot roomFace (others.map seat)) couple rfl)
+
+theorem after_the_crossing_every_reading_stands (s : List Nat) (r : Room) (w : List Nat) :
+    reads (host roomFace (List Nat)) s (atTheDoor r w) = reads roomFace s r := sorry
+
+theorem the_crossing_is_the_one_difference (r : Room) (b : Bool) :
+    Derived roomFace (fun r' => crossed r' = b) ∧ ∀ s, reads (host roomFace (List Nat)) s (atTheDoor r []) = reads roomFace s r :=
+  ⟨the_crossing_is_a_reading b, fun s => the_ceremony_reseats_every_reading roomFace s r []⟩
+
 theorem an_edge_is_a_reading (v lo hi : Nat) (e : List Nat × List Nat) :
     Derived roomFace (fun r => edge v lo hi r = e) := sorry
 

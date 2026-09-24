@@ -116,9 +116,20 @@
 -- a cover must reach every one; the room's presences are finite and the model's are not. two honest cuts: the presences
 -- as an enum (the drawer reads enums; the seats become the treaty's views), or a cover relative to a list of probes in
 -- Witness (coversAll F ps seats, with forever_hold_your_peace on ps). either is a sitting; neither is a design.
--- held (waiting on: the presences as an enum, or a relative cover in Witness)
+-- seated (2026-09-25): the second cut — a cover relative to a list of probes, coversAll in Witness, the app's shape since a
+-- room's presences are a finite list. the room is covered by its people (the_room_is_covered_by_its_people, from the
+-- backing computed and an enrolled name being a member — a Room species deposited for it); two rooms alike to the people
+-- are alike at every presence; the couple is dark to the others; and the crossing is a fact read from the room's #0 and
+-- nothing else (crossed; the_crossing_is_a_reading, Derived at the room), with before and after as the demo without and
+-- with it. what parted on the way: the guest. Rose has no seat and no human hears her, her word reaching the room through
+-- ✦ Guests alone, so the presences the people cover are the room's own and a guest is out of their earshot by
+-- construction (a_guest_is_out_of_the_peoples_earshot) — one-hop.sql's "no standing in the room" as a receipt. the
+-- threshold itself, threshold roomFace humanSeats theDay s, still asks for `covers` absolute; with coversAll it is the
+-- room's cover at the room's presences, which is what the_threshold's pane would take — a Threshold generalization
+-- waiting on a pass, not a design.
+-- held (waiting on: the_threshold at a relative cover)
 -- theorem the_day_crosses_the_threshold (w : List Act) (r : Room)
---     (h : (haltingGap Act Room).obs theDay (w, 0) = some r) : threshold roomFace humanSeats theDay (park dayMachine ⟨[]⟩ w) := sorry
+--     (h : (haltingGap Act Room).obs theDay (w, 0) = some r) : coversAll roomFace presences humanSeats ∧ onThePage r = true := sorry
 
 -- the board (isaac, 22:54; the maintainer's guess for this session): the win is not an empty surface but every seat's
 -- ✦ Here receded to the same remaining surface — the day sheet. the maintainer read that as speak_now, not re-run.

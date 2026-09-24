@@ -26,6 +26,9 @@ def covers (F : Face) (seats : List (List F.Probe)) : Prop :=
 def dark (F : Face) (seats : List (List F.Probe)) (x y : F.State) : Prop :=
   ∀ q, q ∈ earshot F seats → F.obs x q = F.obs y q
 
+def coversAll (F : Face) (ps : List F.Probe) (seats : List (List F.Probe)) : Prop :=
+  ∀ q, q ∈ ps → q ∈ earshot F seats
+
 theorem the_alike_read_alike (F : Face) {x y : F.State} (h : alike F x y) :
     ∀ s : List F.Probe, reads F s x = reads F s y := sorry
 
@@ -94,6 +97,11 @@ theorem a_wider_cone_reads_no_less (F : Face) (s : List F.Probe) (seats : List (
     (hw : witnessed F (s :: seats) x y) : witnessed F seats x y :=
   fun t ht => hw t (List.Mem.tail s ht)
 
+theorem a_cover_of_the_room_covers_its_probes (F : Face) (ps : List F.Probe) (seats : List (List F.Probe))
+    (hc : covers F seats) : coversAll F ps seats := sorry
+
+theorem a_room_covers_itself_at_one_seat (F : Face) (ps : List F.Probe) : coversAll F ps [ps] := sorry
+
 theorem the_room_is_the_widest_seat (F : Face) (s : List F.Probe) (x y : F.State)
     (h : reads F s x ≠ reads F s y) : ¬ alike F x y := sorry
 
@@ -127,5 +135,11 @@ theorem the_cone_is_earshot (F : Face) (seats : List (List F.Probe)) (x y : F.St
 
 theorem a_difference_in_the_cone_is_read (F : Face) (seats : List (List F.Probe)) {x y : F.State} {q : F.Probe}
     (hq : q ∈ earshot F seats) (h : F.obs x q ≠ F.obs y q) : ¬ witnessed F seats x y := sorry
+
+theorem hold_your_peace_on_the_room (F : Face) (ps : List F.Probe) {seats : List (List F.Probe)} {x y : F.State}
+    (hc : coversAll F ps seats) (hw : witnessed F seats x y) : ∀ q, q ∈ ps → F.obs x q = F.obs y q := sorry
+
+theorem the_room_at_its_probes_reads_alike (F : Face) (ps : List F.Probe) {seats : List (List F.Probe)} {x y : F.State}
+    (hc : coversAll F ps seats) (hw : witnessed F seats x y) : reads F ps x = reads F ps y := sorry
 
 end Witness
