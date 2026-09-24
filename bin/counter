@@ -768,11 +768,16 @@ if primings_path:
                 hand_members = [n for _, n, _ in theorems if not is_vac[n] and group_of.get(NS_NAME + '.' + n) == key]
                 base = [m for m in members if not m[0].startswith(NS_NAME + '.')] + [by_qn[NS_NAME + '.' + n] for n in hand_members if n not in regrown_by]
                 cover = set(a for m in base for f in m[2] for a in f)
+                # a skeleton needs a body standing to be offered at all: two hand bodies of one shape with no
+                # fans regrew by each other, were both vacated (no alternative to cover), and neither stood
+                # (2026-09-25, the two threshold panes; the nine inductions' oscillation with no fan to hang
+                # the rule on) — the first of them is kept as the exemplar when nothing else of the shape stands
+                standing = bool(base)
                 for n in hand_members:
                     if n not in regrown_by: continue
                     alts = set(a for f in by_qn[NS_NAME + '.' + n][2] for a in f)
-                    if alts <= cover: continue
-                    kept.append(n); cover |= alts
+                    if standing and alts <= cover: continue
+                    kept.append(n); cover |= alts; standing = True
                     carried.append(n); seated_text[n] = hand_with_receipt(n); del regrown_by[n]
             if kept:
                 print(f'the exemplars kept: {len(kept)} hand bodies carrying a fan alternative no standing body carries: {" ".join(kept)}')

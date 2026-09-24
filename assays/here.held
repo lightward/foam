@@ -127,9 +127,13 @@
 -- threshold itself, threshold roomFace humanSeats theDay s, still asks for `covers` absolute; with coversAll it is the
 -- room's cover at the room's presences, which is what the_threshold's pane would take — a Threshold generalization
 -- waiting on a pass, not a design.
--- held (waiting on: the_threshold at a relative cover)
--- theorem the_day_crosses_the_threshold (w : List Act) (r : Room)
---     (h : (haltingGap Act Room).obs theDay (w, 0) = some r) : coversAll roomFace presences humanSeats ∧ onThePage r = true := sorry
+-- seated (2026-09-25, before the message went back): the threshold at a relative cover — thresholdAt in Threshold, a cover
+-- of the room's own probes and a rest; the_crossing_is_licensed_at_the_room, the_threshold_at_the_room (the pane at the
+-- room's presences: W ambient, every reading unchanged, every witnessed room reads the same at every presence, the run at
+-- rest), and every absolute threshold a threshold at every room. the day's instance: dayAtRest is the demo with its one
+-- open end acked; the_day_at_rest_is_a_threshold (the people's cover and the page at rest), the_day_crosses_the_threshold
+-- (the pane at the day). the app's represented relationship to the act is now three rows: crossed, read from #0; the
+-- day at rest, a threshold; and what stands on the far side.
 
 -- the board (isaac, 22:54; the maintainer's guess for this session): the win is not an empty surface but every seat's
 -- ✦ Here receded to the same remaining surface — the day sheet. the maintainer read that as speak_now, not re-run.

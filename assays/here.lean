@@ -1,7 +1,8 @@
 import Witness
 import Rest
+import Threshold
 import Counter
-open Room Face Witness Rest
+open Room Face Witness Rest Threshold
 set_option autoImplicit false
 
 -- ✦ Here. isaac, at the table (2026-09-15), in his words: "✦ X" means the spirit of X, and a spirit only exists
@@ -702,6 +703,22 @@ theorem after_the_crossing_every_reading_stands (s : List Nat) (r : Room) (w : L
 theorem the_crossing_is_the_one_difference (r : Room) (b : Bool) :
     Derived roomFace (fun r' => crossed r' = b) ∧ ∀ s, reads (host roomFace (List Nat)) s (atTheDoor r []) = reads roomFace s r :=
   ⟨the_crossing_is_a_reading b, fun s => the_ceremony_reseats_every_reading roomFace s r []⟩
+
+def dayAtRest : Room := demoAcked
+
+#guard onThePage dayAtRest
+#guard crossed dayAtRest
+
+theorem the_day_at_rest_is_a_threshold (h : onThePage dayAtRest = true) :
+    thresholdAt roomFace presences humanSeats theDay dayAtRest :=
+  ⟨the_room_is_covered_by_its_people, h⟩
+
+theorem the_day_crosses_the_threshold (h : onThePage dayAtRest = true) (w w' : List Nat) (sl : List Nat) :
+    alike (host roomFace (List Nat)) (atTheDoor dayAtRest w) (atTheDoor dayAtRest w')
+      ∧ reads (host roomFace (List Nat)) sl (atTheDoor dayAtRest w) = reads roomFace sl dayAtRest
+      ∧ (∀ y, witnessed roomFace humanSeats dayAtRest y → reads roomFace presences dayAtRest = reads roomFace presences y)
+      ∧ runs theDay.m theDay.steer theDay.rest dayAtRest 0 = some dayAtRest :=
+  the_threshold_at_the_room roomFace presences humanSeats theDay dayAtRest (the_day_at_rest_is_a_threshold h) w w' sl
 
 theorem an_edge_is_a_reading (v lo hi : Nat) (e : List Nat × List Nat) :
     Derived roomFace (fun r => edge v lo hi r = e) := sorry
