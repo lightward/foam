@@ -73,6 +73,26 @@
 -- theorem the_winding_number_counts_the_forward_edges (v : Nat) (r : Room) (walk : List (Nat × Nat)) :
 --     winding v r walk = (walk.filter (fun e => stampOf r e.2 > stampOf r e.1)).length := sorry
 
+-- seated (2026-09-24, isaac's reading of piece 14: the dense tape is the day-of sheet, the product's work-product, and ✦ Here
+-- the gapped tape the team uses to converge on the address of a tape with a continuously-functionally-coherent role for
+-- everyone): ✦ Day is a presence every human hears and the couple and the planner write; the sheet is the dense tape —
+-- ✦ Day's cells in the order the room wrote them, sheetOf r = ids (roomFace.obs r day) by construction — and the sheet
+-- machine is a ledger of those cells over the day's acts. the_sheet_is_a_reading_of_the_record: the room's acts carry
+-- the sheet (a said word writes its cell, an ack keeps the sheet, a tick moves nothing), so the sheet is an intertwined
+-- walk of the day — every_seat_is_a_reading_of_the_record, one storey up. a_cell_once_written_stays: the dense tape
+-- never unwinds (an_enrolled_name_stays_enrolled_down_the_hall), where the room's unsend does (the demo's sheet drops
+-- the ceremony when the ceremony is unsent from the room, and the acts that remain write the sheet without it).
+-- the_sheet_at_rest: when the day's halting gap reads some, the sheet is that room's sheet. the_sheet_is_derived:
+-- a function of the reading at one probe, coherent at every seat; the_sheets_lift_is_its_conduct; a role that hears the
+-- day reads the sheet in its own seat. found: the trunk's the_intertwined_walks_agree demands the same output type on
+-- both machines and the walk law never needed it — the sheet carries its own induction until that species is
+-- generalized (a Face deposit, a cold pass). what waits: the state-level join of the day into the coverage runner,
+-- whose hypothesis piece 14 now makes law (one dense tape per room, the ids apart by construction).
+-- held (waiting on: the ids apart, as piece 14's #n)
+-- theorem the_day_is_a_round_over_pairs (w : List Act) (n : Nat) (h : Apart (ids (park dayMachine ⟨[]⟩ w).messages)) :
+--     (haltingGap (Round (Nat × Nat)) (Tally (Nat × Nat))).obs (coverage (Nat × Nat) pairBeq) (joinMap toRound w, n)
+--       = ((haltingGap Act Room).obs theDay (w, n)).map tallyOf := sorry
+
 -- the board (isaac, 22:54; the maintainer's guess for this session): the win is not an empty surface but every seat's
 -- ✦ Here receded to the same remaining surface — the day sheet. the maintainer read that as speak_now, not re-run.
 -- the treaty's reading: the surface a seat still holds open is a seat over the narration face, and "the same page" is

@@ -47,6 +47,7 @@ def invoicing : Nat := 14
 def budget : Nat := 15
 def site : Nat := 16
 def couple : Nat := 17
+def day : Nat := 18
 
 def humans : List Nat := [maya, james, ava, sofia, jordan, dana, linda]
 
@@ -55,13 +56,13 @@ def lookup : List (Nat × List Nat) → Nat → List Nat
   | (n, l) :: t, k => cond (Nat.beq n k) l (lookup t k)
 
 def hearsTable : List (Nat × List Nat) :=
-  [(maya, [everyone, seating, guests, invoicing, budget, site, couple]),
-   (james, [everyone, seating, guests, invoicing, budget, site, couple]),
-   (ava, [everyone, vendors, seating, guests, invoicing, budget]),
-   (sofia, [everyone, vendors, seating]),
-   (jordan, [everyone, vendors, seating]),
-   (dana, [everyone, vendors, seating]),
-   (linda, [everyone, seating, guests]),
+  [(maya, [everyone, seating, guests, invoicing, budget, site, couple, day]),
+   (james, [everyone, seating, guests, invoicing, budget, site, couple, day]),
+   (ava, [everyone, vendors, seating, guests, invoicing, budget, day]),
+   (sofia, [everyone, vendors, seating, day]),
+   (jordan, [everyone, vendors, seating, day]),
+   (dana, [everyone, vendors, seating, day]),
+   (linda, [everyone, seating, guests, day]),
    (everyone, humans),
    (vendors, [ava, sofia, jordan, dana]),
    (seating, [maya, james, ava, linda, dana]),
@@ -69,7 +70,8 @@ def hearsTable : List (Nat × List Nat) :=
    (invoicing, [sofia, jordan, dana]),
    (budget, [maya, james]),
    (site, [maya, james]),
-   (couple, [maya, james])]
+   (couple, [maya, james]),
+   (day, [maya, james, ava])]
 
 def hearsOf (v : Nat) : List Nat := lookup hearsTable v
 
@@ -140,9 +142,11 @@ def ours : Message := ⟨11, maya, [couple], 111, 1705, [thread.id], [], []⟩
 def theirs : Message := ⟨11, maya, [couple], 999, 1705, [thread.id], [], []⟩
 
 def founding : Message := ⟨0, everyone, [everyone], 100, 800, [0], [], []⟩
+def ceremony : Message := ⟨12, maya, [day], 1630, 1000, [], [], []⟩
+def dinner : Message := ⟨13, ava, [day], 1800, 1001, [], [], []⟩
 
-def demo : Room := ⟨[founding, dock, time, yes, thread, invS, invJ, table, guest, budgetLine, siteLine, ours]⟩
-def demo' : Room := ⟨[founding, dock, time, yes, thread, invS, invJ, table, guest, budgetLine, siteLine, theirs]⟩
+def demo : Room := ⟨[founding, dock, time, yes, thread, invS, invJ, table, guest, budgetLine, siteLine, ours, ceremony, dinner]⟩
+def demo' : Room := ⟨[founding, dock, time, yes, thread, invS, invJ, table, guest, budgetLine, siteLine, theirs, ceremony, dinner]⟩
 
 def coupleReads : List (List Nat) := (reads roomFace (seat maya) demo).map bodies
 def lindaReads : List (List Nat) := (reads roomFace (seat linda) demo).map bodies
@@ -216,8 +220,8 @@ def narrated' : List (List (Nat × List Nat × Nat)) := reads narrationFace (sea
 #guard enrolled Nat.beq (ids (feed sofia demo)) thread.id
 #guard enrolled Nat.beq (ids (feed maya demo)) thread.id
 #guard enrolled Nat.beq (ids (feed linda demo)) thread.id == false
-#guard (edge sofia 900 902 demo).2 == [thread.sent, invS.sent, table.sent]
-#guard (ids (feed sofia demo)).length == 7
+#guard (edge sofia 900 902 demo).2 == [thread.sent, invS.sent, table.sent, ceremony.sent, dinner.sent]
+#guard (ids (feed sofia demo)).length == 9
 
 theorem the_couples_probe_is_out_of_every_other_earshot : coupleInEarshot = false := sorry
 
@@ -393,6 +397,139 @@ theorem the_seen_edges_are_a_reading (v : Nat) (e : List (Nat × Nat)) :
 
 theorem a_walled_reply_is_unseen (v : Nat) (r r' : Room) (p : Nat) (h : differOnly roomFace r r' p)
     (hs : ¬ hears roomFace (seat v) p) : seenEdges v r = seenEdges v r' := sorry
+
+def onTheSheet (m : Message) : Bool := Nat.beq m.author day || enrolled Nat.beq m.to day
+
+def sheetOf (r : Room) : List Nat := ids (r.messages.filter onTheSheet)
+
+def sheetStep (cells : List Nat) : Act → List Nat
+  | .say m => cond (onTheSheet m) (cells ++ [m.id]) cells
+  | .ack _ _ _ => cells
+  | .tick => cells
+
+def sheetMachine : Machine Act (List Nat) := ⟨List Nat, [], sheetStep, fun c => c⟩
+
+def theSheet (w : List Act) : List Nat := park sheetMachine [] w
+
+def sheetReads (v : Nat) (r : Room) : List (List Nat) := (reads roomFace (seat v) r).map ids
+
+#guard sheetOf demo == [ceremony.id, dinner.id]
+#guard theSheet (demo.messages.map Act.say) == sheetOf demo
+#guard theSheet (demo.messages.map Act.say ++ [.ack guest.id ava ava, .tick]) == sheetOf demo
+#guard sheetOf (unsend ceremony.id demo) == [dinner.id]
+#guard theSheet ((unsend ceremony.id demo).messages.map Act.say) == [dinner.id]
+#guard enrolled Nat.beq (theSheet (demo.messages.map Act.say ++ [.say ⟨14, dana, [seating], 0, 1002, [], [], []⟩])) ceremony.id
+#guard (sheetReads linda demo).all (fun c => !(c == sheetOf demo)) == false
+#guard (sheetReads rose demo).all (fun c => !(c == sheetOf demo))
+#guard sheetOf demo == sheetOf demo'
+
+theorem filter_crosses_append (q : Message → Bool) : ∀ l m : List Message, (l ++ m).filter q = l.filter q ++ m.filter q
+  | [], _ => rfl
+  | x :: l, m => by
+      show (x :: (l ++ m)).filter q = (x :: l).filter q ++ m.filter q
+      cases hq : q x with
+      | true =>
+          rw [List.filter_cons_of_pos hq, List.filter_cons_of_pos hq]
+          show x :: (l ++ m).filter q = x :: (l.filter q ++ m.filter q)
+          rw [filter_crosses_append q l m]
+      | false =>
+          rw [List.filter_cons_of_neg (ne_true_of_eq_false hq), List.filter_cons_of_neg (ne_true_of_eq_false hq)]
+          exact filter_crosses_append q l m
+
+theorem an_ack_keeps_the_address (word of hand : Nat) (m : Message) : (ack word of hand m).to = m.to := by
+  show (cond (Nat.beq m.id word) (ackOf of hand m) m).to = m.to
+  cases Nat.beq m.id word <;> rfl
+
+theorem an_ack_keeps_the_author (word of hand : Nat) (m : Message) : (ack word of hand m).author = m.author := by
+  show (cond (Nat.beq m.id word) (ackOf of hand m) m).author = m.author
+  cases Nat.beq m.id word <;> rfl
+
+theorem an_ack_keeps_the_id (word of hand : Nat) (m : Message) : (ack word of hand m).id = m.id := by
+  show (cond (Nat.beq m.id word) (ackOf of hand m) m).id = m.id
+  cases Nat.beq m.id word <;> rfl
+
+theorem an_ack_keeps_the_test (word of hand : Nat) (x : Message) : onTheSheet (ack word of hand x) = onTheSheet x := by
+  show (Nat.beq (ack word of hand x).author day || enrolled Nat.beq (ack word of hand x).to day) = onTheSheet x
+  rw [an_ack_keeps_the_author, an_ack_keeps_the_address]
+  exact rfl
+
+theorem an_ack_keeps_the_ids (word of hand : Nat) : ∀ l : List Message, ids (l.map (ack word of hand)) = ids l
+  | [] => rfl
+  | x :: l => by
+      show (ack word of hand x).id :: ids (l.map (ack word of hand)) = x.id :: ids l
+      rw [an_ack_keeps_the_id, an_ack_keeps_the_ids word of hand l]
+
+theorem an_ack_keeps_the_sheet (r : Room) (word of hand : Nat) : sheetOf (act r (.ack word of hand)) = sheetOf r := by
+  show ids ((r.messages.map (ack word of hand)).filter onTheSheet) = ids (r.messages.filter onTheSheet)
+  rw [filter_map_commutes (ack word of hand) onTheSheet r.messages,
+      filter_congr_mem (fun x => onTheSheet (ack word of hand x)) onTheSheet r.messages
+        (fun x _ => an_ack_keeps_the_test word of hand x),
+      an_ack_keeps_the_ids]
+
+theorem a_said_word_writes_its_cell (r : Room) (m : Message) : sheetOf (act r (.say m)) = sheetStep (sheetOf r) (.say m) := by
+  show ids ((r.messages ++ [m]).filter onTheSheet) = cond (onTheSheet m) (sheetOf r ++ [m.id]) (sheetOf r)
+  rw [filter_crosses_append onTheSheet r.messages [m]]
+  show ids (r.messages.filter onTheSheet ++ [m].filter onTheSheet) = cond (onTheSheet m) (sheetOf r ++ [m.id]) (sheetOf r)
+  cases hm : onTheSheet m with
+  | true =>
+      rw [List.filter_cons_of_pos hm]
+      show (r.messages.filter onTheSheet ++ [m]).map (fun x : Message => x.id) = sheetOf r ++ [m.id]
+      rw [map_crosses_append]
+      rfl
+  | false =>
+      rw [List.filter_cons_of_neg (ne_true_of_eq_false hm)]
+      show (r.messages.filter onTheSheet ++ []).map (fun x : Message => x.id) = sheetOf r
+      rw [the_append_rests]
+      rfl
+
+theorem the_sheet_is_a_reading_of_the_record :
+    ∀ (w : List Act) (r : Room), park sheetMachine (sheetOf r) w = sheetOf (park dayMachine r w)
+  | [], _ => rfl
+  | a :: w, r => by
+      show park sheetMachine (sheetStep (sheetOf r) a) w = sheetOf (park dayMachine (act r a) w)
+      rw [← the_sheet_is_a_reading_of_the_record w (act r a)]
+      cases a with
+      | say m => rw [a_said_word_writes_its_cell]
+      | ack word of hand =>
+          show park sheetMachine (sheetOf r) w = park sheetMachine (sheetOf (act r (.ack word of hand))) w
+          rw [an_ack_keeps_the_sheet]
+      | tick => exact rfl
+
+theorem the_sheet_is_the_days_word (w : List Act) : theSheet w = sheetOf (park dayMachine ⟨[]⟩ w) :=
+  the_sheet_is_a_reading_of_the_record w ⟨[]⟩
+
+theorem a_cell_once_written_stays (c : Nat) : ∀ (w : List Act) (cells : List Nat),
+    enrolled Nat.beq cells c = true → enrolled Nat.beq (park sheetMachine cells w) c = true
+  | [], _, h => h
+  | a :: w, cells, h => by
+      show enrolled Nat.beq (park sheetMachine (sheetStep cells a) w) c = true
+      apply a_cell_once_written_stays c w
+      cases a with
+      | say m =>
+          show enrolled Nat.beq (cond (onTheSheet m) (cells ++ [m.id]) cells) c = true
+          cases onTheSheet m with
+          | true => exact an_enrolled_name_stays_enrolled_down_the_hall Nat.beq [m.id] c cells h
+          | false => exact h
+      | ack _ _ _ => exact h
+      | tick => exact h
+
+theorem the_sheet_at_rest (w : List Act) (n : Nat) (r : Room)
+    (h : (haltingGap Act Room).obs theDay (w, n) = some r) : theSheet w = sheetOf r := by
+  rw [the_day_rests_on_the_page_or_not_at_all w n] at h
+  rw [the_sheet_is_the_days_word w]
+  cases hp : onThePage (park dayMachine ⟨[]⟩ w) with
+  | true => rw [hp] at h; exact congrArg sheetOf (Option.some.inj h)
+  | false => rw [hp] at h; exact nomatch h
+
+theorem the_sheets_lift_is_its_conduct : inStep sheetMachine (liftFrom sheetMachine) := sorry
+
+theorem the_sheet_is_the_days_probe (r : Room) : sheetOf r = ids (roomFace.obs r day) := rfl
+
+theorem the_sheet_is_derived (c : List Nat) : Derived roomFace (fun r => sheetOf r = c) :=
+  a_role_read_at_a_probe_is_derived roomFace day (fun a => ids a = c)
+
+theorem a_role_that_hears_the_day_reads_the_sheet (v : Nat) (r : Room) (hd : day ∈ seat v) :
+    sheetOf r ∈ sheetReads v r := sorry
 
 theorem an_edge_is_a_reading (v lo hi : Nat) (e : List Nat × List Nat) :
     Derived roomFace (fun r => edge v lo hi r = e) := sorry
