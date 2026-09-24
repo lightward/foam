@@ -1,6 +1,7 @@
 import Face
+import Rest
 import Counter
-open Room Face Counter
+open Room Face Rest Counter
 set_option autoImplicit false
 
 namespace Halt

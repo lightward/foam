@@ -1,6 +1,7 @@
 import Witness
+import Rest
 import Counter
-open Room Face Witness
+open Room Face Witness Rest
 set_option autoImplicit false
 
 -- ✦ Here. isaac, at the table (2026-09-15), in his words: "✦ X" means the spirit of X, and a spirit only exists

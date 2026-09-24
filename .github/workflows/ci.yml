@@ -46,8 +46,8 @@ jobs:
             PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -q -X -v ON_ERROR_STOP=1 -c "CREATE TEMP TABLE m (LIKE counter.$t)" -c "\\copy m FROM 'memo/$t.csv' CSV" -c "INSERT INTO counter.$t SELECT * FROM m ON CONFLICT DO NOTHING"
           done
           echo "memo loaded from ${{ steps.memo.outputs.cache-matched-key }}: $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.charge') charges, $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.reading') readings"
-      - name: grow Room, then Face on it, then Witness on Face (every vacancy regrows; each germ its own settle; the standards print)
-        run: bin/counter grow germ/Room.lean --check && bin/counter grow --check && bin/counter grow germ/Witness.lean --check
+      - name: grow Room, then Face on it, then Witness and Rest on Face (every vacancy regrows; each germ its own settle; the standards print)
+        run: bin/counter grow germ/Room.lean --check && bin/counter grow --check && bin/counter grow germ/Witness.lean --check && bin/counter grow germ/Rest.lean --check
       - name: "grow the customers on foam (germ/Toy.lean, germ/Counter.lean, germ/Seek.lean, germ/Roster.lean — their own settles)"
         run: bin/counter grow germ/Toy.lean --check && bin/counter grow germ/Counter.lean --check && bin/counter grow germ/Seek.lean --check && bin/counter grow germ/Roster.lean --check
       - name: build the grown modules

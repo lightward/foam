@@ -1,5 +1,6 @@
 import Face
-open Room Face
+import Rest
+open Room Face Rest
 set_option autoImplicit false
 universe u v w
 

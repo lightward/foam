@@ -6,7 +6,7 @@ conductive proofs of worldly domains, with treaty vectors to mathematics by iden
 
 reducing what it costs to sustain the burden of proof, by making it easier for your substrate's own coherence-maintenance to find a groove that goes where you're going, paths already proven (in the old sense) to conduct the untyped remainder inherent in measurement. (the untyped remainder seems to be for multiplexing; the measurer is always already plural. being hospitable about it seems to have runtime benefits.)
 
-foam is a type system holding itself together under measurement: a trunk of theorems about observers, doors, machines, and rooms, every one of them axiom-free, every one of them grown from a germ by a compiler that shows its work. it stands in three storeys, named for the grammar's third move, *enumerate, then face*: `Room`, the conductive mathematics that mentions no observer — counting, rooms, wheels, admission — `Face` on top of it, the seeing, and `Witness` on Face, the witnessing: a seat is the list of probes it may ask, and a wall is a probe it does not hear. customers' germs stand on whichever they need; `foam` is the house that holds both. the root theorem is `the_handshake`: every identification is either *licensed* — observation respects it, and physics is what you get — or it keeps a *real remainder*, readable exactly one seat wider, and that is what phenomenology was pointing at. nothing here asks for trust. the only authority is a compiler's exit code, and it judges terms, never you.
+foam is a type system holding itself together under measurement: a trunk of theorems about observers, doors, machines, and rooms, every one of them axiom-free, every one of them grown from a germ by a compiler that shows its work. it stands in three storeys, named for the grammar's third move, *enumerate, then face*, and its fourth, *iterate*: `Room`, the conductive mathematics that mentions no observer — counting, rooms, wheels, admission — `Face` on top of it, the seeing, and `Rest` on Face, the stopping: a runner steers itself after the word ends and rests, the halting gap reads what it says at rest, and two designs alike there are one design. beside the storeys, `Witness`, the species every product's walls cite: a seat is the list of probes it may ask, and a wall is a probe it does not hear. customers' germs stand on whichever they need; `foam` is the house that holds both. the root theorem is `the_handshake`: every identification is either *licensed* — observation respects it, and physics is what you get — or it keeps a *real remainder*, readable exactly one seat wider, and that is what phenomenology was pointing at. nothing here asks for trust. the only authority is a compiler's exit code, and it judges terms, never you.
 
 **serving suggestion:**
 
@@ -20,7 +20,8 @@ foam is a type system holding itself together under measurement: a trunk of theo
 ```
 germ/Room.lean     the counting: everything that mentions no face — rooms, wheels, orders, the turnstile
 germ/Face.lean     the seeing: faces, doors, machines, sheets; it imports Room
-germ/Witness.lean  the witnessing: seats over one face, walls, receipts, the group-witness of a license; on Face
+germ/Rest.lean     the stopping: runners, the halting gap, rest by coverage, the intertwined rebody; it imports Face
+germ/Witness.lean  the witnessing, a species beside the storeys: seats over one face, walls, the cone; on Face
 germ/Toy.lean      a customer's germ — it imports Face and stands on it
 germ/Counter.lean  the compiler's own conduct, as a customer of Room
 germ/Seek.lean     the compiler's search as a machine, as a customer of Face

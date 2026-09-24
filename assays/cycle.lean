@@ -1,5 +1,6 @@
 import Witness
-open Room Face Witness
+import Rest
+open Room Face Witness Rest
 set_option autoImplicit false
 
 -- Counter, for anyone that cycles. isaac, at the table (2026-09-05), in his words: a cycle is anything
