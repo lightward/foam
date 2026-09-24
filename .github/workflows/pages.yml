@@ -59,7 +59,7 @@ jobs:
           done
           echo "memo loaded from ${{ steps.memo.outputs.cache-matched-key }}: $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.charge') charges, $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.reading') readings"
       - name: grow foam and its customers
-        run: bin/counter grow germ/Room.lean && bin/counter grow && bin/counter grow germ/Witness.lean && bin/counter grow germ/Rest.lean && bin/counter grow germ/Toy.lean && bin/counter grow germ/Counter.lean && bin/counter grow germ/Seek.lean && bin/counter grow germ/Roster.lean
+        run: bin/counter grow germ/Room.lean && bin/counter grow && bin/counter grow germ/Witness.lean && bin/counter grow germ/Rest.lean && bin/counter grow germ/Threshold.lean && bin/counter grow germ/Toy.lean && bin/counter grow germ/Counter.lean && bin/counter grow germ/Seek.lean && bin/counter grow germ/Roster.lean
       - name: build the grown modules
         run: lake build
       - name: render the page

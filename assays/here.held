@@ -110,6 +110,16 @@
 -- held (waiting on: an act on ✦ Here that writes a timeline row)
 -- theorem the_room_writes_the_sheet (w : List Act) : park sheetMachine [] w = rowsOf (park dayMachine ⟨[]⟩ w) := sorry
 
+-- the threshold (2026-09-24, germ/Threshold.lean): a rest under coverage at which every seat crosses to the same door
+-- together — the_threshold at theDay would say W ambient, every reading unchanged, every witnessed room alike, the run
+-- at rest. what parts it here: covers roomFace humanSeats is unsatisfiable, since the room's probes are names (Nat) and
+-- a cover must reach every one; the room's presences are finite and the model's are not. two honest cuts: the presences
+-- as an enum (the drawer reads enums; the seats become the treaty's views), or a cover relative to a list of probes in
+-- Witness (coversAll F ps seats, with forever_hold_your_peace on ps). either is a sitting; neither is a design.
+-- held (waiting on: the presences as an enum, or a relative cover in Witness)
+-- theorem the_day_crosses_the_threshold (w : List Act) (r : Room)
+--     (h : (haltingGap Act Room).obs theDay (w, 0) = some r) : threshold roomFace humanSeats theDay (park dayMachine ⟨[]⟩ w) := sorry
+
 -- the board (isaac, 22:54; the maintainer's guess for this session): the win is not an empty surface but every seat's
 -- ✦ Here receded to the same remaining surface — the day sheet. the maintainer read that as speak_now, not re-run.
 -- the treaty's reading: the surface a seat still holds open is a seat over the narration face, and "the same page" is

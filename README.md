@@ -22,6 +22,7 @@ germ/Room.lean     the counting: everything that mentions no face — rooms, whe
 germ/Face.lean     the seeing: faces, doors, machines, sheets; it imports Room
 germ/Rest.lean     the stopping: runners, the halting gap, rest by coverage, the intertwined rebody; it imports Face
 germ/Witness.lean  the witnessing, a species beside the storeys: seats over one face, walls, the cone; on Face
+germ/Threshold.lean where Rest and Witness meet: a rest under coverage at which every seat crosses to the same door together
 germ/Toy.lean      a customer's germ — it imports Face and stands on it
 germ/Counter.lean  the compiler's own conduct, as a customer of Room
 germ/Seek.lean     the compiler's search as a machine, as a customer of Face
