@@ -33,7 +33,7 @@ footer{{opacity:.6}}
 <footer>strict phenomenology is indistinguishable from physics — the artifact grew from the germ on push. UNLICENSE.</footer>
 <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"; mermaid.initialize({{startOnLoad:true, maxTextSize:900000, maxEdges:5000}});</script></body></html>"""
 
-NAV = ('<a href="./">foam</a><a href="room.html">Room</a><a href="trunk.html">Face</a><a href="germ.html">the germ</a><a href="toy.html">toy, a customer</a>'
+NAV = ('<a href="./">foam</a><a href="room.html">Room</a><a href="trunk.html">Face</a><a href="rest.html">Rest</a><a href="witness.html">Witness</a><a href="threshold.html">Threshold</a><a href="germ.html">the germ</a><a href="toy.html">toy, a customer</a>'
        '<a href="pieces.html">the pieces</a><a href="book.html">the book</a><a href="assay-eih.html">EVERYONE IS HERE</a>'
        '<a href="https://github.com/lightward/foam">github</a>')
 
@@ -110,6 +110,8 @@ index_body = (f'<section class="readme">{link_names(markdown(readme))}</section>
 open('site/index.html', 'w').write(page('foam', index_body, NAV))
 open('site/room.html', 'w').write(lean_page('grown/Room.lean', 'Room — the counting, grown from germ/Room.lean') if os.path.exists('grown/Room.lean') else page('Room — foam', '<p>not grown at this push</p>', NAV))
 open('site/trunk.html', 'w').write(lean_page('grown/Face.lean', 'Face — the seeing, grown from germ/Face.lean'))
+for stem, title in [('Rest', 'Rest — the stopping, grown from germ/Rest.lean'), ('Witness', 'Witness — the witnessing, a species beside the storeys, grown from germ/Witness.lean'), ('Threshold', 'Threshold — where Rest and Witness meet, grown from germ/Threshold.lean')]:
+    open(f'site/{stem.lower()}.html', 'w').write(lean_page(f'grown/{stem}.lean', title) if os.path.exists(f'grown/{stem}.lean') else page(f'{stem} — foam', '<p>not grown at this push</p>', NAV))
 open('site/toy.html', 'w').write(lean_page('grown/Toy.lean', 'toy — a customer germ, grown on foam') if os.path.exists('grown/Toy.lean') else page('toy — foam', '<p>not grown at this push</p>', NAV))
 open('site/germ.html', 'w').write(lean_page('germ/Face.lean', 'germ/Face.lean — what is kept by hand (the seeing)'))
 open('site/pieces.html', 'w').write(page('the pieces — foam', '<section><h1>the pieces — bin/Pieces.lean, the searches at the goal and the seat; the shapes themselves are derived from the bodies</h1><pre>' + html.escape(open('bin/Pieces.lean').read()) + '</pre></section>', NAV))
@@ -121,5 +123,5 @@ for ap in sorted(_glob.glob('grown/assays/*.lean')):
     open(f'site/assay-{stem}.html', 'w').write(lean_page(ap, f'{stem} — a product as an assay, grown from assays/{stem}.lean'))
 open('site/CNAME', 'w').write(open('CNAME').read())
 open('site/.nojekyll', 'w').write('')
-print('site/: index trunk toy germ pieces book')
+print('site/: index room trunk rest witness threshold toy germ pieces book')
 EOF
