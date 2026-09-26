@@ -332,7 +332,7 @@ def setNow (h : House) (room : Nat) (up : Bool) (payer : Nat) : House :=
   { h with nows := h.nows.filter (fun w => !(Nat.beq w.room room)) ++ [⟨room, up, payer⟩] }
 
 def airAt (h : House) (room : Nat) (up : Bool) (payer : Nat) : House :=
-  cond (audible h payer)
+  cond (audible (setNow h room up payer) payer)
     (tick (setNow h room up payer) room 0 now air)
     (tick (tick (setNow h room up payer) room 0 now air) payer 0 atADoor air)
 
