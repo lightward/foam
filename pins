@@ -11,6 +11,7 @@ grown/assays/counter.lean	72b9c53775807e30
 grown/assays/cycle.lean	7a3afb7cc555bfbb
 grown/assays/eih.lean	15a8e142dc13d6e1
 grown/assays/everyone.lean	592aea676ba2e661
+grown/assays/everyoneishere.lean	bbd7dfffcb85af0f
 grown/assays/grover.lean	a0135af9cfbb0fbf
 grown/assays/here.lean	7884751639e711e1
 grown/assays/kuramoto.lean	f3c0a637578bfa82

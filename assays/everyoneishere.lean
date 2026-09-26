@@ -30,34 +30,59 @@ namespace EveryoneIsHere.Treaty
 
 -- a probe is (room, kind). the tape and the head are what every standing hears and what a door reads; the rest
 -- are the tables, each the room's own; ✦ Guests is recognized party by party, so a party is its own probe.
+
 def tapeK : Nat := 1
+
 def headK : Nat := 2
+
 def everyone : Nat := 3
+
 def couple : Nat := 4
+
 def vendors : Nat := 5
+
 def now : Nat := 6
+
 def seating : Nat := 7
+
 def reach : Nat := 8
+
 def guests : Nat := 9
+
 def guestsOf (party : Nat) : Nat := 10 + party
+
 def atADoor : Nat := 0
 
 -- the kinds of a cell
+
 def said : Nat := 1
+
 def asked : Nat := 2
+
 def ack : Nat := 3
+
 def founded : Nat := 4
+
 def stood : Nat := 5
+
 def left : Nat := 6
+
 def air : Nat := 7
 
 -- the roles a standing can have; a room standing at a silent room has none
+
 def asRoom : Nat := 0
+
 def asCouple : Nat := 1
+
 def asParty : Nat := 2
+
 def asVendor : Nat := 3
+
 def asPlanner : Nat := 4
+
 def asGuest : Nat := 5
+
 def asTeam : Nat := 6
 
 structure Standing where
@@ -164,6 +189,8 @@ def heardAt (h : House) (p : Nat × Nat) : List (Nat × Nat × Nat × Nat × Nat
         (storeAt h p.1 p.2)))
 
 def roomFace : Face := ⟨House, Nat × Nat, List (Nat × Nat × Nat × Nat × Nat), heardAt⟩
+
+instance : BEq roomFace.Ans := inferInstanceAs (BEq (List (Nat × Nat × Nat × Nat × Nat)))
 
 -- the head and `ready` are readings at one probe each: the head at the door, ready at ✦ Now
 
@@ -357,25 +384,43 @@ def house (w : List Act) : House := park houseMachine emptyHouse w
 -- seating, never ✦ Couple: the app's narrowing, a wall at last), and a guest — a seat the way a vendor is.
 
 def root : Nat := 0
+
 def maya : Nat := 1
+
 def james : Nat := 2
+
 def ava : Nat := 3
+
 def sofia : Nat := 4
+
 def jordan : Nat := 5
+
 def dana : Nat := 6
+
 def linda : Nat := 7
+
 def rose : Nat := 8
+
 def wedding : Nat := 20
 
 def mayaAt : Standing := ⟨31, maya, wedding, everyone, asCouple, 1⟩
+
 def jamesAt : Standing := ⟨32, james, wedding, everyone, asCouple, 1⟩
+
 def avaAt : Standing := ⟨33, ava, wedding, everyone, asPlanner, 2⟩
+
 def sofiaAt : Standing := ⟨34, sofia, wedding, everyone, asVendor, 3⟩
+
 def jordanAt : Standing := ⟨35, jordan, wedding, everyone, asVendor, 4⟩
+
 def danaAt : Standing := ⟨36, dana, wedding, everyone, asVendor, 5⟩
+
 def lindaAt : Standing := ⟨37, linda, wedding, everyone, asParty, 6⟩
+
 def roseAt : Standing := ⟨38, rose, wedding, guestsOf 1, asGuest, 0⟩
+
 def weddingHosted : Standing := ⟨21, wedding, root, atADoor, asRoom, 0⟩
+
 def weddingPaid : Standing := ⟨22, wedding, maya, atADoor, asRoom, 0⟩
 
 def opening : List Act :=
@@ -404,18 +449,27 @@ def script (ours : Nat) : List Act :=
    .ask wedding 21 33 33]
 
 def demo : House := house (script 111)
+
 def demo' : House := house (script 999)
 
 def demoStar : House := park houseMachine demo [.ack wedding 12 36 true, .ack wedding 18 38 true]
+
 def demoAcked : House := park houseMachine demoStar [.ack wedding 21 33 true]
+
 def demoNo : House := park houseMachine demo [.ack wedding 12 36 true, .ack wedding 18 38 false, .ack wedding 21 33 true]
+
 def demoOut : House := park houseMachine demo [.air wedding false maya]
+
 def demoLeft : House := leaveAt demoOut 34
+
 def demoSaid : House := sayAt demo wedding 31 couple 7
 
 def people : List Nat := [31, 32, 33, 34, 35, 36, 37]
+
 def others : List Nat := [33, 34, 35, 36, 37, 38]
+
 def humanSeats (h : House) : List (List (Nat × Nat)) := people.map (seatOf h)
+
 def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 
 -- the clock: order is n, #0 is the founding and the room's only word, a number once written never moves
@@ -596,7 +650,8 @@ theorem a_door_reads_the_head_alone (h h' : House) (k : Nat) (hd : differOnly ro
     (hs : ¬ hears roomFace (homeSeat h sofia) (wedding, k)) :
     reads roomFace (homeSeat h sofia) h = reads roomFace (homeSeat h sofia) h' := sorry
 
-theorem the_couples_seat_parts_them (h h' : House) (hp : heardAt h (wedding, couple) ≠ heardAt h' (wedding, couple)) :
+theorem the_couples_seat_parts_them (h h' : House) (hp : roomFace.obs h (wedding, couple) ≠ roomFace.obs h' (wedding, couple))
+    (hs : hears roomFace (seatOf h 31) (wedding, couple)) :
     reads roomFace (seatOf h 31) h ≠ reads roomFace (seatOf h 31) h' := sorry
 
 theorem the_head_is_a_reading (n : Nat) : Derived roomFace (fun h => headOf h wedding = n) :=
@@ -606,22 +661,49 @@ theorem ready_is_a_reading (b : Bool) : Derived roomFace (fun h => ready h weddi
   a_role_read_at_a_probe_is_derived roomFace (wedding, now) (fun a => readyRead a = b)
 
 theorem the_voices_are_a_reading (s : List (Nat × Nat)) (v : List (Nat × Nat × Nat × Nat)) :
-    Derived roomFace (fun h => voices h s = v) :=
-  a_seat_over_a_seat_is_derived roomFace s voicesRead v
+    Derived roomFace (fun h => voices h s = v) := sorry
 
 theorem the_sign_is_off_the_tape (h : House) (word voice : Nat) (p q : Bool) :
-    cellRows (ackAt h wedding word voice p) wedding = cellRows (ackAt h wedding word voice q) wedding := sorry
+    cellRows (ackAt h wedding word voice p) wedding = cellRows (ackAt h wedding word voice q) wedding := by
+  unfold ackAt
+  cases airOn h wedding <;> rfl
 
-theorem a_hosts_tape_never_ticks_for_a_hosted_word (h : House) (voice k body : Nat) :
-    cellRows (sayAt h wedding voice k body) root = cellRows h root := sorry
-
-theorem a_tick_keeps_every_cell (h : House) (room voice k kind r : Nat) (t : Nat × Nat × Nat × Nat × Nat)
-    (ht : t ∈ cellRows h r) : t ∈ cellRows (tick h room voice k kind) r := sorry
+theorem the_filter_crosses_the_append {A : Type} (q : A → Bool) :
+    ∀ l m : List A, (l ++ m).filter q = l.filter q ++ m.filter q
+  | [], _ => rfl
+  | a :: l, m => by
+      cases hq : q a with
+      | true =>
+          rw [List.cons_append, List.filter_cons_of_pos hq, List.filter_cons_of_pos hq]
+          exact congrArg (List.cons a) (the_filter_crosses_the_append q l m)
+      | false =>
+          rw [List.cons_append, List.filter_cons_of_neg (ne_true_of_eq_false hq),
+              List.filter_cons_of_neg (ne_true_of_eq_false hq)]
+          exact the_filter_crosses_the_append q l m
 
 theorem the_room_is_the_widest_seat (s : List (Nat × Nat)) (h h' : House) (hr : reads roomFace s h ≠ reads roomFace s h') :
     ¬ alike roomFace h h' := sorry
 
 theorem two_houses_part_only_at_a_probe (h h' : House) :
-    alike roomFace h h' ↔ ∀ q, sound roomFace h q = sound roomFace h' q := sorry
+    alike roomFace h h' ↔ ∀ q, sound roomFace h q = sound roomFace h' q :=
+  ⟨fun ha q => no_interview_parts_the_alike roomFace ha q, fun hq => the_sounding_reads_the_alike roomFace hq⟩
+
+theorem a_hosts_tape_never_ticks_for_a_hosted_word (h : House) (voice k body : Nat) :
+    cellRows (sayAt h wedding voice k body) root = cellRows h root := by
+  unfold sayAt
+  cases airOn h wedding
+  · rfl
+  · show ((h.tape ++ [(⟨wedding, nextCell h wedding, voice, coarse k, said⟩ : Cell)]).filter (fun c : Cell => Nat.beq c.room root)).map
+        (fun c : Cell => (1, c.n, c.voice, c.tableKind, c.kind)) = cellRows h root
+    rw [the_filter_crosses_the_append, List.filter_cons_of_neg (by show ¬ Nat.beq wedding root = true; decide),
+        List.filter_nil, the_append_rests]
+    rfl
+
+theorem a_tick_keeps_every_cell (h : House) (room voice k kind r : Nat) (t : Nat × Nat × Nat × Nat × Nat)
+    (ht : t ∈ cellRows h r) : t ∈ cellRows (tick h room voice k kind) r := by
+  show t ∈ ((h.tape ++ [(⟨room, nextCell h room, voice, k, kind⟩ : Cell)]).filter (fun c : Cell => Nat.beq c.room r)).map
+      (fun c : Cell => (1, c.n, c.voice, c.tableKind, c.kind))
+  rw [the_filter_crosses_the_append, map_crosses_append]
+  exact mem_append_left _ ht
 
 end EveryoneIsHere.Treaty
