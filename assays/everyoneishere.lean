@@ -190,7 +190,9 @@ def heardAt (h : House) (p : Nat × Nat) : List (Nat × Nat × Nat × Nat × Nat
 
 def roomFace : Face := ⟨House, Nat × Nat, List (Nat × Nat × Nat × Nat × Nat), heardAt⟩
 
-instance : BEq roomFace.Ans := inferInstanceAs (BEq (List (Nat × Nat × Nat × Nat × Nat)))
+-- what a seat reads, as rows: the face's answers at its probes, one list per probe
+
+def readsAt (h : House) (s : List (Nat × Nat)) : List (List (Nat × Nat × Nat × Nat × Nat)) := reads roomFace s h
 
 -- the head and `ready` are readings at one probe each: the head at the door, ready at ✦ Now
 
@@ -529,9 +531,9 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard homeSeat demo root == [(wedding, headK)]
 #guard homeSeat demo sofia == [(wedding, headK)]
 #guard homeSeat demo maya == [(wedding, headK), (wedding, headK)]
-#guard reads roomFace (homeSeat demo sofia) demo == [[(2, 22, 0, 0, 0)]]
-#guard reads roomFace (homeSeat demo sofia) demoSaid == [[(2, 23, 0, 0, 0)]]
-#guard reads roomFace (homeSeat demo sofia) demo == reads roomFace (homeSeat demo sofia) demo'
+#guard readsAt demo (homeSeat demo sofia) == [[(2, 22, 0, 0, 0)]]
+#guard readsAt demoSaid (homeSeat demo sofia) == [[(2, 23, 0, 0, 0)]]
+#guard readsAt demo (homeSeat demo sofia) == readsAt demo' (homeSeat demo sofia)
 
 -- earshot: who hears what
 #guard (seatOf demo 38).length == 4
@@ -609,12 +611,12 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 
 -- witness: two houses that differ only in the couple's word read the same at every seat off ✦ Couple
 #guard seatOf demo 37 == seatOf demo' 37
-#guard reads roomFace (seatOf demo 37) demo == reads roomFace (seatOf demo 37) demo'
-#guard reads roomFace (seatOf demo 34) demo == reads roomFace (seatOf demo 34) demo'
-#guard reads roomFace (seatOf demo 38) demo == reads roomFace (seatOf demo 38) demo'
-#guard reads roomFace (seatOf demo 33) demo == reads roomFace (seatOf demo 33) demo'
-#guard (reads roomFace (seatOf demo 31) demo == reads roomFace (seatOf demo 31) demo') == false
-#guard (reads roomFace (seatOf demo 32) demo == reads roomFace (seatOf demo 32) demo') == false
+#guard readsAt demo (seatOf demo 37) == readsAt demo' (seatOf demo 37)
+#guard readsAt demo (seatOf demo 34) == readsAt demo' (seatOf demo 34)
+#guard readsAt demo (seatOf demo 38) == readsAt demo' (seatOf demo 38)
+#guard readsAt demo (seatOf demo 33) == readsAt demo' (seatOf demo 33)
+#guard (readsAt demo (seatOf demo 31) == readsAt demo' (seatOf demo 31)) == false
+#guard (readsAt demo (seatOf demo 32) == readsAt demo' (seatOf demo 32)) == false
 
 -- the walls
 
