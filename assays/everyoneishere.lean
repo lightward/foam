@@ -296,8 +296,10 @@ def coarse (k : Nat) : Nat := cond (Nat.ble 10 k) guests k
 
 def known (h : House) (room : Nat) : Bool := h.rooms.any (fun r => Nat.beq r.1 room)
 
+def taken (h : House) (handle : Nat) : Bool := h.rooms.any (fun r => Nat.beq r.2 handle)
+
 def foundAt (h : House) (room handle : Nat) : House :=
-  cond (known h room) h (tick { h with rooms := h.rooms ++ [(room, handle)] } room 0 atADoor founded)
+  cond (known h room || taken h handle) h (tick { h with rooms := h.rooms ++ [(room, handle)] } room 0 atADoor founded)
 
 def hearConcerns : Nat → List Nat
   | 1 => [everyone, couple, now, seating, reach, guests]
@@ -506,6 +508,14 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard handleOf demo wedding == 120
 #guard roomBy demo 120 == wedding
 #guard cellBy demo 120 10 == cellAt demo wedding 10
+#guard taken demo 120
+#guard taken demo 99 == false
+#guard (foundAt demo 99 120).rooms == demo.rooms
+#guard cellRows (foundAt demo 99 120) 99 == []
+#guard cellRows (foundAt demo 99 120) wedding == cellRows demo wedding
+#guard roomBy (foundAt demo 99 120) 120 == wedding
+#guard (house [.found root 100, .found maya 101, .found james 101]).rooms == [(root, 100), (maya, 101)]
+#guard distinct ((house [.found root 100, .found maya 101, .found james 101]).rooms.map (·.2))
 
 -- air: a word, an ask, a ✓ need it; a door ticks without it; a room whose air is out hosts no doors
 #guard airOn demo wedding
@@ -636,6 +646,12 @@ theorem a_check_needs_air (h : House) (room word voice : Nat) (pos : Bool) (ha :
     ackAt h room word voice pos = h := by
   show cond (airOn h room) (landAck h room word voice pos) h = h
   rw [ha]
+  rfl
+
+theorem a_handle_names_one_room (h : House) (room handle : Nat) (ht : taken h handle = true) :
+    foundAt h room handle = h := by
+  unfold foundAt
+  rw [ht, Bool.or_true]
   rfl
 
 theorem the_couples_table_is_a_wall_at_every_other_seat (h h' : House) (hd : differOnly roomFace h h' (wedding, couple))
