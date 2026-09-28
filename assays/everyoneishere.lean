@@ -246,6 +246,17 @@ def inbox (h : House) (sid : Nat) : List Nat := joinMap cellsOfWords (reads room
 
 def sees (h : House) (sid cell : Nat) : Bool := enrolled Nat.beq (inbox h sid) cell
 
+def askRows (rd : List (List (Nat × Nat × Nat × Nat × Nat))) : List (Nat × Nat × Nat × Nat) :=
+  joinMap (fun a => (a.filter (fun t => Nat.beq t.1 4)).map (fun t => (t.2.1, t.2.2.1, t.2.2.2.1, t.2.2.2.2))) rd
+
+def ackedRead (rd : List (List (Nat × Nat × Nat × Nat × Nat))) (word ofWhom : Nat) : Bool :=
+  rd.any (fun a => a.any (fun t => Nat.beq t.1 5 && Nat.beq t.2.2.1 word && Nat.beq t.2.2.2.1 ofWhom))
+
+def starredRead (rd : List (List (Nat × Nat × Nat × Nat × Nat))) (sid : Nat) : List Nat :=
+  ((askRows rd).filter (fun a => Nat.beq a.2.2.1 sid && !(ackedRead rd a.2.1 a.2.2.2))).map (·.1)
+
+def starred (h : House) (sid : Nat) : List Nat := starredRead (reads roomFace (seatOf h sid) h) sid
+
 def acksRead (h : House) (s : List (Nat × Nat)) : List (Nat × Bool) :=
   joinMap (fun a => (a.filter (fun t => Nat.beq t.1 5)).map (fun t => (t.2.1, Nat.beq t.2.2.2.2 1))) (reads roomFace s h)
 
@@ -597,8 +608,8 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard voices demo (seatOf demo 38) == voices demo' (seatOf demo' 38)
 #guard voices demo (seatOf demo 34) == voices demo' (seatOf demo' 34)
 
--- the ✓: a sign on the row, none on the tape; ready reads an ack as answered without it; a ★ is one cell and
--- keeps everyone waiting; letting go is one's own ✓
+-- the ✓: a sign on the row, none on the tape; ready reads an ack as answered without it; a ★ is one cell, an ask
+-- of oneself, and keeps everyone waiting; letting go is one's own ✓
 #guard (openAsks demo wedding).map (·.cell) == [15, 19, 22]
 #guard ready demo wedding == false
 #guard ready demoStar wedding == false
@@ -618,6 +629,19 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard voiceAt demoAcked (seatOf demoAcked 38) 24 == 38
 #guard voiceAt demoAcked (seatOf demoAcked 34) 24 == 0
 #guard voiceAt demoAcked (seatOf demoAcked 37) 24 == 0
+
+-- the ★: a reading, not a kind. an ask standing reads ★ to its asker, whoever it is of, and to no one else; the
+-- self-ask is the one case where only the reader's own ✓ closes it
+#guard starred demo 31 == [15, 19]
+#guard starred demo 33 == [22]
+#guard starred demo 36 == []
+#guard starred demo 38 == []
+#guard starred demo 34 == []
+#guard starred demoStar 31 == []
+#guard starred demoStar 33 == [22]
+#guard starred demoAcked 33 == []
+#guard starred demoNo 31 == []
+#guard starred demoNo 33 == []
 
 -- witness: two houses that differ only in the couple's word read the same at every seat off ✦ Couple
 #guard seatOf demo 37 == seatOf demo' 37
