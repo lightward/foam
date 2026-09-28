@@ -24,9 +24,13 @@ set_option autoImplicit false
 -- alone. the sign of a ✓ (ack_pos · ack_neg) is the acks row's and never the tape's; `ready` reads an ack as
 -- answered without it. a word, a ✓ or a store row takes a cell only while the room's air is on; an ask takes its
 -- cell without air, in any room that is (the answer is speech and speech is what air is for; the ask is free
--- because the connective tissue is), and #0 is a word an ask can stand on, the room asking who is here; a door
--- (stood, left, air) ticks in a silent room whatever the air. the crossing is not here: a room in this assay
--- has no history but its own tape.
+-- because the connective tissue is), and #0 is a word an ask can stand on, the room asking who is here — and
+-- every seat is that ask: an ask of the standing on #0 by whoever seats, the standing there and hearing from
+-- the ask, its "I am here" its ✓ (speech, so air), its own no its leaving, the founder's seat a ★ on #0; the
+-- couple's ✓ on #0 is the room saying everyone who is here is here and lets go every seat's ask at once, as
+-- one's ✓ on a word lets go every outbound ask of one's standing on it, and a removal after the answer is a
+-- `left` and only that. a door (stood, left, air) ticks in a silent room whatever the air. the crossing is
+-- not here: a room in this assay has no history but its own tape.
 
 namespace EveryoneIsHere.Treaty
 
@@ -161,8 +165,11 @@ def payerOf (h : House) (room : Nat) : Nat :=
   | w :: _ => w.payer
   | [] => 0
 
+-- an ask is answered by the asked's ✓ on the word, or let go by the asker's own: one's ✓ on a word answers every
+-- outbound ask of one's standing on it, so no ask stands that no one present can close
+
 def answered (h : House) (a : Ask) : Bool :=
-  h.acks.any (fun k => Nat.beq k.room a.room && Nat.beq k.word a.word && Nat.beq k.voice a.ofWhom)
+  h.acks.any (fun k => Nat.beq k.room a.room && Nat.beq k.word a.word && (Nat.beq k.voice a.ofWhom || Nat.beq k.voice a.voice))
 
 def openAsks (h : House) (room : Nat) : List Ask :=
   (h.asks.filter (fun a => Nat.beq a.room room)).filter (fun a => !(answered h a))
@@ -255,7 +262,7 @@ def ackedRead (rd : List (List (Nat × Nat × Nat × Nat × Nat))) (word ofWhom 
   rd.any (fun a => a.any (fun t => Nat.beq t.1 5 && Nat.beq t.2.2.1 word && Nat.beq t.2.2.2.1 ofWhom))
 
 def starredRead (rd : List (List (Nat × Nat × Nat × Nat × Nat))) (sid : Nat) : List Nat :=
-  ((askRows rd).filter (fun a => Nat.beq a.2.2.1 sid && !(ackedRead rd a.2.1 a.2.2.2))).map (·.1)
+  ((askRows rd).filter (fun a => Nat.beq a.2.2.1 sid && !(ackedRead rd a.2.1 a.2.2.2) && !(ackedRead rd a.2.1 sid))).map (·.1)
 
 def starred (h : House) (sid : Nat) : List Nat := starredRead (reads roomFace (seatOf h sid) h) sid
 
@@ -301,7 +308,12 @@ def distinct : List Nat → Bool
 
 -- the motions. every one is a cell taken by the trigger, never by the mover; a word, a ✓ and a store row need
 -- air; an ask needs a room and no air, and stands on #0 as on any word; a door ticks in a silent room, and a
--- room with a Now has no door side.
+-- room with a Now has no door side. a standing read at a table is seated by an ask of it on #0 by whoever
+-- seats, and answers "I am here" with its ✓; a standing read at a door is stood. a row on #0 is read where
+-- the standing it is about is read — an ask's asked, a ✓'s voice — so a seat's ask and its answer are that
+-- table's half, as the seat is. a standing's own no on #0 is its leaving: the sign on the row, its hears rows
+-- gone, the door's `left` after it; the standing stays as the record and the name is kept. leaveAt, the
+-- couple's removal, still takes the standing with it, the one out of step, to follow in a later pass.
 
 def tick (h : House) (room voice tableKind kind : Nat) : House :=
   { h with tape := h.tape ++ [⟨room, nextCell h room, voice, tableKind, kind⟩] }
@@ -329,19 +341,47 @@ def seatSide (h : House) (s : Standing) (kind : Nat) : House := tick h s.atRoom 
 def doorSide (h : House) (s : Standing) (kind : Nat) : House :=
   cond (audible h s.room) h (tick h s.room s.id atADoor kind)
 
-def standAt (h : House) (s : Standing) (extra : List Nat) : House :=
+def stand (h : House) (s : Standing) (extra : List Nat) : House :=
+  { h with standings := h.standings ++ [s],
+           hears := h.hears ++ (hearConcerns s.role ++ extra).map (fun k => (s.atRoom, k, s.id)) }
+
+def tableOfSeat (h : House) (room sid : Nat) : Nat :=
+  match h.standings.filter (fun s => Nat.beq s.atRoom room && Nat.beq s.id sid) with
+  | s :: _ => s.tableKind
+  | [] => atADoor
+
+def tableOfWord (h : House) (room cell : Nat) : Nat :=
+  cond (Nat.beq cell 0) atADoor
+    (match h.words.filter (fun w => Nat.beq w.room room && Nat.beq w.cell cell) with
+      | w :: _ => w.tableKind
+      | [] => 0)
+
+def tableOn (h : House) (room word who : Nat) : Nat :=
+  cond (Nat.beq word 0) (tableOfSeat h room who) (tableOfWord h room word)
+
+def landAsk (h : House) (room word voice ofWhom : Nat) : House :=
+  tick { h with asks := h.asks ++ [⟨room, nextCell h room, word, voice, ofWhom, tableOn h room word ofWhom⟩] }
+    room voice (coarse (tableOn h room word ofWhom)) asked
+
+def standAt (h : House) (seater : Nat) (s : Standing) (extra : List Nat) : House :=
   doorSide
-    (seatSide { h with standings := h.standings ++ [s],
-                       hears := h.hears ++ (hearConcerns s.role ++ extra).map (fun k => (s.atRoom, k, s.id)) } s stood)
+    (cond (Nat.beq s.tableKind atADoor) (seatSide (stand h s extra) s stood) (landAsk (stand h s extra) s.atRoom 0 seater s.id))
     s stood
+
+def unseat (h : House) (sid : Nat) : House :=
+  { h with hears := h.hears.filter (fun t => !(Nat.beq t.2.2 sid)) }
 
 def leaveAt (h : House) (sid : Nat) : House :=
   match standingOf h sid with
   | s :: _ =>
       doorSide
-        (seatSide { h with standings := h.standings.filter (fun t => !(Nat.beq t.id sid)),
-                           hears := h.hears.filter (fun t => !(Nat.beq t.2.2 sid)) } s left)
+        (seatSide { unseat h sid with standings := h.standings.filter (fun t => !(Nat.beq t.id sid)) } s left)
         s left
+  | [] => h
+
+def goneAt (h : House) (room sid : Nat) : House :=
+  match h.standings.filter (fun s => Nat.beq s.atRoom room && Nat.beq s.id sid) with
+  | s :: _ => doorSide (unseat h sid) s left
   | [] => h
 
 def setNow (h : House) (room : Nat) (up : Bool) (payer : Nat) : House :=
@@ -357,27 +397,20 @@ def landWord (h : House) (room voice k body : Nat) : House :=
 
 def sayAt (h : House) (room voice k body : Nat) : House := cond (airOn h room) (landWord h room voice k body) h
 
-def tableOfWord (h : House) (room cell : Nat) : Nat :=
-  cond (Nat.beq cell 0) atADoor
-    (match h.words.filter (fun w => Nat.beq w.room room && Nat.beq w.cell cell) with
-      | w :: _ => w.tableKind
-      | [] => 0)
-
-def landAsk (h : House) (room word voice ofWhom : Nat) : House :=
-  tick { h with asks := h.asks ++ [⟨room, nextCell h room, word, voice, ofWhom, tableOfWord h room word⟩] }
-    room voice (coarse (tableOfWord h room word)) asked
-
 def askAt (h : House) (room word voice ofWhom : Nat) : House := cond (known h room) (landAsk h room word voice ofWhom) h
 
 def landAck (h : House) (room word voice : Nat) (pos : Bool) : House :=
-  tick { h with acks := h.acks ++ [⟨room, nextCell h room, word, voice, pos, tableOfWord h room word⟩] }
-    room voice (coarse (tableOfWord h room word)) ack
+  tick { h with acks := h.acks ++ [⟨room, nextCell h room, word, voice, pos, tableOn h room word voice⟩] }
+    room voice (coarse (tableOn h room word voice)) ack
 
-def ackAt (h : House) (room word voice : Nat) (pos : Bool) : House := cond (airOn h room) (landAck h room word voice pos) h
+def ackAt (h : House) (room word voice : Nat) (pos : Bool) : House :=
+  cond (airOn h room)
+    (cond (Nat.beq word 0 && !pos) (goneAt (landAck h room word voice pos) room voice) (landAck h room word voice pos))
+    h
 
 inductive Act where
   | found (room handle : Nat)
-  | stand (s : Standing) (extra : List Nat)
+  | stand (seater : Nat) (s : Standing) (extra : List Nat)
   | leave (sid : Nat)
   | air (room : Nat) (up : Bool) (payer : Nat)
   | say (room voice tableKind body : Nat)
@@ -386,7 +419,7 @@ inductive Act where
 
 def act (h : House) : Act → House
   | .found room handle => foundAt h room handle
-  | .stand s extra => standAt h s extra
+  | .stand seater s extra => standAt h seater s extra
   | .leave sid => leaveAt h sid
   | .air room up payer => airAt h room up payer
   | .say room voice k body => sayAt h room voice k body
@@ -401,6 +434,8 @@ def house (w : List Act) : House := park houseMachine emptyHouse w
 -- for a Now she pays for, hosted at the root. the standings: the couple, a planner, three vendors (a venue
 -- hears ✦ Seating, the one wall a vendor kind bore), one of the party helping with the day (everyone, now and
 -- seating, never ✦ Couple: the app's narrowing, a wall at last), and a guest — a seat the way a vendor is.
+-- maya seats herself before the air is on (an ask needs none) and everyone else after it; each says "I am
+-- here" but rose, whose ask is her RSVP and stands.
 
 def root : Nat := 0
 
@@ -445,37 +480,50 @@ def weddingPaid : Standing := ⟨22, wedding, maya, atADoor, asRoom, 0⟩
 def opening : List Act :=
   [.found root 100, .found maya 101, .found james 102, .found ava 103, .found sofia 104, .found jordan 105,
    .found dana 106, .found linda 107, .found rose 108, .found wedding 120,
-   .stand mayaAt [], .air wedding true maya, .stand weddingPaid [], .stand weddingHosted [],
-   .stand jamesAt [], .stand avaAt [], .stand sofiaAt [], .stand jordanAt [], .stand danaAt [seating],
-   .stand lindaAt [], .stand roseAt [guestsOf 1]]
+   .stand 31 mayaAt [], .air wedding true maya, .stand 0 weddingPaid [], .stand 0 weddingHosted [],
+   .stand 31 jamesAt [], .ack wedding 0 32 true, .stand 31 avaAt [], .ack wedding 0 33 true,
+   .stand 31 sofiaAt [], .ack wedding 0 34 true, .stand 31 jordanAt [], .ack wedding 0 35 true,
+   .stand 31 danaAt [seating], .ack wedding 0 36 true, .stand 31 lindaAt [], .ack wedding 0 37 true,
+   .stand 31 roseAt [guestsOf 1]]
 
--- the wedding's tape after the opening: #0 founded, #1 maya stood, #2 air, #3–#8 the others stood, #9 rose stood
--- at ✦ Guests. then the words, #10 on: the couple's own word (#10), the caterer at ✦ Vendors (#11), a word at
--- ✦ Everyone with three asks on it (#12–#15) and two ✓s (#16, #17), the invitation to rose's party with its ask
--- (#18, #19), the venue's chart move (#20), the planner's itinerary row (#21) and her ★ on it (#22).
+-- the wedding's tape after the opening: #0 founded, #1 maya's ★ on #0 (her own seat, asked before the air is
+-- on), #2 air, then each seat as two cells — the couple's ask of the standing on #0 and its "I am here" —
+-- #3–#14 for james, ava, sofia, jordan, dana and linda, and #15 rose asked at ✦ Guests, her RSVP, standing.
+-- then the words, #16 on: the couple's own word (#16), the caterer at ✦ Vendors (#17), a word at ✦ Everyone
+-- with three asks on it (#18–#21) and two ✓s (#22, #23), the invitation's word to rose's party (#24; its ask
+-- is her seat's, on #0), the venue's chart move (#25), the planner's itinerary row (#26) and her ★ on it (#27).
 
 def script (ours : Nat) : List Act :=
   opening ++
   [.say wedding 31 couple ours,
    .say wedding 34 vendors 101,
    .say wedding 31 everyone 102,
-   .ask wedding 12 31 34, .ask wedding 12 31 35, .ask wedding 12 31 36,
-   .ack wedding 12 34 true, .ack wedding 12 35 true,
+   .ask wedding 18 31 34, .ask wedding 18 31 35, .ask wedding 18 31 36,
+   .ack wedding 18 34 true, .ack wedding 18 35 true,
    .say wedding 31 (guestsOf 1) 108,
-   .ask wedding 18 31 38,
    .say wedding 36 seating 107,
    .say wedding 33 now 1630,
-   .ask wedding 21 33 33]
+   .ask wedding 26 33 33]
 
 def demo : House := house (script 111)
 
 def demo' : House := house (script 999)
 
-def demoStar : House := park houseMachine demo [.ack wedding 12 36 true, .ack wedding 18 38 true]
+-- the caterer's ✓ and rose's yes (#28, #29); then the planner's own ✓ and the couple's on #0 (#30, #31): ready
 
-def demoAcked : House := park houseMachine demoStar [.ack wedding 21 33 true]
+def demoStar : House := park houseMachine demo [.ack wedding 18 36 true, .ack wedding 0 38 true]
 
-def demoNo : House := park houseMachine demo [.ack wedding 12 36 true, .ack wedding 18 38 false, .ack wedding 21 33 true]
+def demoAcked : House := park houseMachine demoStar [.ack wedding 26 33 true, .ack wedding 0 31 true]
+
+def demoNo : House := park houseMachine demo [.ack wedding 18 36 true, .ack wedding 0 38 false, .ack wedding 26 33 true, .ack wedding 0 31 true]
+
+-- the couple's ✓ on #0 alone: everyone who is here is here
+
+def demoHere : House := park houseMachine demo [.ack wedding 0 31 true]
+
+-- the caterer's own no on #0 after her yes: her leaving
+
+def demoGone : House := park houseMachine demo [.ack wedding 0 34 false]
 
 def demoOut : House := park houseMachine demo [.air wedding false maya]
 
@@ -492,19 +540,77 @@ def humanSeats (h : House) : List (List (Nat × Nat)) := people.map (seatOf h)
 def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 
 -- the clock: order is n, #0 is the founding and the room's only word, a number once written never moves
-#guard (cellRows demo wedding).map (·.2.1) == List.range 23
-#guard headOf demo wedding == 22
+#guard (cellRows demo wedding).map (·.2.1) == List.range 28
+#guard headOf demo wedding == 27
 #guard headOf demo maya == 3
 #guard headOf demo root == 1
 #guard cellAt demo wedding 0 == (0, 0, atADoor, founded)
-#guard cellAt demo wedding 1 == (1, 31, everyone, stood)
+#guard cellAt demo wedding 1 == (1, 31, everyone, asked)
 #guard cellAt demo wedding 2 == (2, 0, now, air)
-#guard cellAt demo wedding 9 == (9, 38, guests, stood)
-#guard cellAt demo wedding 10 == (10, 31, couple, said)
-#guard cellAt demo wedding 22 == (22, 33, now, asked)
+#guard cellAt demo wedding 15 == (15, 31, guests, asked)
+#guard cellAt demo wedding 16 == (16, 31, couple, said)
+#guard cellAt demo wedding 27 == (27, 33, now, asked)
 #guard (tapeOf demo wedding).all (fun c => !(Nat.beq c.voice 0) || Nat.beq c.kind founded || Nat.beq c.kind air)
-#guard headOf demoSaid wedding == 23
-#guard (cellRows demoSaid wedding).take 23 == cellRows demo wedding
+#guard headOf demoSaid wedding == 28
+#guard (cellRows demoSaid wedding).take 28 == cellRows demo wedding
+
+-- seating: every seat is an ask of the standing on #0 by whoever seats, read where the standing is read, and
+-- "I am here" is its ✓ — the founder's a ★ on #0 before the air is on, the guest's her RSVP, standing
+#guard (demo.asks.filter (fun a => Nat.beq a.word 0)).map (fun a => (a.cell, a.voice, a.ofWhom, a.tableKind)) ==
+  [(1, 31, 31, everyone), (3, 31, 32, everyone), (5, 31, 33, everyone), (7, 31, 34, everyone), (9, 31, 35, everyone),
+   (11, 31, 36, everyone), (13, 31, 37, everyone), (15, 31, 38, guestsOf 1)]
+#guard cellAt demo wedding 3 == (3, 31, everyone, asked)
+#guard cellAt demo wedding 4 == (4, 32, everyone, ack)
+#guard cellAt demo wedding 7 == (7, 31, everyone, asked)
+#guard cellAt demo wedding 8 == (8, 34, everyone, ack)
+#guard (demo.acks.filter (fun a => Nat.beq a.word 0)).map (fun a => (a.cell, a.voice, a.tableKind)) ==
+  [(4, 32, everyone), (6, 33, everyone), (8, 34, everyone), (10, 35, everyone), (12, 36, everyone), (14, 37, everyone)]
+#guard headOf (house (opening.take 11)) wedding == 1
+#guard airOn (house (opening.take 11)) wedding == false
+#guard cellAt (house (opening.take 11)) wedding 1 == (1, 31, everyone, asked)
+#guard headOf (house (opening.take 11 ++ [.ack wedding 0 31 true])) wedding == 1
+#guard (openAsks demo wedding).map (·.cell) == [1, 15, 21, 27]
+#guard starred demo 31 == [1, 21, 15]
+#guard starred demo 32 == []
+#guard voiceAt demo (seatOf demo 31) 15 == 31
+#guard voiceAt demo (seatOf demo 34) 15 == 31
+#guard voiceAt demo (seatOf demo 38) 15 == 0
+#guard voiceAt demo (seatOf demo 34) 4 == 32
+#guard voiceAt demo (seatOf demo 38) 4 == 0
+
+-- the couple's ✓ on #0 is one move: it answers the founder's ★ and lets go every unanswered seat at once, and
+-- seats or unseats no one; a room is ready only once the couple has said so
+#guard cellAt demoHere wedding 28 == (28, 31, everyone, ack)
+#guard (openAsks demoHere wedding).map (·.cell) == [21, 27]
+#guard starred demoHere 31 == [21]
+#guard ready demoHere wedding == false
+#guard seatOf demoHere 38 == seatOf demo 38
+#guard demoHere.standings.map (·.id) == demo.standings.map (·.id)
+#guard demoHere.hears == demo.hears
+#guard starred demoStar 31 == [1]
+#guard ready (park houseMachine demoStar [.ack wedding 26 33 true]) wedding == false
+#guard ready demoAcked wedding
+#guard cellAt demoAcked wedding 31 == (31, 31, everyone, ack)
+
+-- a standing's own no on #0 is its leaving: the sign on its row, the latest of its ✓s, its hears rows gone, the
+-- door's left after it; the standing stays and its name is kept; the room's tape reads the same as for a yes.
+-- leaveAt, the couple's removal, is a left and only that, and still takes the standing: the one out of step
+#guard headOf demoGone wedding == 28
+#guard cellAt demoGone wedding 28 == (28, 34, everyone, ack)
+#guard cellRows (ackAt demo wedding 0 34 true) wedding == cellRows demoGone wedding
+#guard headOf demoGone sofia == 2
+#guard cellAt demoGone sofia 2 == (2, 34, atADoor, left)
+#guard demoGone.standings.map (·.id) == demo.standings.map (·.id)
+#guard seatOf demoGone 34 == [(wedding, tapeK), (wedding, headK)]
+#guard inbox demoGone 34 == []
+#guard acksRead demoGone (seatOf demoGone 31) ==
+  [(4, true), (6, true), (8, true), (10, true), (12, true), (14, true), (22, true), (23, true), (28, false)]
+#guard voiceAt demoGone (seatOf demoGone 37) 28 == 34
+#guard (openAsks demoGone wedding).map (·.cell) == [1, 15, 21, 27]
+#guard (openAsks (park houseMachine demo [.ack wedding 0 38 false]) wedding).map (·.cell) == [1, 21, 27]
+#guard headOf (ackAt demoOut wedding 0 34 false) wedding == 28
+#guard headOf (ackAt demoOut wedding 0 34 false) sofia == 1
+#guard voiceAt demoLeft (seatOf demoLeft 37) 29 == 0
 
 -- a silent room's tape ticks for its doors and for an ask, and nothing else: founded, stood at a wedding, air for a
 -- Now it pays for; an ask on its #0, the one word every room has, takes its cell without air; a word does not
@@ -514,17 +620,20 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard cellAt demo maya 3 == (3, 22, atADoor, stood)
 #guard cellAt demo root 1 == (1, 21, atADoor, stood)
 #guard cellAt demo sofia 1 == (1, 34, atADoor, stood)
-#guard cellAt demo wedding 5 == (5, 34, everyone, stood)
 #guard airOn demo maya == false
 #guard audible demo maya == false
 #guard headOf (sayAt demo maya 31 everyone 5) maya == 3
 #guard tableOfWord demo maya 0 == atADoor
 #guard tableOfWord demo wedding 0 == atADoor
-#guard tableOfWord demo wedding 10 == couple
+#guard tableOfWord demo wedding 16 == couple
+#guard tableOn demo wedding 0 38 == guestsOf 1
+#guard tableOn demo wedding 0 34 == everyone
+#guard tableOn demo wedding 0 99 == atADoor
+#guard tableOn demo maya 0 22 == atADoor
 #guard headOf (askAt demo maya 0 31 22) maya == 4
 #guard cellAt (askAt demo maya 0 31 22) maya 4 == (4, 31, atADoor, asked)
 #guard (openAsks (askAt demo maya 0 31 22) maya).map (·.cell) == [4]
-#guard (openAsks (askAt demo maya 0 31 22) wedding).map (·.cell) == [15, 19, 22]
+#guard (openAsks (askAt demo maya 0 31 22) wedding).map (·.cell) == [1, 15, 21, 27]
 #guard cellRows (askAt demo 99 0 31 31) 99 == []
 #guard (askAt demo 99 0 31 31).asks.length == demo.asks.length
 
@@ -532,7 +641,7 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard distinct (demo.rooms.map (·.2))
 #guard handleOf demo wedding == 120
 #guard roomBy demo 120 == wedding
-#guard cellBy demo 120 10 == cellAt demo wedding 10
+#guard cellBy demo 120 16 == cellAt demo wedding 16
 #guard taken demo 120
 #guard taken demo 99 == false
 #guard (foundAt demo 99 120).rooms == demo.rooms
@@ -546,16 +655,16 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard airOn demo wedding
 #guard airOn demoOut wedding == false
 #guard audible demoOut wedding
-#guard headOf demoOut wedding == 23
-#guard cellAt demoOut wedding 23 == (23, 0, now, air)
+#guard headOf demoOut wedding == 28
+#guard cellAt demoOut wedding 28 == (28, 0, now, air)
 #guard cellAt demoOut maya 4 == (4, 0, atADoor, air)
-#guard headOf (sayAt demoOut wedding 31 everyone 5) wedding == 23
-#guard headOf (askAt demoOut wedding 12 31 37) wedding == 24
-#guard cellAt (askAt demoOut wedding 12 31 37) wedding 24 == (24, 31, everyone, asked)
-#guard (openAsks (askAt demoOut wedding 12 31 37) wedding).map (·.cell) == [15, 19, 22, 24]
-#guard headOf (ackAt demoOut wedding 12 36 true) wedding == 23
-#guard headOf demoLeft wedding == 24
-#guard cellAt demoLeft wedding 24 == (24, 34, everyone, left)
+#guard headOf (sayAt demoOut wedding 31 everyone 5) wedding == 28
+#guard headOf (askAt demoOut wedding 18 31 37) wedding == 29
+#guard cellAt (askAt demoOut wedding 18 31 37) wedding 29 == (29, 31, everyone, asked)
+#guard (openAsks (askAt demoOut wedding 18 31 37) wedding).map (·.cell) == [1, 15, 21, 27, 29]
+#guard headOf (ackAt demoOut wedding 18 36 true) wedding == 28
+#guard headOf demoLeft wedding == 29
+#guard cellAt demoLeft wedding 29 == (29, 34, everyone, left)
 #guard cellAt demoLeft sofia 2 == (2, 34, atADoor, left)
 #guard inbox demoLeft 31 == inbox demoOut 31
 #guard homeSeat demoOut wedding == []
@@ -568,8 +677,8 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard homeSeat demo root == [(wedding, headK)]
 #guard homeSeat demo sofia == [(wedding, headK)]
 #guard homeSeat demo maya == [(wedding, headK), (wedding, headK)]
-#guard readsAt demo (homeSeat demo sofia) == [[(2, 22, 0, 0, 0)]]
-#guard readsAt demoSaid (homeSeat demo sofia) == [[(2, 23, 0, 0, 0)]]
+#guard readsAt demo (homeSeat demo sofia) == [[(2, 27, 0, 0, 0)]]
+#guard readsAt demoSaid (homeSeat demo sofia) == [[(2, 28, 0, 0, 0)]]
 #guard readsAt demo (homeSeat demo sofia) == readsAt demo' (homeSeat demo sofia)
 
 -- earshot: who hears what
@@ -588,73 +697,78 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard enrolled pbeq (earshot roomFace ([34, 35, 36, 37].map (seatOf demo))) (wedding, guestsOf 1) == false
 
 -- the words: seen where the table is heard
-#guard sees demo 31 10
-#guard sees demo 32 10
-#guard sees demo 33 10 == false
-#guard sees demo 34 10 == false
-#guard sees demo 37 10 == false
-#guard sees demo 38 10 == false
-#guard sees demo 34 11
-#guard sees demo 31 11 == false
-#guard sees demo 37 12
-#guard sees demo 38 12 == false
-#guard sees demo 38 18
-#guard sees demo 33 18
-#guard sees demo 31 18
-#guard sees demo 34 18 == false
-#guard sees demo 37 18 == false
-#guard sees demo 36 20
-#guard sees demo 37 20
-#guard sees demo 34 20 == false
-#guard sees demo 38 21
-#guard sees demo 34 21
-#guard inbox demo 34 == [12, 11, 21]
-#guard inbox demo 38 == [21, 18]
+#guard sees demo 31 16
+#guard sees demo 32 16
+#guard sees demo 33 16 == false
+#guard sees demo 34 16 == false
+#guard sees demo 37 16 == false
+#guard sees demo 38 16 == false
+#guard sees demo 34 17
+#guard sees demo 31 17 == false
+#guard sees demo 37 18
+#guard sees demo 38 18 == false
+#guard sees demo 38 24
+#guard sees demo 33 24
+#guard sees demo 31 24
+#guard sees demo 34 24 == false
+#guard sees demo 37 24 == false
+#guard sees demo 36 25
+#guard sees demo 37 25
+#guard sees demo 34 25 == false
+#guard sees demo 38 26
+#guard sees demo 34 26
+#guard inbox demo 34 == [18, 17, 26]
+#guard inbox demo 38 == [26, 24]
 
 -- the grain: the tape is read whole by every standing, and a voice resolves only where its table is heard
-#guard (voices demo (seatOf demo 38)).length == 23
-#guard voiceAt demo (seatOf demo 34) 10 == 31
-#guard voiceAt demo (seatOf demo 37) 10 == 31
-#guard voiceAt demo (seatOf demo 38) 10 == 0
-#guard voiceAt demo (seatOf demo 31) 9 == 38
-#guard voiceAt demo (seatOf demo 33) 9 == 38
-#guard voiceAt demo (seatOf demo 38) 9 == 38
-#guard voiceAt demo (seatOf demo 34) 9 == 0
+#guard (voices demo (seatOf demo 38)).length == 28
+#guard voiceAt demo (seatOf demo 34) 16 == 31
+#guard voiceAt demo (seatOf demo 37) 16 == 31
+#guard voiceAt demo (seatOf demo 38) 16 == 0
 #guard voiceAt demo (seatOf demo 38) 0 == 0
 #guard voices demo (seatOf demo 38) == voices demo' (seatOf demo' 38)
 #guard voices demo (seatOf demo 34) == voices demo' (seatOf demo' 34)
 
 -- the ✓: a sign on the row, none on the tape; ready reads an ack as answered without it; a ★ is one cell, an ask
--- of oneself, and keeps everyone waiting; letting go is one's own ✓
-#guard (openAsks demo wedding).map (·.cell) == [15, 19, 22]
+-- of oneself, and keeps everyone waiting; letting go is one's own ✓. a party's answer names itself to the couple
+-- and that party alone; a party that said no hears nothing more and its own tape says left
 #guard ready demo wedding == false
 #guard ready demoStar wedding == false
-#guard (openAsks demoStar wedding).map (·.cell) == [22]
+#guard (openAsks demoStar wedding).map (·.cell) == [1, 27]
 #guard ready demoAcked wedding
 #guard ready demoNo wedding
-#guard cellAt demoAcked wedding 24 == (24, 38, guests, ack)
-#guard cellAt demoAcked wedding 25 == (25, 33, now, ack)
+#guard cellAt demoAcked wedding 29 == (29, 38, guests, ack)
+#guard cellAt demoAcked wedding 30 == (30, 33, now, ack)
 #guard cellRows demoAcked wedding == cellRows demoNo wedding
-#guard acksRead demoAcked (seatOf demoAcked 31) == [(16, true), (17, true), (23, true), (25, true), (24, true)]
-#guard acksRead demoNo (seatOf demoNo 31) == [(16, true), (17, true), (23, true), (25, true), (24, false)]
-#guard acksRead demoNo (seatOf demoNo 38) == [(25, true), (24, false)]
-#guard acksRead demoNo (seatOf demoNo 34) == [(16, true), (17, true), (23, true), (25, true)]
+#guard acksRead demoAcked (seatOf demoAcked 31) ==
+  [(4, true), (6, true), (8, true), (10, true), (12, true), (14, true), (22, true), (23, true), (28, true), (31, true), (30, true), (29, true)]
+#guard acksRead demoNo (seatOf demoNo 31) ==
+  [(4, true), (6, true), (8, true), (10, true), (12, true), (14, true), (22, true), (23, true), (28, true), (31, true), (30, true), (29, false)]
+#guard acksRead demoAcked (seatOf demoAcked 38) == [(30, true), (29, true)]
+#guard acksRead demoNo (seatOf demoNo 34) ==
+  [(4, true), (6, true), (8, true), (10, true), (12, true), (14, true), (22, true), (23, true), (28, true), (31, true), (30, true)]
 #guard acksRead demoNo (seatOf demoNo 34) == acksRead demoAcked (seatOf demoAcked 34)
-#guard voiceAt demoAcked (seatOf demoAcked 31) 24 == 38
-#guard voiceAt demoAcked (seatOf demoAcked 33) 24 == 38
-#guard voiceAt demoAcked (seatOf demoAcked 38) 24 == 38
-#guard voiceAt demoAcked (seatOf demoAcked 34) 24 == 0
-#guard voiceAt demoAcked (seatOf demoAcked 37) 24 == 0
+#guard voiceAt demoAcked (seatOf demoAcked 31) 29 == 38
+#guard voiceAt demoAcked (seatOf demoAcked 33) 29 == 38
+#guard voiceAt demoAcked (seatOf demoAcked 38) 29 == 38
+#guard voiceAt demoAcked (seatOf demoAcked 34) 29 == 0
+#guard voiceAt demoAcked (seatOf demoAcked 37) 29 == 0
+#guard partiesOf demoNo wedding == [guestsOf 1]
+#guard enrolled pbeq (seatOf demoNo 31) (wedding, guestsOf 1)
+#guard seatOf demoNo 38 == [(wedding, tapeK), (wedding, headK)]
+#guard acksRead demoNo (seatOf demoNo 38) == []
+#guard headOf demoNo rose == 2
+#guard cellAt demoNo rose 2 == (2, 38, atADoor, left)
+#guard headOf demoAcked rose == 1
 
 -- the ★: a reading, not a kind. an ask standing reads ★ to its asker, whoever it is of, and to no one else; the
 -- self-ask is the one case where only the reader's own ✓ closes it
-#guard starred demo 31 == [15, 19]
-#guard starred demo 33 == [22]
+#guard starred demo 33 == [27]
 #guard starred demo 36 == []
 #guard starred demo 38 == []
 #guard starred demo 34 == []
-#guard starred demoStar 31 == []
-#guard starred demoStar 33 == [22]
+#guard starred demoStar 33 == [27]
+#guard starred demoAcked 31 == []
 #guard starred demoAcked 33 == []
 #guard starred demoNo 31 == []
 #guard starred demoNo 33 == []
@@ -690,7 +804,7 @@ theorem an_ask_needs_a_room (h : House) (room word voice ofWhom : Nat) (hk : kno
 
 theorem a_check_needs_air (h : House) (room word voice : Nat) (pos : Bool) (ha : airOn h room = false) :
     ackAt h room word voice pos = h := by
-  show cond (airOn h room) (landAck h room word voice pos) h = h
+  unfold ackAt
   rw [ha]
   rfl
 
@@ -727,9 +841,10 @@ theorem ready_is_a_reading (b : Bool) : Derived roomFace (fun h => ready h weddi
 theorem the_voices_are_a_reading (s : List (Nat × Nat)) (v : List (Nat × Nat × Nat × Nat)) :
     Derived roomFace (fun h => voices h s = v) := sorry
 
-theorem the_sign_is_off_the_tape (h : House) (word voice : Nat) (p q : Bool) :
+theorem the_sign_is_off_the_tape (h : House) (word voice : Nat) (p q : Bool) (hw : Nat.beq word 0 = false) :
     cellRows (ackAt h wedding word voice p) wedding = cellRows (ackAt h wedding word voice q) wedding := by
   unfold ackAt
+  rw [hw]
   cases airOn h wedding <;> rfl
 
 theorem the_filter_crosses_the_append {A : Type} (q : A → Bool) :
