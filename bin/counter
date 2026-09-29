@@ -1100,7 +1100,15 @@ print("  a hand body sharing a shape with a regrown one is a piece that exists a
       lines="$lines$f	$fp
 "
     done
-    if [ "$setpin" = 1 ]; then printf '%s' "$lines" > pins; echo "  pins: $(wc -l < pins | tr -d ' ') artifacts anchored in ./pins"; exit 0; fi
+    if [ "$setpin" = 1 ]; then
+      # a named --set moves only the named lines and keeps every other pin standing (the 28th and the
+      # 29th both paid for a set that wrote the named files alone); an unnamed --set is the whole house
+      printf '%s' "$lines" > pins.new
+      [ -f pins ] && awk -F'\t' 'NR == FNR { new[$1] = $0; next } ($1 in new) { print new[$1]; delete new[$1]; next } { print }' pins.new pins > pins.merged || cp pins.new pins.merged
+      awk -F'\t' 'NR == FNR { seen[$1] = 1; next } !($1 in seen)' pins.merged pins.new >> pins.merged
+      mv pins.merged pins; rm -f pins.new
+      echo "  pins: $(wc -l < pins | tr -d ' ') artifacts anchored in ./pins"; exit 0
+    fi
     exit $moved ;;
   countersign)
     # the whole house, in one verb: every germ its own settle, the treaty assays grown, lake build,
