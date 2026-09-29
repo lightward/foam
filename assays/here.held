@@ -36,35 +36,11 @@
 -- theorem reached_is_a_reading (v : Nat) (m : Message) : Derived roomFace (fun r => reached v m r = true) := sorry
 -- theorem assent_is_heard (v : Nat) (m : Message) : ¬ unheard roomFace (assent v m) := sorry
 
--- seated (2026-09-19, the room's ask in everyoneishere#2, Abe's issue in the maintainer's words): the edge of an
--- interval of a seat's ✦ Here — what the seat's own reading holds before and after it — is a reading over the seat
--- (an_edge_is_a_reading, by a_seat_over_a_seat_is_derived), and a word at a probe the seat does not hear does not
--- move it (a_walled_word_does_not_move_the_edge, regrown through a_narrower_seat_reads_no_more and
--- a_wall_hides_the_probe). so the narrator speaks only from the seat's fixed point and a wall is silence: to draw
--- it the narrator would need a probe the seat does not hear, which is the widen, which is the reveal (item 8) and
--- not the edge; open 2 (a ✦ you don't hear) closes the same way. the maintainer's open question about the author
--- clause the treaty answered by removing it: a word is heard at its author's presence as at every addressee's
--- (heardAt; a_persons_own_word_is_heard_at_their_presence), so sees is the seat's reading and nothing more, and a
--- person's own words are on their edge as the app shows them. a feed counts each message once whatever probes it
--- reaches the seat through (onceEach). one thing the room should hear: the seat's feed is the room's order only
--- within one probe's reading; two rooms alike at every probe may interleave different authors' words differently,
--- so an edge as a count and a span is exact and an edge as an ordered list is exact up to that interleaving.
-
--- seated (2026-09-21, the room's three decisions in lightward/foam#92): the day's rows under them. an ask waits on each
--- seat and an ack is never withdrawn — the turnstile: the seats an ask names are the names it waits on, an ack enrolls
--- a seat by anyone's hand, decided is `backed`, the open ends are `lacking`, an_ack_is_never_withdrawn is
--- the_backing_survives_the_seating, a_nag_waits_on_nothing, the_open_ends_are_named, no_open_end_is_decided. the same
--- page is the room at rest: theDay is a Runner over acts (a word said, a seat acked, a tick of Now) whose rest is
--- onThePage, and the_day_rests_on_the_page_or_not_at_all — a tick moves nothing, so the halting gap reads `some`
--- exactly when the page is on the page after the last act, and `none` at every fuel otherwise; the blank page is on
--- the page (a start of `some []`). no wall on reply direction: a reply is a list of originals (many on both ends), the
--- founding word answers itself, and a loop is a fact per seat — the_seen_edges_are_a_reading, a_walled_reply_is_unseen
--- (a ring through a word in ✦ Couple is a ring to the couple and an open line to linda, by the rows).
--- the parting row is typed and not walled: unsend removes a word with every ask and ack it carried (the weight of the
--- demo drops to zero when guest's word is unsent); whether unsend stops at another seat's ack is the room's.
+-- unsend removes a word with every ask and ack it carried; whether it stops at another seat's ack is the room's.
 -- held (waiting on: the room's word on unsend at another's ack)
 -- theorem an_unsend_stops_at_anothers_ack (r : Room) (m : Message) (hm : m ∈ r.messages)
 --     (h : ∃ a, a ∈ m.ackedBy ∧ a.2 ≠ m.author) : unsend m.id r = r := sorry
+
 -- ✦ Now has no row yet (decided in direction: one presence, and the database the one place now is cast into a
 -- measure). when it does, birth order is stamp order by law and the winding number of a walk round a loop is the
 -- count of forward edges it crosses; foam's tape is the shape (the cell written where the head is), and the lift of
@@ -73,67 +49,19 @@
 -- theorem the_winding_number_counts_the_forward_edges (v : Nat) (r : Room) (walk : List (Nat × Nat)) :
 --     winding v r walk = (walk.filter (fun e => stampOf r e.2 > stampOf r e.1)).length := sorry
 
--- seated (2026-09-24, isaac's reading of piece 14: the dense tape is the day-of sheet, the product's work-product, and ✦ Here
--- the gapped tape the team uses to converge on the address of a tape with a continuously-functionally-coherent role for
--- everyone): ✦ Day is a presence every human hears and the couple and the planner write; the sheet is the dense tape —
--- ✦ Day's cells in the order the room wrote them, sheetOf r = ids (roomFace.obs r day) by construction — and the sheet
--- machine is a ledger of those cells over the day's acts. the_sheet_is_a_reading_of_the_record: the room's acts carry
--- the sheet (a said word writes its cell, an ack keeps the sheet, a tick moves nothing), so the sheet is an intertwined
--- walk of the day — every_seat_is_a_reading_of_the_record, one storey up. a_cell_once_written_stays: the dense tape
--- never unwinds (an_enrolled_name_stays_enrolled_down_the_hall), where the room's unsend does (the demo's sheet drops
--- the ceremony when the ceremony is unsent from the room, and the acts that remain write the sheet without it).
--- the_sheet_at_rest: when the day's halting gap reads some, the sheet is that room's sheet. the_sheet_is_derived:
--- a function of the reading at one probe, coherent at every seat; the_sheets_lift_is_its_conduct; a role that hears the
--- day reads the sheet in its own seat. found: the trunk's the_intertwined_walks_agree demands the same output type on
--- both machines and the walk law never needed it — the sheet carries its own induction until that species is
--- generalized (a Face deposit, a cold pass). what waits: the state-level join of the day into the coverage runner,
--- whose hypothesis piece 14 now makes law (one dense tape per room, the ids apart by construction).
+
+-- the day's tally over pairs, the state-level join of the day into the coverage runner: the apartness is the primary
+-- key, the room's law, and #n adds order by construction.
 -- held (waiting on: the ids apart, as piece 14's #n)
 -- theorem the_day_is_a_round_over_pairs (w : List Act) (n : Nat) (h : Apart (ids (park dayMachine ⟨[]⟩ w).messages)) :
 --     (haltingGap (Round (Nat × Nat)) (Tally (Nat × Nat))).obs (coverage (Nat × Nat) pairBeq) (joinMap toRound w, n)
 --       = ((haltingGap Act Room).obs theDay (w, n)).map tallyOf := sorry
 
--- metered (2026-09-24, the maintainer's third word on 55d9c66 — the app's day-of sheet is timeline_rows, ordered by
--- position, a row struck rather than gone, not on the tape; and isaac: can you measure "more conductive"?): the meter is
--- the grammar's sixth move, classify the map, run on a shape's clerks — a clerk is a conductor if it has a section and a
--- resistor if it merges (a_merging_map_has_no_section) — and the verdict is Counter.conductive on the clerks' receipts,
--- the same def the gate runs on axioms. foam's sheet: say and ack conduct, unsend merges (unsend_merges: demo and demoAlt,
--- differing in the ceremony's body, land together; no_map_unsends_an_unsend). the app's sheet: writeRow conducts, strike
--- keeps every cell (a_strike_keeps_every_cell) and unstrike retracts it on the unstruck fiber (unstrike_retracts_strike).
--- the_apps_sheet_is_conductive reads true; foams_sheet_has_a_resistor reads false. "dense" was the wrong word on both
--- sides: the sheet's law is that a cell once written stays, apartness and monotonicity, not density; the unique key
--- holds cells apart and every tape a seat reads is gapped, by the walls and by unsend. and the apartness the tally over
--- pairs waits on is the primary key, the room's law before piece 14; what #n adds is order by construction, which is the
--- twenty-first's third decision made a fact of the tape. foam's sheet as words to a ✦ Day presence stands as a model of a
--- possible product; the app's is the built one, and the intertwiner from the room to it waits on an act that writes a
--- timeline row, which ✦ Here does not have today — the room's to build or not.
+
+-- the intertwiner from the room to the app's sheet (timeline_rows by position, a row struck rather than gone).
 -- held (waiting on: an act on ✦ Here that writes a timeline row)
 -- theorem the_room_writes_the_sheet (w : List Act) : park sheetMachine [] w = rowsOf (park dayMachine ⟨[]⟩ w) := sorry
 
--- the threshold (2026-09-24, germ/Threshold.lean): a rest under coverage at which every seat crosses to the same door
--- together — the_threshold at theDay would say W ambient, every reading unchanged, every witnessed room alike, the run
--- at rest. what parts it here: covers roomFace humanSeats is unsatisfiable, since the room's probes are names (Nat) and
--- a cover must reach every one; the room's presences are finite and the model's are not. two honest cuts: the presences
--- as an enum (the drawer reads enums; the seats become the treaty's views), or a cover relative to a list of probes in
--- Witness (coversAll F ps seats, with forever_hold_your_peace on ps). either is a sitting; neither is a design.
--- seated (2026-09-25): the second cut — a cover relative to a list of probes, coversAll in Witness, the app's shape since a
--- room's presences are a finite list. the room is covered by its people (the_room_is_covered_by_its_people, from the
--- backing computed and an enrolled name being a member — a Room species deposited for it); two rooms alike to the people
--- are alike at every presence; the couple is dark to the others; and the crossing is a fact read from the room's #0 and
--- nothing else (crossed; the_crossing_is_a_reading, Derived at the room), with before and after as the demo without and
--- with it. what parted on the way: the guest. Rose has no seat and no human hears her, her word reaching the room through
--- ✦ Guests alone, so the presences the people cover are the room's own and a guest is out of their earshot by
--- construction (a_guest_is_out_of_the_peoples_earshot) — one-hop.sql's "no standing in the room" as a receipt. the
--- threshold itself, threshold roomFace humanSeats theDay s, still asks for `covers` absolute; with coversAll it is the
--- room's cover at the room's presences, which is what the_threshold's pane would take — a Threshold generalization
--- waiting on a pass, not a design.
--- seated (2026-09-25, before the message went back): the threshold at a relative cover — thresholdAt in Threshold, a cover
--- of the room's own probes and a rest; the_crossing_is_licensed_at_the_room, the_threshold_at_the_room (the pane at the
--- room's presences: W ambient, every reading unchanged, every witnessed room reads the same at every presence, the run at
--- rest), and every absolute threshold a threshold at every room. the day's instance: dayAtRest is the demo with its one
--- open end acked; the_day_at_rest_is_a_threshold (the people's cover and the page at rest), the_day_crosses_the_threshold
--- (the pane at the day). the app's represented relationship to the act is now three rows: crossed, read from #0; the
--- day at rest, a threshold; and what stands on the far side.
 
 -- the board (isaac, 22:54; the maintainer's guess for this session): the win is not an empty surface but every seat's
 -- ✦ Here receded to the same remaining surface — the day sheet. the maintainer read that as speak_now, not re-run.
@@ -145,15 +73,3 @@
 -- held (waiting on: surface)
 -- theorem the_win_is_a_reading (r : Room) :
 --     Derived roomFace (fun r' => (humans.map (fun v => surface v r')).all (fun s => s == surface maya r') = true) := sorry
-
--- seated (2026-09-16, the room's word through the maintainer, ce851e7 in everyoneishere): a self-addressed word
--- leaves no remainder — the general rule, the draft one case of it, the invoice row unmoved, the reveal kept honest.
--- the assay's overheard now excludes a word whose audience is its author alone (`alone`); the concrete row regrows,
--- the wall reading regrows (a word only its author's seat hears is unread at every seat that does not hear the
--- author, by a_wall_hides_the_probe), and the general statement a_word_to_oneself_leaves_no_remainder stands as a
--- hand body: its proof walks the filter (mem_map_back, filter_holds, and_reads) and the shape keeping the audience,
--- a route the search does not compose. found 2026-09-15 by the rows: with piece 4 as first written, jordan's unsent
--- invoice narrated "jordan wrote to jordan" to the whole room.
-
--- a_name_is_or_is_not stood here as a hand body for two days, kept out of Room to spare the house a cold pass; deposited
--- in Room on 2026-09-18, when the house's law was written that a cold pass is paid and never weighed.
