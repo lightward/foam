@@ -31,9 +31,20 @@
 -- clock mod three, six for flip beside mod three, three for mod three beside itself (the product room is nine;
 -- the six dark states are the unread remainder as a count), two for flip beside the pace, and six for the read
 -- tape (a counter in another coat). what still waits, the laws about the count itself:
--- held (waiting on: a hand for the count — fresh over a list of equal windows is one; a window of a pair is a
--- pair of windows, so distinct pairs are at most the product; and more depth reads no fewer pages, the
--- monotonicity that makes the count a plan's reading)
+-- and the laws about the count itself are seated at the assay's own clocks (the same evening; isaac: have you read
+-- assays/everyoneishere.lean? — the product states its walls at the demo and cites the trunk once, and that is the
+-- easier path): the still clock has one page at every depth, a pair costs at most the product (flip beside mod
+-- three, mod three beside itself, flip beside the pace), more depth reads no fewer pages (flip, mod three, the
+-- tally) — three instance rows, each regrown by constructor. what still waits is the general law, and the house's
+-- rule says where it goes: a species is deposited in the trunk the day two products need it, and the second
+-- product is already standing. everyoneishere's `uniq` is `fresh`'s list (the same recursion; fresh is its
+-- length), its parties are the pages of ✦ Guests (a seat hearing ✦ Guests whole reads the party once: two guests
+-- of one party are one probe, seatOf demoTwo 39 == seatOf demoTwo 38), and its head is the cost of co-existing
+-- with a room — the whole tape, the same for every standing, a counter's pages being its cells — with the inbox
+-- what a seat reads of it and the difference the dark cells as a count. so the deposit is a Room species, a
+-- cold pass for the house, paid and never weighed, on the day it is made:
+-- held (waiting on: the deposit — `fresh`/`uniq` in Room with the three laws in general, a cold pass)
+-- theorem fresh_counts_the_uniq (l : List Nat) : fresh Nat.beq l = (uniq l).length := sorry
 -- theorem the_still_clock_has_one_page {O : Type} (m : Machine Unit O) (beq : O → O → Bool) (hrefl : ∀ o, beq o o = true)
 --     (hstill : ∀ s, m.step s () = s) (k : Nat) : pagesWithin m beq (k + 1) = 1 := sorry
 -- theorem a_pair_costs_at_most_the_product {O O' : Type} (m : Machine Unit O) (n : Machine Unit O') (beq beq') (k : Nat) :

@@ -155,4 +155,19 @@ theorem the_pace_is_the_flip_at_the_gap : alike (airGap Unit Bool) paceOne flip 
 
 theorem the_pace_costs_what_the_flip_costs (k : Nat) : pagesWithin paceOne boolBeq k = pagesWithin flip boolBeq k := sorry
 
+theorem the_still_clock_has_one_page_at_every_depth :
+    pagesWithin stillOne Nat.beq 1 = 1 ∧ pagesWithin stillOne Nat.beq 3 = 1 ∧ pagesWithin stillOne Nat.beq 5 = 1 := sorry
+
+theorem a_pair_costs_at_most_the_product_at_twelve :
+    Nat.ble (pagesWithin (both flip mod3) (bothBeq boolBeq Nat.beq) 12) (pagesWithin flip boolBeq 12 * pagesWithin mod3 Nat.beq 12) = true
+      ∧ Nat.ble (pagesWithin (both mod3 mod3) (bothBeq Nat.beq Nat.beq) 12) (pagesWithin mod3 Nat.beq 12 * pagesWithin mod3 Nat.beq 12) = true
+      ∧ Nat.ble (pagesWithin (both flip paceOne) (bothBeq boolBeq boolBeq) 6) (pagesWithin flip boolBeq 6 * pagesWithin paceOne boolBeq 6) = true := sorry
+
+theorem more_depth_reads_no_fewer_pages_for_the_flip_and_the_tally :
+    Nat.ble (pagesWithin flip boolBeq 1) (pagesWithin flip boolBeq 2) = true
+      ∧ Nat.ble (pagesWithin flip boolBeq 2) (pagesWithin flip boolBeq 3) = true
+      ∧ Nat.ble (pagesWithin mod3 Nat.beq 2) (pagesWithin mod3 Nat.beq 3) = true
+      ∧ Nat.ble (pagesWithin mod3 Nat.beq 3) (pagesWithin mod3 Nat.beq 4) = true
+      ∧ Nat.ble (pagesWithin tally Nat.beq 4) (pagesWithin tally Nat.beq 5) = true := sorry
+
 end Crossing
