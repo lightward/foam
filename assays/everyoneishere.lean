@@ -223,8 +223,12 @@ def ready (h : House) (room : Nat) : Bool := readyRead (heardAt h (room, now))
 
 def standingOf (h : House) (sid : Nat) : List Standing := h.standings.filter (fun s => Nat.beq s.id sid)
 
+def uniq : List Nat → List Nat
+  | [] => []
+  | x :: r => cond (enrolled Nat.beq r x) (uniq r) (x :: uniq r)
+
 def partiesOf (h : House) (room : Nat) : List Nat :=
-  (h.standings.filter (fun s => Nat.beq s.atRoom room && Nat.beq s.role asGuest)).map (·.tableKind)
+  uniq ((h.standings.filter (fun s => Nat.beq s.atRoom room && Nat.beq s.role asGuest)).map (·.tableKind))
 
 def probesOf (h : House) (room k : Nat) : List (Nat × Nat) :=
   cond (Nat.beq k guests) ((partiesOf h room).map (fun p => (room, p))) [(room, k)]
@@ -306,9 +310,10 @@ def distinct : List Nat → Bool
   | [] => true
   | x :: r => !(enrolled Nat.beq r x) && distinct r
 
--- the motions. every one is a cell taken by the trigger, never by the mover; a word, a ✓ and a store row need
--- air; an ask needs a room and no air, and stands on #0 as on any word; a door ticks in a silent room, and a
--- room with a Now has no door side. a standing read at a table is seated by an ask of it on #0 by whoever
+-- the motions. every one is a cell taken by the trigger, never by the mover; a word, a ✓ on a word and a store
+-- row need air; an ask needs a room and no air, and stands on #0 as on any word, and a ✓ on #0 needs a room
+-- and no air too — a ✓ at the door is a door motion, so an ask at the door can be answered where it stands;
+-- a door ticks in a silent room, and a room with a Now has no door side. a standing read at a table is seated by an ask of it on #0 by whoever
 -- seats, and answers "I am here" with its ✓; a standing read at a door is stood. a row on #0 is read where
 -- the standing it is about is read — an ask's asked, a ✓'s voice — so a seat's ask and its answer are that
 -- table's half, as the seat is. a standing's own no on #0 is its leaving: the sign on the row, its hears rows
@@ -404,7 +409,7 @@ def landAck (h : House) (room word voice : Nat) (pos : Bool) : House :=
     room voice (coarse (tableOn h room word voice)) ack
 
 def ackAt (h : House) (room word voice : Nat) (pos : Bool) : House :=
-  cond (airOn h room)
+  cond (cond (Nat.beq word 0) (known h room) (airOn h room))
     (cond (Nat.beq word 0 && !pos) (goneAt (landAck h room word voice pos) room voice) (landAck h room word voice pos))
     h
 
@@ -568,7 +573,10 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard headOf (house (opening.take 11)) wedding == 1
 #guard airOn (house (opening.take 11)) wedding == false
 #guard cellAt (house (opening.take 11)) wedding 1 == (1, 31, everyone, asked)
-#guard headOf (house (opening.take 11 ++ [.ack wedding 0 31 true])) wedding == 1
+#guard headOf (house (opening.take 11 ++ [.ack wedding 0 31 true])) wedding == 2
+#guard cellAt (house (opening.take 11 ++ [.ack wedding 0 31 true])) wedding 2 == (2, 31, everyone, ack)
+#guard (openAsks (house (opening.take 11 ++ [.ack wedding 0 31 true])) wedding).map (·.cell) == []
+#guard starred (house (opening.take 11 ++ [.ack wedding 0 31 true])) 31 == []
 #guard (openAsks demo wedding).map (·.cell) == [1, 15, 21, 27]
 #guard starred demo 31 == [1, 21, 15]
 #guard starred demo 32 == []
@@ -608,8 +616,9 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard voiceAt demoGone (seatOf demoGone 37) 28 == 34
 #guard (openAsks demoGone wedding).map (·.cell) == [1, 15, 21, 27]
 #guard (openAsks (park houseMachine demo [.ack wedding 0 38 false]) wedding).map (·.cell) == [1, 21, 27]
-#guard headOf (ackAt demoOut wedding 0 34 false) wedding == 28
-#guard headOf (ackAt demoOut wedding 0 34 false) sofia == 1
+#guard headOf (ackAt demoOut wedding 0 34 false) wedding == 29
+#guard cellAt (ackAt demoOut wedding 0 34 false) wedding 29 == (29, 34, everyone, ack)
+#guard headOf (ackAt demoOut wedding 0 34 false) sofia == 2
 #guard voiceAt demoLeft (seatOf demoLeft 37) 29 == 0
 
 -- a silent room's tape ticks for its doors and for an ask, and nothing else: founded, stood at a wedding, air for a
@@ -634,6 +643,12 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard cellAt (askAt demo maya 0 31 22) maya 4 == (4, 31, atADoor, asked)
 #guard (openAsks (askAt demo maya 0 31 22) maya).map (·.cell) == [4]
 #guard (openAsks (askAt demo maya 0 31 22) wedding).map (·.cell) == [1, 15, 21, 27]
+#guard headOf (ackAt (askAt demo maya 0 31 22) maya 0 22 true) maya == 5
+#guard cellAt (ackAt (askAt demo maya 0 31 22) maya 0 22 true) maya 5 == (5, 22, atADoor, ack)
+#guard (openAsks (ackAt (askAt demo maya 0 31 22) maya 0 22 true) maya).map (·.cell) == []
+#guard headOf (ackAt (askAt demo maya 0 31 22) maya 18 22 true) maya == 4
+#guard (ackAt demo 99 0 31 true).acks.length == demo.acks.length
+#guard cellRows (ackAt demo 99 0 31 true) 99 == []
 #guard cellRows (askAt demo 99 0 31 31) 99 == []
 #guard (askAt demo 99 0 31 31).asks.length == demo.asks.length
 
@@ -651,7 +666,8 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard (house [.found root 100, .found maya 101, .found james 101]).rooms == [(root, 100), (maya, 101)]
 #guard distinct ((house [.found root 100, .found maya 101, .found james 101]).rooms.map (·.2))
 
--- air: a word and a ✓ need it; an ask and a door tick without it; a room whose air is out hosts no doors
+-- air: a word needs it, and a ✓ on a word; an ask, a ✓ on #0 and a door tick without it; a room whose air is
+-- out hosts no doors
 #guard airOn demo wedding
 #guard airOn demoOut wedding == false
 #guard audible demoOut wedding
@@ -754,6 +770,21 @@ def otherSeats (h : House) : List (List (Nat × Nat)) := others.map (seatOf h)
 #guard voiceAt demoAcked (seatOf demoAcked 34) 29 == 0
 #guard voiceAt demoAcked (seatOf demoAcked 37) 29 == 0
 #guard partiesOf demoNo wedding == [guestsOf 1]
+
+-- a second guest of the same party is one more standing and the same one probe: a seat hearing ✦ Guests whole
+-- reads the party once
+
+def liam : Nat := 9
+
+def liamAt : Standing := ⟨39, liam, wedding, guestsOf 1, asGuest, 0⟩
+
+def demoTwo : House := park houseMachine demo [.found liam 109, .stand 31 liamAt [guestsOf 1]]
+
+#guard demoTwo.standings.length == demo.standings.length + 1
+#guard partiesOf demoTwo wedding == [guestsOf 1]
+#guard probesOf demoTwo wedding guests == [(wedding, guestsOf 1)]
+#guard seatOf demoTwo 31 == seatOf demo 31
+#guard seatOf demoTwo 39 == seatOf demoTwo 38
 #guard enrolled pbeq (seatOf demoNo 31) (wedding, guestsOf 1)
 #guard seatOf demoNo 38 == [(wedding, tapeK), (wedding, headK)]
 #guard acksRead demoNo (seatOf demoNo 38) == []
@@ -802,11 +833,20 @@ theorem an_ask_needs_a_room (h : House) (room word voice ofWhom : Nat) (hk : kno
   rw [hk]
   rfl
 
-theorem a_check_needs_air (h : House) (room word voice : Nat) (pos : Bool) (ha : airOn h room = false) :
-    ackAt h room word voice pos = h := by
+theorem a_check_needs_air (h : House) (room word voice : Nat) (pos : Bool) (hw : Nat.beq word 0 = false)
+    (ha : airOn h room = false) : ackAt h room word voice pos = h := by
   unfold ackAt
-  rw [ha]
+  rw [hw, ha]
   rfl
+
+theorem a_check_at_the_door_needs_no_air (h : House) (room voice : Nat) (pos : Bool) (hk : known h room = true) :
+    ackAt h room 0 voice pos = cond (!pos) (goneAt (landAck h room 0 voice pos) room voice) (landAck h room 0 voice pos) := by
+  unfold ackAt
+  rw [hk]
+  rfl
+
+theorem a_check_at_the_door_needs_a_room (h : House) (room voice : Nat) (pos : Bool) (hk : known h room = false) :
+    ackAt h room 0 voice pos = h := sorry
 
 theorem a_handle_names_one_room (h : House) (room handle : Nat) (ht : taken h handle = true) :
     foundAt h room handle = h := by
