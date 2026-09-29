@@ -74,18 +74,29 @@ for label, src in lean_srcs:
     rr = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'reasons', label, ns, ','.join(imports)], capture_output=True, text=True)
     arrows = [l.split() for l in rr.stdout.splitlines() if len(l.split()) == 4]
     bare = [(a, d) for a, d, k, own in arrows if k == '0' and own != '0']
-    books.append((label, ns, decls, receipts, local, above, how, len(arrows), bare))
+    # a #guard row is a citation too: an assay's carriers are exercised by its rows, and a carrier every
+    # row evaluates and no theorem cites is the treaty's, not a leaf (2026-09-29, the book read on the
+    # product as of the cut: forty leaves, every one under a guard)
+    guarded = set()
+    for line in src.splitlines():
+        if line.startswith('#guard ') and not line.startswith('#guard_msgs'):
+            for n in re.findall(r"[A-Za-z_][A-Za-z0-9_']*", line):
+                guarded.add(n)
+    books.append((label, ns, decls, receipts, local, above, how, len(arrows), bare, guarded))
 
 cited_above = {}
-for _, _, _, _, _, above, _, _, _ in books:
+for _, _, _, _, _, above, _, _, _, _ in books:
     for (m, n), by in above.items():
         cited_above.setdefault((m, n), set()).update(by)
 
-for label, ns, decls, receipts, local, _, how, n_arrows, bare in books:
+for label, ns, decls, receipts, local, _, how, n_arrows, bare, guarded in books:
     n_thm = sum(1 for k, _ in decls if k == 'theorem')
     print(f"the census [{label}]: {len(decls)} declarations ({len(decls) - n_thm} carriers, {n_thm} theorems), {receipts} receipts")
     print(f"the arrows [{label}]: {n_arrows} citations, {len(bare)} by computation alone (the statements share no word of the house though the cited one has some; dashed on the chart)" + (': ' + ' '.join(f'{a}→{d}' for a, d in bare) if bare else ''))
-    leaves = [n for _, n in decls if n not in local and (ns, n) not in cited_above]
+    rows_only = [n for _, n in decls if n not in local and (ns, n) not in cited_above and n in guarded]
+    if rows_only:
+        print(f"the rows [{label}] — {len(rows_only)} carriers no theorem cites, evaluated by the treaty's rows: {' '.join(rows_only)}")
+    leaves = [n for _, n in decls if n not in local and (ns, n) not in cited_above and n not in guarded]
     seated_above = [(n, sorted(cited_above[(ns, n)])) for _, n in decls if n not in local and (ns, n) in cited_above]
     print(f"the frontier [{label}] — {len(leaves)} leaves no organ in the house cites yet ({how}):")
     for n in leaves:
