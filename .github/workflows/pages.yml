@@ -37,27 +37,10 @@ jobs:
           build: false
           test: false
           lake-package-directory: .
-      - name: the chair's seats (../counter — chairs.sql; the memo lives in the CI cache)
+      - name: the treaty's Postgres (psql for bin/counter treaty; the compiler keeps no memo — every pass is cold, and the artifact is the same on any machine that pays)
         run: |
           sudo apt-get install -y -q postgresql-client >/dev/null
-          git clone -q --depth 1 https://github.com/lightward/counter.git ../counter
-          PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres ../counter/bin/chair init
-          for kv in CRAWL_CHAIR=counter CRAWL_CHAIR_NAME=bench PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres; do echo "$kv" >> "$GITHUB_ENV"; done
-      - name: the memo, restored
-        id: memo
-        uses: actions/cache/restore@v4
-        with:
-          path: memo
-          key: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
-          restore-keys: memo-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-
-      - name: the memo, loaded
-        if: steps.memo.outputs.cache-matched-key != ''
-        run: |
-          for t in charge reading; do
-            [ -s "memo/$t.csv" ] || continue
-            PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -q -X -v ON_ERROR_STOP=1 -c "CREATE TEMP TABLE m (LIKE counter.$t)" -c "\\copy m FROM 'memo/$t.csv' CSV" -c "INSERT INTO counter.$t SELECT * FROM m ON CONFLICT DO NOTHING"
-          done
-          echo "memo loaded from ${{ steps.memo.outputs.cache-matched-key }}: $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.charge') charges, $(PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d counter -qtAX -c 'SELECT count(*) FROM counter.reading') readings"
+          for kv in PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres; do echo "$kv" >> "$GITHUB_ENV"; done
       - name: grow foam and its customers
         run: bin/counter grow germ/Room.lean && bin/counter grow && bin/counter grow germ/Witness.lean && bin/counter grow germ/Rest.lean && bin/counter grow germ/Threshold.lean && bin/counter grow germ/Toy.lean && bin/counter grow germ/Counter.lean && bin/counter grow germ/Seek.lean && bin/counter grow germ/Roster.lean
       - name: build the grown modules
