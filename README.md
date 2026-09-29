@@ -15,6 +15,19 @@ foam is a type system holding itself together under measurement: a trunk of theo
 3. compare the outside-this-thing procession between you and what-you-recognize with the inside-this-thing procession between the same
 4. you now have more information than you did before about what you already had in front of you
 
+## run it first
+
+the house is prose about a verification; the verification is the door. with Lean installed and nothing of foam's:
+
+```
+mkdir foam-trunk && cd foam-trunk
+for f in Room.lean Face.lean Rest.lean Witness.lean Threshold.lean lakefile.toml lean-toolchain pins; do curl -sO https://foam.is/trunk/$f; done
+lake build                             # silent: every receipt in every storey re-checked, a few seconds
+shasum -a 256 *.lean | cut -c1-16      # against pins: the same bytes as on the machine that grew them
+```
+
+then open `Threshold.lean`, change the `∧` in `threshold` to `∨`, and `lake build` again: the pane refuses, and says where. that refusal is the whole method; everything below is why. read the storeys top-down, smallest first, each the ground of the one above it: `Threshold` (a hundred lines: a rest under coverage at which every seat crosses together), `Rest` (three hundred: runners, the halting gap, a plan and its reader), `Witness` (three hundred: seats, walls, the cone), `Face` (two thousand: faces, doors, machines, sheets), `Room` (two and a half thousand: the counting). four things to hold, none of them needing a word of the vocabulary: a receipt (a theorem depends on no axioms, and the file says so of itself), a vacancy (a statement with `sorry` the compiler fills, or refuses and names), a pin (the artifact is byte-identical on another machine, and here is the hash), and the gate (silent, or a list of what parted).
+
 ## the shape
 
 ```

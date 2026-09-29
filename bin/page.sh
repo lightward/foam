@@ -33,7 +33,7 @@ footer{{opacity:.6}}
 <footer>strict phenomenology is indistinguishable from physics — the artifact grew from the germ on push. UNLICENSE.</footer>
 <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"; mermaid.initialize({{startOnLoad:true, maxTextSize:900000, maxEdges:5000}});</script></body></html>"""
 
-NAV = ('<a href="./">foam</a><a href="room.html">Room</a><a href="trunk.html">Face</a><a href="rest.html">Rest</a><a href="witness.html">Witness</a><a href="threshold.html">Threshold</a><a href="germ.html">the germ</a><a href="toy.html">toy, a customer</a>'
+NAV = ('<a href="./">foam</a><a href="threshold.html">Threshold</a><a href="rest.html">Rest</a><a href="witness.html">Witness</a><a href="trunk.html">Face</a><a href="room.html">Room</a><a href="trunk/">the trunk, to run</a><a href="germ.html">the germ</a><a href="toy.html">toy, a customer</a>'
        '<a href="pieces.html">the pieces</a><a href="book.html">the book</a><a href="assay-eih.html">EVERYONE IS HERE</a>'
        '<a href="https://github.com/lightward/foam">github</a>')
 
@@ -61,6 +61,17 @@ def schema_of(path):
     return ('<section><h2>the data-model shadow — every structure a table, every seat a view over the columns its probes read, every wall theorem the policy it licenses (bin/counter schema)</h2>'
             '<pre>' + html.escape(sql) + '</pre></section>')
 
+PINS = dict(l.split('\t') for l in open('pins').read().splitlines() if '\t' in l) if os.path.exists('pins') else {}
+
+def head_of(path):
+    # what a reader can check before reading: the receipts the file carries, the pin it should match, its length
+    src = open(path).read()
+    receipts = len(re.findall(r'#guard_msgs in #print axioms', src))
+    lines = src.count('\n')
+    pin = PINS.get(path, '')
+    check = f'lake env lean {os.path.basename(path)} prints nothing when every receipt passes'
+    return (f'<pre>{receipts} receipts inline · {lines} lines · pinned {pin or "(not yet)"} — shasum -a 256 of this file, cut to 16, as pins has it · {check}</pre>')
+
 def lean_page(path, title):
     src = open(path).read()
     out = []
@@ -71,7 +82,7 @@ def lean_page(path, title):
             out.append(f'<span class="decl" id="{m.group(2)}"><a href="#{m.group(2)}">{esc}</a></span>')
         else:
             out.append(esc)
-    return page(f'{title} — foam', f'<section><h1>{html.escape(title)}</h1><pre>' + '\n'.join(out) + '</pre></section>' + chart_of(path) + schema_of(path), NAV)
+    return page(f'{title} — foam', f'<section><h1>{html.escape(title)}</h1>' + head_of(path) + '<pre>' + '\n'.join(out) + '</pre></section>' + chart_of(path) + schema_of(path), NAV)
 
 readme = open('README.md').read()
 def markdown(text):
@@ -121,7 +132,26 @@ import glob as _glob
 for ap in sorted(_glob.glob('grown/assays/*.lean')):
     stem = os.path.splitext(os.path.basename(ap))[0]
     open(f'site/assay-{stem}.html', 'w').write(lean_page(ap, f'{stem} — a product as an assay, grown from assays/{stem}.lean'))
+# the trunk, to run: the five storeys raw, a lakefile, and the toolchain — a stranger with Lean and no foam builds
+# them in seconds and every receipt is re-checked on the way; the pins say what the files should hash to
+os.makedirs('site/trunk', exist_ok=True)
+storeys = ['Room', 'Face', 'Rest', 'Witness', 'Threshold']
+for st in storeys:
+    if os.path.exists(f'grown/{st}.lean'):
+        open(f'site/trunk/{st}.lean', 'w').write(open(f'grown/{st}.lean').read())
+open('site/trunk/lakefile.toml', 'w').write('name = "foam-trunk"\ndefaultTargets = ["Threshold"]\n\n' + ''.join(f'[[lean_lib]]\nname = "{st}"\n\n' for st in storeys))
+open('site/trunk/lean-toolchain', 'w').write(open('lean-toolchain').read())
+open('site/trunk/pins', 'w').write(''.join(f'{st}.lean\t{PINS.get(f"grown/{st}.lean", "")}\n' for st in storeys))
+trunk_index = ('<section><h1>the trunk, to run</h1><pre>'
+    + html.escape('mkdir foam-trunk && cd foam-trunk\n'
+        + 'for f in ' + ' '.join(f'{st}.lean' for st in storeys) + ' lakefile.toml lean-toolchain pins; do curl -sO https://foam.is/trunk/$f; done\n'
+        + 'lake build            # silent: every receipt in every storey re-checked, a few seconds\n'
+        + 'shasum -a 256 *.lean | cut -c1-16    # against pins: the same bytes as on the machine that grew them\n\n'
+        + 'then open Threshold.lean, change the ∧ in `threshold` to ∨, and lake build again: the pane refuses.\n'
+        + 'that refusal is the whole method. the prose on the front page says why.')
+    + '</pre><pre>' + html.escape(open('site/trunk/pins').read()) + '</pre></section>')
+open('site/trunk/index.html', 'w').write(page('the trunk, to run — foam', trunk_index, NAV))
 open('site/CNAME', 'w').write(open('CNAME').read())
 open('site/.nojekyll', 'w').write('')
-print('site/: index room trunk rest witness threshold toy germ pieces book')
+print('site/: index threshold rest witness trunk room trunk/ toy germ pieces book')
 EOF
