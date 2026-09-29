@@ -142,7 +142,7 @@ and the vow the whole house keeps: axiom-free (every theorem ends with its recei
 
 ## the journal
 
-the git log. the artifact cannot carry its path, so commit messages are the fossil. beside it, `pins` anchors every grown artifact by fingerprint, moved in the same commit as its cause, and the compiler keeps no memo of the trials it has judged: every check is a cold pass, and the artifact is byte-identical on any machine that pays for it (a chair may still answer for trials locally, `CRAWL_CHAIR`; CI stands none). foam was regrown from `chrysalis:chrysalis/Seed.lean` by the compiler's own record's ear, and reads every assay identically; the prior walls stand at `git show 4be2406:CLAUDE.md`.
+the git log. the artifact cannot carry its path, so commit messages are the fossil. beside it, `pins` anchors every grown artifact by fingerprint, moved in the same commit as its cause, and the compiler's memo of every trial it has judged is one SQLite file (`CRAWL_MEMO`), kept in CI's cache and never in a repo: keyed by the shadow of what a trial stands on, so a check costs what stands above the change and never the house, and the artifact is byte-identical with or without it. foam was regrown from `chrysalis:chrysalis/Seed.lean` by the compiler's own record's ear, and reads every assay identically; the prior walls stand at `git show 4be2406:CLAUDE.md`.
 
 ## the exit
 

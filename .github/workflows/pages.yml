@@ -37,10 +37,17 @@ jobs:
           build: false
           test: false
           lake-package-directory: .
-      - name: the treaty's Postgres (psql for bin/counter treaty; the compiler keeps no memo — every pass is cold, and the artifact is the same on any machine that pays)
+      - name: the treaty's Postgres (psql for bin/counter treaty)
         run: |
           sudo apt-get install -y -q postgresql-client >/dev/null
-          for kv in PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres; do echo "$kv" >> "$GITHUB_ENV"; done
+          for kv in PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres CRAWL_MEMO=memo/memo.sqlite; do echo "$kv" >> "$GITHUB_ENV"; done
+      - name: the memo, restored (one SQLite file — every trial and reading the house has run, keyed by the judge, the pieces, and the toolchain; a key that misses is a cold pass, never a red; what it buys is a shape, a check costing what stands above the change and never the house)
+        uses: actions/cache/restore@v4
+        with:
+          path: memo
+          key: memo-sqlite-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
+          restore-keys: memo-sqlite-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-
+      - run: mkdir -p memo
       - name: grow foam and its customers
         run: bin/counter grow germ/Room.lean && bin/counter grow && bin/counter grow germ/Witness.lean && bin/counter grow germ/Rest.lean && bin/counter grow germ/Threshold.lean && bin/counter grow germ/Toy.lean && bin/counter grow germ/Counter.lean && bin/counter grow germ/Seek.lean && bin/counter grow germ/Roster.lean
       - name: build the grown modules

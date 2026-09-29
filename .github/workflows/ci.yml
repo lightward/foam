@@ -25,10 +25,17 @@ jobs:
           build: false
           test: false
           lake-package-directory: .
-      - name: the treaty's Postgres (psql for bin/counter treaty; the compiler keeps no memo — every pass is cold, and the artifact is the same on any machine that pays)
+      - name: the treaty's Postgres (psql for bin/counter treaty)
         run: |
           sudo apt-get install -y -q postgresql-client >/dev/null
-          for kv in PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres; do echo "$kv" >> "$GITHUB_ENV"; done
+          for kv in PGSOCK=localhost PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres CRAWL_MEMO=memo/memo.sqlite; do echo "$kv" >> "$GITHUB_ENV"; done
+      - name: the memo, restored (one SQLite file — every trial and reading the house has run, keyed by the judge, the pieces, and the toolchain; a key that misses is a cold pass, never a red; what it buys is a shape, a check costing what stands above the change and never the house)
+        uses: actions/cache/restore@v4
+        with:
+          path: memo
+          key: memo-sqlite-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
+          restore-keys: memo-sqlite-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-
+      - run: mkdir -p memo
       - name: grow Room, then Face on it, then Witness and Rest on Face, then Threshold where they meet (every vacancy regrows; each germ its own settle; the standards print)
         run: bin/counter grow germ/Room.lean --check && bin/counter grow --check && bin/counter grow germ/Witness.lean --check && bin/counter grow germ/Rest.lean --check && bin/counter grow germ/Threshold.lean --check
       - name: "grow the customers on foam (germ/Toy.lean, germ/Counter.lean, germ/Seek.lean, germ/Roster.lean — their own settles)"
@@ -52,3 +59,9 @@ jobs:
           bin/counter treaty assays/cycle.lean
       - name: "the pins (every artifact against the pins committed beside the germs — identical, or red: a pin moves in the same commit as its cause, bin/counter pin --set)"
         run: bin/counter pin
+      - name: the memo, saved (the cache is immutable per key, so every run saves under its own and the next restores the latest by prefix)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: memo
+          key: memo-sqlite-${{ hashFiles('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}

@@ -54,16 +54,24 @@
 #     the assay as the grid its makers would draw: seats down, probes across, a mark where a seat
 #     hears, the walls beside each seat as the theorems that cite it, the doors below. markdown
 #   bin/counter pin [--set] [grown/*.lean]
-#     the artifacts by fingerprint. with a chair (CRAWL_CHAIR), each against its last pin: identical
+#     the artifacts by fingerprint against the pins committed beside the germs: identical
 #     or moved; --set pins them. anchor the end so the means can float
 #   bin/counter countersign
 #     the whole house: --check on every germ, the treaty assays grown, lake build, the gate, the book
 #
-# the chair (CRAWL_CHAIR=<database>, CRAWL_CHAIR_NAME=<chair>; ../counter): a trial and a reading of
-# the judge are deterministic, so the chair answers for them by fingerprint and is charged what it
-# could not answer. unset, the compiler runs exactly as before, memoryless; the artifact is
-# byte-identical either way, and pin is the check
+# the memo (CRAWL_MEMO=<sqlite file>): a trial and a reading of the judge are deterministic, so the
+# memo answers for them by fingerprint and keeps what it could not answer. unset, the compiler runs
+# exactly as before, memoryless; the artifact is byte-identical either way, and pin is the check
 set -u
+
+# the memo's file, from bash: get <db> <fp> prints the reading's body (empty if none); put <db> <fp> <kind> keeps stdin as it
+MEMO_PY='import sqlite3, sys
+db = sqlite3.connect(sys.argv[2], timeout=120)
+db.execute("CREATE TABLE IF NOT EXISTS reading (fp TEXT PRIMARY KEY, kind TEXT NOT NULL, body TEXT NOT NULL)")
+if sys.argv[1] == "get":
+    r = db.execute("SELECT body FROM reading WHERE fp = ?", (sys.argv[3],)).fetchone(); sys.stdout.write(r[0] if r else "")
+else:
+    db.execute("INSERT OR IGNORE INTO reading (fp, kind, body) VALUES (?, ?, ?)", (sys.argv[3], sys.argv[4], sys.stdin.read())); db.commit()'
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -194,16 +202,16 @@ NS_NAME = (re.search(r'^namespace ([\w.]+)', header, re.M) or re.search(r'^names
 IMPORTS = [m for m in re.findall(r'^import (\S+)', header, re.M) if m != 'Init']
 SCOPE = [NS_NAME, ','.join(IMPORTS)]
 
-# THE CHAIR (2026-09-07, isaac's move; ../counter): a trial of the judge and a reading of the judge
-# (templates, needs, cites) are deterministic — the same inputs give the same output on any
-# machine — so a chair may answer for them from its charges and readings, and is charged what it
-# could not answer. the compiler keeps nothing: with CRAWL_CHAIR unset it runs exactly as before,
-# and the artifact must be byte-identical either way (pin is the check). a fingerprint folds in
-# everything the answer stands on: the judge, the pieces, the toolchain, the manifest, and every
-# grown module the germ imports, transitively
+# THE MEMO (2026-09-07 as the chair, isaac's move; a file since 2026-09-29): a trial of the judge and
+# a reading of the judge (templates, needs, cites) are deterministic — the same inputs give the same
+# output on any machine — so a memo may answer for them and keeps what it could not answer. the
+# compiler keeps nothing itself: with CRAWL_MEMO unset it runs exactly as before, and the artifact
+# must be byte-identical either way (pin is the check). a fingerprint folds in everything the answer
+# stands on: the judge, the pieces, the toolchain, the manifest, and every grown module the germ
+# imports, transitively — each cut to its shadow, so a body-only change leaves every answer standing.
+# what the memo buys is a shape, not minutes: a check costs what stands above the change, never the house
 import hashlib
-chair = os.environ.get('CRAWL_CHAIR')
-chair_name = os.environ.get('CRAWL_CHAIR_NAME', 'bench')
+memo_path = os.environ.get('CRAWL_MEMO')
 def sha(b): return hashlib.sha256(b if isinstance(b, bytes) else b.encode()).hexdigest()[:32]
 def shadow_of(src):
     """the prefix as a trial reads it (2026-09-18): the header and every carrier whole, every theorem its
@@ -230,8 +238,8 @@ def shadow_of(src):
         out.append(block[:cut].rstrip() + '\n' + (block[rt:] if rt != -1 else ''))
     return '\n'.join(out)
 env_fp = ''
-chair_id = ''
-if chair:
+MEMO = None
+if memo_path:
     _parts = [open(f, 'rb').read() for f in ('bin/judge.lean', 'bin/Pieces.lean', 'lean-toolchain', 'lake-manifest.json')]
     _seen = set()
     def _walk(mod):
@@ -241,33 +249,24 @@ if chair:
         _parts.append(shadow_of(open(f'grown/{mod}.lean').read()).encode())
     for _m in IMPORTS: _walk(_m)
     env_fp = sha(b'\0'.join(_parts))
-    def chair_sql(sql, stdin=None):
-        # a query goes over stdin (a round's fingerprints outgrow an argument list on Linux); a COPY
-        # keeps its statement on the command line and its rows on stdin
-        base = ['psql', '-h', os.environ.get('PGSOCK', '/tmp'), '-p', os.environ.get('PGPORT', '5432'), '-U', os.environ.get('PGUSER', os.environ.get('USER', '')), '-d', chair, '-q', '-X', '--csv', '-t', '-v', 'ON_ERROR_STOP=1']
-        args, inp = (base + ['-c', sql], stdin) if stdin is not None else (base, sql)
-        r = subprocess.run(args, capture_output=True, text=True, input=inp, env=dict(os.environ, PATH='/opt/homebrew/opt/postgresql@17/bin:' + os.environ.get('PATH', '')))
-        if r.returncode != 0: raise SystemExit('crawl: the chair did not answer:\n' + r.stderr[-1500:])
-        return r.stdout
-    chair_id = chair_sql(f"SELECT counter.who('{chair_name}')").strip()
-    if not chair_id: raise SystemExit(f'crawl: no chair named {chair_name} at {chair}')
-def chair_read(kind, path, args):
-    """a reading of the judge (templates, needs, cites) on a file: answered by the chair when it
-    has read the same inputs, else read and charged"""
-    if chair:
-        import csv, io
+    import sqlite3
+    MEMO = sqlite3.connect(memo_path, timeout=120)
+    MEMO.execute("CREATE TABLE IF NOT EXISTS charge (prefix_fp TEXT NOT NULL, candidate_fp TEXT NOT NULL, vacancy TEXT NOT NULL, piece TEXT NOT NULL, verdict TEXT NOT NULL, body TEXT NOT NULL DEFAULT '', PRIMARY KEY (prefix_fp, candidate_fp))")
+    MEMO.execute('CREATE TABLE IF NOT EXISTS reading (fp TEXT PRIMARY KEY, kind TEXT NOT NULL, body TEXT NOT NULL)')
+    MEMO.commit()
+def memo_read(kind, path, args):
+    """a reading of the judge (templates, needs, cites) on a file: answered by the memo when it
+    has read the same inputs, else read and kept"""
+    if memo_path:
         fp = sha(env_fp + kind + '\0' + '\0'.join(args) + '\0' + open(path).read())
-        rows = chair_sql(f"SELECT body FROM counter.reading WHERE fp = '{fp}'")
-        for (b,) in csv.reader(io.StringIO(rows)):
-            chair_read.answered += 1; return b
+        row = MEMO.execute('SELECT body FROM reading WHERE fp = ?', (fp,)).fetchone()
+        if row: memo_read.answered += 1; return row[0]
     r = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', kind, path] + args, capture_output=True, text=True)
-    if chair and r.returncode == 0:
-        import csv, io
-        buf = io.StringIO(); w = csv.writer(buf, quoting=csv.QUOTE_ALL); w.writerow([chair_id, kind, fp, r.stdout])
-        chair_sql('CREATE TEMP TABLE rd (LIKE counter.reading); COPY rd (observer, kind, fp, body) FROM STDIN CSV; INSERT INTO counter.reading SELECT * FROM rd ON CONFLICT DO NOTHING', buf.getvalue())
-    chair_read.returncode = r.returncode; chair_read.stderr = r.stderr
+    if memo_path and r.returncode == 0:
+        MEMO.execute('INSERT OR IGNORE INTO reading (fp, kind, body) VALUES (?, ?, ?)', (fp, kind, r.stdout)); MEMO.commit()
+    memo_read.returncode = r.returncode; memo_read.stderr = r.stderr
     return r.stdout
-chair_read.answered = 0; chair_read.returncode = 0; chair_read.stderr = ''
+memo_read.answered = 0; memo_read.returncode = 0; memo_read.stderr = ''
 seated_names = set(n for _, n, _ in blocks)
 for k, n, b in held_blocks:
     if n in seated_names:
@@ -296,7 +295,7 @@ for _, n, b in theorems:
 tf = tempfile.NamedTemporaryFile('w', suffix='.lean', prefix='crawl-needs-', dir=os.environ.get('TMPDIR', '/tmp'), delete=False)
 tf.write('\n'.join([header.rstrip('\n'), ''] + [b.rstrip('\n') + '\n' for _, _, b in blocks] + ([footer] if footer else [])) + '\n')
 tf.close()
-needs_out = chair_read('needs', tf.name, SCOPE)
+needs_out = memo_read('needs', tf.name, SCOPE)
 os.unlink(tf.name)
 exact = 0
 for l in needs_out.splitlines():
@@ -383,7 +382,7 @@ if primings_path:
             src_s = open(shp).read()
             m_ns = re.search(r'^namespace ([\w.]+)', src_s, re.M)
             imps = ','.join(m for m in re.findall(r'^import (\S+)', src_s, re.M) if m != 'Init')
-            rt_out = chair_read('templates', shp, [m_ns.group(1) if m_ns else 'Foam', imps])
+            rt_out = memo_read('templates', shp, [m_ns.group(1) if m_ns else 'Foam', imps])
             for line in rt_out.splitlines():
                 m_u = re.match(r'the templates: (\d+) bodies, \d+ rendered; \d+ unrendered: ?(.*)$', line)
                 if m_u:
@@ -395,8 +394,8 @@ if primings_path:
                 key = (mode, skel)
                 groups.setdefault(key, []).append((qn, tpl.replace('⏎', '\n'), fans))
                 group_of[qn] = key
-            if chair_read.returncode != 0 or not rt_out.startswith('the templates:'):
-                raise SystemExit(f'crawl: the judge rendered no templates from {shp}\n' + (rt_out + chair_read.stderr)[-1500:])
+            if memo_read.returncode != 0 or not rt_out.startswith('the templates:'):
+                raise SystemExit(f'crawl: the judge rendered no templates from {shp}\n' + (rt_out + memo_read.stderr)[-1500:])
         n_groups = len(groups)
         print(f'the pieces, derived: {n_bodies} bodies in scope ({" ".join(scope_files)}), {n_groups} skeletons; '
               f'{len(unrendered)} bodies unrendered (a hole no search reaches){": " + " ".join(unrendered) if unrendered else ""}')
@@ -450,7 +449,7 @@ if primings_path:
     tf2 = tempfile.NamedTemporaryFile('w', suffix='.lean', prefix='crawl-cites-', dir=os.environ.get('TMPDIR', '/tmp'), delete=False)
     tf2.write('\n'.join([header.rstrip('\n'), ''] + [b.rstrip('\n') + '\n' for _, _, b in blocks] + ([footer] if footer else [])) + '\n')
     tf2.close()
-    cites_out = chair_read('cites', tf2.name, SCOPE)
+    cites_out = memo_read('cites', tf2.name, SCOPE)
     os.unlink(tf2.name)
     carrier_deps = {}
     for l in cites_out.splitlines():
@@ -523,17 +522,19 @@ if primings_path:
             if c[0] != cur:
                 groups.append([]); cur = c[0]
             groups[-1].append(i)
-        to_judge = []   # the groups' suffixes the chair could not answer
-        if chair:
-            import csv, io
+        to_judge = []   # the groups' suffixes the memo could not answer
+        if memo_path:
             pfx = sha(env_fp + shadow_of('\n'.join(prefix_lines)))
             cfps = [sha(t) for t in texts]
-            memo = {}
-            rows = chair_sql(f"SELECT candidate_fp, verdict, body FROM counter.charge WHERE prefix_fp = '{pfx}' AND candidate_fp = ANY(ARRAY[{', '.join(repr(c) for c in sorted(set(cfps)))}]::text[])")
-            for cf_, v, b in csv.reader(io.StringIO(rows)): memo[cf_] = (v, b)
+            hits = {}
+            asked = sorted(set(cfps))
+            for at in range(0, len(asked), 500):
+                part = asked[at:at + 500]
+                for cf_, v, b in MEMO.execute(f"SELECT candidate_fp, verdict, body FROM charge WHERE prefix_fp = ? AND candidate_fp IN ({', '.join('?' * len(part))})", [pfx] + part):
+                    hits[cf_] = (v, b)
             for g in groups:
                 for j, i in enumerate(g):
-                    hit = memo.get(cfps[i])
+                    hit = hits.get(cfps[i])
                     if hit is None:
                         to_judge.append(g[j:]); break
                     verdicts[i] = hit[0]; judge.answered += 1
@@ -584,15 +585,12 @@ if primings_path:
                     jb[j] = jb[j][:k]
                 verdicts[i] = jv[j]
                 if j in jb: bodies[i] = '\n'.join(jb[j]).rstrip()
-            if chair:
-                # what the judge judged, charged to the chair (a skipped candidate was never judged)
-                buf = io.StringIO(); w = csv.writer(buf, quoting=csv.QUOTE_ALL)   # an empty body is '', never NULL
-                for j, i in enumerate(flat):
-                    if jv[j] == 'skipped': continue
-                    n, k = cands[i]
-                    w.writerow([chair_id, n, pfx, cfps[i], primings_of[n][k][0], jv[j], 0, bodies.get(i, '')])
-                # a charge is keyed by its fingerprints: the same trial twice is one row
-                chair_sql('CREATE TEMP TABLE c (LIKE counter.charge); COPY c (observer, vacancy, prefix_fp, candidate_fp, piece, verdict, ms, body) FROM STDIN CSV; INSERT INTO counter.charge SELECT * FROM c ON CONFLICT DO NOTHING', buf.getvalue())
+            if memo_path:
+                # what the judge judged, kept by the memo (a skipped candidate was never judged); a
+                # charge is keyed by its fingerprints, so the same trial twice is one row
+                MEMO.executemany('INSERT OR IGNORE INTO charge (prefix_fp, candidate_fp, vacancy, piece, verdict, body) VALUES (?, ?, ?, ?, ?, ?)',
+                                 [(pfx, cfps[i], cands[i][0], primings_of[cands[i][0]][cands[i][1]][0], jv[j], bodies.get(i, '')) for j, i in enumerate(flat) if jv[j] != 'skipped'])
+                MEMO.commit()
         if len(verdicts) != len(cands):
             raise SystemExit('crawl: a candidate has no verdict')
         # the seated bodies as the judge elaborated them, pieces expanded — what the module grows
@@ -712,9 +710,9 @@ if primings_path:
             pending_vac = [n for n in pending_vac if n not in seated_set]
             rounds.append(len(seated_now))
             detail = ' '.join(f'{nm} {c}' for nm, c in per_round.items() if c)
-            # with a chair, the round says how much of it was home: the first round the chair could
+            # with a memo, the round says how much of it was home: the first round the memo could
             # not answer is the round a change landed in
-            home = (f'; home {answered_round} of {answered_round + judge.judged}' if chair else '')
+            home = (f'; home {answered_round} of {answered_round + judge.judged}' if memo_path else '')
             print(f'  round {r}: seated {len(seated_now)} — regrown {len(seated_now) - carried_now} ({detail}), carried {carried_now}; {len(pending_vac)} vacancies still pending{home}')
             if not seated_now:
                 print(f'GROW REFUSED at round {r}: {len(pending_vac)} vacancies no piece regrows — the germ names them:')
@@ -742,18 +740,15 @@ if primings_path:
         # are recorded, so a regrown body is already exactly the citations that closed it; and a
         # search against the FINISHED module can see theorems seated in later rounds, which the
         # derived order cannot carry)
-        drain_line = f'the drain, grown: {len(rounds)} rounds — ' + ' '.join(str(c) for c in rounds) + f'; {tried} candidates judged' + (f', {judge.answered} answered by the chair; {chair_read.answered} readings answered' if chair else '')
+        drain_line = f'the drain, grown: {len(rounds)} rounds — ' + ' '.join(str(c) for c in rounds) + f'; {tried} candidates judged' + (f', {judge.answered} answered by the memo; {memo_read.answered} readings answered' if memo_path else '')
         print(drain_line)
-        if chair:
-            # the report carries its own baseline: the last drain of this germ, as the chair heard it
-            import csv, io
-            # the last drain of this germ is one row, keyed by the germ; it is replaced, not appended —
-            # the one place the chair overwrites, since 'last time' means last time
-            prev = chair_sql(f"SELECT body FROM counter.reading WHERE kind = 'drain' AND fp = '{sha('drain ' + germ_path)}'")
-            for (b,) in csv.reader(io.StringIO(prev)): print(f'the drain, last time: {b}'); break
-            chair_sql(f"DELETE FROM counter.reading WHERE fp = '{sha('drain ' + germ_path)}'")
-            buf = io.StringIO(); w = csv.writer(buf, quoting=csv.QUOTE_ALL); w.writerow([chair_id, 'drain', sha('drain ' + germ_path), drain_line[len('the drain, grown: '):]])
-            chair_sql('CREATE TEMP TABLE rd (LIKE counter.reading); COPY rd (observer, kind, fp, body) FROM STDIN CSV; INSERT INTO counter.reading SELECT * FROM rd ON CONFLICT DO NOTHING', buf.getvalue())
+        if memo_path:
+            # the report carries its own baseline: the last drain of this germ, as the memo heard it —
+            # one row, keyed by the germ; replaced, not appended, since 'last time' means last time
+            k = sha('drain ' + germ_path)
+            row = MEMO.execute("SELECT body FROM reading WHERE kind = 'drain' AND fp = ?", (k,)).fetchone()
+            if row: print(f'the drain, last time: {row[0]}')
+            MEMO.execute('INSERT OR REPLACE INTO reading (fp, kind, body) VALUES (?, ?, ?)', (k, 'drain', drain_line[len('the drain, grown: '):])); MEMO.commit()
         if derived_mode:
             hand_regrown = [n for n in regrown_by if not is_vac[n]]
             print(f'the exemplars: {len(set(regrown_by.values()))} pieces seated bodies; {len(hand_regrown)} hand bodies regrown by another body\'s shape: {" ".join(hand_regrown)}')
@@ -976,31 +971,28 @@ EOF
   # the report mirrors the whole verdict: the gate and the treaty vectors are said here, after the
   # python half's tee has closed, so they are appended by hand or the page reads an empty treaty
   say() { printf '%s\n' "$*"; if [ -n "$report" ]; then printf '%s\n' "$*" >> "$report"; fi; }
-  # an elaboration is deterministic too: the chair (CRAWL_CHAIR) answers for `lake env lean <file>`
+  # an elaboration is deterministic too: the memo (CRAWL_MEMO) answers for `lake env lean <file>`
   # by the fingerprint of the file, the toolchain, the manifest, and every grown module it imports,
-  # transitively; else the file is elaborated and the answer charged as a reading of kind elab.
+  # transitively; else the file is elaborated and the answer kept as a reading of kind elab.
   # prints the output; returns the exit code
-  chair_elab() {
+  memo_elab() {
     local f="$1" fp body rc out_
-    if [ -n "${CRAWL_CHAIR:-}" ]; then
+    if [ -n "${CRAWL_MEMO:-}" ]; then
       local -a seen=(); local closure=""
       grown_closure() { local m; for m in "$@"; do case " ${seen[*]:-} " in *" $m "*) continue ;; esac; seen+=("$m"); [ -f "grown/$m.lean" ] || continue; grown_closure $(grep -E '^import ' "grown/$m.lean" | awk '{print $2}'); closure="$closure grown/$m.lean"; done; }
       grown_closure $(grep -E '^import ' "$f" | awk '{print $2}')
       fp="$( { echo elab; cat "$f" lean-toolchain lake-manifest.json $closure; } | shasum -a 256 | cut -c1-32)"
-      export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
-      body="$(psql -h "${PGSOCK:-/tmp}" -p "${PGPORT:-5432}" -U "${PGUSER:-$USER}" -d "$CRAWL_CHAIR" -q -X -tA -c "SELECT body FROM counter.reading WHERE fp = '$fp'")"
+      body="$(python3 -c "$MEMO_PY" get "$CRAWL_MEMO" "$fp")"
       if [ -n "$body" ]; then printf '%s\n' "$body" | sed 1d; return "$(printf '%s\n' "$body" | head -1)"; fi
       out_="$(lake env lean "$f" 2>&1)"; rc=$?
-      printf '%s\n%s' "$rc" "$out_" | psql -h "${PGSOCK:-/tmp}" -p "${PGPORT:-5432}" -U "${PGUSER:-$USER}" -d "$CRAWL_CHAIR" -q -X -c "COPY counter.reading (observer, kind, fp, body) FROM STDIN (FORMAT text)" 2>/dev/null <<EOF_
-$(psql -h "${PGSOCK:-/tmp}" -p "${PGPORT:-5432}" -U "${PGUSER:-$USER}" -d "$CRAWL_CHAIR" -q -X -tA -c "SELECT counter.who('${CRAWL_CHAIR_NAME:-bench}')")	elab	$fp	$(printf '%s\n%s' "$rc" "$out_" | sed 's/\\/\\\\/g' | awk 'BEGIN{ORS=""} NR>1{print "\\n"} {print}')
-EOF_
+      printf '%s\n%s' "$rc" "$out_" | python3 -c "$MEMO_PY" put "$CRAWL_MEMO" "$fp" elab
       printf '%s' "$out_"; return $rc
     fi
     lake env lean "$f" 2>&1
   }
   say "the gate on the regrown trail:"
   local gate
-  gate="$(chair_elab "$out")"
+  gate="$(memo_elab "$out")"
   if [ -n "$gate" ]; then
     say "$(echo "$gate" | head -20)"
     say "crawl: the regrown trail did not elaborate silently"
@@ -1023,7 +1015,7 @@ EOF_
     fi
     probe="$(mktemp /tmp/crawl-assay.XXXXXX).lean"
     { grep -E '^import ' "$src" | grep -vE "^import ${name}\$"; cat "$out"; echo; grep -vE '^import ' "$src"; } > "$probe"
-    if chair_elab "$probe" >/dev/null 2>&1; then say "  $f: identical"
+    if memo_elab "$probe" >/dev/null 2>&1; then say "  $f: identical"
     else say "  $f: PARTS"; rm -f "$probe"; exit 1; fi
     rm -f "$probe"
   done
