@@ -680,8 +680,8 @@ theorem the_revoice_moves_no_seat {I : Type u} {O : Type v} {O' : Type v'}
     (g : O → O') (m : Machine I O) :
     ∀ (w : List I) (s : m.S), park (revoice g m) s w = park m s w := sorry
 
-theorem the_intertwined_walks_agree {I : Type u} {O : Type v} (m n : Machine I O)
-    (h : m.S → n.S) (hstep : ∀ s i, n.step (h s) i = h (m.step s i)) :
+theorem the_intertwined_walks_agree {I : Type u} {O : Type v} {O' : Type v'} (m : Machine I O)
+    (n : Machine I O') (h : m.S → n.S) (hstep : ∀ s i, n.step (h s) i = h (m.step s i)) :
     ∀ (w : List I) (s : m.S), park n (h s) w = h (park m s w) :=
   by
     (intro x; induction x;
