@@ -31,6 +31,14 @@ def inStepWith {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O) (B : R.m.
 def coverage (A : Type u) (beq : A → A → Bool) : Runner.{u, u, u} (Round A) (Tally A) :=
   ⟨tallyMachine A, fun _ => .tick, rested beq⟩
 
+def plan {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O) (w : List I) : R.m.S := park R.m R.m.s0 w
+
+def read {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O) (s : R.m.S) (fuel : Nat) : Option O :=
+  runs R.m R.steer R.rest s fuel
+
+def readable {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O) (s : R.m.S) : Prop :=
+  ∃ fuel, ∃ o, read R s fuel = some o
+
 theorem the_intertwiner_carries_the_run {I : Type u} {O : Type v} (m n : Machine I O) (r : m.S → I) (r' : n.S → I)
     (rest : m.S → Bool) (rest' : n.S → Bool) (h : m.S → n.S)
     (hstep : ∀ s i, n.step (h s) i = h (m.step s i)) (hsteer : ∀ s, r' (h s) = r s)
@@ -85,6 +93,24 @@ theorem the_last_name_unlocks {A : Type u} (beq : A → A → Bool) (hrefl : ∀
     (h : lacking beq t.visited t.counts = 1) :
     ∃ k, k ∈ t.counts ∧ enrolled beq t.visited k = false ∧ rested beq (tallyStep t (.visit k)) = true := sorry
 
+theorem a_plan_is_read_at_the_gap {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O) (w : List I) (fuel : Nat) :
+    read R (plan R w) fuel = (haltingGap I O).obs R (w, fuel) := rfl
+
+theorem more_fuel_reads_no_less {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O) :
+    ∀ (fuel : Nat) (s : R.m.S) (o : O), read R s fuel = some o → read R s (fuel + 1) = some o
+  | 0, s, o, h => by
+      have h' : cond (R.rest s) (some (R.m.out s)) none = some o := h
+      show cond (R.rest s) (some (R.m.out s)) (runs R.m R.steer R.rest (R.m.step s (R.steer s)) 0) = some o
+      cases hr : R.rest s with
+      | true => rw [hr] at h'; exact h'
+      | false => rw [hr] at h'; exact nomatch h'
+  | fuel + 1, s, o, h => by
+      have h' : cond (R.rest s) (some (R.m.out s)) (runs R.m R.steer R.rest (R.m.step s (R.steer s)) fuel) = some o := h
+      show cond (R.rest s) (some (R.m.out s)) (runs R.m R.steer R.rest (R.m.step s (R.steer s)) (fuel + 1)) = some o
+      cases hr : R.rest s with
+      | true => rw [hr] at h'; exact h'
+      | false => rw [hr] at h'; exact more_fuel_reads_no_less R fuel (R.m.step s (R.steer s)) o h'
+
 theorem an_intertwined_rebody_is_unheard_at_the_halting_gap {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
     (h : R.m.S → R'.m.S) (hs0 : h R.m.s0 = R'.m.s0)
     (hstep : ∀ s i, R'.m.step (h s) i = h (R.m.step s i)) (hsteer : ∀ s, R'.steer (h s) = R.steer s)
@@ -113,6 +139,20 @@ theorem two_still_runners_rest_alike_through_a_translation {I : Type u} {I' : Ty
   rw [a_still_runner_rests_where_it_stands R' hstill', a_still_runner_rests_where_it_stands R hstill, ← hs0,
     a_translated_intertwiner_carries_the_walk R.m R'.m f h hstep w R.m.s0, hrest, hout]
 
+theorem any_more_fuel_reads_the_same {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O) (s : R.m.S) (o : O) (f : Nat)
+    (h : read R s f = some o) : ∀ k : Nat, read R s (f + k) = some o
+  | 0 => h
+  | k + 1 => more_fuel_reads_no_less R (f + k) s o (any_more_fuel_reads_the_same R s o f h k)
+
+theorem the_still_plan_is_readable_iff_at_rest {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O)
+    (hstill : ∀ s, R.m.step s (R.steer s) = s) (s : R.m.S) : readable R s ↔ R.rest s = true :=
+  ⟨(fun ⟨fuel, o, h⟩ => by
+      have h' : cond (R.rest s) (some (R.m.out s)) none = some o := (a_still_runner_rests_where_it_stands R hstill fuel s).symm.trans h
+      cases hr : R.rest s with
+      | true => rfl
+      | false => rw [hr] at h'; exact nomatch h'),
+   (fun hr => ⟨0, R.m.out s, by show cond (R.rest s) (some (R.m.out s)) none = some (R.m.out s); rw [hr]; rfl⟩)⟩
+
 theorem the_carried_unit_is_unheard_at_rest : alike (haltingGap Unit Nat) carrying counting :=
   an_intertwined_rebody_is_unheard_at_the_halting_gap counting carrying (fun s => (s, ())) rfl
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
@@ -127,5 +167,14 @@ theorem the_rest_handshake {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O) 
     (h0 : B R.m.s0 R'.m.s0) :
     runs R.m R.steer R.rest s n = cond (R.rest s) (some (R.m.out s)) none
       ∧ alike (haltingGap I O) R R' := sorry
+
+theorem every_reader_reads_the_same {I : Type u} {O : Type v} (R : Runner.{u, v, w} I O) (s : R.m.S) (o o' : O)
+    (f f' : Nat) (h : read R s f = some o) (h' : read R s f' = some o') : o = o' :=
+  Option.some.inj ((any_more_fuel_reads_the_same R s o f h f').symm.trans
+    ((congrArg (read R s) (Nat.add_comm f f')).trans (any_more_fuel_reads_the_same R s o' f' h' f)))
+
+theorem the_replay_reads_the_plan {I : Type u} {O : Type v} (R : Runner.{u, v, u} I O) (w : List I) (fuel : Nat) :
+    read (replayRunner R) (plan (replayRunner R) w) fuel = read R (plan R w) fuel :=
+  (the_record_rests_where_the_machine_rests R (w, fuel)).symm
 
 end Rest

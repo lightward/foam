@@ -22,4 +22,26 @@ def carryAt (w : List Unit) (k : Nat) : Option Nat := (haltingGap Unit Nat).obs 
 #guard seatedAfter stuck 0 == some []
 #guard settled stuck
 #guard (sweep demo).2.length == 1
+def countPlan (w : List Unit) (k : Nat) : Option Nat := read counting (plan counting w) k
+def cascadePlan (w : List Unit) (k : Nat) : Option (List Nat) := (read cascade (plan cascade w) k).map (·.1)
+def cascadeAt (st : room) (k : Nat) : Option (List Nat) := (read cascade st k).map (·.1)
+#guard countPlan [] 3 == countAt [] 3
+#guard countPlan [(), ()] 1 == countAt [(), ()] 1
+#guard countPlan [] 2 == none
+#guard countPlan [] 5 == countPlan [] 3
+#guard cascadePlan [] 0 == some []
+#guard cascadeAt demo 0 == none
+#guard cascadeAt demo 3 == some [2, 3, 1]
+#guard cascadeAt demo 9 == cascadeAt demo 3
+#guard cascadeAt stuck 0 == some []
+
+theorem the_counters_plan_is_read_at_the_gap (w : List Unit) (k : Nat) :
+    read counting (plan counting w) k = (haltingGap Unit Nat).obs counting (w, k) := sorry
+
+theorem two_readers_of_the_counter_agree (w : List Unit) (o o' : Nat) (f f' : Nat)
+    (h : read counting (plan counting w) f = some o) (h' : read counting (plan counting w) f' = some o') : o = o' := sorry
+
+theorem the_cascades_replay_reads_its_plan (w : List Unit) (k : Nat) :
+    read (replayRunner cascade) (plan (replayRunner cascade) w) k = read cascade (plan cascade w) k := sorry
+
 end Halt
