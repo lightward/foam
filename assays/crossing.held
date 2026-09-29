@@ -1,0 +1,39 @@
+-- the vestibule of the crossing number: what the assay would say about co-existence and cannot yet, each a
+-- statement in the assay's own terms and the darkness it waits on. read by bin/counter book. the assay measures
+-- distance (the parting fuel: the least tick at which two clocks part at the air gap); isaac's question (2026-09-29,
+-- the evening) was cost — how costly it is to co-exist with one clock versus another, with regression in terms —
+-- and the annals answer in three places, each a count and none yet a row here.
+
+-- the width of contact (the birth-to-between eras, Plateau's laws read as the minimum structure that supports
+-- co-existence: one observer inert, two tension without resolution, three stable junctions; in the house now
+-- three_is_the_width_of_contact and the_hallway_is_too_small): co-existence has a count before any clock does,
+-- the number of seats a junction needs. nothing waits on it; it is a citation the assay could make and does not.
+
+-- the pages (foamcore~1, Foam/Bridges/Kolmogorov.lean: rest_compresses_time_away — at rest the reel over any k
+-- ticks reads as one page; motion_refuses_the_page — a moving world needs more than one; in the house now
+-- a_still_runner_rests_where_it_stands and the_still_plan_is_readable_iff_at_rest): the cost of co-existing with
+-- a clock is the count of its pages — the distinct sheets (liftFrom) on its orbit, which is the size of the least
+-- carrier of its behavior and not of its room. one at rest; two for flip and for paceOne alike, though paceOne's
+-- room is infinite (the_pace_is_carried_onto_the_flip: the count is the carrier's); none for the tally. a
+-- combination of clocks costs at most the product and, for coprime periods, the least common period; the
+-- difference from the product room is the dark states never visited, the unread remainder as a count. this is
+-- the dual of the parting fuel — not when two clocks part but how much a seat carries to keep in step — and it
+-- regresses in terms for the same reason the crossing number does: a function of the behavior, so every
+-- unheard rebody has the same count. waiting on: a carrier for the count of distinct sheets on an orbit — a
+-- period, or a bound within which the count is read (the sheets are infinite objects; a page is a sheet read to
+-- a depth), and the row that a clock and its decomposition into clocks have one count.
+-- held (waiting on: pages, a period or a bound)
+-- theorem the_still_clock_has_one_page {O : Type} (m : Machine Unit O) (hstill : ∀ s, m.step s () = s) :
+--     pages m = 1 := sorry
+-- theorem the_pace_costs_what_the_flip_costs : pages paceOne = pages flip := sorry
+-- theorem a_pair_costs_at_most_the_product {O O' : Type} (m : Machine Unit O) (n : Machine Unit O') :
+--     Nat.ble (pages (both m n)) (pages m * pages n) = true := sorry
+-- theorem a_decomposition_costs_the_same {O : Type} (m m' : Machine Unit O) (h : alike (airGap Unit O) m m') :
+--     pages m = pages m' := sorry
+
+-- the bill upstairs (foamcore~1, Foam/Bridges/Landauer.lean: the_bill_moves_upstairs — two maintenance sequences
+-- of different length agree at the front and differ at the back, the debt outliving its legibility; in the
+-- house now the_records_part_the_seats and a_wider_seat_reads_the_remainder): the cost of co-existence is a
+-- count read one seat wider — the length of the carried record, unread at the host and real at the widen. the
+-- replay runner carries the whole word; the counter carrying a unit carries one more cell than the counter; the
+-- page count above is the least such record. waiting on: the same carrier, read at the widen.
