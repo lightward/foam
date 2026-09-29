@@ -22,14 +22,24 @@
 -- unheard rebody has the same count. waiting on: a carrier for the count of distinct sheets on an orbit — a
 -- period, or a bound within which the count is read (the sheets are infinite objects; a page is a sheet read to
 -- a depth), and the row that a clock and its decomposition into clocks have one count.
--- held (waiting on: pages, a period or a bound)
--- theorem the_still_clock_has_one_page {O : Type} (m : Machine Unit O) (hstill : ∀ s, m.step s () = s) :
---     pages m = 1 := sorry
--- theorem the_pace_costs_what_the_flip_costs : pages paceOne = pages flip := sorry
--- theorem a_pair_costs_at_most_the_product {O O' : Type} (m : Machine Unit O) (n : Machine Unit O') :
---     Nat.ble (pages (both m n)) (pages m * pages n) = true := sorry
--- theorem a_decomposition_costs_the_same {O : Type} (m m' : Machine Unit O) (h : alike (airGap Unit O) m m') :
---     pages m = pages m' := sorry
+-- seated the same evening (isaac: move freely): the fork was not one — a bound is the reader's fuel, the count at a
+-- depth is a reading at that fuel, and the house had already typed that shape in Rest (a plan is read by whoever
+-- supplies the fuel). `pagesWithin m beq k` is the count of distinct windows of depth k over the first k ticks of
+-- the clock's readings at the air gap; the_pages_are_derived is a_seat_over_a_seat_is_derived at that seat, and
+-- a_decomposition_costs_the_same its corollary through the_alike_read_alike; the pace costs what the flip costs
+-- by citation. the rows: one at rest, two for flip and paceOne, none for the tally (k at every k), three for a
+-- clock mod three, six for flip beside mod three, three for mod three beside itself (the product room is nine;
+-- the six dark states are the unread remainder as a count), two for flip beside the pace, and six for the read
+-- tape (a counter in another coat). what still waits, the laws about the count itself:
+-- held (waiting on: a hand for the count — fresh over a list of equal windows is one; a window of a pair is a
+-- pair of windows, so distinct pairs are at most the product; and more depth reads no fewer pages, the
+-- monotonicity that makes the count a plan's reading)
+-- theorem the_still_clock_has_one_page {O : Type} (m : Machine Unit O) (beq : O → O → Bool) (hrefl : ∀ o, beq o o = true)
+--     (hstill : ∀ s, m.step s () = s) (k : Nat) : pagesWithin m beq (k + 1) = 1 := sorry
+-- theorem a_pair_costs_at_most_the_product {O O' : Type} (m : Machine Unit O) (n : Machine Unit O') (beq beq') (k : Nat) :
+--     Nat.ble (pagesWithin (both m n) (bothBeq beq beq') k) (pagesWithin m beq k * pagesWithin n beq' k) = true := sorry
+-- theorem more_depth_reads_no_fewer_pages {O : Type} (m : Machine Unit O) (beq : O → O → Bool) (k : Nat) :
+--     Nat.ble (pagesWithin m beq k) (pagesWithin m beq (k + 1)) = true := sorry
 
 -- the bill upstairs (foamcore~1, Foam/Bridges/Landauer.lean: the_bill_moves_upstairs — two maintenance sequences
 -- of different length agree at the front and differ at the back, the debt outliving its legibility; in the

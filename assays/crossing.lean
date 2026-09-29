@@ -1,5 +1,6 @@
 import Face
-open Room Face
+import Witness
+open Room Face Witness
 set_option autoImplicit false
 
 namespace Crossing
@@ -105,5 +106,53 @@ theorem a_voice_parts_no_sooner {O O' : Type} (g : O → O') (m m' : Machine.{0,
 theorem the_read_tape_crosses_at_three :
     inStepTo onesTaped ones Nat.beq 2 = true ∧ parts onesTaped ones Nat.beq 3 = true
       ∧ crossingWithin onesTaped ones Nat.beq 10 = some 3 ∧ crossingWithin onesTended ones Nat.beq 10 = none := sorry
+
+def ticks (n : Nat) : List (List Unit) := (List.range n).map (fun i => List.replicate i ())
+
+def window {O : Type} (outs : List O) (i k : Nat) : List O := (outs.drop i).take k
+
+def listBeq {O : Type} (beq : O → O → Bool) : List O → List O → Bool
+  | [], [] => true
+  | [], _ :: _ => false
+  | _ :: _, [] => false
+  | a :: as, b :: bs => beq a b && listBeq beq as bs
+
+def fresh {A : Type} (beq : A → A → Bool) : List A → Nat
+  | [] => 0
+  | x :: xs => cond (enrolled beq xs x) (fresh beq xs) (fresh beq xs + 1)
+
+def pagesOf {O : Type} (beq : O → O → Bool) (outs : List O) (k : Nat) : Nat :=
+  fresh (listBeq beq) ((List.range k).map (fun i => window outs i k))
+
+def pagesWithin {O : Type} (m : Machine.{0, 0, w} Unit O) (beq : O → O → Bool) (k : Nat) : Nat :=
+  pagesOf beq (reads (airGap Unit O) (ticks (k + k)) m) k
+
+def stillOne : Machine Unit Nat := ⟨Unit, (), fun _ _ => (), fun _ => 1⟩
+def mod3 : Machine Unit Nat := ⟨Nat, 0, fun s _ => (s + 1) % 3, fun s => s⟩
+def boolBeq (a b : Bool) : Bool := a == b
+
+#guard pagesWithin stillOne Nat.beq 5 == 1
+#guard pagesWithin flip boolBeq 4 == 2
+#guard pagesWithin paceOne boolBeq 4 == 2
+#guard pagesWithin tally Nat.beq 4 == 4
+#guard pagesWithin tally Nat.beq 7 == 7
+#guard pagesWithin mod3 Nat.beq 6 == 3
+#guard pagesWithin (both flip mod3) (bothBeq boolBeq Nat.beq) 12 == 6
+#guard pagesWithin (both mod3 mod3) (bothBeq Nat.beq Nat.beq) 12 == 3
+#guard pagesWithin (both flip paceOne) (bothBeq boolBeq boolBeq) 6 == 2
+#guard pagesWithin onesTaped Nat.beq 6 == 6
+
+theorem the_pages_are_derived {O : Type} (beq : O → O → Bool) (k v : Nat) :
+    Derived (airGap Unit O) (fun m : Machine.{0, 0, w} Unit O => pagesWithin m beq k = v) :=
+  a_seat_over_a_seat_is_derived (airGap Unit O) (ticks (k + k)) (fun outs => pagesOf beq outs k) v
+
+theorem a_decomposition_costs_the_same {O : Type} (m m' : Machine.{0, 0, w} Unit O) (beq : O → O → Bool)
+    (h : alike (airGap Unit O) m m') (k : Nat) : pagesWithin m beq k = pagesWithin m' beq k :=
+  congrArg (fun outs => pagesOf beq outs k) (the_alike_read_alike (airGap Unit O) h (ticks (k + k)))
+
+theorem the_pace_is_the_flip_at_the_gap : alike (airGap Unit Bool) paceOne flip :=
+  fun w => (the_pace_is_carried_onto_the_flip (0 : Nat) w).symm
+
+theorem the_pace_costs_what_the_flip_costs (k : Nat) : pagesWithin paceOne boolBeq k = pagesWithin flip boolBeq k := sorry
 
 end Crossing
