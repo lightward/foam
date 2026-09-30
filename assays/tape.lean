@@ -34,6 +34,26 @@ def rememberedRuns : Nat := behavior rememberedAdder [1, 1, 1]
 #guard met adderForgets == []
 #guard rememberedRuns == untended
 
+def visited {I O : Type} (m : Machine.{0, 0, w} I O) : m.S → List I → List m.S
+  | _, [] => []
+  | s, i :: u => s :: visited m (m.step s i) u
+
+def backwards {A : Type w} : List A → List A
+  | [] => []
+  | x :: xs => backwards xs ++ [x]
+
+def adderVisited : List Nat := visited adder (0 : Nat) [1, 1, 1]
+#guard adderVisited == [0, 1, 2]
+#guard adderRemembers == backwards adderVisited
+
+theorem the_tape_is_the_route_reversed {I O : Type} (m : Machine.{0, 0, w} I O) :
+    ∀ (u : List I) (s : m.S) (h : List m.S), met (park (remembering m) (atTheDoor s h) u) = backwards (visited m s u) ++ h
+  | [], _, _ => rfl
+  | i :: u, s, h => by
+      show met (park (remembering m) (atTheDoor (m.step s i) (s :: h)) u) = (backwards (visited m (m.step s i) u) ++ [s]) ++ h
+      rw [the_tape_is_the_route_reversed m u (m.step s i) (s :: h), the_appends_regroup]
+      exact rfl
+
 theorem a_wait_is_a_still_plan_on_its_own_tape {I O : Type} (R : Runner.{0, 0, w} I O) (hstill : ∀ s, R.m.step s (R.steer s) = s)
     (n : Nat) (s : R.m.S) (m : Machine.{0, 0, w} I O) (d : door m.S (List m.S)) (i : I) (u : List I) :
     runs R.m R.steer R.rest s n = cond (R.rest s) (some (R.m.out s)) none
