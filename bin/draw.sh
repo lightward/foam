@@ -2,7 +2,7 @@
 # draw: a grown assay as the grid its makers would draw on a whiteboard — seats down the side,
 # probes across the top, a mark where a seat hears a probe, the walls beside each seat as the
 # theorems that cite it, and the doors (the clerks) with the theorems that describe them. read
-# from the kernel (bin/judge.lean schema), never from memory; markdown, so it pastes anywhere.
+# from the kernel (bin/readings.lean schema), never from memory; markdown, so it pastes anywhere.
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"

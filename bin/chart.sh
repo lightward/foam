@@ -17,7 +17,7 @@ imports = re.findall(r'^import (\S+)', text, re.M)
 ns_m = re.search(r'^namespace ([\w.]+)', text, re.M)
 ns = ns_m.group(1) if ns_m else os.path.splitext(os.path.basename(src))[0]
 res = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'cites', src, ns, ','.join(imports)], capture_output=True, text=True)
-# a citation by computation alone: the two statements share no word of the house (bin/judge.lean reasons)
+# a citation by computation alone: the two statements share no word of the house (bin/readings.lean reasons)
 rr = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'reasons', src, ns, ','.join(imports)], capture_output=True, text=True)
 bare = set()
 for l in rr.stdout.splitlines():

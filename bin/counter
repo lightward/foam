@@ -58,7 +58,7 @@
 #     or moved; --set pins them. anchor the end so the means can float
 #   bin/counter roots [shape] [<storeys>]
 #     the roots by the shadow: which theorems' statements are other theorems' with the binders filled
-#     (bin/judge.lean roots — unification, no body and no ranking); the sinks; the alike statements.
+#     (bin/readings.lean roots — unification, no body and no ranking); the sinks; the alike statements.
 #     by computation (default transparency) or by shape (reducible)
 #   bin/counter countersign
 #     the whole house: --check on every germ, the treaty assays grown, lake build, the gate, the book
@@ -919,7 +919,7 @@ if primings_path:
         print(f'  treaty coverage ... {len(covered)} of {len(data)} data carriers evaluated by an assay'
               + (f'; unevaluated: {" ".join(uncovered)}' if uncovered else '')
               + f'; beyond a row\'s reach: {len(props)} relations ({" ".join(props)}), {len(sorts)} types ({" ".join(sorts)})')
-    # the ceiling: the kernel's own census of the trail's proof shapes (bin/judge.lean census),
+    # the ceiling: the kernel's own census of the trail's proof shapes (bin/readings.lean census),
     # so the yield reads against what the three moves could reach at all
     res = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'census', cf.name] + SCOPE, capture_output=True, text=True)
     os.unlink(cf.name)
@@ -1074,7 +1074,7 @@ print("  a hand body sharing a shape with a regrown one is a piece that exists a
     exec lake env lean --run "$ROOT/bin/gate.lean" "$@" ;;
   roots)
     # the roots, read from the shadow: for each grown storey, which theorems' statements are other
-    # theorems' with the binders filled (bin/judge.lean roots — unification, no body and no ranking
+    # theorems' with the binders filled (bin/readings.lean roots — unification, no body and no ranking
     # in it); a theorem many instantiate and that instantiates none is a sink, a root by the
     # statements alone. the citation count was the wrong measure for this (2026-09-30): it reads
     # routes, the search's geometry and the custodian's hands mixed, and routes are what the house sheds
@@ -1084,7 +1084,7 @@ print("  a hand body sharing a shape with a regrown one is a piece that exists a
     for X in "$@"; do
       [ -f "grown/$X.lean" ] || continue
       imps="$(grep -E '^import ' "grown/$X.lean" | awk '{print $2}' | paste -sd, -)"
-      lake env lean --run bin/judge.lean roots "grown/$X.lean" "$X" "$imps" $([ $mode = shape ] && echo shape) 2>/dev/null | sed "s/^/$X /"
+      lake env lean --run bin/readings.lean roots "grown/$X.lean" "$X" "$imps" $([ $mode = shape ] && echo shape) 2>/dev/null | sed "s/^/$X /"
     done | python3 -c '
 import sys, collections
 inst = collections.defaultdict(list); of = collections.defaultdict(set)

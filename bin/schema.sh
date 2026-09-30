@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# schema: the data-model shadow of a grown stream, read from the kernel (bin/judge.lean schema) —
+# schema: the data-model shadow of a grown stream, read from the kernel (bin/readings.lean schema) —
 # every structure a table, every enum a type, a list field a child table, every seat a view over
 # the columns its probes read, and every theorem that cites a seat the policy it licenses.
 # the minimum data model for the treaty to hold, never a second copy of it.
