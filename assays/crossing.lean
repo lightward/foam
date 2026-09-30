@@ -211,4 +211,17 @@ theorem the_winding_is_the_crossing_with_the_shift :
       ∧ crossingWithin mod3 (shifted mod3 2) Nat.beq 10 = some 0
       ∧ windingWithin (both flip mod3) (bothBeq boolBeq Nat.beq) 10 = some 6 := sorry
 
+def lapsOf (k : Nat) : List Nat := met (park (remembering mod3) (atTheDoor (0 : Nat) ([] : List Nat)) (List.replicate (k * 3) ()))
+def onePage : List Nat := [2, 1, 0]
+
+#guard lapsOf 1 == onePage
+#guard lapsOf 2 == joinMap (fun _ => onePage) (List.replicate 2 ())
+#guard lapsOf 4 == joinMap (fun _ => onePage) (List.replicate 4 ())
+def lapEnd : Nat := face (park (remembering mod3) (atTheDoor (0 : Nat) ([] : List Nat)) (List.replicate 12 ()))
+#guard lapEnd == 0
+
+theorem the_holonomy_of_a_closed_route_is_its_winding :
+    lapsOf 2 = joinMap (fun _ => onePage) (List.replicate 2 ()) ∧ lapsOf 4 = joinMap (fun _ => onePage) (List.replicate 4 ())
+      ∧ (lapsOf 4).length = 4 * (windingWithin mod3 Nat.beq 10).getD 0 := sorry
+
 end Crossing
