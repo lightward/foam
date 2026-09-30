@@ -170,4 +170,45 @@ theorem more_depth_reads_no_fewer_pages_for_the_flip_and_the_tally :
       ∧ Nat.ble (pagesWithin mod3 Nat.beq 3) (pagesWithin mod3 Nat.beq 4) = true
       ∧ Nat.ble (pagesWithin tally Nat.beq 4) (pagesWithin tally Nat.beq 5) = true := sorry
 
+def shifted {O : Type} (m : Machine.{0, 0, w} Unit O) (k : Nat) : Machine.{0, 0, w} Unit O :=
+  ⟨m.S, park m m.s0 (List.replicate k ()), m.step, m.out⟩
+
+def windingWithin {O : Type} (m : Machine.{0, 0, w} Unit O) (beq : O → O → Bool) (bound : Nat) : Option Nat :=
+  firstOf' m beq 1 bound
+where
+  firstOf' (m : Machine.{0, 0, w} Unit O) (beq : O → O → Bool) : Nat → Nat → Option Nat
+    | _, 0 => none
+    | k, fuel + 1 => cond (inStepTo m (shifted m k) beq bound) (some k) (firstOf' m beq (k + 1) fuel)
+
+#guard crossingWithin mod3 (shifted mod3 3) Nat.beq 10 == none
+#guard crossingWithin mod3 (shifted mod3 1) Nat.beq 10 == some 0
+#guard crossingWithin flip (shifted flip 2) boolBeq 10 == none
+#guard crossingWithin flip (shifted flip 1) boolBeq 10 == some 0
+#guard crossingWithin stillOne (shifted stillOne 1) Nat.beq 10 == none
+#guard crossingWithin tally (shifted tally 1) Nat.beq 10 == some 0
+#guard windingWithin mod3 Nat.beq 10 == some 3
+#guard windingWithin flip boolBeq 10 == some 2
+#guard windingWithin stillOne Nat.beq 10 == some 1
+#guard windingWithin tally Nat.beq 10 == none
+#guard windingWithin (both flip mod3) (bothBeq boolBeq Nat.beq) 10 == some 6
+#guard windingWithin mod3 Nat.beq 10 == some (pagesWithin mod3 Nat.beq 6)
+
+theorem the_shift_walks_the_same {O : Type} (m : Machine.{0, 0, w} Unit O) (p : Nat) :
+    ∀ (u : List Unit) (s : m.S), park (shifted m p) s u = park m s u := sorry
+
+theorem a_clock_never_parts_from_its_own_return {O : Type} (m : Machine.{0, 0, w} Unit O) (beq : O → O → Bool)
+    (hrefl : ∀ o, beq o o = true) (p : Nat) (hp : park m m.s0 (List.replicate p ()) = m.s0) (n : Nat) :
+    parts m (shifted m p) beq n = false := by
+  have e : behavior (shifted m p) (List.replicate n ()) = behavior m (List.replicate n ()) := by
+    show m.out (park (shifted m p) (park m m.s0 (List.replicate p ())) (List.replicate n ())) = m.out (park m m.s0 (List.replicate n ()))
+    rw [the_shift_walks_the_same, hp]
+  show (!(beq (behavior m (List.replicate n ())) (behavior (shifted m p) (List.replicate n ())))) = false
+  rw [e, hrefl]
+  rfl
+
+theorem the_winding_is_the_crossing_with_the_shift :
+    windingWithin mod3 Nat.beq 10 = some 3 ∧ crossingWithin mod3 (shifted mod3 3) Nat.beq 10 = none
+      ∧ crossingWithin mod3 (shifted mod3 2) Nat.beq 10 = some 0
+      ∧ windingWithin (both flip mod3) (bothBeq boolBeq Nat.beq) 10 = some 6 := sorry
+
 end Crossing
