@@ -117,6 +117,57 @@ def reasonsMode (trail : String) (sc : Scope) : IO Unit := do
       let shared := (own.filter (fun c => words.contains c)).size
       IO.println s!"{n.getString!} {nameOf sc d} {shared} {own.size}"
 
+/-- the roots, read from the shadow: S is an INSTANCE of T when S's statement is T's with T's binders
+filled — unification of the two statements, no body and no ranking in it; an Eq is tried both ways
+round. a theorem many instantiate and that instantiates none is a sink: a root by the statements alone.
+prints `S T` per instance found; the trail's own theorems as S, the trail's and its imports' as T -/
+def rootsMode (trail : String) (sc : Scope) (byShape : Bool) : IO Unit := do
+  let st ← elabFrom (← IO.FS.readFile trail) trail none
+  let env := st.env
+  let mut thms : Array Name := #[]
+  for (n, ci) in env.constants.map₂.toList do
+    if n.getPrefix == sc.ns && ci.isTheorem then thms := thms.push n
+  let mut targets : Array Name := thms
+  for (n, ci) in env.constants.map₁.toList do
+    if sc.owns n && n.getPrefix != sc.ns && ci.isTheorem then targets := targets.push n
+  let res ← (Meta.MetaM.toIO (ctxCore := { fileName := trail, fileMap := default, maxHeartbeats := 5000 * 1000 }) (sCore := { env := env }) do
+    let mut out : Array (Name × Name) := #[]
+    for s in thms do
+      let some si := env.find? s | continue
+      for t in targets do
+        if t == s then continue
+        let hb ← IO.getNumHeartbeats
+        let ok ← try
+          withTheReader Core.Context (fun c => { c with initHeartbeats := hb }) do
+            (if byShape then Meta.withReducible else id) <| Meta.withNewMCtxDepth do
+              Meta.forallTelescope si.type fun sFvars sBody => do
+                let tc ← Meta.mkConstWithFreshMVarLevels t
+                let tType ← Meta.inferType tc
+                let (mvs, _, tBody) ← Meta.forallMetaTelescope tType
+                -- the conclusion, by unification (an Eq either way round)
+                let hit ← (do
+                  if ← Meta.isDefEq sBody tBody then return true
+                  match tBody.eq?, sBody.eq? with
+                  | some (α, a, b), some _ => Meta.isDefEq sBody (mkApp3 (mkConst ``Eq [← Meta.getLevel α]) α b a)
+                  | _, _ => return false)
+                if !hit then return false
+                -- every binder of T filled: by the conclusion, or by a hypothesis of S of the same type
+                for m in mvs do
+                  if ← m.mvarId!.isAssigned then continue
+                  let mty ← instantiateMVars (← Meta.inferType m)
+                  let mut done := false
+                  for f in sFvars do
+                    if done then continue
+                    if ← Meta.isDefEq mty (← Meta.inferType f) then
+                      if ← Meta.isDefEq m f then done := true
+                  if !done then return false
+                return true
+        catch _ => pure false
+        if ok then out := out.push (s, t)
+    return out)
+  for (s, t) in res.1 do
+    IO.println s!"{s.getString!} {nameOf sc t}"
+
 partial def stripLams : Expr → Expr
   | .lam _ _ b _ => stripLams b
   | e => e
@@ -960,6 +1011,11 @@ unsafe def main (args : List String) : IO Unit := do
     return
   if args.head? == some "reasons" then
     reasonsMode args[1]! sc
+    return
+  if args.head? == some "roots" then
+    -- by computation (default transparency: the house's own notion, a citation that closes by
+    -- unfolding is an instance) or by shape (reducible: the statements as written)
+    rootsMode args[1]! sc (args.contains "shape")
     return
   if args.head? == some "census" then
     censusMode args[1]! sc

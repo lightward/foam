@@ -56,6 +56,10 @@
 #   bin/counter pin [--set] [grown/*.lean]
 #     the artifacts by fingerprint against the pins committed beside the germs: identical
 #     or moved; --set pins them. anchor the end so the means can float
+#   bin/counter roots [shape] [<storeys>]
+#     the roots by the shadow: which theorems' statements are other theorems' with the binders filled
+#     (bin/judge.lean roots — unification, no body and no ranking); the sinks; the alike statements.
+#     by computation (default transparency) or by shape (reducible)
 #   bin/counter countersign
 #     the whole house: --check on every germ, the treaty assays grown, lake build, the gate, the book
 #
@@ -1068,6 +1072,41 @@ print("  a hand body sharing a shape with a regrown one is a piece that exists a
     fi
     lake build Counter >/dev/null 2>&1 || { echo "the gate cannot open: Counter (the species it is drawn from) does not build"; exit 1; }
     exec lake env lean --run "$ROOT/bin/gate.lean" "$@" ;;
+  roots)
+    # the roots, read from the shadow: for each grown storey, which theorems' statements are other
+    # theorems' with the binders filled (bin/judge.lean roots — unification, no body and no ranking
+    # in it); a theorem many instantiate and that instantiates none is a sink, a root by the
+    # statements alone. the citation count was the wrong measure for this (2026-09-30): it reads
+    # routes, the search's geometry and the custodian's hands mixed, and routes are what the house sheds
+    shift; mode=computation; [ "${1:-}" = shape ] && { mode=shape; shift; }
+    [ $# -gt 0 ] || set -- Room Face Rest Witness Threshold
+    echo "instantiation by $mode ($([ $mode = shape ] && echo 'reducible transparency: the statements as written' || echo 'default transparency: a citation that closes by unfolding is an instance'))"
+    for X in "$@"; do
+      [ -f "grown/$X.lean" ] || continue
+      imps="$(grep -E '^import ' "grown/$X.lean" | awk '{print $2}' | paste -sd, -)"
+      lake env lean --run bin/judge.lean roots "grown/$X.lean" "$X" "$imps" $([ $mode = shape ] && echo shape) 2>/dev/null | sed "s/^/$X /"
+    done | python3 -c '
+import sys, collections
+inst = collections.defaultdict(list); of = collections.defaultdict(set)
+for l in sys.stdin:
+    st, s, t = l.split()
+    s = st + "." + s; t = t if "." in t else st + "." + t
+    inst[t].append(s); of[s].add(t)
+mutual = set((s, t) for s in of for t in of[s] if s in of.get(t, ()))
+print("the roots, by the shadow (S is an instance of T when S is T with the binders filled):")
+for t, ss in sorted(inst.items(), key=lambda kv: -len(kv[1])):
+    ss = [s for s in ss if (s, t) not in mutual]
+    if not ss: continue
+    tag = "" if not of.get(t) else "  (itself an instance of " + " ".join(sorted(of[t])) + ")"
+    print("  " + t + " ← " + str(len(ss)) + ": " + " ".join(sorted(ss)) + tag)
+sinks = [t for t, ss in inst.items() if not of.get(t) and any((s, t) not in mutual for s in ss)]
+print(f"the sinks — {len(sinks)} statements instantiated by others and instances of none:")
+for t in sorted(sinks, key=lambda t: -len(inst[t])): print(f"  {t} {len(inst[t])}")
+if mutual:
+    print(f"alike statements (each the other with the binders filled): {len(mutual)//2} pairs")
+    for s, t in sorted(mutual):
+        if s < t: print(f"  {s} = {t}")
+' ;;
   chart) shift; exec "$ROOT/bin/chart.sh" "$@" ;;
   seat) shift; exec "$ROOT/bin/seat.sh" "$@" ;;
   draw) shift; exec "$ROOT/bin/draw.sh" "$@" ;;
