@@ -1,6 +1,6 @@
 # foam
 
-strict phenomenology is indistinguishable from physics.
+strict phenomenology is indistinguishable from physics, and physics is the phenomenology of reversible computation.
 
 conductive proofs of worldly domains, with treaty vectors to mathematics by identity.
 
