@@ -872,7 +872,7 @@ if primings_path:
             grown.append(footer)
         cf = tempfile.NamedTemporaryFile('w', suffix='.lean', prefix='crawl-census-', dir=os.environ.get('TMPDIR', '/tmp'), delete=False)
         cf.write('\n'.join(grown) + '\n'); cf.close()
-        resk = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'kinds', cf.name] + SCOPE, capture_output=True, text=True)
+        resk = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/readings.lean', 'kinds', cf.name] + SCOPE, capture_output=True, text=True)
         kinds = dict(l.split() for l in resk.stdout.splitlines() if len(l.split()) == 2)
         print('the standards (foam-safe at this build; what the compiler vouches for by construction, and what it counts):')
         print(f'  axiom-free ........ {total} receipts minted into the artifact; every one checked at the gate below')
@@ -921,7 +921,7 @@ if primings_path:
               + f'; beyond a row\'s reach: {len(props)} relations ({" ".join(props)}), {len(sorts)} types ({" ".join(sorts)})')
     # the ceiling: the kernel's own census of the trail's proof shapes (bin/readings.lean census),
     # so the yield reads against what the three moves could reach at all
-    res = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'census', cf.name] + SCOPE, capture_output=True, text=True)
+    res = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/readings.lean', 'census', cf.name] + SCOPE, capture_output=True, text=True)
     os.unlink(cf.name)
     cls = dict(l.split() for l in res.stdout.splitlines() if len(l.split()) == 2)
     if cls:

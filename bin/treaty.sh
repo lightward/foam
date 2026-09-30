@@ -51,7 +51,7 @@ def sql_array(items, ty='integer'):
 # the shadow, as the judge reads it: tables with their fields' types, enums, seats, readers, faces
 ns = re.search(r'^namespace (\S+)', open(grown).read(), re.M).group(1)
 imports = ','.join(re.findall(r'^import (\S+)', open(grown).read(), re.M))
-rep = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'schema', grown, ns, imports], capture_output=True, text=True).stdout
+rep = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/readings.lean', 'schema', grown, ns, imports], capture_output=True, text=True).stdout
 tables, enums, seats, readers, facefns, nameprobed = {}, {}, {}, {}, {}, set()
 for l in rep.splitlines():
     p = l.split(' ')

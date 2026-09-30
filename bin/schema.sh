@@ -14,7 +14,7 @@ text = open(src).read()
 imports = re.findall(r'^import (\S+)', text, re.M)
 ns_m = re.search(r'^namespace ([\w.]+)', text, re.M)
 ns = ns_m.group(1) if ns_m else os.path.splitext(os.path.basename(src))[0]
-res = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'schema', src, ns, ','.join(imports)], capture_output=True, text=True)
+res = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/readings.lean', 'schema', src, ns, ','.join(imports)], capture_output=True, text=True)
 RESERVED = set("user table order group from select where to end check default primary references in is on all and or not as by into join case when then else null limit offset union values with using cast column constraint create do for grant having only some window distinct desc asc any array between except fetch foreign intersect lateral returning unique".split())
 def snake(n):
     s = re.sub(r'(?<!^)(?=[A-Z])', '_', n.rsplit('.', 1)[-1]).lower()

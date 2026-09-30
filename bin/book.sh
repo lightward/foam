@@ -71,7 +71,7 @@ for label, src in lean_srcs:
             if any(other != name and re.search(r'\b' + re.escape(name) + r'\b', body) for other, body in bodies.items()):
                 local.add(name)
     # the citations by computation alone: an arrow whose two statements share no word of the house
-    rr = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'reasons', label, ns, ','.join(imports)], capture_output=True, text=True)
+    rr = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/readings.lean', 'reasons', label, ns, ','.join(imports)], capture_output=True, text=True)
     arrows = [l.split() for l in rr.stdout.splitlines() if len(l.split()) == 4]
     bare = [(a, d) for a, d, k, own in arrows if k == '0' and own != '0']
     # a #guard row is a citation too: an assay's carriers are exercised by its rows, and a carrier every

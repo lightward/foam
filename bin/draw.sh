@@ -14,7 +14,7 @@ text = open(src).read()
 imports = re.findall(r'^import (\S+)', text, re.M)
 ns_m = re.search(r'^namespace ([\w.]+)', text, re.M)
 ns = ns_m.group(1) if ns_m else os.path.splitext(os.path.basename(src))[0]
-res = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/judge.lean', 'schema', src, ns, ','.join(imports)], capture_output=True, text=True)
+res = subprocess.run(['lake', 'env', 'lean', '--run', 'bin/readings.lean', 'schema', src, ns, ','.join(imports)], capture_output=True, text=True)
 short = lambda n: n.split('.')[-1]
 types, seats, readers, faces, cites, rules, clerks = {}, {}, {}, {}, {}, [], []
 for l in res.stdout.splitlines():
