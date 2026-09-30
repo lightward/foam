@@ -111,6 +111,9 @@ theorem more_fuel_reads_no_less {I : Type u} {O : Type v} (R : Runner.{u, v, w} 
       | true => rw [hr] at h'; exact h'
       | false => rw [hr] at h'; exact more_fuel_reads_no_less R fuel (R.m.step s (R.steer s)) o h'
 
+theorem every_runner_is_a_plan_at_the_one_face (I : Type u) (O : Type v) :
+    haltingGap.{u, v, w} I O = reseat (appFace (List I × Nat) (Option O)) (fun R : Runner.{u, v, w} I O => fun p => read R (plan R p.1) p.2) := sorry
+
 theorem an_intertwined_rebody_is_unheard_at_the_halting_gap {I : Type u} {O : Type v} (R R' : Runner.{u, v, w} I O)
     (h : R.m.S → R'.m.S) (hs0 : h R.m.s0 = R'.m.s0)
     (hstep : ∀ s i, R'.m.step (h s) i = h (R.m.step s i)) (hsteer : ∀ s, R'.steer (h s) = R.steer s)

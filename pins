@@ -1,10 +1,10 @@
 grown/Room.lean	094b906d36a9ee10
-grown/Face.lean	944bca4bae1b3bee
-grown/Rest.lean	5e2aaed3bc3f77b0
+grown/Face.lean	c812fe2c2c4550a1
+grown/Rest.lean	464f5d1b7a99b72b
 grown/Witness.lean	234e5775d27994fa
 grown/Threshold.lean	f7da54dac965a650
 grown/Toy.lean	2e7348e7edba3b75
-grown/Counter.lean	7df18c7beca4b13c
+grown/Counter.lean	50eb093128ce9af0
 grown/Seek.lean	7746a94afc19b5f1
 grown/Roster.lean	cd39e9677e0f44d1
 grown/assays/counter.lean	72b9c53775807e30
@@ -13,9 +13,9 @@ grown/assays/eih.lean	15a8e142dc13d6e1
 grown/assays/everyone.lean	592aea676ba2e661
 grown/assays/everyoneishere.lean	9b1f60abdbe775de
 grown/assays/grover.lean	a0135af9cfbb0fbf
-grown/assays/halt.lean	c99b66bea485e11f
+grown/assays/halt.lean	7e23efe6bf23915d
 grown/assays/here.lean	a7922d2a684e4eed
 grown/assays/kuramoto.lean	f3c0a637578bfa82
 grown/assays/voice.lean	8328df9a5ea3c4bc
 grown/assays/crossing.lean	7855bf1976232888
-grown/assays/tape.lean	9b8abfc04c6a314e
+grown/assays/tape.lean	cf9eb5c76702e931

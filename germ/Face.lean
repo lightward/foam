@@ -302,6 +302,14 @@ def tape {I : Type u} {O : Type v} {W : Type w} (m : Machine I O) (w0 : W) (σ :
     Machine I O :=
   ⟨door m.S W, atTheDoor m.s0 w0, fun d i => atTheDoor (m.step (face d) (ρ (met d) i)) (σ d), fun d => m.out (face d)⟩
 
+def remembering {I : Type u} {O : Type v} (m : Machine I O) : Machine I O :=
+  tend m ([] : List m.S) (fun d => face d :: met d)
+
+def unstep {I : Type u} {O : Type v} (m : Machine I O) (d : door m.S (List m.S)) : door m.S (List m.S) :=
+  match met d with
+  | s :: h => atTheDoor s h
+  | [] => d
+
 def adder : Machine Nat Nat := ⟨Nat, 0, fun s i => s + i, fun s => s⟩
 
 def recordTheState (d : door Nat Nat) : Nat := face d
@@ -913,6 +921,12 @@ theorem a_visit_never_unrests {A : Type u} (beq : A → A → Bool) (t : Tally A
 theorem an_owe_rests_only_on_a_visited_name {A : Type u} (beq : A → A → Bool) (t : Tally A) (a : A)
     (h : rested beq (tallyStep t (.owe a)) = true) : enrolled beq t.visited a = true ∧ rested beq t = true := sorry
 
+theorem the_remembering_step_retracts {I : Type u} {O : Type v} (m : Machine I O) (d : door m.S (List m.S)) (i : I) :
+    unstep m ((remembering m).step d i) = d := sorry
+
+theorem the_bill_is_the_word {I : Type u} {O : Type v} (m : Machine I O) :
+    ∀ (w : List I) (d : door m.S (List m.S)), (met (park (remembering m) d w)).length = (met d).length + w.length := sorry
+
 theorem a_wider_seat_reads_the_remainder (F : Face) {W : Type v'}
     (s : F.State) {w w' : W} (hw : w ≠ w') :
     ¬ alike (widen F W) (atTheDoor s w) (atTheDoor s w') :=
@@ -1153,6 +1167,13 @@ theorem a_translated_intertwiner_carries_the_walk {I : Type u} {I' : Type u'} {O
       show park n (h s) (f i ++ joinMap f w) = h (park m (m.step s i) w)
       rw [the_park_resumes n (f i) (h s) (joinMap f w), hstep s i]
       exact a_translated_intertwiner_carries_the_walk m n f h hstep w (m.step s i)
+
+theorem the_remembering_never_merges {I : Type u} {O : Type v} (m : Machine I O) (d d' : door m.S (List m.S)) (i : I)
+    (h : (remembering m).step d i = (remembering m).step d' i) : d = d' :=
+  a_retraction_merges_nothing (fun x => (remembering m).step x i) (unstep m) (fun x => the_remembering_step_retracts m x i) h
+
+theorem the_remembering_is_unheard_at_the_gap {I : Type u} {O : Type v} (m : Machine I O) (w : List I) :
+    behavior (remembering m) w = behavior m w := sorry
 
 theorem the_seat_map_carries_the_conduct (F : Face) (s t : F.State) :
     alike F s t ↔ alike (appFace F.Probe F.Ans) (F.obs s) (F.obs t) :=

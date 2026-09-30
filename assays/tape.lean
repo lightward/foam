@@ -23,14 +23,6 @@ def unreadTape : Nat := behavior (tape adder (0 : Nat) recordTheState (fun _ i =
 #guard stateAfterTwo == 2
 #guard unreadTape == untended
 
-def remembering {I O : Type} (m : Machine.{0, 0, w} I O) : Machine I O :=
-  tend m ([] : List m.S) (fun d => face d :: met d)
-
-def unstep {I O : Type} (m : Machine.{0, 0, w} I O) (d : door m.S (List m.S)) : door m.S (List m.S) :=
-  match met d with
-  | s :: h => atTheDoor s h
-  | [] => d
-
 def rememberedAdder : Machine Nat Nat := remembering adder
 def adderRemembers : List Nat := met (park rememberedAdder (atTheDoor (0 : Nat) ([] : List Nat)) [1, 1, 1])
 def adderForgets : door Nat (List Nat) :=
@@ -41,19 +33,6 @@ def rememberedRuns : Nat := behavior rememberedAdder [1, 1, 1]
 #guard face adderForgets == 0
 #guard met adderForgets == []
 #guard rememberedRuns == untended
-
-theorem the_remembering_step_retracts {I O : Type} (m : Machine.{0, 0, w} I O) (d : door m.S (List m.S)) (i : I) :
-    unstep m ((remembering m).step d i) = d := sorry
-
-theorem the_remembering_never_merges {I O : Type} (m : Machine.{0, 0, w} I O) (d d' : door m.S (List m.S)) (i : I)
-    (h : (remembering m).step d i = (remembering m).step d' i) : d = d' :=
-  a_retraction_merges_nothing (fun x => (remembering m).step x i) (unstep m) (fun x => the_remembering_step_retracts m x i) h
-
-theorem the_remembering_is_unheard_at_the_gap {I O : Type} (m : Machine.{0, 0, w} I O) (w : List I) :
-    behavior (remembering m) w = behavior m w := sorry
-
-theorem the_bill_is_the_word {I O : Type} (m : Machine.{0, 0, w} I O) :
-    ∀ (w : List I) (d : door m.S (List m.S)), (met (park (remembering m) d w)).length = (met d).length + w.length := sorry
 
 theorem a_wait_is_a_still_plan_on_its_own_tape {I O : Type} (R : Runner.{0, 0, w} I O) (hstill : ∀ s, R.m.step s (R.steer s) = s)
     (n : Nat) (s : R.m.S) (m : Machine.{0, 0, w} I O) (d : door m.S (List m.S)) (i : I) (u : List I) :
