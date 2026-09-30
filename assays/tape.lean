@@ -1,5 +1,6 @@
 import Face
-open Room Face
+import Rest
+open Room Face Rest
 set_option autoImplicit false
 
 namespace Tape
@@ -53,5 +54,14 @@ theorem the_remembering_is_unheard_at_the_gap {I O : Type} (m : Machine.{0, 0, w
 
 theorem the_bill_is_the_word {I O : Type} (m : Machine.{0, 0, w} I O) :
     ∀ (w : List I) (d : door m.S (List m.S)), (met (park (remembering m) d w)).length = (met d).length + w.length := sorry
+
+theorem a_wait_is_a_still_plan_on_its_own_tape {I O : Type} (R : Runner.{0, 0, w} I O) (hstill : ∀ s, R.m.step s (R.steer s) = s)
+    (n : Nat) (s : R.m.S) (m : Machine.{0, 0, w} I O) (d : door m.S (List m.S)) (i : I) (u : List I) :
+    runs R.m R.steer R.rest s n = cond (R.rest s) (some (R.m.out s)) none
+      ∧ (readable R s ↔ R.rest s = true)
+      ∧ unstep m ((remembering m).step d i) = d
+      ∧ (met (park (remembering m) d u)).length = (met d).length + u.length :=
+  ⟨a_still_runner_rests_where_it_stands R hstill n s, the_still_plan_is_readable_iff_at_rest R hstill s,
+   the_remembering_step_retracts m d i, the_bill_is_the_word m u d⟩
 
 end Tape

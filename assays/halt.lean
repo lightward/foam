@@ -44,4 +44,7 @@ theorem two_readers_of_the_counter_agree (w : List Unit) (o o' : Nat) (f f' : Na
 theorem the_cascades_replay_reads_its_plan (w : List Unit) (k : Nat) :
     read (replayRunner cascade) (plan (replayRunner cascade) w) k = read cascade (plan cascade w) k := sorry
 
+theorem every_runner_is_a_plan_at_the_one_face (I O : Type) :
+    haltingGap.{0, 0, 0} I O = reseat (appFace (List I × Nat) (Option O)) (fun R : Runner.{0, 0, 0} I O => fun p => read R (plan R p.1) p.2) := sorry
+
 end Halt
