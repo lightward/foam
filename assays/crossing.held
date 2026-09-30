@@ -58,3 +58,20 @@
 -- count read one seat wider — the length of the carried record, unread at the host and real at the widen. the
 -- replay runner carries the whole word; the counter carrying a unit carries one more cell than the counter; the
 -- page count above is the least such record. waiting on: the same carrier, read at the widen.
+
+-- knot theory, crossed with reversible computation as the measurement an observer is already doing (isaac,
+-- 2026-09-30): the knot is W's alike-class at the widest seat, never formed as a term — knot theory takes the
+-- quotient by isotopy and the house refuses it, so a conductive knot theory has diagrams (seats), Reidemeister
+-- moves (unheard rebodies), invariants (Derived readings), and the knot only as a license between two diagrams.
+-- the three counts are three invariants of one worldline: winding is self-linking (the crossing with the shifted
+-- copy, seated above), crossing per tap is seated, and the knot-theoretic crossing number is the MINIMUM over
+-- seats — a reading of the class without forming it, Derived by construction. the unknotting number is refused:
+-- a crossing change passes one strand through another, a cut, the resistor; what the house has instead is the
+-- blocking number, the loops made because one may not cut. waiting on: a finite family of taps to take the
+-- minimum over (ρ ranges over a function space; the row wants a list), and the count of resistors in a route
+-- as the knottedness of its record.
+-- held (waiting on: a finite family of taps; the clerks of a route as a list)
+-- theorem the_crossing_number_is_the_least_over_seats {O : Type} (m : Machine Unit O) (beq : O → O → Bool) (taps : List (W → Unit → Unit)) :
+--     crossingNumber m beq taps = leastOf ((taps.map (fun ρ => crossingWithin (tape m w0 σ ρ) m beq bound))) := sorry
+-- theorem a_conductive_route_is_the_unknot (route : List (S → S)) (h : ∀ f, f ∈ route → ∃ r, ∀ s, r (f s) = s) :
+--     knottedness route = 0 := sorry
