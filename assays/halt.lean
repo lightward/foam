@@ -44,4 +44,7 @@ theorem two_readers_of_the_counter_agree (w : List Unit) (o o' : Nat) (f f' : Na
 theorem the_cascades_replay_reads_its_plan (w : List Unit) (k : Nat) :
     read (replayRunner cascade) (plan (replayRunner cascade) w) k = read cascade (plan cascade w) k := sorry
 
+theorem a_plan_read_is_a_meeting_at_a_door (w : List Unit) (k : Nat) :
+    read counting (plan counting w) k = walkIn (haltingGap Unit Nat).obs (atTheDoor counting (w, k)) := sorry
+
 end Halt
