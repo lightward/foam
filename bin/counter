@@ -1124,6 +1124,11 @@ if mutual:
     moved=0; lines=""
     for f in "$@"; do
       [ -f "$f" ] || continue
+      if [ "$setpin" = 1 ]; then
+        # a holonomy of something that does not regrow is not a holonomy: a set refuses an artifact
+        # the kernel refuses (2026-09-30, after two red artifacts were anchored on the way to a green one)
+        if ! lake env lean "$f" >/dev/null 2>&1; then echo "  $f — REFUSED: the artifact does not elaborate silently; nothing anchored"; exit 1; fi
+      fi
       fp="$(shasum -a 256 "$f" | cut -c1-16)"
       last="$(awk -F'\t' -v f="$f" '$1 == f { print $2 }' pins 2>/dev/null)"
       if [ -z "$last" ]; then verdict="unpinned"; moved=1; elif [ "$last" = "$fp" ]; then verdict="identical"; else verdict="MOVED from $last"; moved=1; fi
