@@ -33,8 +33,8 @@ footer{{opacity:.6}}
 <footer>strict phenomenology is indistinguishable from physics — the artifact grew from the germ on push. UNLICENSE.</footer>
 <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"; mermaid.initialize({{startOnLoad:true, maxTextSize:900000, maxEdges:5000}});</script></body></html>"""
 
-NAV = ('<a href="./">foam</a><a href="threshold.html">Threshold</a><a href="rest.html">Rest</a><a href="witness.html">Witness</a><a href="trunk.html">Face</a><a href="room.html">Room</a><a href="trunk/">the trunk, to run</a><a href="germ.html">the germ</a><a href="toy.html">toy, a customer</a>'
-       '<a href="pieces.html">the pieces</a><a href="book.html">the book</a><a href="assay-eih.html">EVERYONE IS HERE</a>'
+NAV = ('<a href="/">foam</a><a href="/threshold.html">Threshold</a><a href="/rest.html">Rest</a><a href="/witness.html">Witness</a><a href="/trunk.html">Face</a><a href="/room.html">Room</a><a href="/trunk/">the trunk, to run</a><a href="/germ.html">the germ</a><a href="/toy.html">toy, a customer</a>'
+       '<a href="/pieces.html">the pieces</a><a href="/book.html">the book</a><a href="/assay-eih.html">EVERYONE IS HERE</a>'
        '<a href="https://github.com/lightward/foam">github</a>')
 
 def chart_of(path):
@@ -86,12 +86,16 @@ def lean_page(path, title):
 
 readme = open('README.md').read()
 def markdown(text):
+    # a reader that marks up must keep escaping: emphasis runs outside code only — a fence or a
+    # backtick span is kept as it is (the `*.lean` of the trunk's shell line read as an open italic)
     text = html.escape(text)
     text = re.sub(r'^(# .+)$', r'<h1>\1</h1>', text, flags=re.M)
     text = re.sub(r'^(## .+)$', r'<h2>\1</h2>', text, flags=re.M)
-    text = re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)', r'<em>*\1*</em>', text)
-    text = re.sub(r'(?<!\*)\*\*([^*]+)\*\*(?!\*)', r'<strong>**\1**</strong>', text)
-    return text
+    def prose(seg):
+        seg = re.sub(r'(?<!\*)\*\*([^*\n]+)\*\*(?!\*)', r'<strong>**\1**</strong>', seg)
+        return re.sub(r'(?<!\*)\*([^*\n]+)\*(?!\*)', r'<em>*\1*</em>', seg)
+    parts = re.split(r'(```.*?```|`[^`\n]*`)', text, flags=re.S)
+    return ''.join(seg if i % 2 else prose(seg) for i, seg in enumerate(parts))
 # link `name` in the README to the trunk where the name is a declaration
 names = set(re.findall(r'^(?:theorem|def|structure|inductive|abbrev) (\w+)', open('grown/Face.lean').read(), re.M))
 def link_names(text):
