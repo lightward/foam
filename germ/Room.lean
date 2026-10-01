@@ -104,6 +104,14 @@ def lacking {A : Type u} (beq : A → A → Bool) (room : List A) : List A → N
   | n :: needs =>
       cond (enrolled beq room n) (lacking beq room needs) (lacking beq room needs + 1)
 
+def uniq {A : Type u} (beq : A → A → Bool) : List A → List A
+  | [] => []
+  | x :: r => cond (enrolled beq r x) (uniq beq r) (x :: uniq beq r)
+
+def fresh {A : Type u} (beq : A → A → Bool) : List A → Nat
+  | [] => 0
+  | x :: r => cond (enrolled beq r x) (fresh beq r) (fresh beq r + 1)
+
 def everyone (beq : Nat → Nat → Bool) (members confirmed : List Nat) : Bool :=
   backed beq confirmed members
 
@@ -645,6 +653,26 @@ theorem an_enrolled_name_is_a_member {A : Type u} (beq : A → A → Bool) (hE :
           rw [hq] at h'
           exact List.Mem.tail _ (an_enrolled_name_is_a_member beq hE s p h')
 
+theorem fresh_counts_the_uniq {A : Type u} (beq : A → A → Bool) :
+    ∀ l : List A, fresh beq l = (uniq beq l).length
+  | [] => rfl
+  | x :: r => by
+      show cond (enrolled beq r x) (fresh beq r) (fresh beq r + 1) = (cond (enrolled beq r x) (uniq beq r) (x :: uniq beq r)).length
+      rw [fresh_counts_the_uniq beq r]
+      cases enrolled beq r x <;> rfl
+
+theorem fresh_of_the_alike_is_one {A : Type u} (beq : A → A → Bool) :
+    ∀ (l : List A) (x : A), (∀ y, y ∈ x :: l → ∀ z, z ∈ x :: l → beq y z = true) → fresh beq (x :: l) = 1
+  | [], _, _ => rfl
+  | y :: r, x, h => by
+      show cond (enrolled beq (y :: r) x) (fresh beq (y :: r)) (fresh beq (y :: r) + 1) = 1
+      have hy : enrolled beq (y :: r) x = true := by
+        show (beq y x || enrolled beq r x) = true
+        rw [h y (List.Mem.tail x (List.Mem.head r)) x (List.Mem.head (y :: r))]
+        rfl
+      rw [hy]
+      exact fresh_of_the_alike_is_one beq r y (fun a ha b hb => h a (List.Mem.tail x ha) b (List.Mem.tail x hb))
+
 theorem a_merging_map_has_no_section {S : Type u} {T : Type u'} (h : S → T)
     {s s' : S} (hs : s ≠ s') (hm : h s = h s')
     (r : T → S) (hr : ∀ x, r (h x) = x) : False := sorry
@@ -1050,6 +1078,15 @@ theorem a_click_never_unseats {A : Type u} (beq : A → A → Bool) (st : List A
   cases hb : backed beq st.1 arr.2 with
   | true => rw [the_backed_are_seated beq st arr hb]; exact ble_le_succ st.1.length
   | false => rw [the_unbacked_wait beq st arr hb]; exact ble_refl st.1.length
+
+theorem fresh_at_most_the_length {A : Type u} (beq : A → A → Bool) :
+    ∀ l : List A, Nat.ble (fresh beq l) l.length = true
+  | [] => rfl
+  | x :: r => by
+      show Nat.ble (cond (enrolled beq r x) (fresh beq r) (fresh beq r + 1)) (r.length + 1) = true
+      cases enrolled beq r x with
+      | true => exact ble_trans _ _ _ (fresh_at_most_the_length beq r) (ble_le_succ r.length)
+      | false => exact fresh_at_most_the_length beq r
 
 theorem the_join_counts_evenly {A : Type u} {B : Type v} (f : A → List B) (n : Nat) :
     ∀ as : List A, (∀ a, a ∈ as → (f a).length = n) →

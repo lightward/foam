@@ -117,10 +117,6 @@ def listBeq {O : Type} (beq : O → O → Bool) : List O → List O → Bool
   | _ :: _, [] => false
   | a :: as, b :: bs => beq a b && listBeq beq as bs
 
-def fresh {A : Type} (beq : A → A → Bool) : List A → Nat
-  | [] => 0
-  | x :: xs => cond (enrolled beq xs x) (fresh beq xs) (fresh beq xs + 1)
-
 def pagesOf {O : Type} (beq : O → O → Bool) (outs : List O) (k : Nat) : Nat :=
   fresh (listBeq beq) ((List.range k).map (fun i => window outs i k))
 

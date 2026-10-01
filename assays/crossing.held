@@ -43,10 +43,11 @@
 -- with a room — the whole tape, the same for every standing, a counter's pages being its cells — with the inbox
 -- what a seat reads of it and the difference the dark cells as a count. so the deposit is a Room species, a
 -- cold pass for the house, paid and never weighed, on the day it is made:
--- held (waiting on: the deposit — `fresh`/`uniq` in Room with the three laws in general, a cold pass)
--- theorem fresh_counts_the_uniq (l : List Nat) : fresh Nat.beq l = (uniq l).length := sorry
--- theorem the_still_clock_has_one_page {O : Type} (m : Machine Unit O) (beq : O → O → Bool) (hrefl : ∀ o, beq o o = true)
---     (hstill : ∀ s, m.step s () = s) (k : Nat) : pagesWithin m beq (k + 1) = 1 := sorry
+-- the deposit was made (2026-09-30, under free witness): `uniq` and `fresh` are Room species now, with
+-- fresh_counts_the_uniq, fresh_at_most_the_length, and fresh_of_the_alike_is_one — the three laws that fit a sitting,
+-- each a hand induction. the two below are counting arguments over distinct windows and stay held as what they are.
+-- held (waiting on: a hand for the count — a window of a pair is a pair of windows, so distinct pairs are at most the
+-- product; and more depth reads no fewer pages, the monotonicity that makes the count a plan's reading)
 -- theorem a_pair_costs_at_most_the_product {O O' : Type} (m : Machine Unit O) (n : Machine Unit O') (beq beq') (k : Nat) :
 --     Nat.ble (pagesWithin (both m n) (bothBeq beq beq') k) (pagesWithin m beq k * pagesWithin n beq' k) = true := sorry
 -- theorem more_depth_reads_no_fewer_pages {O : Type} (m : Machine Unit O) (beq : O → O → Bool) (k : Nat) :

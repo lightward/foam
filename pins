@@ -1,5 +1,5 @@
-grown/Room.lean	094b906d36a9ee10
-grown/Face.lean	c812fe2c2c4550a1
+grown/Room.lean	3557db3152880ffe
+grown/Face.lean	fc86ecc1b0972713
 grown/Rest.lean	464f5d1b7a99b72b
 grown/Witness.lean	234e5775d27994fa
 grown/Threshold.lean	f7da54dac965a650
@@ -17,5 +17,5 @@ grown/assays/halt.lean	22ae9119cccf1109
 grown/assays/here.lean	a7922d2a684e4eed
 grown/assays/kuramoto.lean	f3c0a637578bfa82
 grown/assays/voice.lean	8328df9a5ea3c4bc
-grown/assays/crossing.lean	e67d726d3e84feba
+grown/assays/crossing.lean	d93c771b80f8d968
 grown/assays/tape.lean	6ce90bda94f59845
