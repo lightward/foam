@@ -63,4 +63,10 @@ theorem a_wait_is_a_still_plan_on_its_own_tape {I O : Type} (R : Runner.{0, 0, w
   ⟨a_still_runner_rests_where_it_stands R hstill n s, the_still_plan_is_readable_iff_at_rest R hstill s,
    the_remembering_step_retracts m d i, the_bill_is_the_word m u d⟩
 
+theorem the_symmetry_is_over_the_guest (F : Face.{0, 0, 0}) {W : Type} (σ : door F.State W → W) (d : door F.State W)
+    (s : F.State) {g g' : W} (hw : g ≠ g') {I O : Type} (m : Machine.{0, 0, w} I O) (u : List I) (d' : door m.S (List m.S)) :
+    alike (host F W) (vertical σ d) d
+      ∧ ¬ alike (widen F W) (atTheDoor s g) (atTheDoor s g')
+      ∧ (met (park (remembering m) d' u)).length = (met d').length + u.length := sorry
+
 end Tape
