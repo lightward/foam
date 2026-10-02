@@ -85,4 +85,45 @@ theorem the_three_fates :
       ∧ (alike (host worldFace Nat) (atTheDoor a 7) (atTheDoor a 9) ∧ ¬ alike (widen worldFace Nat) (atTheDoor a 7) (atTheDoor a 9))
       ∧ alike (widen worldFace Nat) (atTheDoor a 7) (atTheDoor a 7) := sorry
 
+def res3 : Nat → Nat
+  | 0 => 0
+  | 1 => 1
+  | 2 => 2
+  | n + 3 => res3 n
+
+def tick (d : door World Nat) : door World Nat :=
+  atTheDoor ⟨(face d).weight + res3 (met d), (face d).hue, (face d).heads⟩ (met d + 1)
+
+def after : Nat → door World Nat → door World Nat
+  | 0, d => d
+  | k + 1, d => after k (tick d)
+
+def partsAt (d d' : door World Nat) (k : Nat) : Bool :=
+  !(Nat.beq (see (face (after k d)) weight) (see (face (after k d')) weight))
+
+def crossingWithin (d d' : door World Nat) : Nat → Nat → Option Nat
+  | _, 0 => none
+  | k, fuel + 1 => cond (partsAt d d' k) (some k) (crossingWithin d d' (k + 1) fuel)
+
+def levelFive : door World Nat × door World Nat := (atTheDoor a 7, atTheDoor a 9)
+def levelSix : door World Nat × door World Nat := (atTheDoor a 7, atTheDoor a 10)
+def levelFiveCrossing : Option Nat := crossingWithin (atTheDoor a 7) (atTheDoor a 9) 0 12
+def levelSixCrossing : Option Nat := crossingWithin (atTheDoor a 7) (atTheDoor a 10) 0 12
+def levelFiveWeights : Nat × Nat := ((face (after 1 (atTheDoor a 7))).weight, (face (after 1 (atTheDoor a 9))).weight)
+
+#guard levelFiveCrossing == some 1
+#guard levelSixCrossing == none
+#guard levelFiveWeights == (4, 3)
+#guard partsAt (atTheDoor a 7) (atTheDoor a 10) 5 == false
+#guard met (after 4 (atTheDoor a 7)) == 11
+
+theorem level_five_parts_at_the_first_tick : partsAt (atTheDoor a 7) (atTheDoor a 9) 1 = true := sorry
+
+theorem level_six_is_in_step_to_twelve : crossingWithin (atTheDoor a 7) (atTheDoor a 10) 0 12 = none := sorry
+
+theorem the_two_secrets_are_alike_at_the_door : alike (host worldFace Nat) (atTheDoor a 7) (atTheDoor a 10) := sorry
+
+theorem the_tick_hears_the_secret_only_as_a_residue (w : World) (s : Nat) :
+    face (tick (atTheDoor w s)) = face (tick (atTheDoor w (s + 3))) := sorry
+
 end Game
