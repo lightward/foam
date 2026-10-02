@@ -1,0 +1,13 @@
+-- the vestibule of the ledger: a transfer between two seats keeps the total — the handshake at money, read
+-- by bin/counter book. isaac's jotting (2026-10-02): money movement carries someone else's cognitive process,
+-- an unknowably plural someone else; "time is money" as parameterization, a timestream a cashflow, and flow
+-- dynamics hold. the house's reading: a charge is fuel one reader spent, spendable by any reader at the same
+-- fingerprint, the payer dark (the memo's observer column was dropped because a memo need not know who paid);
+-- the bill is the word; and conservation is a symmetry over who is holding, the Noether reading — a transfer
+-- is unheard at the face whose one probe is the total and heard at the face whose probes are the seats.
+-- the concrete rows are seated in the assay; what waits is the law in general.
+-- held (waiting on: a hand for the induction — the names apart, the giver and the taker distinct, the gift affordable)
+-- theorem the_gift_keeps_the_total (l : List (Nat × Nat)) (a b k : Nat) (hn : Apart (l.map (·.1))) (hab : a ≠ b)
+--     (hk : Nat.ble k (held l a) = true) : total (give l a b k) = total l := sorry
+-- theorem an_affordable_gift_is_unheard_at_the_total (a b k : Nat) (hab : a ≠ b) :
+--     ∀ l, Apart (l.map (·.1)) → Nat.ble k (held l a) = true → totalFace.obs (give l a b k) () = totalFace.obs l () := sorry
