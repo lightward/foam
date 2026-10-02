@@ -59,7 +59,7 @@ for ap in sorted(glob.glob('assays/*.lean')):
     assays.append((stem, imps[-1] if imps else '', os.path.exists(f'grown/assays/{stem}.lean'), os.path.exists(f'assays/{stem}.held')))
 
 NAV = ('<a href="/">foam</a>' + ''.join(f'<a href="/{s.lower()}.html">{s}</a>' for s in storeys)
-       + '<a href="/trunk/">the trunk, to run</a><a href="/assays.html">the assays</a><a href="/readings.html">the readings</a>'
+       + '<a href="/trunk/">the trunk, to run</a><a href="/assays.html">the assays</a><a href="/game/">the game</a><a href="/readings.html">the readings</a>'
        + '<a href="/compiler.html">the compiler</a><a href="https://github.com/lightward/foam">github</a>')
 
 def chart_of(path):
@@ -199,3 +199,4 @@ open('site/CNAME', 'w').write(open('CNAME').read())
 open('site/.nojekyll', 'w').write('')
 print('site/: index ' + ' '.join(s.lower() for s in storeys + compiler) + ' trunk/ assays readings compiler germ pieces ' + ' '.join(f'assay-{a[0]}' for a in assays))
 EOF
+bin/game.sh   # the game, derived from assays/game.lean, at site/game/
