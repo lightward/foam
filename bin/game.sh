@@ -6,10 +6,13 @@ set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 mkdir -p site/game
+export GAME_ASSAY="${GAME_ASSAY:-assays/game.lean}"
 python3 - <<'EOF'
 import html, json, os, re, sys
 
-src = open('assays/game.lean').read()
+ASSAY = os.environ.get('GAME_ASSAY', 'assays/game.lean')
+src = open(ASSAY).read()
+def red(msg): print(f'bin/game.sh: {ASSAY} ' + msg, file=sys.stderr); sys.exit(1)
 
 # the probes: every Nat def with a literal body, in def order; the structure's fields give the order of a world's readings
 fields = re.findall(r'^\s+(\w+) : Nat\s*$', re.search(r'structure World where\n((?:\s+\w+ : Nat\n)+)', src).group(1) if re.search(r'structure World where', src) else '', re.M)
@@ -22,6 +25,39 @@ gaps = re.findall(r'^def (\w+) : Option Nat := firstGap (\w+) (\w+) (\w+)\s*$', 
 mirrors = [(n, int(h), int(w)) for n, h, w in
            re.findall(r'^def (\w+) : door Nat Nat := turnAbout \(atTheDoor \((\d+) : Nat\) \((\d+) : Nat\)\)', src, re.M)]
 lesson = 'alike at your seat is not sameness, and a difference you cannot read is a license, not nothing.'
+
+# the ticking world: the residue's modulus from its own step equation (| n + 3 => res3 n), its base cases the identity below it;
+# the tick asserted in form — one field of the face grows by the residue of the secret, the others are kept, the secret winds by one —
+# so a tick the assay changes is refused here, never diverged from silently; a crossing is (def : Option Nat := crossingWithin (atTheDoor x s) (atTheDoor y t) start bound)
+tickRule = None
+res = re.search(r'^def (\w+) : Nat → Nat\n((?:  \| .*\n)+)', src, re.M)
+if res:
+    rname, eqs = res.group(1), res.group(2)
+    step = re.search(r'^  \| n \+ (\d+) => ' + rname + r' n\s*$', eqs, re.M)
+    base = re.findall(r'^  \| (\d+) => (\d+)\s*$', eqs, re.M)
+    if not step or sorted(int(k) for k, _ in base) != list(range(int(step.group(1)))) or any(k != v for k, v in base):
+        red(f'defines {rname} but not as a residue (base cases the identity below the step n + m => {rname} n)')
+    modulus = int(step.group(1))
+    tick = re.search(r'^def tick \(d : door World Nat\) : door World Nat :=\n\s*atTheDoor ⟨([^⟩]*)⟩ \(met d \+ 1\)\s*$', src, re.M)
+    if not tick: red('defines tick, but not in the form atTheDoor ⟨…⟩ (met d + 1) this generator plays')
+    parts = [x.strip() for x in tick.group(1).split(',')]
+    moved = [(i, re.match(r'^\(face d\)\.(\w+) \+ ' + rname + r' \(met d\)$', x)) for i, x in enumerate(parts)]
+    moved = [(i, m.group(1)) for i, m in moved if m]
+    kept = [x == f'(face d).{f}' for x, f in zip(parts, fields)]
+    if len(parts) != len(fields) or len(moved) != 1 or not all(k for i, k in enumerate(kept) if i != moved[0][0]) or fields[moved[0][0]] != moved[0][1]:
+        red('defines tick, but not as one field grown by ' + rname + ' of the secret with the others kept: ' + tick.group(1))
+    tickRule = {'residue': rname, 'modulus': modulus, 'moves': moved[0][1]}
+crossings = [(n, x, int(s), y, int(t), int(k0), int(bound)) for n, x, s, y, t, k0, bound in
+             re.findall(r'^def (\w+) : Option Nat := crossingWithin \(atTheDoor (\w+) (\d+)\) \(atTheDoor (\w+) (\d+)\) (\d+) (\d+)\s*$', src, re.M)]
+if crossings and not tickRule: red('reads a crossing but defines no residue to tick by')
+# a crossing belongs to the nearest level before it with its door pair (levelTwo and levelFive share a pair; position tells them apart)
+pos = {n: src.index(f'\ndef {n} ') for n, *_ in levels}
+ticking = {}
+for n, x, s, y, t, k0, bound in crossings:
+    here = src.index(f'\ndef {n} ')
+    owners = [m for m, mx, ms, my, mt in levels if (mx, ms, my, mt) == (x, s, y, t) and pos[m] < here]
+    if not owners: red(f'reads {n} through crossingWithin at a door pair no level before it defines')
+    ticking[owners[-1]] = {'crossing': n, 'start': k0, 'bound': bound}
 
 missing = [k for k, v in [('probes', probes), ('fields', fields), ('seats', seats), ('worlds', worlds), ('levels', levels), ('mirrors', mirrors)] if not v]
 if missing:
@@ -38,13 +74,16 @@ for n, x, s, y, t in levels:
 full = next((n for n, ps in seats if set(ps) == set(pnum)), seats[0][0])
 plays = []
 for n, x, s, y, t in levels:
+    if n in ticking: continue
     at = [seat for _, gx, gy, seat in gaps if (gx, gy) == (x, y)] or [full]
     for seat in at: plays.append({'kind': 'level', 'name': n, 'seat': seat, 'doors': [{'world': x, 'secret': s}, {'world': y, 'secret': t}]})
+for n, x, s, y, t in levels:   # the ticking levels after the still ones, in def order: the world moves and the player watches the face
+    if n in ticking: plays.append({'kind': 'ticking', 'name': n, 'doors': [{'world': x, 'secret': s}, {'world': y, 'secret': t}], **ticking[n]})
 for n, h, w in mirrors: plays.append({'kind': 'mirror', 'name': n, 'face': w, 'met': h})   # turnAbout (atTheDoor h w) = (w, h)
 
 data = {'fields': fields, 'probes': [{'name': n, 'number': v} for n, v in probes], 'seats': dict(seats), 'full': full,
         'worlds': worlds, 'levels': [{'name': n, 'doors': [[x, s], [y, t]]} for n, x, s, y, t in levels],
-        'mirrors': [{'name': n, 'face': w, 'met': h} for n, h, w in mirrors], 'plays': plays, 'lesson': lesson}
+        'mirrors': [{'name': n, 'face': w, 'met': h} for n, h, w in mirrors], 'tick': tickRule, 'plays': plays, 'lesson': lesson}
 
 # the page: the same frame as every other page (bin/page.sh's), the nav derived the same way
 libs = [l for l in re.findall(r'^name = "(\w+)"', open('lakefile.toml').read(), re.M) if os.path.exists(f'germ/{l}.lean')]
@@ -112,6 +151,17 @@ GAME_JS = r'''(function () {
     for (var i = 0; i < seat.length; i++) if (see(x, probeNum[seat[i]]) !== see(y, probeNum[seat[i]])) return i + 1;
     return seat.length;
   }
+  function residue(n) { return n % D.tick.modulus; }          // the assay's res3: n + 3 => res3 n, the identity below it
+  function tick(d) {                            // the assay's tick: one field of the face grows by the residue of the secret, the secret winds by one
+    var r = d.readings.slice(); r[D.fields.indexOf(D.tick.moves)] += residue(d.secret); return { readings: r, secret: d.secret + 1 };
+  }
+  function weightOf(d) { return d.readings[D.fields.indexOf(D.tick.moves)]; }
+  function crossingWithin(d, e, k, fuel) {      // the assay's crossingWithin: the least k within the fuel at which the moved field parts, else null
+    for (var i = 0; i < k; i++) { d = tick(d); e = tick(e); }
+    for (var j = 0; j < fuel; j++) { if (weightOf(d) !== weightOf(e)) return k + j; d = tick(d); e = tick(e); }
+    return null;
+  }
+  function word(n) { var w = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']; return n < w.length ? w[n] : String(n); }
   var fullSeat = D.seats[D.full];
   var root = document.getElementById('game');
   var at = 0, total = 0, S = null;
@@ -127,14 +177,19 @@ GAME_JS = r'''(function () {
     var p = D.plays[at];
     S = { play: p, fuel: 0, asked: [], note: null, verdict: null, widened: false, done: false };
     if (p.kind === 'level') { S.seat = D.seats[p.seat]; S.x = p.doors[0].world; S.y = p.doors[1].world; }
+    if (p.kind === 'ticking') {
+      S.ticks = 0; S.cur = p.doors.map(function (d) { return { readings: D.worlds[d.world].slice(), secret: d.secret }; });
+      for (var i = 0; i < p.start; i++) S.cur = S.cur.map(tick);
+      S.crossing = crossingWithin(S.cur[0], S.cur[1], 0, p.bound);
+    }
   }
   function render() {
     root.innerHTML = '';
     if (at >= D.plays.length) { renderEnd(); return; }
     if (!S) fresh();
     var p = S.play;
-    root.appendChild(el('h2', {}, [(at + 1) + ' / ' + D.plays.length + ' — ' + p.name + (p.kind === 'level' ? ' at the seat ' + p.seat + ' [' + S.seat.join(', ') + ']' : ' — the mirror')]));
-    if (p.kind === 'level') renderLevel(); else renderMirror();
+    root.appendChild(el('h2', {}, [(at + 1) + ' / ' + D.plays.length + ' — ' + p.name + (p.kind === 'level' ? ' at the seat ' + p.seat + ' [' + S.seat.join(', ') + ']' : p.kind === 'ticking' ? ' — the world ticks' : ' — the mirror')]));
+    if (p.kind === 'level') renderLevel(); else if (p.kind === 'ticking') renderTicking(); else renderMirror();
     root.appendChild(el('p', { 'class': 'fuel' }, ['fuel spent on this level: ' + S.fuel + ' · in all: ' + (total + S.fuel)]));
     if (S.note) root.appendChild(el('p', { 'class': 'wrong' }, [S.note]));
     if (S.verdict) root.appendChild(el('p', { 'class': 'verdict' }, [S.verdict]));
@@ -185,6 +240,50 @@ GAME_JS = r'''(function () {
     }
     root.appendChild(bar);
   }
+  function tickingCard(d, which) {
+    var parted = weightOf(S.cur[0]) !== weightOf(S.cur[1]);
+    var rows = D.fields.map(function (f, i) {
+      return el('tr', { 'class': f === D.tick.moves && parted ? 'parted' : '' }, [el('td', {}, [f]), el('td', {}, [String(d.readings[i])])]);
+    });
+    rows.push(el('tr', { 'class': S.widened ? 'parted' : 'hidden' }, [el('td', {}, ['the guest']), el('td', {}, [S.widened ? String(d.secret) : '·'])]));
+    return el('div', { 'class': 'door' }, [el('h3', {}, ['door ' + which]), el('table', {}, rows)]);
+  }
+  function renderTicking() {
+    var p = S.play, parted = weightOf(S.cur[0]) !== weightOf(S.cur[1]);
+    root.appendChild(el('div', { 'class': 'doors' }, [tickingCard(S.cur[0], 'one'), tickingCard(S.cur[1], 'two')]));
+    root.appendChild(el('p', {}, ['the world ticks on its own: at every tick the ' + D.tick.moves + ' grows by what the secret leaves mod ' + word(D.tick.modulus) + ', and the secret winds by one. you read the face and never the secret. ticks so far: ' + S.ticks + ' of ' + p.bound + '.']));
+    if (S.done) return;
+    var bar = el('div', {});
+    if (!S.verdict) {
+      bar.appendChild(button('tick', function () {
+        S.fuel++; S.ticks++; S.cur = S.cur.map(tick); S.note = null;
+        if (S.ticks >= p.bound) S.note = 'the bound of ' + word(p.bound) + ' ticks is reached: the assay reads no further. call it.';
+        render();
+      }, S.ticks >= p.bound));
+      bar.appendChild(button('they have parted', function () {
+        if (parted) { S.verdict = 'timelike — parted at the face after ' + S.ticks + ' tick' + (S.ticks === 1 ? '' : 's') + ' (' + D.tick.moves + ')'; S.done = true; S.note = null; }
+        else { S.fuel++; S.note = 'not parted: both doors read ' + weightOf(S.cur[0]) + ' at ' + D.tick.moves + ' after ' + S.ticks + ' tick' + (S.ticks === 1 ? '' : 's') + '. one fuel.'; }
+        render();
+      }));
+      bar.appendChild(button('they never part', function () {
+        if (S.crossing === null) {
+          S.verdict = 'alike at the face at every tick within ' + word(p.bound) + ': the face hears the secrets only as a residue — ' + word(p.doors[0].secret) + ' and ' + word(p.doors[1].secret) + ' are one secret to it. lightlike: parted one seat wider.';
+          S.note = null;
+        } else { S.fuel++; S.note = (parted ? 'they have parted already: look at the ' + D.tick.moves + '.' : 'they part — keep ticking.') + ' one fuel.'; }
+        render();
+      }));
+    }
+    bar.appendChild(button('widen', function () {
+      S.fuel++; S.widened = true; S.done = true;
+      var s = S.cur[0].secret, t = S.cur[1].secret, diff = s > t ? s - t : t - s;
+      if (S.crossing === null) S.verdict = 'the secrets differ by ' + word(diff) + ', and the tick hears a secret only mod ' + word(D.tick.modulus) + ': that is the local physics of this room, and you have entrained to it if you called it.';
+      else if (parted) S.verdict = 'the guests read ' + s + ' and ' + t + ' now; the face parted them at tick ' + S.crossing + ' on its own. timelike, and the widen was one fuel you did not need.';
+      else S.verdict = 'lightlike at this tick — alike at the face, the guests read ' + s + ' and ' + t + '; left to tick, the face parts them at tick ' + S.crossing + '.';
+      render();
+    }));
+    if (S.verdict) bar.appendChild(button('rest here', function () { S.done = true; render(); }));
+    root.appendChild(bar);
+  }
   function renderMirror() {
     var p = S.play;
     root.appendChild(el('div', { 'class': 'doors' }, [el('div', { 'class': 'door' }, [el('h3', {}, ['the door, turned about']),
@@ -204,7 +303,11 @@ GAME_JS = r'''(function () {
     root.appendChild(bar);
   }
   function renderEnd() {
-    var least = D.plays.reduce(function (n, p) { return n + (p.kind === 'level' ? fuelToPart(p.doors[0].world, p.doors[1].world, D.seats[p.seat]) : 1); }, 0);
+    var least = D.plays.reduce(function (n, p) {
+      if (p.kind === 'level') return n + fuelToPart(p.doors[0].world, p.doors[1].world, D.seats[p.seat]);
+      if (p.kind === 'ticking') { var c = crossingWithin({ readings: D.worlds[p.doors[0].world], secret: p.doors[0].secret }, { readings: D.worlds[p.doors[1].world], secret: p.doors[1].secret }, p.start, p.bound); return n + (c === null ? 0 : c); }
+      return n + 1;
+    }, 0);
     root.appendChild(el('h2', {}, ['the lesson']));
     root.appendChild(el('p', { 'class': 'lesson' }, [D.lesson]));
     root.appendChild(el('p', { 'class': 'fuel' }, ['fuel spent: ' + total + ' · the assay\'s own count, asking each seat in order and widening nothing: ' + least]));
@@ -216,12 +319,13 @@ GAME_JS = r'''(function () {
 
 body = ('<section class="game"><h1>the game — spot the difference, where sometimes there isn\'t one</h1>'
         '<p>each level is two doors; ask the probes your seat hears, one fuel each, and either name the probe that parts them or say they are alike at this seat. '
-        'after alike you may widen, one fuel, and read what the face could not.</p>'
-        '<p class="fuel">every door, level, seat, and mirror below is read from <a href="/assay-game.html">assays/game.lean</a>; the engine is <code>the_window_agrees_or_names_the_gap</code>, the mirror is <code>the_yield_fixes_the_agreed</code>.</p>'
+        'after alike you may widen, one fuel, and read what the face could not. '
+        'in a ticking level the world moves on its own and you watch the face: tick, one fuel each, and call whether the doors have parted or never will.</p>'
+        '<p class="fuel">every door, level, seat, tick, and mirror below is read from <a href="/assay-game.html">assays/game.lean</a>; the engine is <code>the_window_agrees_or_names_the_gap</code>, the tick is <code>the_tick_hears_the_secret_only_as_a_residue</code>, the mirror is <code>the_yield_fixes_the_agreed</code>.</p>'
         '<div id="game"></div></section>' + GAME_CSS
         + '<script id="data" type="application/json">' + json.dumps(data, ensure_ascii=False).replace('</', '<\\/') + '</script>'
         + '<script>' + GAME_JS + '</script>')
 
 open('site/game/index.html', 'w').write(page('the game — foam', body, NAV))
-print(f'site/game/index.html: {len(plays)} plays ({len(levels)} levels, {len(mirrors)} mirrors) from assays/game.lean')
+print(f'site/game/index.html: {len(plays)} plays ({len(levels) - len(ticking)} levels, {len(ticking)} ticking, {len(mirrors)} mirrors) from {ASSAY}')
 EOF
