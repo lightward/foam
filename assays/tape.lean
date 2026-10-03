@@ -69,4 +69,11 @@ theorem the_symmetry_is_over_the_guest (F : Face.{0, 0, 0}) {W : Type} (σ : doo
       ∧ ¬ alike (widen F W) (atTheDoor s g) (atTheDoor s g')
       ∧ (met (park (remembering m) d' u)).length = (met d').length + u.length := sorry
 
+theorem the_horizon_radiates {I O : Type} {W : Type} (m : Machine.{0, 0, 0} I O) (w0 : W) (σ : door m.S W → W)
+    (u : List I) (n : Machine.{0, 0, w} I O) (d : door n.S (List n.S)) (v : List I) :
+    behavior (tend m w0 σ) u = behavior m u
+      ∧ (behavior (tape adder (0 : Nat) recordTheState readThrough) [1, 1, 1] = (4 : Nat)
+          ∧ behavior adder [1, 1, 1] = (3 : Nat) ∧ (4 : Nat) ≠ 3)
+      ∧ (met (park (remembering n) d v)).length = (met d).length + v.length := sorry
+
 end Tape
