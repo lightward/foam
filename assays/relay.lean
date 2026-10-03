@@ -40,4 +40,19 @@ theorem the_erasing_stage_merges : met throughErase = met throughEraseOther ∧ 
 theorem no_section_recovers_the_erased (r : List Bool → List Bool) (hr : ∀ s, r (erase s) = s) : False :=
   a_merging_map_has_no_section erase (s := signal) (s' := otherSignal) (by decide) (by decide) r hr
 
+def helloWorld : List Bool := [true, false, false, true, false, true, true, false]
+def playedBack : List Bool := behavior (replayer (ledger Bool)) helloWorld
+def theRouteKept : List Bool := park (replayer (ledger Bool)) [] helloWorld
+
+#guard playedBack == helloWorld
+#guard theRouteKept == helloWorld
+#guard theRouteKept.length == helloWorld.length
+
+theorem the_replayer_parks_the_word {I O : Type} (m : Machine.{0, 0, 0} I O) :
+    ∀ (ws rec : List I), park (replayer m) rec ws = rec ++ ws := sorry
+
+theorem the_identity_relay_keeps_its_route (w : List Bool) :
+    behavior (replayer (ledger Bool)) w = behavior (ledger Bool) w ∧ park (replayer (ledger Bool)) [] w = w :=
+  ⟨the_replay_is_the_machine (ledger Bool) w, the_replayer_parks_the_word (ledger Bool) w []⟩
+
 end Relay
