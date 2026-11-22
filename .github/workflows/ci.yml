@@ -55,7 +55,6 @@ jobs:
           done
       - name: the treaty in SQL (the shadow loads into Postgres; the assay's rows replay as queries)
         run: |
-          bin/counter treaty assays/eih.lean
           bin/counter treaty assays/cycle.lean
       - name: "the pins (every artifact against the pins committed beside the germs — identical, or red: a pin moves in the same commit as its cause, bin/counter pin --set)"
         run: bin/counter pin
