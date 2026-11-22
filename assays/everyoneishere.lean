@@ -150,6 +150,48 @@ theorem holding_moves_only_at_a_handshake (r : List Entry) (n : Nat) (e : Entry)
       rw [the_holder_reads_the_last_entry n r 1 none e]
       exact same)
 
+inductive Step where
+  | looks (place : Nat)
+  | acts (e : Entry)
+
+def walk : List Entry → List Step → List Entry
+  | r, [] => r
+  | r, Step.looks _ :: s => walk r s
+  | r, Step.acts e :: s => walk (move r e) s
+
+def actsOf : List Step → List Entry
+  | [] => []
+  | Step.looks _ :: s => actsOf s
+  | Step.acts e :: s => e :: actsOf s
+
+def theDayWandered : List Entry :=
+  walk [] [Step.looks 0, Step.acts (Entry.arrives 1), Step.looks 1, Step.looks 1, Step.acts (Entry.arrives 2),
+    Step.acts (Entry.says 1), Step.looks 3, Step.acts (Entry.marks 1 3 (some 2)), Step.looks 4, Step.looks 2,
+    Step.acts (Entry.marks 2 3 none), Step.acts (Entry.acks 3 4), Step.acts (Entry.acks 1 4), Step.looks 4,
+    Step.acts (Entry.acks 2 4), Step.acts (Entry.acks 2 4), Step.looks 9, Step.acts (Entry.says 3)]
+
+#guard theDayWandered.length == theDay.length
+#guard holder theDayWandered 4 == holder theDay 4
+
+theorem a_look_writes_nothing : ∀ (s : List Step) (r : List Entry), walk r s = moves r (actsOf s)
+  | [], _ => rfl
+  | Step.looks _ :: s, r => a_look_writes_nothing s r
+  | Step.acts e :: s, r => a_look_writes_nothing s (move r e)
+
+theorem walkers_who_move_alike_leave_one_tape (r : List Entry) (s s' : List Step) (same : actsOf s = actsOf s') :
+    walk r s = walk r s' := by
+  rw [a_look_writes_nothing s r, a_look_writes_nothing s' r, same]
+
+def tapeFace : Face := ⟨List Entry, Nat, Option Entry, entryAt⟩
+
+theorem the_tape_merges_the_walkers (r : List Entry) (w w' : List Nat) :
+    alike (host tapeFace (List Nat)) (atTheDoor r w) (atTheDoor r w') :=
+  the_host_merges_the_guests tapeFace (List Nat) r w w'
+
+theorem a_wider_seat_reads_the_walk (r : List Entry) {w w' : List Nat} (h : w ≠ w') :
+    ¬ alike (widen tapeFace (List Nat)) (atTheDoor r w) (atTheDoor r w') :=
+  a_wider_seat_reads_the_remainder tapeFace r h
+
 def noOne : Face := originFace Nat
 
 theorem no_one_is_everyone_at_the_zeroth_door (s t : Nat) : alike noOne s t :=
