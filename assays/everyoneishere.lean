@@ -60,10 +60,6 @@ def optSame : Option Nat → Option Nat → Bool
   | some _, none => false
   | none, some _ => false
 
-def towardSeated (r : List Entry) : Option Nat → Bool
-  | some t => seated r t
-  | none => true
-
 def ackable (r : List Entry) (h n : Nat) : Option Entry → Bool
   | some (Entry.marks m _ t) => seated r h && reachesFor m t h && optSame (holder r n) (some m)
   | some (Entry.arrives _) => false
@@ -74,7 +70,7 @@ def ackable (r : List Entry) (h n : Nat) : Option Entry → Bool
 def admit (r : List Entry) : Entry → Bool
   | Entry.arrives h => !seated r h
   | Entry.says h => seated r h
-  | Entry.marks h w t => seated r h && wordsOf r w h && towardSeated r t
+  | Entry.marks h w _ => seated r h && wordsOf r w h
   | Entry.acks h n => ackable r h n (entryAt r n)
 
 def keepIf : Bool → List Entry → List Entry → List Entry
@@ -97,6 +93,7 @@ def theDay : List Entry :=
 #guard admit theDay (Entry.marks 1 3 none) == true
 #guard admit theDay (Entry.acks 1 4) == false
 #guard seated theDay 3 == false
+#guard admit theDay (Entry.marks 1 3 (some 9)) == true
 
 theorem appending_nothing_is_still (r : List Entry) : r = r ++ [] := by
   induction r with
@@ -109,12 +106,12 @@ theorem the_tape_only_grows (r : List Entry) (e : Entry) : ∃ t, move r e = r +
   | true => exact ⟨[e], rfl⟩
   | false => exact ⟨[], appending_nothing_is_still r⟩
 
-theorem the_middle_of_three {a b c : Bool} (h : (a && b && c) = true) : b = true := by
-  cases a <;> cases b <;> cases c <;> first | rfl | cases h
+theorem the_second_of_two {a b : Bool} (h : (a && b) = true) : b = true := by
+  cases a <;> cases b <;> first | rfl | cases h
 
 theorem only_you_mark_your_own_words (r : List Entry) (h w : Nat) (t : Option Nat)
     (ok : admit r (Entry.marks h w t) = true) : wordsOf r w h = true :=
-  the_middle_of_three ok
+  the_second_of_two ok
 
 theorem the_holder_reads_the_last_entry (n : Nat) :
     ∀ (r : List Entry) (i : Nat) (x : Option Nat) (e : Entry),
