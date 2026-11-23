@@ -194,4 +194,34 @@ def noOne : Face := originFace Nat
 theorem no_one_is_everyone_at_the_zeroth_door (s t : Nat) : alike noOne s t :=
   the_origin_merges_every_seat s t
 
+-- foam's game at the product's carriers (2026-11-23): a world's room, ticked. each tick the wearer says a step, marks
+-- it toward the world, the world says its new weight and acks. in the product (spec/frames/game_treaty_spec.rb in
+-- everyoneishere) the step's words carry the secret's residue mod 3 and the secret stays on the wearer's own tape;
+-- here, at the kernel's grain, words are only that a seat said something, so the secret has nowhere to go at all
+
+def worldRoom : List Entry := moves [] [Entry.arrives 1, Entry.arrives 2]
+
+def tickOnce (r : List Entry) : List Entry :=
+  moves r [Entry.says 1, Entry.marks 1 (r.length + 1) (some 2), Entry.says 2, Entry.acks 2 (r.length + 2)]
+
+def ticked : Nat → List Entry → List Entry
+  | 0, r => r
+  | k + 1, r => ticked k (tickOnce r)
+
+def worldAfter (k : Nat) (_secret : Nat) : List Entry := ticked k worldRoom
+
+def fourTicksLength : Nat := (worldAfter 4 7).length
+def fourTicksHolder : Option Nat := holder (worldAfter 4 7) 16
+
+#guard fourTicksLength == 18
+#guard fourTicksHolder == some 2
+
+theorem the_world_room_never_hears_the_secret (k s s' : Nat) : worldAfter k s = worldAfter k s' := sorry
+
+theorem the_world_room_merges_the_secrets (k s s' : Nat) :
+    alike (host tapeFace Nat) (atTheDoor (worldAfter k s) s) (atTheDoor (worldAfter k s') s') := sorry
+
+theorem a_wider_seat_reads_the_secret (k : Nat) {s s' : Nat} (h : s ≠ s') :
+    ¬ alike (widen tapeFace Nat) (atTheDoor (worldAfter k s) s) (atTheDoor (worldAfter k s') s') := sorry
+
 end EveryoneIsHere
