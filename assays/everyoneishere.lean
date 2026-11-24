@@ -194,6 +194,58 @@ def noOne : Face := originFace Nat
 theorem no_one_is_everyone_at_the_zeroth_door (s t : Nat) : alike noOne s t :=
   the_origin_merges_every_seat s t
 
+-- custody (2026-11-24): a council of three, on Isaac's question "we might be close to having conservation laws in
+-- EIH?", found the conserved thing is custody, not openness: every end has one holder from its mark, the mark is the
+-- only source, and between makings no move makes a holder appear or vanish (everyoneishere model.md, the same day)
+
+def heldCount (r : List Entry) : Nat := ((List.range (r.length + 1)).filter (fun n => (holder r n).isSome)).length
+
+def markCount : List Entry → Nat
+  | [] => 0
+  | Entry.marks _ _ _ :: r => markCount r + 1
+  | Entry.arrives _ :: r => markCount r
+  | Entry.says _ :: r => markCount r
+  | Entry.acks _ _ :: r => markCount r
+
+#guard heldCount theDay == markCount theDay
+#guard heldCount theDayWandered == markCount theDayWandered
+
+theorem holding_neither_appears_nor_vanishes_between_makings (r : List Entry) (e : Entry) (n : Nat)
+    (notMark : ∀ m w t, e ≠ Entry.marks m w t) : (holder (move r e) n).isSome = (holder r n).isSome := by
+  show (holderGo n (keepIf (admit r e) (r ++ [e]) r) 1 none).isSome = (holder r n).isSome
+  cases ha : admit r e with
+  | false => rfl
+  | true =>
+      show (holderGo n (r ++ [e]) 1 none).isSome = (holder r n).isSome
+      rw [the_holder_reads_the_last_entry n r 1 none e]
+      cases e with
+      | arrives s => rfl
+      | says s => rfl
+      | marks m w t => exact absurd rfl (notMark m w t)
+      | acks a k =>
+          show (either (Nat.beq k n) (some a) (holder r n)).isSome = (holder r n).isSome
+          cases hb : Nat.beq k n with
+          | false => rfl
+          | true =>
+              have kn : k = n := Nat.eq_of_beq_eq_true hb
+              subst kn
+              have hk : ackable r a k (entryAt r k) = true := ha
+              revert hk
+              cases entryAt r k with
+              | none => intro hk; cases hk
+              | some d =>
+                  cases d with
+                  | arrives _ => intro hk; cases hk
+                  | says _ => intro hk; cases hk
+                  | acks _ _ => intro hk; cases hk
+                  | marks m w t =>
+                      intro hk
+                      have hs : optSame (holder r k) (some m) = true := the_second_of_two hk
+                      revert hs
+                      cases holder r k with
+                      | none => intro hs; cases hs
+                      | some _ => intro _; rfl
+
 -- foam's game at the product's carriers (2026-11-23): a world's room, ticked. each tick the wearer says a step, marks
 -- it toward the world, the world says its new weight and acks. in the product (spec/frames/game_treaty_spec.rb in
 -- everyoneishere) the step's words carry the secret's residue mod 3 and the secret stays on the wearer's own tape;
